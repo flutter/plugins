@@ -35,6 +35,8 @@ class SkuDetailsWrapper {
     @required this.title,
     @required this.type,
     @required this.isRewarded,
+    @required this.originalPrice,
+    @required this.originalPriceAmountMicros,
   });
 
   /// Constructs an instance of this from a key value map of data.
@@ -84,6 +86,12 @@ class SkuDetailsWrapper {
   /// False if the product is paid.
   final bool isRewarded;
 
+  /// The original price that the user purchased this product for.
+  final String originalPrice;
+
+  /// [originalPrice] in micro-units ("990000").
+  final int originalPriceAmountMicros;
+
   @override
   bool operator ==(dynamic other) {
     if (other.runtimeType != runtimeType) {
@@ -104,7 +112,9 @@ class SkuDetailsWrapper {
         typedOther.subscriptionPeriod == subscriptionPeriod &&
         typedOther.title == title &&
         typedOther.type == type &&
-        typedOther.isRewarded == isRewarded;
+        typedOther.isRewarded == isRewarded &&
+        typedOther.originalPrice == originalPrice &&
+        typedOther.originalPriceAmountMicros == originalPriceAmountMicros;
   }
 
   @override
@@ -122,7 +132,9 @@ class SkuDetailsWrapper {
         subscriptionPeriod.hashCode,
         title.hashCode,
         type.hashCode,
-        isRewarded.hashCode);
+        isRewarded.hashCode,
+        originalPrice,
+        originalPriceAmountMicros);
   }
 }
 
@@ -130,10 +142,10 @@ class SkuDetailsWrapper {
 ///
 /// Returned by [BillingClient.querySkuDetails].
 @JsonSerializable()
-@BillingResponseConverter()
 class SkuDetailsResponseWrapper {
   @visibleForTesting
-  SkuDetailsResponseWrapper({@required this.responseCode, this.skuDetailsList});
+  SkuDetailsResponseWrapper(
+      {@required this.billingResult, this.skuDetailsList});
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -142,8 +154,8 @@ class SkuDetailsResponseWrapper {
   factory SkuDetailsResponseWrapper.fromJson(Map<String, dynamic> map) =>
       _$SkuDetailsResponseWrapperFromJson(map);
 
-  /// The final status of the [BillingClient.querySkuDetails] call.
-  final BillingResponse responseCode;
+  /// The final result of the [BillingClient.querySkuDetails] call.
+  final BillingResultWrapper billingResult;
 
   /// A list of [SkuDetailsWrapper] matching the query to [BillingClient.querySkuDetails].
   final List<SkuDetailsWrapper> skuDetailsList;
@@ -156,10 +168,48 @@ class SkuDetailsResponseWrapper {
 
     final SkuDetailsResponseWrapper typedOther = other;
     return typedOther is SkuDetailsResponseWrapper &&
-        typedOther.responseCode == responseCode &&
+        typedOther.billingResult == billingResult &&
         typedOther.skuDetailsList == skuDetailsList;
   }
 
   @override
-  int get hashCode => hashValues(responseCode, skuDetailsList);
+  int get hashCode => hashValues(billingResult, skuDetailsList);
+}
+
+/// Params containing the response code and the debug message from the Play Billing API response.
+@JsonSerializable()
+@BillingResponseConverter()
+class BillingResultWrapper {
+  /// Constructs the object with [responseCode] and [debugMessage].
+  BillingResultWrapper({@required this.responseCode, this.debugMessage});
+
+  /// Constructs an instance of this from a key value map of data.
+  ///
+  /// The map needs to have named string keys with values matching the names and
+  /// types of all of the members on this class.
+  factory BillingResultWrapper.fromJson(Map map) =>
+      _$BillingResultWrapperFromJson(map);
+
+  /// Response code returned in the Play Billing API calls.
+  final BillingResponse responseCode;
+
+  /// Debug message returned in the Play Billing API calls.
+  ///
+  /// This message uses an en-US locale and should not be shown to users.
+  final String debugMessage;
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    final BillingResultWrapper typedOther = other;
+    return typedOther is BillingResultWrapper &&
+        typedOther.responseCode == responseCode &&
+        typedOther.debugMessage == debugMessage;
+  }
+
+  @override
+  int get hashCode => hashValues(responseCode, debugMessage);
 }

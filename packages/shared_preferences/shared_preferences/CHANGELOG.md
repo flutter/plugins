@@ -1,3 +1,22 @@
+## 0.5.6
+
+* Support `web` by default.
+* Require Flutter SDK 1.12.13+hotfix.4 or greater.
+
+## 0.5.5
+
+* Support macos by default.
+
+## 0.5.4+10
+
+* Adds a `shared_preferences_macos` package.
+
+## 0.5.4+9
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
 ## 0.5.4+8
 
 * Switch `package:shared_preferences` to `package:shared_preferences_platform_interface`.

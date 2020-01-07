@@ -4,8 +4,8 @@
 
 import 'package:test/test.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
-import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
+import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 
 final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   description: 'description',
@@ -22,6 +22,8 @@ final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   title: 'title',
   type: SkuType.inapp,
   isRewarded: true,
+  originalPrice: 'originalPrice',
+  originalPriceAmountMicros: 1000,
 );
 
 void main() {
@@ -38,23 +40,29 @@ void main() {
   group('SkuDetailsResponseWrapper', () {
     test('parsed from map', () {
       final BillingResponse responseCode = BillingResponse.ok;
+      const String debugMessage = 'dummy message';
       final List<SkuDetailsWrapper> skusDetails = <SkuDetailsWrapper>[
         dummySkuDetails,
         dummySkuDetails
       ];
+      BillingResultWrapper result = BillingResultWrapper(
+          responseCode: responseCode, debugMessage: debugMessage);
       final SkuDetailsResponseWrapper expected = SkuDetailsResponseWrapper(
-          responseCode: responseCode, skuDetailsList: skusDetails);
+          billingResult: result, skuDetailsList: skusDetails);
 
       final SkuDetailsResponseWrapper parsed =
           SkuDetailsResponseWrapper.fromJson(<String, dynamic>{
-        'responseCode': BillingResponseConverter().toJson(responseCode),
+        'billingResult': <String, dynamic>{
+          'responseCode': BillingResponseConverter().toJson(responseCode),
+          'debugMessage': debugMessage,
+        },
         'skuDetailsList': <Map<String, dynamic>>[
           buildSkuMap(dummySkuDetails),
           buildSkuMap(dummySkuDetails)
         ]
       });
 
-      expect(parsed.responseCode, equals(expected.responseCode));
+      expect(parsed.billingResult, equals(expected.billingResult));
       expect(parsed.skuDetailsList, containsAll(expected.skuDetailsList));
     });
 
@@ -72,17 +80,23 @@ void main() {
 
     test('handles empty list of skuDetails', () {
       final BillingResponse responseCode = BillingResponse.error;
+      const String debugMessage = 'dummy message';
       final List<SkuDetailsWrapper> skusDetails = <SkuDetailsWrapper>[];
+      BillingResultWrapper billingResult = BillingResultWrapper(
+          responseCode: responseCode, debugMessage: debugMessage);
       final SkuDetailsResponseWrapper expected = SkuDetailsResponseWrapper(
-          responseCode: responseCode, skuDetailsList: skusDetails);
+          billingResult: billingResult, skuDetailsList: skusDetails);
 
       final SkuDetailsResponseWrapper parsed =
           SkuDetailsResponseWrapper.fromJson(<String, dynamic>{
-        'responseCode': BillingResponseConverter().toJson(responseCode),
+        'billingResult': <String, dynamic>{
+          'responseCode': BillingResponseConverter().toJson(responseCode),
+          'debugMessage': debugMessage,
+        },
         'skuDetailsList': <Map<String, dynamic>>[]
       });
 
-      expect(parsed.responseCode, equals(expected.responseCode));
+      expect(parsed.billingResult, equals(expected.billingResult));
       expect(parsed.skuDetailsList, containsAll(expected.skuDetailsList));
     });
   });
@@ -104,5 +118,7 @@ Map<String, dynamic> buildSkuMap(SkuDetailsWrapper original) {
     'title': original.title,
     'type': original.type.toString().substring(8),
     'isRewarded': original.isRewarded,
+    'originalPrice': original.originalPrice,
+    'originalPriceAmountMicros': original.originalPriceAmountMicros,
   };
 }
