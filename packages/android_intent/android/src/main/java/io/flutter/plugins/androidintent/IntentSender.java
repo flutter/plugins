@@ -45,16 +45,16 @@ public final class IntentSender {
    * @param action the Intent action, such as {@code ACTION_VIEW}.
    * @param flags forwarded to {@link Intent#addFlags(int)} if non-null.
    * @param category forwarded to {@link Intent#addCategory(String)} if non-null.
-   * @param data forwarded to {@link Intent#setData(Uri)} if non-null
-   *     and 'type' parameter is null. If both 'data' and 'type' is non-null
-   *     they're forwarded to {@link Intent#setDataAndType(Uri, String)}
+   * @param data forwarded to {@link Intent#setData(Uri)} if non-null and 'type' parameter is null.
+   *     If both 'data' and 'type' is non-null they're forwarded to {@link
+   *     Intent#setDataAndType(Uri, String)}
    * @param arguments forwarded to {@link Intent#putExtras(Bundle)} if non-null.
    * @param packageName forwarded to {@link Intent#setPackage(String)} if non-null. This is forced
    *     to null if it can't be resolved.
    * @param componentName forwarded to {@link Intent#setComponent(ComponentName)} if non-null.
-   * @param type forwarded to {@link Intent#setType(String)} if non-null
-   *     and 'data' parameter is null. If both 'data' and 'type' is non-null
-   *     they're forwarded to {@link Intent#setDataAndType(Uri, String)}
+   * @param type forwarded to {@link Intent#setType(String)} if non-null and 'data' parameter is
+   *     null. If both 'data' and 'type' is non-null they're forwarded to {@link
+   *     Intent#setDataAndType(Uri, String)}
    */
   void send(
       String action,
