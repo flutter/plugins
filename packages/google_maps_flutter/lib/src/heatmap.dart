@@ -53,13 +53,6 @@ class WeightedLatLng {
     return <dynamic>[point._toJson(), intensity];
   }
 
-  static WeightedLatLng _fromJson(dynamic json) {
-    if (json == null) {
-      return null;
-    }
-    return WeightedLatLng(point: json[0], intensity: json[1]);
-  }
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -99,13 +92,6 @@ class HeatmapGradient {
 
   dynamic _toJson() {
     return <dynamic>[colors.map((Color c) => c.value).toList(), startPoints, colorMapSize];
-  }
-
-  static HeatmapGradient _fromJson(dynamic json) {
-    if (json == null) {
-      return null;
-    }
-    return HeatmapGradient(colors: json[0].map((dynamic value) => Color(value)).toList(), startPoints: json[1], colorMapSize: json[2]);
   }
 
   @override
