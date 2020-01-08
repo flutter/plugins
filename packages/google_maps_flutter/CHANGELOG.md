@@ -1,3 +1,7 @@
+## 0.5.21+16
+
+* Adds support for heatmaps in google_maps_flutter. 
+
 ## 0.5.21+15
 
 * Remove the deprecated `author:` field from pubspec.yaml
