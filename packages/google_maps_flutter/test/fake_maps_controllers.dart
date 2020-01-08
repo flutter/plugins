@@ -19,6 +19,7 @@ class FakePlatformGoogleMap {
     updatePolygons(params);
     updatePolylines(params);
     updateCircles(params);
+    updateHeatmaps(params);
   }
 
   MethodChannel channel;
@@ -79,6 +80,12 @@ class FakePlatformGoogleMap {
 
   Set<Circle> circlesToChange;
 
+  Set<HeatmapId> heatmapIdsToRemove;
+
+  Set<Heatmap> heatmapsToAdd;
+
+  Set<Heatmap> heatmapsToChange;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -95,6 +102,9 @@ class FakePlatformGoogleMap {
         return Future<void>.sync(() {});
       case 'circles#update':
         updateCircles(call.arguments);
+        return Future<void>.sync(() {});
+      case 'heatmaps#update':
+        updateHeatmaps(call.arguments);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -309,6 +319,64 @@ class FakePlatformGoogleMap {
         circleId: CircleId(circleId),
         visible: visible,
         radius: radius,
+      ));
+    }
+
+    return result;
+  }
+
+  List<WeightedLatLng> _deserializeWeightedPoints(List<dynamic> points) {
+    return points.map<WeightedLatLng>((dynamic list) {
+      return WeightedLatLng(point: LatLng(list[0][0], list[0][1]), intensity: list[1]);
+    }).toList();
+  }
+
+  void updateHeatmaps(Map<dynamic, dynamic> heatmapUpdates) {
+    if (heatmapUpdates == null) {
+      return;
+    }
+    heatmapsToAdd = _deserializeHeatmaps(heatmapUpdates['heatmapsToAdd']);
+    heatmapIdsToRemove =
+        _deserializeHeatmapIds(heatmapUpdates['heatmapIdsToRemove']);
+    heatmapsToChange =
+        _deserializeHeatmaps(heatmapUpdates['heatmapsToChange']);
+  }
+
+  Set<HeatmapId> _deserializeHeatmapIds(List<dynamic> heatmapIds) {
+    if (heatmapIds == null) {
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
+      return Set<HeatmapId>();
+    }
+    return heatmapIds
+        .map((dynamic heatmapId) => HeatmapId(heatmapId))
+        .toSet();
+  }
+
+  Set<Heatmap> _deserializeHeatmaps(dynamic heatmaps) {
+    if (heatmaps == null) {
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
+      return Set<Heatmap>();
+    }
+    final List<dynamic> heatmapsData = heatmaps;
+    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+    // https://github.com/flutter/flutter/issues/28312
+    // ignore: prefer_collection_literals
+    final Set<Heatmap> result = Set<Heatmap>();
+    for (Map<dynamic, dynamic> heatmapData in heatmapsData) {
+      final String heatmapId = heatmapData['heatmapId'];
+      final bool visible = heatmapData['visible'];
+      final double opacity = heatmapData['opacity'];
+      final List<WeightedLatLng> points = _deserializeWeightedPoints(heatmapData['points']);
+
+      result.add(Heatmap(
+        heatmapId: HeatmapId(heatmapId),
+        visible: visible,
+        opacity: opacity,
+        points: points,
       ));
     }
 
