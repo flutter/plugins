@@ -10,7 +10,7 @@
   // Provide the GoogleMaps API key.
   NSString* mapsApiKey = [[NSProcessInfo processInfo] environment][@"MAPS_API_KEY"];
   if ([mapsApiKey length] == 0) {
-    mapsApiKey = @"YOUR KEY HERE";
+    mapsApiKey = @"AIzaSyBetw7SrHkePuiMGxCE1fg5v8jLoDVNTXU";
   }
   [GMSServices provideAPIKey:mapsApiKey];
 

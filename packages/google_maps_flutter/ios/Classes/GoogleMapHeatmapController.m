@@ -9,16 +9,14 @@
   GMUHeatmapTileLayer* _heatmapLayer;
   GMSMapView* _mapView;
 }
-- (instancetype)initHeatmapWithPath:(GMSMutablePath*)path
-                          heatmapId:(NSString*)heatmapId
-                             mapView:(GMSMapView*)mapView {
+- (instancetype)initHeatmapWithHeatmapId:(NSString*)heatmapId
+                                 mapView:(GMSMapView*)mapView {
   self = [super init];
   if (self) {
-    _heatmapLayer = GMUHeatmapTileLayer();
+    _heatmapLayer = [[GMUHeatmapTileLayer alloc] init];
     _heatmapLayer.map = mapView;
     _mapView = mapView;
     _heatmapId = heatmapId;
-    _heatmapLayer.userData = @[ heatmapId ];
   }
   return self;
 }
@@ -33,29 +31,43 @@
   _heatmapLayer.map = visible ? _mapView : nil;
 }
 - (void)setRadius:(NSUInteger)radius {
-  _heatmapLayer.radius(radius);
-  clearTileCache();
+  [_heatmapLayer setRadius:radius];
+  [_heatmapLayer clearTileCache];
 }
-- (void)setGradient:(GMUGradient *)gradient {
-  _heatmapLayer.gradient(gradient);
-  clearTileCache();
+- (void)setGradient:(GMUGradient*)gradient {
+  [_heatmapLayer setGradient:gradient];
+  [_heatmapLayer clearTileCache];
 }
-- (void)setPoints:(NSArray<GMUWeightedLatLng *>*)points {
-  _heatmapLayer.weightedData(points);
-  clearTileCache();
+- (void)setPoints:(NSArray<GMUWeightedLatLng*>*)points {
+  [_heatmapLayer setWeightedData:points];
+  [_heatmapLayer clearTileCache];
 }
-- (void)clearTileCache:() {
-  _heatmapLayer.clearTileCache();
+- (void)setOpacity:(double)opacity {
+  _heatmapLayer.opacity = opacity;
+  [_heatmapLayer clearTileCache];
 }
 
 @end
 
 static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:data]; }
 
+static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toDouble:data]; }
+
 static BOOL ToBool(NSNumber* data) { return [FLTGoogleMapJsonConversions toBool:data]; }
 
-static NSArray<CLLocation*>* ToPoints(NSArray* data) {
-  return [FLTGoogleMapJsonConversions toPoints:data];
+static NSArray<GMUWeightedLatLng*>* ToPoints(NSArray* data) {
+  NSMutableArray* points = [[NSMutableArray alloc] init];
+  for (unsigned i = 0; i < [data count]; i++) {
+    NSNumber* latitude = data[i][0][0];
+    NSNumber* longitude = data[i][0][1];
+    NSNumber* intensity = data[i][1];
+    GMUWeightedLatLng* weightedPoint =
+        [[GMUWeightedLatLng alloc] initWithCoordinate:CLLocationCoordinate2DMake([FLTGoogleMapJsonConversions toDouble:latitude],[FLTGoogleMapJsonConversions toDouble:longitude])
+                                            intensity:[FLTGoogleMapJsonConversions toFloat:intensity]];
+    [points addObject:weightedPoint];
+  }
+
+  return points;
 }
 
 static NSArray<UIColor*>* ToColors(NSArray* data) {
@@ -71,7 +83,7 @@ static NSArray<UIColor*>* ToColors(NSArray* data) {
 static NSArray<NSNumber*>* ToStartsPoints(NSArray* data) {
   NSMutableArray* startPoints = [[NSMutableArray alloc] init];
   for (unsigned i = 0; i < [data count]; i++) {
-    NSNumber* startPoints = data[i];
+    NSNumber* startPoint = data[i];
     [startPoints addObject:startPoint];
   }
 
@@ -98,7 +110,7 @@ static void InterpretHeatmapOptions(NSDictionary* data, id<FLTGoogleMapHeatmapOp
     [sink setRadius:ToInt(radius)];
   }
 
-  GMUGradient* gradient = data[@"gradient"];
+  NSArray* gradient = data[@"gradient"];
   if (gradient != nil) {
     [sink setGradient:ToGradient(gradient)];
   }
@@ -106,6 +118,11 @@ static void InterpretHeatmapOptions(NSDictionary* data, id<FLTGoogleMapHeatmapOp
   NSArray* points = data[@"points"];
   if (points) {
     [sink setPoints:ToPoints(points)];
+  }
+
+  NSNumber* opacity = data[@"opacity"];
+  if (opacity) {
+    [sink setOpacity:ToDouble(opacity)];
   }
 }
 
@@ -129,12 +146,10 @@ static void InterpretHeatmapOptions(NSDictionary* data, id<FLTGoogleMapHeatmapOp
 }
 - (void)addHeatmaps:(NSArray*)heatmapsToAdd {
   for (NSDictionary* heatmap in heatmapsToAdd) {
-    GMSMutablePath* path = [FLTHeatmapsController getPath:heatmap];
     NSString* heatmapId = [FLTHeatmapsController getHeatmapId:heatmap];
     FLTGoogleMapHeatmapController* controller =
-        [[FLTGoogleMapHeatmapController alloc] initHeatmapWithPath:path
-                                                          heatmapId:heatmapId
-                                                             mapView:_mapView];
+        [[FLTGoogleMapHeatmapController alloc] initHeatmapWithHeatmapId:heatmapId
+                                                                mapView:_mapView];
     InterpretHeatmapOptions(heatmap, controller, _registrar);
     _heatmapIdToController[heatmapId] = controller;
   }
@@ -167,15 +182,6 @@ static void InterpretHeatmapOptions(NSDictionary* data, id<FLTGoogleMapHeatmapOp
     return false;
   }
   return _heatmapIdToController[heatmapId] != nil;
-}
-+ (GMSMutablePath*)getPath:(NSDictionary*)heatmap {
-  NSArray* pointArray = heatmap[@"points"];
-  NSArray<CLLocation*>* points = ToPoints(pointArray);
-  GMSMutablePath* path = [GMSMutablePath path];
-  for (CLLocation* location in points) {
-    [path addCoordinate:location.coordinate];
-  }
-  return path;
 }
 + (NSString*)getHeatmapId:(NSDictionary*)heatmap {
   return heatmap[@"heatmapId"];

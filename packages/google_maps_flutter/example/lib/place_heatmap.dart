@@ -39,9 +39,9 @@ class PlaceHeatmapBodyState extends State<PlaceHeatmapBody> {
   int gradientsIndex = 0;
   List<HeatmapGradient> gradients = <HeatmapGradient>[
     HeatmapGradient(colors: <Color>[Colors.green, Colors.red], startPoints: <double>[0.2, 0.7]),
-    HeatmapGradient(colors: <Color>[Colors.blue, Colors.purple], startPoints: <double>[0.2, 0.7]),
     HeatmapGradient(colors: <Color>[Colors.green, Colors.red], startPoints: <double>[0.8, 0.9]),
     HeatmapGradient(colors: <Color>[Colors.green, Colors.red], startPoints: <double>[0.2, 0.7], colorMapSize: 8),
+    HeatmapGradient(colors: <Color>[Colors.blue, Colors.purple], startPoints: <double>[0.2, 0.7]),
   ];
 
   // Values when changing heatmap opacity.
@@ -143,6 +143,8 @@ class PlaceHeatmapBodyState extends State<PlaceHeatmapBody> {
 
   @override
   Widget build(BuildContext context) {
+    final bool iOSorNotSelected = Platform.isIOS || (currentHeatmap == null);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -196,7 +198,7 @@ class PlaceHeatmapBodyState extends State<PlaceHeatmapBody> {
                               : _changeGradient,
                         ),
                         FlatButton(
-                          child: const Text('change opacity [android only]'),
+                          child: const Text('change opacity'),
                           onPressed: (currentHeatmap == null)
                               ? null
                               : _changeOpacity,
@@ -209,7 +211,7 @@ class PlaceHeatmapBodyState extends State<PlaceHeatmapBody> {
                         ),
                         FlatButton(
                           child: const Text('change transparencies [android only]'),
-                          onPressed: (currentHeatmap == null)
+                          onPressed: iOSorNotSelected
                               ? null
                               : _changeTransparency,
                         ),

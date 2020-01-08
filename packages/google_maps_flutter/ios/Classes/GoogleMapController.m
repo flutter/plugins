@@ -59,7 +59,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   FLTPolygonsController* _polygonsController;
   FLTPolylinesController* _polylinesController;
   FLTCirclesController* _circlesController;
-  FLTHeatmapsController* _HeatmapsController;
+  FLTHeatmapsController* _heatmapsController;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame

@@ -4,25 +4,22 @@
 
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import <Google-Maps-iOS-Utils/GMUHeatmapTileLayer.h>
 
 // Defines heatmap UI options writable from Flutter.
 @protocol FLTGoogleMapHeatmapOptionsSink
-- (void)setPoints:(NSArray<CLLocation*>*)points;
-- (void)setGradient:(GMUGradient)gradient;
-- (void)setOpacity:(double)opacity;
+- (void)setPoints:(NSArray<GMUWeightedLatLng*>*)points;
+- (void)setGradient:(GMUGradient*)gradient;
 - (void)setRadius:(NSUInteger)radius;
-- (void)setFadeIn:(BOOL)fadeIn;
-- (void)setTransparency:(CGFloat)transparency;
 - (void)setVisible:(BOOL)visible;
-- (void)setZIndex:(NSUInteger)zIndex;
+- (void)setOpacity:(double)opacity;
 @end
 
 // Defines heatmap controllable by Flutter.
 @interface FLTGoogleMapHeatmapController : NSObject <FLTGoogleMapHeatmapOptionsSink>
 @property(atomic, readonly) NSString* heatmapId;
-- (instancetype)initHeatmapWithPath:(GMSMutablePath*)path
-                          heatmapId:(NSString*)heatmapId
-                             mapView:(GMSMapView*)mapView;
+- (instancetype)initHeatmapWithHeatmapId:(NSString*)heatmapId
+                               mapView:(GMSMapView*)mapView;
 - (void)removeHeatmap;
 @end
 
