@@ -57,14 +57,14 @@ public final class IntentSender {
    *     they're forwarded to {@link Intent#setDataAndType(Uri, String)}
    */
   void send(
-          String action,
-          @Nullable Integer flags,
-          @Nullable String category,
-          @Nullable Uri data,
-          @Nullable Bundle arguments,
-          @Nullable String packageName,
-          @Nullable ComponentName componentName,
-          @Nullable String type) {
+      String action,
+      @Nullable Integer flags,
+      @Nullable String category,
+      @Nullable Uri data,
+      @Nullable Bundle arguments,
+      @Nullable String packageName,
+      @Nullable ComponentName componentName,
+      @Nullable String type) {
     if (applicationContext == null) {
       Log.wtf(TAG, "Trying to send an intent before the applicationContext was initialized.");
       return;
