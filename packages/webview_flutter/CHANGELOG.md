@@ -1,6 +1,6 @@
 ## 0.3.19+4
 
-* Add pinch to zoom.
+* Add pinch to zoom to android.
 
 ## 0.3.19+3
 
