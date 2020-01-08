@@ -99,6 +99,9 @@ class AndroidIntent {
   final String componentName;
   final MethodChannel _channel;
   final Platform _platform;
+  /// Set an explicit MIME data type.
+  ///
+  /// See https://developer.android.com/reference/android/content/Intent.html#intent-structure.
   final String type;
 
   bool _isPowerOfTwo(int x) {
