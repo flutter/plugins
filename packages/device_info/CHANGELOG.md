@@ -1,3 +1,39 @@
+## 0.4.1+4
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.1+3
+
+* Fix pedantic errors. Adds some missing documentation and fixes unawaited
+  futures in the tests.
+
+## 0.4.1+2
+
+* Remove AndroidX warning.
+
+## 0.4.1+1
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.4.1
+
+* Support the v2 Android embedding.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+
+## 0.4.0+4
+
+* Define clang module for iOS.
+
+## 0.4.0+3
+
+* Update and migrate iOS example project.
+
 ## 0.4.0+2
 
 * Bump minimum Flutter version to 1.5.0.

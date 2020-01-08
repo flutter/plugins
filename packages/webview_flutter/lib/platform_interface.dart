@@ -21,7 +21,10 @@ abstract class WebViewPlatformCallbacksHandler {
   /// Invoked by [WebViewPlatformController] when a navigation request is pending.
   ///
   /// If true is returned the navigation is allowed, otherwise it is blocked.
-  bool onNavigationRequest({String url, bool isForMainFrame});
+  FutureOr<bool> onNavigationRequest({String url, bool isForMainFrame});
+
+  /// Invoked by [WebViewPlatformController] when a page has started loading.
+  void onPageStarted(String url);
 
   /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);
@@ -220,10 +223,15 @@ class WebSetting<T> {
 ///
 /// The `userAgent` parameter must not be null.
 class WebSettings {
+  /// Construct an instance with initial settings. Future setting changes can be
+  /// sent with [WebviewPlatform#updateSettings].
+  ///
+  /// The `userAgent` parameter must not be null.
   WebSettings({
     this.javascriptMode,
     this.hasNavigationDelegate,
     this.debuggingEnabled,
+    this.gestureNavigationEnabled,
     @required this.userAgent,
   }) : assert(userAgent != null);
 
@@ -248,9 +256,14 @@ class WebSettings {
   /// See also [WebView.userAgent].
   final WebSetting<String> userAgent;
 
+  /// Whether to allow swipe based navigation in iOS.
+  ///
+  /// See also: [WebView.gestureNavigationEnabled]
+  final bool gestureNavigationEnabled;
+
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, userAgent: $userAgent,)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent)';
   }
 }
 
@@ -258,6 +271,10 @@ class WebSettings {
 ///
 /// The `autoMediaPlaybackPolicy` parameter must not be null.
 class CreationParams {
+  /// Constructs an instance to use when creating a new
+  /// [WebViewPlatformController].
+  ///
+  /// The `autoMediaPlaybackPolicy` parameter must not be null.
   CreationParams({
     this.initialUrl,
     this.webSettings,

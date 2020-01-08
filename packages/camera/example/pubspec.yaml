@@ -1,6 +1,5 @@
 name: camera_example
 description: Demonstrates how to use the camera plugin.
-author: Flutter Team <flutter-dev@googlegroups.com>
 
 dependencies:
   camera:
@@ -9,6 +8,7 @@ dependencies:
   flutter:
     sdk: flutter
   video_player: ^0.10.0
+  e2e: "^0.2.0"
 
 dev_dependencies:
   flutter_test:
@@ -18,3 +18,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=1.9.1+hotfix.4 <2.0.0"

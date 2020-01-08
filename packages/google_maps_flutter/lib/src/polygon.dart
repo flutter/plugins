@@ -9,6 +9,7 @@ part of google_maps_flutter;
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class PolygonId {
+  /// Creates an immutable identifier for a [Polygon].
   PolygonId(this.value) : assert(value != null);
 
   /// value of the [PolygonId].
@@ -34,6 +35,7 @@ class PolygonId {
 /// Draws a polygon through geographical locations on the map.
 @immutable
 class Polygon {
+  /// Creates an immutable representation of a polygon through geographical locations on the map.
   const Polygon({
     @required this.polygonId,
     this.consumeTapEvents = false,
@@ -120,6 +122,11 @@ class Polygon {
     );
   }
 
+  /// Creates a new [Polygon] object whose values are the same as this instance.
+  Polygon clone() {
+    return copyWith(pointsParam: List<LatLng>.of(points));
+  }
+
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
@@ -179,7 +186,7 @@ Map<PolygonId, Polygon> _keyByPolygonId(Iterable<Polygon> polygons) {
     return <PolygonId, Polygon>{};
   }
   return Map<PolygonId, Polygon>.fromEntries(polygons.map((Polygon polygon) =>
-      MapEntry<PolygonId, Polygon>(polygon.polygonId, polygon)));
+      MapEntry<PolygonId, Polygon>(polygon.polygonId, polygon.clone())));
 }
 
 List<Map<String, dynamic>> _serializePolygonSet(Set<Polygon> polygons) {

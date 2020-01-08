@@ -1,3 +1,40 @@
+## 0.4.0+13
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.0+12
+
+* Fix pedantic lints. This involved internally refactoring how the
+  `PackageInfo.fromPlatform` code handled futures, but shouldn't change existing
+  functionality.
+
+## 0.4.0+11
+
+* Remove AndroidX warnings.
+
+## 0.4.0+10
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.4.0+9
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.4.0+8
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Add a unit test.
+* Migrate to using the new e2e test binding.
+
+## 0.4.0+7
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
 ## 0.4.0+6
 
 * Fix Android compiler warnings.
