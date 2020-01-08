@@ -1,6 +1,11 @@
-## 0.10.5+1
+## 0.10.5+2
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.5+1
+
+* Fixes issue where `initialize()` `Future` stalls when failing to load source
+  data and does not throw an error.
 
 ## 0.10.5
 
@@ -17,7 +22,6 @@
 
 * Fix pedantic lints. This fixes some potential race conditions in cases where
   futures within some video_player methods weren't being awaited correctly.
->>>>>>> master
 
 ## 0.10.4
 
