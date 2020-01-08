@@ -1,3 +1,8 @@
+## 0.6.3
+
+* Support Android V2 embedding.
+* Migrate to using the new e2e test binding.
+
 ## 0.6.2+3
 * Remove the deprecated `author:` field from pubspec.yaml
 * Migrate the plugin to the pubspec platforms manifest.
