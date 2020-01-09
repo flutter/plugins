@@ -15,7 +15,8 @@ import 'utils.dart';
 void main() {
   gapiUrl = toBase64Url(gapi_mocks.auth2InitSuccess(GoogleSignInUserData()));
 
-  test('Plugin is initialized after GAPI fully loads and init is called', () async {
+  test('Plugin is initialized after GAPI fully loads and init is called',
+      () async {
     expect(
       html.querySelector('script[src^="data:"]'),
       isNull,
