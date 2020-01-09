@@ -18,5 +18,9 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
   plugin:
-    androidPackage: com.example.espresso
-    pluginClass: EspressoPlugin
+    platforms:
+      android:
+        package: com.example.espresso
+        pluginClass: EspressoPlugin
+      ios:
+        pluginClass: EspressoPlugin
