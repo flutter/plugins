@@ -38,7 +38,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   }
 
   Future<void> _isGapiInitialized;
-  Future<void> _isAuthInitialized;
+  Future<void> _isAuthInitialized = Completer<void>().future;
 
   /// This is only exposed for testing. It shouldn't be accessed by users of the
   /// plugin as it could break at any point.

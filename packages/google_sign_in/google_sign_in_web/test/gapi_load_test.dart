@@ -7,14 +7,15 @@
 import 'dart:html' as html;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:google_sign_in_web/google_sign_in_web.dart';
 import 'gapi_mocks/gapi_mocks.dart' as gapi_mocks;
 import 'utils.dart';
 
 void main() {
-  gapiUrl = toBase64Url(gapi_mocks.gapiInitSuccess());
+  gapiUrl = toBase64Url(gapi_mocks.auth2InitSuccess(GoogleSignInUserData()));
 
-  test('Plugin is initialized after GAPI fully loads', () async {
+  test('Plugin is initialized after GAPI fully loads and init is called', () async {
     expect(
       html.querySelector('script[src^="data:"]'),
       isNull,
@@ -26,6 +27,12 @@ void main() {
       isNotNull,
       reason: 'Mock script should be injected',
     );
+    expect(
+      plugin.initialized,
+      doesNotComplete,
+      reason: 'The plugin should only complete the future after calling .init',
+    );
+    await plugin.init(hostedDomain: '', clientId: '');
     await plugin.initialized;
     expect(
       plugin.initialized,
