@@ -5,11 +5,12 @@ Provides bindings for Espresso tests of Flutter Android apps.
 ## Installation
 
 Add ```android:usesCleartextTraffic="true"``` in the ```<application>``` in the AndroidManifest.xml
-of the Android app used for testing.
+of the Android app used for testing. It's best to put this in a debug or androidTest
+AndroidManifest.xml so that you don't ship it to end users. (See the example app of this package.)
 
 Add dependencies to your build.gradle:
 
-```
+```groovy
 dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation "com.google.truth:truth:1.0"
@@ -119,3 +120,4 @@ gcloud firebase test android run --type instrumentation \
   --results-bucket=<RESULTS_BUCKET> \
   --results-dir=<RESULTS_DIRECTORY>
 ```
+
