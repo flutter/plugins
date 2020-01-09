@@ -1,3 +1,14 @@
+## 0.4.6+2
+
+* Migrate deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+* Bump Flutter SDK to 1.12.13+hotfix.5 or greater (current stable).
+
+## 0.4.6+1
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
 ## 0.4.6
 
 * Add macOS support.
