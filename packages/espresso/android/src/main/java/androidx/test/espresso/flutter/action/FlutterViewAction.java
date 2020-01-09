@@ -120,10 +120,11 @@ public final class FlutterViewAction<T> implements ViewAction {
       ListenableFuture<Void> testingProtocolReadyFuture =
           JdkFutureAdapters.listenInPoolThread(flutterTestingProtocol.connect());
       AsyncFunction<Void, Void> flutterIdleFunc =
-              new AsyncFunction<Void, Void>() {
-          public ListenableFuture<Void> apply(Void readyResult) {
-            return JdkFutureAdapters.listenInPoolThread(flutterTestingProtocol.waitUntilIdle());
-          }};
+          new AsyncFunction<Void, Void>() {
+            public ListenableFuture<Void> apply(Void readyResult) {
+              return JdkFutureAdapters.listenInPoolThread(flutterTestingProtocol.waitUntilIdle());
+            }
+          };
       ListenableFuture<Void> flutterIdleFuture =
           transformAsync(testingProtocolReadyFuture, flutterIdleFunc, taskExecutor);
       loopUntilCompletion(FLUTTER_IDLE_TASK_NAME, uiController, flutterIdleFuture, taskExecutor);

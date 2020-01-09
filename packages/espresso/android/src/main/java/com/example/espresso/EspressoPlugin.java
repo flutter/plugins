@@ -12,7 +12,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class EspressoPlugin implements FlutterPlugin, MethodCallHandler {
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    final MethodChannel channel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "espresso");
+    final MethodChannel channel =
+        new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "espresso");
     channel.setMethodCallHandler(new EspressoPlugin());
   }
 
@@ -40,6 +41,5 @@ public class EspressoPlugin implements FlutterPlugin, MethodCallHandler {
   }
 
   @Override
-  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-  }
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {}
 }

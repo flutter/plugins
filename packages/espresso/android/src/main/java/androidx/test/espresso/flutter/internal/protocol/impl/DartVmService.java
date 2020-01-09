@@ -119,27 +119,29 @@ public final class DartVmService implements FlutterTestingProtocol {
   }
 
   @Override
-  public Future<Void> perform(@Nullable final WidgetMatcher widgetMatcher, final SyntheticAction action) {
+  public Future<Void> perform(
+      @Nullable final WidgetMatcher widgetMatcher, final SyntheticAction action) {
     // Assumes all the actions require a response.
     ListenableFuture<JsonRpcResponse> responseFuture =
         client.request(getActionRequest(widgetMatcher, action));
     Function<JsonRpcResponse, Void> resultTransformFunc =
         new Function<JsonRpcResponse, Void>() {
-            public Void apply(JsonRpcResponse response) {
-          if (response.getError() == null) {
-            return null;
-          } else {
-            // TODO(https://github.com/android/android-test/issues/251): Update error case handling
-            // like
-            // AmbiguousWidgetMatcherException, NoMatchingWidgetException after nailing down the
-            // design with
-            // Flutter team.
-            throw new RuntimeException(
-                String.format(
-                    "Error occurred when performing the given action %s on widget matched %s",
-                    action, widgetMatcher));
+          public Void apply(JsonRpcResponse response) {
+            if (response.getError() == null) {
+              return null;
+            } else {
+              // TODO(https://github.com/android/android-test/issues/251): Update error case handling
+              // like
+              // AmbiguousWidgetMatcherException, NoMatchingWidgetException after nailing down the
+              // design with
+              // Flutter team.
+              throw new RuntimeException(
+                  String.format(
+                      "Error occurred when performing the given action %s on widget matched %s",
+                      action, widgetMatcher));
+            }
           }
-        }};
+        };
     return transform(responseFuture, resultTransformFunc, directExecutor());
   }
 
@@ -149,12 +151,13 @@ public final class DartVmService implements FlutterTestingProtocol {
     ListenableFuture<JsonRpcResponse> jsonResponseFuture = client.request(request);
 
     Function<JsonRpcResponse, WidgetInfo> widgetInfoTransformer =
-            new Function<JsonRpcResponse, WidgetInfo>() {
-        public WidgetInfo apply(JsonRpcResponse jsonResponse) {
-          GetWidgetDiagnosticsResponse widgetDiagnostics =
-              GetWidgetDiagnosticsResponse.fromJsonRpcResponse(jsonResponse);
-          return WidgetInfoFactory.createWidgetInfo(widgetDiagnostics);
-        }};
+        new Function<JsonRpcResponse, WidgetInfo>() {
+          public WidgetInfo apply(JsonRpcResponse jsonResponse) {
+            GetWidgetDiagnosticsResponse widgetDiagnostics =
+                GetWidgetDiagnosticsResponse.fromJsonRpcResponse(jsonResponse);
+            return WidgetInfoFactory.createWidgetInfo(widgetDiagnostics);
+          }
+        };
     return transform(jsonResponseFuture, widgetInfoTransformer, directExecutor());
   }
 
@@ -168,35 +171,36 @@ public final class DartVmService implements FlutterTestingProtocol {
     ListenableFuture<List<JsonRpcResponse>> responses =
         Futures.allAsList(topLeftFuture, bottomRightFuture);
     Function<List<JsonRpcResponse>, Rect> rectTransformer =
-            new Function<List<JsonRpcResponse>, Rect>() {
-        public Rect apply(List<JsonRpcResponse> jsonResponses) {
-          GetOffsetResponse topLeft = GetOffsetResponse.fromJsonRpcResponse(jsonResponses.get(0));
-          GetOffsetResponse bottomRight =
-              GetOffsetResponse.fromJsonRpcResponse(jsonResponses.get(1));
-          checkState(
-              topLeft.getX() >= 0 && topLeft.getY() >= 0,
-              String.format(
-                  "The relative coordinates [%.1f, %.1f] of a widget's top left vertex cannot be"
-                      + " negative (negative means it's off the outer Flutter view)!",
-                  topLeft.getX(), topLeft.getY()));
-          checkState(
-              bottomRight.getX() >= 0 && bottomRight.getY() >= 0,
-              String.format(
-                  "The relative coordinates [%.1f, %.1f] of a widget's bottom right vertex cannot"
-                      + " be negative (negative means it's off the outer Flutter view)!",
-                  bottomRight.getX(), bottomRight.getY()));
-          checkState(
-              topLeft.getX() <= bottomRight.getX() && topLeft.getY() <= bottomRight.getY(),
-              String.format(
-                  "The coordinates of the bottom right vertex [%.1f, %.1f] are not actually to the"
-                      + " bottom right of the top left vertex [%.1f, %.1f]!",
-                  topLeft.getX(), topLeft.getY(), bottomRight.getX(), bottomRight.getY()));
-          return new Rect(
-              (int) topLeft.getX(),
-              (int) topLeft.getY(),
-              (int) bottomRight.getX(),
-              (int) bottomRight.getY());
-        }};
+        new Function<List<JsonRpcResponse>, Rect>() {
+          public Rect apply(List<JsonRpcResponse> jsonResponses) {
+            GetOffsetResponse topLeft = GetOffsetResponse.fromJsonRpcResponse(jsonResponses.get(0));
+            GetOffsetResponse bottomRight =
+                GetOffsetResponse.fromJsonRpcResponse(jsonResponses.get(1));
+            checkState(
+                topLeft.getX() >= 0 && topLeft.getY() >= 0,
+                String.format(
+                    "The relative coordinates [%.1f, %.1f] of a widget's top left vertex cannot be"
+                        + " negative (negative means it's off the outer Flutter view)!",
+                    topLeft.getX(), topLeft.getY()));
+            checkState(
+                bottomRight.getX() >= 0 && bottomRight.getY() >= 0,
+                String.format(
+                    "The relative coordinates [%.1f, %.1f] of a widget's bottom right vertex cannot"
+                        + " be negative (negative means it's off the outer Flutter view)!",
+                    bottomRight.getX(), bottomRight.getY()));
+            checkState(
+                topLeft.getX() <= bottomRight.getX() && topLeft.getY() <= bottomRight.getY(),
+                String.format(
+                    "The coordinates of the bottom right vertex [%.1f, %.1f] are not actually to the"
+                        + " bottom right of the top left vertex [%.1f, %.1f]!",
+                    topLeft.getX(), topLeft.getY(), bottomRight.getX(), bottomRight.getY()));
+            return new Rect(
+                (int) topLeft.getX(),
+                (int) topLeft.getY(),
+                (int) bottomRight.getX(),
+                (int) bottomRight.getY());
+          }
+        };
     return transform(responses, rectTransformer, directExecutor());
   }
 
@@ -234,9 +238,10 @@ public final class DartVmService implements FlutterTestingProtocol {
     ListenableFuture<JsonRpcResponse> jsonGetVmResp = client.request(getVmReq);
     Function<JsonRpcResponse, GetVmResponse> jsonToResponse =
         new Function<JsonRpcResponse, GetVmResponse>() {
-            public GetVmResponse apply(JsonRpcResponse jsonResp) {
-          return GetVmResponse.fromJsonRpcResponse(jsonResp);
-        }};
+          public GetVmResponse apply(JsonRpcResponse jsonResp) {
+            return GetVmResponse.fromJsonRpcResponse(jsonResp);
+          }
+        };
     return transform(jsonGetVmResp, jsonToResponse, directExecutor());
   }
 
