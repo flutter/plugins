@@ -11,7 +11,7 @@ of the Android app used for testing.
 
 Add dependencies to your build.gradle:
 
-```
+```groovy
 dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation "com.google.truth:truth:1.0"
@@ -48,7 +48,7 @@ dependencies {
 
 Create an `android/app/src/androidTest` folder and put a test file in a package-appropriate subfolder, e.g. `android/app/src/androidTest/java/com/example/MainActivityTest.java`:
 
-```
+```java
 package com.example.espresso_example;
 
 import static androidx.test.espresso.flutter.EspressoFlutter.onFlutterWidget;
@@ -91,7 +91,7 @@ public class MainActivityTest {
 You'll need to create a test app that enables the Flutter driver extension.
 You can put this in your test_driver/ folder, e.g. test_driver/example.dart.
 
-```
+```dart
 import 'package:flutter_driver/driver_extension.dart';
 import '../lib/main.dart' as app;
 
