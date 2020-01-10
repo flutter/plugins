@@ -2,7 +2,13 @@ package io.flutter.plugins.sharedpreferencesexample;
 
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.Espresso.pressBackUnconditionally;
+import static androidx.test.espresso.flutter.action.FlutterActions.click;
+import static androidx.test.espresso.flutter.action.FlutterActions.syntheticClick;
+import static androidx.test.espresso.flutter.assertion.FlutterAssertions.matches;
 import static androidx.test.espresso.flutter.EspressoFlutter.onFlutterWidget;
+import static androidx.test.espresso.flutter.matcher.FlutterMatchers.withTooltip;
+import static androidx.test.espresso.flutter.matcher.FlutterMatchers.withValueKey;
+import static androidx.test.espresso.flutter.matcher.FlutterMatchers.withText;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.flutter.action.FlutterActions;
@@ -30,20 +36,20 @@ public final class SharedPreferencesIntegrationTest {
 
     @Test
     public void tapToCheckPersistentData() throws Exception {
-        onFlutterWidget(FlutterMatchers.withTooltip("Clear")).perform(FlutterActions.click());
-        onFlutterWidget(FlutterMatchers.withTooltip("Increment")).perform(FlutterActions.click());
-        onFlutterWidget(FlutterMatchers.withValueKey("ResultText"))
+        onFlutterWidget(withTooltip("Clear")).perform(click());
+        onFlutterWidget(withTooltip("Increment")).perform(click());
+        onFlutterWidget(withValueKey("ResultText"))
                 .check(
-                        FlutterAssertions.matches(
-                                FlutterMatchers.withText(
+                        matches(
+                                withText(
                                         "Button tapped 1 time.\n\nThis should persist across restarts.")));
         pressBackUnconditionally();
         // reopen the application
         myActivityTestRule.launchActivity(null);
-        onFlutterWidget(FlutterMatchers.withValueKey("ResultText"))
+        onFlutterWidget(withValueKey("ResultText"))
                 .check(
-                        FlutterAssertions.matches(
-                                FlutterMatchers.withText(
+                        matches(
+                                withText(
                                         "Button tapped 1 time.\n\nThis should persist across restarts.")));
     }
 }
