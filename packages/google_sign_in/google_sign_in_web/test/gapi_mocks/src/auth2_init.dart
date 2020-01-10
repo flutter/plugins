@@ -13,6 +13,11 @@ var mockUser = ${googleUser(userData)};
 function GapiAuth2() {}
 GapiAuth2.prototype.init = function (initOptions) {
   return {
+    then: (onSuccess, onError) => {
+      window.setTimeout(() => {
+        onSuccess(window.gapi.auth2);
+      }, 30);
+    },
     currentUser: {
       listen: (cb) => {
         window.setTimeout(() => {
