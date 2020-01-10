@@ -107,11 +107,11 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       isAuthInitialized.complete();
     }), allowInterop((dynamic reason) {
       // onError
-      throw (PlatformException(
+      throw PlatformException(
         code: 'google_sign_in',
         message: reason.error,
         details: reason.details,
-      ));
+      );
     }));
 
     return null;
