@@ -253,7 +253,6 @@ class _GoogleMapState extends State<GoogleMap> {
 
   @override
   void didUpdateWidget(GoogleMap oldWidget) {
-    print('LOCAL');
     super.didUpdateWidget(oldWidget);
     _updateOptions();
     _updateMarkers();
