@@ -1,6 +1,8 @@
 ## 0.2.3+1
 
 * Updated README.
+* Renamed test file.
+* Added `@TestOn` annotation to test.
 
 ## 0.2.3
 

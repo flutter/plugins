@@ -12,20 +12,20 @@ pubspec.yaml of the example app.
 
 Add a `@TestOn('!vm')` declaration to the top of your test file, ensuring
 that the unit test runner doesn't try to run your test. You'll want to
-call `E2EWidgetsFlutterBinding.ensureInitialized()`, replacing any other
+invoke `E2EWidgetsFlutterBinding.ensureInitialized()`, replacing any other
 binding initialization.
 
 ```dart
 @TestOn('!vm');
 
 import 'package:e2e/e2e.dart';
+import 'package:<package_name>/<package_name>.dart';
 
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
   testWidgets("failing test example", (WidgetTester tester) async {
-    expect(2 + 2, equals(5));
+    // your test assertions go here
   });
-  exit(result == 'pass' ? 0 : 1);
 }
 ```
 
