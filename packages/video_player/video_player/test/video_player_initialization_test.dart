@@ -9,6 +9,8 @@ import 'package:video_player/video_player.dart';
 import 'video_player_test.dart' show FakeVideoPlayerPlatform;
 
 void main() {
+  // This test needs to run first and therefore needs to be the only test
+  // in this file.
   test('plugin initialized', () async {
     WidgetsFlutterBinding.ensureInitialized();
     FakeVideoPlayerPlatform fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
