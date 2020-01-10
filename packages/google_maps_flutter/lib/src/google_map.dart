@@ -286,8 +286,7 @@ class _GoogleMapState extends State<GoogleMap> {
     }
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
-    controller._updateMarkers(
-        _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
+    controller._updateMarkers(_markerUpdates);
     _markers = _keyByMarkerId(widget.markers);
   }
 
@@ -302,8 +301,7 @@ class _GoogleMapState extends State<GoogleMap> {
     }
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
-    controller._updatePolygons(
-        _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
+    controller._updatePolygons(_polygonUpdates);
     _polygons = _keyByPolygonId(widget.polygons);
   }
 
@@ -318,8 +316,7 @@ class _GoogleMapState extends State<GoogleMap> {
     }
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
-    controller._updatePolylines(
-        _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
+    controller._updatePolylines(_polylineUpdates);
     _polylines = _keyByPolylineId(widget.polylines);
   }
 
@@ -334,8 +331,7 @@ class _GoogleMapState extends State<GoogleMap> {
     }
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
-    controller._updateCircles(
-        _CircleUpdates.from(_circles.values.toSet(), widget.circles));
+    controller._updateCircles(_circleUpdates);
     _circles = _keyByCircleId(widget.circles);
   }
 
