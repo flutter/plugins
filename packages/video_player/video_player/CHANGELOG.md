@@ -1,3 +1,8 @@
+## 0.10.5+2
+
+* Fixes issue when device mute control(iOS) muted
+  Video sound will be muted which isn't normal experience.
+
 ## 0.10.5+1
 
 * Fixes issue where `initialize()` `Future` stalls when failing to load source
