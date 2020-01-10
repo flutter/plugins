@@ -174,6 +174,7 @@ class GoogleSignIn {
     this.signInOption = SignInOption.standard,
     this.scopes = const <String>[],
     this.hostedDomain,
+    this.clientId,
   });
 
   /// Factory for creating default sign in user experience.
@@ -203,6 +204,9 @@ class GoogleSignIn {
   /// user.
   static const String kSignInCanceledError = 'sign_in_canceled';
 
+  /// Error code indicating network error. Retrying should resolve the problem.
+  static const String kNetworkError = 'network_error';
+
   /// Error code indicating that attempt to sign in failed.
   static const String kSignInFailedError = 'sign_in_failed';
 
@@ -215,6 +219,9 @@ class GoogleSignIn {
 
   /// Domain to restrict sign-in to.
   final String hostedDomain;
+
+  /// Client ID being used to connect to google sign-in. Only supported on web.
+  final String clientId;
 
   StreamController<GoogleSignInAccount> _currentUserController =
       StreamController<GoogleSignInAccount>.broadcast();
@@ -249,6 +256,7 @@ class GoogleSignIn {
       signInOption: signInOption,
       scopes: scopes,
       hostedDomain: hostedDomain,
+      clientId: clientId,
     )..catchError((dynamic _) {
         // Invalidate initialization if it errors out.
         _initialization = null;
@@ -318,8 +326,9 @@ class GoogleSignIn {
   ///
   /// When [suppressErrors] is set to `false` and an error occurred during sign in
   /// returned Future completes with [PlatformException] whose `code` can be
-  /// either [kSignInRequiredError] (when there is no authenticated user) or
-  /// [kSignInFailedError] (when an unknown error occurred).
+  /// one of [kSignInRequiredError] (when there is no authenticated user) ,
+  /// [kNetworkError] (when a network error occurred) or [kSignInFailedError]
+  /// (when an unknown error occurred).
   Future<GoogleSignInAccount> signInSilently({
     bool suppressErrors = true,
   }) async {
