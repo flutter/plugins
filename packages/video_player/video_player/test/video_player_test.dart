@@ -91,14 +91,6 @@ void main() {
       fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
     });
 
-    test('plugin initialized', () async {
-      final VideoPlayerController controller = VideoPlayerController.network(
-        'https://127.0.0.1',
-      );
-      await controller.initialize();
-      expect(fakeVideoPlayerPlatform.calls.first.method, 'init');
-    });
-
     group('initialize', () {
       test('asset', () async {
         final VideoPlayerController controller = VideoPlayerController.asset(
