@@ -224,6 +224,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
 
+  [self enableSoundWhenMuteControlOfDeviceMuted];
+
   [self createVideoOutputAndDisplayLink:frameUpdater];
 
   [self addObservers:item];
@@ -231,6 +233,17 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
 
   return self;
+}
+
+-(void)enableSoundWhenMuteControlOfDeviceMuted {
+  NSError *error = nil;
+  BOOL success = [[AVAudioSession sharedInstance]
+                  setCategory: AVAudioSessionCategoryPlayback
+                  error:&error];
+  if (!success) {
+    NSLog(@"Error setting speaker: %@", error);
+  }
+  [[AVAudioSession sharedInstance] setActive:YES error:&error];
 }
 
 - (void)observeValueForKeyPath:(NSString*)path
