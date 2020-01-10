@@ -10,5 +10,4 @@ import 'src/gapi.dart';
 import 'src/google_user.dart';
 import 'src/test_iife.dart';
 
-part 'src/gapi_load.dart';
 part 'src/auth2_init.dart';
