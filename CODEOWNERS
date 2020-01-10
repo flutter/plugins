@@ -9,7 +9,7 @@ packages/android_intent/* @mklim
 packages/battery/* @amirh
 packages/camera/* @bparrishMines @mklim
 packages/connectivity/* @cyanglaz
-packages/google_maps_flutter/* @iskakaushik
+packages/google_maps_flutter/* @cyanglaz
 packages/google_sign_in/* @cyanglaz @mehmetf
 packages/image_picker/* @cyanglaz
 packages/in_app_purchase/* @mklim @cyanglaz
