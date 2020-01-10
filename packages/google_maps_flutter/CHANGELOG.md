@@ -1,3 +1,7 @@
+## 0.5.21+16
+
+* Fix Widget from updating configurations when there is nothing to update.
+
 ## 0.5.21+15
 
 * Remove the deprecated `author:` field from pubspec.yaml
