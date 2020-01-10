@@ -1,3 +1,7 @@
+## 0.3.19+4
+
+* Add zoom for Android.
+
 ## 0.3.19+3
 
 * Setup XCTests.
