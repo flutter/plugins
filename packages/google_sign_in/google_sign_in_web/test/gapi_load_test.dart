@@ -28,11 +28,11 @@ void main() {
       isNotNull,
       reason: 'Mock script should be injected',
     );
-    expect(
-      plugin.initialized,
-      doesNotComplete,
-      reason: 'The plugin should only complete the future after calling .init',
-    );
+    expect(() {
+      plugin.initialized;
+    }, throwsStateError,
+        reason:
+            'The plugin should throw if checking for `initialized` before calling .init');
     await plugin.init(hostedDomain: '', clientId: '');
     await plugin.initialized;
     expect(

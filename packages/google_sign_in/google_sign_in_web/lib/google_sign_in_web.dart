@@ -38,13 +38,25 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   }
 
   Future<void> _isGapiInitialized;
-  Future<void> _isAuthInitialized = Completer<void>().future;
+  Future<void> _isAuthInitialized;
+  bool _isInitCalled = false;
 
-  /// This is only exposed for testing. It shouldn't be accessed by users of the
-  /// plugin as it could break at any point.
+  // This method throws if init hasn't been called at some point in the past.
+  // It is used by the [initialized] getter to ensure that users can't await
+  // on a Future that will never resolve.
+  void _assertIsInitCalled() {
+    if (!_isInitCalled) {
+      throw StateError(
+          'GoogleSignInPlugin::init() must be called before any other method in this plugin.');
+    }
+  }
+
+  /// A future that resolves when both GAPI and Auth2 have been correctly initialized.
   @visibleForTesting
-  Future<void> get initialized =>
-      Future.wait([_isGapiInitialized, _isAuthInitialized]);
+  Future<void> get initialized {
+    _assertIsInitCalled();
+    return Future.wait([_isGapiInitialized, _isAuthInitialized]);
+  }
 
   String _autoDetectedClientId;
 
@@ -83,6 +95,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
     Completer<void> isAuthInitialized = Completer<void>();
     _isAuthInitialized = isAuthInitialized.future;
+    _isInitCalled = true;
 
     auth.then(allowInterop((auth2.GoogleAuth initializedAuth) {
       // onSuccess
