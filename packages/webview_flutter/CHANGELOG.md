@@ -1,6 +1,14 @@
-## 0.3.19+2
+## 0.3.19+4
 
 * iOS now can open iframe links and target _blank links.
+
+## 0.3.19+3
+
+* Setup XCTests.
+
+## 0.3.19+2
+
+* Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
 
 ## 0.3.19+1
 
