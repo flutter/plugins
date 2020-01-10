@@ -253,6 +253,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   @override
   void didUpdateWidget(GoogleMap oldWidget) {
+    print('LOCAL');
     super.didUpdateWidget(oldWidget);
     _updateOptions();
     _updateMarkers();
@@ -265,6 +266,7 @@ class _GoogleMapState extends State<GoogleMap> {
     final _GoogleMapOptions newOptions = _GoogleMapOptions.fromWidget(widget);
     final Map<String, dynamic> updates =
         _googleMapOptions.updatesMap(newOptions);
+
     if (updates.isEmpty) {
       return;
     }
@@ -275,6 +277,14 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 
   void _updateMarkers() async {
+    final _markerUpdates =
+        _MarkerUpdates.from(_markers.values.toSet(), widget.markers);
+
+    if (_markerUpdates.markerIdsToRemove.isEmpty &&
+        _markerUpdates.markersToAdd.isEmpty &&
+        _markerUpdates.markersToChange.isEmpty) {
+      return;
+    }
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updateMarkers(
@@ -283,6 +293,14 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 
   void _updatePolygons() async {
+    final _polygonUpdates =
+        _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons);
+
+    if (_polygonUpdates.polygonIdsToRemove.isEmpty &&
+        _polygonUpdates.polygonsToAdd.isEmpty &&
+        _polygonUpdates.polygonsToChange.isEmpty) {
+      return;
+    }
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updatePolygons(
@@ -291,6 +309,14 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 
   void _updatePolylines() async {
+    final _polylineUpdates =
+        _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines);
+
+    if (_polylineUpdates.polylineIdsToRemove.isEmpty &&
+        _polylineUpdates.polylinesToAdd.isEmpty &&
+        _polylineUpdates.polylinesToChange.isEmpty) {
+      return;
+    }
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updatePolylines(
@@ -299,6 +325,14 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 
   void _updateCircles() async {
+    final _circleUpdates =
+        _CircleUpdates.from(_circles.values.toSet(), widget.circles);
+
+    if (_circleUpdates.circleIdsToRemove.isEmpty &&
+        _circleUpdates.circlesToAdd.isEmpty &&
+        _circleUpdates.circlesToChange.isEmpty) {
+      return;
+    }
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updateCircles(
@@ -312,7 +346,9 @@ class _GoogleMapState extends State<GoogleMap> {
       widget.initialCameraPosition,
       this,
     );
+
     _controller.complete(controller);
+
     if (widget.onMapCreated != null) {
       widget.onMapCreated(controller);
     }
@@ -491,7 +527,11 @@ class _GoogleMapOptions {
     final Map<String, dynamic> prevOptionsMap = toMap();
 
     return newOptions.toMap()
-      ..removeWhere(
-          (String key, dynamic value) => prevOptionsMap[key] == value);
+      ..removeWhere((String key, dynamic value) {
+        if (value is List) {
+          return listEquals(prevOptionsMap[key], value);
+        }
+        return prevOptionsMap[key] == value;
+      });
   }
 }
