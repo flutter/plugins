@@ -327,7 +327,8 @@ class FakePlatformGoogleMap {
 
   List<WeightedLatLng> _deserializeWeightedPoints(List<dynamic> points) {
     return points.map<WeightedLatLng>((dynamic list) {
-      return WeightedLatLng(point: LatLng(list[0][0], list[0][1]), intensity: list[1]);
+      return WeightedLatLng(
+          point: LatLng(list[0][0], list[0][1]), intensity: list[1]);
     }).toList();
   }
 
@@ -338,8 +339,7 @@ class FakePlatformGoogleMap {
     heatmapsToAdd = _deserializeHeatmaps(heatmapUpdates['heatmapsToAdd']);
     heatmapIdsToRemove =
         _deserializeHeatmapIds(heatmapUpdates['heatmapIdsToRemove']);
-    heatmapsToChange =
-        _deserializeHeatmaps(heatmapUpdates['heatmapsToChange']);
+    heatmapsToChange = _deserializeHeatmaps(heatmapUpdates['heatmapsToChange']);
   }
 
   Set<HeatmapId> _deserializeHeatmapIds(List<dynamic> heatmapIds) {
@@ -349,9 +349,7 @@ class FakePlatformGoogleMap {
       // ignore: prefer_collection_literals
       return Set<HeatmapId>();
     }
-    return heatmapIds
-        .map((dynamic heatmapId) => HeatmapId(heatmapId))
-        .toSet();
+    return heatmapIds.map((dynamic heatmapId) => HeatmapId(heatmapId)).toSet();
   }
 
   Set<Heatmap> _deserializeHeatmaps(dynamic heatmaps) {
@@ -370,7 +368,8 @@ class FakePlatformGoogleMap {
       final String heatmapId = heatmapData['heatmapId'];
       final bool visible = heatmapData['visible'];
       final double opacity = heatmapData['opacity'];
-      final List<WeightedLatLng> points = _deserializeWeightedPoints(heatmapData['points']);
+      final List<WeightedLatLng> points =
+          _deserializeWeightedPoints(heatmapData['points']);
 
       result.add(Heatmap(
         heatmapId: HeatmapId(heatmapId),

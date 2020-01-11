@@ -43,7 +43,7 @@ class WeightedLatLng {
     this.intensity = 1,
   });
 
-  /// The location of the [WeightedLatLng]. 
+  /// The location of the [WeightedLatLng].
   final LatLng point;
 
   /// The intensity of the [WeightedLatLng].
@@ -58,8 +58,7 @@ class WeightedLatLng {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final WeightedLatLng typedOther = other;
-    return point == typedOther.point &&
-        intensity == typedOther.intensity;
+    return point == typedOther.point && intensity == typedOther.intensity;
   }
 
   @override
@@ -91,7 +90,11 @@ class HeatmapGradient {
   final int colorMapSize;
 
   dynamic _toJson() {
-    return <dynamic>[colors.map((Color c) => c.value).toList(), startPoints, colorMapSize];
+    return <dynamic>[
+      colors.map((Color c) => c.value).toList(),
+      startPoints,
+      colorMapSize
+    ];
   }
 
   @override
@@ -253,9 +256,8 @@ Map<HeatmapId, Heatmap> _keyByHeatmapId(Iterable<Heatmap> heatmaps) {
   if (heatmaps == null) {
     return <HeatmapId, Heatmap>{};
   }
-  return Map<HeatmapId, Heatmap>.fromEntries(heatmaps.map(
-      (Heatmap heatmap) => MapEntry<HeatmapId, Heatmap>(
-          heatmap.heatmapId, heatmap.clone())));
+  return Map<HeatmapId, Heatmap>.fromEntries(heatmaps.map((Heatmap heatmap) =>
+      MapEntry<HeatmapId, Heatmap>(heatmap.heatmapId, heatmap.clone())));
 }
 
 List<Map<String, dynamic>> _serializeHeatmapSet(Set<Heatmap> heatmaps) {

@@ -38,10 +38,19 @@ class PlaceHeatmapBodyState extends State<PlaceHeatmapBody> {
   // Values when changing heatmap gradient.
   int gradientsIndex = 0;
   List<HeatmapGradient> gradients = <HeatmapGradient>[
-    HeatmapGradient(colors: <Color>[Colors.green, Colors.red], startPoints: <double>[0.2, 0.7]),
-    HeatmapGradient(colors: <Color>[Colors.green, Colors.red], startPoints: <double>[0.8, 0.9]),
-    HeatmapGradient(colors: <Color>[Colors.green, Colors.red], startPoints: <double>[0.2, 0.7], colorMapSize: 8),
-    HeatmapGradient(colors: <Color>[Colors.blue, Colors.purple], startPoints: <double>[0.2, 0.7]),
+    HeatmapGradient(
+        colors: <Color>[Colors.green, Colors.red],
+        startPoints: <double>[0.2, 0.7]),
+    HeatmapGradient(
+        colors: <Color>[Colors.green, Colors.red],
+        startPoints: <double>[0.8, 0.9]),
+    HeatmapGradient(
+        colors: <Color>[Colors.green, Colors.red],
+        startPoints: <double>[0.2, 0.7],
+        colorMapSize: 8),
+    HeatmapGradient(
+        colors: <Color>[Colors.blue, Colors.purple],
+        startPoints: <double>[0.2, 0.7]),
   ];
 
   // Values when changing heatmap opacity.
@@ -127,7 +136,8 @@ class PlaceHeatmapBodyState extends State<PlaceHeatmapBody> {
     final Heatmap heatmap = heatmaps[currentHeatmap];
     setState(() {
       heatmaps[currentHeatmap] = heatmap.copyWith(
-        transparencyParam: transparencies[++transparenciesIndex % transparencies.length],
+        transparencyParam:
+            transparencies[++transparenciesIndex % transparencies.length],
       );
     });
   }
@@ -178,14 +188,12 @@ class PlaceHeatmapBodyState extends State<PlaceHeatmapBody> {
                         ),
                         FlatButton(
                           child: const Text('remove'),
-                          onPressed:
-                              (currentHeatmap == null) ? null : _remove,
+                          onPressed: (currentHeatmap == null) ? null : _remove,
                         ),
                         FlatButton(
                           child: const Text('toggle visible'),
-                          onPressed: (currentHeatmap == null)
-                              ? null
-                              : _toggleVisible,
+                          onPressed:
+                              (currentHeatmap == null) ? null : _toggleVisible,
                         ),
                       ],
                     ),
@@ -193,27 +201,24 @@ class PlaceHeatmapBodyState extends State<PlaceHeatmapBody> {
                       children: <Widget>[
                         FlatButton(
                           child: const Text('change gradient'),
-                          onPressed: (currentHeatmap == null)
-                              ? null
-                              : _changeGradient,
+                          onPressed:
+                              (currentHeatmap == null) ? null : _changeGradient,
                         ),
                         FlatButton(
                           child: const Text('change opacity'),
-                          onPressed: (currentHeatmap == null)
-                              ? null
-                              : _changeOpacity,
+                          onPressed:
+                              (currentHeatmap == null) ? null : _changeOpacity,
                         ),
                         FlatButton(
                           child: const Text('change radius'),
-                          onPressed: (currentHeatmap == null)
-                              ? null
-                              : _changeRadius,
+                          onPressed:
+                              (currentHeatmap == null) ? null : _changeRadius,
                         ),
                         FlatButton(
-                          child: const Text('change transparencies [android only]'),
-                          onPressed: iOSorNotSelected
-                              ? null
-                              : _changeTransparency,
+                          child: const Text(
+                              'change transparencies [android only]'),
+                          onPressed:
+                              iOSorNotSelected ? null : _changeTransparency,
                         ),
                       ],
                     )

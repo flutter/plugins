@@ -98,8 +98,7 @@ void main() {
 
   testWidgets("Updating a heatmap", (WidgetTester tester) async {
     final Heatmap p1 = Heatmap(heatmapId: HeatmapId("heatmap_1"));
-    final Heatmap p2 =
-        Heatmap(heatmapId: HeatmapId("heatmap_1"), opacity: 0.5);
+    final Heatmap p2 = Heatmap(heatmapId: HeatmapId("heatmap_1"), opacity: 0.5);
 
     await tester.pumpWidget(_mapWithHeatmaps(_toSet(p1: p1)));
     await tester.pumpWidget(_mapWithHeatmaps(_toSet(p1: p2)));
@@ -133,7 +132,9 @@ void main() {
   testWidgets("Mutate a heatmap", (WidgetTester tester) async {
     final Heatmap p1 = Heatmap(
       heatmapId: HeatmapId("heatmap_1"),
-      points: <WeightedLatLng>[WeightedLatLng(point: LatLng(0.0, 0.0), intensity: 1)],
+      points: <WeightedLatLng>[
+        WeightedLatLng(point: LatLng(0.0, 0.0), intensity: 1)
+      ],
     );
     await tester.pumpWidget(_mapWithHeatmaps(_toSet(p1: p1)));
 

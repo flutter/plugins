@@ -18,10 +18,8 @@ class _HeatmapUpdates {
       current = Set<Heatmap>.identity();
     }
 
-    final Map<HeatmapId, Heatmap> previousHeatmaps =
-        _keyByHeatmapId(previous);
-    final Map<HeatmapId, Heatmap> currentHeatmaps =
-        _keyByHeatmapId(current);
+    final Map<HeatmapId, Heatmap> previousHeatmaps = _keyByHeatmapId(previous);
+    final Map<HeatmapId, Heatmap> currentHeatmaps = _keyByHeatmapId(current);
 
     final Set<HeatmapId> prevHeatmapIds = previousHeatmaps.keys.toSet();
     final Set<HeatmapId> currentHeatmapIds = currentHeatmaps.keys.toSet();
