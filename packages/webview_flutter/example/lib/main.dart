@@ -26,6 +26,81 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
+const String test = '''
+<!DOCTYPE html><html>
+<head><title>Navigation Delegate Example</title></head>
+<body>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+<h1>
+The navigation delegate is set to block navigation to the youtube website.
+</h1>
+
+
+<input/>xxx
+</body>
+</html>
+
+''';
+
 class WebViewExample extends StatefulWidget {
   @override
   _WebViewExampleState createState() => _WebViewExampleState();
@@ -38,22 +113,25 @@ class _WebViewExampleState extends State<WebViewExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter WebView example'),
-        // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
-        actions: <Widget>[
-          NavigationControls(_controller.future),
-          SampleMenu(_controller.future),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Flutter WebView example'),
+      //   // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
+      //   actions: <Widget>[
+      //     NavigationControls(_controller.future),
+      //     SampleMenu(_controller.future),
+      //   ],
+      // ),
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          initialUrl: 'https://flutter.dev',
+          initialUrl: 'https://github.com/flutter/flutter/issues/1122',
           javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
+          onWebViewCreated: (WebViewController webViewController) async {
+                final String contentBase64 =
+        base64Encode(const Utf8Encoder().convert(test));
             _controller.complete(webViewController);
+            await webViewController.loadUrl('data:text/html;base64,$contentBase64');
           },
           // TODO(iskakaushik): Remove this when collection literals makes it to stable.
           // ignore: prefer_collection_literals

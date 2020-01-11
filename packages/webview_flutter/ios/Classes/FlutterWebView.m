@@ -34,14 +34,37 @@
 
 @end
 
+@interface FLTWKWebView : WKWebView
+
+@end
+
+@implementation FLTWKWebView
+
+- (void)setFrame:(CGRect)frame {
+  [super setFrame:frame];
+  // We don't want the contentInsets to be adjusted by iOS, flutter should always take control of webview's contentInsets.
+  self.scrollView.contentInset = UIEdgeInsetsZero;
+  if (@available(iOS 11, *)) {
+    // Above iOS 11, adjust contentInset to compensate the adjustedContentInset so the sum will always be 0.
+    if (UIEdgeInsetsEqualToEdgeInsets(self.scrollView.adjustedContentInset, UIEdgeInsetsZero)) {
+      return;
+    }
+    UIEdgeInsets insetToAdjust = self.scrollView.adjustedContentInset;
+    self.scrollView.contentInset = UIEdgeInsetsMake(-insetToAdjust.top, -insetToAdjust.left, -insetToAdjust.bottom, -insetToAdjust.right);
+  }
+}
+
+@end
+
 @implementation FLTWebViewController {
-  WKWebView* _webView;
+  FLTWKWebView* _webView;
   int64_t _viewId;
   FlutterMethodChannel* _channel;
   NSString* _currentUrl;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
   FLTWKNavigationDelegate* _navigationDelegate;
+  // The edge insets when webview before keyboard showing up.
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -69,7 +92,7 @@
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
 
-    _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
@@ -79,10 +102,16 @@
 
     if (@available(iOS 11.0, *)) {
       _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      if (@available(iOS 13.0, *)) {
-        _webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
-      }
     }
+
+    if (@available(iOS 13.0, *)) {
+      _webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
+    } else {
+      // Fallback on earlier versions
+    }
+
+    _webView.backgroundColor = [UIColor redColor];
+//    _webView.scrollView.delegate = self;
 
     [self applySettings:settings];
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
@@ -92,9 +121,49 @@
     if ([initialUrl isKindOfClass:[NSString class]]) {
       [self loadUrl:initialUrl];
     }
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(keyboardWillShow:)
+//                                                 name:UIKeyboardWillShowNotification
+//                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(keyboardWillHide:)
+//                                                 name:UIKeyboardWillHideNotification
+//                                               object:nil];
+
+//    _initialContentInset = _webView.scrollView.contentInset;
   }
   return self;
 }
+//- (void)keyboardWillShow:(NSNotification *)notification {
+//  NSLog(@"==$ keyboardWillShow");
+//  NSLog(@"==$ adjust content inset %@", @(_webView.scrollView.adjustedContentInset));
+//  NSLog(@"==$ content inset %@", @(_webView.scrollView.contentInset));
+//  NSLog(@"==$ contentInsetAdjustmentBehavior %@", @(_webView.scrollView.contentInsetAdjustmentBehavior));
+//  _adjustedContentInsets = _webView.scrollView.adjustedContentInsets;
+////  if (_keyboardHidden) {
+////    CGFloat bottomInsetToAdjust = 0;
+////    if (@available(iOS 11.0, *)) {
+////      UIEdgeInsets adjustedInsets = _webView.scrollView.adjustedContentInset;
+////      bottomInsetToAdjust = adjustedInsets.bottom;
+////    } else {
+////      CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+////      bottomInsetToAdjust = keyboardFrame.size.height;
+////    }
+////    _webView.scrollView.contentInset = UIEdgeInsetsMake(_initialContentInset.left, _initialContentInset.top, _initialContentInset.bottom-bottomInsetToAdjust, _initialContentInset.right);
+////  }
+////  _keyboardHidden = NO;
+//}
+//
+//- (void)keyboardWillHide:(NSNotification *)notification {
+//  NSLog(@"==$ keyboardWillHide");
+//  _webView.userInfo = notification.userInfo;
+////  _keyboardHidden = YES;
+////  _webView.scrollView.contentInset = _initialContentInset;
+//}
+//
+//- (void)dealloc {
+//  [[NSNotificationCenter defaultCenter] removeObserver:self];
+//}
 
 - (UIView*)view {
   return _webView;
