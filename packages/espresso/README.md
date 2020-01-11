@@ -10,7 +10,7 @@ Add ```android:usesCleartextTraffic="true"``` in the ```<application>``` in the 
 of the Android app used for testing. It's best to put this in a debug or androidTest
 AndroidManifest.xml so that you don't ship it to end users. (See the example app of this package.)
 
-Add dependencies to your build.gradle:
+Add the following dependencies in android/app/build.gradle:
 
 ```groovy
 dependencies {
@@ -18,32 +18,7 @@ dependencies {
     testImplementation "com.google.truth:truth:1.0"
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-
-    // Core library
     api 'androidx.test:core:1.2.0'
-
-    // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation 'androidx.test:runner:1.1.0'
-    androidTestImplementation 'androidx.test:rules:1.1.0'
-
-    // Assertions
-    androidTestImplementation 'androidx.test.ext:junit:1.0.0'
-    androidTestImplementation 'androidx.test.ext:truth:1.0.0'
-    androidTestImplementation 'com.google.truth:truth:0.42'
-
-    // Espresso dependencies
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-accessibility:3.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.1.0'
-    androidTestImplementation 'androidx.test.espresso.idling:idling-concurrent:3.1.0'
-
-    // The following Espresso dependency can be either "implementation"
-    // or "androidTestImplementation", depending on whether you want the
-    // dependency to appear on your APK's compile classpath or the test APK
-    // classpath.
-    androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.1.0'
 }
 ```
 
@@ -91,10 +66,12 @@ public class MainActivityTest {
 
 You'll need to create a test app that enables the Flutter driver extension.
 You can put this in your test_driver/ folder, e.g. test_driver/example.dart.
+Replace `<app_package_name>` with the package name of your app. If you're
+developing a plugin, this will be the package name of the example app.
 
 ```dart
 import 'package:flutter_driver/driver_extension.dart';
-import '../lib/main.dart' as app;
+import 'package:<app_package_name>/main.dart' as app;
 
 void main() {
   enableFlutterDriverExtension();
