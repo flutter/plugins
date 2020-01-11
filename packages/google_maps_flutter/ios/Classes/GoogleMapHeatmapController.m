@@ -9,8 +9,7 @@
   GMUHeatmapTileLayer* _heatmapLayer;
   GMSMapView* _mapView;
 }
-- (instancetype)initHeatmapWithHeatmapId:(NSString*)heatmapId
-                                 mapView:(GMSMapView*)mapView {
+- (instancetype)initHeatmapWithHeatmapId:(NSString*)heatmapId mapView:(GMSMapView*)mapView {
   self = [super init];
   if (self) {
     _heatmapLayer = [[GMUHeatmapTileLayer alloc] init];
@@ -61,9 +60,11 @@ static NSArray<GMUWeightedLatLng*>* ToPoints(NSArray* data) {
     NSNumber* latitude = data[i][0][0];
     NSNumber* longitude = data[i][0][1];
     NSNumber* intensity = data[i][1];
-    GMUWeightedLatLng* weightedPoint =
-        [[GMUWeightedLatLng alloc] initWithCoordinate:CLLocationCoordinate2DMake([FLTGoogleMapJsonConversions toDouble:latitude],[FLTGoogleMapJsonConversions toDouble:longitude])
-                                            intensity:[FLTGoogleMapJsonConversions toFloat:intensity]];
+    GMUWeightedLatLng* weightedPoint = [[GMUWeightedLatLng alloc]
+        initWithCoordinate:CLLocationCoordinate2DMake(
+                               [FLTGoogleMapJsonConversions toDouble:latitude],
+                               [FLTGoogleMapJsonConversions toDouble:longitude])
+                 intensity:[FLTGoogleMapJsonConversions toFloat:intensity]];
     [points addObject:weightedPoint];
   }
 
@@ -91,15 +92,14 @@ static NSArray<NSNumber*>* ToStartsPoints(NSArray* data) {
 }
 
 static GMUGradient* ToGradient(NSArray* data) {
-  GMUGradient* gradient =
-        [[GMUGradient alloc] initWithColors:ToColors(data[0])
-                                startPoints:ToStartsPoints(data[1])
-                               colorMapSize:ToInt(data[2])];
+  GMUGradient* gradient = [[GMUGradient alloc] initWithColors:ToColors(data[0])
+                                                  startPoints:ToStartsPoints(data[1])
+                                                 colorMapSize:ToInt(data[2])];
   return gradient;
 }
 
 static void InterpretHeatmapOptions(NSDictionary* data, id<FLTGoogleMapHeatmapOptionsSink> sink,
-                                     NSObject<FlutterPluginRegistrar>* registrar) {
+                                    NSObject<FlutterPluginRegistrar>* registrar) {
   NSNumber* visible = data[@"visible"];
   if (visible != nil) {
     [sink setVisible:ToBool(visible)];
@@ -148,8 +148,7 @@ static void InterpretHeatmapOptions(NSDictionary* data, id<FLTGoogleMapHeatmapOp
   for (NSDictionary* heatmap in heatmapsToAdd) {
     NSString* heatmapId = [FLTHeatmapsController getHeatmapId:heatmap];
     FLTGoogleMapHeatmapController* controller =
-        [[FLTGoogleMapHeatmapController alloc] initHeatmapWithHeatmapId:heatmapId
-                                                                mapView:_mapView];
+        [[FLTGoogleMapHeatmapController alloc] initHeatmapWithHeatmapId:heatmapId mapView:_mapView];
     InterpretHeatmapOptions(heatmap, controller, _registrar);
     _heatmapIdToController[heatmapId] = controller;
   }
