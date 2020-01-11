@@ -24,6 +24,10 @@ class MethodChannelCustomCursor extends CustomCursorPlatform {
   Future<bool> setCursor(CursorType value) {
     return _channel.invokeMethod<bool>(
       'setCursor',
+      {
+        "type": Cursor.getMacOSCursor(value),
+        "update": false,
+      },
     );
   }
 
@@ -31,6 +35,10 @@ class MethodChannelCustomCursor extends CustomCursorPlatform {
   Future<bool> setMacOSCursor(MacOSCursor value) {
     return _channel.invokeMethod<bool>(
       'setCursor',
+      {
+        "type": value.value,
+        "update": false,
+      },
     );
   }
 

@@ -37,7 +37,7 @@ class CustomCursorPlugin extends CustomCursorPlatform {
 
   @override
   Future<bool> setCursor(CursorType value) {
-    html.document.body.style.cursor = _getCursor(value);
+    html.document.body.style.cursor = Cursor.getWebCursor(value);
     return Future.value(true);
   }
 
@@ -46,34 +46,4 @@ class CustomCursorPlugin extends CustomCursorPlatform {
     html.document.body.style.cursor = web.value;
     return Future.value(true);
   }
-}
-
-String _getCursor(CursorType cursor) {
-  final _cursor = _getWebCursor(cursor);
-  return _cursor;
-}
-
-String _getWebCursor(CursorType cursor) {
-  switch (cursor) {
-    case CursorType.arrow:
-      return WebCursor.arrow;
-    case CursorType.cross:
-      return WebCursor.crossHair;
-    case CursorType.hand:
-      return WebCursor.grab;
-    case CursorType.resizeLeft:
-      return WebCursor.eResize;
-    case CursorType.resizeRight:
-      return WebCursor.wResize;
-    case CursorType.resizeDown:
-      return WebCursor.nResize;
-    case CursorType.resizeUp:
-      return WebCursor.sResize;
-    case CursorType.resizeLeftRight:
-      return WebCursor.ewResize;
-    case CursorType.resizeUpDown:
-      return WebCursor.nsResize;
-    default:
-  }
-  return WebCursor.arrow;
 }

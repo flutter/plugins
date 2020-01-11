@@ -21,70 +21,41 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Container(
             width: 400,
-            child: kIsWeb
-                ? Wrap(
-                    children: [
-                      'all-scroll',
-                      'auto',
-                      'cell',
-                      'context-menu',
-                      'col-resize',
-                      'copy',
-                      'crosshair',
-                      'default',
-                      'e-resize',
-                      'ew-resize',
-                      'grab',
-                      'grabbing',
-                      'help',
-                      'move',
-                      'n-resize',
-                      'ne-resize',
-                      'nesw-resize',
-                      'ns-resize',
-                      'nw-resize',
-                      'nwse-resize',
-                      'no-drop',
-                      'none',
-                      'not-allowed',
-                      'pointer',
-                      'progress',
-                      'row-resize',
-                      's-resize',
-                      'se-resize',
-                      'sw-resize',
-                      'text',
-                      'w-resize',
-                      'wait',
-                      'zoom-in',
-                      'zoom-out',
-                    ].map((t) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: MouseRegion(
-                          onEnter: (_) => CustomCursorPlugin()
-                              .setWebCursor(WebCursor.custom(t)),
-                          onExit: (_) => CustomCursorPlugin().resetCursor(),
-                          child: Text(t),
-                        ),
-                      );
-                    }).toList(),
-                  )
-                : Wrap(
-                    children: CursorType.values.map((t) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: MouseRegion(
-                          onEnter: (_) => CustomCursorPlugin().setCursor(t),
-                          onExit: (_) => CustomCursorPlugin().resetCursor(),
-                          child: Text(describeEnum(t)),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+            child: kIsWeb ? _buildWebBody() : _buildDefaultBody(),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDefaultBody() {
+    return Wrap(
+      children: CursorType.values.map((t) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: MouseRegion(
+            onEnter: (_) => CustomCursorPlugin().setCursor(t),
+            onExit: (_) => CustomCursorPlugin().resetCursor(),
+            child: Text(describeEnum(t)),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildWebBody() {
+    return Wrap(
+      children: WebCursor.values.map((t) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: MouseRegion(
+            onEnter: (_) =>
+                CustomCursorPlugin().setWebCursor(WebCursor.custom(t)),
+            onExit: (_) => CustomCursorPlugin().resetCursor(),
+            child: Text(t),
+          ),
+        );
+      }).toList(),
     );
   }
 }

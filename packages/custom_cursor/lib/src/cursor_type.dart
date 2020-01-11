@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // /// Customization of the Mouse Pointer
@@ -94,6 +97,68 @@ import 'package:flutter/material.dart';
 abstract class Cursor {
   String get value;
   CursorType get type;
+
+  static String getDefault(CursorType type) {
+    if (kIsWeb) {
+      return getWebCursor(type);
+    }
+    if (Platform.isMacOS) {
+      return getMacOSCursor(type);
+    }
+    return MacOSCursor.arrow;
+  }
+
+  String get macOSCursor => getMacOSCursor(type);
+
+  static String getMacOSCursor(CursorType type) {
+    switch (type) {
+      case CursorType.arrow:
+        return MacOSCursor.arrow;
+      case CursorType.cross:
+        return MacOSCursor.crossHair;
+      case CursorType.hand:
+        return MacOSCursor.openHand;
+      case CursorType.resizeLeft:
+        return MacOSCursor.resizeLeft;
+      case CursorType.resizeRight:
+        return MacOSCursor.resizeRight;
+      case CursorType.resizeDown:
+        return MacOSCursor.resizeDown;
+      case CursorType.resizeUp:
+        return MacOSCursor.resizeUp;
+      case CursorType.resizeLeftRight:
+        return MacOSCursor.resizeLeftRight;
+      case CursorType.resizeUpDown:
+        return MacOSCursor.resizeUpDown;
+      default:
+    }
+    return MacOSCursor.arrow;
+  }
+
+  static String getWebCursor(CursorType type) {
+    switch (type) {
+      case CursorType.arrow:
+        return WebCursor.arrow;
+      case CursorType.cross:
+        return WebCursor.crossHair;
+      case CursorType.hand:
+        return WebCursor.grab;
+      case CursorType.resizeLeft:
+        return WebCursor.eResize;
+      case CursorType.resizeRight:
+        return WebCursor.wResize;
+      case CursorType.resizeDown:
+        return WebCursor.nResize;
+      case CursorType.resizeUp:
+        return WebCursor.sResize;
+      case CursorType.resizeLeftRight:
+        return WebCursor.ewResize;
+      case CursorType.resizeUpDown:
+        return WebCursor.nsResize;
+      default:
+    }
+    return WebCursor.arrow;
+  }
 }
 
 /// Generic [Cursor] type that is shared across all platforms.
@@ -128,6 +193,7 @@ class MacOSCursor extends Cursor {
   static String beamVertical = 'beam-vertical';
   static String crossHair = 'cross-hair';
   static String closedHand = 'closed-hand';
+  static String openHand = 'open-hand';
   static String pointingHand = 'pointing-hand';
   static String resizeLeft = 'resize-left';
   static String resizeRight = 'resize-right';
@@ -197,4 +263,41 @@ class WebCursor extends Cursor {
   static String wait = "wait";
   static String zoomIn = "zoom-in";
   static String zoomOut = "zoom-out";
+
+  static List<String> get values => [
+        'all-scroll',
+        'auto',
+        'cell',
+        'context-menu',
+        'col-resize',
+        'copy',
+        'crosshair',
+        'default',
+        'e-resize',
+        'ew-resize',
+        'grab',
+        'grabbing',
+        'help',
+        'move',
+        'n-resize',
+        'ne-resize',
+        'nesw-resize',
+        'ns-resize',
+        'nw-resize',
+        'nwse-resize',
+        'no-drop',
+        'none',
+        'not-allowed',
+        'pointer',
+        'progress',
+        'row-resize',
+        's-resize',
+        'se-resize',
+        'sw-resize',
+        'text',
+        'w-resize',
+        'wait',
+        'zoom-in',
+        'zoom-out',
+      ];
 }
