@@ -15,10 +15,10 @@ Add the following dependencies in android/app/build.gradle:
 ```groovy
 dependencies {
     testImplementation 'junit:junit:4.12'
-    testImplementation "com.google.truth:truth:1.0"  // new
+    testImplementation "com.google.truth:truth:1.0"
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    api 'androidx.test:core:1.2.0' // new
+    api 'androidx.test:core:1.2.0'
 }
 ```
 
