@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
           padding: const EdgeInsets.all(8.0),
           child: MouseRegion(
             onEnter: (_) =>
-                CustomCursorPlugin().setWebCursor(WebCursor.custom(t)),
+                CustomCursorPlugin().setMacOSCursor(MacOSCursor.custom(t)),
             onExit: (_) => CustomCursorPlugin().resetCursor(),
             child: Text(t),
           ),

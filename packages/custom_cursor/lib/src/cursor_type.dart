@@ -73,6 +73,10 @@ enum CursorType {
 
 /// [MacOS] platform cursor
 class MacOSCursor extends Cursor {
+  MacOSCursor.custom(String value)
+      : this._value = value,
+        this._type = CursorType.custom;
+
   MacOSCursor(String value, CursorType type)
       : this._value = value,
         _type = type;
