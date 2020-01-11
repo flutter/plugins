@@ -1,114 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-
-// /// Customization of the Mouse Pointer
-// class Cursor {
-//   const Cursor(this._type)
-//       : _macOSCursor = null,
-//         _webCursorType = null;
-
-//   /// Fallback to a arrow cursor.
-//   const Cursor.fallback()
-//       : _type = CursorType.arrow,
-//         _macOSCursor = MacOSCursor.arrow,
-//         _webCursorType = WebCursor.arrow;
-
-//   /// Custom cursor with an option to specify MacOS and Web cursors explicitly.
-//   const Cursor.custom({
-//     @required CursorType type,
-//     MacOSCursor MacOSCursor,
-//     WebCursor webCursorType,
-//   })  : assert(type != null),
-//         _type = type,
-//         _macOSCursor = MacOSCursor,
-//         _webCursorType = webCursorType;
-
-//   final CursorType _type;
-//   final MacOSCursor _macOSCursor;
-//   final WebCursor _webCursorType;
-
-//   /// Cursor Type
-//   CursorType get value => _type;
-
-//   /// [MacOS] Cursor Type derived from [CursorType]
-//   /// or set explicitly
-//   MacOSCursor get macOSCursor {
-//     if (_macOSCursor != null) {
-//       return _macOSCursor;
-//     }
-//     switch (_type) {
-//       case CursorType.arrow:
-//         return MacOSCursor.arrow;
-//       case CursorType.cross:
-//         return MacOSCursor.crossHair;
-//       case CursorType.hand:
-//         return MacOSCursor.openHand;
-//       case CursorType.resizeLeft:
-//         return MacOSCursor.resizeLeft;
-//       case CursorType.resizeRight:
-//         return MacOSCursor.resizeRight;
-//       case CursorType.resizeDown:
-//         return MacOSCursor.resizeDown;
-//       case CursorType.resizeUp:
-//         return MacOSCursor.resizeUp;
-//       case CursorType.resizeLeftRight:
-//         return MacOSCursor.resizeLeftRight;
-//       case CursorType.resizeUpDown:
-//         return MacOSCursor.resizeUpDown;
-//     }
-
-//     return MacOSCursor.arrow;
-//   }
-
-//   /// [Web] Cursor Type derived from [CursorType]
-//   /// or set explicitly
-//   WebCursor get webCursor {
-//     if (_webCursorType != null) {
-//       return _webCursorType;
-//     }
-
-//     switch (_type) {
-//       case CursorType.arrow:
-//         return WebCursor.arrow;
-//       case CursorType.cross:
-//         return WebCursor.crossHair;
-//       case CursorType.hand:
-//         return WebCursor.grab;
-//       case CursorType.resizeLeft:
-//         return WebCursor.eResize;
-//       case CursorType.resizeRight:
-//         return WebCursor.wResize;
-//       case CursorType.resizeDown:
-//         return WebCursor.nResize;
-//       case CursorType.resizeUp:
-//         return WebCursor.sResize;
-//       case CursorType.resizeLeftRight:
-//         return WebCursor.ewResize;
-//       case CursorType.resizeUpDown:
-//         return WebCursor.nsResize;
-//     }
-
-//     return WebCursor.arrow;
-//   }
-// }
 
 abstract class Cursor {
   String get value;
   CursorType get type;
 
-  static String getDefault(CursorType type) {
-    if (kIsWeb) {
-      return getWebCursor(type);
-    }
-    if (Platform.isMacOS) {
-      return getMacOSCursor(type);
-    }
-    return MacOSCursor.arrow;
-  }
-
   String get macOSCursor => getMacOSCursor(type);
+
+  String get webCursor => getWebCursor(type);
 
   static String getMacOSCursor(CursorType type) {
     switch (type) {
@@ -207,6 +107,27 @@ class MacOSCursor extends Cursor {
   static String dragLink = 'drag-link';
   static String dragCopy = 'drag-copy';
   static String contextMenu = 'context-menu';
+
+  static List<String> get values => [
+        'arrow',
+        'beam-vertical',
+        'cross-hair',
+        'closed-hand',
+        'open-hand',
+        'pointing-hand',
+        'resize-left',
+        'resize-right',
+        'resize-down',
+        'resize-up',
+        'resize-left-right',
+        'resize-up-down',
+        'beam-horizontial',
+        'disappearing-item',
+        'not-allowed',
+        'drag-link',
+        'drag-copy',
+        'context-menu',
+      ];
 }
 
 /// [Web] platform cursor

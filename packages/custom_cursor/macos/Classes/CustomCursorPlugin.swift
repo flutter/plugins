@@ -44,23 +44,23 @@ public class CustomCursorPlugin: NSObject, FlutterPlugin {
         var cursor: NSCursor
         switch type {
         case "arrow": cursor = NSCursor.arrow
-        case "beamVertical": cursor = NSCursor.iBeam
-        case "beamHorizontial": cursor = NSCursor.iBeamCursorForVerticalLayout
-        case "crossHair": cursor = NSCursor.crosshair
-        case "closedHand": cursor = NSCursor.closedHand
+        case "beam-vertical": cursor = NSCursor.iBeam
+        case "beam-horizontial": cursor = NSCursor.iBeamCursorForVerticalLayout
+        case "cross-hair": cursor = NSCursor.crosshair
+        case "closed-hand": cursor = NSCursor.closedHand
         case "openHand": cursor = NSCursor.openHand
-        case "pointingHand": cursor = NSCursor.pointingHand
-        case "resizeLeft": cursor = NSCursor.resizeLeft
-        case "resizeRight": cursor = NSCursor.resizeRight
-        case "resizeLeftRight": cursor = NSCursor.resizeLeftRight
-        case "resizeUp": cursor = NSCursor.resizeUp
-        case "resizeDown": cursor = NSCursor.resizeDown
-        case "resizeUpDown": cursor = NSCursor.resizeUpDown
-        case "disappearingItem": cursor = NSCursor.disappearingItem
-        case "notAllowed": cursor = NSCursor.operationNotAllowed
-        case "dragLink": cursor = NSCursor.dragLink
-        case "dragCopy": cursor = NSCursor.dragCopy
-        case "contextMenu": cursor = NSCursor.contextualMenu
+        case "pointing-hand": cursor = NSCursor.pointingHand
+        case "resize-left": cursor = NSCursor.resizeLeft
+        case "resize-right": cursor = NSCursor.resizeRight
+        case "resize-left-right": cursor = NSCursor.resizeLeftRight
+        case "resize-up": cursor = NSCursor.resizeUp
+        case "resize-down": cursor = NSCursor.resizeDown
+        case "resize-up-down": cursor = NSCursor.resizeUpDown
+        case "disappearing-item": cursor = NSCursor.disappearingItem
+        case "not-allowed": cursor = NSCursor.operationNotAllowed
+        case "drag-link": cursor = NSCursor.dragLink
+        case "drag-copy": cursor = NSCursor.dragCopy
+        case "context-menu": cursor = NSCursor.contextualMenu
         default:
             cursor = NSCursor.arrow
         }

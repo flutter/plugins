@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -21,14 +23,20 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Container(
             width: 400,
-            child: kIsWeb ? _buildWebBody() : _buildDefaultBody(),
+            child: _buildBody(),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildDefaultBody() {
+  Widget _buildBody() {
+    if (kIsWeb) {
+      return _buildWebBody();
+    }
+    if (Platform.isMacOS) {
+      return _buildMacOSBody();
+    }
     return Wrap(
       children: CursorType.values.map((t) {
         return Padding(
@@ -46,6 +54,22 @@ class _MyAppState extends State<MyApp> {
   Widget _buildWebBody() {
     return Wrap(
       children: WebCursor.values.map((t) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: MouseRegion(
+            onEnter: (_) =>
+                CustomCursorPlugin().setWebCursor(WebCursor.custom(t)),
+            onExit: (_) => CustomCursorPlugin().resetCursor(),
+            child: Text(t),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildMacOSBody() {
+    return Wrap(
+      children: MacOSCursor.values.map((t) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: MouseRegion(
