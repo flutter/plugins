@@ -8,7 +8,10 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  plugin_platform_interface: ^1.0.1
   flutter:
+    sdk: flutter
+  flutter_web_plugins:
     sdk: flutter
 
 dev_dependencies:
@@ -31,6 +34,9 @@ flutter:
   # However, it is required in order to declare macOS support.
   plugin:
     platforms:
+      web:
+        pluginClass: CustomCursorPlugin
+        fileName: custom_cursor_web.dart
       android:
         package: com.example.custom_cursor
         pluginClass: CustomCursorPlugin
