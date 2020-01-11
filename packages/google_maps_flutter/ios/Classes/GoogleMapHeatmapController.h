@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import <Flutter/Flutter.h>
-#import <GoogleMaps/GoogleMaps.h>
 #import <Google-Maps-iOS-Utils/GMUHeatmapTileLayer.h>
+#import <GoogleMaps/GoogleMaps.h>
 
 // Defines heatmap UI options writable from Flutter.
 @protocol FLTGoogleMapHeatmapOptionsSink
@@ -18,8 +18,7 @@
 // Defines heatmap controllable by Flutter.
 @interface FLTGoogleMapHeatmapController : NSObject <FLTGoogleMapHeatmapOptionsSink>
 @property(atomic, readonly) NSString* heatmapId;
-- (instancetype)initHeatmapWithHeatmapId:(NSString*)heatmapId
-                               mapView:(GMSMapView*)mapView;
+- (instancetype)initHeatmapWithHeatmapId:(NSString*)heatmapId mapView:(GMSMapView*)mapView;
 - (void)removeHeatmap;
 @end
 

@@ -6,8 +6,6 @@ package io.flutter.plugins.googlemaps;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
 import java.util.List;
@@ -73,8 +71,7 @@ class HeatmapsController {
     addHeatmap(heatmapId, options);
   }
 
-  private void addHeatmap(
-      String heatmapId, HeatmapOptions heatmapOptions) {
+  private void addHeatmap(String heatmapId, HeatmapOptions heatmapOptions) {
 
     TileOverlay overlay = mGoogleMap.addTileOverlay(heatmapOptions.getTileOverlayOptions());
     heatmapOptions.setTileOverlay(overlay);

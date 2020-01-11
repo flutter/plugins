@@ -6,9 +6,9 @@ package io.flutter.plugins.googlemaps;
 
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.maps.android.heatmaps.WeightedLatLng;
-import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.Gradient;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import java.util.List;
 
 /** Receiver of Heatmap configuration options. */
@@ -28,7 +28,7 @@ class HeatmapOptions implements HeatmapOptionsSink {
   }
 
   public void setPoints(List<WeightedLatLng> points) {
-    if(null == mHeatmapTileProvider) {
+    if (null == mHeatmapTileProvider) {
       mHeatmapTileProviderBuilder.weightedData(points);
     } else {
       mHeatmapTileProvider.setWeightedData(points);
@@ -36,7 +36,7 @@ class HeatmapOptions implements HeatmapOptionsSink {
   }
 
   public void setGradient(Gradient gradient) {
-    if(null == mHeatmapTileProvider) {
+    if (null == mHeatmapTileProvider) {
       mHeatmapTileProviderBuilder.gradient(gradient);
     } else {
       mHeatmapTileProvider.setGradient(gradient);
@@ -44,7 +44,7 @@ class HeatmapOptions implements HeatmapOptionsSink {
   }
 
   public void setOpacity(double opacity) {
-    if(null == mHeatmapTileProvider) {
+    if (null == mHeatmapTileProvider) {
       mHeatmapTileProviderBuilder.opacity(opacity);
     } else {
       mHeatmapTileProvider.setOpacity(opacity);
@@ -52,7 +52,7 @@ class HeatmapOptions implements HeatmapOptionsSink {
   }
 
   public void setRadius(int radius) {
-    if(null == mHeatmapTileProvider) {
+    if (null == mHeatmapTileProvider) {
       mHeatmapTileProviderBuilder.radius(radius);
     } else {
       mHeatmapTileProvider.setRadius(radius);
@@ -60,7 +60,7 @@ class HeatmapOptions implements HeatmapOptionsSink {
   }
 
   public void setFadeIn(boolean fadeIn) {
-    if(null == mTileOverlay) {
+    if (null == mTileOverlay) {
       mTileOverlayOptions.fadeIn(fadeIn);
     } else {
       mTileOverlay.setFadeIn(fadeIn);
@@ -68,7 +68,7 @@ class HeatmapOptions implements HeatmapOptionsSink {
   }
 
   public void setTransparency(float transparency) {
-    if(null == mTileOverlay) {
+    if (null == mTileOverlay) {
       mTileOverlayOptions.transparency(transparency);
     } else {
       mTileOverlay.setTransparency(transparency);
@@ -76,7 +76,7 @@ class HeatmapOptions implements HeatmapOptionsSink {
   }
 
   public void setVisible(boolean visible) {
-    if(null == mTileOverlay) {
+    if (null == mTileOverlay) {
       mTileOverlayOptions.visible(visible);
     } else {
       mTileOverlay.setVisible(visible);
@@ -84,7 +84,7 @@ class HeatmapOptions implements HeatmapOptionsSink {
   }
 
   public void setZIndex(float zIndex) {
-    if(null == mTileOverlay) {
+    if (null == mTileOverlay) {
       mTileOverlayOptions.zIndex(zIndex);
     } else {
       mTileOverlay.setZIndex(zIndex);

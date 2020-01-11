@@ -100,8 +100,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
                                                     mapView:_mapView
                                                   registrar:registrar];
     _heatmapsController = [[FLTHeatmapsController alloc] init:_channel
-                                                        mapView:_mapView
-                                                      registrar:registrar];
+                                                      mapView:_mapView
+                                                    registrar:registrar];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];

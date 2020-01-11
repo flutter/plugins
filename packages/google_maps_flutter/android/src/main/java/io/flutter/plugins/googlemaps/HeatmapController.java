@@ -5,19 +5,17 @@
 package io.flutter.plugins.googlemaps;
 
 import com.google.android.gms.maps.model.TileOverlay;
-import com.google.maps.android.heatmaps.WeightedLatLng;
-import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.Gradient;
-
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import java.util.List;
 
 /** Controller of a single Heatmap on the map. */
 class HeatmapController implements HeatmapOptionsSink {
 
   private final HeatmapOptions mHeatmapOptions;
-  
+
   private final TileOverlay mTileOverlay;
-  
+
   private final String mGoogleMapsHeatmapId;
 
   HeatmapController(HeatmapOptions heatmapOptions, TileOverlay tileOverlay) {

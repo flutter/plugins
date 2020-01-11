@@ -23,8 +23,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.SquareCap;
-import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.google.maps.android.heatmaps.Gradient;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import io.flutter.view.FlutterMain;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -619,7 +619,10 @@ class Convert {
     for (Object ob : data) {
       final List<?> weightedPoint = toList(ob);
       final List<?> point = toList(weightedPoint.get(0));
-      points.add(new WeightedLatLng(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))), toInt(weightedPoint.get(1))));
+      points.add(
+          new WeightedLatLng(
+              new LatLng(toFloat(point.get(0)), toFloat(point.get(1))),
+              toInt(weightedPoint.get(1))));
     }
     return points;
   }
@@ -635,7 +638,7 @@ class Convert {
   private static int[] toIntArray(Object o) {
     final List<?> data = toList(o);
     final int[] ints = new int[data.size()];
-    
+
     int index = 0;
     for (Object ob : data) {
       ints[index++] = toInt(ob);
@@ -646,7 +649,7 @@ class Convert {
   private static float[] toFloatArray(Object o) {
     final List<?> data = toList(o);
     final float[] floats = new float[data.size()];
-    
+
     int index = 0;
     for (Object ob : data) {
       floats[index++] = toFloat(ob);

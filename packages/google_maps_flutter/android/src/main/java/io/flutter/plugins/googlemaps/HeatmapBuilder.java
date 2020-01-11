@@ -4,9 +4,9 @@
 
 package io.flutter.plugins.googlemaps;
 
-import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import java.util.List;
 
 class HeatmapBuilder implements HeatmapOptionsSink {
@@ -17,7 +17,8 @@ class HeatmapBuilder implements HeatmapOptionsSink {
   }
 
   HeatmapOptions build() {
-    HeatmapTileProvider heatmapTileProvider = heatmapOptions.getHeatmapTileProviderBuilder().build();
+    HeatmapTileProvider heatmapTileProvider =
+        heatmapOptions.getHeatmapTileProviderBuilder().build();
     heatmapOptions.setHeatmapTileProvider(heatmapTileProvider);
     return heatmapOptions;
   }
