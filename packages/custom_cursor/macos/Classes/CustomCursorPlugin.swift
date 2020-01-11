@@ -48,7 +48,7 @@ public class CustomCursorPlugin: NSObject, FlutterPlugin {
         case "beam-horizontial": cursor = NSCursor.iBeamCursorForVerticalLayout
         case "cross-hair": cursor = NSCursor.crosshair
         case "closed-hand": cursor = NSCursor.closedHand
-        case "openHand": cursor = NSCursor.openHand
+        case "open-hand": cursor = NSCursor.openHand
         case "pointing-hand": cursor = NSCursor.pointingHand
         case "resize-left": cursor = NSCursor.resizeLeft
         case "resize-right": cursor = NSCursor.resizeRight
