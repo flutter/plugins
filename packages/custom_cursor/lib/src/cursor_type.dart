@@ -1,7 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
-
 abstract class Cursor {
   String get value;
   CursorType get type;
