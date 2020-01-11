@@ -62,8 +62,8 @@ class _MyAppState extends State<MyApp> {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: MouseRegion(
-                          onEnter: (_) =>
-                              CustomCursorPlugin().setWebCursor(WebCursor(t)),
+                          onEnter: (_) => CustomCursorPlugin()
+                              .setWebCursor(WebCursor.custom(t)),
                           onExit: (_) => CustomCursorPlugin().resetCursor(),
                           child: Text(t),
                         ),

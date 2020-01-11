@@ -16,22 +16,22 @@ class CustomCursorPlugin extends CustomCursorPlatform {
 
   @override
   Future<bool> resetCursor() {
-    WebCursor _cursor = WebCursor.arrow;
-    html.document.body.style.cursor = _cursor.type;
+    String _cursor = WebCursor.arrow;
+    html.document.body.style.cursor = _cursor;
     return Future.value(true);
   }
 
   @override
   Future<bool> hideCursor() {
-    WebCursor _cursor = WebCursor.none;
-    html.document.body.style.cursor = _cursor.type;
+    String _cursor = WebCursor.none;
+    html.document.body.style.cursor = _cursor;
     return Future.value(true);
   }
 
   @override
   Future<bool> showCursor() {
-    WebCursor _cursor = WebCursor.arrow;
-    html.document.body.style.cursor = _cursor.type;
+    String _cursor = WebCursor.arrow;
+    html.document.body.style.cursor = _cursor;
     return Future.value(true);
   }
 
@@ -43,17 +43,17 @@ class CustomCursorPlugin extends CustomCursorPlatform {
 
   @override
   Future<bool> setWebCursor(WebCursor web) {
-    html.document.body.style.cursor = web.type;
+    html.document.body.style.cursor = web.value;
     return Future.value(true);
   }
 }
 
 String _getCursor(CursorType cursor) {
   final _cursor = _getWebCursor(cursor);
-  return _cursor.type;
+  return _cursor;
 }
 
-WebCursor _getWebCursor(CursorType cursor) {
+String _getWebCursor(CursorType cursor) {
   switch (cursor) {
     case CursorType.arrow:
       return WebCursor.arrow;
@@ -73,6 +73,7 @@ WebCursor _getWebCursor(CursorType cursor) {
       return WebCursor.ewResize;
     case CursorType.resizeUpDown:
       return WebCursor.nsResize;
+    default:
   }
   return WebCursor.arrow;
 }
