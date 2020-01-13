@@ -1,3 +1,7 @@
+## 0.3.5
+
+* Add support for [setType](https://developer.android.com/reference/android/content/Intent.html#setType(java.lang.String)) and [setDataAndType](https://developer.android.com/reference/android/content/Intent.html#setDataAndType(android.net.Uri,%20java.lang.String)) parameters. 
+
 ##  0.3.4+8
 
 * Remove the deprecated `author:` field from pubspec.yaml
