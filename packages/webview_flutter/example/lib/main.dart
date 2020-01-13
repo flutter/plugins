@@ -26,81 +26,6 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
-const String test = '''
-<!DOCTYPE html><html>
-<head><title>Navigation Delegate Example</title></head>
-<body>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-<h1>
-The navigation delegate is set to block navigation to the youtube website.
-</h1>
-
-
-<input/>xxx
-</body>
-</html>
-
-''';
-
 class WebViewExample extends StatefulWidget {
   @override
   _WebViewExampleState createState() => _WebViewExampleState();
@@ -128,10 +53,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           initialUrl: 'https://github.com/flutter/flutter/issues/1122',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) async {
-                final String contentBase64 =
-        base64Encode(const Utf8Encoder().convert(test));
             _controller.complete(webViewController);
-            await webViewController.loadUrl('data:text/html;base64,$contentBase64');
           },
           // TODO(iskakaushik): Remove this when collection literals makes it to stable.
           // ignore: prefer_collection_literals
