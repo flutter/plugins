@@ -844,6 +844,31 @@ void main() {
     });
   });
 
+  group('mixedContentMode', () {
+    testWidgets('set mixedContentMode', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        mixedContentMode: MixedContentMode.alwaysAllow,
+      ));
+
+      final FakePlatformWebView? platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView?.mixedContentMode,
+          MixedContentMode.alwaysAllow.index);
+    });
+
+    testWidgets('defaults to null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final FakePlatformWebView? platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      expect(platformWebView?.mixedContentMode, null);
+    });
+
+    // no need to change
+  });
+
   group('Custom platform implementation', () {
     setUpAll(() {
       WebView.platform = MyWebViewPlatform();
@@ -939,6 +964,7 @@ class FakePlatformWebView {
     hasNavigationDelegate =
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
+    mixedContentMode = params['settings']['mixedContentMode'];
     userAgent = params['settings']['userAgent'];
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
@@ -958,6 +984,7 @@ class FakePlatformWebView {
 
   bool? hasNavigationDelegate;
   bool? debuggingEnabled;
+  int? mixedContentMode;
   String? userAgent;
 
   Future<dynamic> onMethodCall(MethodCall call) {

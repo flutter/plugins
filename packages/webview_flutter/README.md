@@ -71,3 +71,7 @@ android {
 
 To use Material Components when the user interacts with input elements in the WebView,
 follow the steps described in the [Enabling Material Components instructions](https://flutter.dev/docs/deployment/android#enabling-material-components).
+
+### Android `mixedContentMode`
+
+1. Android `mixedContentMode` requires `usesCleartextTraffic` in `AndroidManifest.xml`;

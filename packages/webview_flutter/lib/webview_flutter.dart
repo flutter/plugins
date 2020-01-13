@@ -130,6 +130,23 @@ class SurfaceAndroidWebView extends AndroidWebView {
   }
 }
 
+/// Describes the state of mixed content(e.g. http content in https pages) support in a given web view.
+///
+/// Only works in Android.
+///
+/// See also https://developer.android.com/reference/android/webkit/WebSettings.html#MIXED_CONTENT_ALWAYS_ALLOW
+/// for these 3 options.
+enum MixedContentMode {
+  /// See also Android `MIXED_CONTENT_ALWAYS_ALLOW` option
+  alwaysAllow,
+
+  /// See also Android `MIXED_CONTENT_NEVER_ALLOW` option
+  neverAllow,
+
+  /// See also Android `MIXED_CONTENT_COMPATIBILITY_MODE` option
+  compatibilityMode,
+}
+
 /// Decides how to handle a specific navigation request.
 ///
 /// The returned [NavigationDecision] determines how the navigation described by
@@ -228,6 +245,7 @@ class WebView extends StatefulWidget {
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
+    this.mixedContentMode,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
@@ -407,6 +425,14 @@ class WebView extends StatefulWidget {
   /// By default `userAgent` is null.
   final String? userAgent;
 
+  /// Controls whether mixed content is allowed to load.
+  ///
+  /// This only works on Android.
+  /// For iOS, you can change the settings in info.plist.
+  ///
+  /// By default `mixedContentMode` is null, and Android would use its own default.
+  final MixedContentMode? mixedContentMode;
+
   /// Which restrictions apply on automatic media playback.
   ///
   /// This initial value is applied to the platform's webview upon creation. Any following
@@ -488,6 +514,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasNavigationDelegate: widget.navigationDelegate != null,
     hasProgressTracking: widget.onProgress != null,
     debuggingEnabled: widget.debuggingEnabled,
+    mixedContentMode: widget.mixedContentMode,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),

@@ -542,6 +542,48 @@ void main() {
     }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
   });
 
+  // NOTE: Requires `usesCleartextTraffic` in `AndroidManifest.xml`
+  testWidgets('set mixedContentMode', (WidgetTester tester) async {
+    // Only for Android
+    if (!Platform.isAndroid) return;
+
+    void test(bool allow) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final Completer<void> loadCompleter = Completer<void>();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl:
+                'https://www.mixedcontentexamples.com/Test/NonSecureImage',
+            javascriptMode: JavascriptMode.unrestricted,
+            mixedContentMode: allow
+                ? MixedContentMode.compatibilityMode
+                : MixedContentMode.neverAllow,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            onPageFinished: (_) => loadCompleter.complete(null),
+          ),
+        ),
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      await loadCompleter.future;
+      final height = int.tryParse(await controller.evaluateJavascript(
+          'document.getElementsByTagName("img")[0].height'));
+      if (allow) {
+        expect(height, 398);
+      } else {
+        expect(height != 398, true);
+      }
+    }
+
+    await test(false);
+    await test(true);
+  });
+
   group('Audio playback policy', () {
     String audioTestBase64;
     setUpAll(() async {

@@ -394,6 +394,7 @@ class WebSettings {
     this.hasNavigationDelegate,
     this.hasProgressTracking,
     this.debuggingEnabled,
+    this.mixedContentMode,
     this.gestureNavigationEnabled,
     this.allowsInlineMediaPlayback,
     required this.userAgent,
@@ -429,6 +430,11 @@ class WebSettings {
   /// See also [WebView.userAgent].
   final WebSetting<String?> userAgent;
 
+  /// The mixed content mode to be used by the webview.
+  ///
+  /// See also: [WebView.mixedContentMode]
+  final MixedContentMode? mixedContentMode;
+
   /// Whether to allow swipe based navigation in iOS.
   ///
   /// See also: [WebView.gestureNavigationEnabled]
@@ -436,7 +442,7 @@ class WebSettings {
 
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback, mixedContentMode: $mixedContentMode)';
   }
 }
 
