@@ -5,13 +5,13 @@
 
 - (BOOL)testE2E:(NSString **)testResult {
   E2EPlugin *e2ePlugin = [E2EPlugin instance];
-  UIViewController* rootViewController =
+  UIViewController *rootViewController =
       [[[[UIApplication sharedApplication] delegate] window] rootViewController];
   if (![rootViewController isKindOfClass:[FlutterViewController class]]) {
     NSLog(@"expected FlutterViewController as rootViewController.");
     return NO;
   }
-  FlutterViewController *flutterViewController = (FlutterViewController*)rootViewController;
+  FlutterViewController *flutterViewController = (FlutterViewController *)rootViewController;
   [e2ePlugin setupChannels:flutterViewController.engine.binaryMessenger];
   while (!e2ePlugin.testResults) {
     CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.f, NO);
