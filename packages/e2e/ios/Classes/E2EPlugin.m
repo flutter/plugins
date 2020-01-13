@@ -26,10 +26,14 @@ static NSString *const kMethodTestFinished = @"allTestsFinished";
   return [super init];
 }
 
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {}
+
+- (void)setupChannels:(id<FlutterBinaryMessenger>)binaryMessenger {
   FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:kE2EPluginChannel
-                                                              binaryMessenger:registrar.messenger];
-  [registrar addMethodCallDelegate:[E2EPlugin instance] channel:channel];
+                                                              binaryMessenger:binaryMessenger];
+  [channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
+    [self handleMethodCall:call result:result];
+  }];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 /** Fetches the singleton instance of the plugin. */
 + (E2EPlugin *)instance;
 
+- (void)setupChannels:(id<FlutterBinaryMessenger>)binaryMessenger;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

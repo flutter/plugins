@@ -1,3 +1,8 @@
+## 0.2.4
+
+* Fixed problem with XCTest in XCode 11.3 where the testing bundles were getting
+  opened multiple times which interfered with the singleton logic for E2EPlugin.
+
 ## 0.2.3
 
 * Updates `E2EPlugin` and add skeleton iOS test case `E2EIosTest`.
