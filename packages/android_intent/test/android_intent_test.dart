@@ -22,12 +22,14 @@ void main() {
           data: Uri.encodeFull('https://flutter.io'),
           flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
           channel: mockChannel,
-          platform: FakePlatform(operatingSystem: 'android'));
+          platform: FakePlatform(operatingSystem: 'android'),
+          type: 'video/*');
       await androidIntent.launch();
       verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
         'action': 'action_view',
         'data': Uri.encodeFull('https://flutter.io'),
         'flags': androidIntent.convertFlags(<int>[Flag.FLAG_ACTIVITY_NEW_TASK]),
+        'type': 'video/*',
       }));
     });
     test('pass null value to action param', () async {
