@@ -66,7 +66,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   }
 }
 
-- (void)testContentInsetsAlwaysZeroAfterSetFrame {
+- (void)testContentInsetsSumAlwaysZeroAfterSetFrame {
   FLTWKWebView *webView = [[FLTWKWebView alloc] initWithFrame:CGRectMake(0, 0, 300, 400)];
   webView.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 300, 0);
   XCTAssertFalse(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
@@ -74,6 +74,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
 
   if (@available(iOS 11, *)) {
+    // After iOS 11, we need to make sure the contentInset compensates the adjustedContentInset.
     UIScrollView *partialMockScrollView = OCMPartialMock(webView.scrollView);
     UIEdgeInsets insetToAdjust = UIEdgeInsetsMake(0, 0, 300, 0);
     OCMStub(partialMockScrollView.adjustedContentInset).andReturn(insetToAdjust);
