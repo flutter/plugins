@@ -132,6 +132,21 @@ void main() {
         });
       });
 
+      test('init errors', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'http://testing.com/invalid_url',
+        );
+        try {
+          dynamic error;
+          fakeVideoPlayerPlatform.forceInitError = true;
+          await controller.initialize().catchError((dynamic e) => error = e);
+          final PlatformException platformEx = error;
+          expect(platformEx.code, equals('VideoError'));
+        } finally {
+          fakeVideoPlayerPlatform.forceInitError = false;
+        }
+      });
+
       test('file', () async {
         final VideoPlayerController controller = VideoPlayerController();
         await controller.setFileDataSource(File('a.avi'));
@@ -482,6 +497,7 @@ class FakeVideoPlayerPlatform {
   List<MethodCall> calls = <MethodCall>[];
   Map<String, dynamic> dataSourceDescription = <String, dynamic>{};
   final Map<int, FakeVideoEventStream> streams = <int, FakeVideoEventStream>{};
+  bool forceInitError = false;
   int nextTextureId = 0;
   final Map<int, Duration> _positions = <int, Duration>{};
 
@@ -492,8 +508,8 @@ class FakeVideoPlayerPlatform {
         initialized.complete(true);
         break;
       case 'create':
-        streams[nextTextureId] = FakeVideoEventStream(
-            nextTextureId, 100, 100, const Duration(seconds: 1));
+        streams[nextTextureId] = FakeVideoEventStream(nextTextureId, 100, 100,
+            const Duration(seconds: 1), forceInitError);
         return Future<Map<String, int>>.sync(() {
           return <String, int>{
             'textureId': nextTextureId++,
@@ -531,7 +547,8 @@ class FakeVideoPlayerPlatform {
 }
 
 class FakeVideoEventStream {
-  FakeVideoEventStream(this.textureId, this.width, this.height, this.duration) {
+  FakeVideoEventStream(this.textureId, this.width, this.height, this.duration,
+      this.initWithError) {
     eventsChannel = FakeEventsChannel(
         'flutter.io/videoPlayer/videoEvents$textureId', () {});
   }
@@ -540,17 +557,21 @@ class FakeVideoEventStream {
   int width;
   int height;
   Duration duration;
+  bool initWithError;
   FakeEventsChannel eventsChannel;
 
   sendInitializedEvent(String key) {
-    final Map<String, dynamic> initializedEvent = <String, dynamic>{
-      'event': 'initialized',
+    if (!initWithError) {
+      eventsChannel.sendEvent(<String, dynamic>{
+        'event': 'initialized',
       'key': key,
-      'duration': duration.inMilliseconds,
-      'width': width,
-      'height': height,
-    };
-    eventsChannel.sendEvent(initializedEvent);
+        'duration': duration.inMilliseconds,
+        'width': width,
+        'height': height,
+      });
+    } else {
+      eventsChannel.sendError('VideoError', 'Video player had error XYZ');
+    }
   }
 }
 
@@ -573,13 +594,23 @@ class FakeEventsChannel {
   }
 
   void sendEvent(dynamic event) {
+    _sendMessage(const StandardMethodCodec().encodeSuccessEnvelope(event));
+  }
+
+  void sendError(String code, [String message, dynamic details]) {
+    _sendMessage(const StandardMethodCodec().encodeErrorEnvelope(
+      code: code,
+      message: message,
+      details: details,
+    ));
+  }
+
+  void _sendMessage(ByteData data) {
     // TODO(jackson): This has been deprecated and should be replaced
     // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
     // available on all the versions of Flutter that we test.
     // ignore: deprecated_member_use
     defaultBinaryMessenger.handlePlatformMessage(
-        eventsMethodChannel.name,
-        const StandardMethodCodec().encodeSuccessEnvelope(event),
-        (ByteData data) {});
+        eventsMethodChannel.name, data, (ByteData data) {});
   }
 }

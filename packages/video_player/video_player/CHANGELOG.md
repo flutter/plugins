@@ -7,6 +7,11 @@
 `VideoPlayerController.setFileDataSource`. All this three methods set this data source to video player
  on both Dart and platform side and return Future which completes after the data source is ready to play.
 
+## 0.10.5+1
+
+* Fixes issue where `initialize()` `Future` stalls when failing to load source
+  data and does not throw an error.
+
 ## 0.10.5
 
 * Support `web` by default.
