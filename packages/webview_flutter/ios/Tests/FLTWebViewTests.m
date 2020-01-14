@@ -7,9 +7,7 @@
 @import XCTest;
 @import webview_flutter;
 
-bool feq(CGFloat a, CGFloat b) {
-  return fabs(b-a) < FLT_EPSILON;
-}
+static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
 @interface FLTWebViewTests : XCTestCase
 
@@ -68,38 +66,21 @@ bool feq(CGFloat a, CGFloat b) {
   }
 }
 
-- (void)testWebViewContentInsetsSumAlways0 {
-  FLTWebViewController *controller =
-      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
-                                   viewIdentifier:1
-                                        arguments:nil
-                                  binaryMessenger:self.mockBinaryMessenger];
-  UIView *view = controller.view;
-  XCTAssertTrue([view isKindOfClass:WKWebView.class]);
-  WKWebView *webView = (WKWebView *)view;
-  [[NSNotificationCenter defaultCenter] postNotificationName:UIKeyboardWillChangeFrameNotification object:self];
-  webView.frame = CGRectMake(0, 0, 300, 300);
+- (void)testContentInsetsAlwaysZeroAfterSetFrame {
+  FLTWKWebView *webView = [[FLTWKWebView alloc] initWithFrame:CGRectMake(0, 0, 300, 400)];
+  webView.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 300, 0);
+  XCTAssertFalse(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
+  webView.frame = CGRectMake(0, 0, 300, 200);
+  XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
 
-  XCTNSNotificationExpectation *expectation = [[XCTNSNotificationExpectation alloc] initWithName:UIKeyboardWillChangeFrameNotification];
-
-  XCTWaiter *waiter = [XCTWaiter new];
-  NSLog(@"~~~> %@", @(webView.scrollView.contentInset));
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
-    NSLog(@"~~~? %@", @(webView.scrollView.contentInset));
-
-    if (@available(iOS 11, *)) {
-      UIEdgeInsets contentInset = webView.scrollView.contentInset;
-      UIEdgeInsets adjustedContentInset = webView.scrollView.adjustedContentInset;
-      XCTAssertTrue(feq(contentInset.top, -adjustedContentInset.top));
-      XCTAssertTrue(feq(contentInset.left, -adjustedContentInset.left));
-      XCTAssertTrue(feq(contentInset.bottom, -adjustedContentInset.bottom));
-      XCTAssertTrue(feq(contentInset.right, -adjustedContentInset.right));
-    } else {
-      XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
-    }
-  });
-  [waiter waitForExpectations:@[expectation] timeout:5];
+  if (@available(iOS 11, *)) {
+    UIScrollView *partialMockScrollView = OCMPartialMock(webView.scrollView);
+    UIEdgeInsets insetToAdjust = UIEdgeInsetsMake(0, 0, 300, 0);
+    OCMStub(partialMockScrollView.adjustedContentInset).andReturn(insetToAdjust);
+    XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
+    webView.frame = CGRectMake(0, 0, 300, 100);
+    XCTAssertTrue(feq(webView.scrollView.contentInset.bottom, 0));
+  }
 }
 
 @end

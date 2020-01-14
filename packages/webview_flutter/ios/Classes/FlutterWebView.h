@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FLTWebViewController : NSObject <FlutterPlatformView, UIScrollViewDelegate>
+@interface FLTWebViewController : NSObject <FlutterPlatformView>
 
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTWebViewFactory : NSObject <FlutterPlatformViewFactory>
 - (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
+@end
+
+@interface FLTWKWebView : WKWebView
 @end
 
 NS_ASSUME_NONNULL_END
