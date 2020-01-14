@@ -1,3 +1,7 @@
+## 0.6.3+1
+
+* Fix an issue that the example app won't launch the image picker after Android V2 embedding migration.
+
 ## 0.6.3
 
 * Support Android V2 embedding.
