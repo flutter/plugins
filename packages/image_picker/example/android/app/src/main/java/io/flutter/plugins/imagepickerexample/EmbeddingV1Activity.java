@@ -13,7 +13,9 @@ public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    ImagePickerPlugin.registerWith(registrarFor("io.flutter.plugins.imagepicker.ImagePickerPlugin"));
-    VideoPlayerPlugin.registerWith(registrarFor("io.flutter.plugins.videoplayer.VideoPlayerPlugin"));
+    ImagePickerPlugin.registerWith(
+        registrarFor("io.flutter.plugins.imagepicker.ImagePickerPlugin"));
+    VideoPlayerPlugin.registerWith(
+        registrarFor("io.flutter.plugins.videoplayer.VideoPlayerPlugin"));
   }
 }
