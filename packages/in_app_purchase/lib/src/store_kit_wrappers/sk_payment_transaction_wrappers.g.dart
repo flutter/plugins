@@ -11,8 +11,8 @@ SKPaymentTransactionWrapper _$SKPaymentTransactionWrapperFromJson(Map json) {
     payment: json['payment'] == null
         ? null
         : SKPaymentWrapper.fromJson(json['payment'] as Map),
-    transactionState: _$enumDecodeNullable(
-        _$SKPaymentTransactionStateWrapperEnumMap, json['transactionState']),
+    transactionState: const SKTransactionStatusConverter()
+        .fromJson(json['transactionState'] as int),
     originalTransaction: json['originalTransaction'] == null
         ? null
         : SKPaymentTransactionWrapper.fromJson(
@@ -27,51 +27,11 @@ SKPaymentTransactionWrapper _$SKPaymentTransactionWrapperFromJson(Map json) {
 Map<String, dynamic> _$SKPaymentTransactionWrapperToJson(
         SKPaymentTransactionWrapper instance) =>
     <String, dynamic>{
-      'transactionState':
-          _$SKPaymentTransactionStateWrapperEnumMap[instance.transactionState],
+      'transactionState': const SKTransactionStatusConverter()
+          .toJson(instance.transactionState),
       'payment': instance.payment,
       'originalTransaction': instance.originalTransaction,
       'transactionTimeStamp': instance.transactionTimeStamp,
       'transactionIdentifier': instance.transactionIdentifier,
       'error': instance.error,
     };
-
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
-}
-
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
-}
-
-const _$SKPaymentTransactionStateWrapperEnumMap = {
-  SKPaymentTransactionStateWrapper.purchasing: 0,
-  SKPaymentTransactionStateWrapper.purchased: 1,
-  SKPaymentTransactionStateWrapper.failed: 2,
-  SKPaymentTransactionStateWrapper.restored: 3,
-  SKPaymentTransactionStateWrapper.deferred: 4,
-};

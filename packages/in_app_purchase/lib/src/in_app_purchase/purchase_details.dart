@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/purchase_wrapper.dart';
+import 'package:in_app_purchase/src/store_kit_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_payment_transaction_wrappers.dart';
 import './in_app_purchase_connection.dart';
 import './product_details.dart';
@@ -11,6 +13,8 @@ import './product_details.dart';
 final String kPurchaseErrorCode = 'purchase_error';
 final String kRestoredPurchaseErrorCode = 'restore_transactions_failed';
 final String kConsumptionFailedErrorCode = 'consume_purchase_failed';
+final String _kPlatformIOS = 'ios';
+final String _kPlatformAndroid = 'android';
 
 /// Represents the data that is used to verify purchases.
 ///
@@ -122,7 +126,23 @@ class PurchaseDetails {
   final String transactionDate;
 
   /// The status that this [PurchaseDetails] is currently on.
-  PurchaseStatus status;
+  PurchaseStatus get status => _status;
+  set status(PurchaseStatus status) {
+    if (_platform == _kPlatformIOS) {
+      if (status == PurchaseStatus.purchased ||
+          status == PurchaseStatus.error) {
+        _pendingCompletePurchase = true;
+      }
+    }
+    if (_platform == _kPlatformAndroid) {
+      if (status == PurchaseStatus.purchased) {
+        _pendingCompletePurchase = true;
+      }
+    }
+    _status = status;
+  }
+
+  PurchaseStatus _status;
 
   /// The error is only available when [status] is [PurchaseStatus.error].
   IAPError error;
@@ -136,6 +156,19 @@ class PurchaseDetails {
   ///
   /// This is null on iOS.
   final PurchaseWrapper billingClientPurchase;
+
+  /// The developer has to call [InAppPurchaseConnection.completePurchase] if the value is `true`
+  /// and the product has been delivered to the user.
+  ///
+  /// The initial value is `false`.
+  /// * See also [InAppPurchaseConnection.completePurchase] for more details on completing purchases.
+  bool get pendingCompletePurchase => _pendingCompletePurchase;
+  bool _pendingCompletePurchase = false;
+
+  // The platform that the object is created on.
+  //
+  // The value is either '_kPlatformIOS' or '_kPlatformAndroid'.
+  String _platform;
 
   PurchaseDetails({
     @required this.purchaseID,
@@ -159,7 +192,10 @@ class PurchaseDetails {
             ? (transaction.transactionTimeStamp * 1000).toInt().toString()
             : null,
         this.skPaymentTransaction = transaction,
-        this.billingClientPurchase = null;
+        this.billingClientPurchase = null,
+        _status = SKTransactionStatusConverter()
+            .toPurchaseStatus(transaction.transactionState),
+        _platform = _kPlatformIOS;
 
   /// Generate a [PurchaseDetails] object based on an Android [Purchase] object.
   PurchaseDetails.fromPurchase(PurchaseWrapper purchase)
@@ -171,7 +207,10 @@ class PurchaseDetails {
             source: IAPSource.GooglePlay),
         this.transactionDate = purchase.purchaseTime.toString(),
         this.skPaymentTransaction = null,
-        this.billingClientPurchase = purchase;
+        this.billingClientPurchase = purchase,
+        _status =
+            PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState),
+        _platform = _kPlatformAndroid;
 }
 
 /// The response object for fetching the past purchases.
