@@ -79,7 +79,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
     OCMStub(partialMockScrollView.adjustedContentInset).andReturn(insetToAdjust);
     XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
     webView.frame = CGRectMake(0, 0, 300, 100);
-    XCTAssertTrue(feq(webView.scrollView.contentInset.bottom, 0));
+    XCTAssertTrue(feq(webView.scrollView.contentInset.bottom, -insetToAdjust.bottom));
   }
 }
 
