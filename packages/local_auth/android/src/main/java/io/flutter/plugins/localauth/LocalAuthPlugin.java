@@ -7,6 +7,7 @@ package io.flutter.plugins.localauth;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -129,6 +130,12 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
         if (Build.VERSION.SDK_INT >= 23) {
           if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
             biometrics.add("fingerprint");
+          } else {
+            FingerprintManagerCompat fingerprintManager =
+                FingerprintManagerCompat.from(activity.getApplicationContext());
+            if (fingerprintManager.isHardwareDetected()) {
+              biometrics.add("fingerprint");
+            }
           }
         }
         if (Build.VERSION.SDK_INT >= 29) {
