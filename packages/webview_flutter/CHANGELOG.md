@@ -1,3 +1,8 @@
+## 0.3.19+4
+
+* On iOS, fix the scroll view content inset is automatically adjusted. After the fix, the content position of the WebView is customizable by Flutter.
+* Fix an iOS 13 bug where the scroll indicator shows at random location.
+
 ## 0.3.19+3
 
 * Setup XCTests.

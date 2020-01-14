@@ -45,11 +45,16 @@ public final class IntentSender {
    * @param action the Intent action, such as {@code ACTION_VIEW}.
    * @param flags forwarded to {@link Intent#addFlags(int)} if non-null.
    * @param category forwarded to {@link Intent#addCategory(String)} if non-null.
-   * @param data forwarded to {@link Intent#setData(Uri)} if non-null.
+   * @param data forwarded to {@link Intent#setData(Uri)} if non-null and 'type' parameter is null.
+   *     If both 'data' and 'type' is non-null they're forwarded to {@link
+   *     Intent#setDataAndType(Uri, String)}
    * @param arguments forwarded to {@link Intent#putExtras(Bundle)} if non-null.
    * @param packageName forwarded to {@link Intent#setPackage(String)} if non-null. This is forced
    *     to null if it can't be resolved.
    * @param componentName forwarded to {@link Intent#setComponent(ComponentName)} if non-null.
+   * @param type forwarded to {@link Intent#setType(String)} if non-null and 'data' parameter is
+   *     null. If both 'data' and 'type' is non-null they're forwarded to {@link
+   *     Intent#setDataAndType(Uri, String)}
    */
   void send(
       String action,
@@ -58,7 +63,8 @@ public final class IntentSender {
       @Nullable Uri data,
       @Nullable Bundle arguments,
       @Nullable String packageName,
-      @Nullable ComponentName componentName) {
+      @Nullable ComponentName componentName,
+      @Nullable String type) {
     if (applicationContext == null) {
       Log.wtf(TAG, "Trying to send an intent before the applicationContext was initialized.");
       return;
@@ -72,8 +78,14 @@ public final class IntentSender {
     if (!TextUtils.isEmpty(category)) {
       intent.addCategory(category);
     }
-    if (data != null) {
+    if (data != null && type == null) {
       intent.setData(data);
+    }
+    if (type != null && data == null) {
+      intent.setType(type);
+    }
+    if (type != null && data != null) {
+      intent.setDataAndType(data, type);
     }
     if (arguments != null) {
       intent.putExtras(arguments);
