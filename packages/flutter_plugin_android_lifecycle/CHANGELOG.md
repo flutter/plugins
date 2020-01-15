@@ -1,3 +1,8 @@
+## 1.0.4
+
+* Require Flutter SDK 1.12.13 or greater.
+* Change to avoid reflection.
+
 ## 1.0.3
 
 * Remove the deprecated `author:` field from pubspec.yaml

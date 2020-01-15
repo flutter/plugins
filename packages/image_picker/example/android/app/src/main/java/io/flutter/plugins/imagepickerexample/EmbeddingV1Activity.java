@@ -6,12 +6,16 @@ package io.flutter.plugins.imagepickerexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
-import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.plugins.imagepicker.ImagePickerPlugin;
+import io.flutter.plugins.videoplayer.VideoPlayerPlugin;
 
 public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    GeneratedPluginRegistrant.registerWith(this);
+    ImagePickerPlugin.registerWith(
+        registrarFor("io.flutter.plugins.imagepicker.ImagePickerPlugin"));
+    VideoPlayerPlugin.registerWith(
+        registrarFor("io.flutter.plugins.videoplayer.VideoPlayerPlugin"));
   }
 }
