@@ -4,7 +4,7 @@
 
 library closed_caption_file;
 
-import 'src/srt.dart';
+import 'src/sub_rip.dart';
 
 /// A structured representation of a parsed closed caption file.
 ///
@@ -18,10 +18,10 @@ class ClosedCaptionFile {
   final List<Caption> captions;
 
   /// Parses a string into a [ClosedCaptionFile], assuming [fileContents] is in
-  /// the `.srt` file format.
+  /// the SubRip file format.
   /// * See: https://en.wikipedia.org/wiki/SubRip
-  ClosedCaptionFile.fromSrtFile(String fileContents)
-      : captions = parseCaptionsFromSrtString(fileContents);
+  ClosedCaptionFile.fromSubRipFile(String fileContents)
+      : captions = parseCaptionsFromSubRipString(fileContents);
 }
 
 /// A representation of a single caption.

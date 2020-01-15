@@ -9,9 +9,10 @@ import 'package:test/test.dart';
 import 'package:closed_caption_file/closed_caption_file.dart';
 
 void main() {
-  test('Parses srt file', () {
-    final file = File('test/data/sample_srt_file.srt');
-    final parsedFile = ClosedCaptionFile.fromSrtFile(file.readAsStringSync());
+  test('Parses SubRip file', () {
+    final file = File('test/data/sample_sub_rip_file.srt');
+    final parsedFile =
+        ClosedCaptionFile.fromSubRipFileFile(file.readAsStringSync());
 
     expect(parsedFile.captions.length, 4);
 

@@ -6,18 +6,18 @@ import 'dart:convert';
 
 import '../closed_caption_file.dart';
 
-/// This is a method that takes in a string (in the .srt file format) and
+/// This is a method that takes in a string (in the SubRip file format) and
 /// produces a list of [Caption]s.
 ///
 /// This method should not be used directly, instead, use
-/// `ClosedCaptionFile.fromSrtFile(...)`.
-List<Caption> parseCaptionsFromSrtString(String file) {
+/// `ClosedCaptionFile.fromSubRipFile(...)`.
+List<Caption> parseCaptionsFromSubRipString(String file) {
   final captions = <Caption>[];
-  for (final captionLines in _readSrtFile(file)) {
+  for (final captionLines in _readSubRipFile(file)) {
     if (captionLines.length < 3) break;
 
     final captionNumber = int.parse(captionLines[0]);
-    final startAndEnd = _StartAndEnd.fromSrtString(captionLines[1]);
+    final startAndEnd = _StartAndEnd.fromSubRipString(captionLines[1]);
 
     final text = captionLines.sublist(2).join('\n');
 
@@ -40,26 +40,26 @@ class _StartAndEnd {
 
   _StartAndEnd(this.start, this.end);
 
-  // Assumes format from an SRT file.
+  // Assumes format from an SubRip file.
   // For example:
   // 00:01:54,724 --> 00:01:56,760
-  static _StartAndEnd fromSrtString(String line) {
+  static _StartAndEnd fromSubRipString(String line) {
     final times = line.split(' --> ');
 
-    final start = _parseSrtTimestamp(times[0]);
-    final end = _parseSrtTimestamp(times[1]);
+    final start = _parseSubRipTimestamp(times[0]);
+    final end = _parseSubRipTimestamp(times[1]);
 
     return _StartAndEnd(start, end);
   }
 }
 
-// Parses a time stamp in an SRT file into a Duration.
+// Parses a time stamp in an SubRip file into a Duration.
 // For example:
 //
-// _parseSrtTimestamp('00:01:59,084')
+// _parseSubRipTimestamp('00:01:59,084')
 // returns
 // Duration(hours: 0, minutes: 1, seconds: 59, milliseconds: 084)
-Duration _parseSrtTimestamp(String timestampString) {
+Duration _parseSubRipTimestamp(String timestampString) {
   final commaSections = timestampString.split(',');
   final hoursMinutesSeconds = commaSections[0].split(':');
 
@@ -76,9 +76,9 @@ Duration _parseSrtTimestamp(String timestampString) {
   );
 }
 
-// Reads on SRT file and splits it into Lists of strings where each list is one
+// Reads on SubRip file and splits it into Lists of strings where each list is one
 // caption.
-List<List<String>> _readSrtFile(String file) {
+List<List<String>> _readSubRipFile(String file) {
   final lines = LineSplitter.split(file).toList();
 
   var captionStrings = <List<String>>[];
