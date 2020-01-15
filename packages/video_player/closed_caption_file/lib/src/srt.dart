@@ -29,7 +29,6 @@ List<Caption> parseCaptionsFromSrtString(String file) {
   return captions;
 }
 
-
 class _StartAndEnd {
   final Duration start;
   final Duration end;
