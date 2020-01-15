@@ -29,6 +29,12 @@ class ClosedCaptionFile {
 /// A typical closed captioning file will include several [Caption]s, each
 /// linked to a start and end time.
 class Caption {
+  /// Creates a new [Caption] object.
+  ///
+  /// This is not recommended for direct use unless you are writing a parser for
+  /// a new closed captioning file type.
+  const Caption({this.number, this.start, this.end, this.text});
+
   /// The number that this caption was assigned.
   final int number;
 
@@ -41,10 +47,4 @@ class Caption {
   /// The actual text that should appear on screen to be read between [start]
   /// and [end].
   final String text;
-
-  /// Creates a new [Caption] object.
-  ///
-  /// This is not recommended for direct use unless you are writing a parser for
-  /// a new closed captioning file type.
-  const Caption({this.number, this.start, this.end, this.text});
 }
