@@ -12,7 +12,7 @@ void main() {
   test('Parses SubRip file', () {
     final file = File('test/data/sample_sub_rip_file.srt');
     final parsedFile =
-        ClosedCaptionFile.fromSubRipFileFile(file.readAsStringSync());
+        ClosedCaptionFile.fromSubRipFile(file.readAsStringSync());
 
     expect(parsedFile.captions.length, 4);
 
