@@ -56,7 +56,7 @@ class Share {
   /// Summons the platform's share sheet to share a file.
   ///
   /// Wraps the platform's native share dialog. Can share a file.
-  /// It uses the ACTION_SEND Intent on Android and UIActivityViewController
+  /// It uses the `ACTION_SEND` Intent on Android and `UIActivityViewController`
   /// on iOS.
   ///
   /// The optional `sharePositionOrigin` parameter can be used to specify a global
