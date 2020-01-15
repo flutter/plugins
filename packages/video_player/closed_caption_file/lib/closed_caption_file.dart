@@ -17,6 +17,16 @@ class ClosedCaptionFile {
   /// The full list of captions from a given file.
   final List<Caption> captions;
 
+  /// Creates a dart representation of an entire file's worth of closed
+  /// captioning.
+  ///
+  /// This constructor should only be used if you're writing a parser for a
+  /// currently unsupported file type.
+  ///
+  /// Prefer using one of the convenience constructors, such as
+  /// `ClosedCaptionFile.fromSubRipFile(...)`.
+  const ClosedCaptionFile({this.captions = const <Caption>[]});
+
   /// Parses a string into a [ClosedCaptionFile], assuming [fileContents] is in
   /// the SubRip file format.
   /// * See: https://en.wikipedia.org/wiki/SubRip
