@@ -6,6 +6,11 @@ import 'dart:convert';
 
 import '../closed_caption_file.dart';
 
+/// This is a method that takes in a string (in the .srt file format) and
+/// produces a list of [Caption]s.
+///
+/// This method should not be used directly, instead, use
+/// `ClosedCaptionFile.fromSrtFile(...)`.
 List<Caption> parseCaptionsFromSrtString(String file) {
   final captions = <Caption>[];
   for (final captionLines in _readSrtFile(file)) {
