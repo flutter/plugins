@@ -72,6 +72,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   XCTAssertFalse(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
   webView.frame = CGRectMake(0, 0, 300, 200);
   XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
+  XCTAssertTrue(CGRectEqualToRect(webView.frame, CGRectMake(0, 0, 300, 200)));
 
   if (@available(iOS 11, *)) {
     // After iOS 11, we need to make sure the contentInset compensates the adjustedContentInset.
@@ -81,6 +82,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
     XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(webView.scrollView.contentInset, UIEdgeInsetsZero));
     webView.frame = CGRectMake(0, 0, 300, 100);
     XCTAssertTrue(feq(webView.scrollView.contentInset.bottom, -insetToAdjust.bottom));
+    XCTAssertTrue(CGRectEqualToRect(webView.frame, CGRectMake(0, 0, 300, 100)));
   }
 }
 
