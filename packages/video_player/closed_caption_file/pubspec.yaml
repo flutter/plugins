@@ -1,5 +1,5 @@
 name: closed_caption_file
-description: A package for parsing common closed caption file types into Dart objects.
+description: A package for parsing common closed caption file formats into Dart objects.
 version: 0.0.1
 
 environment:
