@@ -1,3 +1,8 @@
+## 0.3.19+5
+
+* On iOS, always keep contentInsets of the WebView to be 0.
+* Fix XCTest case to follow XCTest naming convention.
+
 ## 0.3.19+4
 
 * On iOS, fix the scroll view content inset is automatically adjusted. After the fix, the content position of the WebView is customizable by Flutter.
