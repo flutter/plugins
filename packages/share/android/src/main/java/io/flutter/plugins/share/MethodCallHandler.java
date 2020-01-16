@@ -7,6 +7,7 @@ package io.flutter.plugins.share;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.*;
+import java.util.List;
 import java.util.Map;
 
 /** Handles the method calls for the plugin. */
@@ -27,13 +28,14 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
         share.share((String) call.argument("text"), (String) call.argument("subject"));
         result.success(null);
         break;
-      case "shareFile":
+      case "shareFiles":
         expectMapArguments(call);
+
         // Android does not support showing the share sheet at a particular point on screen.
         try {
-          share.shareFile(
-              (String) call.argument("path"),
-              (String) call.argument("mimeType"),
+          share.shareFiles(
+              (List<String>) call.argument("paths"),
+              (List<String>) call.argument("mimeTypes"),
               (String) call.argument("text"),
               (String) call.argument("subject"));
           result.success(null);

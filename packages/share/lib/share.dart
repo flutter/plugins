@@ -53,7 +53,7 @@ class Share {
     return channel.invokeMethod<void>('share', params);
   }
 
-  /// Summons the platform's share sheet to share a file.
+  /// Summons the platform's share sheet to share a single file.
   ///
   /// Wraps the platform's native share dialog. Can share a file.
   /// It uses the `ACTION_SEND` Intent on Android and `UIActivityViewController`
@@ -65,16 +65,50 @@ class Share {
   ///
   /// May throw [PlatformException] or [FormatException]
   /// from [MethodChannel].
-  static Future<void> shareFile(File file,
-      {String mimeType,
-      String subject,
-      String text,
-      Rect sharePositionOrigin}) {
+  static Future<void> shareFile(
+    File file, {
+    String mimeType,
+    String subject,
+    String text,
+    Rect sharePositionOrigin,
+  }) {
     assert(file != null);
     assert(file.existsSync());
+
+    shareFiles(<File>[file],
+      mimeTypes: <String>[mimeType ?? _mimeTypeForFile(file)],
+      subject: subject,
+      text: text,
+      sharePositionOrigin: sharePositionOrigin,
+    );
+  }
+
+  /// Summons the platform's share sheet to share multiple files.
+  ///
+  /// Wraps the platform's native share dialog. Can share a file.
+  /// It uses the `ACTION_SEND` Intent on Android and `UIActivityViewController`
+  /// on iOS.
+  ///
+  /// The optional `sharePositionOrigin` parameter can be used to specify a global
+  /// origin rect for the share sheet to popover from on iPads. It has no effect
+  /// on non-iPads.
+  ///
+  /// May throw [PlatformException] or [FormatException]
+  /// from [MethodChannel].
+  static Future<void> shareFiles(
+    List<File> files, {
+    List<String> mimeTypes,
+    String subject,
+    String text,
+    Rect sharePositionOrigin,
+  }) {
+    assert(files != null);
+    assert(files.isNotEmpty);
+    assert(files.every((file) => file.existsSync()));
     final Map<String, dynamic> params = <String, dynamic>{
-      'path': file.path,
-      'mimeType': mimeType ?? _mimeTypeForFile(file),
+      'paths': files.map((file) => file.path).toList(),
+      'mimeTypes': mimeTypes ??
+          files.map((file) => _mimeTypeForFile(file)).toList(),
     };
 
     if (subject != null) params['subject'] = subject;
@@ -87,7 +121,7 @@ class Share {
       params['originHeight'] = sharePositionOrigin.height;
     }
 
-    return channel.invokeMethod('shareFile', params);
+    return channel.invokeMethod('shareFiles', params);
   }
 
   static String _mimeTypeForFile(File file) {

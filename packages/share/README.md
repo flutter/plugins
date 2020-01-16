@@ -37,3 +37,8 @@ To share a file invoke the static `shareFile` method anywhere in your Dart code
 ``` dart
 Share.shareFile(File('${directory.path}/image.jpg'));
 ```
+
+To share multiple files invoke the static `shareFiles` method anywhere in your Dart code
+``` dart
+Share.shareFiles(<File>[File('${directory.path}/image1.jpg', File('${directory.path}/image2.jpg']));
+```

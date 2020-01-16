@@ -126,21 +126,30 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
           withController:[UIApplication sharedApplication].keyWindow.rootViewController
                 atSource:originRect];
       result(nil);
-    } else if ([@"shareFile" isEqualToString:call.method]) {
-      NSString *path = arguments[@"path"];
-      NSString *mimeType = arguments[@"mimeType"];
+    } else if ([@"shareFiles" isEqualToString:call.method]) {
+      NSArray *paths = arguments[@"paths"];
+      NSArray *mimeTypes = arguments[@"mimeTypes"];
       NSString *subject = arguments[@"subject"];
       NSString *text = arguments[@"text"];
 
-      if (path.length == 0) {
+      if (paths.count == 0) {
         result([FlutterError errorWithCode:@"error"
-                                   message:@"Non-empty path expected"
+                                   message:@"Non-empty paths expected"
                                    details:nil]);
         return;
       }
 
-      [self shareFile:path
-            withMimeType:mimeType
+      for (NSString *path in paths) {
+        if (path.length == 0) {
+          result([FlutterError errorWithCode:@"error"
+                                     message:@"Non-empty paths expected"
+                                     details:nil]);
+          return;
+        }
+      }
+
+      [self shareFiles:paths
+            withMimeType:mimeTypes
              withSubject:subject
                 withText:text
           withController:[UIApplication sharedApplication].keyWindow.rootViewController
@@ -172,16 +181,22 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   [self share:@[ data ] withController:controller atSource:origin];
 }
 
-+ (void)shareFile:(id)path
-      withMimeType:(id)mimeType
++ (void)shareFiles:(NSArray *)paths
+      withMimeType:(NSArray *)mimeTypes
        withSubject:(NSString *)subject
           withText:(NSString *)text
     withController:(UIViewController *)controller
           atSource:(CGRect)origin {
-  NSArray *items = @[
-    [[ShareData alloc] initWithSubject:subject text:text], [[ShareData alloc] initWithFile:path
-                                                                                  mimeType:mimeType]
-  ];
+  NSMutableArray *items = [[NSMutableArray alloc] init];
+
+  if (text != nil || subject != nil) {
+    [items addObject:[[ShareData alloc] initWithSubject:subject text:text]];
+  }
+
+  for (int i = 0; i < [paths count]; i++) {
+    [items addObject:[[ShareData alloc] initWithFile:paths[i] mimeType:mimeTypes[i]]];
+  }
+
   [self share:items withController:controller atSource:origin];
 }
 

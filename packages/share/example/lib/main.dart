@@ -22,7 +22,7 @@ class DemoApp extends StatefulWidget {
 class DemoAppState extends State<DemoApp> {
   String text = '';
   String subject = '';
-  File imageFile;
+  List<File> imageFiles = [];
 
   @override
   Widget build(BuildContext context) {
@@ -59,21 +59,19 @@ class DemoAppState extends State<DemoApp> {
                   }),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 12.0)),
-                _buildImagePreview(),
-                imageFile == null
-                    ? ListTile(
-                        leading: Icon(Icons.add),
-                        title: Text("Add image"),
-                        onTap: () async {
-                          final image = await ImagePicker.pickImage(
-                            source: ImageSource.gallery,
-                          );
-                          setState(() {
-                            this.imageFile = image;
-                          });
-                        },
-                      )
-                    : Container(),
+                _buildImagePreviews(),
+                ListTile(
+                  leading: Icon(Icons.add),
+                  title: Text("Add image"),
+                  onTap: () async {
+                    final image = await ImagePicker.pickImage(
+                      source: ImageSource.gallery,
+                    );
+                    setState(() {
+                      imageFiles.add(image);
+                    });
+                  },
+                ),
                 const Padding(padding: EdgeInsets.only(top: 12.0)),
                 Builder(
                   builder: (BuildContext context) {
@@ -91,13 +89,22 @@ class DemoAppState extends State<DemoApp> {
                               // has its position and size after it's built.
                               final RenderBox box = context.findRenderObject();
 
-                              if (imageFile != null) {
-                                await Share.shareFile(imageFile,
-                                    text: text,
-                                    subject: subject,
-                                    sharePositionOrigin:
-                                        box.localToGlobal(Offset.zero) &
-                                            box.size);
+                              if (imageFiles.isNotEmpty) {
+                                if (imageFiles.length == 1) {
+                                  await Share.shareFile(imageFiles[0],
+                                      text: text,
+                                      subject: subject,
+                                      sharePositionOrigin:
+                                          box.localToGlobal(Offset.zero) &
+                                              box.size);
+                                } else {
+                                  await Share.shareFiles(imageFiles,
+                                      text: text,
+                                      subject: subject,
+                                      sharePositionOrigin:
+                                          box.localToGlobal(Offset.zero) &
+                                              box.size);
+                                }
                               } else {
                                 await Share.share(text,
                                     subject: subject,
@@ -115,35 +122,50 @@ class DemoAppState extends State<DemoApp> {
     );
   }
 
-  Widget _buildImagePreview() {
-    if (imageFile == null) {
-      return Container();
+  Widget _buildImagePreviews() {
+    if (imageFiles.isEmpty) return Container();
+
+    List<Widget> imageWidgets = [];
+    for (int i = 0; i < imageFiles.length; i++) {
+      imageWidgets.add(_buildImagePreview(i));
     }
-    return Stack(
-      children: <Widget>[
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: 200,
-            maxHeight: 200,
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: imageWidgets),
+    );
+  }
+
+  Widget _buildImagePreview(int position) {
+    File imageFile = imageFiles[position];
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Stack(
+        children: <Widget>[
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 200,
+              maxHeight: 200,
+            ),
+            child: Image.file(imageFile),
           ),
-          child: Image.file(imageFile),
-        ),
-        Positioned(
-          right: 0,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: FloatingActionButton(
-              backgroundColor: Colors.red,
-              child: Icon(Icons.delete),
-              onPressed: () {
-                setState(() {
-                  imageFile = null;
-                });
-              },
+          Positioned(
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FloatingActionButton(
+                backgroundColor: Colors.red,
+                child: Icon(Icons.delete),
+                onPressed: () {
+                  setState(() {
+                    imageFiles.removeAt(position);
+                  });
+                },
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

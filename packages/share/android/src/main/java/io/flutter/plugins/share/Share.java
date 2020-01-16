@@ -16,6 +16,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Handles share intent. */
 class Share {
@@ -58,27 +60,27 @@ class Share {
     }
   }
 
-  void shareFile(String path, String mimeType, String text, String subject) throws IOException {
-    if (path == null || path.isEmpty()) {
+  void shareFiles(List<String> paths, List<String> mimeTypes, String text, String subject) throws IOException {
+    if (paths == null || paths.isEmpty()) {
       throw new IllegalArgumentException("Non-empty path expected");
     }
 
-    File file = new File(path);
     clearExternalShareFolder();
-    if (!fileIsOnExternal(file)) {
-      file = copyToExternalShareFolder(file);
-    }
-
-    Uri fileUri =
-        FileProvider.getUriForFile(
-            activity, activity.getPackageName() + ".flutter.share_provider", file);
+    ArrayList<Uri> fileUris = getUrisForPaths(paths);
 
     Intent shareIntent = new Intent();
-    shareIntent.setAction(Intent.ACTION_SEND);
-    shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+    if (fileUris.size() == 1) {
+      shareIntent.setAction(Intent.ACTION_SEND);
+      shareIntent.putExtra(Intent.EXTRA_STREAM, fileUris.get(0));
+      shareIntent.setType(
+          !mimeTypes.isEmpty() && mimeTypes.get(0) != null ? mimeTypes.get(0) : "*/*");
+    } else {
+      shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+      shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, fileUris);
+      shareIntent.setType(reduceMimeTypes(mimeTypes));
+    }
     if (text != null) shareIntent.putExtra(Intent.EXTRA_TEXT, text);
     if (subject != null) shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-    shareIntent.setType(mimeType != null ? mimeType : "*/*");
     shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
     if (activity != null) {
@@ -87,6 +89,49 @@ class Share {
       chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       activity.startActivity(chooserIntent);
     }
+  }
+
+  private ArrayList<Uri> getUrisForPaths(List<String> paths) throws IOException {
+    ArrayList<Uri> uris = new ArrayList<>(paths.size());
+    for (String path : paths) {
+      File file = new File(path);
+      if (!fileIsOnExternal(file)) {
+        file = copyToExternalShareFolder(file);
+      }
+
+      uris.add(FileProvider.getUriForFile(
+          activity, activity.getPackageName() + ".flutter.share_provider", file));
+    }
+    return uris;
+  }
+
+  private String reduceMimeTypes(List<String> mimeTypes) {
+    if (mimeTypes.size() > 1) {
+      String reducedMimeType = mimeTypes.get(0);
+      for (int i = 1; i < mimeTypes.size(); i++) {
+        String mimeType = mimeTypes.get(i);
+        if (!reducedMimeType.equals(mimeType)) {
+          if (getMimeTypeBase(mimeType).equals(getMimeTypeBase(reducedMimeType))) {
+            reducedMimeType = getMimeTypeBase(mimeType) + "/*";
+          } else {
+            reducedMimeType = "*/*";
+            break;
+          }
+        }
+      }
+      return reducedMimeType;
+    } else if(mimeTypes.size() == 1) {
+      return mimeTypes.get(0);
+    } else {
+      return "*/*";
+    }
+  }
+
+  @NonNull
+  private String getMimeTypeBase(String mimeType) {
+    if (mimeType == null || !mimeType.contains("/")) return "*";
+
+    return mimeType.substring(0, mimeType.indexOf("/"));
   }
 
   private boolean fileIsOnExternal(File file) {
