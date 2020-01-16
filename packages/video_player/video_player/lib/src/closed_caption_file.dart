@@ -4,7 +4,8 @@
 
 library closed_caption_file;
 
-import 'src/sub_rip.dart';
+import 'sub_rip.dart';
+export 'sub_rip.dart' show SubRipCaptionFile;
 
 /// A structured representation of a parsed closed caption file.
 ///
@@ -13,25 +14,14 @@ import 'src/sub_rip.dart';
 ///
 /// The [captions] are a list of all captions in a file, in the order that they
 /// appeared in the file.
-class ClosedCaptionFile {
+///
+/// See:
+/// * [SubRipCaptionFile].
+abstract class ClosedCaptionFile {
   /// The full list of captions from a given file.
-  final List<Caption> captions;
-
-  /// Creates a dart representation of an entire file's worth of closed
-  /// captioning.
   ///
-  /// This constructor should only be used if you're writing a parser for a
-  /// currently unsupported file type.
-  ///
-  /// Prefer using one of the convenience constructors, such as
-  /// `ClosedCaptionFile.fromSubRipFile(...)`.
-  const ClosedCaptionFile({this.captions = const <Caption>[]});
-
-  /// Parses a string into a [ClosedCaptionFile], assuming [fileContents] is in
-  /// the SubRip file format.
-  /// * See: https://en.wikipedia.org/wiki/SubRip
-  ClosedCaptionFile.fromSubRipFile(String fileContents)
-      : captions = parseCaptionsFromSubRipString(fileContents);
+  /// The [captions] will be in the order that they appear in the given file.
+  List<Caption> get captions;
 }
 
 /// A representation of a single caption.

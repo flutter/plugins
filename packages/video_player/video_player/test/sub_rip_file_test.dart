@@ -4,25 +4,25 @@
 
 import 'dart:io';
 
-import 'package:test/test.dart';
-
-import 'package:closed_caption_file/closed_caption_file.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:video_player/src/closed_caption_file.dart';
+import 'package:video_player/video_player.dart';
 
 void main() {
   test('Parses SubRip file', () {
-    final file = File('test/data/sample_sub_rip_file.srt');
-    final parsedFile =
-        ClosedCaptionFile.fromSubRipFile(file.readAsStringSync());
+    final File file = File('test/data/sample_sub_rip_file.srt');
+    final SubRipCaptionFile parsedFile =
+        SubRipCaptionFile(file.readAsStringSync());
 
     expect(parsedFile.captions.length, 4);
 
-    final firstCaption = parsedFile.captions.first;
+    final Caption firstCaption = parsedFile.captions.first;
     expect(firstCaption.number, 1);
     expect(firstCaption.start, Duration(seconds: 6));
     expect(firstCaption.end, Duration(seconds: 12, milliseconds: 74));
     expect(firstCaption.text, 'This is a test file');
 
-    final secondCaption = parsedFile.captions[1];
+    final Caption secondCaption = parsedFile.captions[1];
     expect(secondCaption.number, 2);
     expect(
       secondCaption.start,
@@ -34,7 +34,7 @@ void main() {
     );
     expect(secondCaption.text, '- Hello.\n- Yes?');
 
-    final thirdCaption = parsedFile.captions[2];
+    final Caption thirdCaption = parsedFile.captions[2];
     expect(thirdCaption.number, 3);
     expect(
       thirdCaption.start,
@@ -49,7 +49,7 @@ void main() {
       'These are more test lines\nYes, these are more test lines.',
     );
 
-    final fourthCaption = parsedFile.captions[3];
+    final Caption fourthCaption = parsedFile.captions[3];
     expect(fourthCaption.number, 4);
     expect(
       fourthCaption.start,
@@ -64,4 +64,32 @@ void main() {
       '- [ Machinery Beeping ]\n- I\'m not sure what that was,',
     );
   });
+
+  test('Parses SubRip file with malformed input', () {
+    final ClosedCaptionFile parsedFile = SubRipCaptionFile(_malformedSubRip);
+
+    expect(parsedFile.captions.length, 1);
+
+    final Caption firstCaption = parsedFile.captions.single;
+    expect(firstCaption.number, 2);
+    expect(firstCaption.start, Duration(seconds: 15));
+    expect(firstCaption.end, Duration(seconds: 17, milliseconds: 74));
+    expect(firstCaption.text, 'This one is valid');
+  });
 }
+
+const String _malformedSubRip = '''
+1
+00:00:06,000--> 00:00:12,074
+This one should be ignored because the
+arrow needs a space.
+
+2
+00:00:15,000 --> 00:00:17,074
+This one is valid
+
+3
+00:01:54,724 --> 00:01:6,760
+This one should be ignored because the 
+ned time is missing a digit.
+''';
