@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-library closed_caption_file;
-
 import 'sub_rip.dart';
 export 'sub_rip.dart' show SubRipCaptionFile;
 
