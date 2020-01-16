@@ -6,7 +6,7 @@ package io.flutter.plugins.shareexample;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.plugins.pathprovider.PathProviderPlugin;
+import io.flutter.plugins.imagepicker.ImagePickerPlugin;
 import io.flutter.plugins.share.SharePlugin;
 
 public class MainActivity extends FlutterActivity {
@@ -15,7 +15,7 @@ public class MainActivity extends FlutterActivity {
   @Override
   public void configureFlutterEngine(FlutterEngine flutterEngine) {
     super.configureFlutterEngine(flutterEngine);
-    flutterEngine.getPlugins().add(new PathProviderPlugin());
+    flutterEngine.getPlugins().add(new ImagePickerPlugin());
     flutterEngine.getPlugins().add(new SharePlugin());
   }
 }

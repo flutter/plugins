@@ -4,11 +4,10 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:share/share.dart';
 
 void main() {
@@ -23,7 +22,7 @@ class DemoApp extends StatefulWidget {
 class DemoAppState extends State<DemoApp> {
   String text = '';
   String subject = '';
-  bool shareFile = false;
+  File imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +36,7 @@ class DemoAppState extends State<DemoApp> {
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 TextField(
                   decoration: const InputDecoration(
@@ -59,34 +59,21 @@ class DemoAppState extends State<DemoApp> {
                   }),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 12.0)),
-                InkWell(
-                  onTap: () => setState(() {
-                    shareFile = !shareFile;
-                  }),
-                  child: Row(
-                    children: <Widget>[
-                      Checkbox(
-                        value: shareFile,
-                        onChanged: (bool value) => setState(() {
-                          shareFile = value;
-                        }),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "Share file",
-                            style: Theme.of(context).textTheme.subhead,
-                          ),
-                          Text(
-                            "Text file with share text as content",
-                            style: TextStyle(color: Colors.black54),
-                          ),
-                        ],
+                _buildImagePreview(),
+                imageFile == null
+                    ? ListTile(
+                        leading: Icon(Icons.add),
+                        title: Text("Add image"),
+                        onTap: () async {
+                          final image = await ImagePicker.pickImage(
+                            source: ImageSource.gallery,
+                          );
+                          setState(() {
+                            this.imageFile = image;
+                          });
+                        },
                       )
-                    ],
-                  ),
-                ),
+                    : Container(),
                 const Padding(padding: EdgeInsets.only(top: 12.0)),
                 Builder(
                   builder: (BuildContext context) {
@@ -104,14 +91,9 @@ class DemoAppState extends State<DemoApp> {
                               // has its position and size after it's built.
                               final RenderBox box = context.findRenderObject();
 
-                              if (shareFile) {
-                                // Could use image_picker here
-                                // - after migration of it to v2
-                                //  - https://github.com/flutter/flutter/issues/41839
-                                //  - https://github.com/flutter/plugins/pull/2430
-                                final File file =
-                                    await _createTextFile('sample.txt', text);
-                                await Share.shareFile(file,
+                              if (imageFile != null) {
+                                await Share.shareFile(imageFile,
+                                    text: text,
                                     subject: subject,
                                     sharePositionOrigin:
                                         box.localToGlobal(Offset.zero) &
@@ -133,10 +115,35 @@ class DemoAppState extends State<DemoApp> {
     );
   }
 
-  Future<File> _createTextFile(String filename, String content) async {
-    final Directory directory = await getApplicationDocumentsDirectory();
-    final File file = File('${directory.path}/$filename');
-    await file.writeAsString(content);
-    return file;
+  Widget _buildImagePreview() {
+    if (imageFile == null) {
+      return Container();
+    }
+    return Stack(
+      children: <Widget>[
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: 200,
+            maxHeight: 200,
+          ),
+          child: Image.file(imageFile),
+        ),
+        Positioned(
+          right: 0,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.red,
+              child: Icon(Icons.delete),
+              onPressed: () {
+                setState(() {
+                  imageFile = null;
+                });
+              },
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
