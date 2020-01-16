@@ -360,9 +360,6 @@ class _MyAppState extends State<MyApp> {
     // handle invalid purchase here if  _verifyPurchase` failed.
   }
 
-  static ListTile buildListCard(ListTile innerTile) =>
-      ListTile(title: Card(child: innerTile));
-
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
       await InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
