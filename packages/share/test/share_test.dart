@@ -87,9 +87,9 @@ void main() {
     try {
       file.createSync();
       await Share.shareFile(file);
-      verify(mockChannel.invokeMethod('shareFile', <String, dynamic>{
-        'path': file.path,
-        'mimeType': 'image/png',
+      verify(mockChannel.invokeMethod('shareFiles', <String, dynamic>{
+        'paths': [file.path],
+        'mimeTypes': ['image/png'],
       }));
     } finally {
       file.deleteSync();
@@ -101,9 +101,9 @@ void main() {
     try {
       file.createSync();
       await Share.shareFile(file, mimeType: '*/*');
-      verify(mockChannel.invokeMethod('shareFile', <String, dynamic>{
-        'path': file.path,
-        'mimeType': '*/*',
+      verify(mockChannel.invokeMethod('shareFiles', <String, dynamic>{
+        'paths': [file.path],
+        'mimeTypes': ['*/*'],
       }));
     } finally {
       file.deleteSync();
