@@ -60,7 +60,8 @@ class Share {
     }
   }
 
-  void shareFiles(List<String> paths, List<String> mimeTypes, String text, String subject) throws IOException {
+  void shareFiles(List<String> paths, List<String> mimeTypes, String text, String subject)
+      throws IOException {
     if (paths == null || paths.isEmpty()) {
       throw new IllegalArgumentException("Non-empty path expected");
     }
@@ -99,8 +100,9 @@ class Share {
         file = copyToExternalShareFolder(file);
       }
 
-      uris.add(FileProvider.getUriForFile(
-          activity, activity.getPackageName() + ".flutter.share_provider", file));
+      uris.add(
+          FileProvider.getUriForFile(
+              activity, activity.getPackageName() + ".flutter.share_provider", file));
     }
     return uris;
   }
@@ -120,7 +122,7 @@ class Share {
         }
       }
       return reducedMimeType;
-    } else if(mimeTypes.size() == 1) {
+    } else if (mimeTypes.size() == 1) {
       return mimeTypes.get(0);
     } else {
       return "*/*";

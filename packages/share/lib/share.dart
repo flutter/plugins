@@ -75,7 +75,8 @@ class Share {
     assert(file != null);
     assert(file.existsSync());
 
-    shareFiles(<File>[file],
+    return shareFiles(
+      <File>[file],
       mimeTypes: <String>[mimeType ?? _mimeTypeForFile(file)],
       subject: subject,
       text: text,
@@ -107,8 +108,8 @@ class Share {
     assert(files.every((file) => file.existsSync()));
     final Map<String, dynamic> params = <String, dynamic>{
       'paths': files.map((file) => file.path).toList(),
-      'mimeTypes': mimeTypes ??
-          files.map((file) => _mimeTypeForFile(file)).toList(),
+      'mimeTypes':
+          mimeTypes ?? files.map((file) => _mimeTypeForFile(file)).toList(),
     };
 
     if (subject != null) params['subject'] = subject;
