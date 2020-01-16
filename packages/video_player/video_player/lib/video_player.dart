@@ -16,10 +16,10 @@ export 'package:video_player_platform_interface/video_player_platform_interface.
 
 export 'src/closed_caption_file.dart';
 
-// This will clear all open videos on the platform when a full restart is
-// performed.
-// ignore: unused_element
-final VideoPlayerPlatform _ = VideoPlayerPlatform.instance..init();
+final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
+  // This will clear all open videos on the platform when a full restart is
+  // performed.
+  ..init();
 
 /// The duration, current position, buffering state, error state and settings
 /// of a [VideoPlayerController].
