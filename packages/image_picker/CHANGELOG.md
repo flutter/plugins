@@ -1,3 +1,7 @@
+## 0.6.3+2
+
+* Bump RoboElectric dependency to 4.3.1 and update resource usage.
+
 ## 0.6.3+1
 
 * Fix an issue that the example app won't launch the image picker after Android V2 embedding migration.
