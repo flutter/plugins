@@ -108,11 +108,10 @@ class DemoAppState extends State<DemoApp> {
                                 // Could use image_picker here
                                 // - after migration of it to v2
                                 //  - https://github.com/flutter/flutter/issues/41839
-                                //  - https://github.com/flutter/plugins/pull/2430)
+                                //  - https://github.com/flutter/plugins/pull/2430
                                 final File file =
                                     await _createTextFile('sample.txt', text);
                                 await Share.shareFile(file,
-                                    text: text,
                                     subject: subject,
                                     sharePositionOrigin:
                                         box.localToGlobal(Offset.zero) &
