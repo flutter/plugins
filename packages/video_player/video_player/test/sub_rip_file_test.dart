@@ -10,9 +10,7 @@ import 'package:video_player/video_player.dart';
 
 void main() {
   test('Parses SubRip file', () {
-    final File file = File('test/data/sample_sub_rip_file.srt');
-    final SubRipCaptionFile parsedFile =
-        SubRipCaptionFile(file.readAsStringSync());
+    final SubRipCaptionFile parsedFile = SubRipCaptionFile(_validSubRip);
 
     expect(parsedFile.captions.length, 4);
 
@@ -77,6 +75,28 @@ void main() {
     expect(firstCaption.text, 'This one is valid');
   });
 }
+
+const String _validSubRip = '''
+1
+00:00:06,000 --> 00:00:12,074
+This is a test file
+
+2
+00:01:54,724 --> 00:01:56,760
+- Hello.
+- Yes?
+
+3
+00:01:56,884 --> 00:01:58,954
+These are more test lines
+Yes, these are more test lines.
+
+4
+01:01:59,084 --> 01:02:01,552
+- [ Machinery Beeping ]
+- I'm not sure what that was,
+
+''';
 
 const String _malformedSubRip = '''
 1
