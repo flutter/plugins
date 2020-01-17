@@ -1,3 +1,8 @@
+## 0.10.6
+
+* `ClosedCaptionFile` and `SubzRipCaptionFile` classes added to read
+  [SubRip](https://en.wikipedia.org/wiki/SubRip) files into dart objects.
+
 ## 0.10.5+2
 
 * Make sure the plugin is correctly initialized
