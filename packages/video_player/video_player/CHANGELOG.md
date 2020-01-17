@@ -1,6 +1,10 @@
-## 0.10.5+2
+## 0.10.5+3
 
 * iOS: fixed some videos being rendered black
+
+## 0.10.5+2
+
+* Make sure the plugin is correctly initialized
 
 ## 0.10.5+1
 
