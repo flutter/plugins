@@ -1,3 +1,7 @@
+## 0.0.2
+
+* Bump gradle version to avoid bugs with android projects
+
 # 0.1.2+2
 
 * Remove unused onMethodCall method.
