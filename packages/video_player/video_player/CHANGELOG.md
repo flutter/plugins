@@ -2,6 +2,9 @@
 
 * Add caching functionality to videos from network sources.
 
+## 0.10.5+2
+
+* Make sure the plugin is correctly initialized
 
 ## 0.10.5+1
 
