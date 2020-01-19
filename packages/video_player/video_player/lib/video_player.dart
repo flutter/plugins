@@ -14,10 +14,10 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
     show DurationRange, DataSourceType, VideoFormat;
 
-// This will clear all open videos on the platform when a full restart is
-// performed.
-// ignore: unused_element
-final VideoPlayerPlatform _ = VideoPlayerPlatform.instance..init();
+final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
+  // This will clear all open videos on the platform when a full restart is
+  // performed.
+  ..init();
 
 /// The duration, current position, buffering state, error state and settings
 /// of a [VideoPlayerController].
@@ -229,8 +229,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         );
         break;
     }
-    _textureId =
-        await VideoPlayerPlatform.instance.create(dataSourceDescription);
+    _textureId = await _videoPlayerPlatform.create(dataSourceDescription);
     _creatingCompleter.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
@@ -277,7 +276,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       }
     }
 
-    _eventSubscription = VideoPlayerPlatform.instance
+    _eventSubscription = _videoPlayerPlatform
         .videoEventsFor(_textureId)
         .listen(eventListener, onError: errorListener);
     return initializingCompleter.future;
@@ -291,7 +290,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         _isDisposed = true;
         _timer?.cancel();
         await _eventSubscription?.cancel();
-        await VideoPlayerPlatform.instance.dispose(_textureId);
+        await _videoPlayerPlatform.dispose(_textureId);
       }
       _lifeCycleObserver.dispose();
     }
@@ -326,7 +325,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    await VideoPlayerPlatform.instance.setLooping(_textureId, value.isLooping);
+    await _videoPlayerPlatform.setLooping(_textureId, value.isLooping);
   }
 
   Future<void> _applyPlayPause() async {
@@ -334,7 +333,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     if (value.isPlaying) {
-      await VideoPlayerPlatform.instance.play(_textureId);
+      await _videoPlayerPlatform.play(_textureId);
       _timer = Timer.periodic(
         const Duration(milliseconds: 500),
         (Timer timer) async {
@@ -350,7 +349,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       );
     } else {
       _timer?.cancel();
-      await VideoPlayerPlatform.instance.pause(_textureId);
+      await _videoPlayerPlatform.pause(_textureId);
     }
   }
 
@@ -358,7 +357,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    await VideoPlayerPlatform.instance.setVolume(_textureId, value.volume);
+    await _videoPlayerPlatform.setVolume(_textureId, value.volume);
   }
 
   /// The position in the current video.
@@ -366,7 +365,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (_isDisposed) {
       return null;
     }
-    return await VideoPlayerPlatform.instance.getPosition(_textureId);
+    return await _videoPlayerPlatform.getPosition(_textureId);
   }
 
   /// Sets the video's current timestamp to be at [moment]. The next
@@ -383,7 +382,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     } else if (position < const Duration()) {
       position = const Duration();
     }
-    await VideoPlayerPlatform.instance.seekTo(_textureId, position);
+    await _videoPlayerPlatform.seekTo(_textureId, position);
     value = value.copyWith(position: position);
   }
 
@@ -483,7 +482,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == null
         ? Container()
-        : VideoPlayerPlatform.instance.buildView(_textureId);
+        : _videoPlayerPlatform.buildView(_textureId);
   }
 }
 
