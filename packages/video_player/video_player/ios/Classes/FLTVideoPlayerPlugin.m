@@ -445,7 +445,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
-if (!_videoOutput || !_isInitialized || !_isPlaying || !_key || ![_player currentItem] || ![[_player currentItem] isPlaybackLikelyToKeepUp]) {
+  if (!_videoOutput || !_isInitialized || !_isPlaying || !_key || ![_player currentItem] ||
+      ![[_player currentItem] isPlaybackLikelyToKeepUp]) {
     return [self prevTransparentBuffer];
   }
 

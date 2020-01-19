@@ -564,7 +564,7 @@ class FakeVideoEventStream {
     if (!initWithError) {
       eventsChannel.sendEvent(<String, dynamic>{
         'event': 'initialized',
-      'key': key,
+        'key': key,
         'duration': duration.inMilliseconds,
         'width': width,
         'height': height,
