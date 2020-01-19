@@ -1,3 +1,7 @@
+## 0.1.1+2
+
+- bump video_player_platform_interface to 1.0.1
+
 ## 0.1.1+1
 
 - Add an android/ folder with no-op implementation to workaround https://github.com/flutter/flutter/issues/46898.
