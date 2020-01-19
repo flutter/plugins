@@ -133,13 +133,15 @@ void main() {
       });
 
       test('init errors', () async {
-        final VideoPlayerController controller = VideoPlayerController.network(
-          'http://testing.com/invalid_url',
-        );
+        fakeVideoPlayerPlatform.forceInitError = true;
+        final VideoPlayerController controller = VideoPlayerController();
         try {
           dynamic error;
-          fakeVideoPlayerPlatform.forceInitError = true;
-          await controller.initialize().catchError((dynamic e) => error = e);
+          await controller
+              .setNetworkDataSource('http://testing.com/invalid_url')
+              .catchError((dynamic e) {
+            error = e;
+          });
           final PlatformException platformEx = error;
           expect(platformEx.code, equals('VideoError'));
         } finally {

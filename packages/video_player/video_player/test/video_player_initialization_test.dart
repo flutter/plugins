@@ -15,10 +15,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
     FakeVideoPlayerPlatform fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
 
-    final VideoPlayerController controller = VideoPlayerController.network(
-      'https://127.0.0.1',
-    );
-    await controller.initialize();
+    VideoPlayerController();
     expect(fakeVideoPlayerPlatform.calls.first.method, 'init');
   });
 }

@@ -16,8 +16,8 @@ export 'package:video_player_platform_interface/video_player_platform_interface.
     show DurationRange, DataSourceType, VideoFormat;
 
 final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
-  // This will clear all open videos on the platform when a full restart is
-  // performed.
+// This will clear all open videos on the platform when a full restart is
+// performed.
   ..init();
 
 /// The duration, current position, buffering state, error state and settings
@@ -208,8 +208,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       final PlatformException e = obj;
       value = VideoPlayerValue.erroneous(e.message);
       _timer?.cancel();
-      if (!initializingCompleter.isCompleted) {
-        initializingCompleter.completeError(obj);
+      if (!_initializingCompleter.isCompleted) {
+        _initializingCompleter.completeError(obj);
       }
     }
 
