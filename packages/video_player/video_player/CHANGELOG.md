@@ -2,6 +2,15 @@
 
 * Add `muted` attribute
 
+## 0.10.5+2
+
+* Make sure the plugin is correctly initialized
+
+## 0.10.5+1
+
+* Fixes issue where `initialize()` `Future` stalls when failing to load source
+  data and does not throw an error.
+
 ## 0.10.5
 
 * Support `web` by default.

@@ -5,8 +5,10 @@
 package io.flutter.plugins.inapppurchase;
 
 import androidx.annotation.Nullable;
+import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
+import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.SkuDetails;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +33,8 @@ import java.util.List;
     info.put("type", detail.getType());
     info.put("isRewarded", detail.isRewarded());
     info.put("subscriptionPeriod", detail.getSubscriptionPeriod());
+    info.put("originalPrice", detail.getOriginalPrice());
+    info.put("originalPriceAmountMicros", detail.getOriginalPriceAmountMicros());
     return info;
   }
 
@@ -57,6 +61,21 @@ import java.util.List;
     info.put("sku", purchase.getSku());
     info.put("isAutoRenewing", purchase.isAutoRenewing());
     info.put("originalJson", purchase.getOriginalJson());
+    info.put("developerPayload", purchase.getDeveloperPayload());
+    info.put("isAcknowledged", purchase.isAcknowledged());
+    info.put("purchaseState", purchase.getPurchaseState());
+    return info;
+  }
+
+  static HashMap<String, Object> fromPurchaseHistoryRecord(
+      PurchaseHistoryRecord purchaseHistoryRecord) {
+    HashMap<String, Object> info = new HashMap<>();
+    info.put("purchaseTime", purchaseHistoryRecord.getPurchaseTime());
+    info.put("purchaseToken", purchaseHistoryRecord.getPurchaseToken());
+    info.put("signature", purchaseHistoryRecord.getSignature());
+    info.put("sku", purchaseHistoryRecord.getSku());
+    info.put("developerPayload", purchaseHistoryRecord.getDeveloperPayload());
+    info.put("originalJson", purchaseHistoryRecord.getOriginalJson());
     return info;
   }
 
@@ -72,10 +91,31 @@ import java.util.List;
     return serialized;
   }
 
+  static List<HashMap<String, Object>> fromPurchaseHistoryRecordList(
+      @Nullable List<PurchaseHistoryRecord> purchaseHistoryRecords) {
+    if (purchaseHistoryRecords == null) {
+      return Collections.emptyList();
+    }
+
+    List<HashMap<String, Object>> serialized = new ArrayList<>();
+    for (PurchaseHistoryRecord purchaseHistoryRecord : purchaseHistoryRecords) {
+      serialized.add(fromPurchaseHistoryRecord(purchaseHistoryRecord));
+    }
+    return serialized;
+  }
+
   static HashMap<String, Object> fromPurchasesResult(PurchasesResult purchasesResult) {
     HashMap<String, Object> info = new HashMap<>();
     info.put("responseCode", purchasesResult.getResponseCode());
+    info.put("billingResult", fromBillingResult(purchasesResult.getBillingResult()));
     info.put("purchasesList", fromPurchasesList(purchasesResult.getPurchasesList()));
+    return info;
+  }
+
+  static HashMap<String, Object> fromBillingResult(BillingResult billingResult) {
+    HashMap<String, Object> info = new HashMap<>();
+    info.put("responseCode", billingResult.getResponseCode());
+    info.put("debugMessage", billingResult.getDebugMessage());
     return info;
   }
 }

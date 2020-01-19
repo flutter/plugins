@@ -21,4 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
 @end
 
+/**
+ * The WkWebView used for the plugin.
+ *
+ * This class overrides some methods in `WKWebView` to serve the needs for the plugin.
+ */
+@interface FLTWKWebView : WKWebView
+@end
+
 NS_ASSUME_NONNULL_END

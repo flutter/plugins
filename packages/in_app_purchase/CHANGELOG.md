@@ -1,3 +1,24 @@
+## 0.3.0
+
+* Migrate the `Google Play Library` to 2.0.3.
+     * Introduce a new class `BillingResultWrapper` which contains a detailed result of a BillingClient operation.
+          * **[Breaking Change]:**  All the BillingClient methods that previously return a `BillingResponse` now return a `BillingResultWrapper`, including: `launchBillingFlow`, `startConnection` and `consumeAsync`.
+          * **[Breaking Change]:**  The `SkuDetailsResponseWrapper` now contains a `billingResult` field in place of `billingResponse` field.
+          * A `billingResult` field is added to the `PurchasesResultWrapper`.
+     * Other Updates to the "billing_client_wrappers":
+          * Updates to the `PurchaseWrapper`: Add `developerPayload`, `purchaseState` and `isAcknowledged` fields.
+          * Updates to the `SkuDetailsWrapper`: Add `originalPrice` and `originalPriceAmountMicros` fields.
+          * **[Breaking Change]:** The `BillingClient.queryPurchaseHistory` is updated to return a `PurchasesHistoryResult`, which contains a list of `PurchaseHistoryRecordWrapper` instead of `PurchaseWrapper`. A `PurchaseHistoryRecordWrapper` object has the same fields and values as A `PurchaseWrapper` object, except that a `PurchaseHistoryRecordWrapper` object does not contain `isAutoRenewing`, `orderId` and `packageName`.
+          * Add a new `BillingClient.acknowledgePurchase` API. Starting from this version, the developer has to acknowledge any purchase on Android using this API within 3 days of purchase, or the user will be refunded. Note that if a product is "consumed" via `BillingClient.consumeAsync`, it is implicitly acknowledged.
+          * **[Breaking Change]:**  Added `enablePendingPurchases` in `BillingClientWrapper`. The application has to call this method before calling `BillingClientWrapper.startConnection`. See [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases) for more information.
+     * Updates to the "InAppPurchaseConnection":
+          * **[Breaking Change]:** `InAppPurchaseConnection.completePurchase` now returns a `Future<BillingResultWrapper>` instead of `Future<void>`. A new optional parameter `{String developerPayload}` has also been added to the API. On Android, this API does not throw an exception anymore, it instead acknowledge the purchase. If a purchase is not completed within 3 days on Android, the user will be refunded.
+          * **[Breaking Change]:** `InAppPurchaseConnection.consumePurchase` now returns a `Future<BillingResultWrapper>` instead of `Future<BillingResponse>`. A new optional parameter `{String developerPayload}` has also been added to the API.
+          * A new boolean field `pendingCompletePurchase` has been added to the `PurchaseDetails` class. Which can be used as an indicator of whether to call `InAppPurchaseConnection.completePurchase` on the purchase.
+          * **[Breaking Change]:**  Added `enablePendingPurchases` in `InAppPurchaseConnection`. The application has to call this method when initializing the `InAppPurchaseConnection` on Android. See [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases) for more information.
+     * Misc: Some documentation updates reflecting the `BillingClient` migration and some documentation fixes.
+     * Refer to [Google Play Billing Library Release Note](https://developer.android.com/google/play/billing/billing_library_releases_notes#release-2_0) for a detailed information on the update.
+
 ## 0.2.2+6
 
 * Correct a comment.
