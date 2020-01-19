@@ -1,3 +1,30 @@
+## 0.4.0+1
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.0
+
+- Added missing documentation.
+- **Breaking change**. `channel` and `withMethodChannel` are now
+  `@visibleForTesting`. These methods are for plugin unit tests only and may be
+  removed in the future.
+- **Breaking change**. Removed `runLaunchAction` from public API. This method
+  was not meant to be used by consumers of the plugin.
+
+## 0.3.3+1
+
+* Update and migrate iOS example project by removing flutter_assets, change
+  "English" to "en", remove extraneous xcconfigs, update to Xcode 11 build
+  settings, and remove ARCHS and DEVELOPMENT_TEAM.
+
+## 0.3.3
+
+* Support Android V2 embedding.
+* Add e2e tests.
+* Migrate to using the new e2e test binding.
+
 ## 0.3.2+4
 
 * Remove AndroidX warnings.
@@ -7,6 +34,7 @@
 * Define clang module for iOS.
 
 ## 0.3.2+2
+
 * Fix bug that would make the shortcut not open on Android.
 * Report shortcut used on Android.
 * Improves example.
@@ -17,7 +45,7 @@
 
 ## 0.3.2
 
-* Fixed the quick actions launch on Android when the app is killed. 
+* Fixed the quick actions launch on Android when the app is killed.
 
 ## 0.3.1
 

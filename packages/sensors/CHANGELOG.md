@@ -1,3 +1,26 @@
+## 0.4.1+7
+
+* Fixed example userAccelerometerEvent in documentation
+
+## 0.4.1+6
+
+* Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater (current stable).
+
+## 0.4.1+5
+
+* Fix example `setState()` called after `dispose()` by canceling the timer.
+
+## 0.4.1+4
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.1+3
+
+* Improve documentation and add unit test coverage.
+
 ## 0.4.1+2
 
 * Remove AndroidX warnings.

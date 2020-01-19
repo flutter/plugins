@@ -1,3 +1,20 @@
+## 5.4.1
+
+* Update unit tests to work with the PlatformInterface from package `plugin_platform_interface`.
+
+## 5.4.0
+
+* Support macos by default.
+
+## 5.3.0
+
+* Support web by default.
+* Use the new plugins pubspec schema.
+
+## 5.2.7
+
+* Minor unit test changes and added a lint for public DartDocs.
+
 ## 5.2.6
 
 *  Remove AndroidX warnings.
