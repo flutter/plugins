@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Add serverAuthCode parameter
+
 ## 1.0.3
 
 * Remove the deprecated `author:` field from pubspec.yaml
