@@ -1,7 +1,7 @@
 name: video_player_web
 description: Web platform implementation of video_player
 homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player_web
-version: 0.1.1
+version: 0.1.1+1
 
 flutter:
   plugin:

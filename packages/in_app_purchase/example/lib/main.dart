@@ -9,6 +9,10 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'consumable_store.dart';
 
 void main() {
+  // For play billing library 2.0 on Android, it is mandatory to call
+  // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
+  // as part of initializing the app.
+  InAppPurchaseConnection.enablePendingPurchases();
   runApp(MyApp());
 }
 
@@ -226,7 +230,7 @@ class _MyAppState extends State<MyApp> {
     // We recommend that you use your own server to verity the purchase data.
     Map<String, PurchaseDetails> purchases =
         Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
-      if (Platform.isIOS) {
+      if (purchase.pendingCompletePurchase) {
         InAppPurchaseConnection.instance.completePurchase(purchase);
       }
       return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
@@ -356,32 +360,33 @@ class _MyAppState extends State<MyApp> {
     // handle invalid purchase here if  _verifyPurchase` failed.
   }
 
-  static ListTile buildListCard(ListTile innerTile) =>
-      ListTile(title: Card(child: innerTile));
-
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+      await InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
       if (purchaseDetails.status == PurchaseStatus.pending) {
         showPendingUI();
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
           handleError(purchaseDetails.error);
+          return;
         } else if (purchaseDetails.status == PurchaseStatus.purchased) {
           bool valid = await _verifyPurchase(purchaseDetails);
           if (valid) {
             deliverProduct(purchaseDetails);
           } else {
             _handleInvalidPurchase(purchaseDetails);
+            return;
           }
         }
-        if (Platform.isIOS) {
-          await InAppPurchaseConnection.instance
-              .completePurchase(purchaseDetails);
-        } else if (Platform.isAndroid) {
+        if (Platform.isAndroid) {
           if (!kAutoConsume && purchaseDetails.productID == _kConsumableId) {
             await InAppPurchaseConnection.instance
                 .consumePurchase(purchaseDetails);
           }
+        }
+        if (purchaseDetails.pendingCompletePurchase) {
+          await InAppPurchaseConnection.instance
+              .completePurchase(purchaseDetails);
         }
       }
     });
