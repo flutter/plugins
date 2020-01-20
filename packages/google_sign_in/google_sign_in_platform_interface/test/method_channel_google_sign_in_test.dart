@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:google_sign_in_platform_interface/src/types.dart';
 import 'package:google_sign_in_platform_interface/src/utils.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 const Map<String, String> kUserData = <String, String>{
   "email": "john.doe@gmail.com",
   "id": "8162538176523816253123",
   "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
   "displayName": "John Doe",
+  "serverAuthCode": "789",
 };
 
 const Map<dynamic, dynamic> kTokenData = <String, dynamic>{
   'idToken': '123',
   'accessToken': '456',
+  'serverAuthCode': '789',
 };
 
 const Map<String, dynamic> kDefaultResponses = <String, dynamic>{
