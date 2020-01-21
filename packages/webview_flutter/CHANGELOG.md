@@ -1,3 +1,140 @@
+## 0.3.19+5
+
+* On iOS, always keep contentInsets of the WebView to be 0.
+* Fix XCTest case to follow XCTest naming convention.
+
+## 0.3.19+4
+
+* On iOS, fix the scroll view content inset is automatically adjusted. After the fix, the content position of the WebView is customizable by Flutter.
+* Fix an iOS 13 bug where the scroll indicator shows at random location.
+
+## 0.3.19+3
+
+* Setup XCTests.
+
+## 0.3.19+2
+
+* Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+
+## 0.3.19+1
+
+* Raise min Flutter SDK requirement to the latest stable. v2 embedding apps no
+  longer need to special case their Flutter SDK requirement like they have
+  since v0.3.15+3.
+
+## 0.3.19
+
+* Add setting for iOS to allow gesture based navigation.
+
+## 0.3.18+1
+
+* Be explicit that keyboard is not ready for production in README.md.
+
+## 0.3.18
+
+* Add support for onPageStarted event.
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate to the new pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.3.17
+
+* Fix pedantic lint errors. Added missing documentation and awaited some futures
+  in tests and the example app.
+
+## 0.3.16
+
+* Add support for async NavigationDelegates. Synchronous NavigationDelegates
+  should still continue to function without any change in behavior.
+
+## 0.3.15+3
+
+* Re-land support for the v2 Android embedding. This correctly sets the minimum
+  SDK to the latest stable and avoid any compile errors. *WARNING:* the V2
+  embedding itself still requires the current Flutter master channel
+  (flutter/flutter@1d4d63a) for text input to work properly on all Android
+  versions.
+
+## 0.3.15+2
+
+* Remove AndroidX warnings.
+
+## 0.3.15+1
+
+* Revert the prior embedding support add since it requires an API that hasn't
+  rolled to stable.
+
+## 0.3.15
+
+* Add support for the v2 Android embedding. This shouldn't affect existing
+  functionality. Plugin authors who use the V2 embedding can now register the
+  plugin and expect that it correctly responds to app lifecycle changes.
+
+## 0.3.14+2
+
+* Define clang module for iOS.
+
+## 0.3.14+1
+
+* Allow underscores anywhere for Javascript Channel name.
+
+## 0.3.14
+
+* Added a getTitle getter to WebViewController.
+
+## 0.3.13
+
+* Add an optional `userAgent` property to set a custom User Agent.
+
+## 0.3.12+1
+
+* Temporarily revert getTitle (doing this as a patch bump shortly after publishing).
+
+## 0.3.12
+
+* Added a getTitle getter to WebViewController.
+
+## 0.3.11+6
+
+* Calling destroy on Android webview when flutter webview is getting disposed.
+
+## 0.3.11+5
+
+* Reduce compiler warnings regarding iOS9 compatibility by moving a single
+  method back into a `@available` block.
+
+## 0.3.11+4
+
+* Removed noisy log messages on iOS.
+
+## 0.3.11+3
+
+* Apply the display listeners workaround that was shipped in 0.3.11+1 on
+  all Android versions prior to P.
+
+## 0.3.11+2
+
+* Add fix for input connection being dropped after a screen resize on certain
+  Android devices.
+
+## 0.3.11+1
+
+* Work around a bug in old Android WebView versions that was causing a crash
+  when resizing the webview on old devices.
+
+## 0.3.11
+
+* Add an initialAutoMediaPlaybackPolicy setting for controlling how auto media
+  playback is restricted.
+
+## 0.3.10+5
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.3.10+4
+
+* Add keyboard text to README.
+
 ## 0.3.10+3
 
 * Don't log an unknown setting key error for 'debuggingEnabled' on iOS.

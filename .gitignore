@@ -7,6 +7,7 @@
 .pub/
 .dart_tool/
 pubspec.lock
+flutter_export_environment.sh
 
 examples/all_plugins/pubspec.yaml
 
@@ -20,7 +21,7 @@ Pods/
 **/Flutter/flutter_assets/
 ServiceDefinitions.json
 xcuserdata/
-*.xcworkspace
+**/DerivedData/
 
 local.properties
 keystore.properties
@@ -28,6 +29,7 @@ keystore.properties
 gradlew
 gradlew.bat
 gradle-wrapper.jar
+.flutter-plugins-dependencies
 *.iml
 
 GeneratedPluginRegistrant.h
@@ -35,3 +37,7 @@ GeneratedPluginRegistrant.m
 GeneratedPluginRegistrant.java
 build/
 .flutter-plugins
+
+.project
+.classpath
+.settings

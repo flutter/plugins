@@ -1,3 +1,42 @@
+## 0.3.1+7
+
+* Clean up various Android workarounds no longer needed after framework v1.12.
+
+## 0.3.1+6
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.3.1+5
+
+* Fix pedantic linter errors.
+
+## 0.3.1+4
+
+* Update and migrate iOS example project.
+
+## 0.3.1+3
+
+* Remove AndroidX warning.
+
+## 0.3.1+2
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.3.1+1
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.3.1
+
+* Support the v2 Android embedder.
+
+## 0.3.0+6
+
+* Define clang module for iOS.
+
 ## 0.3.0+5
 
 * Fix Gradle version.

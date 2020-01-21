@@ -1,3 +1,98 @@
+## 0.6.3+2
+
+* Bump RoboElectric dependency to 4.3.1 and update resource usage.
+
+## 0.6.3+1
+
+* Fix an issue that the example app won't launch the image picker after Android V2 embedding migration.
+
+## 0.6.3
+
+* Support Android V2 embedding.
+* Migrate to using the new e2e test binding.
+
+## 0.6.2+3
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.6.2+2
+* Android: Revert the image file return logic when the image doesn't have to be scaled. Fix a rotation regression caused by 0.6.2+1
+* Example App: Add a dialog to enter `maxWidth`, `maxHeight` or `quality` when picking image.
+
+## 0.6.2+1
+
+* Android: Fix a crash when a non-image file is picked.
+* Android: Fix unwanted bitmap scaling.
+
+## 0.6.2
+
+* iOS: Fixes an issue where picking content from Gallery would result in a crash on iOS 13.
+
+## 0.6.1+11
+
+* Stability and Maintainability: update documentations, add unit tests.
+
+## 0.6.1+10
+
+* iOS: Fix image orientation problems when scaling images.
+
+## 0.6.1+9
+
+* Remove AndroidX warning.
+
+## 0.6.1+8
+
+* Fix iOS build and analyzer warnings.
+
+## 0.6.1+7
+
+* Android: Fix ImagePickerPlugin#onCreate casting context which causes exception.
+
+## 0.6.1+6
+
+* Define clang module for iOS
+
+## 0.6.1+5
+
+* Update and migrate iOS example project.
+
+## 0.6.1+4
+
+* Android: Fix a regression where the `retrieveLostImage` does not work anymore.
+* Set up Android unit test to test `ImagePickerCache` and added image quality caching tests.
+
+## 0.6.1+3
+
+* Bugfix iOS: Fix orientation of the picked image after scaling.
+* Remove unnecessary code that tried to normalize the orientation.
+* Trivial XCTest code fix.
+
+## 0.6.1+2
+
+* Replace dependency on `androidx.legacy:legacy-support-v4:1.0.0` with `androidx.core:core:1.0.2`
+
+## 0.6.1+1
+
+* Add dependency on `androidx.annotation:annotation:1.0.0`.
+
+## 0.6.1
+
+* New feature : Get images with custom quality. While picking images, user can pass `imageQuality`
+parameter to compress image.
+
+## 0.6.0+20
+
+* Android: Migrated information cache methods to use instance methods.
+
+## 0.6.0+19
+
+* Android: Fix memory leak due not unregistering ActivityLifecycleCallbacks.
+
+## 0.6.0+18
+
+* Fix video play in example and update video_player plugin dependency.
+
 ## 0.6.0+17
 
 * iOS: Fix a crash when user captures image from the camera with devices under iOS 11.

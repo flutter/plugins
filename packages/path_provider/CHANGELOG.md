@@ -1,3 +1,70 @@
+## 1.5.1
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 1.5.0
+
+* Add macOS support.
+
+## 1.4.5
+
+* Add support for v2 plugins APIs.
+
+## 1.4.4
+
+* Update driver tests in the example app to e2e tests.
+
+## 1.4.3
+
+* Update driver tests in the example app to e2e tests.
+* Add missing DartDocs and a lint to prevent further regressions.
+
+## 1.4.2
+
+* Update and migrate iOS example project by removing flutter_assets, change
+  "English" to "en", remove extraneous xcconfigs, update to Xcode 11 build
+  settings, remove ARCHS, and build pods as libraries instead of frameworks.
+
+## 1.4.1
+
+* Remove AndroidX warnings.
+
+## 1.4.0
+
+* Support retrieving storage paths on Android devices with multiple external
+  storage options. This adds a new class `AndroidEnvironment` that shadows the
+  directory names from Androids `android.os.Environment` class.
+* Fixes `getLibraryDirectory` semantics & tests.
+
+## 1.3.1
+
+* Define clang module for iOS.
+
+## 1.3.0
+
+* Added iOS-only support for `getLibraryDirectory`.
+* Update integration tests and example test.
+* Update example app UI to use a `ListView` show the list of content.
+* Update .gitignore to include Xcode build output folder `**/DerivedData/`
+
+## 1.2.2
+
+* Correct the integration test for Android's `getApplicationSupportDirectory` call.
+* Introduce `setMockPathProviderPlatform` for API for tests.
+* Adds missing unit and integration tests.
+
+## 1.2.1
+
+* Fix fall through bug.
+
+## 1.2.0
+
+* On Android, `getApplicationSupportDirectory` is now supported using `getFilesDir`.
+* `getExternalStorageDirectory` now returns `null` instead of throwing an
+  exception if no external files directory is available.
+
 ## 1.1.2
 
 * `getExternalStorageDirectory` now uses `getExternalFilesDir` on Android.
