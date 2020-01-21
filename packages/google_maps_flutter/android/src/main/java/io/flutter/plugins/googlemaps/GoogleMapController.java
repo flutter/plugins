@@ -490,8 +490,7 @@ final class GoogleMapController
   };
 
   // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView
-  // interface, but the maximum
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
   // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionUnlocked() {
     // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
