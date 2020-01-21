@@ -6,7 +6,12 @@ package io.flutter.plugins.googlemaps;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.FragmentManager;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,6 +30,7 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
   static final int DESTROYED = 6;
   private final AtomicInteger state = new AtomicInteger(0);
   private final int registrarActivityHashCode;
+  private boolean dummyMapInitialized;
 
   public static void registerWith(Registrar registrar) {
     if (registrar.activity() == null) {
@@ -94,5 +100,34 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
 
   private GoogleMapsPlugin(Registrar registrar) {
     this.registrarActivityHashCode = registrar.activity().hashCode();
+    if (dummyMapInitialized) {
+      return;
+    }
+    Activity activity = registrar.activity();
+    if (activity == null) {
+      return;
+    }
+    FragmentManager fragmentManager = activity.getFragmentManager();
+    if (fragmentManager == null) {
+      return;
+    }
+    initDummyMap(fragmentManager);
+    dummyMapInitialized = true;
+  }
+
+  /**
+   * This method creates dummy map. This call will initialize all services needed by GoogleMaps This
+   * will speed up next GoogleMap view initialization
+   */
+  private static void initDummyMap(@NonNull final FragmentManager fragmentManager) {
+    final MapFragment mapFragment = new MapFragment();
+    fragmentManager.beginTransaction().add(mapFragment, "DummyMap").commit();
+    mapFragment.getMapAsync(
+        new OnMapReadyCallback() {
+          @Override
+          public void onMapReady(GoogleMap googleMap) {
+            fragmentManager.beginTransaction().remove(mapFragment).commit();
+          }
+        });
   }
 }

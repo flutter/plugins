@@ -1,3 +1,7 @@
+## 0.5.22
+
+* Add dummy map initialization
+
 ## 0.5.21+15
 
 * Remove the deprecated `author:` field from pubspec.yaml
