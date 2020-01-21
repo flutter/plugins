@@ -92,7 +92,9 @@ class GoogleMap extends StatefulWidget {
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
 
-  /// True if the map view should be in lite mode. Android only. See https://developers.google.com/maps/documentation/android-sdk/lite#overview_of_lite_mode for more details.
+  /// True if the map view should be in lite mode. Android only.
+  ///
+  /// See https://developers.google.com/maps/documentation/android-sdk/lite#overview_of_lite_mode for more details.
   final bool liteModeEnabled;
 
   /// True if the map view should respond to tilt gestures.
