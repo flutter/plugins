@@ -363,7 +363,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
 }
 
-- (void)onTextureUnregistered {
+- (void)onTextureUnregistered:(NSObject<FlutterTexture>*)texture {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self dispose];
   });
