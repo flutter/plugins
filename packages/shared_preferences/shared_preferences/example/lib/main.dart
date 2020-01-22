@@ -31,16 +31,25 @@ class SharedPreferencesDemo extends StatefulWidget {
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   Future<int> _counter;
 
   Future<void> _incrementCounter() async {
-    final SharedPreferences prefs = await _prefs;
-    final int counter = (prefs.getInt('counter') ?? 0) + 1;
+    final prefs = await _prefs;
+    final counter = (prefs.getInt('counter') ?? 0) + 1;
 
     setState(() {
-      _counter = prefs.setInt("counter", counter).then((bool success) {
+      _counter = prefs.setInt('counter', counter).then((bool success) {
         return counter;
+      });
+    });
+  }
+
+  Future<void> _clearCounter() async {
+    final prefs = await _prefs;
+    setState(() {
+      _counter = prefs.setInt('counter', 0).then((bool success) {
+        return 0;
       });
     });
   }
@@ -57,30 +66,49 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("SharedPreferences Demo"),
+        title: const Text('Shared Preferences Demo'),
       ),
       body: Center(
-          child: FutureBuilder<int>(
-              future: _counter,
-              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return const CircularProgressIndicator();
-                  default:
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      return Text(
-                        'Button tapped ${snapshot.data} time${snapshot.data == 1 ? '' : 's'}.\n\n'
-                        'This should persist across restarts.',
-                      );
-                    }
-                }
-              })),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        child: FutureBuilder<int>(
+            future: _counter,
+            builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                  return const CircularProgressIndicator();
+                default:
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return Text(
+                      'Button tapped ${snapshot.data} time${snapshot.data == 1 ? '' : 's'}.\n\n'
+                      'This should persist across restarts.',
+                      key: Key('ResultText'),
+                    );
+                  }
+              }
+            }),
+      ),
+      floatingActionButton: Align(
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 100,
+            ),
+            FloatingActionButton(
+              onPressed: _incrementCounter,
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+              heroTag: 'add',
+            ),
+            FloatingActionButton(
+              onPressed: _clearCounter,
+              tooltip: 'Clear',
+              child: const Icon(Icons.delete),
+              heroTag: 'clear',
+            ),
+          ],
+        ),
+        alignment: Alignment.bottomRight,
       ),
     );
   }

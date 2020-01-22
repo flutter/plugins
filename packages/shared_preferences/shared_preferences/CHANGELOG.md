@@ -1,3 +1,7 @@
+## 0.5.6+1
+
+* Added an Espresso test.
+
 ## 0.5.6
 
 * Support `web` by default.
