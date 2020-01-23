@@ -1,5 +1,5 @@
-import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter_driver/driver_extension.dart';
+// ignore: avoid_relative_lib_import
 import '../lib/main.dart' as app;
 
 Future<void> main() async {

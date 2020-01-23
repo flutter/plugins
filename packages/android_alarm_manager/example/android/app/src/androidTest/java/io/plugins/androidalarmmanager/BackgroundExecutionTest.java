@@ -9,7 +9,6 @@ import static androidx.test.espresso.flutter.EspressoFlutter.onFlutterWidget;
 import static androidx.test.espresso.flutter.action.FlutterActions.click;
 import static androidx.test.espresso.flutter.matcher.FlutterMatchers.withValueKey;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -32,10 +31,8 @@ public class BackgroundExecutionTest {
 
   @Before
   public void setUp() throws Exception {
-    Context context =
-        InstrumentationRegistry.getInstrumentation().getTargetContext();
-    prefs = context.getSharedPreferences("FlutterSharedPreferences",
-                                         Context.MODE_PRIVATE);
+    Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+    prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     ActivityScenario.launch(MainActivity.class);
   }
 
@@ -56,8 +53,7 @@ public class BackgroundExecutionTest {
     // background isolate, and then increment the counter in the shared
     // preferences. Timeout after 20s, just to be safe.
     int tries = 0;
-    while ((prefs.getLong(countKey, -1) == 0) &&
-           (tries < 200)) {
+    while ((prefs.getLong(countKey, -1) == 0) && (tries < 200)) {
       Thread.sleep(100);
       ++tries;
     }
