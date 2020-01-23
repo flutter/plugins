@@ -373,6 +373,7 @@ class _MyAppState extends State<MyApp> {
             deliverProduct(purchaseDetails);
           } else {
             _handleInvalidPurchase(purchaseDetails);
+            return;
           }
         }
         if (Platform.isAndroid) {
