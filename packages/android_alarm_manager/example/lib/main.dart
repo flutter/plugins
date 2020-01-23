@@ -26,7 +26,6 @@ SharedPreferences prefs;
 
 Future<void> main() async {
   // TODO(bkonyi): uncomment
-  /*
   WidgetsFlutterBinding.ensureInitialized();
 
   // Register the UI isolate's SendPort to allow for communication from the
@@ -40,7 +39,6 @@ Future<void> main() async {
     await prefs.setInt(countKey, 0);
   }
   runApp(AlarmManagerExampleApp());
-  */
   print("hello world!");
 }
 
@@ -136,13 +134,13 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
             ),
             RaisedButton(
               child: Text(
-                'Schedule Alarm',
+                'Schedule OneShot Alarm',
               ),
-              key: ValueKey('RegisterAlarms'),
+              key: ValueKey('RegisterOneShotAlarm'),
               onPressed: () async {
                 print('Scheduling!');
                 await AndroidAlarmManager.oneShot(
-                  const Duration(seconds: 20),
+                  const Duration(seconds: 5),
                   // Ensure we have a unique alarm ID.
                   Random().nextInt(pow(2, 31)),
                   callback,
@@ -150,7 +148,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
                   wakeup: true,
                 );
               },
-            )
+            ),
           ],
         ),
       ),
