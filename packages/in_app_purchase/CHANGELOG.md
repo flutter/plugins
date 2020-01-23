@@ -1,3 +1,7 @@
+## 0.3.0+1
+
+* Fixing usage example. No functional changes. 
+
 ## 0.3.0
 
 * Migrate the `Google Play Library` to 2.0.3.
