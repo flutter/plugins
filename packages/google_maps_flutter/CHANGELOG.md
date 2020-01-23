@@ -1,6 +1,6 @@
 ## 0.5.22
 
-* Add dummy map initialization
+* Android: Add dummy map initialization
 
 ## 0.5.21+15
 
