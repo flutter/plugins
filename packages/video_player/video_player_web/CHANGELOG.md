@@ -1,7 +1,7 @@
 ## 0.1.2
 
 * Add a `PlatformException` to the player's `eventController` when there's a `videoElement.onError`. Fixes https://github.com/flutter/flutter/issues/48884.
-  * Pass through the Future from the web videoElement.play() method, so we don't end up with unhandled Futures in tests.
+* Handle DomExceptions on videoElement.play() and turn them into `PlatformException` as well, so we don't end up with unhandled Futures.
 * Update setup instructions in the README.
 
 ## 0.1.1+1
