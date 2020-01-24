@@ -195,7 +195,18 @@ class _VideoPlayer {
   }
 
   Future<void> play() {
-    return videoElement.play();
+    return videoElement.play().catchError((e) {
+      // play() attempts to begin playback of the media. It returns
+      // a Promise which can get rejected in case of failure to begin
+      // playback for any reason, such as permission issues.
+      // The rejection handler is called with a DomException.
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/play
+      DomException exception = e;
+      eventController.addError(PlatformException(
+        code: exception.name,
+        message: exception.message,
+      ));
+    }, test: (e) => e is DomException);
   }
 
   void pause() {

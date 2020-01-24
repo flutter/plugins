@@ -91,19 +91,14 @@ void main() {
                 'https://flutter.github.io/assets-for-api-docs/assets/videos/_non_existent_video.mp4'),
       );
 
-      // Mute video to allow autoplay (See https://goo.gl/xX8pDD)
-      await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
-      Stream<VideoEvent> events =
+      Stream<VideoEvent> eventStream =
           VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
 
-      try {
-        await VideoPlayerPlatform.instance.play(videoPlayerId);
-      } catch (e) {
-        // The version of Chrome we're using in test may throw a DomException here!
-        // See https://stackoverflow.com/questions/37674223/domexception-failed-to-load-because-no-supported-source-was-found
-      } finally {
-        expect(events.first, throwsA(isA<PlatformException>()));
-      }
+      // Mute video to allow autoplay (See https://goo.gl/xX8pDD)
+      await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
+      await VideoPlayerPlatform.instance.play(videoPlayerId);
+
+      expect(eventStream.toList(), throwsA(isA<PlatformException>()));
     });
 
     test('can pause', () {
