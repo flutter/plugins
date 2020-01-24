@@ -29,7 +29,7 @@ Currently the following biometric types are implemented:
 To get a list of enrolled biometrics, call getAvailableBiometrics:
 
 ```dart
-List<BiometricType> availableBiometrics;
+List<BiometricType> availableBiometrics =
     await auth.getAvailableBiometrics();
 
 if (Platform.isIOS) {
@@ -91,6 +91,16 @@ await localAuth.authenticateWithBiometrics(
 
 ```
 
+If needed, you can manually stop authentication for android:
+
+```dart
+
+void _cancelAuthentication() {
+    localAuth.stopAuthentication();
+}
+
+```
+
 ### Exceptions
 
 There are 6 types of exceptions: PasscodeNotSet, NotEnrolled, NotAvailable, OtherOperatingSystem, LockedOut and PermanentlyLockedOut.
@@ -127,6 +137,11 @@ app has not been updated to use TouchID.
 
 ## Android Integration
 
+Note that local_auth plugin requires the use of a FragmentActivity as
+opposed to Activity. This can be easily done by switching to use
+`FlutterFragmentActivity` as opposed to `FlutterActivity` in your
+manifest (or your own Activity class if you are extending the base class).
+
 Update your project's `AndroidManifest.xml` file to include the
 `USE_FINGERPRINT` permissions:
 
@@ -136,6 +151,12 @@ Update your project's `AndroidManifest.xml` file to include the
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
 <manifest>
 ```
+
+On Android, you can check only for existence of fingerprint hardware prior
+to API 29 (Android Q). Therefore, if you would like to support other biometrics
+types (such as face scanning) and you want to support SDKs lower than Q,
+*do not* call `getAvailableBiometrics`. Simply call `authenticateWithBiometrics`.
+This will return an error if there was no hardware available.
 
 ## Sticky Auth
 

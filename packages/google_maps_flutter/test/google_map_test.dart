@@ -10,6 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'fake_maps_controllers.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
 
@@ -93,6 +95,35 @@ void main() {
     );
 
     expect(platformGoogleMap.compassEnabled, true);
+  });
+
+  testWidgets('Can update mapToolbarEnabled', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          mapToolbarEnabled: false,
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.mapToolbarEnabled, false);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          mapToolbarEnabled: true,
+        ),
+      ),
+    );
+
+    expect(platformGoogleMap.mapToolbarEnabled, true);
   });
 
   testWidgets('Can update cameraTargetBounds', (WidgetTester tester) async {
@@ -468,5 +499,63 @@ void main() {
     );
 
     expect(platformGoogleMap.padding, <double>[60, 50, 80, 70]);
+  });
+
+  testWidgets('Can update traffic', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          trafficEnabled: false,
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.trafficEnabled, false);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          trafficEnabled: true,
+        ),
+      ),
+    );
+
+    expect(platformGoogleMap.trafficEnabled, true);
+  });
+
+  testWidgets('Can update buildings', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          buildingsEnabled: false,
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.buildingsEnabled, false);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          buildingsEnabled: true,
+        ),
+      ),
+    );
+
+    expect(platformGoogleMap.buildingsEnabled, true);
   });
 }

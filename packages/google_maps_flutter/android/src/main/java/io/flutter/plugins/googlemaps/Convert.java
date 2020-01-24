@@ -201,9 +201,21 @@ class Convert {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
-  private static LatLng toLatLng(Object o) {
+  static LatLng toLatLng(Object o) {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
+  }
+
+  static Point toPoint(Object o) {
+    Map<String, Integer> screenCoordinate = (Map<String, Integer>) o;
+    return new Point(screenCoordinate.get("x"), screenCoordinate.get("y"));
+  }
+
+  static Map<String, Integer> pointToJson(Point point) {
+    final Map<String, Integer> data = new HashMap<>(2);
+    data.put("x", point.x);
+    data.put("y", point.y);
+    return data;
   }
 
   private static LatLngBounds toLatLngBounds(Object o) {
@@ -260,6 +272,10 @@ class Convert {
     if (compassEnabled != null) {
       sink.setCompassEnabled(toBoolean(compassEnabled));
     }
+    final Object mapToolbarEnabled = data.get("mapToolbarEnabled");
+    if (mapToolbarEnabled != null) {
+      sink.setMapToolbarEnabled(toBoolean(mapToolbarEnabled));
+    }
     final Object mapType = data.get("mapType");
     if (mapType != null) {
       sink.setMapType(toInt(mapType));
@@ -307,6 +323,18 @@ class Convert {
     final Object myLocationButtonEnabled = data.get("myLocationButtonEnabled");
     if (myLocationButtonEnabled != null) {
       sink.setMyLocationButtonEnabled(toBoolean(myLocationButtonEnabled));
+    }
+    final Object indoorEnabled = data.get("indoorEnabled");
+    if (indoorEnabled != null) {
+      sink.setIndoorEnabled(toBoolean(indoorEnabled));
+    }
+    final Object trafficEnabled = data.get("trafficEnabled");
+    if (trafficEnabled != null) {
+      sink.setTrafficEnabled(toBoolean(trafficEnabled));
+    }
+    final Object buildingsEnabled = data.get("buildingsEnabled");
+    if (buildingsEnabled != null) {
+      sink.setBuildingsEnabled(toBoolean(buildingsEnabled));
     }
   }
 

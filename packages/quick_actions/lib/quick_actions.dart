@@ -17,6 +17,10 @@ typedef void QuickActionHandler(String type);
 
 /// Home screen quick-action shortcut item.
 class ShortcutItem {
+  /// Constructs an instance with the given [type], [localizedTitle], and
+  /// [icon].
+  ///
+  /// Only [icon] should be nullable. It will remain `null` if unset.
   const ShortcutItem({
     @required this.type,
     @required this.localizedTitle,
@@ -36,28 +40,47 @@ class ShortcutItem {
 
 /// Quick actions plugin.
 class QuickActions {
-  const QuickActions();
+  /// Gets an instance of the plugin with the default methodChannel.
+  ///
+  /// [initialize] should be called before using any other methods.
+  factory QuickActions() => _instance;
+
+  /// This is a test-only constructor. Do not call this, it can break at any
+  /// time.
+  @visibleForTesting
+  QuickActions.withMethodChannel(this.channel);
+
+  static final QuickActions _instance =
+      QuickActions.withMethodChannel(_kChannel);
+
+  /// This is a test-only accessor. Do not call this, it can break at any time.
+  @visibleForTesting
+  final MethodChannel channel;
 
   /// Initializes this plugin.
   ///
   /// Call this once before any further interaction with the the plugin.
-  void initialize(QuickActionHandler handler) {
-    _kChannel.setMethodCallHandler((MethodCall call) async {
+  void initialize(QuickActionHandler handler) async {
+    channel.setMethodCallHandler((MethodCall call) async {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
+    final String action = await channel.invokeMethod<String>('getLaunchAction');
+    if (action != null) {
+      handler(action);
+    }
   }
 
   /// Sets the [ShortcutItem]s to become the app's quick actions.
   Future<void> setShortcutItems(List<ShortcutItem> items) async {
     final List<Map<String, String>> itemsList =
         items.map(_serializeItem).toList();
-    await _kChannel.invokeMethod<void>('setShortcutItems', itemsList);
+    await channel.invokeMethod<void>('setShortcutItems', itemsList);
   }
 
   /// Removes all [ShortcutItem]s registered for the app.
   Future<void> clearShortcutItems() =>
-      _kChannel.invokeMethod<void>('clearShortcutItems');
+      channel.invokeMethod<void>('clearShortcutItems');
 
   Map<String, String> _serializeItem(ShortcutItem item) {
     return <String, String>{

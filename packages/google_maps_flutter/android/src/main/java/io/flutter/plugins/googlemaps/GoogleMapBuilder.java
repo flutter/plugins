@@ -17,6 +17,9 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
+  private boolean indoorEnabled = true;
+  private boolean trafficEnabled = false;
+  private boolean buildingsEnabled = true;
   private Object initialMarkers;
   private Object initialPolygons;
   private Object initialPolylines;
@@ -30,6 +33,9 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
+    controller.setIndoorEnabled(indoorEnabled);
+    controller.setTrafficEnabled(trafficEnabled);
+    controller.setBuildingsEnabled(buildingsEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
     controller.setInitialMarkers(initialMarkers);
     controller.setInitialPolygons(initialPolygons);
@@ -46,6 +52,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setCompassEnabled(boolean compassEnabled) {
     options.compassEnabled(compassEnabled);
+  }
+
+  @Override
+  public void setMapToolbarEnabled(boolean setMapToolbarEnabled) {
+    options.mapToolbarEnabled(setMapToolbarEnabled);
   }
 
   @Override
@@ -96,6 +107,21 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     options.zoomGesturesEnabled(zoomGesturesEnabled);
+  }
+
+  @Override
+  public void setIndoorEnabled(boolean indoorEnabled) {
+    this.indoorEnabled = indoorEnabled;
+  }
+
+  @Override
+  public void setTrafficEnabled(boolean trafficEnabled) {
+    this.trafficEnabled = trafficEnabled;
+  }
+
+  @Override
+  public void setBuildingsEnabled(boolean buildingsEnabled) {
+    this.buildingsEnabled = buildingsEnabled;
   }
 
   @Override

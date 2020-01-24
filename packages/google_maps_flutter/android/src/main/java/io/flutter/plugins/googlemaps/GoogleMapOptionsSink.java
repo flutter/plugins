@@ -12,6 +12,8 @@ interface GoogleMapOptionsSink {
 
   void setCompassEnabled(boolean compassEnabled);
 
+  void setMapToolbarEnabled(boolean setMapToolbarEnabled);
+
   void setMapType(int mapType);
 
   void setMinMaxZoomPreference(Float min, Float max);
@@ -31,6 +33,12 @@ interface GoogleMapOptionsSink {
   void setMyLocationEnabled(boolean myLocationEnabled);
 
   void setMyLocationButtonEnabled(boolean myLocationButtonEnabled);
+
+  void setIndoorEnabled(boolean indoorEnabled);
+
+  void setTrafficEnabled(boolean trafficEnabled);
+
+  void setBuildingsEnabled(boolean buildingsEnabled);
 
   void setInitialMarkers(Object initialMarkers);
 

@@ -27,6 +27,8 @@ class FakePlatformGoogleMap {
 
   bool compassEnabled;
 
+  bool mapToolbarEnabled;
+
   CameraTargetBounds cameraTargetBounds;
 
   MapType mapType;
@@ -44,6 +46,10 @@ class FakePlatformGoogleMap {
   bool trackCameraPosition;
 
   bool myLocationEnabled;
+
+  bool trafficEnabled;
+
+  bool buildingsEnabled;
 
   bool myLocationButtonEnabled;
 
@@ -129,6 +135,7 @@ class FakePlatformGoogleMap {
     final Set<Marker> result = Set<Marker>();
     for (Map<dynamic, dynamic> markerData in markersData) {
       final String markerId = markerData['markerId'];
+      final double alpha = markerData['alpha'];
       final bool draggable = markerData['draggable'];
       final bool visible = markerData['visible'];
 
@@ -147,6 +154,7 @@ class FakePlatformGoogleMap {
         draggable: draggable,
         visible: visible,
         infoWindow: infoWindow,
+        alpha: alpha,
       ));
     }
 
@@ -189,15 +197,23 @@ class FakePlatformGoogleMap {
       final String polygonId = polygonData['polygonId'];
       final bool visible = polygonData['visible'];
       final bool geodesic = polygonData['geodesic'];
+      final List<LatLng> points = _deserializePoints(polygonData['points']);
 
       result.add(Polygon(
         polygonId: PolygonId(polygonId),
         visible: visible,
         geodesic: geodesic,
+        points: points,
       ));
     }
 
     return result;
+  }
+
+  List<LatLng> _deserializePoints(List<dynamic> points) {
+    return points.map<LatLng>((dynamic list) {
+      return LatLng(list[0], list[1]);
+    }).toList();
   }
 
   void updatePolylines(Map<dynamic, dynamic> polylineUpdates) {
@@ -239,11 +255,13 @@ class FakePlatformGoogleMap {
       final String polylineId = polylineData['polylineId'];
       final bool visible = polylineData['visible'];
       final bool geodesic = polylineData['geodesic'];
+      final List<LatLng> points = _deserializePoints(polylineData['points']);
 
       result.add(Polyline(
         polylineId: PolylineId(polylineId),
         visible: visible,
         geodesic: geodesic,
+        points: points,
       ));
     }
 
@@ -301,6 +319,9 @@ class FakePlatformGoogleMap {
     if (options.containsKey('compassEnabled')) {
       compassEnabled = options['compassEnabled'];
     }
+    if (options.containsKey('mapToolbarEnabled')) {
+      mapToolbarEnabled = options['mapToolbarEnabled'];
+    }
     if (options.containsKey('cameraTargetBounds')) {
       final List<dynamic> boundsList = options['cameraTargetBounds'];
       cameraTargetBounds = boundsList[0] == null
@@ -335,6 +356,12 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('myLocationButtonEnabled')) {
       myLocationButtonEnabled = options['myLocationButtonEnabled'];
+    }
+    if (options.containsKey('trafficEnabled')) {
+      trafficEnabled = options['trafficEnabled'];
+    }
+    if (options.containsKey('buildingsEnabled')) {
+      buildingsEnabled = options['buildingsEnabled'];
     }
     if (options.containsKey('padding')) {
       padding = options['padding'];

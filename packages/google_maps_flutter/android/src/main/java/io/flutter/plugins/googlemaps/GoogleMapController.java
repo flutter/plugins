@@ -18,6 +18,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -63,6 +64,7 @@ final class GoogleMapController
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMapLongClickListener,
         GoogleMap.SnapshotReadyCallback,
+        GoogleMap.OnMarkerDragListener,
         PlatformView {
 
   private static final String TAG = "GoogleMapController";
@@ -75,6 +77,9 @@ final class GoogleMapController
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
+  private boolean indoorEnabled = true;
+  private boolean trafficEnabled = false;
+  private boolean buildingsEnabled = true;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
@@ -107,7 +112,7 @@ final class GoogleMapController
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
     this.polygonsController = new PolygonsController(methodChannel);
-    this.polylinesController = new PolylinesController(methodChannel);
+    this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel);
   }
 
@@ -169,6 +174,9 @@ final class GoogleMapController
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
+    this.googleMap.setIndoorEnabled(this.indoorEnabled);
+    this.googleMap.setTrafficEnabled(this.trafficEnabled);
+    this.googleMap.setBuildingsEnabled(this.buildingsEnabled);
     googleMap.setOnInfoWindowClickListener(this);
     if (mapReadyResult != null) {
       mapReadyResult.success(null);
@@ -178,6 +186,7 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    googleMap.setOnMarkerDragListener(this);
     googleMap.setOnPolygonClickListener(this);
     googleMap.setOnPolylineClickListener(this);
     googleMap.setOnCircleClickListener(this);
@@ -227,6 +236,31 @@ final class GoogleMapController
         {
           googleMap.snapshot(this);
           result.success(null);
+        }
+      case "map#getScreenCoordinate":
+        {
+          if (googleMap != null) {
+            LatLng latLng = Convert.toLatLng(call.arguments);
+            Point screenLocation = googleMap.getProjection().toScreenLocation(latLng);
+            result.success(Convert.pointToJson(screenLocation));
+          } else {
+            result.error(
+                "GoogleMap uninitialized",
+                "getScreenCoordinate called prior to map initialization",
+                null);
+          }
+          break;
+        }
+      case "map#getLatLng":
+        {
+          if (googleMap != null) {
+            Point point = Convert.toPoint(call.arguments);
+            LatLng latLng = googleMap.getProjection().fromScreenLocation(point);
+            result.success(Convert.latLngToJson(latLng));
+          } else {
+            result.error(
+                "GoogleMap uninitialized", "getLatLng called prior to map initialization", null);
+          }
           break;
         }
       case "camera#move":
@@ -294,6 +328,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isCompassEnabled());
           break;
         }
+      case "map#isMapToolbarEnabled":
+        {
+          result.success(googleMap.getUiSettings().isMapToolbarEnabled());
+          break;
+        }
       case "map#getMinMaxZoomLevels":
         {
           List<Float> zoomLevels = new ArrayList<>(2);
@@ -325,6 +364,16 @@ final class GoogleMapController
       case "map#isMyLocationButtonEnabled":
         {
           result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
+          break;
+        }
+      case "map#isTrafficEnabled":
+        {
+          result.success(googleMap.isTrafficEnabled());
+          break;
+        }
+      case "map#isBuildingsEnabled":
+        {
+          result.success(googleMap.isBuildingsEnabled());
           break;
         }
       case "map#setStyle":
@@ -398,6 +447,17 @@ final class GoogleMapController
   }
 
   @Override
+  public void onMarkerDragStart(Marker marker) {}
+
+  @Override
+  public void onMarkerDrag(Marker marker) {}
+
+  @Override
+  public void onMarkerDragEnd(Marker marker) {
+    markersController.onMarkerDragEnd(marker.getId(), marker.getPosition());
+  }
+
+  @Override
   public void onPolygonClick(Polygon polygon) {
     polygonsController.onPolygonTap(polygon.getId());
   }
@@ -431,6 +491,20 @@ final class GoogleMapController
     mapView.onDestroy();
     registrar.activity().getApplication().unregisterActivityLifecycleCallbacks(this);
   }
+
+  // @Override
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
+  // does. This will override it when available even with the annotation commented out.
+  public void onInputConnectionLocked() {
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+  };
+
+  // @Override
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
+  // does. This will override it when available even with the annotation commented out.
+  public void onInputConnectionUnlocked() {
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+  };
 
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -498,6 +572,11 @@ final class GoogleMapController
   @Override
   public void setCompassEnabled(boolean compassEnabled) {
     googleMap.getUiSettings().setCompassEnabled(compassEnabled);
+  }
+
+  @Override
+  public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
+    googleMap.getUiSettings().setMapToolbarEnabled(mapToolbarEnabled);
   }
 
   @Override
@@ -652,5 +731,17 @@ final class GoogleMapController
     }
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
+  }
+
+  public void setIndoorEnabled(boolean indoorEnabled) {
+    this.indoorEnabled = indoorEnabled;
+  }
+
+  public void setTrafficEnabled(boolean trafficEnabled) {
+    this.trafficEnabled = trafficEnabled;
+  }
+
+  public void setBuildingsEnabled(boolean buildingsEnabled) {
+    this.buildingsEnabled = buildingsEnabled;
   }
 }

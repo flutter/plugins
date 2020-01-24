@@ -14,14 +14,17 @@ class GoogleMapController {
     channel.setMethodCallHandler(_handleMethodCall);
   }
 
+  /// Initialize control of a [GoogleMap] with [id].
+  ///
+  /// Mainly for internal use when instantiating a [GoogleMapController] passed
+  /// in [GoogleMap.onMapCreated] callback.
   static Future<GoogleMapController> init(
     int id,
     CameraPosition initialCameraPosition,
     _GoogleMapState googleMapState,
   ) async {
     assert(id != null);
-    final MethodChannel channel =
-        MethodChannel('plugins.flutter.io/google_maps_$id');
+    final MethodChannel channel = MethodChannel('plugins.flutter.io/google_maps_$id');
     await channel.invokeMethod<void>('map#waitForMap');
     return GoogleMapController._(
       channel,
@@ -30,6 +33,9 @@ class GoogleMapController {
     );
   }
 
+  /// Used to communicate with the native platform.
+  ///
+  /// Accessible only for testing.
   @visibleForTesting
   final MethodChannel channel;
 
@@ -57,6 +63,9 @@ class GoogleMapController {
       case 'marker#onTap':
         _googleMapState.onMarkerTap(call.arguments['markerId']);
         break;
+      case 'marker#onDragEnd':
+        _googleMapState.onMarkerDragEnd(call.arguments['markerId'], LatLng._fromJson(call.arguments['position']));
+        break;
       case 'infoWindow#onTap':
         _googleMapState.onInfoWindowTap(call.arguments['markerId']);
         break;
@@ -73,8 +82,7 @@ class GoogleMapController {
         _googleMapState.onTap(LatLng._fromJson(call.arguments['position']));
         break;
       case 'map#onLongPress':
-        _googleMapState
-            .onLongPress(LatLng._fromJson(call.arguments['position']));
+        _googleMapState.onLongPress(LatLng._fromJson(call.arguments['position']));
         break;
       case 'map#onSnapshot':
         _googleMapState.onSnaphot(call.arguments);
@@ -190,8 +198,7 @@ class GoogleMapController {
   /// and [Android](https://developers.google.com/maps/documentation/android-sdk/style-reference)
   /// style reference for more information regarding the supported styles.
   Future<void> setMapStyle(String mapStyle) async {
-    final List<dynamic> successAndError =
-        await channel.invokeMethod<List<dynamic>>('map#setStyle', mapStyle);
+    final List<dynamic> successAndError = await channel.invokeMethod<List<dynamic>>('map#setStyle', mapStyle);
     final bool success = successAndError[0];
     if (!success) {
       throw MapStyleException(successAndError[1]);
@@ -200,8 +207,7 @@ class GoogleMapController {
 
   /// Return [LatLngBounds] defining the region that is visible in a map.
   Future<LatLngBounds> getVisibleRegion() async {
-    final Map<String, dynamic> latLngBounds =
-        await channel.invokeMapMethod<String, dynamic>('map#getVisibleRegion');
+    final Map<String, dynamic> latLngBounds = await channel.invokeMapMethod<String, dynamic>('map#getVisibleRegion');
     final LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
     final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
 
@@ -211,5 +217,24 @@ class GoogleMapController {
   /// Ask for a snapshot to be returned via onSnapshot event
   Future<void> snapshot() async {
     await channel.invokeMethod<void>('map#snapshot');
+  }
+
+  /// Return [ScreenCoordinate] of the [LatLng] in the current map view.
+  ///
+  /// A projection is used to translate between on screen location and geographic coordinates.
+  /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
+  /// of the map, not necessarily of the whole screen.
+  Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
+    final Map<String, int> point = await channel.invokeMapMethod<String, int>('map#getScreenCoordinate', latLng._toJson());
+    return ScreenCoordinate(x: point['x'], y: point['y']);
+  }
+
+  /// Returns [LatLng] corresponding to the [ScreenCoordinate] in the current map view.
+  ///
+  /// Returned [LatLng] corresponds to a screen location. The screen location is specified in screen
+  /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
+  Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) async {
+    final List<dynamic> latLng = await channel.invokeMethod<List<dynamic>>('map#getLatLng', screenCoordinate._toJson());
+    return LatLng(latLng[0], latLng[1]);
   }
 }

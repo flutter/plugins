@@ -9,6 +9,7 @@ part of google_maps_flutter;
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class CircleId {
+  /// Creates an immutable identifier for a [Circle].
   CircleId(this.value) : assert(value != null);
 
   /// value of the [CircleId].
@@ -34,6 +35,7 @@ class CircleId {
 /// Draws a circle on the map.
 @immutable
 class Circle {
+  /// Creates an immutable representation of a [Circle] to draw on [GoogleMap].
   const Circle({
     @required this.circleId,
     this.consumeTapEvents = false,
@@ -114,6 +116,9 @@ class Circle {
     );
   }
 
+  /// Creates a new [Circle] object whose values are the same as this instance.
+  Circle clone() => copyWith();
+
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
@@ -141,7 +146,16 @@ class Circle {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Circle typedOther = other;
-    return circleId == typedOther.circleId;
+    return circleId == typedOther.circleId &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        fillColor == typedOther.fillColor &&
+        center == typedOther.center &&
+        radius == typedOther.radius &&
+        strokeColor == typedOther.strokeColor &&
+        strokeWidth == typedOther.strokeWidth &&
+        visible == typedOther.visible &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override
@@ -152,8 +166,8 @@ Map<CircleId, Circle> _keyByCircleId(Iterable<Circle> circles) {
   if (circles == null) {
     return <CircleId, Circle>{};
   }
-  return Map<CircleId, Circle>.fromEntries(circles.map(
-      (Circle circle) => MapEntry<CircleId, Circle>(circle.circleId, circle)));
+  return Map<CircleId, Circle>.fromEntries(circles.map((Circle circle) =>
+      MapEntry<CircleId, Circle>(circle.circleId, circle.clone())));
 }
 
 List<Map<String, dynamic>> _serializeCircleSet(Set<Circle> circles) {

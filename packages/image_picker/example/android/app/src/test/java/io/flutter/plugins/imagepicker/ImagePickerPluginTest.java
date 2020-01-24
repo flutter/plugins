@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.Application;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -28,6 +29,7 @@ public class ImagePickerPluginTest {
 
   @Mock PluginRegistry.Registrar mockRegistrar;
   @Mock Activity mockActivity;
+  @Mock Application mockApplication;
   @Mock ImagePickerDelegate mockImagePickerDelegate;
   @Mock MethodChannel.Result mockResult;
 
@@ -36,17 +38,17 @@ public class ImagePickerPluginTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    when(mockRegistrar.context()).thenReturn(mockApplication);
 
-    plugin = new ImagePickerPlugin(mockRegistrar, mockImagePickerDelegate);
+    plugin = new ImagePickerPlugin(mockImagePickerDelegate, mockActivity);
   }
 
   @Test
   public void onMethodCall_WhenActivityIsNull_FinishesWithForegroundActivityRequiredError() {
-    when(mockRegistrar.activity()).thenReturn(null);
     MethodCall call = buildMethodCall(SOURCE_GALLERY);
-
-    plugin.onMethodCall(call, mockResult);
-
+    ImagePickerPlugin imagePickerPluginWithNullActivity =
+        new ImagePickerPlugin(mockImagePickerDelegate, null);
+    imagePickerPluginWithNullActivity.onMethodCall(call, mockResult);
     verify(mockResult)
         .error("no_activity", "image_picker plugin requires a foreground activity.", null);
     verifyZeroInteractions(mockImagePickerDelegate);
@@ -54,46 +56,34 @@ public class ImagePickerPluginTest {
 
   @Test
   public void onMethodCall_WhenCalledWithUnknownMethod_ThrowsException() {
-    when(mockRegistrar.activity()).thenReturn(mockActivity);
     exception.expect(IllegalArgumentException.class);
     exception.expectMessage("Unknown method test");
-
     plugin.onMethodCall(new MethodCall("test", null), mockResult);
-
     verifyZeroInteractions(mockImagePickerDelegate);
     verifyZeroInteractions(mockResult);
   }
 
   @Test
   public void onMethodCall_WhenCalledWithUnknownImageSource_ThrowsException() {
-    when(mockRegistrar.activity()).thenReturn(mockActivity);
     exception.expect(IllegalArgumentException.class);
     exception.expectMessage("Invalid image source: -1");
-
     plugin.onMethodCall(buildMethodCall(-1), mockResult);
-
     verifyZeroInteractions(mockImagePickerDelegate);
     verifyZeroInteractions(mockResult);
   }
 
   @Test
   public void onMethodCall_WhenSourceIsGallery_InvokesChooseImageFromGallery() {
-    when(mockRegistrar.activity()).thenReturn(mockActivity);
     MethodCall call = buildMethodCall(SOURCE_GALLERY);
-
     plugin.onMethodCall(call, mockResult);
-
     verify(mockImagePickerDelegate).chooseImageFromGallery(eq(call), any());
     verifyZeroInteractions(mockResult);
   }
 
   @Test
   public void onMethodCall_WhenSourceIsCamera_InvokesTakeImageWithCamera() {
-    when(mockRegistrar.activity()).thenReturn(mockActivity);
     MethodCall call = buildMethodCall(SOURCE_CAMERA);
-
     plugin.onMethodCall(call, mockResult);
-
     verify(mockImagePickerDelegate).takeImageWithCamera(eq(call), any());
     verifyZeroInteractions(mockResult);
   }
@@ -104,6 +94,13 @@ public class ImagePickerPluginTest {
     ImagePickerPlugin.registerWith((mockRegistrar));
     assertTrue(
         "No exception thrown when ImagePickerPlugin.registerWith ran with activity = null", true);
+  }
+
+  @Test
+  public void onConstructor_WhenContextTypeIsActivity_ShouldNotCrash() {
+    new ImagePickerPlugin(mockImagePickerDelegate, mockActivity);
+    assertTrue(
+        "No exception thrown when ImagePickerPlugin() ran with context instanceof Activity", true);
   }
 
   private MethodCall buildMethodCall(final int source) {
