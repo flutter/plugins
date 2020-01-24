@@ -1,3 +1,21 @@
+## 0.3.1+7
+
+* Clean up various Android workarounds no longer needed after framework v1.12.
+
+## 0.3.1+6
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.3.1+5
+
+* Fix pedantic linter errors.
+
+## 0.3.1+4
+
+* Update and migrate iOS example project.
+
 ## 0.3.1+3
 
 * Remove AndroidX warning.

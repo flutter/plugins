@@ -38,6 +38,7 @@ enum ResolutionPreset {
   max,
 }
 
+// ignore: inference_failure_on_function_return_type
 typedef onLatestImageAvailable = Function(CameraImage image);
 
 /// Returns the resolution preset as a String.
@@ -444,7 +445,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       throw CameraException(e.code, e.message);
     }
 
-    _imageStreamSubscription.cancel();
+    await _imageStreamSubscription.cancel();
     _imageStreamSubscription = null;
   }
 

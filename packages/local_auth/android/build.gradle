@@ -37,4 +37,33 @@ dependencies {
     api "androidx.core:core:1.1.0-beta01"
     api "androidx.biometric:biometric:1.0.0-beta01"
     api "androidx.fragment:fragment:1.1.0-alpha06"
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}
+
+// TODO(bparrishMines): Remove this hack once androidx.lifecycle is included on stable. https://github.com/flutter/flutter/issues/42348
+afterEvaluate {
+    def containsEmbeddingDependencies = false
+    for (def configuration : configurations.all) {
+        for (def dependency : configuration.dependencies) {
+            if (dependency.group == 'io.flutter' &&
+                    dependency.name.startsWith('flutter_embedding') &&
+                    dependency.isTransitive())
+            {
+                containsEmbeddingDependencies = true
+                break
+            }
+        }
+    }
+    if (!containsEmbeddingDependencies) {
+        android {
+            dependencies {
+                def lifecycle_version = "1.1.1"
+                compileOnly "android.arch.lifecycle:runtime:$lifecycle_version"
+                compileOnly "android.arch.lifecycle:common:$lifecycle_version"
+                compileOnly "android.arch.lifecycle:common-java8:$lifecycle_version"
+            }
+        }
+    }
 }
