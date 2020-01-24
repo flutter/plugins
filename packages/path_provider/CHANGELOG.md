@@ -1,3 +1,7 @@
+## 1.5.2
+
+* macOS support now allows for retrieving the user's downloads directory.
+
 ## 1.5.1
 
 * Remove the deprecated `author:` field from pubspec.yaml
