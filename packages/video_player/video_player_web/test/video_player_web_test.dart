@@ -98,7 +98,7 @@ void main() {
       await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
       await VideoPlayerPlatform.instance.play(videoPlayerId);
 
-      expect(eventStream.toList(), throwsA(isA<PlatformException>()));
+      expect(eventStream, emitsError(isA<PlatformException>()));
     });
 
     test('can pause', () {
