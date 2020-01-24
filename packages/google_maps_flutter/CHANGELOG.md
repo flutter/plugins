@@ -2,6 +2,10 @@
 
 * Add support for holes in Polygons
 
+## 0.5.21+16
+
+* Fixed typo in LatLng's documentation.
+
 ## 0.5.21+15
 
 * Remove the deprecated `author:` field from pubspec.yaml
