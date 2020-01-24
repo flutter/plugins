@@ -99,12 +99,9 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
   }
 
   private GoogleMapsPlugin(Registrar registrar) {
-    this.registrarActivityHashCode = registrar.activity().hashCode();
-    if (dummyMapInitialized) {
-      return;
-    }
     Activity activity = registrar.activity();
-    if (activity == null) {
+    this.registrarActivityHashCode = activity.hashCode();
+    if (dummyMapInitialized) {
       return;
     }
     FragmentManager fragmentManager = activity.getFragmentManager();
