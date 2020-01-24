@@ -104,11 +104,7 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
     if (dummyMapInitialized) {
       return;
     }
-    FragmentManager fragmentManager = activity.getFragmentManager();
-    if (fragmentManager == null) {
-      return;
-    }
-    initDummyMap(fragmentManager);
+    initDummyMap(activity.getFragmentManager());
     dummyMapInitialized = true;
   }
 
