@@ -1,4 +1,4 @@
-## 5.4.1+1
+## 5.4.2
 
 * Add documentation suggesting how to encode urls with special characters
 
