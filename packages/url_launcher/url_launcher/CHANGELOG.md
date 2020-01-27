@@ -1,3 +1,7 @@
+## 5.4.1+1
+
+* Add documentation suggesting how to encode urls with special characters
+
 ## 5.4.1
 
 * Update unit tests to work with the PlatformInterface from package `plugin_platform_interface`.
