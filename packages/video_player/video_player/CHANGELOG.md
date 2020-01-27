@@ -1,6 +1,10 @@
-## 0.10.5+3
+## 0.10.5+4
 
 * Fixes issue Flutter's video plugin can cause crashes after a closing a flutter view on simulator model iPhone X or higher
+
+## 0.10.5+3
+
+* Add integration instructions for the `web` platform.
 
 ## 0.10.5+2
 

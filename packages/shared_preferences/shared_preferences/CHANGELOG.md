@@ -1,3 +1,7 @@
+## 0.5.6+1
+
+* Updated README
+
 ## 0.5.6
 
 * Support `web` by default.
