@@ -62,7 +62,7 @@ import 'package:url_launcher/url_launcher.dart';
 final Uri _emailLaunchUri = Uri(
   scheme: 'mailto',
   userInfo: 'support',
-  host: 'storybridgeapp.com',
+  host: 'flutter.dev',
   queryParameters: {
     'subject': 'Example Subject & Symbols are allowed!'
   }
