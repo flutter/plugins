@@ -72,7 +72,7 @@ final String _emailLaunchString = _emailLaunchUri.toString();
 
 // ...
 
-launch(emailLaunchString);
+launch(_emailLaunchString);
 ```
 
 ## Handling missing URL receivers
