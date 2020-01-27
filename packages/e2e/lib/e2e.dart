@@ -11,6 +11,8 @@ import 'package:flutter/widgets.dart';
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
 class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
+  /// Sets up a listener to report that the tests are finished when everything is
+  /// torn down.
   E2EWidgetsFlutterBinding() {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
@@ -18,7 +20,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         await _channel.invokeMethod<void>(
             'allTestsFinished', <String, dynamic>{'results': _results});
       } on MissingPluginException {
-        // Tests were run on the host rather than a device.
+        print('Warning: E2E test plugin was not detected.');
       }
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
@@ -26,6 +28,10 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
+  /// Similar to [WidgetsFlutterBinding.ensureInitialized].
+  ///
+  /// Returns an instance of the [E2EWidgetsFlutterBinding], creating and
+  /// initializing it if necessary.
   static WidgetsBinding ensureInitialized() {
     if (WidgetsBinding.instance == null) {
       E2EWidgetsFlutterBinding();
@@ -34,8 +40,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     return WidgetsBinding.instance;
   }
 
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.dev/e2e');
+  static const MethodChannel _channel = MethodChannel('plugins.flutter.io/e2e');
 
   static Map<String, String> _results = <String, String>{};
 

@@ -1,9 +1,11 @@
 name: e2e_example
 description: Demonstrates how to use the e2e plugin.
+version: 0.0.1
 publish_to: 'none'
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.6.7 <2.0.0"
 
 dependencies:
   flutter:
@@ -18,6 +20,8 @@ dev_dependencies:
     sdk: flutter
   e2e:
     path: ../
+  e2e_macos:
+    path: ../e2e_macos
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

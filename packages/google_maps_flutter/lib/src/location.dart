@@ -55,7 +55,7 @@ class LatLng {
 /// * lat ∈ [`southwest.latitude`, `northeast.latitude`]
 /// * lng ∈ [`southwest.longitude`, `northeast.longitude`],
 ///   if `southwest.longitude` ≤ `northeast.longitude`,
-/// * lng ∈ [-180, `northeast.longitude`] ∪ [`southwest.longitude`, 180[,
+/// * lng ∈ [-180, `northeast.longitude`] ∪ [`southwest.longitude`, 180],
 ///   if `northeast.longitude` < `southwest.longitude`
 class LatLngBounds {
   /// Creates geographical bounding box with the specified corners.
@@ -95,6 +95,7 @@ class LatLngBounds {
     }
   }
 
+  /// Converts a list to [LatLngBounds].
   @visibleForTesting
   static LatLngBounds fromList(dynamic json) {
     if (json == null) {

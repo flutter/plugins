@@ -14,10 +14,11 @@ function check_publish() {
   local failures=()
   for dir in $(pub global run flutter_plugin_tools list --plugins="$1"); do
     local package_name=$(basename "$dir")
+
     echo "Checking that $package_name can be published."
     if [[ $(cd "$dir" && cat pubspec.yaml | grep -E "^publish_to: none") ]]; then
       echo "Package $package_name is marked as unpublishable. Skipping."
-    elif (cd "$dir" && pub publish --dry-run > /dev/null); then
+    elif (cd "$dir" && flutter pub publish -- --dry-run > /dev/null); then
       echo "Package $package_name is able to be published."
     else
       error "Unable to publish $package_name"

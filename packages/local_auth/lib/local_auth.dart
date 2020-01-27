@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This is a temporary ignore to allow us to land a new set of linter rules in a
+// series of manageable patches instead of one gigantic PR. It disables some of
+// the new lints that are already failing on this plugin, for this plugin. It
+// should be deleted and the failing lints addressed as soon as possible.
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 
 import 'package:flutter/services.dart';
@@ -88,6 +94,18 @@ class LocalAuthentication {
     }
     return await _channel.invokeMethod<bool>(
         'authenticateWithBiometrics', args);
+  }
+
+  /// Returns true if auth was cancelled successfully.
+  /// This api only works for Android.
+  /// Returns false if there was some error or no auth in progress.
+  ///
+  /// Returns [Future] bool true or false:
+  Future<bool> stopAuthentication() {
+    if (_platform.isAndroid) {
+      return _channel.invokeMethod<bool>('stopAuthentication');
+    }
+    return Future<bool>.sync(() => true);
   }
 
   /// Returns true if device is capable of checking biometrics
