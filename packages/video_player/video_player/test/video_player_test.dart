@@ -52,8 +52,8 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<ClosedCaptionFile> get closedCaptionFile => _loadClosedCaption();
 }
 
-
-Future<ClosedCaptionFile> _loadClosedCaption() async => _FakeClosedCaptionFile();
+Future<ClosedCaptionFile> _loadClosedCaption() async =>
+    _FakeClosedCaptionFile();
 
 class _FakeClosedCaptionFile extends ClosedCaptionFile {
   @override
