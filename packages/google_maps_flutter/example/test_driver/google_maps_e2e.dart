@@ -104,9 +104,10 @@ void main() {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
+    GoogleMapController controller;
 
-    const MinMaxZoomPreference initialZoomLevel = MinMaxZoomPreference(2, 4);
-    const MinMaxZoomPreference finalZoomLevel = MinMaxZoomPreference(3, 8);
+    const MinMaxZoomPreference initialZoomLevel = MinMaxZoomPreference(4, 8);
+    const MinMaxZoomPreference finalZoomLevel = MinMaxZoomPreference(6, 10);
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -114,18 +115,26 @@ void main() {
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
         minMaxZoomPreference: initialZoomLevel,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (GoogleMapController c) async {
           final GoogleMapInspector inspector =
               // ignore: invalid_use_of_visible_for_testing_member
-              GoogleMapInspector(controller.channel);
+              GoogleMapInspector(c.channel);
+          controller = c;
           inspectorCompleter.complete(inspector);
         },
       ),
     ));
 
     final GoogleMapInspector inspector = await inspectorCompleter.future;
-    MinMaxZoomPreference zoomLevel = await inspector.getMinMaxZoomLevels();
-    expect(zoomLevel, equals(initialZoomLevel));
+    await controller.moveCamera(CameraUpdate.zoomTo(15));
+    await tester.pumpAndSettle();
+    double zoomLevel = await inspector.getZoomLevel();
+    expect(zoomLevel, equals(initialZoomLevel.maxZoom));
+
+    await controller.moveCamera(CameraUpdate.zoomTo(1));
+    await tester.pumpAndSettle();
+    zoomLevel = await inspector.getZoomLevel();
+    expect(zoomLevel, equals(initialZoomLevel.minZoom));
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -139,8 +148,15 @@ void main() {
       ),
     ));
 
-    zoomLevel = await inspector.getMinMaxZoomLevels();
-    expect(zoomLevel, equals(finalZoomLevel));
+    await controller.moveCamera(CameraUpdate.zoomTo(15));
+    await tester.pumpAndSettle();
+    zoomLevel = await inspector.getZoomLevel();
+    expect(zoomLevel, equals(finalZoomLevel.maxZoom));
+
+    await controller.moveCamera(CameraUpdate.zoomTo(1));
+    await tester.pumpAndSettle();
+    zoomLevel = await inspector.getZoomLevel();
+    expect(zoomLevel, equals(finalZoomLevel.minZoom));
   });
 
   testWidgets('testZoomGesturesEnabled', (WidgetTester tester) async {
@@ -426,6 +442,7 @@ void main() {
     expect(isBuildingsEnabled, true);
   });
 
+  // Location button tests are skipped because we don't have location permission to test.
   testWidgets('testMyLocationButtonToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
@@ -466,7 +483,7 @@ void main() {
 
     myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, false);
-  });
+  }, skip: true);
 
   testWidgets('testMyLocationButton initial value false',
       (WidgetTester tester) async {
@@ -494,7 +511,7 @@ void main() {
     final bool myLocationButtonEnabled =
         await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, false);
-  });
+  }, skip: true);
 
   testWidgets('testMyLocationButton initial value true',
       (WidgetTester tester) async {
@@ -522,7 +539,7 @@ void main() {
     final bool myLocationButtonEnabled =
         await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, true);
-  });
+  }, skip: true);
 
   testWidgets('testSetMapStyle valid Json String', (WidgetTester tester) async {
     final Key key = GlobalKey();
@@ -569,8 +586,7 @@ void main() {
       await controller.setMapStyle('invalid_value');
       fail('expected MapStyleException');
     } on MapStyleException catch (e) {
-      expect(e.cause,
-          'The data couldn’t be read because it isn’t in the correct format.');
+      expect(e.cause, isNotNull);
     }
   });
 
