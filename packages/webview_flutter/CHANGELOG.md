@@ -1,6 +1,7 @@
 ## 0.3.19+6
 
 * iOS now can open iframe links and target _blank links.
+* Allow zoom and hide the zoom in and zoom out buttons.
 
 ## 0.3.19+5
 
