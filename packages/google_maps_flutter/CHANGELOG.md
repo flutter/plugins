@@ -1,3 +1,7 @@
+## 0.5.21+17
+
+* Fix Swift example in README.md.
+
 ## 0.5.21+16
 
 * Fixed typo in LatLng's documentation.
