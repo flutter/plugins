@@ -1,6 +1,7 @@
-## 1.5.2
+## 1.6.0
 
-* macOS support now allows for retrieving the user's downloads directory.
+* Support for retrieving the downloads directory was added.
+  The call for this is `getDownloadsDirectory`.
 
 ## 1.5.1
 
