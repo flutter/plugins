@@ -216,3 +216,23 @@ Future<List<Directory>> getExternalStorageDirectories({
 
   return paths.map((String path) => Directory(path)).toList();
 }
+
+/// Path to the directory where downloaded files can be stored.
+/// This is typically only relevant on desktop operating systems.
+///
+/// On Android and on iOS, this function throws an [UnsupportedError] as no equivalent
+/// path exists.
+Future<Directory> getDownloadsDirectory() async {
+  if (_platform.isAndroid) {
+    throw UnsupportedError('Functionality not available on Android');
+  }
+  if (_platform.isIOS) {
+    throw UnsupportedError('Functionality not available on iOS');
+  }
+  final String path =
+      await _channel.invokeMethod<String>('getDownloadsDirectory');
+  if (path == null) {
+    return null;
+  }
+  return Directory(path);
+}
