@@ -11,6 +11,8 @@ import 'package:flutter/widgets.dart';
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
 class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
+  /// Sets up a listener to report that the tests are finished when everything is
+  /// torn down.
   E2EWidgetsFlutterBinding() {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
@@ -26,6 +28,10 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
+  /// Similar to [WidgetsFlutterBinding.ensureInitialized].
+  ///
+  /// Returns an instance of the [E2EWidgetsFlutterBinding], creating and
+  /// initializing it if necessary.
   static WidgetsBinding ensureInitialized() {
     if (WidgetsBinding.instance == null) {
       E2EWidgetsFlutterBinding();

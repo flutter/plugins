@@ -1,6 +1,8 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 
+// ignore_for_file: public_member_api_docs
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {

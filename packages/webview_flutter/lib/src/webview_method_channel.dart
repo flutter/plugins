@@ -10,6 +10,8 @@ import '../platform_interface.dart';
 
 /// A [WebViewPlatformController] that uses a method channel to control the webview.
 class MethodChannelWebViewPlatform implements WebViewPlatformController {
+  /// Constructs an instance that will listen for webviews broadcasting to the
+  /// given [id], using the given [WebViewPlatformCallbacksHandler].
   MethodChannelWebViewPlatform(int id, this._platformCallbacksHandler)
       : assert(_platformCallbacksHandler != null),
         _channel = MethodChannel('plugins.flutter.io/webview_$id') {
@@ -40,6 +42,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         return null;
       case 'onProgress':
         _platformCallbacksHandler.onProgress(call.arguments['progress']);
+      case 'onPageStarted':
+        _platformCallbacksHandler.onPageStarted(call.arguments['url']);
         return null;
     }
     throw MissingPluginException(
@@ -136,6 +140,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull('hasNavigationDelegate', settings.hasNavigationDelegate);
     _addIfNonNull('hasProgressTracking', settings.hasProgressTracking);
     _addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
+    _addIfNonNull(
+        'gestureNavigationEnabled', settings.gestureNavigationEnabled);
     _addSettingIfPresent('userAgent', settings.userAgent);
     return map;
   }

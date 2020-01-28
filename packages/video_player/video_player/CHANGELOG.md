@@ -1,3 +1,40 @@
+## 0.10.5+3
+
+* Add integration instructions for the `web` platform.
+
+## 0.10.5+2
+
+* Make sure the plugin is correctly initialized
+
+## 0.10.5+1
+
+* Fixes issue where `initialize()` `Future` stalls when failing to load source
+  data and does not throw an error.
+
+## 0.10.5
+
+* Support `web` by default.
+* Require Flutter SDK 1.12.13+hotfix.4 or greater.
+
+## 0.10.4+2
+
+* Remove the deprecated `author:` field form pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.10.4+1
+
+* Fix pedantic lints. This fixes some potential race conditions in cases where
+  futures within some video_player methods weren't being awaited correctly.
+
+## 0.10.4
+
+* Port plugin code to use the federated Platform Interface, instead of a MethodChannel directly.
+
+## 0.10.3+3
+
+* Add DartDocs and unit tests.
+
 ## 0.10.3+2
 
 * Update the homepage to point to the new plugin location

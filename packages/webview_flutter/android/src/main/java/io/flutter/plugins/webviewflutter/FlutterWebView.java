@@ -285,6 +285,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
                   }
                 });
           }
+        case "gestureNavigationEnabled":
           break;
         case "userAgent":
           updateUserAgent((String) settings.get(key));
