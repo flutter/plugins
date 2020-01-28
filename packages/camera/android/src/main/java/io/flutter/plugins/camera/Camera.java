@@ -71,6 +71,14 @@ public class Camera {
     max,
   }
 
+  // Flash control setting. (Mirrors FlashMode enum in camera.dart)
+  // Labels respect java convention to avoid conflict with reserved word or any variable name
+  private final int CAMERA_FLASH_MODE_OFF = 0;
+  private final int CAMERA_FLASH_MODE_ALWAYS_FLASH = 1;
+  private final int CAMERA_FLASH_MODE_AUTO_FLASH = 2;
+  private final int CAMERA_FLASH_MODE_TORCH = 3;
+
+
   public Camera(
       final Activity activity,
       final SurfaceTextureEntry flutterTexture,
@@ -138,6 +146,7 @@ public class Camera {
 
     mediaRecorder.prepare();
   }
+
 
   @SuppressLint("MissingPermission")
   public void open(@NonNull final Result result) throws CameraAccessException {
@@ -517,4 +526,47 @@ public class Camera {
             : (isFrontFacing) ? -currentOrientation : currentOrientation;
     return (sensorOrientationOffset + sensorOrientation + 360) % 360;
   }
+
+  public void setFlash(boolean value) {
+    try {
+        setFlashModeRequest(captureRequestBuilder, value ? CAMERA_FLASH_MODE_TORCH : CAMERA_FLASH_MODE_OFF);
+        CaptureRequest request = captureRequestBuilder.build();
+        cameraCaptureSession.setRepeatingRequest(request, null, null);
+    } catch (Exception e) {
+      return;
+    }
+  }
+
+  private void setFlashModeRequest(CaptureRequest.Builder builderRequest, int mode) {
+    int flashRequestMode;
+    int autoExposureRequestMode;
+    switch (mode) {
+      case CAMERA_FLASH_MODE_ALWAYS_FLASH:
+        flashRequestMode = CameraMetadata.FLASH_MODE_OFF;
+        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON_ALWAYS_FLASH;
+        break;
+      case CAMERA_FLASH_MODE_AUTO_FLASH:
+        flashRequestMode = CameraMetadata.FLASH_MODE_OFF;
+        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH;
+        break;
+      case CAMERA_FLASH_MODE_TORCH:
+        flashRequestMode = CameraMetadata.FLASH_MODE_TORCH;
+        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON;
+        break;
+      default:
+        flashRequestMode = CameraMetadata.FLASH_MODE_OFF;
+        autoExposureRequestMode = CameraMetadata.CONTROL_AE_MODE_ON;
+    }
+
+    builderRequest.set(CaptureRequest.FLASH_MODE, flashRequestMode);
+    builderRequest.set(CaptureRequest.CONTROL_AE_MODE, autoExposureRequestMode);
+    builderRequest.set(
+            CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+            CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+  }
+
 }
+
+
+
+

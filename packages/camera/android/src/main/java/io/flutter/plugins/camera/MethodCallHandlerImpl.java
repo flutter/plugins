@@ -131,6 +131,13 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           result.success(null);
           break;
         }
+      case "enableFlash":
+      {
+        if (camera != null) {
+          camera.setFlash(call.argument("flash"));
+        }
+        break;
+      }
       default:
         result.notImplemented();
         break;
