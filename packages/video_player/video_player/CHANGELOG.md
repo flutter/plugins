@@ -1,3 +1,8 @@
+## 0.10.6
+
+* `ClosedCaptionFile` and `SubRipCaptionFile` classes added to read
+  [SubRip](https://en.wikipedia.org/wiki/SubRip) files into dart objects.
+
 ## 0.10.5+3
 
 * Add integration instructions for the `web` platform.
