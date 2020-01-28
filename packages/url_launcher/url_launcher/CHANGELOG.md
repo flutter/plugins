@@ -1,6 +1,6 @@
 ## 5.4.2
 
-* Add documentation suggesting how to encode urls with special characters
+* Add documentation suggesting how to encode urls with special characters.
 
 ## 5.4.1
 
