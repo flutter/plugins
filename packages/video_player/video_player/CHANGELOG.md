@@ -1,3 +1,8 @@
+## 0.10.7
+
+* `VideoPlayerController` support for reading closed caption files. 
+* `VideoPlayerValue` has a `caption` field for reading the current closed caption at any given time.
+
 ## 0.10.6
 
 * `ClosedCaptionFile` and `SubRipCaptionFile` classes added to read
