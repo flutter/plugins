@@ -1,6 +1,10 @@
+## 0.3.0+2
+
+* Update te example app to avoid using deprecated api.
+
 ## 0.3.0+1
 
-* Fixing usage example. No functional changes. 
+* Fixing usage example. No functional changes.
 
 ## 0.3.0
 
