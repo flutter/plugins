@@ -40,15 +40,24 @@ Ensure the following permission is present in your Android Manifest file, locate
 
 The Flutter project template adds it, so it may already be there.
 
-### Supported Formats
+### Web
+
+This plugin compiles for the web platform since version `0.10.5`, in recent enough versions of Flutter (`>=1.12.13+hotfix.4`).
+
+> The Web platform does **not** suppport `dart:io`, so attempts to create a `VideoPlayerController.file` will throw an `UnimplementedError`.
+
+Different web browsers may have different video-playback capabilities (supported formats, autoplay...). Check [package:video_player_web](https://pub.dev/packages/video_player_web) for more web-specific information.
+
+## Supported Formats
 
 - On iOS, the backing player is [AVPlayer](https://developer.apple.com/documentation/avfoundation/avplayer).
   The supported formats vary depending on the version of iOS, [AVURLAsset](https://developer.apple.com/documentation/avfoundation/avurlasset) class
   has [audiovisualTypes](https://developer.apple.com/documentation/avfoundation/avurlasset/1386800-audiovisualtypes?language=objc) that you can query for supported av formats.
 - On Android, the backing player is [ExoPlayer](https://google.github.io/ExoPlayer/),
   please refer [here](https://google.github.io/ExoPlayer/supported-formats.html) for list of supported formats.
+- On Web, available formats depend on your users' browsers (vendor and version). Check [package:video_player_web](https://pub.dev/packages/video_player_web) for more specific information.
 
-### Example
+## Example
 
 ```dart
 import 'package:video_player/video_player.dart';
