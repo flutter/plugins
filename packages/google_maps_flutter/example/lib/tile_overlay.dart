@@ -56,7 +56,7 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
   }
 
   void _clearTileCache() {
-    print("Clear tile cahce");
+    print("Clear tile cache");
     if (_tileOverlay != null && controller != null) {
       controller.clearTileCache(_tileOverlay.tileOverlayId);
     }
