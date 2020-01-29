@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Added support for user's downloads directory.
+
 ## 0.0.2+1
 
 * Update README.
