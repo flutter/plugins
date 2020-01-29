@@ -484,7 +484,7 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('liteModeEnabled', liteModeEnabled);
     if (liteModeEnabled != null && liteModeEnabled && !Platform.isAndroid) {
-      print('Warning: liteModeEnabled is Android only');
+      throw Exception('liteModeEnabled is Android only');
     }
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
