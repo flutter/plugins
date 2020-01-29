@@ -8,10 +8,11 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.FragmentManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,7 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * the map. A Texture drawn using GoogleMap bitmap snapshots can then be shown instead of the
  * overlay.
  */
-public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks {
+public class GoogleMapsPlugin
+    implements Application.ActivityLifecycleCallbacks, MethodChannel.MethodCallHandler {
   static final int CREATED = 1;
   static final int STARTED = 2;
   static final int RESUMED = 3;
@@ -30,7 +32,7 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
   static final int DESTROYED = 6;
   private final AtomicInteger state = new AtomicInteger(0);
   private final int registrarActivityHashCode;
-  private boolean dummyMapInitialized;
+  private final FragmentManager fragmentManager;
 
   public static void registerWith(Registrar registrar) {
     if (registrar.activity() == null) {
@@ -100,27 +102,31 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
 
   private GoogleMapsPlugin(Registrar registrar) {
     Activity activity = registrar.activity();
-    this.registrarActivityHashCode = activity.hashCode();
-    if (dummyMapInitialized) {
-      return;
-    }
-    initDummyMap(activity.getFragmentManager());
-    dummyMapInitialized = true;
+    registrarActivityHashCode = activity.hashCode();
+    fragmentManager = activity.getFragmentManager();
+    MethodChannel methodChannel =
+        new MethodChannel(registrar.messenger(), "flutter.io/googleMapsPluginUtils");
+    methodChannel.setMethodCallHandler(this);
   }
 
-  /**
-   * This method creates dummy map. This call will initialize all services needed by GoogleMaps This
-   * will speed up next GoogleMap view initialization
-   */
-  private static void initDummyMap(@NonNull final FragmentManager fragmentManager) {
-    final MapFragment mapFragment = new MapFragment();
-    fragmentManager.beginTransaction().add(mapFragment, "DummyMap").commit();
-    mapFragment.getMapAsync(
-        new OnMapReadyCallback() {
-          @Override
-          public void onMapReady(GoogleMap googleMap) {
-            fragmentManager.beginTransaction().remove(mapFragment).commit();
-          }
-        });
+  @Override
+  public void onMethodCall(MethodCall call, final MethodChannel.Result result) {
+    switch (call.method) {
+      case "warmUp":
+        final MapFragment mapFragment = new MapFragment();
+        fragmentManager.beginTransaction().add(mapFragment, "DummyMap").commit();
+        mapFragment.getMapAsync(
+            new OnMapReadyCallback() {
+              @Override
+              public void onMapReady(GoogleMap googleMap) {
+                fragmentManager.beginTransaction().remove(mapFragment).commit();
+                result.success(null);
+              }
+            });
+        break;
+      default:
+        result.notImplemented();
+        break;
+    }
   }
 }
