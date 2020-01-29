@@ -213,9 +213,7 @@ class _MyAppState extends State<MyApp> {
     if (!_isAvailable) {
       return Card();
     }
-    final ListTile productHeader = ListTile(
-        title: Text('Products for Sale',
-            style: Theme.of(context).textTheme.headline));
+    final ListTile productHeader = ListTile(title: Text('Products for Sale'));
     List<ListTile> productList = <ListTile>[];
     if (_notFoundIds.isNotEmpty) {
       productList.add(ListTile(
@@ -284,9 +282,8 @@ class _MyAppState extends State<MyApp> {
     if (!_isAvailable || _notFoundIds.contains(_kConsumableId)) {
       return Card();
     }
-    final ListTile consumableHeader = ListTile(
-        title: Text('Purchased consumables',
-            style: Theme.of(context).textTheme.headline));
+    final ListTile consumableHeader =
+        ListTile(title: Text('Purchased consumables'));
     final List<Widget> tokens = _consumables.map((String id) {
       return GridTile(
         child: IconButton(
