@@ -62,6 +62,7 @@ class TileOverlay {
     this.transparency = 0.0,
     this.zIndex,
     this.visible = true,
+    this.tileSize = 256,
   }) : assert(transparency >= 0.0 && transparency <= 1.0);
 
   /// Uniquely identifies a [TileOverlay].
@@ -83,6 +84,15 @@ class TileOverlay {
   /// The visibility for the tile overlay. The default visibility is true.
   final bool visible;
 
+  /// Specifies the number of pixels (not points) that the returned tile images will prefer
+  /// to display as. iOS only.
+  ///
+  /// Defaults to 256, which is the traditional size of Google Maps tiles.
+  /// As an example, an application developer may wish to provide retina tiles (512 pixel edge length)
+  /// on retina devices, to keep the same number of tiles per view as the default value of 256
+  /// would give on a non-retina device.
+  final int tileSize;
+
   /// Creates a new [Polygon] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   TileOverlay copyWith({
@@ -91,6 +101,7 @@ class TileOverlay {
     double transparencyParam,
     double zIndexParam,
     bool visibleParam,
+    int tileSizeParam,
   }) {
     return TileOverlay(
       tileOverlayId: tileOverlayId,
@@ -98,6 +109,7 @@ class TileOverlay {
       transparency: transparencyParam ?? transparency,
       zIndex: zIndexParam ?? zIndex,
       visible: visibleParam ?? visible,
+      tileSize: tileSizeParam ?? tileSize,
     );
   }
 
@@ -115,6 +127,7 @@ class TileOverlay {
     addIfPresent('transparency', transparency);
     addIfPresent('zIndex', zIndex);
     addIfPresent('visible', visible);
+    addIfPresent('tileSize', tileSize);
 
     return json;
   }
@@ -128,7 +141,8 @@ class TileOverlay {
         fadeIn == typedOther.fadeIn &&
         transparency == typedOther.transparency &&
         zIndex == typedOther.zIndex &&
-        visible == typedOther.visible;
+        visible == typedOther.visible &&
+        tileSize == typedOther.tileSize;
   }
 
   @override
