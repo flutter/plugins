@@ -365,7 +365,7 @@ class FakePlatformGoogleMap {
       final String tileOverlayId = tileOverlayData['tileOverlayId'];
       final bool fadeIn = tileOverlayData['fadeIn'];
       final double transparency = tileOverlayData['transparency'];
-      final double zIndex = tileOverlayData['zIndex'];
+      final int zIndex = tileOverlayData['zIndex'];
       final bool visible = tileOverlayData['visible'];
 
       result.add(TileOverlay(

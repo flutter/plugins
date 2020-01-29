@@ -79,7 +79,7 @@ class TileOverlay {
 
   /// The tile overlay's zIndex, i.e., the order in which it will be drawn where
   /// overlays with larger values are drawn above those with lower values
-  final double zIndex;
+  final int zIndex;
 
   /// The visibility for the tile overlay. The default visibility is true.
   final bool visible;
@@ -99,7 +99,7 @@ class TileOverlay {
     TileOverlayId tileOverlayId,
     bool fadeInParam,
     double transparencyParam,
-    double zIndexParam,
+    int zIndexParam,
     bool visibleParam,
     int tileSizeParam,
   }) {
