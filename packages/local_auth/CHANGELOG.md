@@ -1,3 +1,7 @@
+## 0.6.2
+
+* Add `authenticate` method that uses biometric authentication, but allows users to also use device authentication - pin, pattern, passcode.
+
 ## 0.6.1+2
 
 * Support v2 embedding.
