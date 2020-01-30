@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.view.ContextThemeWrapper;
@@ -82,15 +83,26 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     this.call = call;
     this.isAuthSticky = call.argument("stickyAuth");
     this.uiThreadExecutor = new UiThreadExecutor();
-    this.promptInfo =
+
+    if(failOverToDeviceAuth){
+      this.promptInfo =
         new BiometricPrompt.PromptInfo.Builder()
             .setDescription((String) call.argument("localizedReason"))
             .setTitle((String) call.argument("signInTitle"))
             .setSubtitle((String) call.argument("fingerprintHint"))
-            .setNegativeButtonText(failOverToDeviceAuth ? null : (String) call.argument("cancelButton"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
-            .setDeviceCredentialAllowed(failOverToDeviceAuth)
+            .setDeviceCredentialAllowed(true)
             .build();
+    } else {
+      this.promptInfo =
+        new BiometricPrompt.PromptInfo.Builder()
+            .setDescription((String) call.argument("localizedReason"))
+            .setTitle((String) call.argument("signInTitle"))
+            .setSubtitle((String) call.argument("fingerprintHint"))
+            .setNegativeButtonText((String) call.argument("cancelButton"))
+            .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
+            .build();
+    }
   }
 
   /** Start the fingerprint listener. */
