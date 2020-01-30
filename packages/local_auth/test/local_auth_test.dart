@@ -33,7 +33,9 @@ void main() {
     group("With device auth fail over", () {
       test('authenticate with no args on Android.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-        await localAuthentication.authenticateWithBiometrics(localizedReason: 'Needs secure');
+        await localAuthentication.authenticateWithBiometrics(
+          localizedReason: 'Needs secure',
+        );
         expect(
           log,
           <Matcher>[
@@ -50,7 +52,9 @@ void main() {
 
       test('authenticate with no args on iOS.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
-        await localAuthentication.authenticateWithBiometrics(localizedReason: 'Needs secure');
+        await localAuthentication.authenticateWithBiometrics(
+          localizedReason: 'Needs secure',
+        );
         expect(
           log,
           <Matcher>[
@@ -90,7 +94,9 @@ void main() {
     group("With biometrics only", () {
       test('authenticate with no args on Android.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-        await localAuthentication.authenticate(localizedReason: 'Needs secure');
+        await localAuthentication.authenticate(
+          localizedReason: 'Needs secure',
+        );
         expect(
           log,
           <Matcher>[
@@ -107,7 +113,9 @@ void main() {
 
       test('authenticate with no args on iOS.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
-        await localAuthentication.authenticate(localizedReason: 'Needs secure');
+        await localAuthentication.authenticate(
+          localizedReason: 'Needs secure',
+        );
         expect(
           log,
           <Matcher>[
