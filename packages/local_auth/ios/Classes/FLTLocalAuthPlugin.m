@@ -88,7 +88,6 @@
   }
   result(biometrics);
 }
-
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments
                  withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
@@ -129,16 +128,15 @@
   }
 }
 
-- (void)authenticate:(NSDictionary *)arguments
-                 withFlutterResult:(FlutterResult)result {
+
+- (void)authenticate:(NSDictionary *)arguments withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
   lastCallArgs = nil;
   lastResult = nil;
   context.localizedFallbackTitle = @"";
 
-  if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication
-                           error:&authError]) {
+  if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&authError]) {
     [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
             localizedReason:arguments[@"localizedReason"]
                       reply:^(BOOL success, NSError *error) {

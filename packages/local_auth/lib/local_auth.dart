@@ -92,7 +92,10 @@ class LocalAuthentication {
               'operating systems.',
           details: 'Your operating system is ${_platform.operatingSystem}');
     }
-    return await _channel.invokeMethod<bool>('authenticateWithBiometrics', args);
+    return await _channel.invokeMethod<bool>(
+      'authenticateWithBiometrics',
+      args,
+    );
   }
 
   /// Authenticates the user with biometrics available on the device while also
@@ -154,7 +157,8 @@ class LocalAuthentication {
     } else {
       throw PlatformException(
         code: otherOperatingSystem,
-        message: 'Local authentication does not support non-Android/iOS operating systems.',
+        message: 'Local authentication does not support non-Android/iOS '
+            'operating systems.',
         details: 'Your operating system is ${_platform.operatingSystem}',
       );
     }
@@ -176,9 +180,9 @@ class LocalAuthentication {
   /// Returns true if device is capable of checking biometrics
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> get canCheckBiometrics async => 
+  Future<bool> get canCheckBiometrics async =>
       (await _channel.invokeListMethod<String>('getAvailableBiometrics'))
-      .isNotEmpty;
+          .isNotEmpty;
 
   /// Returns a list of enrolled biometrics
   ///
