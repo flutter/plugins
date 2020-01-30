@@ -92,8 +92,36 @@ class LocalAuthentication {
               'operating systems.',
           details: 'Your operating system is ${_platform.operatingSystem}');
     }
-    return await _channel.invokeMethod<bool>(
-        'authenticateWithBiometrics', args);
+    return await _channel.invokeMethod<bool>('authenticateWithBiometrics', args);
+  }
+
+  Future<bool> authenticate({
+    @required String localizedReason,
+    bool useErrorDialogs = true,
+    bool stickyAuth = false,
+    AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
+    IOSAuthMessages iOSAuthStrings = const IOSAuthMessages(),
+    bool sensitiveTransaction = true,
+  }) async {
+    assert(localizedReason != null);
+    final Map<String, Object> args = <String, Object>{
+      'localizedReason': localizedReason,
+      'useErrorDialogs': useErrorDialogs,
+      'stickyAuth': stickyAuth,
+      'sensitiveTransaction': sensitiveTransaction,
+    };
+    if (_platform.isIOS) {
+      args.addAll(iOSAuthStrings.args);
+    } else if (_platform.isAndroid) {
+      args.addAll(androidAuthStrings.args);
+    } else {
+      throw PlatformException(
+        code: otherOperatingSystem,
+        message: 'Local authentication does not support non-Android/iOS operating systems.',
+        details: 'Your operating system is ${_platform.operatingSystem}',
+      );
+    }
+    return await _channel.invokeMethod<bool>('authenticate', args);
   }
 
   /// Returns true if auth was cancelled successfully.
@@ -111,9 +139,7 @@ class LocalAuthentication {
   /// Returns true if device is capable of checking biometrics
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> get canCheckBiometrics async =>
-      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))
-          .isNotEmpty;
+  Future<bool> get canCheckBiometrics async => (await _channel.invokeListMethod<String>('getAvailableBiometrics')).isNotEmpty;
 
   /// Returns a list of enrolled biometrics
   ///
@@ -122,8 +148,7 @@ class LocalAuthentication {
   /// - BiometricType.fingerprint
   /// - BiometricType.iris (not yet implemented)
   Future<List<BiometricType>> getAvailableBiometrics() async {
-    final List<String> result =
-        (await _channel.invokeListMethod<String>('getAvailableBiometrics'));
+    final List<String> result = (await _channel.invokeListMethod<String>('getAvailableBiometrics'));
     final List<BiometricType> biometrics = <BiometricType>[];
     result.forEach((String value) {
       switch (value) {
