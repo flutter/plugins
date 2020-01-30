@@ -61,10 +61,27 @@ class _MyAppState extends State<MyApp> {
         _isAuthenticating = true;
         _authorized = 'Authenticating';
       });
-      authenticated = await auth.authenticateWithBiometrics(
-          localizedReason: 'Scan your fingerprint to authenticate',
-          useErrorDialogs: true,
-          stickyAuth: true);
+      authenticated = await auth.authenticate(localizedReason: 'Let OS determine authentication method', useErrorDialogs: true, stickyAuth: true);
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = 'Authenticating';
+      });
+    } on PlatformException catch (e) {
+      print(e);
+    }
+    if (!mounted) return;
+
+    setState(() => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
+  }
+
+  Future<void> _authenticateWithBiometrics() async {
+    bool authenticated = false;
+    try {
+      setState(() {
+        _isAuthenticating = true;
+        _authorized = 'Authenticating';
+      });
+      authenticated = await auth.authenticateWithBiometrics(localizedReason: 'Scan your fingerprint to authenticate', useErrorDialogs: true, stickyAuth: true);
       setState(() {
         _isAuthenticating = false;
         _authorized = 'Authenticating';
@@ -80,39 +97,80 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void _cancelAuthentication() {
-    auth.stopAuthentication();
+  void _cancelAuthentication() async {
+    await auth.stopAuthentication();
+    setState(() => _isAuthenticating = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Scaffold(
-      appBar: AppBar(
-        title: const Text('Plugin example app'),
-      ),
-      body: ConstrainedBox(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Plugin example app'),
+        ),
+        body: ConstrainedBox(
           constraints: const BoxConstraints.expand(),
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Text('Can check biometrics: $_canCheckBiometrics\n'),
-                RaisedButton(
-                  child: const Text('Check biometrics'),
-                  onPressed: _checkBiometrics,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Can check biometrics: $_canCheckBiometrics\n'),
+              RaisedButton(
+                child: const Text('Check biometrics'),
+                onPressed: _checkBiometrics,
+              ),
+              Divider(height: 100),
+              Text('Available biometrics: $_availableBiometrics\n'),
+              RaisedButton(
+                child: const Text('Get available biometrics'),
+                onPressed: _getAvailableBiometrics,
+              ),
+              Divider(height: 100),
+              Text('Current State: $_authorized\n'),
+              Visibility(
+                visible: !_isAuthenticating,
+                child: Column(
+                  children: [
+                    RaisedButton(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Authenticate'),
+                          Icon(Icons.perm_device_information),
+                        ],
+                      ),
+                      onPressed: _authenticate,
+                    ),
+                    RaisedButton(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(_isAuthenticating ? 'Cancel' : 'Authenticate: biometrics only'),
+                          Icon(Icons.fingerprint),
+                        ],
+                      ),
+                      onPressed: _authenticateWithBiometrics,
+                    ),
+                  ],
                 ),
-                Text('Available biometrics: $_availableBiometrics\n'),
-                RaisedButton(
-                  child: const Text('Get available biometrics'),
-                  onPressed: _getAvailableBiometrics,
+              ),
+              Visibility(
+                visible: _isAuthenticating,
+                child: RaisedButton(
+                  onPressed: _cancelAuthentication,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text("Cancel Authentication"),
+                      Icon(Icons.cancel),
+                    ],
+                  ),
                 ),
-                Text('Current State: $_authorized\n'),
-                RaisedButton(
-                  child: Text(_isAuthenticating ? 'Cancel' : 'Authenticate'),
-                  onPressed:
-                      _isAuthenticating ? _cancelAuthentication : _authenticate,
-                )
-              ])),
-    ));
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
