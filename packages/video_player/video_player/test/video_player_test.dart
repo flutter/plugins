@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
@@ -106,6 +107,51 @@ void main() {
           (Widget widget) => widget is Texture && widget.textureId == 102,
         ),
         findsOneWidget);
+  });
+
+  group('ClosedCaption widget', () {
+    testWidgets('uses a default text style', (WidgetTester tester) async {
+      final String text = 'foo';
+      await tester.pumpWidget(MaterialApp(home: ClosedCaption(text: text)));
+
+      final Text textWidget = tester.widget<Text>(find.text(text));
+      expect(textWidget.style.fontSize, 36.0);
+      expect(textWidget.style.color, Colors.white);
+    });
+
+    testWidgets('uses given text and style', (WidgetTester tester) async {
+      final String text = 'foo';
+      final TextStyle textStyle = TextStyle(fontSize: 14.725);
+      await tester.pumpWidget(MaterialApp(
+        home: ClosedCaption(
+          text: text,
+          textStyle: textStyle,
+        ),
+      ));
+      expect(find.text(text), findsOneWidget);
+
+      final Text textWidget = tester.widget<Text>(find.text(text));
+      expect(textWidget.style.fontSize, textStyle.fontSize);
+    });
+
+    testWidgets('handles null text', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: ClosedCaption(text: null)));
+      expect(find.byType(Text), findsNothing);
+    });
+
+    testWidgets('Passes text contrast ratio guidelines',
+        (WidgetTester tester) async {
+      final String text = 'foo';
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          backgroundColor: Colors.white,
+          body: ClosedCaption(text: text),
+        ),
+      ));
+      expect(find.text(text), findsOneWidget);
+
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+    });
   });
 
   group('VideoPlayerController', () {
