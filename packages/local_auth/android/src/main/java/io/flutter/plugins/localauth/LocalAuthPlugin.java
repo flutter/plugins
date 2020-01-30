@@ -84,6 +84,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
   }
 
+  /*
+   Starts authentication process
+  */
   private void authenticate(MethodCall call, final Result result) {
     if (authInProgress.get()) {
       // Apps should not invoke another authentication request while one is in progress,
@@ -156,6 +159,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
   }
 
+  /*
+   Returns biometric types available on device
+  */
   private void getAvailableBiometrics(final Result result) {
     try {
       if (activity == null || activity.isFinishing()) {
