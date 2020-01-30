@@ -406,7 +406,9 @@ class _GoogleMapOptions {
     this.indoorViewEnabled,
     this.trafficEnabled,
     this.buildingsEnabled,
-  });
+  }) {
+    assert(liteModeEnabled != null && liteModeEnabled && !Platform.isAndroid);
+  }
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
     return _GoogleMapOptions(
@@ -483,9 +485,6 @@ class _GoogleMapOptions {
     addIfNonNull('tiltGesturesEnabled', tiltGesturesEnabled);
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('liteModeEnabled', liteModeEnabled);
-    if (liteModeEnabled != null && liteModeEnabled && !Platform.isAndroid) {
-      throw Exception('liteModeEnabled is Android only');
-    }
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
