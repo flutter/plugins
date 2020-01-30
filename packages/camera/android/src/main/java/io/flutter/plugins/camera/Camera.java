@@ -147,9 +147,6 @@ public class Camera {
     mediaRecorder.prepare();
   }
 
-  public void setFlash(boolean value){
-
-  }
 
   @SuppressLint("MissingPermission")
   public void open(@NonNull final Result result) throws CameraAccessException {
