@@ -128,7 +128,6 @@
   }
 }
 
-
 - (void)authenticate:(NSDictionary *)arguments withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
