@@ -42,6 +42,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,10 +87,13 @@ final class GoogleMapController
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
-  private final int registrarActivityHashCode;
+  private final int
+      activityHashCode; // Do not use directly, use getActivityHashCode() instead to get correct hashCode for both v1 and v2 embedding.
   private final Lifecycle lifecycle;
   private final Context context;
-  private final Application application;
+  private final Application
+      mApplication; // Do not use direclty, use getApplication() instead to get correct application object for both v1 and v2 embedding.
+  private final PluginRegistry.Registrar registrar; // For v1 embedding only.
   private final MarkersController markersController;
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
@@ -106,6 +110,7 @@ final class GoogleMapController
       BinaryMessenger binaryMessenger,
       Application application,
       Lifecycle lifecycle,
+      PluginRegistry.Registrar registrar,
       int registrarActivityHashCode,
       GoogleMapOptions options) {
     this.id = id;
@@ -115,9 +120,10 @@ final class GoogleMapController
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel = new MethodChannel(binaryMessenger, "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
-    this.application = application;
+    mApplication = application;
     this.lifecycle = lifecycle;
-    this.registrarActivityHashCode = registrarActivityHashCode;
+    this.registrar = registrar;
+    this.activityHashCode = registrarActivityHashCode;
     this.markersController = new MarkersController(methodChannel);
     this.polygonsController = new PolygonsController(methodChannel);
     this.polylinesController = new PolylinesController(methodChannel, density);
@@ -166,7 +172,7 @@ final class GoogleMapController
     if (lifecycle != null) {
       lifecycle.addObserver(this);
     } else {
-      application.registerActivityLifecycleCallbacks(this);
+      getApplication().registerActivityLifecycleCallbacks(this);
     }
     mapView.getMapAsync(this);
   }
@@ -491,7 +497,7 @@ final class GoogleMapController
     disposed = true;
     methodChannel.setMethodCallHandler(null);
     mapView.onDestroy();
-    application.unregisterActivityLifecycleCallbacks(this);
+    getApplication().unregisterActivityLifecycleCallbacks(this);
   }
 
   // @Override
@@ -511,7 +517,7 @@ final class GoogleMapController
   // Application.ActivityLifecycleCallbacks methods
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
       return;
     }
     mapView.onCreate(savedInstanceState);
@@ -519,7 +525,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityStarted(Activity activity) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
       return;
     }
     mapView.onStart();
@@ -527,7 +533,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityResumed(Activity activity) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
       return;
     }
     mapView.onResume();
@@ -535,7 +541,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityPaused(Activity activity) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
       return;
     }
     mapView.onPause();
@@ -543,7 +549,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityStopped(Activity activity) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
       return;
     }
     mapView.onStop();
@@ -551,7 +557,7 @@ final class GoogleMapController
 
   @Override
   public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
       return;
     }
     mapView.onSaveInstanceState(outState);
@@ -559,7 +565,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityDestroyed(Activity activity) {
-    if (disposed || activity.hashCode() != registrarActivityHashCode) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
       return;
     }
     mapView.onDestroy();
@@ -800,6 +806,22 @@ final class GoogleMapController
     }
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
+  }
+
+  private int getActivityHashCode() {
+    if (registrar != null && registrar.activity() != null) {
+      return registrar.activity().hashCode();
+    } else {
+      return activityHashCode;
+    }
+  }
+
+  private Application getApplication() {
+    if (registrar != null && registrar.activity() != null) {
+      return registrar.activity().getApplication();
+    } else {
+      return mApplication;
+    }
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {

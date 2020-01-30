@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.lifecycle.Lifecycle;
 import com.google.android.gms.maps.model.CameraPosition;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
@@ -22,12 +23,14 @@ public class GoogleMapFactory extends PlatformViewFactory {
   private final Application application;
   private final int activityHashCode;
   private final Lifecycle lifecycle;
+  private final PluginRegistry.Registrar registrar; // V1 embedding only.
 
   GoogleMapFactory(
       AtomicInteger state,
       BinaryMessenger binaryMessenger,
       Application application,
       Lifecycle lifecycle,
+      PluginRegistry.Registrar registrar,
       int activityHashCode) {
     super(StandardMessageCodec.INSTANCE);
     mActivityState = state;
@@ -35,6 +38,7 @@ public class GoogleMapFactory extends PlatformViewFactory {
     this.application = application;
     this.activityHashCode = activityHashCode;
     this.lifecycle = lifecycle;
+    this.registrar = registrar;
   }
 
   @SuppressWarnings("unchecked")
@@ -61,6 +65,13 @@ public class GoogleMapFactory extends PlatformViewFactory {
       builder.setInitialCircles(params.get("circlesToAdd"));
     }
     return builder.build(
-        id, context, mActivityState, binaryMessenger, application, lifecycle, activityHashCode);
+        id,
+        context,
+        mActivityState,
+        binaryMessenger,
+        application,
+        lifecycle,
+        registrar,
+        activityHashCode);
   }
 }

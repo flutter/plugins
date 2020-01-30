@@ -54,12 +54,7 @@ public class GoogleMapsPlugin
         .platformViewRegistry()
         .registerViewFactory(
             VIEW_TYPE,
-            new GoogleMapFactory(
-                plugin.state,
-                registrar.messenger(),
-                registrar.activity().getApplication(),
-                null,
-                registrar.activity().hashCode()));
+            new GoogleMapFactory(plugin.state, registrar.messenger(), null, null, registrar, -1));
   }
 
   public GoogleMapsPlugin() {}
@@ -91,6 +86,7 @@ public class GoogleMapsPlugin
                 pluginBinding.getBinaryMessenger(),
                 binding.getActivity().getApplication(),
                 lifecycle,
+                null,
                 binding.getActivity().hashCode()));
   }
 

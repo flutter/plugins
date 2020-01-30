@@ -12,6 +12,7 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.PluginRegistry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class GoogleMapBuilder implements GoogleMapOptionsSink {
@@ -35,10 +36,19 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
       BinaryMessenger binaryMessenger,
       Application application,
       Lifecycle lifecycle,
+      PluginRegistry.Registrar registrar,
       int activityHashCode) {
     final GoogleMapController controller =
         new GoogleMapController(
-            id, context, state, binaryMessenger, application, lifecycle, activityHashCode, options);
+            id,
+            context,
+            state,
+            binaryMessenger,
+            application,
+            lifecycle,
+            registrar,
+            activityHashCode,
+            options);
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
