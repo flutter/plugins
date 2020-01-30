@@ -23,8 +23,8 @@ bool canCheckBiometrics =
 
 Currently the following biometric types are implemented:
 
-* BiometricType.face
-* BiometricType.fingerprint
+- BiometricType.face
+- BiometricType.fingerprint
 
 To get a list of enrolled biometrics, call getAvailableBiometrics:
 
@@ -44,10 +44,10 @@ if (Platform.isIOS) {
 We have default dialogs with an 'OK' button to show authentication error
 messages for the following 2 cases:
 
-1.  Passcode/PIN/Pattern Not Set. The user has not yet configured a passcode on
-    iOS or PIN/pattern on Android.
-2.  Touch ID/Fingerprint Not Enrolled. The user has not enrolled any
-    fingerprints on the device.
+1. Passcode/PIN/Pattern Not Set. The user has not yet configured a passcode on
+   iOS or PIN/pattern on Android.
+2. Touch ID/Fingerprint Not Enrolled. The user has not enrolled any
+   fingerprints on the device.
 
 Which means, if there's no fingerprint on the user's device, a dialog with
 instructions will pop up to let the user set up fingerprint. If the user clicks
@@ -55,12 +55,27 @@ instructions will pop up to let the user set up fingerprint. If the user clicks
 
 Use the exported APIs to trigger local authentication with default dialogs:
 
+The `authenticate()` method uses biometric authentication, but also allows
+users to use pin, pattern, or passcode.
+
+```dart
+var localAuth = LocalAuthentication();
+bool didAuthenticate =
+    await localAuth.authenticate(
+        localizedReason: 'Please authenticate to show  account balance');
+```
+
+The `authenticateWithBiometrics()` method uses biometric authentication only.
+
 ```dart
 var localAuth = LocalAuthentication();
 bool didAuthenticate =
     await localAuth.authenticateWithBiometrics(
-        localizedReason: 'Please authenticate to show account balance');
+        localizedReason: 'Please authenticate to show  account balance');
 ```
+
+Note that `authenticate()` and `authenticateWithBiometrics()` methods have
+the same signature and parameters.
 
 If you don't want to use the default dialogs, call this API with
 'useErrorDialogs = false'. In this case, it will throw the error message back
@@ -134,7 +149,6 @@ you need to also add:
 to your Info.plist file. Failure to do so results in a dialog that tells the user your
 app has not been updated to use TouchID.
 
-
 ## Android Integration
 
 Note that local_auth plugin requires the use of a FragmentActivity as
@@ -155,7 +169,7 @@ Update your project's `AndroidManifest.xml` file to include the
 On Android, you can check only for existence of fingerprint hardware prior
 to API 29 (Android Q). Therefore, if you would like to support other biometrics
 types (such as face scanning) and you want to support SDKs lower than Q,
-*do not* call `getAvailableBiometrics`. Simply call `authenticateWithBiometrics`.
+_do not_ call `getAvailableBiometrics`. Simply call `authenticateWithBiometrics`.
 This will return an error if there was no hardware available.
 
 ## Sticky Auth
