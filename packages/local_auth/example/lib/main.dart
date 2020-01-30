@@ -109,66 +109,68 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: ConstrainedBox(
-          constraints: const BoxConstraints.expand(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Can check biometrics: $_canCheckBiometrics\n'),
-              RaisedButton(
-                child: const Text('Check biometrics'),
-                onPressed: _checkBiometrics,
-              ),
-              Divider(height: 100),
-              Text('Available biometrics: $_availableBiometrics\n'),
-              RaisedButton(
-                child: const Text('Get available biometrics'),
-                onPressed: _getAvailableBiometrics,
-              ),
-              Divider(height: 100),
-              Text('Current State: $_authorized\n'),
-              Visibility(
-                visible: !_isAuthenticating,
-                child: Column(
-                  children: [
-                    RaisedButton(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Authenticate'),
-                          Icon(Icons.perm_device_information),
-                        ],
-                      ),
-                      onPressed: _authenticate,
-                    ),
-                    RaisedButton(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(_isAuthenticating ? 'Cancel' : 'Authenticate: biometrics only'),
-                          Icon(Icons.fingerprint),
-                        ],
-                      ),
-                      onPressed: _authenticateWithBiometrics,
-                    ),
-                  ],
+        body: ListView(
+          padding: const EdgeInsets.only(top: 30),
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Can check biometrics: $_canCheckBiometrics\n'),
+                RaisedButton(
+                  child: const Text('Check biometrics'),
+                  onPressed: _checkBiometrics,
                 ),
-              ),
-              Visibility(
-                visible: _isAuthenticating,
-                child: RaisedButton(
-                  onPressed: _cancelAuthentication,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                Divider(height: 100),
+                Text('Available biometrics: $_availableBiometrics\n'),
+                RaisedButton(
+                  child: const Text('Get available biometrics'),
+                  onPressed: _getAvailableBiometrics,
+                ),
+                Divider(height: 100),
+                Text('Current State: $_authorized\n'),
+                Visibility(
+                  visible: !_isAuthenticating,
+                  child: Column(
                     children: [
-                      Text("Cancel Authentication"),
-                      Icon(Icons.cancel),
+                      RaisedButton(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('Authenticate'),
+                            Icon(Icons.perm_device_information),
+                          ],
+                        ),
+                        onPressed: _authenticate,
+                      ),
+                      RaisedButton(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(_isAuthenticating ? 'Cancel' : 'Authenticate: biometrics only'),
+                            Icon(Icons.fingerprint),
+                          ],
+                        ),
+                        onPressed: _authenticateWithBiometrics,
+                      ),
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
+                Visibility(
+                  visible: _isAuthenticating,
+                  child: RaisedButton(
+                    onPressed: _cancelAuthentication,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("Cancel Authentication"),
+                        Icon(Icons.cancel),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
