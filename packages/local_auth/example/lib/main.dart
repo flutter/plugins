@@ -61,7 +61,10 @@ class _MyAppState extends State<MyApp> {
         _isAuthenticating = true;
         _authorized = 'Authenticating';
       });
-      authenticated = await auth.authenticate(localizedReason: 'Let OS determine authentication method', useErrorDialogs: true, stickyAuth: true);
+      authenticated = await auth.authenticate(
+          localizedReason: 'Let OS determine authentication method',
+          useErrorDialogs: true,
+          stickyAuth: true);
       setState(() {
         _isAuthenticating = false;
         _authorized = 'Authenticating';
@@ -71,7 +74,8 @@ class _MyAppState extends State<MyApp> {
     }
     if (!mounted) return;
 
-    setState(() => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
+    setState(
+        () => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
   }
 
   Future<void> _authenticateWithBiometrics() async {
@@ -81,7 +85,10 @@ class _MyAppState extends State<MyApp> {
         _isAuthenticating = true;
         _authorized = 'Authenticating';
       });
-      authenticated = await auth.authenticateWithBiometrics(localizedReason: 'Scan your fingerprint to authenticate', useErrorDialogs: true, stickyAuth: true);
+      authenticated = await auth.authenticateWithBiometrics(
+          localizedReason: 'Scan your fingerprint to authenticate',
+          useErrorDialogs: true,
+          stickyAuth: true);
       setState(() {
         _isAuthenticating = false;
         _authorized = 'Authenticating';
@@ -146,7 +153,9 @@ class _MyAppState extends State<MyApp> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(_isAuthenticating ? 'Cancel' : 'Authenticate: biometrics only'),
+                            Text(_isAuthenticating
+                                ? 'Cancel'
+                                : 'Authenticate: biometrics only'),
                             Icon(Icons.fingerprint),
                           ],
                         ),

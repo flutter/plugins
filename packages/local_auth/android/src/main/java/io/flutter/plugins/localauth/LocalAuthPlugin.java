@@ -46,8 +46,8 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
    * initialized this way won't react to changes in activity or context.
    *
    * @param registrar attaches this plugin's {@link
-   *                  io.flutter.plugin.common.MethodChannel.MethodCallHandler} to the registrar's {@link
-   *                  io.flutter.plugin.common.BinaryMessenger}.
+   *     io.flutter.plugin.common.MethodChannel.MethodCallHandler} to the registrar's {@link
+   *     io.flutter.plugin.common.BinaryMessenger}.
    */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
@@ -104,15 +104,16 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
     if (!(activity instanceof FragmentActivity)) {
       result.error(
-              "no_fragment_activity",
-              "local_auth plugin requires activity to be a FragmentActivity.",
-              null);
+          "no_fragment_activity",
+          "local_auth plugin requires activity to be a FragmentActivity.",
+          null);
       return;
     }
 
     authInProgress.set(true);
     boolean failoverToDeviceAuth = call.method.equals("authenticate");
-    authenticationHelper = new AuthenticationHelper(
+    authenticationHelper =
+        new AuthenticationHelper(
             lifecycle,
             (FragmentActivity) activity,
             call,

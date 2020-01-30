@@ -84,24 +84,24 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     this.isAuthSticky = call.argument("stickyAuth");
     this.uiThreadExecutor = new UiThreadExecutor();
 
-    if(failOverToDeviceAuth){
+    if (failOverToDeviceAuth) {
       this.promptInfo =
-        new BiometricPrompt.PromptInfo.Builder()
-            .setDescription((String) call.argument("localizedReason"))
-            .setTitle((String) call.argument("signInTitle"))
-            .setSubtitle((String) call.argument("fingerprintHint"))
-            .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
-            .setDeviceCredentialAllowed(true)
-            .build();
+          new BiometricPrompt.PromptInfo.Builder()
+              .setDescription((String) call.argument("localizedReason"))
+              .setTitle((String) call.argument("signInTitle"))
+              .setSubtitle((String) call.argument("fingerprintHint"))
+              .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
+              .setDeviceCredentialAllowed(true)
+              .build();
     } else {
       this.promptInfo =
-        new BiometricPrompt.PromptInfo.Builder()
-            .setDescription((String) call.argument("localizedReason"))
-            .setTitle((String) call.argument("signInTitle"))
-            .setSubtitle((String) call.argument("fingerprintHint"))
-            .setNegativeButtonText((String) call.argument("cancelButton"))
-            .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
-            .build();
+          new BiometricPrompt.PromptInfo.Builder()
+              .setDescription((String) call.argument("localizedReason"))
+              .setTitle((String) call.argument("signInTitle"))
+              .setSubtitle((String) call.argument("fingerprintHint"))
+              .setNegativeButtonText((String) call.argument("cancelButton"))
+              .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
+              .build();
     }
   }
 
