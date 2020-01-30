@@ -810,9 +810,9 @@ class ClosedCaption extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextStyle effectiveTextStyle = textStyle ??
         DefaultTextStyle.of(context).style.copyWith(
-          fontSize: 36.0,
-          color: Colors.white,
-        );
+              fontSize: 36.0,
+              color: Colors.white,
+            );
 
     if (text == null) {
       return SizedBox.shrink();
