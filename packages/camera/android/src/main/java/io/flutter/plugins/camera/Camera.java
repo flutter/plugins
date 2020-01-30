@@ -530,25 +530,15 @@ public class Camera {
 
   public void setFlash(boolean value) {
     try {
-      if (mode != CAMERA_FLASH_MODE_TORCH && flashMode == CAMERA_FLASH_MODE_TORCH) {
-        setFlashModeRequest(captureRequestBuilder, CAMERA_FLASH_MODE_OFF);
-        setAutoFocusModeRequest(captureRequestBuilder, autoFocusMode);
-        CaptureRequest request = captureRequestBuilder.build();
-        cameraCaptureSession.setRepeatingRequest(request, null, null);
-      }
+        setFlashModeRequest(captureRequestBuilder, value ? CAMERA_FLASH_MODE_TORCH : CAMERA_FLASH_MODE_OFF);
 
-      // Keep the new mode
-      flashMode = mode;
 
-      // Rebuild Capture Session with flash and focus settings
-      setFlashModeRequest(captureRequestBuilder, flashMode);
-      setAutoFocusModeRequest(captureRequestBuilder, autoFocusMode);
+      setFlashModeRequest(captureRequestBuilder, value ? CAMERA_FLASH_MODE_TORCH : CAMERA_FLASH_MODE_OFF);
       CaptureRequest request = captureRequestBuilder.build();
       cameraCaptureSession.setRepeatingRequest(request, null, null);
 
-      result.success(null);
     } catch (Exception e) {
-      result.error("cameraFlashFailed", e.getMessage(), null);
+
     }
   }
 
