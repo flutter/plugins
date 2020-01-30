@@ -151,7 +151,7 @@ void main() {
       expect(find.text(text), findsOneWidget);
 
       await expectLater(tester, meetsGuideline(textContrastGuideline));
-    });
+    }, skip: isBrowser);
   });
 
   group('VideoPlayerController', () {
