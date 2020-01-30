@@ -12,7 +12,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.view.ContextThemeWrapper;
@@ -75,7 +74,8 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
       Lifecycle lifecycle,
       FragmentActivity activity,
       MethodCall call,
-      AuthCompletionHandler completionHandler) {
+      AuthCompletionHandler completionHandler,
+      boolean failOverToDeviceAuth) {
     this.lifecycle = lifecycle;
     this.activity = activity;
     this.completionHandler = completionHandler;
@@ -87,8 +87,9 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setDescription((String) call.argument("localizedReason"))
             .setTitle((String) call.argument("signInTitle"))
             .setSubtitle((String) call.argument("fingerprintHint"))
-            .setNegativeButtonText((String) call.argument("cancelButton"))
+            .setNegativeButtonText(failOverToDeviceAuth ? null : (String) call.argument("cancelButton"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
+            .setDeviceCredentialAllowed(failOverToDeviceAuth)
             .build();
   }
 

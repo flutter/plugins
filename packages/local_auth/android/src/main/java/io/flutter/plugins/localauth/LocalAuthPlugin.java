@@ -46,8 +46,8 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
    * initialized this way won't react to changes in activity or context.
    *
    * @param registrar attaches this plugin's {@link
-   *     io.flutter.plugin.common.MethodChannel.MethodCallHandler} to the registrar's {@link
-   *     io.flutter.plugin.common.BinaryMessenger}.
+   *                  io.flutter.plugin.common.MethodChannel.MethodCallHandler} to the registrar's {@link
+   *                  io.flutter.plugin.common.BinaryMessenger}.
    */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
@@ -67,93 +67,82 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
-    if (call.method.equals("authenticateWithBiometrics")) {
-      if (authInProgress.get()) {
-        // Apps should not invoke another authentication request while one is in progress,
-        // so we classify this as an error condition. If we ever find a legitimate use case for
-        // this, we can try to cancel the ongoing auth and start a new one but for now, not worth
-        // the complexity.
-        result.error("auth_in_progress", "Authentication in progress", null);
-        return;
-      }
-
-      if (activity == null || activity.isFinishing()) {
-        result.error("no_activity", "local_auth plugin requires a foreground activity", null);
-        return;
-      }
-
-      if (!(activity instanceof FragmentActivity)) {
-        result.error(
-            "no_fragment_activity",
-            "local_auth plugin requires activity to be a FragmentActivity.",
-            null);
-        return;
-      }
-      authInProgress.set(true);
-      authenticationHelper =
-          new AuthenticationHelper(
-              lifecycle,
-              (FragmentActivity) activity,
-              call,
-              new AuthCompletionHandler() {
-                @Override
-                public void onSuccess() {
-                  if (authInProgress.compareAndSet(true, false)) {
-                    result.success(true);
-                  }
-                }
-
-                @Override
-                public void onFailure() {
-                  if (authInProgress.compareAndSet(true, false)) {
-                    result.success(false);
-                  }
-                }
-
-                @Override
-                public void onError(String code, String error) {
-                  if (authInProgress.compareAndSet(true, false)) {
-                    result.error(code, error, null);
-                  }
-                }
-              });
-      authenticationHelper.authenticate();
-    } else if (call.method.equals("getAvailableBiometrics")) {
-      try {
-        if (activity == null || activity.isFinishing()) {
-          result.error("no_activity", "local_auth plugin requires a foreground activity", null);
-          return;
-        }
-        ArrayList<String> biometrics = new ArrayList<String>();
-        PackageManager packageManager = activity.getPackageManager();
-        if (Build.VERSION.SDK_INT >= 23) {
-          if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
-            biometrics.add("fingerprint");
-          }
-        }
-        if (Build.VERSION.SDK_INT >= 29) {
-          if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
-            biometrics.add("face");
-          }
-          if (packageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)) {
-            biometrics.add("iris");
-          }
-        }
-        result.success(biometrics);
-      } catch (Exception e) {
-        result.error("no_biometrics_available", e.getMessage(), null);
-      }
-    } else if (call.method.equals(("stopAuthentication"))) {
-      stopAuthentication(result);
-    } else {
-      result.notImplemented();
+    switch (call.method) {
+      case "authenticate":
+      case "authenticateWithBiometrics":
+        this.authenticate(call, result);
+        break;
+      case "getAvailableBiometrics":
+        this.getAvailableBiometrics(result);
+        break;
+      case "stopAuthentication":
+        this.stopAuthentication(result);
+        break;
+      default:
+        result.notImplemented();
+        break;
     }
+  }
+
+  private void authenticate(MethodCall call, final Result result) {
+    if (authInProgress.get()) {
+      // Apps should not invoke another authentication request while one is in progress,
+      // so we classify this as an error condition. If we ever find a legitimate use case for
+      // this, we can try to cancel the ongoing auth and start a new one but for now, not worth
+      // the complexity.
+      result.error("auth_in_progress", "Authentication in progress", null);
+      return;
+    }
+
+    if (activity == null || activity.isFinishing()) {
+      result.error("no_activity", "local_auth plugin requires a foreground activity", null);
+      return;
+    }
+
+    if (!(activity instanceof FragmentActivity)) {
+      result.error(
+              "no_fragment_activity",
+              "local_auth plugin requires activity to be a FragmentActivity.",
+              null);
+      return;
+    }
+
+    authInProgress.set(true);
+    boolean failoverToDeviceAuth = call.method.equals("authenticate");
+    authenticationHelper = new AuthenticationHelper(
+            lifecycle,
+            (FragmentActivity) activity,
+            call,
+            new AuthCompletionHandler() {
+              @Override
+              public void onSuccess() {
+                if (authInProgress.compareAndSet(true, false)) {
+                  result.success(true);
+                }
+              }
+
+              @Override
+              public void onFailure() {
+                if (authInProgress.compareAndSet(true, false)) {
+                  result.success(false);
+                }
+              }
+
+              @Override
+              public void onError(String code, String error) {
+                if (authInProgress.compareAndSet(true, false)) {
+                  result.error(code, error, null);
+                }
+              }
+            },
+            failoverToDeviceAuth);
+    authenticationHelper.authenticate();
   }
 
   /*
    Stops the authentication if in progress.
   */
-  private void stopAuthentication(Result result) {
+  private void stopAuthentication(final Result result) {
     try {
       if (authenticationHelper != null && authInProgress.get()) {
         authenticationHelper.stopAuthentication();
@@ -164,6 +153,33 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       result.success(false);
     } catch (Exception e) {
       result.success(false);
+    }
+  }
+
+  private void getAvailableBiometrics(final Result result) {
+    try {
+      if (activity == null || activity.isFinishing()) {
+        result.error("no_activity", "local_auth plugin requires a foreground activity", null);
+        return;
+      }
+      ArrayList<String> biometrics = new ArrayList<String>();
+      PackageManager packageManager = activity.getPackageManager();
+      if (Build.VERSION.SDK_INT >= 23) {
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+          biometrics.add("fingerprint");
+        }
+      }
+      if (Build.VERSION.SDK_INT >= 29) {
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
+          biometrics.add("face");
+        }
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)) {
+          biometrics.add("iris");
+        }
+      }
+      result.success(biometrics);
+    } catch (Exception e) {
+      result.error("no_biometrics_available", e.getMessage(), null);
     }
   }
 
