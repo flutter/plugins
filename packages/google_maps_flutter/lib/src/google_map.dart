@@ -10,7 +10,7 @@ const MethodChannel _channel =
 /// Utils for GoogleMaps plugin
 class GoogleMapsPluginUtils {
   ///This method creates dummy map. This call will initialize all services needed by GoogleMaps This
-  ///will speed up next GoogleMap view initialization
+  ///will speed up next GoogleMap view initialization. Android only.
   static Future<void> warmUp() {
     if (!Platform.isAndroid) throw Exception("warmUp is Android only");
     return _channel.invokeMethod<void>('warmUp');
