@@ -101,6 +101,16 @@ void main() {
   });
 
   testWidgets('updateMinMaxZoomLevels', (WidgetTester tester) async {
+    // The behaviors of setting min max zoom level on iOS and Android are different.
+    // On iOS, when we get the min or max zoom level after setting the preference, the
+    // min and max will be exactly the same as the value we set; on Android however,
+    // the values we get do not equal to the value we set.
+    //
+    // Also, when we call zoomTo to set the zoom, on Android, it usually
+    // honors the preferences that we set and the zoom cannot pass beyond the boundary.
+    // On iOS, on the other hand, zoomTo seems to override the preferences.
+    //
+    // Thus we test iOS and Android a little differently here.
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
@@ -126,15 +136,21 @@ void main() {
     ));
 
     final GoogleMapInspector inspector = await inspectorCompleter.future;
-    await controller.moveCamera(CameraUpdate.zoomTo(15));
-    await tester.pumpAndSettle();
-    double zoomLevel = await inspector.getZoomLevel();
-    expect(zoomLevel, equals(initialZoomLevel.maxZoom));
 
-    await controller.moveCamera(CameraUpdate.zoomTo(1));
-    await tester.pumpAndSettle();
-    zoomLevel = await inspector.getZoomLevel();
-    expect(zoomLevel, equals(initialZoomLevel.minZoom));
+    if (Platform.isIOS) {
+      MinMaxZoomPreference zoomLevel = await inspector.getMinMaxZoomLevels();
+      expect(zoomLevel, equals(initialZoomLevel));
+    } else if (Platform.isAndroid) {
+      await controller.moveCamera(CameraUpdate.zoomTo(15));
+      await tester.pumpAndSettle();
+      double zoomLevel = await inspector.getZoomLevel();
+      expect(zoomLevel, equals(initialZoomLevel.maxZoom));
+
+      await controller.moveCamera(CameraUpdate.zoomTo(1));
+      await tester.pumpAndSettle();
+      zoomLevel = await inspector.getZoomLevel();
+      expect(zoomLevel, equals(initialZoomLevel.minZoom));
+    }
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -148,15 +164,20 @@ void main() {
       ),
     ));
 
-    await controller.moveCamera(CameraUpdate.zoomTo(15));
-    await tester.pumpAndSettle();
-    zoomLevel = await inspector.getZoomLevel();
-    expect(zoomLevel, equals(finalZoomLevel.maxZoom));
+    if (Platform.isIOS) {
+      MinMaxZoomPreference zoomLevel = await inspector.getMinMaxZoomLevels();
+      expect(zoomLevel, equals(finalZoomLevel));
+    } else {
+      await controller.moveCamera(CameraUpdate.zoomTo(15));
+      await tester.pumpAndSettle();
+      double zoomLevel = await inspector.getZoomLevel();
+      expect(zoomLevel, equals(finalZoomLevel.maxZoom));
 
-    await controller.moveCamera(CameraUpdate.zoomTo(1));
-    await tester.pumpAndSettle();
-    zoomLevel = await inspector.getZoomLevel();
-    expect(zoomLevel, equals(finalZoomLevel.minZoom));
+      await controller.moveCamera(CameraUpdate.zoomTo(1));
+      await tester.pumpAndSettle();
+      zoomLevel = await inspector.getZoomLevel();
+      expect(zoomLevel, equals(finalZoomLevel.minZoom));
+    }
   });
 
   testWidgets('testZoomGesturesEnabled', (WidgetTester tester) async {
@@ -442,7 +463,7 @@ void main() {
     expect(isBuildingsEnabled, true);
   });
 
-  // Location button tests are skipped because we don't have location permission to test.
+  // Location button tests are skipped in Android because we don't have location permission to test.
   testWidgets('testMyLocationButtonToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
@@ -483,7 +504,7 @@ void main() {
 
     myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, false);
-  }, skip: true);
+  }, skip: Platform.isAndroid);
 
   testWidgets('testMyLocationButton initial value false',
       (WidgetTester tester) async {
@@ -511,7 +532,7 @@ void main() {
     final bool myLocationButtonEnabled =
         await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, false);
-  }, skip: true);
+  }, skip: Platform.isAndroid);
 
   testWidgets('testMyLocationButton initial value true',
       (WidgetTester tester) async {
@@ -539,7 +560,7 @@ void main() {
     final bool myLocationButtonEnabled =
         await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, true);
-  }, skip: true);
+  }, skip: Platform.isAndroid);
 
   testWidgets('testSetMapStyle valid Json String', (WidgetTester tester) async {
     final Key key = GlobalKey();
