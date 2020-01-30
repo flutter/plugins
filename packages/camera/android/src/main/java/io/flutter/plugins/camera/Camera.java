@@ -147,6 +147,9 @@ public class Camera {
     mediaRecorder.prepare();
   }
 
+  public void setFlash(boolean value){
+
+  }
 
   @SuppressLint("MissingPermission")
   public void open(@NonNull final Result result) throws CameraAccessException {
@@ -527,17 +530,33 @@ public class Camera {
     return (sensorOrientationOffset + sensorOrientation + 360) % 360;
   }
 
+
   public void setFlash(boolean value) {
     try {
-        setFlashModeRequest(captureRequestBuilder, value ? CAMERA_FLASH_MODE_TORCH : CAMERA_FLASH_MODE_OFF);
+      if (mode != CAMERA_FLASH_MODE_TORCH && flashMode == CAMERA_FLASH_MODE_TORCH) {
+        setFlashModeRequest(captureRequestBuilder, CAMERA_FLASH_MODE_OFF);
+        setAutoFocusModeRequest(captureRequestBuilder, autoFocusMode);
         CaptureRequest request = captureRequestBuilder.build();
         cameraCaptureSession.setRepeatingRequest(request, null, null);
+      }
+
+      // Keep the new mode
+      flashMode = mode;
+
+      // Rebuild Capture Session with flash and focus settings
+      setFlashModeRequest(captureRequestBuilder, flashMode);
+      setAutoFocusModeRequest(captureRequestBuilder, autoFocusMode);
+      CaptureRequest request = captureRequestBuilder.build();
+      cameraCaptureSession.setRepeatingRequest(request, null, null);
+
+      result.success(null);
     } catch (Exception e) {
-      return;
+      result.error("cameraFlashFailed", e.getMessage(), null);
     }
   }
 
   private void setFlashModeRequest(CaptureRequest.Builder builderRequest, int mode) {
+    // Request Flash mode and set the tightly coupled auto Exposure mode
     int flashRequestMode;
     int autoExposureRequestMode;
     switch (mode) {
@@ -560,6 +579,10 @@ public class Camera {
 
     builderRequest.set(CaptureRequest.FLASH_MODE, flashRequestMode);
     builderRequest.set(CaptureRequest.CONTROL_AE_MODE, autoExposureRequestMode);
+
+    // Request Auto Exposure mode as recommended when you switch the Flash
+    // more information:
+    // https://developer.android.com/reference/android/hardware/camera2/CaptureRequest.html#FLASH_MODE
     builderRequest.set(
             CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
             CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_START);
