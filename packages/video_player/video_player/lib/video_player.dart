@@ -808,9 +808,8 @@ class ClosedCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle defaultTextStyle = DefaultTextStyle.of(context).style;
     final TextStyle effectiveTextStyle = textStyle ??
-        defaultTextStyle.copyWith(
+        DefaultTextStyle.of(context).style.copyWith(
           fontSize: 36.0,
           color: Colors.white,
         );
