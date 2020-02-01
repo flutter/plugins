@@ -95,7 +95,7 @@ void main() {
     test('throws PlatformException when playing bad media', () async {
       int textureId = await VideoPlayerPlatform.instance.create();
 
-      VideoPlayerPlatform.instance.setDataSource(
+      await VideoPlayerPlatform.instance.setDataSource(
         textureId,
         DataSource(
             sourceType: DataSourceType.network,
