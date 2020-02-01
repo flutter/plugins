@@ -94,7 +94,6 @@ class _MyHomePageState extends State<_MyHomePage> {
           children: <Widget>[
             Text(
               'Button tapped $_counter time${_counter == 1 ? '' : 's'}.',
-              style: Theme.of(context).textTheme.display1,
               key: ValueKey('CountText'),
             ),
           ],
