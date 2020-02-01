@@ -3,8 +3,32 @@ import 'dart:html';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+
+// An error code value to error name Map.
+// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/code
+const Map<int, String> _kErrorValueToErrorName = {
+  1: 'MEDIA_ERR_ABORTED',
+  2: 'MEDIA_ERR_NETWORK',
+  3: 'MEDIA_ERR_DECODE',
+  4: 'MEDIA_ERR_SRC_NOT_SUPPORTED',
+};
+
+// An error code value to description Map.
+// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/code
+const Map<int, String> _kErrorValueToErrorDescription = {
+  1: 'The user canceled the fetching of the video.',
+  2: 'A network error occurred while fetching the video, despite having previously been available.',
+  3: 'An error occurred while trying to decode the video, despite having previously been determined to be usable.',
+  4: 'The video has been found to be unsuitable (missing or in a format not supported by your browser).',
+};
+
+// The default error message, when the error is an empty string
+// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/message
+const String _kDefaultErrorMessage =
+    'No further diagnostic information can be determined or provided.';
 
 /// The web implementation of [VideoPlayerPlatform].
 ///
@@ -144,9 +168,20 @@ class _VideoPlayer {
         sendInitialized();
       }
     });
-    videoElement.onError.listen((dynamic error) {
-      eventController.addError(error);
+
+    // The error event fires when some form of error occurs while attempting to load or perform the media.
+    videoElement.onError.listen((Event _) {
+      // The Event itself (_) doesn't contain info about the actual error.
+      // We need to look at the HTMLMediaElement.error.
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
+      MediaError error = videoElement.error;
+      eventController.addError(PlatformException(
+        code: _kErrorValueToErrorName[error.code],
+        message: error.message != '' ? error.message : _kDefaultErrorMessage,
+        details: _kErrorValueToErrorDescription[error.code],
+      ));
     });
+
     videoElement.onEnded.listen((dynamic _) {
       eventController.add(VideoEvent(eventType: VideoEventType.completed));
     });
@@ -159,8 +194,19 @@ class _VideoPlayer {
     ));
   }
 
-  void play() {
-    videoElement.play();
+  Future<void> play() {
+    return videoElement.play().catchError((e) {
+      // play() attempts to begin playback of the media. It returns
+      // a Promise which can get rejected in case of failure to begin
+      // playback for any reason, such as permission issues.
+      // The rejection handler is called with a DomException.
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/play
+      DomException exception = e;
+      eventController.addError(PlatformException(
+        code: exception.name,
+        message: exception.message,
+      ));
+    }, test: (e) => e is DomException);
   }
 
   void pause() {
