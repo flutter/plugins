@@ -1,6 +1,16 @@
-## 0.5.22
+## 0.5.23
 
 * Add support for holes in Polygons
+
+## 0.5.22
+
+* Support Android v2 embedding.
+* Bump the min flutter version to `1.12.13+hotfix.5`.
+* Fixes some e2e tests on Android.
+
+## 0.5.21+17
+
+* Fix Swift example in README.md.
 
 ## 0.5.21+16
 
