@@ -93,7 +93,10 @@ void main() {
     });
 
     test('throws PlatformException when playing bad media', () async {
-      int videoPlayerId = await VideoPlayerPlatform.instance.create(
+      int textureId = await VideoPlayerPlatform.instance.create();
+
+      VideoPlayerPlatform.instance.setDataSource(
+        textureId,
         DataSource(
             sourceType: DataSourceType.network,
             uri:
@@ -101,11 +104,11 @@ void main() {
       );
 
       Stream<VideoEvent> eventStream =
-          VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
+          VideoPlayerPlatform.instance.videoEventsFor(textureId);
 
       // Mute video to allow autoplay (See https://goo.gl/xX8pDD)
-      await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
-      await VideoPlayerPlatform.instance.play(videoPlayerId);
+      await VideoPlayerPlatform.instance.setVolume(textureId, 0);
+      await VideoPlayerPlatform.instance.play(textureId);
 
       expect(eventStream, emitsError(isA<PlatformException>()));
     });
