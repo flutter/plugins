@@ -407,7 +407,7 @@ class _GoogleMapOptions {
     this.trafficEnabled,
     this.buildingsEnabled,
   }) {
-    assert(liteModeEnabled != null && liteModeEnabled && !Platform.isAndroid);
+    assert(liteModeEnabled == null || (liteModeEnabled && Platform.isAndroid));
   }
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
