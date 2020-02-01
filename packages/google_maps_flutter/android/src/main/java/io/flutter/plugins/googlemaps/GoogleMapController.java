@@ -117,7 +117,6 @@ final class GoogleMapController
     this.id = id;
     this.context = context;
     this.activityState = activityState;
-    this.registrar = registrar;
     this.options = options;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;

@@ -1,3 +1,7 @@
+## 0.5.23
+
+* Add liteModeEnabled option.
+
 ## 0.5.22
 
 * Support Android v2 embedding.
@@ -11,10 +15,6 @@
 ## 0.5.21+16
 
 * Fixed typo in LatLng's documentation.
-
-## 0.5.22
-
-* Add liteModeEnabled option.
 
 ## 0.5.21+15
 
