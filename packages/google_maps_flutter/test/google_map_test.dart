@@ -386,35 +386,6 @@ void main() {
     expect(platformGoogleMap.zoomGesturesEnabled, true);
   });
 
-  testWidgets('Can update liteModeEnabled', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const Directionality(
-        textDirection: TextDirection.ltr,
-        child: GoogleMap(
-          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          liteModeEnabled: false,
-        ),
-      ),
-    );
-
-    final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
-
-    expect(platformGoogleMap.liteModeEnabled, false);
-
-    await tester.pumpWidget(
-      const Directionality(
-        textDirection: TextDirection.ltr,
-        child: GoogleMap(
-          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          liteModeEnabled: true,
-        ),
-      ),
-    );
-
-    expect(platformGoogleMap.liteModeEnabled, true);
-  });
-
   testWidgets('Can update myLocationEnabled', (WidgetTester tester) async {
     await tester.pumpWidget(
       const Directionality(
