@@ -405,7 +405,7 @@ class _GoogleMapState extends State<GoogleMap> {
     if (tile == null) {
       tile = TileProvider.noTile;
     }
-    return tile.toJson();
+    return tile._toJson();
   }
 }
 
