@@ -652,6 +652,32 @@ void main() {
       expect(currentUrl, 'https://www.google.com/');
     });
   });
+
+  testWidgets('launches with gestureNavigationEnabled on iOS',
+      (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: SizedBox(
+          width: 400,
+          height: 300,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: 'https://flutter.dev/',
+            gestureNavigationEnabled: true,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+          ),
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final String currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'https://flutter.dev/');
+  });
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.

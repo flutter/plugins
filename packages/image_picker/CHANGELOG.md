@@ -1,3 +1,16 @@
+## 0.6.3+2
+
+* Bump RoboElectric dependency to 4.3.1 and update resource usage.
+
+## 0.6.3+1
+
+* Fix an issue that the example app won't launch the image picker after Android V2 embedding migration.
+
+## 0.6.3
+
+* Support Android V2 embedding.
+* Migrate to using the new e2e test binding.
+
 ## 0.6.2+3
 * Remove the deprecated `author:` field from pubspec.yaml
 * Migrate the plugin to the pubspec platforms manifest.

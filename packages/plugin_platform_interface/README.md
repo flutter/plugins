@@ -18,7 +18,7 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
 
   static UrlLauncherPlatform _instance = MethodChannelUrlLauncher();
 
-  static const Object _token = Object();
+  static final Object _token = Object();
 
   static UrlLauncherPlatform get instance => _instance;
 

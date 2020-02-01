@@ -4,14 +4,13 @@
 
 package io.flutter.url_launcher_web;
 
-import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** UrlLauncherWebPlugin */
 public class UrlLauncherWebPlugin implements FlutterPlugin {
   @Override
-  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {}
+  public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {}
 
   // This static function is optional and equivalent to onAttachedToEngine. It supports the old
   // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
@@ -25,5 +24,5 @@ public class UrlLauncherWebPlugin implements FlutterPlugin {
   public static void registerWith(Registrar registrar) {}
 
   @Override
-  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {}
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
 }

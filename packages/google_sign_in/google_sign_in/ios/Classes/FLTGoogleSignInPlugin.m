@@ -13,6 +13,7 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 // These error codes must match with ones declared on Android and Dart sides.
 static NSString *const kErrorReasonSignInRequired = @"sign_in_required";
 static NSString *const kErrorReasonSignInCanceled = @"sign_in_canceled";
+static NSString *const kErrorReasonNetworkError = @"network_error";
 static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 
 static FlutterError *getFlutterError(NSError *error) {
@@ -21,6 +22,8 @@ static FlutterError *getFlutterError(NSError *error) {
     errorCode = kErrorReasonSignInRequired;
   } else if (error.code == kGIDSignInErrorCodeCanceled) {
     errorCode = kErrorReasonSignInCanceled;
+  } else if ([error.domain isEqualToString:NSURLErrorDomain]) {
+    errorCode = kErrorReasonNetworkError;
   } else {
     errorCode = kErrorReasonSignInFailed;
   }
