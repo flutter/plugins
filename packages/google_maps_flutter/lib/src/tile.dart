@@ -3,6 +3,7 @@ part of google_maps_flutter;
 /// Contains information about a Tile that is returned by a [TileProvider].
 @immutable
 class Tile {
+  /// Creates an immutable representation of a [Tile] to draw by [TileProvider].
   const Tile(this.width, this.height, this.data);
 
   /// The width of the image encoded by data in pixels.

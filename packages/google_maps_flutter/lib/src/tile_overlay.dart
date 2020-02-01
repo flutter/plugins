@@ -5,6 +5,7 @@ part of google_maps_flutter;
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class TileOverlayId {
+  /// Creates an immutable identifier for a [TileOverlay].
   TileOverlayId(this.value) : assert(value != null);
 
   /// value of the [TileOverlayId].
@@ -55,6 +56,7 @@ class TileOverlayId {
 /// At zoom level N, the x values of the tile coordinates range from 0 to 2N - 1 and increase from
 /// west to east and the y values range from 0 to 2N - 1 and increase from north to south.
 class TileOverlay {
+  /// Creates an immutable representation of a [TileOverlay] to draw on [GoogleMap].
   const TileOverlay({
     @required this.tileOverlayId,
     this.fadeIn = true,
