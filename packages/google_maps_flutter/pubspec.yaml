@@ -6,6 +6,7 @@ version: 0.5.22
 dependencies:
   flutter:
     sdk: flutter
+  flutter_plugin_android_lifecycle: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -29,4 +30,4 @@ flutter:
 
 environment:
   sdk: ">=2.0.0-dev.47.0 <3.0.0"
-  flutter: ">=1.10.0 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"
