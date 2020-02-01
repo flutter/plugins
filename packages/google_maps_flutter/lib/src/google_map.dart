@@ -317,6 +317,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void _updateTileOverlays() async {
     final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
     controller._updateTileOverlays(_TileOverlayUpdates.from(
         _tileOverlays.values.toSet(), widget.tileOverlays));
     _tileOverlays = _keyTileOverlayId(widget.tileOverlays);
