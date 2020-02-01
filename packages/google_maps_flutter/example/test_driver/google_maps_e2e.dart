@@ -449,8 +449,8 @@ void main() {
         myLocationButtonEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           final GoogleMapInspector inspector =
-          // ignore: invalid_use_of_visible_for_testing_member
-          GoogleMapInspector(controller.channel);
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
           inspectorCompleter.complete(inspector);
         },
       ),
@@ -461,7 +461,8 @@ void main() {
     expect(myLocationEnabled, false);
     myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
     expect(myLocationButtonEnabled, false);
-  }, skip: true); //TODO: Remove `skip' when https://github.com/flutter/flutter/issues/12561 will be fixed
+  }, skip: true);
+  //TODO: Remove `skip' when https://github.com/flutter/flutter/issues/12561 will be fixed
 
   testWidgets('testTraffic', (WidgetTester tester) async {
     final Key key = GlobalKey();
