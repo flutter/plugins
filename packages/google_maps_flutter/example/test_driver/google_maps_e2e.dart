@@ -258,7 +258,7 @@ void main() {
 
     liteModeEnabled = await inspector.isLiteModeEnabled();
     expect(liteModeEnabled, true);
-  });
+  }, skip: !Platform.isAndroid);
 
   testWidgets('testRotateGesturesEnabled', (WidgetTester tester) async {
     final Key key = GlobalKey();
