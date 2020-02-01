@@ -20,17 +20,16 @@
 @end
 
 @interface FLTTileProviderController : GMSTileLayer
-@property(atomic, readonly) NSString* tileOverlayId;
-- (instancetype)init:(FlutterMethodChannel*)methodChannel
-       tileOverlayId:(NSString*)tileOverlayId;
+@property(atomic, readonly) NSString *tileOverlayId;
+- (instancetype)init:(FlutterMethodChannel *)methodChannel tileOverlayId:(NSString *)tileOverlayId;
 @end
 
 @interface FLTTileOverlaysController : NSObject
-- (instancetype)init:(FlutterMethodChannel*)methodChannel
-             mapView:(GMSMapView*)mapView
-           registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
-- (void)addTileOverlays:(NSArray*)tileOverlaysToAdd;
-- (void)changeTileOverlays:(NSArray*)tileOverlaysToChange;
-- (void)removeTileOverlayIds:(NSArray*)tileOverlayIdsToRemove;
-- (void)clearTileCache:(NSString*)tileOverlayId;
+- (instancetype)init:(FlutterMethodChannel *)methodChannel
+             mapView:(GMSMapView *)mapView
+           registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
+- (void)addTileOverlays:(NSArray *)tileOverlaysToAdd;
+- (void)changeTileOverlays:(NSArray *)tileOverlaysToChange;
+- (void)removeTileOverlayIds:(NSArray *)tileOverlayIdsToRemove;
+- (void)clearTileCache:(NSString *)tileOverlayId;
 @end

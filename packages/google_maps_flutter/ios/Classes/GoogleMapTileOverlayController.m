@@ -10,7 +10,7 @@
   GMSMapView* _mapView;
 }
 
-- (instancetype)initWithTileLayer:(GMSTileLayer *)tileLayer mapView:(GMSMapView *)mapView {
+- (instancetype)initWithTileLayer:(GMSTileLayer*)tileLayer mapView:(GMSMapView*)mapView {
   self = [super init];
   if (self) {
     _layer = tileLayer;
@@ -55,7 +55,7 @@
   FlutterMethodChannel* _methodChannel;
   NSString* _tileOverlayId;
 }
-- (instancetype)init:(FlutterMethodChannel *)methodChannel tileOverlayId:(NSString *)tileOverlayId {
+- (instancetype)init:(FlutterMethodChannel*)methodChannel tileOverlayId:(NSString*)tileOverlayId {
   self = [super init];
   if (self) {
     _methodChannel = methodChannel;
@@ -64,38 +64,36 @@
   return self;
 }
 
-- (void)requestTileForX:(NSUInteger)x y:(NSUInteger)y zoom:(NSUInteger)zoom receiver:(id<GMSTileReceiver>)receiver {
+- (void)requestTileForX:(NSUInteger)x
+                      y:(NSUInteger)y
+                   zoom:(NSUInteger)zoom
+               receiver:(id<GMSTileReceiver>)receiver {
   NSNumber* xn = [NSNumber numberWithUnsignedInteger:x];
   NSNumber* yn = [NSNumber numberWithUnsignedInteger:y];
   NSNumber* zoomn = [NSNumber numberWithUnsignedInteger:zoom];
-  
-  [_methodChannel invokeMethod:@"tileOverlay#getTile"
-                     arguments:@{
-                       @"tileOverlayId": _tileOverlayId,
-                       @"x":xn,
-                       @"y":yn,
-                       @"zoom":zoomn
-                     } result: ^(id _Nullable result) {
-    UIImage* tileImage;
-    if ([result isKindOfClass:[NSDictionary class]]) {
-      FlutterStandardTypedData* typedData = (FlutterStandardTypedData*) result[@"data"];
-      tileImage = [UIImage imageWithData:typedData.data];
-    } else {
-      if ([result isKindOfClass:[FlutterError class]]) {
-        FlutterError* error = (FlutterError*)result;
-        NSLog(@"Can't get tile: errorCode = %@, errorMessage = %@, date = %@",
-              [error code],
-              [error message],
-              [error details]);
-      }
-      if ([result isKindOfClass:[FlutterMethodNotImplemented class]]) {
-        NSLog(@"Can't get tile: notImplemented");
-      }
-      tileImage = kGMSTileLayerNoTile;
-    }
-    
-    [receiver receiveTileWithX:x y:y zoom:zoom image:tileImage];
-  }];
+
+  [_methodChannel
+      invokeMethod:@"tileOverlay#getTile"
+         arguments:@{@"tileOverlayId" : _tileOverlayId, @"x" : xn, @"y" : yn, @"zoom" : zoomn}
+            result:^(id _Nullable result) {
+              UIImage* tileImage;
+              if ([result isKindOfClass:[NSDictionary class]]) {
+                FlutterStandardTypedData* typedData = (FlutterStandardTypedData*)result[@"data"];
+                tileImage = [UIImage imageWithData:typedData.data];
+              } else {
+                if ([result isKindOfClass:[FlutterError class]]) {
+                  FlutterError* error = (FlutterError*)result;
+                  NSLog(@"Can't get tile: errorCode = %@, errorMessage = %@, date = %@",
+                        [error code], [error message], [error details]);
+                }
+                if ([result isKindOfClass:[FlutterMethodNotImplemented class]]) {
+                  NSLog(@"Can't get tile: notImplemented");
+                }
+                tileImage = kGMSTileLayerNoTile;
+              }
+
+              [receiver receiveTileWithX:x y:y zoom:zoom image:tileImage];
+            }];
 }
 @end
 
@@ -105,14 +103,14 @@ static float ToFloat(NSNumber* data) { return [FLTGoogleMapJsonConversions toFlo
 
 static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:data]; }
 
-static void InterpretTileOverlayOptions(NSDictionary* data, id<FLTGoogleMapTileOverlayOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar>* registrar) {
-  
+static void InterpretTileOverlayOptions(NSDictionary* data,
+                                        id<FLTGoogleMapTileOverlayOptionsSink> sink,
+                                        NSObject<FlutterPluginRegistrar>* registrar) {
   NSNumber* visible = data[@"visible"];
   if (visible != nil) {
     [sink setVisible:ToBool(visible)];
   }
-  
+
   NSNumber* transparency = data[@"transparency"];
   if (transparency != nil) {
     [sink setTransparency:ToFloat(transparency)];
@@ -122,12 +120,12 @@ static void InterpretTileOverlayOptions(NSDictionary* data, id<FLTGoogleMapTileO
   if (zIndex != nil) {
     [sink setZIndex:ToInt(zIndex)];
   }
-  
+
   NSNumber* fadeIn = data[@"fadeIn"];
   if (fadeIn != nil) {
     [sink setFadeIn:ToBool(fadeIn)];
   }
-  
+
   NSNumber* tileSize = data[@"tileSize"];
   if (tileSize != nil) {
     [sink setTileSize:[tileSize integerValue]];
@@ -153,20 +151,19 @@ static void InterpretTileOverlayOptions(NSDictionary* data, id<FLTGoogleMapTileO
   return self;
 }
 
-- (void)addTileOverlays:(NSArray *)tileOverlaysToAdd {
+- (void)addTileOverlays:(NSArray*)tileOverlaysToAdd {
   for (NSDictionary* tileOverlay in tileOverlaysToAdd) {
-    
     NSString* tileOverlayId = [FLTTileOverlaysController getTileOverlayId:tileOverlay];
-    FLTTileProviderController* tileProvider = [[FLTTileProviderController alloc] init:_methodChannel tileOverlayId:tileOverlayId];
+    FLTTileProviderController* tileProvider =
+        [[FLTTileProviderController alloc] init:_methodChannel tileOverlayId:tileOverlayId];
     FLTGoogleMapTileOverlayController* controller =
-        [[FLTGoogleMapTileOverlayController alloc] initWithTileLayer:tileProvider
-                                                             mapView:_mapView];
+        [[FLTGoogleMapTileOverlayController alloc] initWithTileLayer:tileProvider mapView:_mapView];
     InterpretTileOverlayOptions(tileOverlay, controller, _registrar);
     _tileOverlayIdToController[tileOverlayId] = controller;
   }
 }
 
-- (void)changeTileOverlays:(NSArray *)tileOverlaysToChange {
+- (void)changeTileOverlays:(NSArray*)tileOverlaysToChange {
   for (NSDictionary* tileOverlay in tileOverlaysToChange) {
     NSString* tileOverlayId = [FLTTileOverlaysController getTileOverlayId:tileOverlay];
     FLTGoogleMapTileOverlayController* controller = _tileOverlayIdToController[tileOverlayId];
@@ -176,7 +173,7 @@ static void InterpretTileOverlayOptions(NSDictionary* data, id<FLTGoogleMapTileO
     InterpretTileOverlayOptions(tileOverlay, controller, _registrar);
   }
 }
-- (void)removeTileOverlayIds:(NSArray *)tileOverlayIdsToRemove {
+- (void)removeTileOverlayIds:(NSArray*)tileOverlayIdsToRemove {
   for (NSString* tileOverlayId in tileOverlayIdsToRemove) {
     if (!tileOverlayId) {
       continue;

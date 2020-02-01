@@ -1,6 +1,6 @@
 ## 0.5.23
 
-* Add TileOverlay support for Android.
+* Add TileOverlay support.
 
 ## 0.5.22
 
