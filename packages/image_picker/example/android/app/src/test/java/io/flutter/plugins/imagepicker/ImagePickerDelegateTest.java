@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 public class ImagePickerDelegateTest {
   private static final Double WIDTH = 10.0;
   private static final Double HEIGHT = 10.0;
+  private static final Double MAX_DURATION = 10.0;
   private static final Integer IMAGE_QUALITY = 90;
 
   @Mock Activity mockActivity;
@@ -364,6 +365,19 @@ public class ImagePickerDelegateTest {
   public void
       onActivityResult_WhenVideoTakenWithCamera_AndResizeParametersSupplied_FinishesWithFilePath() {
     when(mockMethodCall.argument("maxWidth")).thenReturn(WIDTH);
+
+    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+    delegate.onActivityResult(
+        ImagePickerDelegate.REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA, Activity.RESULT_OK, mockIntent);
+
+    verify(mockResult).success("pathFromUri");
+    verifyNoMoreInteractions(mockResult);
+  }
+
+  @Test
+  public void
+      onActivityResult_WhenVideoTakenWithCamera_AndMaxDurationParametersSupplied_FinishesWithFilePath() {
+    when(mockMethodCall.argument("maxDuration")).thenReturn(MAX_DURATION);
 
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
     delegate.onActivityResult(
