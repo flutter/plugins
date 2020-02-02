@@ -199,6 +199,7 @@ public class ImagePickerDelegate
     this.cache = cache;
   }
 
+  // Save the state of the image picker so it can be retrieved with `retrieveLostImage`.
   void saveStateBeforeResult() {
     if (methodCall == null) {
       return;

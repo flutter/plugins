@@ -86,7 +86,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.2.1-flutter
+    image: mojave-xcode-11.3-flutter
   setup_script:
     - pod repo update
   upgrade_script:
@@ -98,7 +98,7 @@ task:
   activate_script: pub global activate flutter_plugin_tools
   create_simulator_script:
     - xcrun simctl list
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-2 | xargs xcrun simctl boot
+    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
       script:
@@ -133,7 +133,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.2.1-flutter
+    image: mojave-xcode-11.3-flutter
   setup_script:
     - pod repo update
     - flutter config --enable-macos-desktop

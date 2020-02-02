@@ -1,3 +1,21 @@
+## 0.3.19+5
+
+* On iOS, always keep contentInsets of the WebView to be 0.
+* Fix XCTest case to follow XCTest naming convention.
+
+## 0.3.19+4
+
+* On iOS, fix the scroll view content inset is automatically adjusted. After the fix, the content position of the WebView is customizable by Flutter.
+* Fix an iOS 13 bug where the scroll indicator shows at random location.
+
+## 0.3.19+3
+
+* Setup XCTests.
+
+## 0.3.19+2
+
+* Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+
 ## 0.3.19+1
 
 * Raise min Flutter SDK requirement to the latest stable. v2 embedding apps no
