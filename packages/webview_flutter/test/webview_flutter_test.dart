@@ -823,6 +823,7 @@ void main() {
       await tester.pumpWidget(
         const WebView(
           initialUrl: 'https://youtube.com',
+          gestureNavigationEnabled: true,
         ),
       );
 
@@ -838,6 +839,7 @@ void main() {
               hasNavigationDelegate: false,
               debuggingEnabled: false,
               userAgent: WebSetting<String>.of(null),
+              gestureNavigationEnabled: true,
             ),
             // TODO(iskakaushik): Remove this when collection literals makes it to stable.
             // ignore: prefer_collection_literals
@@ -993,11 +995,8 @@ class FakePlatformWebView {
     };
     final ByteData data = codec
         .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(
-        channel.name, data, (ByteData data) {});
+    ServicesBinding.instance.defaultBinaryMessenger
+        .handlePlatformMessage(channel.name, data, (ByteData data) {});
   }
 
   // Fakes a main frame navigation that was initiated by the webview, e.g when
@@ -1015,10 +1014,8 @@ class FakePlatformWebView {
     };
     final ByteData data =
         codec.encodeMethodCall(MethodCall('navigationRequest', arguments));
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(channel.name, data, (ByteData data) {
+    ServicesBinding.instance.defaultBinaryMessenger
+        .handlePlatformMessage(channel.name, data, (ByteData data) {
       final bool allow = codec.decodeEnvelope(data);
       if (allow) {
         _loadUrl(url);
@@ -1034,10 +1031,7 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(
+    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
       channel.name,
       data,
       (ByteData data) {},
@@ -1052,10 +1046,7 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(
+    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
       channel.name,
       data,
       (ByteData data) {},
@@ -1194,6 +1185,8 @@ class MatchesWebSettings extends Matcher {
         _webSettings.hasNavigationDelegate ==
             webSettings.hasNavigationDelegate &&
         _webSettings.debuggingEnabled == webSettings.debuggingEnabled &&
+        _webSettings.gestureNavigationEnabled ==
+            webSettings.gestureNavigationEnabled &&
         _webSettings.userAgent == webSettings.userAgent;
   }
 }

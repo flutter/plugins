@@ -42,7 +42,7 @@ public class ImageResizerTest {
   @Test
   public void onResizeImageIfNeeded_WhenQualityIsNull_ShoultNotResize_ReturnTheUnscaledFile() {
     String outoutFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, null, null);
-    assertThat(outoutFile, equalTo(externalDirectory.getPath() + "/pngImage.png"));
+    assertThat(outoutFile, equalTo(imageFile.getPath()));
   }
 
   @Test

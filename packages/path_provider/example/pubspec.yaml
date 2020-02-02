@@ -6,6 +6,8 @@ dependencies:
     sdk: flutter
   path_provider:
     path: ../
+  path_provider_macos:
+    path: ../path_provider_macos
 
 dev_dependencies:
   e2e: ^0.2.1

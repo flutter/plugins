@@ -44,6 +44,7 @@ class GoogleMap extends StatefulWidget {
     this.padding = const EdgeInsets.all(0),
     this.indoorViewEnabled = false,
     this.trafficEnabled = false,
+    this.buildingsEnabled = true,
     this.markers,
     this.polygons,
     this.polylines,
@@ -178,6 +179,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Enables or disables the traffic layer of the map
   final bool trafficEnabled;
+
+  /// Enables or disables showing 3D buildings where available
+  final bool buildingsEnabled;
 
   /// Which gestures should be consumed by the map.
   ///
@@ -394,6 +398,7 @@ class _GoogleMapOptions {
     this.padding,
     this.indoorViewEnabled,
     this.trafficEnabled,
+    this.buildingsEnabled,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -413,6 +418,7 @@ class _GoogleMapOptions {
       padding: map.padding,
       indoorViewEnabled: map.indoorViewEnabled,
       trafficEnabled: map.trafficEnabled,
+      buildingsEnabled: map.buildingsEnabled,
     );
   }
 
@@ -446,6 +452,8 @@ class _GoogleMapOptions {
 
   final bool trafficEnabled;
 
+  final bool buildingsEnabled;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -475,6 +483,7 @@ class _GoogleMapOptions {
     ]);
     addIfNonNull('indoorEnabled', indoorViewEnabled);
     addIfNonNull('trafficEnabled', trafficEnabled);
+    addIfNonNull('buildingsEnabled', buildingsEnabled);
     return optionsMap;
   }
 

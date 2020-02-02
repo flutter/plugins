@@ -17,6 +17,8 @@ import 'utils.dart' show injectJSLibraries;
 external set gapiOnloadCallback(Function callback);
 
 // This name must match the external setter above
+/// This is only exposed for testing. It shouldn't be accessed by users of the
+/// plugin as it could break at any point.
 @visibleForTesting
 const String kGapiOnloadCallbackFunctionName = "gapiOnloadCallback";
 String _addOnloadToScript(String url) => url.startsWith('data:')

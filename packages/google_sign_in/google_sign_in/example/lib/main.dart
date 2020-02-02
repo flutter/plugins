@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 import 'dart:convert' show json;
 
@@ -102,9 +104,7 @@ class SignInDemoState extends State<SignInDemo> {
     }
   }
 
-  Future<void> _handleSignOut() async {
-    _googleSignIn.disconnect();
-  }
+  Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   Widget _buildBody() {
     if (_currentUser != null) {

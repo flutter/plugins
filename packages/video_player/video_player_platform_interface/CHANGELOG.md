@@ -1,3 +1,8 @@
+## 1.0.4
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Require Flutter SDK 1.10.0 or greater.
+
 ## 1.0.3
 
 * Document public API.

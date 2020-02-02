@@ -173,6 +173,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     // These error codes must match with ones declared on iOS and Dart sides.
     private static final String ERROR_REASON_SIGN_IN_CANCELED = "sign_in_canceled";
     private static final String ERROR_REASON_SIGN_IN_REQUIRED = "sign_in_required";
+    private static final String ERROR_REASON_NETWORK_ERROR = "network_error";
     private static final String ERROR_REASON_SIGN_IN_FAILED = "sign_in_failed";
     private static final String ERROR_FAILURE_TO_RECOVER_AUTH = "failed_to_recover_auth";
     private static final String ERROR_USER_RECOVERABLE_AUTH = "user_recoverable_auth";
@@ -372,6 +373,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         return ERROR_REASON_SIGN_IN_CANCELED;
       } else if (statusCode == CommonStatusCodes.SIGN_IN_REQUIRED) {
         return ERROR_REASON_SIGN_IN_REQUIRED;
+      } else if (statusCode == CommonStatusCodes.NETWORK_ERROR) {
+        return ERROR_REASON_NETWORK_ERROR;
       } else {
         return ERROR_REASON_SIGN_IN_FAILED;
       }

@@ -27,6 +27,7 @@ class AndroidIntent {
   /// [package] refers to the package parameter of the intent, can be null.
   /// [componentName] refers to the component name of the intent, can be null.
   /// If not null, then [package] but also be provided.
+  /// [type] refers to the type of the intent, can be null.
   const AndroidIntent({
     @required this.action,
     this.flags,
@@ -36,6 +37,7 @@ class AndroidIntent {
     this.package,
     this.componentName,
     Platform platform,
+    this.type,
   })  : assert(action != null),
         _channel = const MethodChannel(_kChannelName),
         _platform = platform ?? const LocalPlatform();
@@ -53,6 +55,7 @@ class AndroidIntent {
     this.arguments,
     this.package,
     this.componentName,
+    this.type,
   })  : _channel = channel,
         _platform = platform;
 
@@ -96,6 +99,11 @@ class AndroidIntent {
   final String componentName;
   final MethodChannel _channel;
   final Platform _platform;
+
+  /// Set an explicit MIME data type.
+  ///
+  /// See https://developer.android.com/reference/android/content/Intent.html#intent-structure.
+  final String type;
 
   bool _isPowerOfTwo(int x) {
     /* First x in the below expression is for the case when x is 0 */
@@ -141,6 +149,9 @@ class AndroidIntent {
       if (componentName != null) {
         args['componentName'] = componentName;
       }
+    }
+    if (type != null) {
+      args['type'] = type;
     }
     await _channel.invokeMethod<void>('launch', args);
   }

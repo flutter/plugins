@@ -38,10 +38,8 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         switch (methodCall.method) {
           case 'listen':
-            // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-            // https://github.com/flutter/flutter/issues/33446
-            // ignore: deprecated_member_use
-            await BinaryMessages.handlePlatformMessage(
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
               Connectivity.eventChannel.name,
               Connectivity.eventChannel.codec.encodeSuccessEnvelope('wifi'),
               (_) {},

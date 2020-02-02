@@ -529,4 +529,33 @@ void main() {
 
     expect(platformGoogleMap.trafficEnabled, true);
   });
+
+  testWidgets('Can update buildings', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          buildingsEnabled: false,
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.buildingsEnabled, false);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          buildingsEnabled: true,
+        ),
+      ),
+    );
+
+    expect(platformGoogleMap.buildingsEnabled, true);
+  });
 }
