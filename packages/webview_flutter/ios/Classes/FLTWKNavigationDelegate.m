@@ -30,8 +30,8 @@
     return;
   }
 
-  NSString *type = nil;
-  switch(navigationAction.navigationType) {
+  NSString* type = nil;
+  switch (navigationAction.navigationType) {
     case WKNavigationTypeBackForward:
       type = @"back_forward";
       break;
