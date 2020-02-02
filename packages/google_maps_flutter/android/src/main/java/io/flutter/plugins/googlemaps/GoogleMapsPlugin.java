@@ -48,9 +48,10 @@ public class GoogleMapsPlugin
   private FlutterPluginBinding pluginBinding;
   private Lifecycle lifecycle;
   private FragmentManager fragmentManager;
-  private MethodChannel methodChannel;
+  private MethodChannel utilsMethodChannel;
 
   private static final String VIEW_TYPE = "plugins.flutter.io/google_maps";
+  private static final String UTILS_CHANNEL = "flutter.io/googleMapsPluginUtils";
 
   public static void registerWith(Registrar registrar) {
     if (registrar.activity() == null) {
@@ -75,17 +76,11 @@ public class GoogleMapsPlugin
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     pluginBinding = binding;
-    if (methodChannel != null) {
-      methodChannel.setMethodCallHandler(this);
-    }
   }
 
   @Override
   public void onDetachedFromEngine(FlutterPluginBinding binding) {
     pluginBinding = null;
-    if (methodChannel != null) {
-      methodChannel.setMethodCallHandler(null);
-    }
   }
 
   // ActivityAware
@@ -105,11 +100,15 @@ public class GoogleMapsPlugin
                 lifecycle,
                 null,
                 binding.getActivity().hashCode()));
+    fragmentManager = binding.getActivity().getFragmentManager();
+    utilsMethodChannel = new MethodChannel(pluginBinding.getBinaryMessenger(), UTILS_CHANNEL);
+    utilsMethodChannel.setMethodCallHandler(this);
   }
 
   @Override
   public void onDetachedFromActivity() {
     lifecycle.removeObserver(this);
+    utilsMethodChannel.setMethodCallHandler(null);
   }
 
   @Override
@@ -121,6 +120,7 @@ public class GoogleMapsPlugin
   public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
     lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
     lifecycle.addObserver(this);
+    utilsMethodChannel.setMethodCallHandler(this);
   }
 
   // DefaultLifecycleObserver methods
@@ -179,6 +179,7 @@ public class GoogleMapsPlugin
       return;
     }
     state.set(RESUMED);
+    utilsMethodChannel.setMethodCallHandler(this);
   }
 
   @Override
@@ -187,6 +188,7 @@ public class GoogleMapsPlugin
       return;
     }
     state.set(PAUSED);
+    utilsMethodChannel.setMethodCallHandler(null);
   }
 
   @Override
@@ -212,7 +214,8 @@ public class GoogleMapsPlugin
   private GoogleMapsPlugin(Activity activity, BinaryMessenger messenger) {
     this.registrarActivityHashCode = activity.hashCode();
     this.fragmentManager = activity.getFragmentManager();
-    this.methodChannel = new MethodChannel(messenger, "flutter.io/googleMapsPluginUtils");
+    this.utilsMethodChannel = new MethodChannel(messenger, UTILS_CHANNEL);
+    this.utilsMethodChannel.setMethodCallHandler(this);
   }
 
   @Override
