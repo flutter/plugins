@@ -95,16 +95,14 @@ class VideoPlayerValue {
   bool get hasError => errorDescription != null;
 
   /// Returns [size.width] / [size.height] when size is non-null, or `1.0.` when
-  /// it is.
-  ///
-  /// If aspect ratio is less than 0, this returns 0.
+  /// size is null or the aspect ratio would be less than or equal to 0.0.
   double get aspectRatio {
     if (size == null) {
       return 1.0;
     }
     final double aspectRatio = size.width / size.height;
-    if (aspectRatio < 0) {
-      return 0;
+    if (aspectRatio <= 0) {
+      return 1.0;
     }
     return aspectRatio;
   }
