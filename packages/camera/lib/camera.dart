@@ -38,6 +38,21 @@ enum ResolutionPreset {
   max,
 }
 
+/// Controls the focus mode of the camera.
+///
+/// Some modes are not supported
+///
+enum FocusMode {
+  /// todo
+  locked,
+
+  /// todo
+  autoFocus,
+
+  /// todo
+  continuousAutoFocus,
+}
+
 // ignore: inference_failure_on_function_return_type
 typedef onLatestImageAvailable = Function(CameraImage image);
 
@@ -60,6 +75,32 @@ String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
   throw ArgumentError('Unknown ResolutionPreset value');
 }
 
+/// Returns the focus mode as a String.
+String serializeFocusMode(FocusMode mode) {
+  switch (mode) {
+    case FocusMode.autoFocus:
+      return 'autoFocus';
+    case FocusMode.continuousAutoFocus:
+      return 'continuousAutoFocus';
+    case FocusMode.locked:
+      return 'locked';
+  }
+  throw ArgumentError('Unknown FocusMode value');
+}
+
+/// Returns the focus mode as a String.
+FocusMode deserializeFocusMode(String mode) {
+  switch (mode) {
+    case 'autoFocus':
+      return FocusMode.autoFocus;
+    case 'continuousAutoFocus':
+      return FocusMode.continuousAutoFocus;
+    case 'locked':
+      return FocusMode.locked;
+  }
+  throw ArgumentError('Unknown FocusMode value');
+}
+
 CameraLensDirection _parseCameraLensDirection(String string) {
   switch (string) {
     case 'front':
@@ -70,6 +111,10 @@ CameraLensDirection _parseCameraLensDirection(String string) {
       return CameraLensDirection.external;
   }
   throw ArgumentError('Unknown CameraLensDirection value');
+}
+
+List<FocusMode> _parseFocusModes(List<dynamic> modes) {
+  return modes.map((mode) => deserializeFocusMode(mode as String)).toList();
 }
 
 /// Completes with a list of available cameras.
@@ -84,6 +129,7 @@ Future<List<CameraDescription>> availableCameras() async {
         name: camera['name'],
         lensDirection: _parseCameraLensDirection(camera['lensFacing']),
         sensorOrientation: camera['sensorOrientation'],
+        focusModes: _parseFocusModes(camera['focusModes'])
       );
     }).toList();
   } on PlatformException catch (e) {
@@ -92,10 +138,11 @@ Future<List<CameraDescription>> availableCameras() async {
 }
 
 class CameraDescription {
-  CameraDescription({this.name, this.lensDirection, this.sensorOrientation});
+  CameraDescription({this.name, this.lensDirection, this.sensorOrientation, this.focusModes});
 
   final String name;
   final CameraLensDirection lensDirection;
+  final List<FocusMode> focusModes;
 
   /// Clockwise angle through which the output image needs to be rotated to be upright on the device screen in its native orientation.
   ///
@@ -120,7 +167,7 @@ class CameraDescription {
 
   @override
   String toString() {
-    return '$runtimeType($name, $lensDirection, $sensorOrientation)';
+    return '$runtimeType($name, $lensDirection, $sensorOrientation, $focusModes)';
   }
 }
 
@@ -245,10 +292,12 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
+    this.focusMode = FocusMode.continuousAutoFocus,
   }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
+  final FocusMode focusMode;
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
@@ -274,6 +323,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         <String, dynamic>{
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
+          'focusMode': serializeFocusMode(focusMode),
           'enableAudio': enableAudio,
         },
       );

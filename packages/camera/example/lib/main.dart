@@ -43,6 +43,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
+  FocusMode focusMode = FocusMode.continuousAutoFocus;
 
   @override
   void initState() {
@@ -102,7 +103,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
           ),
           _captureControlRowWidget(),
-          _toggleAudioWidget(),
+          Row(
+            children: <Widget>[
+              _toggleAudioWidget(),
+              _changeFocusModeWidget(),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
@@ -154,6 +160,35 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             },
           ),
         ],
+      ),
+    );
+  }
+
+  /// Change FocusMode
+  Widget _changeFocusModeWidget() {
+    var modes = controller?.description?.focusModes ?? [];
+    if (modes.isEmpty == true) return SizedBox();
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 25),
+      child: DropdownButton<FocusMode>(
+        value: focusMode,
+        items: modes
+            .map(
+              (it) => DropdownMenuItem<FocusMode>(
+                value: it,
+                child: Text(
+                  "$it".replaceFirst("FocusMode.", ""),
+                ),
+              ),
+            )
+            .toList(),
+        onChanged: (value) {
+          focusMode = value;
+          if (controller != null) {
+            onNewCameraSelected(controller.description);
+          }
+        },
       ),
     );
   }
@@ -283,6 +318,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: enableAudio,
+      focusMode: focusMode
     );
 
     // If the controller is updated then update the UI.
@@ -477,7 +513,6 @@ class CameraApp extends StatelessWidget {
 List<CameraDescription> cameras = [];
 
 Future<void> main() async {
-  // Fetch the available cameras before initializing the app.
   try {
     WidgetsFlutterBinding.ensureInitialized();
     cameras = await availableCameras();
