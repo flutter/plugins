@@ -1,3 +1,7 @@
+## 0.5.22+1
+
+* Fix for toggling traffic layer on Android not working
+
 ## 0.5.22
 
 * Support Android v2 embedding.

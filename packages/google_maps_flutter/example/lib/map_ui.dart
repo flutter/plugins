@@ -53,6 +53,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _zoomGesturesEnabled = true;
   bool _indoorViewEnabled = true;
   bool _myLocationEnabled = true;
+  bool _myTrafficEnabled = false;
   bool _myLocationButtonEnabled = true;
   GoogleMapController _controller;
   bool _nightMode = false;
@@ -191,8 +192,7 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _myLocationToggler() {
     return FlatButton(
-      child: Text(
-          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+      child: Text('${_myLocationEnabled ? 'disable' : 'enable'} my location'),
       onPressed: () {
         setState(() {
           _myLocationEnabled = !_myLocationEnabled;
@@ -208,6 +208,17 @@ class MapUiBodyState extends State<MapUiBody> {
       onPressed: () {
         setState(() {
           _myLocationButtonEnabled = !_myLocationButtonEnabled;
+        });
+      },
+    );
+  }
+
+  Widget _myTrafficToggler() {
+    return FlatButton(
+      child: Text('${_myTrafficEnabled ? 'disable' : 'enable'} my traffic'),
+      onPressed: () {
+        setState(() {
+          _myTrafficEnabled = !_myTrafficEnabled;
         });
       },
     );
@@ -260,6 +271,7 @@ class MapUiBodyState extends State<MapUiBody> {
       indoorViewEnabled: _indoorViewEnabled,
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
+      trafficEnabled: _myTrafficEnabled,
       onCameraMove: _updateCameraPosition,
     );
 
@@ -300,6 +312,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _indoorViewToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),
+              _myTrafficToggler(),
               _nightModeToggler(),
             ],
           ),
