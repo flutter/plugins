@@ -1,5 +1,4 @@
 on:
-  pull_request: # to update newly open PRs or when a PR is synced
   check_suite: # to update all PRs upon a Check Suite completion
     type: ['completed']
   
