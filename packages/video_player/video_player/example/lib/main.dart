@@ -277,19 +277,16 @@ class _PlayPauseOverlay extends StatelessWidget {
           reverseDuration: Duration(milliseconds: 200),
           child: controller.value.isPlaying
               ? SizedBox.shrink()
-              : SizedBox.fromSize(
-                  size: controller.value.size ?? Size.zero,
-                  child: Container(
-                    color: Colors.black26,
-                    child: Center(
-                      child: Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 100.0,
-                      ),
-                    ),
+              : Container(
+                color: Colors.black26,
+                child: Center(
+                  child: Icon(
+                    Icons.play_arrow,
+                    color: Colors.white,
+                    size: 100.0,
                   ),
                 ),
+              ),
         ),
         GestureDetector(
           onTap: () {
@@ -346,8 +343,9 @@ class _PlayerVideoAndPopPageState extends State<_PlayerVideoAndPopPage> {
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
             if (snapshot.data == true) {
               return AspectRatio(
-                  aspectRatio: _videoPlayerController.value.aspectRatio,
-                  child: VideoPlayer(_videoPlayerController));
+                aspectRatio: _videoPlayerController.value.aspectRatio,
+                child: VideoPlayer(_videoPlayerController),
+              );
             } else {
               return const Text('waiting for video to load');
             }

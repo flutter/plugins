@@ -96,7 +96,18 @@ class VideoPlayerValue {
 
   /// Returns [size.width] / [size.height] when size is non-null, or `1.0.` when
   /// it is.
-  double get aspectRatio => size != null ? size.width / size.height : 1.0;
+  ///
+  /// If aspect ratio is less than 0, this returns 0.
+  double get aspectRatio {
+    if (size == null) {
+      return 1.0;
+    }
+    final double aspectRatio = size.width / size.height;
+    if (aspectRatio < 0) {
+      return 0;
+    }
+    return aspectRatio;
+  }
 
   /// Returns a new instance that has the same values as this current instance,
   /// except for any overrides passed in as arguments to [copyWidth].
