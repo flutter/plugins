@@ -10,7 +10,7 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.util.Size;
-import io.flutter.plugins.camera.Camera.ResolutionPreset;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +18,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.flutter.plugins.camera.Camera.ResolutionPreset;
+
+import static android.hardware.camera2.CameraMetadata.CONTROL_AF_MODE_AUTO;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AF_MODE_CONTINUOUS_PICTURE;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AF_MODE_CONTINUOUS_VIDEO;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AF_MODE_EDOF;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AF_MODE_MACRO;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AF_MODE_OFF;
 
 /** Provides various utilities for camera. */
 public final class CameraUtils {
@@ -65,9 +74,58 @@ public final class CameraUtils {
           details.put("lensFacing", "external");
           break;
       }
+
+      int[] focusModes = characteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
+      List<String> modes = serializeFocusModes(focusModes);
+      details.put("focusModes", modes);
+
       cameras.add(details);
     }
     return cameras;
+  }
+
+  static List<String> serializeFocusModes(int[] focusModes) {
+    List<String> modes = new ArrayList<>();
+    for (int focusMode : focusModes) {
+      switch (focusMode) {
+        case CONTROL_AF_MODE_OFF:
+          modes.add(Camera.FocusMode.off.name());
+          break;
+        case CONTROL_AF_MODE_AUTO:
+          modes.add(Camera.FocusMode.autoFocus.name());
+          break;
+        case CONTROL_AF_MODE_MACRO:
+          modes.add(Camera.FocusMode.macro.name());
+          break;
+        case CONTROL_AF_MODE_CONTINUOUS_VIDEO:
+          modes.add(Camera.FocusMode.continuousAutoFocusVideo.name());
+          break;
+        case CONTROL_AF_MODE_CONTINUOUS_PICTURE:
+          modes.add(Camera.FocusMode.continuousAutoFocusPhoto.name());
+          break;
+        case CONTROL_AF_MODE_EDOF:
+          modes.add(Camera.FocusMode.extendedDepthOfField.name());
+          break;
+      }
+    }
+    return modes;
+  }
+
+  static int getControlFocus(Camera.FocusMode focusMode) {
+    switch (focusMode) {
+      case autoFocus:
+        return CONTROL_AF_MODE_AUTO;
+      case macro:
+        return CONTROL_AF_MODE_MACRO;
+      case continuousAutoFocusVideo:
+        return CONTROL_AF_MODE_CONTINUOUS_VIDEO;
+      case continuousAutoFocusPhoto:
+        return CONTROL_AF_MODE_CONTINUOUS_PICTURE;
+      case extendedDepthOfField:
+        return CONTROL_AF_MODE_EDOF;
+      default:
+        return CONTROL_AF_MODE_OFF;
+    }
   }
 
   static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(

@@ -43,7 +43,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
-  FocusMode focusMode = FocusMode.continuousAutoFocus;
+  FocusMode focusMode = FocusMode.continuousAutoFocusPhoto;
 
   @override
   void initState() {
@@ -103,11 +103,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
           ),
           _captureControlRowWidget(),
-          Row(
-            children: <Widget>[
-              _toggleAudioWidget(),
-              _changeFocusModeWidget(),
-            ],
+          _toggleAudioWidget(),
+          Align(
+            child: _changeFocusModeWidget(),
+            alignment: Alignment.centerLeft,
           ),
           Padding(
             padding: const EdgeInsets.all(5.0),
@@ -170,9 +169,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (modes.isEmpty == true) return SizedBox();
 
     return Padding(
-      padding: const EdgeInsets.only(left: 25),
-      child: DropdownButton<FocusMode>(
+      padding: const EdgeInsets.only(left: 25, right: 25, bottom: 8),
+      child: DropdownButtonFormField<FocusMode>(
         value: focusMode,
+        decoration: InputDecoration(labelText: "Focus Mode"),
         items: modes
             .map(
               (it) => DropdownMenuItem<FocusMode>(
@@ -314,6 +314,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (controller != null) {
       await controller.dispose();
     }
+
+    if (!cameraDescription.focusModes.contains(focusMode)) {
+      focusMode = FocusMode.off;
+    }
+
     controller = CameraController(
       cameraDescription,
       ResolutionPreset.medium,

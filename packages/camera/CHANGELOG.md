@@ -1,3 +1,7 @@
+## 0.5.8
+
+* Adds ability to change the autofocus mode of the camera
+
 ## 0.5.7+3
 
 * Fix an Android crash when permissions are requested multiple times.

@@ -40,17 +40,21 @@ enum ResolutionPreset {
 
 /// Controls the focus mode of the camera.
 ///
-/// Some modes are not supported
+/// Not all modes are supported on every device or platform. Check the camera's supported focus modes before using.
 ///
 enum FocusMode {
-  /// todo
-  locked,
-
-  /// todo
+  /// auto focus is off or locked.
+  off,
+  /// Close-up focusing mode. (Android only)
+  macro,
+  /// Basic automatic focus mode.
   autoFocus,
-
-  /// todo
-  continuousAutoFocus,
+  /// Focus mode to provide a constantly-in-focus image stream, optimized for photos.
+  continuousAutoFocusPhoto,
+  /// Focus mode to provide a constantly-in-focus image stream, optimized for videos.
+  continuousAutoFocusVideo,
+  /// Extended depth of field (digital focus) mode. (Android only)
+  extendedDepthOfField,
 }
 
 // ignore: inference_failure_on_function_return_type
@@ -80,12 +84,17 @@ String serializeFocusMode(FocusMode mode) {
   switch (mode) {
     case FocusMode.autoFocus:
       return 'autoFocus';
-    case FocusMode.continuousAutoFocus:
-      return 'continuousAutoFocus';
-    case FocusMode.locked:
-      return 'locked';
+    case FocusMode.macro:
+      return 'macro';
+    case FocusMode.continuousAutoFocusPhoto:
+      return 'continuousAutoFocusPhoto';
+    case FocusMode.continuousAutoFocusVideo:
+      return 'continuousAutoFocusVideo';
+    case FocusMode.extendedDepthOfField:
+      return 'extendedDepthOfField';
+    default:
+      return 'off';
   }
-  throw ArgumentError('Unknown FocusMode value');
 }
 
 /// Returns the focus mode as a String.
@@ -93,10 +102,16 @@ FocusMode deserializeFocusMode(String mode) {
   switch (mode) {
     case 'autoFocus':
       return FocusMode.autoFocus;
-    case 'continuousAutoFocus':
-      return FocusMode.continuousAutoFocus;
-    case 'locked':
-      return FocusMode.locked;
+    case 'off':
+      return FocusMode.off;
+    case 'macro':
+      return FocusMode.macro;
+    case 'continuousAutoFocusPhoto':
+      return FocusMode.continuousAutoFocusPhoto;
+    case 'continuousAutoFocusVideo':
+      return FocusMode.continuousAutoFocusVideo;
+    case 'extendedDepthOfField':
+      return FocusMode.extendedDepthOfField;
   }
   throw ArgumentError('Unknown FocusMode value');
 }
@@ -114,7 +129,7 @@ CameraLensDirection _parseCameraLensDirection(String string) {
 }
 
 List<FocusMode> _parseFocusModes(List<dynamic> modes) {
-  return modes.map((mode) => deserializeFocusMode(mode as String)).toList();
+  return modes?.map((mode) => deserializeFocusMode(mode as String))?.toList() ?? [];
 }
 
 /// Completes with a list of available cameras.
@@ -292,7 +307,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
-    this.focusMode = FocusMode.continuousAutoFocus,
+    this.focusMode = FocusMode.continuousAutoFocusPhoto,
   }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;

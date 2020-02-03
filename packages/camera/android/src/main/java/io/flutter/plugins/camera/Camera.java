@@ -59,6 +59,7 @@ public class Camera {
   private MediaRecorder mediaRecorder;
   private boolean recordingVideo;
   private CamcorderProfile recordingProfile;
+  private FocusMode focusMode;
   private int currentOrientation = ORIENTATION_UNKNOWN;
 
   // Mirrors camera.dart
@@ -71,13 +72,24 @@ public class Camera {
     max,
   }
 
+  // Mirrors camera.dart
+  public enum FocusMode {
+    off,
+    macro,
+    autoFocus,
+    continuousAutoFocusPhoto,
+    continuousAutoFocusVideo,
+    extendedDepthOfField,
+  }
+
   public Camera(
       final Activity activity,
       final SurfaceTextureEntry flutterTexture,
       final DartMessenger dartMessenger,
       final String cameraName,
       final String resolutionPreset,
-      final boolean enableAudio)
+      final boolean enableAudio,
+      final String focusMode)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
@@ -110,6 +122,7 @@ public class Camera {
     isFrontFacing =
         characteristics.get(CameraCharacteristics.LENS_FACING) == CameraMetadata.LENS_FACING_FRONT;
     ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
+    this.focusMode = FocusMode.valueOf(focusMode);
     recordingProfile =
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
@@ -249,6 +262,7 @@ public class Camera {
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
       captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+      captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraUtils.getControlFocus(focusMode));
 
       cameraCaptureSession.capture(
           captureBuilder.build(),
@@ -320,6 +334,8 @@ public class Camera {
               cameraCaptureSession = session;
               captureRequestBuilder.set(
                   CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+              captureRequestBuilder.set(
+                  CaptureRequest.CONTROL_AF_MODE, CameraUtils.getControlFocus(focusMode));
               cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               if (onSuccessCallback != null) {
                 onSuccessCallback.run();

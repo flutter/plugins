@@ -131,9 +131,12 @@ typedef enum {
 
 // Mirrors FocusMode in camera.dart
 typedef enum {
-  locked,
-  continuousAutoFocus,
+  off,
+  macro,
   autoFocus,
+  continuousAutoFocusPhoto,
+  continuousAutoFocusVideo,
+  extendedDepthOfField,
 } FocusMode;
 
 static ResolutionPreset getResolutionPresetForString(NSString *preset) {
@@ -163,13 +166,19 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 }
 
 static FocusMode getFocusModeForString(NSString *mode) {
-  if ([mode isEqualToString:@"autoFocus"]) {
-    return autoFocus;
-  } else if ([mode isEqualToString:@"continuousAutoFocus"]) {
-    return continuousAutoFocus;
-  } else if ([mode isEqualToString:@"locked"]) {
-    return locked;
-  } else {
+    if ([mode isEqualToString:@ "autoFocus"]){
+      return autoFocus;
+    } else if ([mode isEqualToString:@ "off"]){
+      return off;
+    } else if ([mode isEqualToString:@ "macro"]){
+      return macro;
+    } else if ([mode isEqualToString:@ "continuousAutoFocusPhoto"]){
+      return continuousAutoFocusPhoto;
+    } else if ([mode isEqualToString:@ "continuousAutoFocusVideo"]){
+      return continuousAutoFocusVideo;
+    } else if ([mode isEqualToString:@ "extendedDepthOfField"]){
+      return extendedDepthOfField;
+    } else {
     NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                          code:NSURLErrorUnknown
                                      userInfo:@{
@@ -182,12 +191,18 @@ static FocusMode getFocusModeForString(NSString *mode) {
 
 static NSString* serializeFocusMode(FocusMode mode) {
     switch (mode) {
-        case autoFocus:
-            return @"autoFocus";
-        case continuousAutoFocus:
-            return @"continuousAutoFocus";
-        case locked:
-            return @"locked";
+	    case autoFocus:
+	      return @"autoFocus";
+	    case macro:
+	      return @"macro";
+	    case continuousAutoFocusPhoto:
+	      return @"continuousAutoFocusPhoto";
+	    case continuousAutoFocusVideo:
+	      return @"continuousAutoFocusVideo";
+	    case extendedDepthOfField:
+	      return @"extendedDepthOfField";
+	    default:
+	      return @"off";
   }
 }
 
@@ -335,10 +350,13 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
         case autoFocus:
             requestedFocusMode = AVCaptureFocusModeAutoFocus;
             break;
-        case locked:
+        case off:
+        case extendedDepthOfField:
+        case macro:
             requestedFocusMode = AVCaptureFocusModeLocked;
             break;
-        case continuousAutoFocus:
+        case continuousAutoFocusVideo:
+        case continuousAutoFocusPhoto:
             requestedFocusMode = AVCaptureFocusModeContinuousAutoFocus;
             break;
     }
@@ -899,10 +917,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
             [supportedFocusModes addObject: serializeFocusMode(autoFocus)];
         }
         if ([device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]){
-            [supportedFocusModes addObject: serializeFocusMode(continuousAutoFocus)];
+            [supportedFocusModes addObject: serializeFocusMode(continuousAutoFocusPhoto)];
+            [supportedFocusModes addObject: serializeFocusMode(continuousAutoFocusVideo)];
         }
         if ([device isFocusModeSupported:AVCaptureFocusModeLocked]){
-            [supportedFocusModes addObject: serializeFocusMode(locked)];
+            [supportedFocusModes addObject: serializeFocusMode(off)];
         }
         
         
