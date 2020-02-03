@@ -166,19 +166,19 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 }
 
 static FocusMode getFocusModeForString(NSString *mode) {
-    if ([mode isEqualToString:@ "autoFocus"]){
-      return autoFocus;
-    } else if ([mode isEqualToString:@ "off"]){
-      return off;
-    } else if ([mode isEqualToString:@ "macro"]){
-      return macro;
-    } else if ([mode isEqualToString:@ "continuousAutoFocusPhoto"]){
-      return continuousAutoFocusPhoto;
-    } else if ([mode isEqualToString:@ "continuousAutoFocusVideo"]){
-      return continuousAutoFocusVideo;
-    } else if ([mode isEqualToString:@ "extendedDepthOfField"]){
-      return extendedDepthOfField;
-    } else {
+  if ([mode isEqualToString:@ "autoFocus"]) {
+    return autoFocus;
+  } else if ([mode isEqualToString:@ "off"]) {
+    return off;
+  } else if ([mode isEqualToString:@ "macro"]) {
+    return macro;
+  } else if ([mode isEqualToString:@ "continuousAutoFocusPhoto"]) {
+    return continuousAutoFocusPhoto;
+  } else if ([mode isEqualToString:@ "continuousAutoFocusVideo"]) {
+    return continuousAutoFocusVideo;
+  } else if ([mode isEqualToString:@ "extendedDepthOfField"]) {
+    return extendedDepthOfField;
+  } else {
     NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                          code:NSURLErrorUnknown
                                      userInfo:@{
@@ -189,23 +189,22 @@ static FocusMode getFocusModeForString(NSString *mode) {
   }
 }
 
-static NSString* serializeFocusMode(FocusMode mode) {
-    switch (mode) {
-	    case autoFocus:
-	      return @"autoFocus";
-	    case macro:
-	      return @"macro";
-	    case continuousAutoFocusPhoto:
-	      return @"continuousAutoFocusPhoto";
-	    case continuousAutoFocusVideo:
-	      return @"continuousAutoFocusVideo";
-	    case extendedDepthOfField:
-	      return @"extendedDepthOfField";
-	    default:
-	      return @"off";
+static NSString *serializeFocusMode(FocusMode mode) {
+  switch (mode) {
+    case autoFocus:
+      return @"autoFocus";
+    case macro:
+      return @"macro";
+    case continuousAutoFocusPhoto:
+      return @"continuousAutoFocusPhoto";
+    case continuousAutoFocusVideo:
+      return @"continuousAutoFocusVideo";
+    case extendedDepthOfField:
+      return @"extendedDepthOfField";
+    default:
+      return @"off";
   }
 }
-
 
 @interface FLTCam : NSObject <FlutterTexture,
                               AVCaptureVideoDataOutputSampleBufferDelegate,
@@ -248,7 +247,7 @@ static NSString* serializeFocusMode(FocusMode mode) {
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
-                        focusMode:(NSString *)focusMode
+                         focusMode:(NSString *)focusMode
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
 
@@ -270,7 +269,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
-                         focusMode: (NSString *) focusMode
+                         focusMode:(NSString *)focusMode
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
@@ -315,8 +314,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_captureSession addOutput:_capturePhotoOutput];
   _motionManager = [[CMMotionManager alloc] init];
   [_motionManager startAccelerometerUpdates];
-    
-  [self setFocusMode: _focusMode];
+
+  [self setFocusMode:_focusMode];
 
   [self setCaptureSessionPreset:_resolutionPreset];
   return self;
@@ -343,35 +342,35 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                                            cameraPosition:_captureDevice.position]];
 }
 
-- (void)setFocusMode:(FocusMode) focusMode {
-    AVCaptureFocusMode requestedFocusMode;
-    
-    switch (focusMode) {
-        case autoFocus:
-            requestedFocusMode = AVCaptureFocusModeAutoFocus;
-            break;
-        case off:
-        case extendedDepthOfField:
-        case macro:
-            requestedFocusMode = AVCaptureFocusModeLocked;
-            break;
-        case continuousAutoFocusVideo:
-        case continuousAutoFocusPhoto:
-            requestedFocusMode = AVCaptureFocusModeContinuousAutoFocus;
-            break;
-    }
-    
-    bool locked = [_captureDevice lockForConfiguration:nil];
-    if (!locked)return;
-    
-      if ([_captureDevice isFocusModeSupported:requestedFocusMode]) {
-          NSLog(@"Setting focus mode: %ld", (long)requestedFocusMode);
-          [_captureDevice setFocusMode:requestedFocusMode];
-      } else {
-          NSLog(@"focus mode not supported focus mode: %ld", (long)requestedFocusMode);
-      }
-    
-    [_captureDevice unlockForConfiguration];
+- (void)setFocusMode:(FocusMode)focusMode {
+  AVCaptureFocusMode requestedFocusMode;
+
+  switch (focusMode) {
+    case autoFocus:
+      requestedFocusMode = AVCaptureFocusModeAutoFocus;
+      break;
+    case off:
+    case extendedDepthOfField:
+    case macro:
+      requestedFocusMode = AVCaptureFocusModeLocked;
+      break;
+    case continuousAutoFocusVideo:
+    case continuousAutoFocusPhoto:
+      requestedFocusMode = AVCaptureFocusModeContinuousAutoFocus;
+      break;
+  }
+
+  bool locked = [_captureDevice lockForConfiguration:nil];
+  if (!locked) return;
+
+  if ([_captureDevice isFocusModeSupported:requestedFocusMode]) {
+    NSLog(@"Setting focus mode: %ld", (long)requestedFocusMode);
+    [_captureDevice setFocusMode:requestedFocusMode];
+  } else {
+    NSLog(@"focus mode not supported focus mode: %ld", (long)requestedFocusMode);
+  }
+
+  [_captureDevice unlockForConfiguration];
 }
 
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
@@ -897,7 +896,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
     NSMutableArray<NSDictionary<NSString *, NSObject *> *> *reply =
         [[NSMutableArray alloc] initWithCapacity:devices.count];
-      
+
     for (AVCaptureDevice *device in devices) {
       NSString *lensFacing;
       switch ([device position]) {
@@ -911,20 +910,19 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
           lensFacing = @"external";
           break;
       }
-    
-        NSMutableArray<NSString*> *supportedFocusModes = [[NSMutableArray alloc] init];
-        if ([device isFocusModeSupported:AVCaptureFocusModeAutoFocus]){
-            [supportedFocusModes addObject: serializeFocusMode(autoFocus)];
-        }
-        if ([device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]){
-            [supportedFocusModes addObject: serializeFocusMode(continuousAutoFocusPhoto)];
-            [supportedFocusModes addObject: serializeFocusMode(continuousAutoFocusVideo)];
-        }
-        if ([device isFocusModeSupported:AVCaptureFocusModeLocked]){
-            [supportedFocusModes addObject: serializeFocusMode(off)];
-        }
-        
-        
+
+      NSMutableArray<NSString *> *supportedFocusModes = [[NSMutableArray alloc] init];
+      if ([device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+        [supportedFocusModes addObject:serializeFocusMode(autoFocus)];
+      }
+      if ([device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+        [supportedFocusModes addObject:serializeFocusMode(continuousAutoFocusPhoto)];
+        [supportedFocusModes addObject:serializeFocusMode(continuousAutoFocusVideo)];
+      }
+      if ([device isFocusModeSupported:AVCaptureFocusModeLocked]) {
+        [supportedFocusModes addObject:serializeFocusMode(off)];
+      }
+
       [reply addObject:@{
         @"name" : [device uniqueID],
         @"lensFacing" : lensFacing,

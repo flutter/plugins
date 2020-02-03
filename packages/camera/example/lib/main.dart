@@ -319,12 +319,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       focusMode = FocusMode.off;
     }
 
-    controller = CameraController(
-      cameraDescription,
-      ResolutionPreset.medium,
-      enableAudio: enableAudio,
-      focusMode: focusMode
-    );
+    controller = CameraController(cameraDescription, ResolutionPreset.medium,
+        enableAudio: enableAudio, focusMode: focusMode);
 
     // If the controller is updated then update the UI.
     controller.addListener(() {

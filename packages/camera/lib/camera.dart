@@ -45,14 +45,19 @@ enum ResolutionPreset {
 enum FocusMode {
   /// auto focus is off or locked.
   off,
+
   /// Close-up focusing mode. (Android only)
   macro,
+
   /// Basic automatic focus mode.
   autoFocus,
+
   /// Focus mode to provide a constantly-in-focus image stream, optimized for photos.
   continuousAutoFocusPhoto,
+
   /// Focus mode to provide a constantly-in-focus image stream, optimized for videos.
   continuousAutoFocusVideo,
+
   /// Extended depth of field (digital focus) mode. (Android only)
   extendedDepthOfField,
 }
@@ -129,7 +134,8 @@ CameraLensDirection _parseCameraLensDirection(String string) {
 }
 
 List<FocusMode> _parseFocusModes(List<dynamic> modes) {
-  return modes?.map((mode) => deserializeFocusMode(mode as String))?.toList() ?? [];
+  return modes?.map((mode) => deserializeFocusMode(mode as String))?.toList() ??
+      [];
 }
 
 /// Completes with a list of available cameras.
@@ -141,11 +147,10 @@ Future<List<CameraDescription>> availableCameras() async {
         .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
     return cameras.map((Map<dynamic, dynamic> camera) {
       return CameraDescription(
-        name: camera['name'],
-        lensDirection: _parseCameraLensDirection(camera['lensFacing']),
-        sensorOrientation: camera['sensorOrientation'],
-        focusModes: _parseFocusModes(camera['focusModes'])
-      );
+          name: camera['name'],
+          lensDirection: _parseCameraLensDirection(camera['lensFacing']),
+          sensorOrientation: camera['sensorOrientation'],
+          focusModes: _parseFocusModes(camera['focusModes']));
     }).toList();
   } on PlatformException catch (e) {
     throw CameraException(e.code, e.message);
@@ -153,7 +158,8 @@ Future<List<CameraDescription>> availableCameras() async {
 }
 
 class CameraDescription {
-  CameraDescription({this.name, this.lensDirection, this.sensorOrientation, this.focusModes});
+  CameraDescription(
+      {this.name, this.lensDirection, this.sensorOrientation, this.focusModes});
 
   final String name;
   final CameraLensDirection lensDirection;
