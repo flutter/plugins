@@ -1,6 +1,6 @@
 ## 0.10.6+1
 
-* Fix the issue of sometimes still never get a valid time by the time PlaybackReady status change is received.
+* Fixed an issue on iOS where the platform video player says it is initialized before it has a valid Presentation Size, and causes a white frame to render indefinitely.
 
 ## 0.10.6
 

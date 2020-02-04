@@ -51,6 +51,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 
 static void* timeRangeContext = &timeRangeContext;
 static void* statusContext = &statusContext;
+static void* durationContext = &durationContext;
 static void* presentationSizeContext = &presentationSizeContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
@@ -71,6 +72,10 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
          forKeyPath:@"status"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:statusContext];
+  [item addObserver:self
+         forKeyPath:@"duration"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:durationContext];
   [item addObserver:self
          forKeyPath:@"presentationSize"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -269,7 +274,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         }
         break;
     }
-  } else if (context == presentationSizeContext) {
+  } else if (context == durationContext || context == presentationSizeContext) {
     if (!_isInitialized) {
       [self finishInitialization];
     }
@@ -418,6 +423,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _disposed = true;
   [_displayLink invalidate];
   [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
+  [[_player currentItem] removeObserver:self forKeyPath:@"duration" context:durationContext];
   [[_player currentItem] removeObserver:self
                              forKeyPath:@"presentationSize"
                                 context:presentationSizeContext];
