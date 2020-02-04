@@ -1,3 +1,7 @@
+## 0.4.1+7
+
+* Fixed example userAccelerometerEvent in documentation
+
 ## 0.4.1+6
 
 * Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.

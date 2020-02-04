@@ -236,6 +236,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
     NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
     result(zoomLevels);
+  } else if ([call.method isEqualToString:@"map#getZoomLevel"]) {
+    result(@(_mapView.camera.zoom));
   } else if ([call.method isEqualToString:@"map#isZoomGesturesEnabled"]) {
     NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
     result(isZoomGesturesEnabled);
