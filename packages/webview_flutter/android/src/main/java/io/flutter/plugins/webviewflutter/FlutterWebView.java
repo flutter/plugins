@@ -228,6 +228,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         new android.webkit.ValueCallback<String>() {
           @Override
           public void onReceiveValue(String value) {
+            if (value.startsWith("\"") && value.endsWith("\"")) {
+              // Unwrap double quote (String type)
+              value = value.substring(1, value.length() - 1);
+            }
             result.success(value);
           }
         });
