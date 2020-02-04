@@ -164,7 +164,8 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setInitialClusterItems(Object initialClusterItems) {
     this.initialClusterItems = initialClusterItems;
-    
+  }
+
   @Override
   public void setInitialPolygons(Object initialPolygons) {
     this.initialPolygons = initialPolygons;
