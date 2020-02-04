@@ -1,3 +1,7 @@
+## 0.10.6+1
+
+* Fix the issue of sometimes still never get a valid time by the time PlaybackReady status change is received.
+
 ## 0.10.6
 
 * `ClosedCaptionFile` and `SubRipCaptionFile` classes added to read
