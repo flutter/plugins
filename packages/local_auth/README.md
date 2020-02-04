@@ -21,6 +21,14 @@ bool canCheckBiometrics =
     await localAuth.canCheckBiometrics;
 ```
 
+You can also get a list of existing local authentication biometric types on your device
+(enrolled or not):
+
+```dart
+List<String> existingBiometrics =
+    await localAuth.existingBiometrics;
+```
+
 Currently the following biometric types are implemented:
 
 * BiometricType.face
