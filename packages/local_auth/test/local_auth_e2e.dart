@@ -9,4 +9,8 @@ void main() {
   testWidgets('canCheckBiometrics', (WidgetTester tester) async {
     expect(LocalAuthentication().getAvailableBiometrics(), completion(isList));
   });
+
+  testWidgets('getExistingBiometrics', (WidgetTester tester) async {
+    expect(LocalAuthentication().getAvailableBiometrics(), completion(isList));
+  });
 }
