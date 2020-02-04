@@ -1,6 +1,7 @@
 ## 0.6.1+2
 
 * Support v2 embedding.
+* Added method to get a list of existing biometric types on device.
 
 ## 0.6.1+1
 
