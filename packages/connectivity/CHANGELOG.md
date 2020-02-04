@@ -1,3 +1,99 @@
+## 0.4.6+2
+
+* Migrate deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+* Bump Flutter SDK to 1.12.13+hotfix.5 or greater (current stable).
+
+## 0.4.6+1
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.6
+
+* Add macOS support.
+
+## 0.4.5+8
+
+* Update documentation to explain when connectivity updates are received on Android.
+
+## 0.4.5+7
+
+* Fix unawaited futures in the example app and tests.
+
+## 0.4.5+6
+
+* Fix singleton Reachability problem on iOS.
+
+## 0.4.5+5
+
+* Add an analyzer check for the public documentation.
+
+## 0.4.5+4
+
+* Stability and Maintainability: update documentations.
+
+## 0.4.5+3
+
+* Remove AndroidX warnings.
+
+## 0.4.5+2
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.4.5+1
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.4.5
+
+* Support the v2 Android embedder.
+
+## 0.4.4+1
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
+## 0.4.4
+
+* Add `requestLocationServiceAuthorization` to request location authorization on iOS.
+* Add `getLocationServiceAuthorization` to get location authorization status on iOS.
+* Update README: add more information on iOS 13 updates with CNCopyCurrentNetworkInfo.
+
+## 0.4.3+7
+
+* Update README with the updated information about CNCopyCurrentNetworkInfo on iOS 13.
+
+## 0.4.3+6
+
+* [Android] Fix the invalid suppression check (it should be "deprecation" not "deprecated").
+
+## 0.4.3+5
+
+* [Android] Added API 29 support for `check()`.
+* [Android] Suppress warnings for using deprecated APIs.
+
+## 0.4.3+4
+
+* [Android] Updated logic to retrieve network info.
+
+## 0.4.3+3
+
+* Support for TYPE_MOBILE_HIPRI on Android.
+
+## 0.4.3+2
+
+* Add missing template type parameter to `invokeMethod` calls.
+
+## 0.4.3+1
+
+* Fixes lint error by using `getApplicationContext()` when accessing the Wifi Service.
+
+## 0.4.3
+
+* Add getWifiBSSID to obtain current wifi network's BSSID.
+
 ## 0.4.2+2
 
 * Add integration test.

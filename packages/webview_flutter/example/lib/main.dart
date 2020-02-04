@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -24,7 +26,12 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
-class WebViewExample extends StatelessWidget {
+class WebViewExample extends StatefulWidget {
+  @override
+  _WebViewExampleState createState() => _WebViewExampleState();
+}
+
+class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
@@ -61,9 +68,13 @@ class WebViewExample extends StatelessWidget {
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
           },
+          onPageStarted: (String url) {
+            print('Page started loading: $url');
+          },
           onPageFinished: (String url) {
             print('Page finished loading: $url');
           },
+          gestureNavigationEnabled: true,
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -150,36 +161,36 @@ class SampleMenu extends StatelessWidget {
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
-                PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.showUserAgent,
-                  child: const Text('Show user agent'),
-                  enabled: controller.hasData,
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.listCookies,
-                  child: Text('List cookies'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.clearCookies,
-                  child: Text('Clear cookies'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.addToCache,
-                  child: Text('Add to cache'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.listCache,
-                  child: Text('List cache'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.clearCache,
-                  child: Text('Clear cache'),
-                ),
-                const PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.navigationDelegate,
-                  child: Text('Navigation Delegate example'),
-                ),
-              ],
+            PopupMenuItem<MenuOptions>(
+              value: MenuOptions.showUserAgent,
+              child: const Text('Show user agent'),
+              enabled: controller.hasData,
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.listCookies,
+              child: Text('List cookies'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.clearCookies,
+              child: Text('Clear cookies'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.addToCache,
+              child: Text('Add to cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.listCache,
+              child: Text('List cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.clearCache,
+              child: Text('Clear cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.navigationDelegate,
+              child: Text('Navigation Delegate example'),
+            ),
+          ],
         );
       },
     );
@@ -189,7 +200,7 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     // Send a message with the user agent string to the Toaster JavaScript channel we registered
     // with the WebView.
-    controller.evaluateJavascript(
+    await controller.evaluateJavascript(
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 
@@ -245,7 +256,7 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
-    controller.loadUrl('data:text/html;base64,$contentBase64');
+    await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
   Widget _getCookieList(String cookies) {
@@ -286,7 +297,7 @@ class NavigationControls extends StatelessWidget {
                   ? null
                   : () async {
                       if (await controller.canGoBack()) {
-                        controller.goBack();
+                        await controller.goBack();
                       } else {
                         Scaffold.of(context).showSnackBar(
                           const SnackBar(content: Text("No back history item")),
@@ -301,7 +312,7 @@ class NavigationControls extends StatelessWidget {
                   ? null
                   : () async {
                       if (await controller.canGoForward()) {
-                        controller.goForward();
+                        await controller.goForward();
                       } else {
                         Scaffold.of(context).showSnackBar(
                           const SnackBar(

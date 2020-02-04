@@ -34,6 +34,8 @@ Widget _mapWithPolylines(Set<Polyline> polylines) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
 
@@ -73,10 +75,10 @@ void main() {
 
     final Polyline addedPolyline = platformGoogleMap.polylinesToAdd.first;
     expect(addedPolyline, equals(p2));
+
     expect(platformGoogleMap.polylineIdsToRemove.isEmpty, true);
 
-    expect(platformGoogleMap.polylinesToChange.length, 1);
-    expect(platformGoogleMap.polylinesToChange.first, equals(p1));
+    expect(platformGoogleMap.polylinesToChange.isEmpty, true);
   });
 
   testWidgets("Removing a polyline", (WidgetTester tester) async {
@@ -128,6 +130,25 @@ void main() {
     expect(update.geodesic, true);
   });
 
+  testWidgets("Mutate a polyline", (WidgetTester tester) async {
+    final Polyline p1 = Polyline(
+      polylineId: PolylineId("polyline_1"),
+      points: <LatLng>[const LatLng(0.0, 0.0)],
+    );
+    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
+
+    p1.points.add(const LatLng(1.0, 1.0));
+    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+    expect(platformGoogleMap.polylinesToChange.length, 1);
+    expect(platformGoogleMap.polylinesToChange.first, equals(p1));
+
+    expect(platformGoogleMap.polylineIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
+  });
+
   testWidgets("Multi Update", (WidgetTester tester) async {
     Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
     Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
@@ -172,29 +193,22 @@ void main() {
     expect(platformGoogleMap.polylineIdsToRemove.first, equals(p3.polylineId));
   });
 
-  testWidgets(
-    "Partial Update",
-    (WidgetTester tester) async {
-      final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
-      Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
-      final Set<Polyline> prev = _toSet(p1: p1, p2: p2);
-      p2 = Polyline(polylineId: PolylineId("polyline_2"), geodesic: true);
-      final Set<Polyline> cur = _toSet(p1: p1, p2: p2);
+  testWidgets("Partial Update", (WidgetTester tester) async {
+    final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
+    final Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
+    Polyline p3 = Polyline(polylineId: PolylineId("polyline_3"));
+    final Set<Polyline> prev = _toSet(p1: p1, p2: p2, p3: p3);
+    p3 = Polyline(polylineId: PolylineId("polyline_3"), geodesic: true);
+    final Set<Polyline> cur = _toSet(p1: p1, p2: p2, p3: p3);
 
-      await tester.pumpWidget(_mapWithPolylines(prev));
-      await tester.pumpWidget(_mapWithPolylines(cur));
+    await tester.pumpWidget(_mapWithPolylines(prev));
+    await tester.pumpWidget(_mapWithPolylines(cur));
 
-      final FakePlatformGoogleMap platformGoogleMap =
-          fakePlatformViewsController.lastCreatedView;
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
 
-      expect(platformGoogleMap.polylinesToChange, _toSet(p2: p2));
-      expect(platformGoogleMap.polylineIdsToRemove.isEmpty, true);
-      expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
-    },
-    // The test is currently broken due to a bug (we're updating all polylines
-    // instead of just the ones that were changed):
-    // https://github.com/flutter/flutter/issues/30764
-    // TODO(amirh): enable this test when the issue is fixed.
-    skip: true,
-  );
+    expect(platformGoogleMap.polylinesToChange, _toSet(p3: p3));
+    expect(platformGoogleMap.polylineIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
+  });
 }

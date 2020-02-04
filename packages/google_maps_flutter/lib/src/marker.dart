@@ -13,6 +13,7 @@ dynamic _offsetToJson(Offset offset) {
 
 /// Text labels for a [Marker] info window.
 class InfoWindow {
+  /// Creates an immutable representation of a label on for [Marker].
   const InfoWindow({
     this.title,
     this.snippet,
@@ -100,6 +101,7 @@ class InfoWindow {
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class MarkerId {
+  /// Creates an immutable identifier for a [Marker].
   MarkerId(this.value) : assert(value != null);
 
   /// value of the [MarkerId].
@@ -146,6 +148,8 @@ class Marker {
   /// * has an axis-aligned icon; [rotation] is 0.0
   /// * is visible; [visible] is true
   /// * is placed at the base of the drawing order; [zIndex] is 0.0
+  /// * reports [onTap] events
+  /// * reports [onDragEnd] events
   const Marker({
     @required this.markerId,
     this.alpha = 1.0,
@@ -160,6 +164,7 @@ class Marker {
     this.visible = true,
     this.zIndex = 0.0,
     this.onTap,
+    this.onDragEnd,
   }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
 
   /// Uniquely identifies a [Marker].
@@ -216,6 +221,9 @@ class Marker {
   /// Callbacks to receive tap events for markers placed on this map.
   final VoidCallback onTap;
 
+  /// Signature reporting the new [LatLng] at the end of a drag event.
+  final ValueChanged<LatLng> onDragEnd;
+
   /// Creates a new [Marker] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Marker copyWith({
@@ -231,6 +239,7 @@ class Marker {
     bool visibleParam,
     double zIndexParam,
     VoidCallback onTapParam,
+    ValueChanged<LatLng> onDragEndParam,
   }) {
     return Marker(
       markerId: markerId,
@@ -246,8 +255,12 @@ class Marker {
       visible: visibleParam ?? visible,
       zIndex: zIndexParam ?? zIndex,
       onTap: onTapParam ?? onTap,
+      onDragEnd: onDragEndParam ?? onDragEnd,
     );
   }
+
+  /// Creates a new [Marker] object whose values are the same as this instance.
+  Marker clone() => copyWith();
 
   Map<String, dynamic> _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
@@ -278,7 +291,19 @@ class Marker {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     final Marker typedOther = other;
-    return markerId == typedOther.markerId;
+    return markerId == typedOther.markerId &&
+        alpha == typedOther.alpha &&
+        anchor == typedOther.anchor &&
+        consumeTapEvents == typedOther.consumeTapEvents &&
+        draggable == typedOther.draggable &&
+        flat == typedOther.flat &&
+        icon == typedOther.icon &&
+        infoWindow == typedOther.infoWindow &&
+        position == typedOther.position &&
+        rotation == typedOther.rotation &&
+        visible == typedOther.visible &&
+        zIndex == typedOther.zIndex &&
+        onTap == typedOther.onTap;
   }
 
   @override
@@ -297,8 +322,8 @@ Map<MarkerId, Marker> _keyByMarkerId(Iterable<Marker> markers) {
   if (markers == null) {
     return <MarkerId, Marker>{};
   }
-  return Map<MarkerId, Marker>.fromEntries(markers.map(
-      (Marker marker) => MapEntry<MarkerId, Marker>(marker.markerId, marker)));
+  return Map<MarkerId, Marker>.fromEntries(markers.map((Marker marker) =>
+      MapEntry<MarkerId, Marker>(marker.markerId, marker.clone())));
 }
 
 List<Map<String, dynamic>> _serializeMarkerSet(Set<Marker> markers) {

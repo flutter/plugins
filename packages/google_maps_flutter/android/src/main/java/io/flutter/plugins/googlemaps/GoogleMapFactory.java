@@ -1,9 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.googlemaps;
 
-import static io.flutter.plugin.common.PluginRegistry.Registrar;
-
+import android.app.Application;
 import android.content.Context;
+import androidx.lifecycle.Lifecycle;
 import com.google.android.gms.maps.model.CameraPosition;
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
@@ -13,12 +19,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GoogleMapFactory extends PlatformViewFactory {
 
   private final AtomicInteger mActivityState;
-  private final Registrar mPluginRegistrar;
+  private final BinaryMessenger binaryMessenger;
+  private final Application application;
+  private final int activityHashCode;
+  private final Lifecycle lifecycle;
+  private final PluginRegistry.Registrar registrar; // V1 embedding only.
 
-  GoogleMapFactory(AtomicInteger state, Registrar registrar) {
+  GoogleMapFactory(
+      AtomicInteger state,
+      BinaryMessenger binaryMessenger,
+      Application application,
+      Lifecycle lifecycle,
+      PluginRegistry.Registrar registrar,
+      int activityHashCode) {
     super(StandardMessageCodec.INSTANCE);
     mActivityState = state;
-    mPluginRegistrar = registrar;
+    this.binaryMessenger = binaryMessenger;
+    this.application = application;
+    this.activityHashCode = activityHashCode;
+    this.lifecycle = lifecycle;
+    this.registrar = registrar;
   }
 
   @SuppressWarnings("unchecked")
@@ -35,14 +55,26 @@ public class GoogleMapFactory extends PlatformViewFactory {
     if (params.containsKey("markersToAdd")) {
       builder.setInitialMarkers(params.get("markersToAdd"));
     }
-
     if (params.containsKey("clusterItemsToAdd")) {
       builder.setInitialClusterItems(params.get("clusterItemsToAdd"));
     }
-
+    if (params.containsKey("polygonsToAdd")) {
+      builder.setInitialPolygons(params.get("polygonsToAdd"));
+    }
     if (params.containsKey("polylinesToAdd")) {
       builder.setInitialPolylines(params.get("polylinesToAdd"));
     }
-    return builder.build(id, context, mActivityState, mPluginRegistrar);
+    if (params.containsKey("circlesToAdd")) {
+      builder.setInitialCircles(params.get("circlesToAdd"));
+    }
+    return builder.build(
+        id,
+        context,
+        mActivityState,
+        binaryMessenger,
+        application,
+        lifecycle,
+        registrar,
+        activityHashCode);
   }
 }

@@ -9,14 +9,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
+import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.JobIntentService;
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
-import io.flutter.view.FlutterCallbackInformation;
-import io.flutter.view.FlutterMain;
-import io.flutter.view.FlutterNativeView;
-import io.flutter.view.FlutterRunArguments;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,155 +21,96 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.CountDownLatch;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AlarmService extends JobIntentService {
-  public static final String TAG = "AlarmService";
-  private static final String CALLBACK_HANDLE_KEY = "callback_handle";
+  private static final String TAG = "AlarmService";
   private static final String PERSISTENT_ALARMS_SET_KEY = "persistent_alarm_ids";
-  private static final String SHARED_PREFERENCES_KEY = "io.flutter.android_alarm_manager_plugin";
+  protected static final String SHARED_PREFERENCES_KEY = "io.flutter.android_alarm_manager_plugin";
   private static final int JOB_ID = 1984; // Random job ID.
-  private static final Object sPersistentAlarmsLock = new Object();
-  private static AtomicBoolean sStarted = new AtomicBoolean(false);
-  private static List<Intent> sAlarmQueue = Collections.synchronizedList(new LinkedList<Intent>());
-  private static FlutterNativeView sBackgroundFlutterView;
-  private static MethodChannel sBackgroundChannel;
-  private static PluginRegistrantCallback sPluginRegistrantCallback;
+  private static final Object persistentAlarmsLock = new Object();
 
-  private String mAppBundlePath;
+  // TODO(mattcarroll): make alarmQueue per-instance, not static.
+  private static List<Intent> alarmQueue = Collections.synchronizedList(new LinkedList<Intent>());
 
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    Context context = getApplicationContext();
-    FlutterMain.ensureInitializationComplete(context, null);
-    mAppBundlePath = FlutterMain.findAppBundlePath(context);
-    if (!sStarted.get()) {
-      SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
-      long callbackHandle = p.getLong(CALLBACK_HANDLE_KEY, 0);
-      startAlarmService(context, callbackHandle);
-    }
-  }
+  /** Background Dart execution context. */
+  private static FlutterBackgroundExecutor flutterBackgroundExecutor;
 
-  // Schedule the alarm to be handled by the AlarmService.
+  /** Schedule the alarm to be handled by the {@link AlarmService}. */
   public static void enqueueAlarmProcessing(Context context, Intent alarmContext) {
     enqueueWork(context, AlarmService.class, JOB_ID, alarmContext);
   }
 
-  // Called once the Dart isolate (sBackgroundFlutterView) has finished
-  // initializing. Processes all alarm events that came in while the isolate
-  // was starting.
-  public static void onInitialized() {
+  /**
+   * Starts the background isolate for the {@link AlarmService}.
+   *
+   * <p>Preconditions:
+   *
+   * <ul>
+   *   <li>The given {@code callbackHandle} must correspond to a registered Dart callback. If the
+   *       handle does not resolve to a Dart callback then this method does nothing.
+   *   <li>A static {@link #pluginRegistrantCallback} must exist, otherwise a {@link
+   *       PluginRegistrantException} will be thrown.
+   * </ul>
+   */
+  public static void startBackgroundIsolate(Context context, long callbackHandle) {
+    if (flutterBackgroundExecutor != null) {
+      Log.w(TAG, "Attempted to start a duplicate background isolate. Returning...");
+      return;
+    }
+    flutterBackgroundExecutor = new FlutterBackgroundExecutor();
+    flutterBackgroundExecutor.startBackgroundIsolate(context, callbackHandle);
+  }
+
+  /**
+   * Called once the Dart isolate ({@code flutterBackgroundExecutor}) has finished initializing.
+   *
+   * <p>Invoked by {@link AndroidAlarmManagerPlugin} when it receives the {@code
+   * AlarmService.initialized} message. Processes all alarm events that came in while the isolate
+   * was starting.
+   */
+  /* package */ static void onInitialized() {
     Log.i(TAG, "AlarmService started!");
-    sStarted.set(true);
-    synchronized (sAlarmQueue) {
-      // Handle all the alarm events received before the Dart isolate was fully
-      // initialized and clear the queue.
-      Iterator<Intent> i = sAlarmQueue.iterator();
+    synchronized (alarmQueue) {
+      // Handle all the alarm events received before the Dart isolate was
+      // initialized, then clear the queue.
+      Iterator<Intent> i = alarmQueue.iterator();
       while (i.hasNext()) {
-        invokeCallbackDispatcher(i.next());
+        flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(i.next(), null);
       }
-      sAlarmQueue.clear();
+      alarmQueue.clear();
     }
   }
 
-  // Here we start the AlarmService. This method does a few things:
-  //   - Retrieves the callback information for the handle associated with the
-  //     callback dispatcher in the Dart portion of the plugin.
-  //   - Builds the arguments object for running in a new FlutterNativeView.
-  //   - Enters the isolate owned by the FlutterNativeView at the callback
-  //     represented by `callbackHandle` and initializes the callback
-  //     dispatcher.
-  //   - Registers the FlutterNativeView's PluginRegistry to receive
-  //     MethodChannel messages.
-  public static void startAlarmService(Context context, long callbackHandle) {
-    FlutterMain.ensureInitializationComplete(context, null);
-    String mAppBundlePath = FlutterMain.findAppBundlePath(context);
-    FlutterCallbackInformation cb =
-        FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
-    if (cb == null) {
-      Log.e(TAG, "Fatal: failed to find callback");
-      return;
-    }
-
-    // Note that we're passing `true` as the second argument to our
-    // FlutterNativeView constructor. This specifies the FlutterNativeView
-    // as a background view and does not create a drawing surface.
-    sBackgroundFlutterView = new FlutterNativeView(context, true);
-    if (mAppBundlePath != null && !sStarted.get()) {
-      if (sPluginRegistrantCallback == null) {
-        throw new PluginRegistrantException();
-      }
-      Log.i(TAG, "Starting AlarmService...");
-      FlutterRunArguments args = new FlutterRunArguments();
-      args.bundlePath = mAppBundlePath;
-      args.entrypoint = cb.callbackName;
-      args.libraryPath = cb.callbackLibraryPath;
-      sBackgroundFlutterView.runFromBundle(args);
-      sPluginRegistrantCallback.registerWith(sBackgroundFlutterView.getPluginRegistry());
-    }
-  }
-
-  public static void setBackgroundChannel(MethodChannel channel) {
-    sBackgroundChannel = channel;
-  }
-
+  /**
+   * Sets the Dart callback handle for the Dart method that is responsible for initializing the
+   * background Dart isolate, preparing it to receive Dart callback tasks requests.
+   */
   public static void setCallbackDispatcher(Context context, long callbackHandle) {
-    SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
-    p.edit().putLong(CALLBACK_HANDLE_KEY, callbackHandle).apply();
+    FlutterBackgroundExecutor.setCallbackDispatcher(context, callbackHandle);
   }
 
-  public static boolean setBackgroundFlutterView(FlutterNativeView view) {
-    if (sBackgroundFlutterView != null && sBackgroundFlutterView != view) {
-      Log.i(TAG, "setBackgroundFlutterView tried to overwrite an existing FlutterNativeView");
-      return false;
-    }
-    sBackgroundFlutterView = view;
-    return true;
-  }
-
+  /**
+   * Sets the {@link PluginRegistrantCallback} used to register the plugins used by an application
+   * with the newly spawned background isolate.
+   *
+   * <p>This should be invoked in {@link Application.onCreate} with {@link
+   * GeneratedPluginRegistrant} in applications using the V1 embedding API in order to use other
+   * plugins in the background isolate. For applications using the V2 embedding API, it is not
+   * necessary to set a {@link PluginRegistrantCallback} as plugins are registered automatically.
+   */
   public static void setPluginRegistrant(PluginRegistrantCallback callback) {
-    sPluginRegistrantCallback = callback;
-  }
-
-  @Override
-  protected void onHandleWork(Intent intent) {
-    // If we're in the middle of processing queued alarms, block until they're
-    // done before processing new alarms.
-    synchronized (sAlarmQueue) {
-      if (!sStarted.get()) {
-        Log.i(TAG, "AlarmService has not yet started.");
-        sAlarmQueue.add(intent);
-        return;
-      }
-    }
-    invokeCallbackDispatcher(intent);
-  }
-
-  // This is where we handle alarm events before sending them to our callback
-  // dispatcher in Dart.
-  private static void invokeCallbackDispatcher(Intent intent) {
-    // Grab the handle for the callback associated with this alarm. Pay close
-    // attention to the type of the callback handle as storing this value in a
-    // variable of the wrong size will cause the callback lookup to fail.
-    long callbackHandle = intent.getLongExtra("callbackHandle", 0);
-    if (sBackgroundChannel == null) {
-      Log.e(
-          TAG,
-          "setBackgroundChannel was not called before alarms were scheduled." + " Bailing out.");
-      return;
-    }
-    // Handle the alarm event in Dart. Note that for this plugin, we don't
-    // care about the method name as we simply lookup and invoke the callback
-    // provided.
-    sBackgroundChannel.invokeMethod("", new Object[] {callbackHandle});
+    // Indirectly set in FlutterBackgroundExecutor for backwards compatibility.
+    FlutterBackgroundExecutor.setPluginRegistrant(callback);
   }
 
   private static void scheduleAlarm(
       Context context,
       int requestCode,
+      boolean alarmClock,
+      boolean allowWhileIdle,
       boolean repeating,
       boolean exact,
       boolean wakeup,
@@ -184,6 +122,8 @@ public class AlarmService extends JobIntentService {
       addPersistentAlarm(
           context,
           requestCode,
+          alarmClock,
+          allowWhileIdle,
           repeating,
           exact,
           wakeup,
@@ -194,6 +134,7 @@ public class AlarmService extends JobIntentService {
 
     // Create an Intent for the alarm and set the desired Dart callback handle.
     Intent alarm = new Intent(context, AlarmBroadcastReceiver.class);
+    alarm.putExtra("id", requestCode);
     alarm.putExtra("callbackHandle", callbackHandle);
     PendingIntent pendingIntent =
         PendingIntent.getBroadcast(context, requestCode, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -206,64 +147,73 @@ public class AlarmService extends JobIntentService {
 
     // Schedule the alarm.
     AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+    if (alarmClock) {
+      AlarmManagerCompat.setAlarmClock(manager, startMillis, pendingIntent, pendingIntent);
+      return;
+    }
+
     if (exact) {
       if (repeating) {
         manager.setRepeating(clock, startMillis, intervalMillis, pendingIntent);
       } else {
-        manager.setExact(clock, startMillis, pendingIntent);
+        if (allowWhileIdle) {
+          AlarmManagerCompat.setExactAndAllowWhileIdle(manager, clock, startMillis, pendingIntent);
+        } else {
+          AlarmManagerCompat.setExact(manager, clock, startMillis, pendingIntent);
+        }
       }
     } else {
       if (repeating) {
         manager.setInexactRepeating(clock, startMillis, intervalMillis, pendingIntent);
       } else {
-        manager.set(clock, startMillis, pendingIntent);
+        if (allowWhileIdle) {
+          AlarmManagerCompat.setAndAllowWhileIdle(manager, clock, startMillis, pendingIntent);
+        } else {
+          manager.set(clock, startMillis, pendingIntent);
+        }
       }
     }
   }
 
-  public static void setOneShot(
-      Context context,
-      int requestCode,
-      boolean exact,
-      boolean wakeup,
-      long startMillis,
-      boolean rescheduleOnReboot,
-      long callbackHandle) {
+  /** Schedules a one-shot alarm to be executed once in the future. */
+  public static void setOneShot(Context context, AndroidAlarmManagerPlugin.OneShotRequest request) {
     final boolean repeating = false;
     scheduleAlarm(
         context,
-        requestCode,
+        request.requestCode,
+        request.alarmClock,
+        request.allowWhileIdle,
         repeating,
-        exact,
-        wakeup,
-        startMillis,
+        request.exact,
+        request.wakeup,
+        request.startMillis,
         0,
-        rescheduleOnReboot,
-        callbackHandle);
+        request.rescheduleOnReboot,
+        request.callbackHandle);
   }
 
+  /** Schedules a periodic alarm to be executed repeatedly in the future. */
   public static void setPeriodic(
-      Context context,
-      int requestCode,
-      boolean exact,
-      boolean wakeup,
-      long startMillis,
-      long intervalMillis,
-      boolean rescheduleOnReboot,
-      long callbackHandle) {
+      Context context, AndroidAlarmManagerPlugin.PeriodicRequest request) {
     final boolean repeating = true;
+    final boolean allowWhileIdle = false;
+    final boolean alarmClock = false;
     scheduleAlarm(
         context,
-        requestCode,
+        request.requestCode,
+        alarmClock,
+        allowWhileIdle,
         repeating,
-        exact,
-        wakeup,
-        startMillis,
-        intervalMillis,
-        rescheduleOnReboot,
-        callbackHandle);
+        request.exact,
+        request.wakeup,
+        request.startMillis,
+        request.intervalMillis,
+        request.rescheduleOnReboot,
+        request.callbackHandle);
   }
 
+  /** Cancels an alarm with ID {@code requestCode}. */
   public static void cancel(Context context, int requestCode) {
     // Clear the alarm if it was set to be rescheduled after reboots.
     clearPersistentAlarm(context, requestCode);
@@ -287,6 +237,8 @@ public class AlarmService extends JobIntentService {
   private static void addPersistentAlarm(
       Context context,
       int requestCode,
+      boolean alarmClock,
+      boolean allowWhileIdle,
       boolean repeating,
       boolean exact,
       boolean wakeup,
@@ -294,6 +246,8 @@ public class AlarmService extends JobIntentService {
       long intervalMillis,
       long callbackHandle) {
     HashMap<String, Object> alarmSettings = new HashMap<>();
+    alarmSettings.put("alarmClock", alarmClock);
+    alarmSettings.put("allowWhileIdle", allowWhileIdle);
     alarmSettings.put("repeating", repeating);
     alarmSettings.put("exact", exact);
     alarmSettings.put("wakeup", wakeup);
@@ -302,10 +256,10 @@ public class AlarmService extends JobIntentService {
     alarmSettings.put("callbackHandle", callbackHandle);
     JSONObject obj = new JSONObject(alarmSettings);
     String key = getPersistentAlarmKey(requestCode);
-    SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
+    SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
 
-    synchronized (sPersistentAlarmsLock) {
-      Set<String> persistentAlarms = p.getStringSet(PERSISTENT_ALARMS_SET_KEY, null);
+    synchronized (persistentAlarmsLock) {
+      Set<String> persistentAlarms = prefs.getStringSet(PERSISTENT_ALARMS_SET_KEY, null);
       if (persistentAlarms == null) {
         persistentAlarms = new HashSet<>();
       }
@@ -313,23 +267,24 @@ public class AlarmService extends JobIntentService {
         RebootBroadcastReceiver.enableRescheduleOnReboot(context);
       }
       persistentAlarms.add(Integer.toString(requestCode));
-      p.edit()
+      prefs
+          .edit()
           .putString(key, obj.toString())
           .putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms)
-          .commit();
+          .apply();
     }
   }
 
   private static void clearPersistentAlarm(Context context, int requestCode) {
     SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
-    synchronized (sPersistentAlarmsLock) {
+    synchronized (persistentAlarmsLock) {
       Set<String> persistentAlarms = p.getStringSet(PERSISTENT_ALARMS_SET_KEY, null);
       if ((persistentAlarms == null) || !persistentAlarms.contains(requestCode)) {
         return;
       }
       persistentAlarms.remove(requestCode);
       String key = getPersistentAlarmKey(requestCode);
-      p.edit().remove(key).putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms).commit();
+      p.edit().remove(key).putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms).apply();
 
       if (persistentAlarms.isEmpty()) {
         RebootBroadcastReceiver.disableRescheduleOnReboot(context);
@@ -338,7 +293,7 @@ public class AlarmService extends JobIntentService {
   }
 
   public static void reschedulePersistentAlarms(Context context) {
-    synchronized (sPersistentAlarmsLock) {
+    synchronized (persistentAlarmsLock) {
       SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
       Set<String> persistentAlarms = p.getStringSet(PERSISTENT_ALARMS_SET_KEY, null);
       // No alarms to reschedule.
@@ -358,6 +313,8 @@ public class AlarmService extends JobIntentService {
         }
         try {
           JSONObject alarm = new JSONObject(json);
+          boolean alarmClock = alarm.getBoolean("alarmClock");
+          boolean allowWhileIdle = alarm.getBoolean("allowWhileIdle");
           boolean repeating = alarm.getBoolean("repeating");
           boolean exact = alarm.getBoolean("exact");
           boolean wakeup = alarm.getBoolean("wakeup");
@@ -367,6 +324,8 @@ public class AlarmService extends JobIntentService {
           scheduleAlarm(
               context,
               requestCode,
+              alarmClock,
+              allowWhileIdle,
               repeating,
               exact,
               wakeup,
@@ -375,14 +334,63 @@ public class AlarmService extends JobIntentService {
               false,
               callbackHandle);
         } catch (JSONException e) {
-          Log.e(
-              TAG,
-              "Data for alarm request code "
-                  + Integer.toString(requestCode)
-                  + " is invalid: "
-                  + json);
+          Log.e(TAG, "Data for alarm request code " + requestCode + " is invalid: " + json);
         }
       }
+    }
+  }
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    if (flutterBackgroundExecutor == null) {
+      flutterBackgroundExecutor = new FlutterBackgroundExecutor();
+    }
+    Context context = getApplicationContext();
+    flutterBackgroundExecutor.startBackgroundIsolate(context);
+  }
+
+  /**
+   * Executes a Dart callback, as specified within the incoming {@code intent}.
+   *
+   * <p>Invoked by our {@link JobIntentService} superclass after a call to {@link
+   * JobIntentService#enqueueWork(Context, Class, int, Intent);}.
+   *
+   * <p>If there are no pre-existing callback execution requests, other than the incoming {@code
+   * intent}, then the desired Dart callback is invoked immediately.
+   *
+   * <p>If there are any pre-existing callback requests that have yet to be executed, the incoming
+   * {@code intent} is added to the {@link #alarmQueue} to invoked later, after all pre-existing
+   * callbacks have been executed.
+   */
+  @Override
+  protected void onHandleWork(final Intent intent) {
+    // If we're in the middle of processing queued alarms, add the incoming
+    // intent to the queue and return.
+    synchronized (alarmQueue) {
+      if (!flutterBackgroundExecutor.isRunning()) {
+        Log.i(TAG, "AlarmService has not yet started.");
+        alarmQueue.add(intent);
+        return;
+      }
+    }
+
+    // There were no pre-existing callback requests. Execute the callback
+    // specified by the incoming intent.
+    final CountDownLatch latch = new CountDownLatch(1);
+    new Handler(getMainLooper())
+        .post(
+            new Runnable() {
+              @Override
+              public void run() {
+                flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(intent, latch);
+              }
+            });
+
+    try {
+      latch.await();
+    } catch (InterruptedException ex) {
+      Log.i(TAG, "Exception waiting to execute Dart callback", ex);
     }
   }
 }

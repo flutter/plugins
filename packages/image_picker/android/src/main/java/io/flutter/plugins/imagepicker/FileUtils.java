@@ -1,3 +1,7 @@
+// Copyright 2019 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 /*
  * Copyright (C) 2007-2008 OpenIntents.org
  *
@@ -140,8 +144,9 @@ class FileUtils {
     OutputStream outputStream = null;
     boolean success = false;
     try {
+      String extension = getImageExtension(uri);
       inputStream = context.getContentResolver().openInputStream(uri);
-      file = File.createTempFile("image_picker", "jpg", context.getCacheDir());
+      file = File.createTempFile("image_picker", extension, context.getCacheDir());
       outputStream = new FileOutputStream(file);
       if (inputStream != null) {
         copy(inputStream, outputStream);
@@ -163,6 +168,27 @@ class FileUtils {
       }
     }
     return success ? file.getPath() : null;
+  }
+
+  /** @return extension of image with dot, or default .jpg if it none. */
+  private static String getImageExtension(Uri uriImage) {
+    String extension = null;
+
+    try {
+      String imagePath = uriImage.getPath();
+      if (imagePath != null && imagePath.lastIndexOf(".") != -1) {
+        extension = imagePath.substring(imagePath.lastIndexOf(".") + 1);
+      }
+    } catch (Exception e) {
+      extension = null;
+    }
+
+    if (extension == null || extension.isEmpty()) {
+      //default extension for matches the previous behavior of the plugin
+      extension = "jpg";
+    }
+
+    return "." + extension;
   }
 
   private static void copy(InputStream in, OutputStream out) throws IOException {

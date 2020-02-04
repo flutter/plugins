@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
+import '../../billing_client_wrappers.dart';
 import '../channel.dart';
 import 'purchase_wrapper.dart';
 import 'sku_details_wrapper.dart';
@@ -48,6 +49,8 @@ typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
 /// some minor changes to account for language differences. Callbacks have been
 /// converted to futures where appropriate.
 class BillingClient {
+  bool _enablePendingPurchases = false;
+
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
     assert(onPurchasesUpdated != null);
     channel.setMethodCallHandler(callHandler);
@@ -68,7 +71,19 @@ class BillingClient {
   /// [`BillingClient#isReady()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#isReady())
   /// to get the ready status of the BillingClient instance.
   Future<bool> isReady() async =>
-      await channel.invokeMethod('BillingClient#isReady()');
+      await channel.invokeMethod<bool>('BillingClient#isReady()');
+
+  /// Enable the [BillingClientWrapper] to handle pending purchases.
+  ///
+  /// Play requires that you call this method when initializing your application.
+  /// It is to acknowledge your application has been updated to support pending purchases.
+  /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
+  /// for more details.
+  ///
+  /// Failure to call this method before any other method in the [startConnection] will throw an exception.
+  void enablePendingPurchases() {
+    _enablePendingPurchases = true;
+  }
 
   /// Calls
   /// [`BillingClient#startConnection(BillingClientStateListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#startconnection)
@@ -76,19 +91,25 @@ class BillingClient {
   ///
   /// [onBillingServiceConnected] has been converted from a callback parameter
   /// to the Future result returned by this function. This returns the
-  /// `BillingClient.BillingResponse` `responseCode` of the connection result.
+  /// `BillingClient.BillingResultWrapper` describing the connection result.
   ///
   /// This triggers the creation of a new `BillingClient` instance in Java if
   /// one doesn't already exist.
-  Future<BillingResponse> startConnection(
+  Future<BillingResultWrapper> startConnection(
       {@required
           OnBillingServiceDisconnected onBillingServiceDisconnected}) async {
+    assert(_enablePendingPurchases,
+        'enablePendingPurchases() must be called before calling startConnection');
     List<Function> disconnectCallbacks =
         _callbacks[_kOnBillingServiceDisconnected] ??= [];
     disconnectCallbacks.add(onBillingServiceDisconnected);
-    return BillingResponseConverter().fromJson(await channel.invokeMethod(
-        "BillingClient#startConnection(BillingClientStateListener)",
-        <String, dynamic>{'handle': disconnectCallbacks.length - 1}));
+    return BillingResultWrapper.fromJson(await channel
+        .invokeMapMethod<String, dynamic>(
+            "BillingClient#startConnection(BillingClientStateListener)",
+            <String, dynamic>{
+          'handle': disconnectCallbacks.length - 1,
+          'enablePendingPurchases': _enablePendingPurchases
+        }));
   }
 
   /// Calls
@@ -99,7 +120,7 @@ class BillingClient {
   ///
   /// This triggers the destruction of the `BillingClient` instance in Java.
   Future<void> endConnection() async {
-    return channel.invokeMethod("BillingClient#endConnection()", null);
+    return channel.invokeMethod<void>("BillingClient#endConnection()", null);
   }
 
   /// Returns a list of [SkuDetailsWrapper]s that have [SkuDetailsWrapper.sku]
@@ -134,7 +155,7 @@ class BillingClient {
   /// Calling this attemps to show the Google Play purchase UI. The user is free
   /// to complete the transaction there.
   ///
-  /// This method returns a [BillingResponse] representing the initial attempt
+  /// This method returns a [BillingResultWrapper] representing the initial attempt
   /// to show the Google Play billing flow. Actual purchase updates are
   /// delivered via the [PurchasesUpdatedListener].
   ///
@@ -146,40 +167,43 @@ class BillingClient {
   /// skuDetails](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setskudetails)
   /// and [the given
   /// accountId](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setAccountId(java.lang.String)).
-  Future<BillingResponse> launchBillingFlow(
+  Future<BillingResultWrapper> launchBillingFlow(
       {@required String sku, String accountId}) async {
     assert(sku != null);
     final Map<String, dynamic> arguments = <String, dynamic>{
       'sku': sku,
       'accountId': accountId,
     };
-    return BillingResponseConverter().fromJson(await channel.invokeMethod(
-        'BillingClient#launchBillingFlow(Activity, BillingFlowParams)',
-        arguments));
+    return BillingResultWrapper.fromJson(
+        await channel.invokeMapMethod<String, dynamic>(
+            'BillingClient#launchBillingFlow(Activity, BillingFlowParams)',
+            arguments));
   }
 
   /// Fetches recent purchases for the given [SkuType].
   ///
-  /// This only fetches whatever purchase history Play happens to have cached
-  /// in memory.
+  /// Unlike [queryPurchaseHistory], This does not make a network request and
+  /// does not return items that are no longer owned.
   ///
-  /// All purchase information should also be verified manually, with your server
-  /// if at all possible. See ["Verify a
+  /// All purchase information should also be verified manually, with your
+  /// server if at all possible. See ["Verify a
   /// purchase"](https://developer.android.com/google/play/billing/billing_library_overview#Verify).
   ///
   /// This wraps [`BillingClient#queryPurchases(String
   /// skutype)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querypurchases).
   Future<PurchasesResultWrapper> queryPurchases(SkuType skuType) async {
     assert(skuType != null);
-    return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
-        'BillingClient#queryPurchases(String)',
-        <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
+    return PurchasesResultWrapper.fromJson(await channel
+        .invokeMapMethod<String, dynamic>(
+            'BillingClient#queryPurchases(String)',
+            <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
   }
 
   /// Fetches purchase history for the given [SkuType].
   ///
-  /// This makes a network request via Play and returns the most recent purchase
-  /// for each [SkuDetailsWrapper] of the given [SkuType].
+  /// Unlike [queryPurchases], this makes a network request via Play and returns
+  /// the most recent purchase for each [SkuDetailsWrapper] of the given
+  /// [SkuType] even if the item is no longer owned.
   ///
   /// All purchase information should also be verified manually, with your
   /// server if at all possible. See ["Verify a
@@ -188,9 +212,10 @@ class BillingClient {
   /// This wraps [`BillingClient#queryPurchaseHistoryAsync(String skuType,
   /// PurchaseHistoryResponseListener
   /// listener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querypurchasehistoryasync).
-  Future<PurchasesResultWrapper> queryPurchaseHistory(SkuType skuType) async {
+  Future<PurchasesHistoryResult> queryPurchaseHistory(SkuType skuType) async {
     assert(skuType != null);
-    return PurchasesResultWrapper.fromJson(await channel.invokeMapMethod(
+    return PurchasesHistoryResult.fromJson(await channel.invokeMapMethod<String,
+            dynamic>(
         'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)',
         <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}));
   }
@@ -198,15 +223,54 @@ class BillingClient {
   /// Consumes a given in-app product.
   ///
   /// Consuming can only be done on an item that's owned, and as a result of consumption, the user will no longer own it.
-  /// Consumption is done asynchronously. The method returns a Future containing a [BillingResponse].
+  /// Consumption is done asynchronously. The method returns a Future containing a [BillingResultWrapper].
+  ///
+  /// The `purchaseToken` must not be null.
+  /// The `developerPayload` is the developer data associated with the purchase to be consumed, it defaults to null.
   ///
   /// This wraps [`BillingClient#consumeAsync(String, ConsumeResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#consumeAsync(java.lang.String,%20com.android.billingclient.api.ConsumeResponseListener))
-  Future<BillingResponse> consumeAsync(String purchaseToken) async {
+  Future<BillingResultWrapper> consumeAsync(String purchaseToken,
+      {String developerPayload}) async {
     assert(purchaseToken != null);
-    return BillingResponseConverter().fromJson(await channel.invokeMethod(
-      'BillingClient#consumeAsync(String, ConsumeResponseListener)',
-      <String, String>{'purchaseToken': purchaseToken},
-    ));
+    return BillingResultWrapper.fromJson(await channel
+        .invokeMapMethod<String, dynamic>(
+            'BillingClient#consumeAsync(String, ConsumeResponseListener)',
+            <String, String>{
+          'purchaseToken': purchaseToken,
+          'developerPayload': developerPayload,
+        }));
+  }
+
+  /// Acknowledge an in-app purchase.
+  ///
+  /// The developer must acknowledge all in-app purchases after they have been granted to the user.
+  /// If this doesn't happen within three days of the purchase, the purchase will be refunded.
+  ///
+  /// Consumables are already implicitly acknowledged by calls to [consumeAsync] and
+  /// do not need to be explicitly acknowledged by using this method.
+  /// However this method can be called for them in order to explicitly acknowledge them if desired.
+  ///
+  /// Be sure to only acknowledge a purchase after it has been granted to the user.
+  /// [PurchaseWrapper.purchaseState] should be [PurchaseStateWrapper.purchased] and
+  /// the purchase should be validated. See [Verify a purchase](https://developer.android.com/google/play/billing/billing_library_overview#Verify) on verifying purchases.
+  ///
+  /// Please refer to [acknowledge](https://developer.android.com/google/play/billing/billing_library_overview#acknowledge) for more
+  /// details.
+  ///
+  /// The `purchaseToken` must not be null.
+  /// The `developerPayload` is the developer data associated with the purchase to be consumed, it defaults to null.
+  ///
+  /// This wraps [`BillingClient#acknowledgePurchase(String, AcknowledgePurchaseResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#acknowledgePurchase(com.android.billingclient.api.AcknowledgePurchaseParams,%20com.android.billingclient.api.AcknowledgePurchaseResponseListener))
+  Future<BillingResultWrapper> acknowledgePurchase(String purchaseToken,
+      {String developerPayload}) async {
+    assert(purchaseToken != null);
+    return BillingResultWrapper.fromJson(await channel.invokeMapMethod<String,
+            dynamic>(
+        'BillingClient#(AcknowledgePurchaseParams params, (AcknowledgePurchaseParams, AcknowledgePurchaseResponseListener)',
+        <String, String>{
+          'purchaseToken': purchaseToken,
+          'developerPayload': developerPayload,
+        }));
   }
 
   @visibleForTesting
@@ -217,7 +281,8 @@ class BillingClient {
         assert(_callbacks[kOnPurchasesUpdated].length == 1);
         final PurchasesUpdatedListener listener =
             _callbacks[kOnPurchasesUpdated].first;
-        listener(PurchasesResultWrapper.fromJson(call.arguments));
+        listener(PurchasesResultWrapper.fromJson(
+            call.arguments.cast<String, dynamic>()));
         break;
       case _kOnBillingServiceDisconnected:
         final int handle = call.arguments['handle'];

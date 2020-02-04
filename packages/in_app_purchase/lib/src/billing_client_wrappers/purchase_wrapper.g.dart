@@ -8,14 +8,19 @@ part of 'purchase_wrapper.dart';
 
 PurchaseWrapper _$PurchaseWrapperFromJson(Map json) {
   return PurchaseWrapper(
-      orderId: json['orderId'] as String,
-      packageName: json['packageName'] as String,
-      purchaseTime: json['purchaseTime'] as int,
-      purchaseToken: json['purchaseToken'] as String,
-      signature: json['signature'] as String,
-      sku: json['sku'] as String,
-      isAutoRenewing: json['isAutoRenewing'] as bool,
-      originalJson: json['originalJson'] as String);
+    orderId: json['orderId'] as String,
+    packageName: json['packageName'] as String,
+    purchaseTime: json['purchaseTime'] as int,
+    purchaseToken: json['purchaseToken'] as String,
+    signature: json['signature'] as String,
+    sku: json['sku'] as String,
+    isAutoRenewing: json['isAutoRenewing'] as bool,
+    originalJson: json['originalJson'] as String,
+    developerPayload: json['developerPayload'] as String,
+    isAcknowledged: json['isAcknowledged'] as bool,
+    purchaseState:
+        const PurchaseStateConverter().fromJson(json['purchaseState'] as int),
+  );
 }
 
 Map<String, dynamic> _$PurchaseWrapperToJson(PurchaseWrapper instance) =>
@@ -27,48 +32,67 @@ Map<String, dynamic> _$PurchaseWrapperToJson(PurchaseWrapper instance) =>
       'signature': instance.signature,
       'sku': instance.sku,
       'isAutoRenewing': instance.isAutoRenewing,
-      'originalJson': instance.originalJson
+      'originalJson': instance.originalJson,
+      'developerPayload': instance.developerPayload,
+      'isAcknowledged': instance.isAcknowledged,
+      'purchaseState':
+          const PurchaseStateConverter().toJson(instance.purchaseState),
+    };
+
+PurchaseHistoryRecordWrapper _$PurchaseHistoryRecordWrapperFromJson(Map json) {
+  return PurchaseHistoryRecordWrapper(
+    purchaseTime: json['purchaseTime'] as int,
+    purchaseToken: json['purchaseToken'] as String,
+    signature: json['signature'] as String,
+    sku: json['sku'] as String,
+    originalJson: json['originalJson'] as String,
+    developerPayload: json['developerPayload'] as String,
+  );
+}
+
+Map<String, dynamic> _$PurchaseHistoryRecordWrapperToJson(
+        PurchaseHistoryRecordWrapper instance) =>
+    <String, dynamic>{
+      'purchaseTime': instance.purchaseTime,
+      'purchaseToken': instance.purchaseToken,
+      'signature': instance.signature,
+      'sku': instance.sku,
+      'originalJson': instance.originalJson,
+      'developerPayload': instance.developerPayload,
     };
 
 PurchasesResultWrapper _$PurchasesResultWrapperFromJson(Map json) {
   return PurchasesResultWrapper(
-      responseCode:
-          _$enumDecode(_$BillingResponseEnumMap, json['responseCode']),
-      purchasesList: (json['purchasesList'] as List)
-          .map((e) => PurchaseWrapper.fromJson(e as Map))
-          .toList());
+    responseCode:
+        const BillingResponseConverter().fromJson(json['responseCode'] as int),
+    billingResult: BillingResultWrapper.fromJson(json['billingResult'] as Map),
+    purchasesList: (json['purchasesList'] as List)
+        .map((e) => PurchaseWrapper.fromJson(e as Map))
+        .toList(),
+  );
 }
 
 Map<String, dynamic> _$PurchasesResultWrapperToJson(
         PurchasesResultWrapper instance) =>
     <String, dynamic>{
-      'responseCode': _$BillingResponseEnumMap[instance.responseCode],
-      'purchasesList': instance.purchasesList
+      'billingResult': instance.billingResult,
+      'responseCode':
+          const BillingResponseConverter().toJson(instance.responseCode),
+      'purchasesList': instance.purchasesList,
     };
 
-T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
-  if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return enumValues.entries
-      .singleWhere((e) => e.value == source,
-          orElse: () => throw ArgumentError(
-              '`$source` is not one of the supported values: '
-              '${enumValues.values.join(', ')}'))
-      .key;
+PurchasesHistoryResult _$PurchasesHistoryResultFromJson(Map json) {
+  return PurchasesHistoryResult(
+    billingResult: BillingResultWrapper.fromJson(json['billingResult'] as Map),
+    purchaseHistoryRecordList: (json['purchaseHistoryRecordList'] as List)
+        .map((e) => PurchaseHistoryRecordWrapper.fromJson(e as Map))
+        .toList(),
+  );
 }
 
-const _$BillingResponseEnumMap = <BillingResponse, dynamic>{
-  BillingResponse.featureNotSupported: -2,
-  BillingResponse.serviceDisconnected: -1,
-  BillingResponse.ok: 0,
-  BillingResponse.userCanceled: 1,
-  BillingResponse.serviceUnavailable: 2,
-  BillingResponse.billingUnavailable: 3,
-  BillingResponse.itemUnavailable: 4,
-  BillingResponse.developerError: 5,
-  BillingResponse.error: 6,
-  BillingResponse.itemAlreadyOwned: 7,
-  BillingResponse.itemNotOwned: 8
-};
+Map<String, dynamic> _$PurchasesHistoryResultToJson(
+        PurchasesHistoryResult instance) =>
+    <String, dynamic>{
+      'billingResult': instance.billingResult,
+      'purchaseHistoryRecordList': instance.purchaseHistoryRecordList,
+    };

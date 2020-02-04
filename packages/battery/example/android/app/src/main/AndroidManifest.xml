@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:name="io.flutter.app.FlutterApplication" android:label="battery_example" android:icon="@mipmap/ic_launcher">
-        <activity android:name=".MainActivity"
+        <activity android:name="io.flutter.embedding.android.FlutterActivity"
                   android:launchMode="singleTop"
                   android:theme="@android:style/Theme.Black.NoTitleBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
@@ -15,5 +15,15 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".EmbedderV1Activity"
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
     </application>
 </manifest>

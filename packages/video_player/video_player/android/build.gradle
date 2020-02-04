@@ -1,0 +1,73 @@
+group 'io.flutter.plugins.videoplayer'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.3.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 16
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    android {
+        compileOptions {
+            sourceCompatibility 1.8
+            targetCompatibility 1.8
+        }
+    }
+
+    dependencies {
+        implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'
+        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.6'
+        implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.6'
+        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.6'
+    }
+}
+
+// TODO(mklim): Remove this hack once androidx.lifecycle is included on stable. https://github.com/flutter/flutter/issues/42348
+afterEvaluate {
+    def containsEmbeddingDependencies = false
+    for (def configuration : configurations.all) {
+        for (def dependency : configuration.dependencies) {
+            if (dependency.group == 'io.flutter' &&
+                dependency.name.startsWith('flutter_embedding') &&
+                dependency.isTransitive())
+            {
+                containsEmbeddingDependencies = true
+                break
+            }
+        }
+    }
+    if (!containsEmbeddingDependencies) {
+        android {
+            dependencies {
+                def lifecycle_version = "1.1.1"
+                compileOnly "android.arch.lifecycle:runtime:$lifecycle_version"
+                compileOnly "android.arch.lifecycle:common:$lifecycle_version"
+                compileOnly "android.arch.lifecycle:common-java8:$lifecycle_version"
+            }
+        }
+    }
+}

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase/src/in_app_purchase_connection/purchase_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
+import 'package:in_app_purchase/src/in_app_purchase/in_app_purchase_connection.dart';
+import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
 
@@ -64,17 +65,15 @@ void main() {
       expect(wrapper.localizedTitle, null);
       expect(wrapper.localizedDescription, null);
       expect(wrapper.priceLocale, null);
-      expect(wrapper.downloadContentVersion, null);
       expect(wrapper.subscriptionGroupIdentifier, null);
       expect(wrapper.price, null);
-      expect(wrapper.downloadable, null);
       expect(wrapper.subscriptionPeriod, null);
     });
 
     test('toProductDetails() should return correct Product object', () {
       final SKProductWrapper wrapper =
           SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
-      final ProductDetails product = wrapper.toProductDetails();
+      final ProductDetails product = ProductDetails.fromSKProduct(wrapper);
       expect(product.title, wrapper.localizedTitle);
       expect(product.description, wrapper.localizedDescription);
       expect(product.id, wrapper.productIdentifier);
@@ -130,14 +129,14 @@ void main() {
 
     test('toPurchaseDetails() should return correct PurchaseDetail object', () {
       PurchaseDetails details =
-          dummyTransaction.toPurchaseDetails('receipt data');
+          PurchaseDetails.fromSKTransaction(dummyTransaction, 'receipt data');
       expect(dummyTransaction.transactionIdentifier, details.purchaseID);
       expect(dummyTransaction.payment.productIdentifier, details.productID);
       expect((dummyTransaction.transactionTimeStamp * 1000).toInt().toString(),
           details.transactionDate);
       expect(details.verificationData.localVerificationData, 'receipt data');
       expect(details.verificationData.serverVerificationData, 'receipt data');
-      expect(details.verificationData.source, PurchaseSource.AppStore);
+      expect(details.verificationData.source, IAPSource.AppStore);
       expect(details.skPaymentTransaction, dummyTransaction);
       expect(details.billingClientPurchase, null);
     });

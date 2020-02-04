@@ -15,9 +15,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${mapsApiKey}" />
-        <activity
-            android:name=".MainActivity"
-            android:launchMode="singleTop"
+        <activity android:name="io.flutter.embedding.android.FlutterActivity"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
             android:hardwareAccelerated="true"
@@ -30,5 +28,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".EmbeddingV1Activity"
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
+        <meta-data android:name="flutterEmbedding" android:value="2"/>
     </application>
 </manifest>

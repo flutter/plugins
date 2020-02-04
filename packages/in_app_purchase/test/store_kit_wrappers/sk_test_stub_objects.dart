@@ -33,7 +33,7 @@ final SKPaymentTransactionWrapper dummyTransaction =
 );
 
 final SKPriceLocaleWrapper dummyLocale =
-    SKPriceLocaleWrapper(currencySymbol: '\$');
+    SKPriceLocaleWrapper(currencySymbol: '\$', currencyCode: 'USD');
 
 final SKProductSubscriptionPeriodWrapper dummySubscription =
     SKProductSubscriptionPeriodWrapper(
@@ -54,11 +54,8 @@ final SKProductWrapper dummyProductWrapper = SKProductWrapper(
   localizedTitle: 'title',
   localizedDescription: 'description',
   priceLocale: dummyLocale,
-  downloadContentVersion: 'version',
   subscriptionGroupIdentifier: 'com.group',
   price: '1.0',
-  downloadable: true,
-  downloadContentLengths: <int>[1, 2],
   subscriptionPeriod: dummySubscription,
   introductoryPrice: dummyDiscount,
 );
@@ -70,7 +67,10 @@ final SkProductResponseWrapper dummyProductResponseWrapper =
 );
 
 Map<String, dynamic> buildLocaleMap(SKPriceLocaleWrapper local) {
-  return {'currencySymbol': local.currencySymbol};
+  return {
+    'currencySymbol': local.currencySymbol,
+    'currencyCode': local.currencyCode
+  };
 }
 
 Map<String, dynamic> buildSubscriptionPeriodMap(
@@ -99,11 +99,8 @@ Map<String, dynamic> buildProductMap(SKProductWrapper product) {
     'localizedTitle': product.localizedTitle,
     'localizedDescription': product.localizedDescription,
     'priceLocale': buildLocaleMap(product.priceLocale),
-    'downloadContentVersion': product.downloadContentVersion,
     'subscriptionGroupIdentifier': product.subscriptionGroupIdentifier,
     'price': product.price,
-    'downloadable': product.downloadable,
-    'downloadContentLengths': product.downloadContentLengths,
     'subscriptionPeriod':
         buildSubscriptionPeriodMap(product.subscriptionPeriod),
     'introductoryPrice': buildDiscountMap(product.introductoryPrice),

@@ -6,11 +6,17 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'platform_interface.dart';
+import 'src/webview_android.dart';
+import 'src/webview_cupertino.dart';
+
+/// Optional callback invoked when a web view is first created. [controller] is
+/// the [WebViewController] for the created web view.
 typedef void WebViewCreatedCallback(WebViewController controller);
 
+/// Describes the state of JavaScript support in a given web view.
 enum JavascriptMode {
   /// JavaScript execution is disabled.
   disabled,
@@ -64,12 +70,35 @@ enum NavigationDecision {
 /// `navigation` should be handled.
 ///
 /// See also: [WebView.navigationDelegate].
-typedef NavigationDecision NavigationDelegate(NavigationRequest navigation);
+typedef FutureOr<NavigationDecision> NavigationDelegate(
+    NavigationRequest navigation);
+
+/// Signature for when a [WebView] has started loading a page.
+typedef void PageStartedCallback(String url);
 
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
 
-final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
+/// Specifies possible restrictions on automatic media playback.
+///
+/// This is typically used in [WebView.initialMediaPlaybackPolicy].
+// The method channel implementation is marshalling this enum to the value's index, so the order
+// is important.
+enum AutoMediaPlaybackPolicy {
+  /// Starting any kind of media playback requires a user action.
+  ///
+  /// For example: JavaScript code cannot start playing media unless the code was executed
+  /// as a result of a user action (like a touch event).
+  require_user_action_for_all_media_types,
+
+  /// Starting any kind of media playback is always allowed.
+  ///
+  /// For example: JavaScript code that's triggered when the page is loaded can start playing
+  /// video or audio.
+  always_allow,
+}
+
+final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9_]*\$');
 
 /// A named channel for receiving messaged from JavaScript code running inside a web view.
 class JavascriptChannel {
@@ -107,7 +136,7 @@ class WebView extends StatefulWidget {
   /// The web view can be controlled using a `WebViewController` that is passed to the
   /// `onWebViewCreated` callback once the web view is created.
   ///
-  /// The `javascriptMode` parameter must not be null.
+  /// The `javascriptMode` and `autoMediaPlaybackPolicy` parameters must not be null.
   const WebView({
     Key key,
     this.onWebViewCreated,
@@ -116,9 +145,49 @@ class WebView extends StatefulWidget {
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
+    this.onPageStarted,
     this.onPageFinished,
+    this.debuggingEnabled = false,
+    this.gestureNavigationEnabled = false,
+    this.userAgent,
+    this.initialMediaPlaybackPolicy =
+        AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
   })  : assert(javascriptMode != null),
+        assert(initialMediaPlaybackPolicy != null),
         super(key: key);
+
+  static WebViewPlatform _platform;
+
+  /// Sets a custom [WebViewPlatform].
+  ///
+  /// This property can be set to use a custom platform implementation for WebViews.
+  ///
+  /// Setting `platform` doesn't affect [WebView]s that were already created.
+  ///
+  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
+  static set platform(WebViewPlatform platform) {
+    _platform = platform;
+  }
+
+  /// The WebView platform that's used by this WebView.
+  ///
+  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
+  static WebViewPlatform get platform {
+    if (_platform == null) {
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+          _platform = AndroidWebView();
+          break;
+        case TargetPlatform.iOS:
+          _platform = CupertinoWebView();
+          break;
+        default:
+          throw UnsupportedError(
+              "Trying to use the default webview implementation for $defaultTargetPlatform but there isn't a default one");
+      }
+    }
+    return _platform;
+  }
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback onWebViewCreated;
@@ -150,7 +219,7 @@ class WebView extends StatefulWidget {
   /// For example for the following JavascriptChannel:
   ///
   /// ```dart
-  /// JavascriptChannel(name: 'Print', onMessageReceived: (JavascriptMessage message) { print(message); });
+  /// JavascriptChannel(name: 'Print', onMessageReceived: (JavascriptMessage message) { print(message.message); });
   /// ```
   ///
   /// JavaScript code can call:
@@ -193,6 +262,9 @@ class WebView extends StatefulWidget {
   ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
   final NavigationDelegate navigationDelegate;
 
+  /// Invoked when a page starts loading.
+  final PageStartedCallback onPageStarted;
+
   /// Invoked when a page has finished loading.
   ///
   /// This is invoked only for the main frame.
@@ -205,6 +277,48 @@ class WebView extends StatefulWidget {
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
 
+  /// Controls whether WebView debugging is enabled.
+  ///
+  /// Setting this to true enables [WebView debugging on Android](https://developers.google.com/web/tools/chrome-devtools/remote-debugging/).
+  ///
+  /// WebView debugging is enabled by default in dev builds on iOS.
+  ///
+  /// To debug WebViews on iOS:
+  /// - Enable developer options (Open Safari, go to Preferences -> Advanced and make sure "Show Develop Menu in Menubar" is on.)
+  /// - From the Menu-bar (of Safari) select Develop -> iPhone Simulator -> <your webview page>
+  ///
+  /// By default `debuggingEnabled` is false.
+  final bool debuggingEnabled;
+
+  /// The value used for the HTTP User-Agent: request header.
+  /// A Boolean value indicating whether horizontal swipe gestures will trigger back-forward list navigations.
+  ///
+  /// This only works on iOS.
+  ///
+  /// By default `gestureNavigationEnabled` is false.
+  final bool gestureNavigationEnabled;
+
+  ///
+  /// When null the platform's webview default is used for the User-Agent header.
+  ///
+  /// When the [WebView] is rebuilt with a different `userAgent`, the page reloads and the request uses the new User Agent.
+  ///
+  /// When [WebViewController.goBack] is called after changing `userAgent` the previous `userAgent` value is used until the page is reloaded.
+  ///
+  /// This field is ignored on iOS versions prior to 9 as the platform does not support a custom
+  /// user agent.
+  ///
+  /// By default `userAgent` is null.
+  final String userAgent;
+
+  /// Which restrictions apply on automatic media playback.
+  ///
+  /// This initial value is applied to the platform's webview upon creation. Any following
+  /// changes to this parameter are ignored (as long as the state of the [WebView] is preserved).
+  ///
+  /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
+  final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -213,60 +327,39 @@ class _WebViewState extends State<WebView> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
+  _PlatformCallbacksHandler _platformCallbacksHandler;
+
   @override
   Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return GestureDetector(
-        // We prevent text selection by intercepting the long press event.
-        // This is a temporary stop gap due to issues with text selection on Android:
-        // https://github.com/flutter/flutter/issues/24585 - the text selection
-        // dialog is not responding to touch events.
-        // https://github.com/flutter/flutter/issues/24584 - the text selection
-        // handles are not showing.
-        // TODO(amirh): remove this when the issues above are fixed.
-        onLongPress: () {},
-        excludeFromSemantics: true,
-        child: AndroidView(
-          viewType: 'plugins.flutter.io/webview',
-          onPlatformViewCreated: _onPlatformViewCreated,
-          gestureRecognizers: widget.gestureRecognizers,
-          // WebView content is not affected by the Android view's layout direction,
-          // we explicitly set it here so that the widget doesn't require an ambient
-          // directionality.
-          layoutDirection: TextDirection.rtl,
-          creationParams: _CreationParams.fromWidget(widget).toMap(),
-          creationParamsCodec: const StandardMessageCodec(),
-        ),
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return UiKitView(
-        viewType: 'plugins.flutter.io/webview',
-        onPlatformViewCreated: _onPlatformViewCreated,
-        gestureRecognizers: widget.gestureRecognizers,
-        creationParams: _CreationParams.fromWidget(widget).toMap(),
-        creationParamsCodec: const StandardMessageCodec(),
-      );
-    }
-    return Text(
-        '$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
+    return WebView.platform.build(
+      context: context,
+      onWebViewPlatformCreated: _onWebViewPlatformCreated,
+      webViewPlatformCallbacksHandler: _platformCallbacksHandler,
+      gestureRecognizers: widget.gestureRecognizers,
+      creationParams: _creationParamsfromWidget(widget),
+    );
   }
 
   @override
   void initState() {
     super.initState();
     _assertJavascriptChannelNamesAreUnique();
+    _platformCallbacksHandler = _PlatformCallbacksHandler(widget);
   }
 
   @override
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
     _assertJavascriptChannelNamesAreUnique();
-    _controller.future.then(
-        (WebViewController controller) => controller._updateWidget(widget));
+    _controller.future.then((WebViewController controller) {
+      _platformCallbacksHandler._widget = widget;
+      controller._updateWidget(widget);
+    });
   }
 
-  void _onPlatformViewCreated(int id) {
-    final WebViewController controller = WebViewController._(id, widget);
+  void _onWebViewPlatformCreated(WebViewPlatformController webViewPlatform) {
+    final WebViewController controller =
+        WebViewController._(widget, webViewPlatform, _platformCallbacksHandler);
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -283,6 +376,63 @@ class _WebViewState extends State<WebView> {
   }
 }
 
+CreationParams _creationParamsfromWidget(WebView widget) {
+  return CreationParams(
+    initialUrl: widget.initialUrl,
+    webSettings: _webSettingsFromWidget(widget),
+    javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
+    userAgent: widget.userAgent,
+    autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
+  );
+}
+
+WebSettings _webSettingsFromWidget(WebView widget) {
+  return WebSettings(
+    javascriptMode: widget.javascriptMode,
+    hasNavigationDelegate: widget.navigationDelegate != null,
+    debuggingEnabled: widget.debuggingEnabled,
+    gestureNavigationEnabled: widget.gestureNavigationEnabled,
+    userAgent: WebSetting<String>.of(widget.userAgent),
+  );
+}
+
+// This method assumes that no fields in `currentValue` are null.
+WebSettings _clearUnchangedWebSettings(
+    WebSettings currentValue, WebSettings newValue) {
+  assert(currentValue.javascriptMode != null);
+  assert(currentValue.hasNavigationDelegate != null);
+  assert(currentValue.debuggingEnabled != null);
+  assert(currentValue.userAgent.isPresent);
+  assert(newValue.javascriptMode != null);
+  assert(newValue.hasNavigationDelegate != null);
+  assert(newValue.debuggingEnabled != null);
+  assert(newValue.userAgent.isPresent);
+
+  JavascriptMode javascriptMode;
+  bool hasNavigationDelegate;
+  bool debuggingEnabled;
+  WebSetting<String> userAgent = WebSetting<String>.absent();
+  if (currentValue.javascriptMode != newValue.javascriptMode) {
+    javascriptMode = newValue.javascriptMode;
+  }
+  if (currentValue.hasNavigationDelegate != newValue.hasNavigationDelegate) {
+    hasNavigationDelegate = newValue.hasNavigationDelegate;
+  }
+  if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
+    debuggingEnabled = newValue.debuggingEnabled;
+  }
+  if (currentValue.userAgent != newValue.userAgent) {
+    userAgent = newValue.userAgent;
+  }
+
+  return WebSettings(
+    javascriptMode: javascriptMode,
+    hasNavigationDelegate: hasNavigationDelegate,
+    debuggingEnabled: debuggingEnabled,
+    userAgent: userAgent,
+  );
+}
+
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   final Set<String> channelNames = channels == null
       // TODO(iskakaushik): Remove this when collection literals makes it to stable.
@@ -292,66 +442,54 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   return channelNames;
 }
 
-class _CreationParams {
-  _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
-
-  static _CreationParams fromWidget(WebView widget) {
-    return _CreationParams(
-      initialUrl: widget.initialUrl,
-      settings: _WebSettings.fromWidget(widget),
-      javascriptChannelNames:
-          _extractChannelNames(widget.javascriptChannels).toList(),
-    );
+class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
+  _PlatformCallbacksHandler(this._widget) {
+    _updateJavascriptChannelsFromSet(_widget.javascriptChannels);
   }
 
-  final String initialUrl;
+  WebView _widget;
 
-  final _WebSettings settings;
+  // Maps a channel name to a channel.
+  final Map<String, JavascriptChannel> _javascriptChannels =
+      <String, JavascriptChannel>{};
 
-  final List<String> javascriptChannelNames;
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'initialUrl': initialUrl,
-      'settings': settings.toMap(),
-      'javascriptChannelNames': javascriptChannelNames,
-    };
-  }
-}
-
-class _WebSettings {
-  _WebSettings({
-    this.javascriptMode,
-    this.hasNavigationDelegate,
-  });
-
-  static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(
-      javascriptMode: widget.javascriptMode,
-      hasNavigationDelegate: widget.navigationDelegate != null,
-    );
+  @override
+  void onJavaScriptChannelMessage(String channel, String message) {
+    _javascriptChannels[channel].onMessageReceived(JavascriptMessage(message));
   }
 
-  final JavascriptMode javascriptMode;
-  final bool hasNavigationDelegate;
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'jsMode': javascriptMode.index,
-      'hasNavigationDelegate': hasNavigationDelegate,
-    };
+  @override
+  FutureOr<bool> onNavigationRequest({String url, bool isForMainFrame}) async {
+    final NavigationRequest request =
+        NavigationRequest._(url: url, isForMainFrame: isForMainFrame);
+    final bool allowNavigation = _widget.navigationDelegate == null ||
+        await _widget.navigationDelegate(request) ==
+            NavigationDecision.navigate;
+    return allowNavigation;
   }
 
-  Map<String, dynamic> updatesMap(_WebSettings newSettings) {
-    final Map<String, dynamic> updates = <String, dynamic>{};
-    if (javascriptMode != newSettings.javascriptMode) {
-      updates['jsMode'] = newSettings.javascriptMode.index;
+  @override
+  void onPageStarted(String url) {
+    if (_widget.onPageStarted != null) {
+      _widget.onPageStarted(url);
     }
-    if (hasNavigationDelegate != newSettings.hasNavigationDelegate) {
-      updates['hasNavigationDelegate'] = newSettings.hasNavigationDelegate;
+  }
+
+  @override
+  void onPageFinished(String url) {
+    if (_widget.onPageFinished != null) {
+      _widget.onPageFinished(url);
     }
-    return updates;
+  }
+
+  void _updateJavascriptChannelsFromSet(Set<JavascriptChannel> channels) {
+    _javascriptChannels.clear();
+    if (channels == null) {
+      return;
+    }
+    for (JavascriptChannel channel in channels) {
+      _javascriptChannels[channel.name] = channel;
+    }
   }
 }
 
@@ -361,66 +499,36 @@ class _WebSettings {
 /// callback for a [WebView] widget.
 class WebViewController {
   WebViewController._(
-    int id,
     this._widget,
-  ) : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
-    _settings = _WebSettings.fromWidget(_widget);
-    _updateJavascriptChannelsFromSet(_widget.javascriptChannels);
-    _channel.setMethodCallHandler(_onMethodCall);
+    this._webViewPlatformController,
+    this._platformCallbacksHandler,
+  ) : assert(_webViewPlatformController != null) {
+    _settings = _webSettingsFromWidget(_widget);
   }
 
-  final MethodChannel _channel;
+  final WebViewPlatformController _webViewPlatformController;
 
-  _WebSettings _settings;
+  final _PlatformCallbacksHandler _platformCallbacksHandler;
+
+  WebSettings _settings;
 
   WebView _widget;
 
-  // Maps a channel name to a channel.
-  Map<String, JavascriptChannel> _javascriptChannels =
-      <String, JavascriptChannel>{};
-
-  Future<bool> _onMethodCall(MethodCall call) async {
-    switch (call.method) {
-      case 'javascriptChannelMessage':
-        final String channel = call.arguments['channel'];
-        final String message = call.arguments['message'];
-        _javascriptChannels[channel]
-            .onMessageReceived(JavascriptMessage(message));
-        return true;
-      case 'navigationRequest':
-        final NavigationRequest request = NavigationRequest._(
-          url: call.arguments['url'],
-          isForMainFrame: call.arguments['isForMainFrame'],
-        );
-        // _navigationDelegate can be null if the widget was rebuilt with no
-        // navigation delegate after a navigation happened and just before we
-        // got the navigationRequest message.
-        final bool allowNavigation = _widget.navigationDelegate == null ||
-            _widget.navigationDelegate(request) == NavigationDecision.navigate;
-        return allowNavigation;
-      case 'onPageFinished':
-        if (_widget.onPageFinished != null) {
-          _widget.onPageFinished(call.arguments['url']);
-        }
-
-        return null;
-    }
-    throw MissingPluginException(
-        '${call.method} was invoked but has no handler');
-  }
-
   /// Loads the specified URL.
+  ///
+  /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
+  /// be added as key value pairs of HTTP headers for the request.
   ///
   /// `url` must not be null.
   ///
   /// Throws an ArgumentError if `url` is not a valid URL string.
-  Future<void> loadUrl(String url) async {
+  Future<void> loadUrl(
+    String url, {
+    Map<String, String> headers,
+  }) async {
     assert(url != null);
     _validateUrlString(url);
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod('loadUrl', url);
+    return _webViewPlatformController.loadUrl(url, headers);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
@@ -430,64 +538,43 @@ class WebViewController {
   /// current URL changes again by the time this function returns (in other
   /// words, by the time this future completes, the WebView may be displaying a
   /// different URL).
-  Future<String> currentUrl() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final String url = await _channel.invokeMethod('currentUrl');
-    return url;
+  Future<String> currentUrl() {
+    return _webViewPlatformController.currentUrl();
   }
 
   /// Checks whether there's a back history item.
   ///
   /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has
   /// changed by the time the future completed.
-  Future<bool> canGoBack() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final bool canGoBack = await _channel.invokeMethod("canGoBack");
-    return canGoBack;
+  Future<bool> canGoBack() {
+    return _webViewPlatformController.canGoBack();
   }
 
   /// Checks whether there's a forward history item.
   ///
   /// Note that this operation is asynchronous, and it is possible that the "canGoForward" state has
   /// changed by the time the future completed.
-  Future<bool> canGoForward() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    final bool canGoForward = await _channel.invokeMethod("canGoForward");
-    return canGoForward;
+  Future<bool> canGoForward() {
+    return _webViewPlatformController.canGoForward();
   }
 
   /// Goes back in the history of this WebView.
   ///
   /// If there is no back history item this is a no-op.
-  Future<void> goBack() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod("goBack");
+  Future<void> goBack() {
+    return _webViewPlatformController.goBack();
   }
 
   /// Goes forward in the history of this WebView.
   ///
   /// If there is no forward history item this is a no-op.
-  Future<void> goForward() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod("goForward");
+  Future<void> goForward() {
+    return _webViewPlatformController.goForward();
   }
 
   /// Reloads the current URL.
-  Future<void> reload() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod("reload");
+  Future<void> reload() {
+    return _webViewPlatformController.reload();
   }
 
   /// Clears all caches used by the [WebView].
@@ -501,63 +588,40 @@ class WebViewController {
   ///
   /// Note: Calling this method also triggers a reload.
   Future<void> clearCache() async {
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    await _channel.invokeMethod("clearCache");
+    await _webViewPlatformController.clearCache();
     return reload();
   }
 
   Future<void> _updateWidget(WebView widget) async {
     _widget = widget;
-    await _updateSettings(_WebSettings.fromWidget(widget));
+    await _updateSettings(_webSettingsFromWidget(widget));
     await _updateJavascriptChannels(widget.javascriptChannels);
   }
 
-  Future<void> _updateSettings(_WebSettings setting) async {
-    final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
-    if (updateMap == null || updateMap.isEmpty) {
-      return null;
-    }
-    _settings = setting;
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod('updateSettings', updateMap);
+  Future<void> _updateSettings(WebSettings newSettings) {
+    final WebSettings update =
+        _clearUnchangedWebSettings(_settings, newSettings);
+    _settings = newSettings;
+    return _webViewPlatformController.updateSettings(update);
   }
 
   Future<void> _updateJavascriptChannels(
       Set<JavascriptChannel> newChannels) async {
-    final Set<String> currentChannels = _javascriptChannels.keys.toSet();
+    final Set<String> currentChannels =
+        _platformCallbacksHandler._javascriptChannels.keys.toSet();
     final Set<String> newChannelNames = _extractChannelNames(newChannels);
     final Set<String> channelsToAdd =
         newChannelNames.difference(currentChannels);
     final Set<String> channelsToRemove =
         currentChannels.difference(newChannelNames);
     if (channelsToRemove.isNotEmpty) {
-      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      _channel.invokeMethod(
-          'removeJavascriptChannels', channelsToRemove.toList());
+      await _webViewPlatformController
+          .removeJavascriptChannels(channelsToRemove);
     }
     if (channelsToAdd.isNotEmpty) {
-      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      _channel.invokeMethod('addJavascriptChannels', channelsToAdd.toList());
+      await _webViewPlatformController.addJavascriptChannels(channelsToAdd);
     }
-    _updateJavascriptChannelsFromSet(newChannels);
-  }
-
-  void _updateJavascriptChannelsFromSet(Set<JavascriptChannel> channels) {
-    _javascriptChannels.clear();
-    if (channels == null) {
-      return;
-    }
-    for (JavascriptChannel channel in channels) {
-      _javascriptChannels[channel.name] = channel;
-    }
+    _platformCallbacksHandler._updateJavascriptChannelsFromSet(newChannels);
   }
 
   /// Evaluates a JavaScript expression in the context of the current page.
@@ -576,20 +640,24 @@ class WebViewController {
   /// When evaluating Javascript in a [WebView], it is best practice to wait for
   /// the [WebView.onPageFinished] callback. This guarantees all the Javascript
   /// embedded in the main frame HTML has been loaded.
-  Future<String> evaluateJavascript(String javascriptString) async {
+  Future<String> evaluateJavascript(String javascriptString) {
     if (_settings.javascriptMode == JavascriptMode.disabled) {
-      throw FlutterError(
-          'JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.');
+      return Future<String>.error(FlutterError(
+          'JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.'));
     }
     if (javascriptString == null) {
-      throw ArgumentError('The argument javascriptString must not be null. ');
+      return Future<String>.error(
+          ArgumentError('The argument javascriptString must not be null.'));
     }
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    final String result =
-        await _channel.invokeMethod('evaluateJavascript', javascriptString);
-    return result;
+    return _webViewPlatformController.evaluateJavascript(javascriptString);
+  }
+
+  /// Returns the title of the currently loaded page.
+  Future<String> getTitle() {
+    return _webViewPlatformController.getTitle();
   }
 }
 
@@ -602,21 +670,14 @@ class CookieManager {
 
   CookieManager._();
 
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/cookie_manager');
   static CookieManager _instance;
 
-  /// Clears all cookies.
+  /// Clears all cookies for all [WebView] instances.
   ///
-  /// This is supported for >= IOS 9.
+  /// This is a no op on iOS version smaller than 9.
   ///
   /// Returns true if cookies were present before clearing, else false.
-  Future<bool> clearCookies() => _channel
-      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      .invokeMethod('clearCookies')
-      .then<bool>((dynamic result) => result);
+  Future<bool> clearCookies() => WebView.platform.clearCookies();
 }
 
 // Throws an ArgumentError if `url` is not a valid URL string.

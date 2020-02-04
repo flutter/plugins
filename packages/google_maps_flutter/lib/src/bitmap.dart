@@ -10,15 +10,34 @@ part of google_maps_flutter;
 class BitmapDescriptor {
   const BitmapDescriptor._(this._json);
 
+  /// Convenience hue value representing red.
   static const double hueRed = 0.0;
+
+  /// Convenience hue value representing orange.
   static const double hueOrange = 30.0;
+
+  /// Convenience hue value representing yellow.
   static const double hueYellow = 60.0;
+
+  /// Convenience hue value representing green.
   static const double hueGreen = 120.0;
+
+  /// Convenience hue value representing cyan.
   static const double hueCyan = 180.0;
+
+  /// Convenience hue value representing azure.
   static const double hueAzure = 210.0;
+
+  /// Convenience hue value representing blue.
   static const double hueBlue = 240.0;
+
+  /// Convenience hue value representing violet.
   static const double hueViolet = 270.0;
+
+  /// Convenience hue value representing magenta.
   static const double hueMagenta = 300.0;
+
+  /// Convenience hue value representing rose.
   static const double hueRose = 330.0;
 
   /// Creates a BitmapDescriptor that refers to the default marker image.
@@ -35,12 +54,46 @@ class BitmapDescriptor {
 
   /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
   /// directory.
+  ///
+  /// Use [fromAssetImage]. This method does not respect the screen dpi when
+  /// picking an asset image.
+  @Deprecated("Use fromAssetImage instead")
   static BitmapDescriptor fromAsset(String assetName, {String package}) {
     if (package == null) {
       return BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
     } else {
       return BitmapDescriptor._(<dynamic>['fromAsset', assetName, package]);
     }
+  }
+
+  /// Creates a [BitmapDescriptor] from an asset image.
+  ///
+  /// Asset images in flutter are stored per:
+  /// https://flutter.dev/docs/development/ui/assets-and-images#declaring-resolution-aware-image-assets
+  /// This method takes into consideration various asset resolutions
+  /// and scales the images to the right resolution depending on the dpi.
+  static Future<BitmapDescriptor> fromAssetImage(
+    ImageConfiguration configuration,
+    String assetName, {
+    AssetBundle bundle,
+    String package,
+  }) async {
+    if (configuration.devicePixelRatio != null) {
+      return BitmapDescriptor._(<dynamic>[
+        'fromAssetImage',
+        assetName,
+        configuration.devicePixelRatio,
+      ]);
+    }
+    final AssetImage assetImage =
+        AssetImage(assetName, package: package, bundle: bundle);
+    final AssetBundleImageKey assetBundleImageKey =
+        await assetImage.obtainKey(configuration);
+    return BitmapDescriptor._(<dynamic>[
+      'fromAssetImage',
+      assetBundleImageKey.name,
+      assetBundleImageKey.scale,
+    ]);
   }
 
   /// Creates a BitmapDescriptor using an array of bytes that must be encoded

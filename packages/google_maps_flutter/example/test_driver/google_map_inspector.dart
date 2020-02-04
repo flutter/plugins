@@ -19,11 +19,21 @@ class GoogleMapInspector {
     return await _channel.invokeMethod<bool>('map#isCompassEnabled');
   }
 
+  Future<bool> isMapToolbarEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isMapToolbarEnabled');
+  }
+
   Future<MinMaxZoomPreference> getMinMaxZoomLevels() async {
     final List<double> zoomLevels =
         (await _channel.invokeMethod<List<dynamic>>('map#getMinMaxZoomLevels'))
             .cast<double>();
     return MinMaxZoomPreference(zoomLevels[0], zoomLevels[1]);
+  }
+
+  Future<double> getZoomLevel() async {
+    final double zoomLevel =
+        await _channel.invokeMethod<double>('map#getZoomLevel');
+    return zoomLevel;
   }
 
   Future<bool> isZoomGesturesEnabled() async {
@@ -40,5 +50,17 @@ class GoogleMapInspector {
 
   Future<bool> isScrollGesturesEnabled() async {
     return await _channel.invokeMethod<bool>('map#isScrollGesturesEnabled');
+  }
+
+  Future<bool> isMyLocationButtonEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isMyLocationButtonEnabled');
+  }
+
+  Future<bool> isTrafficEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isTrafficEnabled');
+  }
+
+  Future<bool> isBuildingsEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isBuildingsEnabled');
   }
 }
