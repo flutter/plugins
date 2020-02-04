@@ -108,6 +108,15 @@ class LocalAuthentication {
     return Future<bool>.sync(() => true);
   }
 
+  /// Returns a list of all available biometrics on the device
+  ///
+  /// Returns a [Future] List<BiometricType> with the following possibilities:
+  /// - BiometricType.face
+  /// - BiometricType.fingerprint
+  /// - BiometricType.iris (not yet implemented)
+  Future<List<BiometricType>> get canCheckBiometrics async =>
+      (await _channel.invokeListMethod<String>('getAvailableBiometrics'));
+
   /// Returns true if device is capable of checking biometrics
   ///
   /// Returns a [Future] bool true or false:
