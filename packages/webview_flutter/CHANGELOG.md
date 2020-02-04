@@ -1,3 +1,7 @@
+## 0.3.19+6
+
+* On iOS, enable opening links with href with target="_blank"
+
 ## 0.3.19+5
 
 * On iOS, always keep contentInsets of the WebView to be 0.
