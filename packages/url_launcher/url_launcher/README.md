@@ -62,8 +62,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 final Uri _emailLaunchUri = Uri(
   scheme: 'mailto',
-  userInfo: 'support',
-  host: 'flutter.dev',
+  path: 'smith@example.com',
   queryParameters: {
     'subject': 'Example Subject & Symbols are allowed!'
   }
@@ -71,7 +70,7 @@ final Uri _emailLaunchUri = Uri(
 
 // ...
 
-// mailto://support@flutter.dev?subject=Example+Subject+%26+Symbols+are+allowed%21
+// mailto:smith@example.com?subject=Example+Subject+%26+Symbols+are+allowed%21
 launch(_emailLaunchUri.toString());
 ```
 
