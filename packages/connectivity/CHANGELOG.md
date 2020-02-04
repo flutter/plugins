@@ -1,3 +1,38 @@
+## 0.4.6+2
+
+* Migrate deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+* Bump Flutter SDK to 1.12.13+hotfix.5 or greater (current stable).
+
+## 0.4.6+1
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.6
+
+* Add macOS support.
+
+## 0.4.5+8
+
+* Update documentation to explain when connectivity updates are received on Android.
+
+## 0.4.5+7
+
+* Fix unawaited futures in the example app and tests.
+
+## 0.4.5+6
+
+* Fix singleton Reachability problem on iOS.
+
+## 0.4.5+5
+
+* Add an analyzer check for the public documentation.
+
+## 0.4.5+4
+
+* Stability and Maintainability: update documentations.
+
 ## 0.4.5+3
 
 * Remove AndroidX warnings.

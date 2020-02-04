@@ -9,6 +9,7 @@ part of google_maps_flutter;
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class PolygonId {
+  /// Creates an immutable identifier for a [Polygon].
   PolygonId(this.value) : assert(value != null);
 
   /// value of the [PolygonId].
@@ -34,6 +35,7 @@ class PolygonId {
 /// Draws a polygon through geographical locations on the map.
 @immutable
 class Polygon {
+  /// Creates an immutable representation of a polygon through geographical locations on the map.
   const Polygon({
     @required this.polygonId,
     this.consumeTapEvents = false,

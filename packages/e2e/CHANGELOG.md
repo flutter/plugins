@@ -1,3 +1,30 @@
+## 0.2.3
+
+* Updates `E2EPlugin` and add skeleton iOS test case `E2EIosTest`.
+* Adds instructions to README.md about e2e testing on iOS devices.
+* Adds iOS e2e testing to example.
+
+## 0.2.2+3
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.2.2+2
+
+* Adds an android dummy project to silence warnings and removes unnecessary
+  .gitignore files.
+
+## 0.2.2+1
+
+* Fix pedantic lints. Adds a missing await in the example test and some missing
+  documentation.
+
+## 0.2.2
+
+* Added a stub macos implementation
+* Added a macos example
+
 ## 0.2.1+1
 
 * Updated README.

@@ -30,6 +30,12 @@ class GoogleMapInspector {
     return MinMaxZoomPreference(zoomLevels[0], zoomLevels[1]);
   }
 
+  Future<double> getZoomLevel() async {
+    final double zoomLevel =
+        await _channel.invokeMethod<double>('map#getZoomLevel');
+    return zoomLevel;
+  }
+
   Future<bool> isZoomGesturesEnabled() async {
     return await _channel.invokeMethod<bool>('map#isZoomGesturesEnabled');
   }
@@ -52,5 +58,9 @@ class GoogleMapInspector {
 
   Future<bool> isTrafficEnabled() async {
     return await _channel.invokeMethod<bool>('map#isTrafficEnabled');
+  }
+
+  Future<bool> isBuildingsEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isBuildingsEnabled');
   }
 }

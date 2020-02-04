@@ -65,7 +65,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
                     registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  if ([super init]) {
+  if (self = [super init]) {
     _viewId = viewId;
 
     GMSCameraPosition* camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
@@ -236,6 +236,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
     NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
     result(zoomLevels);
+  } else if ([call.method isEqualToString:@"map#getZoomLevel"]) {
+    result(@(_mapView.camera.zoom));
   } else if ([call.method isEqualToString:@"map#isZoomGesturesEnabled"]) {
     NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
     result(isZoomGesturesEnabled);
@@ -254,6 +256,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isTrafficEnabled"]) {
     NSNumber* isTrafficEnabled = @(_mapView.trafficEnabled);
     result(isTrafficEnabled);
+  } else if ([call.method isEqualToString:@"map#isBuildingsEnabled"]) {
+    NSNumber* isBuildingsEnabled = @(_mapView.buildingsEnabled);
+    result(isBuildingsEnabled);
   } else if ([call.method isEqualToString:@"map#setStyle"]) {
     NSString* mapStyle = [call arguments];
     NSString* error = [self setMapStyle:mapStyle];
@@ -313,6 +318,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setTrafficEnabled:(BOOL)enabled {
   _mapView.trafficEnabled = enabled;
+}
+
+- (void)setBuildingsEnabled:(BOOL)enabled {
+  _mapView.buildingsEnabled = enabled;
 }
 
 - (void)setMapType:(GMSMapViewType)mapType {
@@ -543,7 +552,7 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
     [sink setCameraTargetBounds:ToOptionalBounds(cameraTargetBounds)];
   }
   NSNumber* compassEnabled = data[@"compassEnabled"];
-  if (compassEnabled) {
+  if (compassEnabled != nil) {
     [sink setCompassEnabled:ToBool(compassEnabled)];
   }
   id indoorEnabled = data[@"indoorEnabled"];
@@ -553,6 +562,10 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   id trafficEnabled = data[@"trafficEnabled"];
   if (trafficEnabled) {
     [sink setTrafficEnabled:ToBool(trafficEnabled)];
+  }
+  id buildingsEnabled = data[@"buildingsEnabled"];
+  if (buildingsEnabled) {
+    [sink setBuildingsEnabled:ToBool(buildingsEnabled)];
   }
   id mapType = data[@"mapType"];
   if (mapType) {
@@ -574,31 +587,31 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   }
 
   NSNumber* rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
-  if (rotateGesturesEnabled) {
+  if (rotateGesturesEnabled != nil) {
     [sink setRotateGesturesEnabled:ToBool(rotateGesturesEnabled)];
   }
   NSNumber* scrollGesturesEnabled = data[@"scrollGesturesEnabled"];
-  if (scrollGesturesEnabled) {
+  if (scrollGesturesEnabled != nil) {
     [sink setScrollGesturesEnabled:ToBool(scrollGesturesEnabled)];
   }
   NSNumber* tiltGesturesEnabled = data[@"tiltGesturesEnabled"];
-  if (tiltGesturesEnabled) {
+  if (tiltGesturesEnabled != nil) {
     [sink setTiltGesturesEnabled:ToBool(tiltGesturesEnabled)];
   }
   NSNumber* trackCameraPosition = data[@"trackCameraPosition"];
-  if (trackCameraPosition) {
+  if (trackCameraPosition != nil) {
     [sink setTrackCameraPosition:ToBool(trackCameraPosition)];
   }
   NSNumber* zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
-  if (zoomGesturesEnabled) {
+  if (zoomGesturesEnabled != nil) {
     [sink setZoomGesturesEnabled:ToBool(zoomGesturesEnabled)];
   }
   NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
-  if (myLocationEnabled) {
+  if (myLocationEnabled != nil) {
     [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
   }
   NSNumber* myLocationButtonEnabled = data[@"myLocationButtonEnabled"];
-  if (myLocationButtonEnabled) {
+  if (myLocationButtonEnabled != nil) {
     [sink setMyLocationButtonEnabled:ToBool(myLocationButtonEnabled)];
   }
 }

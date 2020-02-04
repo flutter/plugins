@@ -1,3 +1,37 @@
+## 1.6.0
+
+* Support for retrieving the downloads directory was added.
+  The call for this is `getDownloadsDirectory`.
+
+## 1.5.1
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 1.5.0
+
+* Add macOS support.
+
+## 1.4.5
+
+* Add support for v2 plugins APIs.
+
+## 1.4.4
+
+* Update driver tests in the example app to e2e tests.
+
+## 1.4.3
+
+* Update driver tests in the example app to e2e tests.
+* Add missing DartDocs and a lint to prevent further regressions.
+
+## 1.4.2
+
+* Update and migrate iOS example project by removing flutter_assets, change
+  "English" to "en", remove extraneous xcconfigs, update to Xcode 11 build
+  settings, remove ARCHS, and build pods as libraries instead of frameworks.
+
 ## 1.4.1
 
 * Remove AndroidX warnings.

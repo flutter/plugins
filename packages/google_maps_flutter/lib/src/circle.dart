@@ -9,6 +9,7 @@ part of google_maps_flutter;
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class CircleId {
+  /// Creates an immutable identifier for a [Circle].
   CircleId(this.value) : assert(value != null);
 
   /// value of the [CircleId].
@@ -34,6 +35,7 @@ class CircleId {
 /// Draws a circle on the map.
 @immutable
 class Circle {
+  /// Creates an immutable representation of a [Circle] to draw on [GoogleMap].
   const Circle({
     @required this.circleId,
     this.consumeTapEvents = false,

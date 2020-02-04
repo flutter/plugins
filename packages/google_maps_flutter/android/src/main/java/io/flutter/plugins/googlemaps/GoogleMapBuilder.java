@@ -4,11 +4,14 @@
 
 package io.flutter.plugins.googlemaps;
 
+import android.app.Application;
 import android.content.Context;
 import android.graphics.Rect;
+import androidx.lifecycle.Lifecycle;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,6 +22,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean myLocationButtonEnabled = false;
   private boolean indoorEnabled = true;
   private boolean trafficEnabled = false;
+  private boolean buildingsEnabled = true;
   private Object initialMarkers;
   private Object initialPolygons;
   private Object initialPolylines;
@@ -26,14 +30,31 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private Rect padding = new Rect(0, 0, 0, 0);
 
   GoogleMapController build(
-      int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
+      int id,
+      Context context,
+      AtomicInteger state,
+      BinaryMessenger binaryMessenger,
+      Application application,
+      Lifecycle lifecycle,
+      PluginRegistry.Registrar registrar,
+      int activityHashCode) {
     final GoogleMapController controller =
-        new GoogleMapController(id, context, state, registrar, options);
+        new GoogleMapController(
+            id,
+            context,
+            state,
+            binaryMessenger,
+            application,
+            lifecycle,
+            registrar,
+            activityHashCode,
+            options);
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
     controller.setIndoorEnabled(indoorEnabled);
     controller.setTrafficEnabled(trafficEnabled);
+    controller.setBuildingsEnabled(buildingsEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
     controller.setInitialMarkers(initialMarkers);
     controller.setInitialPolygons(initialPolygons);
@@ -115,6 +136,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setTrafficEnabled(boolean trafficEnabled) {
     this.trafficEnabled = trafficEnabled;
+  }
+
+  @Override
+  public void setBuildingsEnabled(boolean buildingsEnabled) {
+    this.buildingsEnabled = buildingsEnabled;
   }
 
   @Override

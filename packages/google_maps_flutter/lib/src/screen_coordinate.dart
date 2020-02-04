@@ -11,12 +11,16 @@ part of google_maps_flutter;
 /// corresponds to top-left of the [GoogleMap] not the whole screen.
 @immutable
 class ScreenCoordinate {
+  /// Creates an immutable representation of a point coordinate in the [GoogleMap]'s view.
   const ScreenCoordinate({
     @required this.x,
     @required this.y,
   });
 
+  /// Represents the number of pixels from the left of the [GoogleMap].
   final int x;
+
+  /// Represents the number of pixels from the top of the [GoogleMap].
   final int y;
 
   dynamic _toJson() {

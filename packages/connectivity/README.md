@@ -50,6 +50,8 @@ dispose() {
 }
 ```
 
+Note that connectivity changes are no longer communicated to Android apps in the background starting with Android O. *You should always check for connectivity status when your app is resumed.* The broadcast is only useful when your application is in the foreground.
+
 You can get wi-fi related information using:
 
 ```dart

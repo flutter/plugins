@@ -231,7 +231,7 @@ void main() {
       sleep(const Duration(milliseconds: 500));
 
       await controller.stopImageStream();
-      controller.dispose();
+      await controller.dispose();
     },
     skip: !Platform.isAndroid,
   );

@@ -66,6 +66,9 @@ class CameraTargetBounds {
 // distinguishing between specifying unbounded zooming (null `minZoom` and
 // `maxZoom`) from not specifying anything (null `MinMaxZoomPreference`).
 class MinMaxZoomPreference {
+  /// Creates a immutable representation of the preferred minimum and maximum zoom values for the map camera.
+  ///
+  /// [AssertionError] will be thrown if [minZoom] > [maxZoom].
   const MinMaxZoomPreference(this.minZoom, this.maxZoom)
       : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
 
@@ -103,7 +106,9 @@ class MinMaxZoomPreference {
 /// See also: `setStyle` on [GoogleMapController] for why this exception
 /// might be thrown.
 class MapStyleException implements Exception {
+  /// Default constructor for [MapStyleException].
   const MapStyleException(this.cause);
 
+  /// The reason `GoogleMapController.setStyle` would throw this exception.
   final String cause;
 }

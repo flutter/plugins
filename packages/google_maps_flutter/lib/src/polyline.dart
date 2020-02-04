@@ -9,6 +9,9 @@ part of google_maps_flutter;
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class PolylineId {
+  /// Creates an immutable object representing a [PolylineId] among [GoogleMap] polylines.
+  ///
+  /// An [AssertionError] will be thrown if [value] is null.
   PolylineId(this.value) : assert(value != null);
 
   /// value of the [PolylineId].
@@ -34,6 +37,7 @@ class PolylineId {
 /// Draws a line through geographical locations on the map.
 @immutable
 class Polyline {
+  /// Creates an immutable object representing a line drawn through geographical locations on the map.
   const Polyline({
     @required this.polylineId,
     this.consumeTapEvents = false,
