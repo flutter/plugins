@@ -278,15 +278,15 @@ class _PlayPauseOverlay extends StatelessWidget {
           child: controller.value.isPlaying
               ? SizedBox.shrink()
               : Container(
-                color: Colors.black26,
-                child: Center(
-                  child: Icon(
-                    Icons.play_arrow,
-                    color: Colors.white,
-                    size: 100.0,
+                  color: Colors.black26,
+                  child: Center(
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 100.0,
+                    ),
                   ),
                 ),
-              ),
         ),
         GestureDetector(
           onTap: () {
