@@ -192,7 +192,8 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _myLocationToggler() {
     return FlatButton(
-      child: Text('${_myLocationEnabled ? 'disable' : 'enable'} my location'),
+      child: Text(
+          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
       onPressed: () {
         setState(() {
           _myLocationEnabled = !_myLocationEnabled;
