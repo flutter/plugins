@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -426,6 +427,33 @@ void main() {
     expect(hasCookies, true);
     final bool hasCookiesSecond = await cookieManager.clearCookies();
     expect(hasCookiesSecond, false);
+  });
+
+  testWidgets('Set and get Cookies', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://flutter.io',
+      ),
+    );
+    final Cookie testCookie = Cookie('test', 'value')
+      ..path = '/'
+      ..domain = 'flutter.io'
+      ..secure = true
+      ..expires = DateTime.now()
+      ..httpOnly = true;
+    final CookieManager cookieManager = CookieManager();
+    final List<Cookie> cookies = <Cookie>[testCookie];
+    await cookieManager.setCookies(cookies);
+    final List<Cookie> receivedCookies = await cookieManager.getCookies();
+    final Cookie receivedCookie = receivedCookies.first;
+    expect(receivedCookie.name, testCookie.name);
+    expect(receivedCookie.value, testCookie.value);
+    expect(receivedCookie.path, testCookie.path);
+    expect(receivedCookie.domain, testCookie.domain);
+    expect(receivedCookie.secure, testCookie.secure);
+    expect(receivedCookie.expires.millisecondsSinceEpoch ~/ 1000,
+        testCookie.expires.millisecondsSinceEpoch ~/ 1000);
+    expect(receivedCookie.httpOnly, testCookie.httpOnly);
   });
 
   testWidgets('Initial JavaScript channels', (WidgetTester tester) async {
@@ -1102,8 +1130,9 @@ class _FakeCookieManager {
   }
 
   bool hasCookies = true;
+  List<Map<dynamic, dynamic>> cookies = <Map<dynamic, dynamic>>[];
 
-  Future<bool> onMethodCall(MethodCall call) {
+  Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'clearCookies':
         bool hadCookies = false;
@@ -1114,7 +1143,14 @@ class _FakeCookieManager {
         return Future<bool>.sync(() {
           return hadCookies;
         });
-        break;
+      case 'setCookies':
+        final List<dynamic> newCookies = call.arguments;
+        for (final Map<dynamic, dynamic> cookie in newCookies) {
+          cookies.add(cookie);
+        }
+        return Future<dynamic>.value(null);
+      case 'getCookies':
+        return Future<dynamic>.value(cookies);
     }
     return Future<bool>.sync(() => null);
   }
@@ -1145,6 +1181,16 @@ class MyWebViewPlatform implements WebViewPlatform {
   @override
   Future<bool> clearCookies() {
     return Future<bool>.sync(() => null);
+  }
+
+  @override
+  Future<List<Cookie>> getCookies() {
+    return Future<List<Cookie>>.value(<Cookie>[]);
+  }
+
+  @override
+  Future<void> setCookies(List<Cookie> cookies) {
+    return Future<void>.value();
   }
 }
 

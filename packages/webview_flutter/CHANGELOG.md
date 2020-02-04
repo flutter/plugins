@@ -1,3 +1,8 @@
+## 0.3.20
+
+* Add support to set and get cookies fo iOS and Android. For iOS, the cookies
+  are now also shared across WebViews with a ProcessPool
+
 ## 0.3.19+5
 
 * On iOS, always keep contentInsets of the WebView to be 0.
@@ -50,7 +55,7 @@
 ## 0.3.15+3
 
 * Re-land support for the v2 Android embedding. This correctly sets the minimum
-  SDK to the latest stable and avoid any compile errors. *WARNING:* the V2
+  SDK to the latest stable and avoid any compile errors. _WARNING:_ the V2
   embedding itself still requires the current Flutter master channel
   (flutter/flutter@1d4d63a) for text input to work properly on all Android
   versions.
@@ -188,7 +193,7 @@
 
 ## 0.3.6+1
 
-* Remove un-used method params in webview\_flutter
+* Remove un-used method params in webview_flutter
 
 ## 0.3.6
 

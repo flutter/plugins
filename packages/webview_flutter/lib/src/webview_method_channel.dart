@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
@@ -116,6 +117,53 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     return _cookieManagerChannel
         .invokeMethod<bool>('clearCookies')
         .then<bool>((dynamic result) => result);
+  }
+
+  /// Read out all cookies, or all cookies for a url when provided
+  static Future<List<Cookie>> getCookies([String currentUrl]) {
+    return _cookieManagerChannel.invokeListMethod<Map<dynamic, dynamic>>(
+        'getCookies', <dynamic, dynamic>{
+      'url': currentUrl
+    }).then<List<Cookie>>((List<Map<dynamic, dynamic>> results) {
+      return results.map((Map<dynamic, dynamic> result) {
+        final Cookie c = Cookie(result['name'], result['value']);
+        // following values optionally work on iOS only
+        c.path = result['path'];
+        c.domain = result['domain'];
+        c.secure = result['secure'];
+        c.httpOnly = result['httpOnly'];
+
+        if (result['expires'] != null) {
+          c.expires = DateTime.fromMillisecondsSinceEpoch(
+              (result['expires'] * 1000).toInt());
+        }
+
+        return c;
+      }).toList();
+    });
+  }
+
+  /// Set cookies into the web view
+  static Future<void> setCookies(List<Cookie> cookies) {
+    final List<Map<String, dynamic>> transferCookies = cookies.map((Cookie c) {
+      final Map<String, dynamic> output = <String, dynamic>{
+        'name': c.name,
+        'value': c.value,
+        'path': c.path,
+        'domain': c.domain,
+        'secure': c.secure,
+        'httpOnly': c.httpOnly,
+        'asString': c.toString(),
+      };
+
+      if (c.expires != null) {
+        output['expires'] = c.expires.millisecondsSinceEpoch ~/ 1000;
+      }
+
+      return output;
+    }).toList();
+    return _cookieManagerChannel.invokeMethod<void>(
+        'setCookies', transferCookies);
   }
 
   static Map<String, dynamic> _webSettingsToMap(WebSettings settings) {
