@@ -9,6 +9,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import 'material_dialogs.dart';
+
 void main() => runApp(MaterialApp(home: WebViewExample()));
 
 const String kNavigationExamplePage = '''
@@ -74,6 +76,31 @@ class _WebViewExampleState extends State<WebViewExample> {
           onPageFinished: (String url) {
             print('Page finished loading: $url');
           },
+          onJSAlert: (String url, String message) async {
+            return await showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => WillPopScope(
+                    onWillPop: () async => false,
+                    child: MyAlertDialog(message: message)));
+          },
+          onJSConfirm: (String url, String message) async {
+            return await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => WillPopScope(
+                  onWillPop: () async => false,
+                  child: ConfirmDialog(message: message)),
+            );
+          },
+          onJSPrompt: (String url, String message, String defaultText) async {
+            return await showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => WillPopScope(
+                    onWillPop: () async => false,
+                    child: PromptDialog(message: message, defaultText: defaultText)));
+          },
           gestureNavigationEnabled: true,
         );
       }),
@@ -120,6 +147,9 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  showAlert,
+  showConfirm,
+  showPrompt,
 }
 
 class SampleMenu extends StatelessWidget {
@@ -158,6 +188,15 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data, context);
                 break;
+              case MenuOptions.showAlert:
+                _onShowAlert(controller.data);
+                break;
+              case MenuOptions.showConfirm:
+                _onShowConfirm(controller.data);
+                break;
+              case MenuOptions.showPrompt:
+                _onShowPrompt(controller.data);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -189,6 +228,18 @@ class SampleMenu extends StatelessWidget {
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.showAlert,
+              child: Text('Show alert from JavaScript'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.showConfirm,
+              child: Text('Show confirm from JavaScript'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.showPrompt,
+              child: Text('Show prompt from JavaScript'),
             ),
           ],
         );
@@ -257,6 +308,31 @@ class SampleMenu extends StatelessWidget {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  void _onShowAlert(WebViewController controller) async {
+    if (controller != null) {
+      await controller.evaluateJavascript('alert("Hello World");');
+    }
+  }
+
+  void _onShowConfirm(WebViewController controller) async {
+    if (controller != null) {
+      final String res = await controller
+          .evaluateJavascript('confirm("Hello, Are you sure?");');
+      print(res);
+      await controller.evaluateJavascript('alert("You chose $res");');
+    }
+  }
+
+  void _onShowPrompt(WebViewController controller) async {
+    if (controller != null) {
+      final String res = await controller
+          .evaluateJavascript(
+          'prompt("What is your name?", "Herry Potter");');
+      print(res);
+      await controller.evaluateJavascript('alert("Hello: $res");');
+    }
   }
 
   Widget _getCookieList(String cookies) {

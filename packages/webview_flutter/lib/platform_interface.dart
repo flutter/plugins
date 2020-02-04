@@ -28,6 +28,29 @@ abstract class WebViewPlatformCallbacksHandler {
 
   /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);
+
+  /// Invoked by [WebViewPlatformController] when page fire an Alert dialog from JavaScript.
+  ///
+  /// Return a future.
+  /// Fulfill the returned future when dialog closed.
+  Future<Null> onJSAlert(String url, String message) async {}
+
+  /// Invoked by [WebViewPlatformController] when page fire an Confirm dialog from JavaScript.
+  ///
+  /// Return a future for dialog respond.
+  /// Fulfill true if user click 'OK' button, false if user click 'Cancel' button.
+  Future<bool> onJSConfirm(String url, String message) async {
+    return false;
+  }
+
+  /// Invoked by [WebViewPlatformController] when page fire an Prompt dialog from JavaScript.
+  ///
+  /// Return a future for user input input text.
+  /// Returns an empty strings when dialog cancelled.
+  Future<String> onJSPrompt(
+      String url, String message, String defaultText) async {
+    return '';
+  }
 }
 
 /// Interface for talking to the webview's platform implementation.

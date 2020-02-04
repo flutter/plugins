@@ -10,6 +10,7 @@ import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebStorage;
 import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -27,6 +28,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final InputAwareWebView webView;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
+  private final FlutterWebChromeClient flutterWebChromeClient;
   private final Handler platformThreadHandler;
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -53,6 +55,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     methodChannel.setMethodCallHandler(this);
 
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
+    flutterWebChromeClient = new FlutterWebChromeClient(methodChannel);
+    final WebChromeClient webChromeClient =
+            flutterWebChromeClient.createWebChromeClient();
+    webView.setWebChromeClient(webChromeClient);
     applySettings((Map<String, Object>) params.get("settings"));
 
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
