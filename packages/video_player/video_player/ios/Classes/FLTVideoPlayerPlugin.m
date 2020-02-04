@@ -257,8 +257,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     AVPlayerItem* item = (AVPlayerItem*)object;
     switch (item.status) {
       case AVPlayerItemStatusFailed:
-        self.errorMessage = [@"Failed to load video: "
-                             stringByAppendingString:[item.error localizedDescription]];
+        self.errorMessage =
+            [@"Failed to load video: " stringByAppendingString:[item.error localizedDescription]];
         [self checkError];
         break;
       case AVPlayerItemStatusUnknown:
