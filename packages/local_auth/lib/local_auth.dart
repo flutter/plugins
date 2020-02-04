@@ -114,7 +114,7 @@ class LocalAuthentication {
   /// - BiometricType.face
   /// - BiometricType.fingerprint
   /// - BiometricType.iris (not yet implemented)
-  Future<List<String>> get getExistingBiometrics async =>
+  Future<List<String>> get existingBiometrics async =>
       (await _channel.invokeListMethod<String>('getAvailableBiometrics'));
 
   /// Returns true if device is capable of checking biometrics
