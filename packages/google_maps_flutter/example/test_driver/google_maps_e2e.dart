@@ -721,7 +721,7 @@ void main() {
   testWidgets('testGetDistance', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapController> controllerCompleter =
-    Completer<GoogleMapController>();
+        Completer<GoogleMapController>();
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
