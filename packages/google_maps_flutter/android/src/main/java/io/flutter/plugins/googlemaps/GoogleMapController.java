@@ -830,9 +830,10 @@ final class GoogleMapController
 
   public void setTrafficEnabled(boolean trafficEnabled) {
     this.trafficEnabled = trafficEnabled;
-    if (googleMap != null) {
-      googleMap.setTrafficEnabled(trafficEnabled);
+    if (googleMap == null) {
+      return;
     }
+    googleMap.setTrafficEnabled(trafficEnabled);
   }
 
   public void setBuildingsEnabled(boolean buildingsEnabled) {
