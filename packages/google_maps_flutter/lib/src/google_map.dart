@@ -296,7 +296,7 @@ class _GoogleMapState extends State<GoogleMap> {
         _clusterItems.values.toSet(), widget.clusterItems));
     _clusterItems = _keyByClusterItemId(widget.clusterItems);
   }
-  
+
   void _updatePolygons() async {
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures

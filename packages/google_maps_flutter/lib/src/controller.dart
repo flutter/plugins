@@ -143,7 +143,7 @@ class GoogleMapController {
       'cluster#update',
       clusterUpdates._toMap(),
     );
-  }  
+  }
 
   /// Updates polygon configuration.
   ///
@@ -156,7 +156,6 @@ class GoogleMapController {
     await channel.invokeMethod<void>(
       'polygons#update',
       polygonUpdates._toMap(),
-
     );
   }
 

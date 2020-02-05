@@ -95,7 +95,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
           });
     }
   }
-  
+
   void _onClusterMarkerTapped(MarkerId markerId) {
     final ClusterItem tappedClusterItem = clusterItems[markerId];
     if (tappedClusterItem != null) {
