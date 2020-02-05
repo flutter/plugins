@@ -169,6 +169,17 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
                                  message:@"getLatLng called prior to map initialization"
                                  details:nil]);
     }
+  } else if ([call.method isEqualToString:@"map#getDistance"]) {
+        if (_mapView != nil) {
+          CLLocationDistance meter = ToDouble(call.arguments[@"meter"]);
+          CLLocationCoordinate2D location = [FLTGoogleMapJsonConversions toLocation:call.arguments[@"location"]];
+          CGFloat distance = [_mapView.projection pointsForMeters:meter atCoordinate:location];
+          result(@(distance));
+        } else {
+          result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                     message:@"getPoints called prior to map initialization"
+                                     details:nil]);
+        }
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
   } else if ([call.method isEqualToString:@"markers#update"]) {
