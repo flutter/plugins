@@ -1,6 +1,6 @@
 ## 0.3.19+6
 
-* On iOS, enable opening links with href with target="_blank"
+* On iOS, enable opening links with href where target="_blank".
 
 ## 0.3.19+5
 
