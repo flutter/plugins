@@ -434,8 +434,23 @@ void main() {
     ));
 
     final GoogleMapInspector inspector = await inspectorCompleter.future;
-    final bool isTrafficEnabled = await inspector.isTrafficEnabled();
+    bool isTrafficEnabled = await inspector.isTrafficEnabled();
     expect(isTrafficEnabled, true);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        trafficEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    isTrafficEnabled = await inspector.isTrafficEnabled();
+    expect(isTrafficEnabled, false);
   });
 
   testWidgets('testBuildings', (WidgetTester tester) async {

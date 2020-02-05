@@ -1,7 +1,11 @@
-## 0.5.22+1
+## 0.5.22+2
 
 * Support projection method pointForMeters to get the distance in meters to content size
   from the specified LatLng in the map.
+  
+## 0.5.22+1
+
+* Fix for toggling traffic layer on Android not working
 
 ## 0.5.22
 
