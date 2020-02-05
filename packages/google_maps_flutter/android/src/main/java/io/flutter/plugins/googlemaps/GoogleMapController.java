@@ -132,7 +132,6 @@ final class GoogleMapController
     this.activityHashCode = registrarActivityHashCode;
     this.markersController = new MarkersController(methodChannel);
     this.clusterController = new ClusterController(methodChannel);
-    this.markersController.setOnMarkerClickListener(this);
     this.polygonsController = new PolygonsController(methodChannel);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel);
@@ -203,6 +202,7 @@ final class GoogleMapController
     markerManager = new MarkerManager(googleMap);
     clusterManager = new ClusterManager<ClusterItemController>(context, googleMap, markerManager);
     markersController.setMarkerManager(markerManager);
+    markersController.setOnMarkerClickListener(this);
     this.googleMap.setIndoorEnabled(this.indoorEnabled);
     this.googleMap.setTrafficEnabled(this.trafficEnabled);
     this.googleMap.setBuildingsEnabled(this.buildingsEnabled);
@@ -825,14 +825,11 @@ final class GoogleMapController
   @SuppressLint("MissingPermission")
   private void updateMyLocationSettings() {
     if (hasLocationPermission()) {
-      // The plugin doesn't add the location permission by default so that apps that
-      // don't need
+      // The plugin doesn't add the location permission by default so that apps that don't need
       // the feature won't require the permission.
-      // Gradle is doing a static check for missing permission and in some
-      // configurations will
-      // fail the build if the permission is missing. The following disables the
-      // Gradle lint.
-      // noinspection ResourceType
+      // Gradle is doing a static check for missing permission and in some configurations will
+      // fail the build if the permission is missing. The following disables the Gradle lint.
+      //noinspection ResourceType
       googleMap.setMyLocationEnabled(myLocationEnabled);
       googleMap.getUiSettings().setMyLocationButtonEnabled(myLocationButtonEnabled);
     } else {
