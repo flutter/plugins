@@ -292,6 +292,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void _updateCluster() async {
     final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
     controller._updateCluster(_ClusterUpdates.from(
         _clusterItems.values.toSet(), widget.clusterItems));
     _clusterItems = _keyByClusterItemId(widget.clusterItems);
