@@ -1,6 +1,7 @@
 ## 0.6.3+2
 
 * Bump RoboElectric dependency to 4.3.1 and update resource usage.
+* Android: Fix reflection crash: Update flutter_plugin_android_lifecycle dependency to 1.0.4 
 
 ## 0.6.3+1
 
