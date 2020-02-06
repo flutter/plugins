@@ -139,6 +139,7 @@ void main() {
       expect(details.verificationData.source, IAPSource.AppStore);
       expect(details.skPaymentTransaction, dummyTransaction);
       expect(details.billingClientPurchase, null);
+      expect(details.pendingCompletePurchase, true);
     });
     test('Should generate correct map of the payment object', () {
       Map map = dummyPayment.toMap();
