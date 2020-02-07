@@ -22,12 +22,14 @@ void main() {
           data: Uri.encodeFull('https://flutter.io'),
           flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
           channel: mockChannel,
-          platform: FakePlatform(operatingSystem: 'android'));
-      androidIntent.launch();
+          platform: FakePlatform(operatingSystem: 'android'),
+          type: 'video/*');
+      await androidIntent.launch();
       verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
         'action': 'action_view',
         'data': Uri.encodeFull('https://flutter.io'),
         'flags': androidIntent.convertFlags(<int>[Flag.FLAG_ACTIVITY_NEW_TASK]),
+        'type': 'video/*',
       }));
     });
     test('pass null value to action param', () async {
@@ -35,7 +37,7 @@ void main() {
           action: null,
           channel: mockChannel,
           platform: FakePlatform(operatingSystem: 'android'));
-      androidIntent.launch();
+      await androidIntent.launch();
       verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
         'action': null,
       }));
@@ -46,7 +48,7 @@ void main() {
           action: null,
           channel: mockChannel,
           platform: FakePlatform(operatingSystem: 'ios'));
-      androidIntent.launch();
+      await androidIntent.launch();
       verifyZeroInteractions(mockChannel);
     });
   });

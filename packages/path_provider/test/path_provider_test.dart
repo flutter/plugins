@@ -226,4 +226,12 @@ void main() {
     );
     expect(directories.map((Directory d) => d.path).toList(), equals(paths));
   });
+
+  test('DownloadsDirectory path macos test', () async {
+    setMockPathProviderPlatform(FakePlatform(operatingSystem: 'macos'));
+    final String fakePath = "/foo/bar/baz";
+    response = fakePath;
+    final Directory directory = await getDownloadsDirectory();
+    expect(directory.path, equals(fakePath));
+  });
 }

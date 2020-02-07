@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 
 /// Provides device and operating system information.
 class DeviceInfoPlugin {
+  /// No work is done when instantiating the plugin. It's safe to call this
+  /// repeatedly or in performance-sensitive blocks.
   DeviceInfoPlugin();
 
   /// Channel used to communicate to native code.

@@ -7,7 +7,7 @@
     <application android:name="io.flutter.app.FlutterApplication" android:label="local_auth_example" android:icon="@mipmap/ic_launcher">
         <activity android:name=".MainActivity"
                   android:launchMode="singleTop"
-                  android:theme="@android:style/Theme.Black.NoTitleBar"
+                  android:theme="@style/Theme.AppCompat.Light"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
                   android:hardwareAccelerated="true"
                   android:windowSoftInputMode="adjustResize">
@@ -15,6 +15,12 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".EmbeddingV1Activity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
         </activity>
     </application>
 </manifest>

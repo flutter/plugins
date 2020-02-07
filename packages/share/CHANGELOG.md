@@ -1,3 +1,21 @@
+## 0.6.3+5
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.6.3+4
+
+* Fix pedantic lints. This shouldn't affect existing functionality.
+
+## 0.6.3+3
+
+* README update.
+
+## 0.6.3+2
+
+* Remove AndroidX warnings.
+
 ## 0.6.3+1
 
 * Include lifecycle dependency as a compileOnly one on Android to resolve

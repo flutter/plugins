@@ -25,10 +25,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class ImagePickerCacheTest {
-  private static final double WIDTH = 10.0;
-  private static final double HEIGHT = 10.0;
   private static final int IMAGE_QUALITY = 90;
-  private static final String PATH = "a_mock_path";
 
   @Mock Activity mockActivity;
   @Mock SharedPreferences mockPreference;

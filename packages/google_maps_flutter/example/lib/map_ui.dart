@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -52,6 +54,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _zoomGesturesEnabled = true;
   bool _indoorViewEnabled = true;
   bool _myLocationEnabled = true;
+  bool _myTrafficEnabled = false;
   bool _myLocationButtonEnabled = true;
   GoogleMapController _controller;
   bool _nightMode = false;
@@ -224,6 +227,17 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _myTrafficToggler() {
+    return FlatButton(
+      child: Text('${_myTrafficEnabled ? 'disable' : 'enable'} my traffic'),
+      onPressed: () {
+        setState(() {
+          _myTrafficEnabled = !_myTrafficEnabled;
+        });
+      },
+    );
+  }
+
   Future<String> _getFileData(String path) async {
     return await rootBundle.loadString(path);
   }
@@ -271,6 +285,7 @@ class MapUiBodyState extends State<MapUiBody> {
       indoorViewEnabled: _indoorViewEnabled,
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
+      trafficEnabled: _myTrafficEnabled,
       onCameraMove: _updateCameraPosition,
     );
 
@@ -312,6 +327,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _indoorViewToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),
+              _myTrafficToggler(),
               _nightModeToggler(),
             ],
           ),

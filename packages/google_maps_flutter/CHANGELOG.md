@@ -1,6 +1,54 @@
-## 0.5.22
+## 0.5.23
 
 * Adds support for toggling zoom controls (Android only)
+
+## 0.5.22+1
+
+* Fix for toggling traffic layer on Android not working
+
+## 0.5.22
+
+* Support Android v2 embedding.
+* Bump the min flutter version to `1.12.13+hotfix.5`.
+* Fixes some e2e tests on Android.
+
+## 0.5.21+17
+
+* Fix Swift example in README.md.
+
+## 0.5.21+16
+
+* Fixed typo in LatLng's documentation.
+
+## 0.5.21+15
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.5.21+14
+
+* Adds support for toggling 3D buildings.
+
+## 0.5.21+13
+
+* Add documentation.
+
+## 0.5.21+12
+
+* Update driver tests in the example app to e2e tests.
+
+## 0.5.21+11
+
+* Define clang module for iOS, fix analyzer warnings.
+
+## 0.5.21+10
+
+* Cast error.code to unsigned long to avoid using NSInteger as %ld format warnings.
+
+## 0.5.21+9
+
+* Remove AndroidX warnings.
 
 ## 0.5.21+8
 

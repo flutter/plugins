@@ -7,18 +7,18 @@
 import 'dart:html' as html;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 void main() {
   group('URL Launcher for Web', () {
     setUp(() {
-      TestWidgetsFlutterBinding.ensureInitialized();
-      webPluginRegistry.registerMessageHandler();
-      final Registrar registrar =
-          webPluginRegistry.registrarFor(UrlLauncherPlugin);
-      UrlLauncherPlugin.registerWith(registrar);
+      UrlLauncherPlatform.instance = UrlLauncherPlugin();
+    });
+
+    test('$UrlLauncherPlugin is the live instance', () {
+      expect(UrlLauncherPlatform.instance, isA<UrlLauncherPlugin>());
     });
 
     test('can launch "http" URLs', () {
@@ -29,12 +29,20 @@ void main() {
       expect(canLaunch('https://google.com'), completion(isTrue));
     });
 
+    test('can launch "mailto" URLs', () {
+      expect(canLaunch('mailto:name@mydomain.com'), completion(isTrue));
+    });
+
     test('cannot launch "tel" URLs', () {
       expect(canLaunch('tel:5551234567'), completion(isFalse));
     });
 
     test('launching a URL returns true', () {
       expect(launch('https://www.google.com'), completion(isTrue));
+    });
+
+    test('launching a "mailto" returns true', () {
+      expect(launch('mailto:name@mydomain.com'), completion(isTrue));
     });
 
     test('the window that is launched is a new window', () {
@@ -44,6 +52,10 @@ void main() {
       expect(newWindow, isNotNull);
       expect(newWindow, isNot(equals(html.window)));
       expect(newWindow.opener, equals(html.window));
+    });
+
+    test('does not implement closeWebView()', () {
+      expect(closeWebView(), throwsUnimplementedError);
     });
   });
 }

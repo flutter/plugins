@@ -5,8 +5,6 @@
 A Flutter plugin for iOS and Android for picking images from the image library,
 and taking new pictures with the camera.
 
-*Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback welcome](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
-
 ## Installation
 
 First, add `image_picker` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
@@ -67,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 ### Handling MainActivity destruction on Android
 
-Android system -- although very rarely -- sometimes kills the MainActivity after the image_picker finishes. When this happens, we lost the data selected from the image_picker. You can use `retrieveLostData` to retrieve the lost data in this situation. For example: 
+Android system -- although very rarely -- sometimes kills the MainActivity after the image_picker finishes. When this happens, we lost the data selected from the image_picker. You can use `retrieveLostData` to retrieve the lost data in this situation. For example:
 
 ```dart
 Future<void> retrieveLostData() async {

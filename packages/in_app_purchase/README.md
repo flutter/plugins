@@ -114,15 +114,15 @@ for (PurchaseDetails purchase in response.pastPurchases) {
 }
 ```
 
-Note that the App Store does not have any APIs for querying consummable
-products, and Google Play considers consummable products to no longer be owned
+Note that the App Store does not have any APIs for querying consumable
+products, and Google Play considers consumable products to no longer be owned
 once they're marked as consumed and fails to return them here. For restoring
 these across devices you'll need to persist them on your own server and query
 that as well.
 
 ### Making a purchase
 
-Both storefronts handle consummable and non-consummable products differently. If
+Both storefronts handle consumable and non-consumable products differently. If
 you're using `InAppPurchaseConnection`, you need to make a distinction here and
 call the right purchase method for each type.
 
