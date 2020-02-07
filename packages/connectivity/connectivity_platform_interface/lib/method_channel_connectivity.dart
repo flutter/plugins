@@ -3,50 +3,67 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show required;
 
-import 'url_launcher_platform_interface.dart';
+import 'connectivity_platform_interface.dart';
 
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
+const MethodChannel _method_channel = MethodChannel('plugins.flutter.io/connectivity');
+const EventChannel _eventChannel = EventChannel('plugins.flutter.io/connectivity_status');
 
-/// An implementation of [UrlLauncherPlatform] that uses method channels.
-class MethodChannelUrlLauncher extends UrlLauncherPlatform {
-  @override
-  Future<bool> canLaunch(String url) {
-    return _channel.invokeMethod<bool>(
-      'canLaunch',
-      <String, Object>{'url': url},
-    );
+/// An implementation of [ConnectivityPlatform] that uses method channels.
+class MethodChannelConnectivity extends ConnectivityPlatform {
+  Stream<ConnectivityResult> _onConnectivityChanged;
+
+   /// Fires whenever the connectivity state changes.
+  Stream<ConnectivityResult> get onConnectivityChanged {
+    if (_onConnectivityChanged == null) {
+      _onConnectivityChanged = _eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic event) => parseConnectivityResult(event));
+    }
+    return _onConnectivityChanged;
   }
 
-  @override
-  Future<void> closeWebView() {
-    return _channel.invokeMethod<void>('closeWebView');
+  Future<ConnectivityResult> checkConnectivity() async {
+    final String result = await _method_channel.invokeMethod<String>('check');
+    return parseConnectivityResult(result);
   }
 
-  @override
-  Future<bool> launch(
-    String url, {
-    @required bool useSafariVC,
-    @required bool useWebView,
-    @required bool enableJavaScript,
-    @required bool enableDomStorage,
-    @required bool universalLinksOnly,
-    @required Map<String, String> headers,
-  }) {
-    return _channel.invokeMethod<bool>(
-      'launch',
-      <String, Object>{
-        'url': url,
-        'useSafariVC': useSafariVC,
-        'useWebView': useWebView,
-        'enableJavaScript': enableJavaScript,
-        'enableDomStorage': enableDomStorage,
-        'universalLinksOnly': universalLinksOnly,
-        'headers': headers,
-      },
-    );
+  Future<String> getWifiName() async {
+    String wifiName = await _method_channel.invokeMethod<String>('wifiName');
+    // as Android might return <unknown ssid>, uniforming result
+    // our iOS implementation will return null
+    if (wifiName == '<unknown ssid>') wifiName = null;
+    return wifiName;
+  }
+
+  Future<String> getWifiBSSID() async {
+    return await _method_channel.invokeMethod<String>('wifiBSSID');
+  }
+
+  /// Obtains the IP address of the connected wifi network
+  Future<String> getWifiIP() async {
+    return await _method_channel.invokeMethod<String>('wifiIPAddress');
+  }
+
+  Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
+      {bool requestAlwaysLocationUsage = false}) async {
+    //Just `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
+    assert(!Platform.isAndroid);
+    final String result = await _method_channel.invokeMethod<String>(
+        'requestLocationServiceAuthorization',
+        <bool>[requestAlwaysLocationUsage]);
+    return convertLocationStatusString(result);
+  }
+
+  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
+    //Just `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
+    assert(!Platform.isAndroid);
+    final String result = await _method_channel
+        .invokeMethod<String>('getLocationServiceAuthorization');
+    return convertLocationStatusString(result);
   }
 }
