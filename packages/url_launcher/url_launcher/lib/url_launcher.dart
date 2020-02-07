@@ -7,8 +7,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 /// Parses the specified URL string and delegates handling of it to the
 /// underlying platform.
@@ -84,17 +83,14 @@ Future<bool> launch(
         ? SystemUiOverlayStyle.dark
         : SystemUiOverlayStyle.light);
   }
-  final bool result = await _channel.invokeMethod<bool>(
-    'launch',
-    <String, Object>{
-      'url': urlString,
-      'useSafariVC': forceSafariVC ?? isWebURL,
-      'useWebView': forceWebView ?? false,
-      'enableJavaScript': enableJavaScript ?? false,
-      'enableDomStorage': enableDomStorage ?? false,
-      'universalLinksOnly': universalLinksOnly ?? false,
-      'headers': headers ?? <String, String>{},
-    },
+  final bool result = await UrlLauncherPlatform.instance.launch(
+    urlString,
+    useSafariVC: forceSafariVC ?? isWebURL,
+    useWebView: forceWebView ?? false,
+    enableJavaScript: enableJavaScript ?? false,
+    enableDomStorage: enableDomStorage ?? false,
+    universalLinksOnly: universalLinksOnly ?? false,
+    headers: headers ?? <String, String>{},
   );
   if (statusBarBrightness != null) {
     WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
@@ -109,10 +105,7 @@ Future<bool> canLaunch(String urlString) async {
   if (urlString == null) {
     return false;
   }
-  return await _channel.invokeMethod<bool>(
-    'canLaunch',
-    <String, Object>{'url': urlString},
-  );
+  return await UrlLauncherPlatform.instance.canLaunch(urlString);
 }
 
 /// Closes the current WebView, if one was previously opened via a call to [launch].
@@ -127,5 +120,5 @@ Future<bool> canLaunch(String urlString) async {
 /// SafariViewController is only available on IOS version >= 9.0, this method does not do anything
 /// on IOS version below 9.0
 Future<void> closeWebView() async {
-  return await _channel.invokeMethod<void>('closeWebView');
+  return await UrlLauncherPlatform.instance.closeWebView();
 }

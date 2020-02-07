@@ -1,3 +1,7 @@
+## 0.4.1+1
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
 ## 0.4.1
 
 * Support the v2 Android embedder.
