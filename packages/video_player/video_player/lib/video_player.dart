@@ -58,7 +58,7 @@ class VideoPlayerValue {
 
   /// The [Caption] that should be displayed based on the current [position].
   ///
-  /// This field will never be null, if there is no caption for the current
+  /// This field will never be null. If there is no caption for the current
   /// [position], this will be an empty [Caption] object.
   final Caption caption;
 
