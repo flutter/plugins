@@ -89,7 +89,7 @@ class GoogleMap extends StatefulWidget {
   /// True if the map view should respond to scroll gestures.
   final bool scrollGesturesEnabled;
 
-  /// True if the map view should show zoom controls.
+  /// True if the map view should show zoom controls. Android only.
   final bool zoomControlsEnabled;
 
   /// True if the map view should respond to zoom gestures.

@@ -359,10 +359,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   _mapView.settings.zoomGestures = enabled;
 }
 
-- (void)setZoomControlsEnabled:(BOOL)enabled {
-  // Noop on iOS.
-}
-
 - (void)setMyLocationEnabled:(BOOL)enabled {
   _mapView.myLocationEnabled = enabled;
 }
