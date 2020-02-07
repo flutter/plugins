@@ -24,7 +24,18 @@ To use this plugin, add `google_maps_flutter` as a [dependency in your pubspec.y
 
 ## Getting Started
 
-Get an API key at <https://cloud.google.com/maps-platform/>.
+* Get an API key at <https://cloud.google.com/maps-platform/>.
+
+* Enable Google Map SDK for each platform.
+  * Go to [Google Developers Console](https://console.cloud.google.com/).
+  * Choose the project that you want to enable Google Maps on.
+  * Select the navigation menu and then select "Google Maps".
+  * Select "APIs" under the Google Maps menu.
+  * To enable Google Maps for Android, select "Maps SDK for Android" in the "Additional APIs" section, then select "ENABLE".
+  * To enable Google Maps for iOS, select "Maps SDK for iOS" in the "Additional APIs" section, then select "ENABLE".
+  * Make sure the APIs you enabled are under the "Enabled APIs" section.
+
+* You can also find detailed steps to get start with Google Maps Platform [here](https://developers.google.com/maps/gmp-get-started).
 
 ### Android
 
