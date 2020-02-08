@@ -110,7 +110,6 @@ class _MyAppState extends State<MyApp> {
     final List<PurchaseDetails> verifiedPurchases = [];
     for (PurchaseDetails purchase in purchaseResponse.pastPurchases) {
       if (await _verifyPurchase(purchase)) {
-        await _connection.consumePurchase(purchase);
         verifiedPurchases.add(purchase);
       }
     }

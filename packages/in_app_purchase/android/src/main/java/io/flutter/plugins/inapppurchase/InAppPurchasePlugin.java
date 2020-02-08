@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import androidx.annotation.VisibleForTesting;
-import androidx.lifecycle.Lifecycle;
 import com.android.billingclient.api.BillingClient;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -46,7 +45,6 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   private MethodChannel methodChannel;
   private MethodCallHandlerImpl methodCallHandler;
-  private Lifecycle lifecycle;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {

@@ -174,9 +174,7 @@ class GooglePlayConnection
   }
 
   Future<void> _connect() =>
-      billingClient.startConnection(onBillingServiceDisconnected: () {
-        print('billing service disconnectd');
-      });
+      billingClient.startConnection(onBillingServiceDisconnected: () {});
 
   Future<void> _disconnect() => billingClient.endConnection();
 
