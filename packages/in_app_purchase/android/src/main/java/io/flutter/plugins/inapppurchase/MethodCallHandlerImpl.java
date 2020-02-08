@@ -87,10 +87,8 @@ class MethodCallHandlerImpl
 
   @Override
   public void onActivityDestroyed(Activity activity) {
-    if (this.activity == activity) {
-      if (this.applicationContext != null) {
-        ((Application) this.applicationContext).unregisterActivityLifecycleCallbacks(this);
-      }
+    if (this.activity == activity && this.applicationContext != null) {
+      ((Application) this.applicationContext).unregisterActivityLifecycleCallbacks(this);
       endBillingClientConnection();
     }
   }

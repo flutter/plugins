@@ -98,4 +98,9 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
     methodChannel = null;
     methodCallHandler = null;
   }
+
+  @VisibleForTesting
+  void setMethodCallHandler(MethodCallHandlerImpl methodCallHandler) {
+    this.methodCallHandler = methodCallHandler;
+  }
 }
