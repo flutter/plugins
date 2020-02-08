@@ -21,6 +21,27 @@ enum ConnectivityResult {
   none
 }
 
+/// The status of the location service authorization.
+enum LocationAuthorizationStatus {
+  /// The authorization of the location service is not determined.
+  notDetermined,
+
+  /// This app is not authorized to use location.
+  restricted,
+
+  /// User explicitly denied the location service.
+  denied,
+
+  /// User authorized the app to access the location at any time.
+  authorizedAlways,
+
+  /// User authorized the app to access the location when the app is visible to them.
+  authorizedWhenInUse,
+
+  /// Status unknown.
+  unknown
+}
+
 /// Discover network connectivity configurations: Distinguish between WI-FI and cellular, check WI-FI status and more.
 class Connectivity {
   /// Constructs a singleton instance of [Connectivity].
@@ -40,10 +61,51 @@ class Connectivity {
 
   static Connectivity _singleton;
 
+  static const EventChannel _eventChannel = EventChannel('plugins.flutter.io/connectivity_status');
   Stream<ConnectivityResult> _onConnectivityChanged;
+
+   /// Fires whenever the connectivity state changes.
+  Stream<ConnectivityResult> get onConnectivityChanged {
+    if (_onConnectivityChanged == null) {
+      _onConnectivityChanged = _eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic event) => _parseConnectivityResult(event));
+    }
+    return _onConnectivityChanged;
+  }
 
   static ConnectivityPlatform get _platform =>
       ConnectivityPlatform.instance;
+
+
+  ConnectivityResult _parseConnectivityResult(String state) {
+    switch (state) {
+      case 'wifi':
+        return ConnectivityResult.wifi;
+      case 'mobile':
+        return ConnectivityResult.mobile;
+      case 'none':
+      default:
+        return ConnectivityResult.none;
+    }
+  }
+
+  LocationAuthorizationStatus _convertLocationStatusString(String result) {
+    switch (result) {
+      case 'notDetermined':
+        return LocationAuthorizationStatus.notDetermined;
+      case 'restricted':
+        return LocationAuthorizationStatus.restricted;
+      case 'denied':
+        return LocationAuthorizationStatus.denied;
+      case 'authorizedAlways':
+        return LocationAuthorizationStatus.authorizedAlways;
+      case 'authorizedWhenInUse':
+        return LocationAuthorizationStatus.authorizedWhenInUse;
+      default:
+        return LocationAuthorizationStatus.unknown;
+    }
+  }
 
   /// Checks the connection status of the device.
   ///
@@ -52,7 +114,8 @@ class Connectivity {
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
   Future<ConnectivityResult> checkConnectivity() async {
-    return _platform.checkConnectivity();
+    final String result = await _platform.checkConnectivity();
+    return _parseConnectivityResult(result);
   }
 
   /// Obtains the wifi name (SSID) of the connected network
@@ -130,7 +193,8 @@ class Connectivity {
   /// See also [getLocationServiceAuthorization] to obtain current location service status.
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false}) async {
-        return requestLocationServiceAuthorization(requestAlwaysLocationUsage: requestAlwaysLocationUsage);
+        final String result = await _platform.requestLocationServiceAuthorization(requestAlwaysLocationUsage: requestAlwaysLocationUsage);
+        return _convertLocationStatusString(result);
   }
 
   /// Get the current location service authorization (Only on iOS).
@@ -170,6 +234,8 @@ class Connectivity {
   ///
   /// See also [requestLocationServiceAuthorization] for requesting a location service authorization.
   Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
-    return getLocationServiceAuthorization();
+    final String result = await _platform.getLocationServiceAuthorization();
+    return _convertLocationStatusString(result);
   }
+
 }

@@ -11,25 +11,13 @@ import 'package:meta/meta.dart' show required;
 import 'connectivity_platform_interface.dart';
 
 const MethodChannel _method_channel = MethodChannel('plugins.flutter.io/connectivity');
-const EventChannel _eventChannel = EventChannel('plugins.flutter.io/connectivity_status');
 
 /// An implementation of [ConnectivityPlatform] that uses method channels.
 class MethodChannelConnectivity extends ConnectivityPlatform {
-  Stream<ConnectivityResult> _onConnectivityChanged;
 
-   /// Fires whenever the connectivity state changes.
-  Stream<ConnectivityResult> get onConnectivityChanged {
-    if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = _eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => parseConnectivityResult(event));
-    }
-    return _onConnectivityChanged;
-  }
-
-  Future<ConnectivityResult> checkConnectivity() async {
+  Future<String> checkConnectivity() async {
     final String result = await _method_channel.invokeMethod<String>('check');
-    return parseConnectivityResult(result);
+    return result;
   }
 
   Future<String> getWifiName() async {
@@ -49,21 +37,21 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
     return await _method_channel.invokeMethod<String>('wifiIPAddress');
   }
 
-  Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
+  Future<String> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false}) async {
     //Just `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
     assert(!Platform.isAndroid);
     final String result = await _method_channel.invokeMethod<String>(
         'requestLocationServiceAuthorization',
         <bool>[requestAlwaysLocationUsage]);
-    return convertLocationStatusString(result);
+    return result;
   }
 
-  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
+  Future<String> getLocationServiceAuthorization() async {
     //Just `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
     assert(!Platform.isAndroid);
     final String result = await _method_channel
         .invokeMethod<String>('getLocationServiceAuthorization');
-    return convertLocationStatusString(result);
+    return result;
   }
 }

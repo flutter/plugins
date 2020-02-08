@@ -17,6 +17,8 @@ dependencies:
   flutter:
     sdk: flutter
   meta: "^1.0.5"
+  connectivity_platform_interface:
+    path: ./connectivity_platform_interface
 
 dev_dependencies:
   flutter_test:
@@ -25,6 +27,7 @@ dev_dependencies:
     sdk: flutter
   test: any
   e2e: ^0.2.0
+  plugin_platform_interface: ^1.0.0
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
