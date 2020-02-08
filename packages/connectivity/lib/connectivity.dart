@@ -193,8 +193,10 @@ class Connectivity {
   /// See also [getLocationServiceAuthorization] to obtain current location service status.
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false}) async {
-        final String result = await _platform.requestLocationServiceAuthorization(requestAlwaysLocationUsage: requestAlwaysLocationUsage);
-        return _convertLocationStatusString(result);
+    //Just `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
+    assert(!Platform.isAndroid);
+    final String result = await _platform.requestLocationServiceAuthorization(requestAlwaysLocationUsage: requestAlwaysLocationUsage);
+    return _convertLocationStatusString(result);
   }
 
   /// Get the current location service authorization (Only on iOS).
@@ -234,6 +236,8 @@ class Connectivity {
   ///
   /// See also [requestLocationServiceAuthorization] for requesting a location service authorization.
   Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
+    //Just `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
+    assert(!Platform.isAndroid);
     final String result = await _platform.getLocationServiceAuthorization();
     return _convertLocationStatusString(result);
   }

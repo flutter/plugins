@@ -38,11 +38,22 @@ abstract class ConnectivityPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  /// Checks the connection status of the device.
   Future<String> checkConnectivity();
+
+  /// Obtains the wifi name (SSID) of the connected network
   Future<String> getWifiName();
+
+  /// Obtains the wifi BSSID of the connected network.
   Future<String> getWifiBSSID();
+
+  /// Obtains the IP address of the connected wifi network
   Future<String> getWifiIP();
+
+  /// Request to authorize the location service (Only on iOS).
   Future<String> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false});
+
+  /// Get the current location service authorization (Only on iOS).
   Future<String> getLocationServiceAuthorization();
 }
