@@ -90,18 +90,10 @@ class GoogleMap extends StatefulWidget {
   final bool scrollGesturesEnabled;
 
   /// True if the map view should show zoom controls. This includes two buttons
-  /// to zoom in and zoom out. The default value is `true`. Android only.
-  bool get zoomControlsEnabled => _zoomControlsEnabled;
-
-  /// True if the map view should show zoom controls. This includes two buttons
-  /// to zoom in and zoom out. The default value is `true`. Android only.
-  set zoomControlsEnabled(bool newValue) {
-    assert(newValue && Platform.isIOS, 'Property is not supported on iOS');
-
-    _zoomControlsEnabled = newValue;
-  }
-
-  bool _zoomControlsEnabled;
+  /// to zoom in and zoom out. The default value is to show zoom controls.
+  ///
+  /// This field is silently ignored on iOS.
+  final bool zoomControlsEnabled;
 
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
