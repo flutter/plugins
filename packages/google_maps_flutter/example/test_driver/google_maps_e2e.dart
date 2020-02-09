@@ -241,7 +241,7 @@ void main() {
 
     final GoogleMapInspector inspector = await inspectorCompleter.future;
     bool zoomControlsEnabled = await inspector.isZoomControlsEnabled();
-    expect(zoomControlsEnabled, true);
+    expect(zoomControlsEnabled, Platform.isIOS ? false : true);
 
     /// Zoom Controls functionality is not available on iOS at the moment.
     if (Platform.isAndroid) {
