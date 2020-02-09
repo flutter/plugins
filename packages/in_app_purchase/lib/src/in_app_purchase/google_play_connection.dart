@@ -176,8 +176,6 @@ class GooglePlayConnection
   Future<void> _connect() =>
       billingClient.startConnection(onBillingServiceDisconnected: () {});
 
-  Future<void> _disconnect() => billingClient.endConnection();
-
   /// Query the product detail list.
   ///
   /// This method only returns [ProductDetailsResponse].

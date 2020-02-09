@@ -69,7 +69,6 @@ class MethodCallHandlerImpl
     this.activity = activity;
   }
 
-  // Activity Life Cycle callbacks
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
 
