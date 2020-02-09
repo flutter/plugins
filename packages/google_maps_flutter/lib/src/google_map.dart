@@ -96,7 +96,7 @@ class GoogleMap extends StatefulWidget {
   /// True if the map view should show zoom controls. This includes two buttons
   /// to zoom in and zoom out. The default value is `true`. Android only.
   set zoomControlsEnabled(bool newValue) {
-    assert(newValue && Platform.isIOS);
+    assert(newValue && Platform.isIOS, 'Property is not supported on iOS');
 
     _zoomControlsEnabled = newValue;
   }
