@@ -35,7 +35,7 @@ class GoogleMap extends StatefulWidget {
     this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
     this.rotateGesturesEnabled = true,
     this.scrollGesturesEnabled = true,
-    this.zoomControlsEnabled = false,
+    this.zoomControlsEnabled = true,
     this.zoomGesturesEnabled = true,
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,

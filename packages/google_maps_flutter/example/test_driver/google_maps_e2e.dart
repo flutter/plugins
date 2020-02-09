@@ -230,7 +230,6 @@ void main() {
       child: GoogleMap(
         key: key,
         initialCameraPosition: _kInitialCameraPosition,
-        zoomControlsEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           final GoogleMapInspector inspector =
               // ignore: invalid_use_of_visible_for_testing_member
@@ -242,7 +241,7 @@ void main() {
 
     final GoogleMapInspector inspector = await inspectorCompleter.future;
     bool zoomControlsEnabled = await inspector.isZoomControlsEnabled();
-    expect(zoomControlsEnabled, false);
+    expect(zoomControlsEnabled, true);
 
     /// Zoom Controls functionality is not available on iOS at the moment.
     if (Platform.isAndroid) {
@@ -251,7 +250,7 @@ void main() {
         child: GoogleMap(
           key: key,
           initialCameraPosition: _kInitialCameraPosition,
-          zoomControlsEnabled: true,
+          zoomControlsEnabled: false,
           onMapCreated: (GoogleMapController controller) {
             fail("OnMapCreated should get called only once.");
           },
@@ -259,7 +258,7 @@ void main() {
       ));
 
       zoomControlsEnabled = await inspector.isZoomControlsEnabled();
-      expect(zoomControlsEnabled, true);
+      expect(zoomControlsEnabled, false);
     }
   });
 

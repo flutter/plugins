@@ -81,7 +81,7 @@ final class GoogleMapController
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
-  private boolean zoomControlsEnabled = false;
+  private boolean zoomControlsEnabled = true;
   private boolean indoorEnabled = true;
   private boolean trafficEnabled = false;
   private boolean buildingsEnabled = true;
