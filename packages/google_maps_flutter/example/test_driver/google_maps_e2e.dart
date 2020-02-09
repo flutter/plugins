@@ -220,12 +220,12 @@ void main() {
     expect(zoomGesturesEnabled, true);
   });
 
-  test('testZoomControlsEnabled', () async {
+  testWidgets('testZoomControlsEnabled', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
-    await pumpWidget(Directionality(
+    await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
       child: GoogleMap(
         key: key,
@@ -246,7 +246,7 @@ void main() {
 
     /// Zoom Controls functionality is not available on iOS at the moment.
     if (Platform.isAndroid) {
-      await pumpWidget(Directionality(
+      await tester.pumpWidget(Directionality(
         textDirection: TextDirection.ltr,
         child: GoogleMap(
           key: key,
