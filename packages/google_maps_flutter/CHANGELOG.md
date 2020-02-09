@@ -2,6 +2,10 @@
 
 * Adds support for toggling zoom controls (Android only)
 
+## 0.5.22+2
+
+* Update README: Add steps to enable Google Map SDK in the Google Developer Console.
+
 ## 0.5.22+1
 
 * Fix for toggling traffic layer on Android not working
