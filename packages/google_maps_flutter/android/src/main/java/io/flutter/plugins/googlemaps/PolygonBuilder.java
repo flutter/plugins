@@ -10,10 +10,12 @@ import java.util.List;
 
 class PolygonBuilder implements PolygonOptionsSink {
   private final PolygonOptions polygonOptions;
+  private final float density;
   private boolean consumeTapEvents;
 
-  PolygonBuilder() {
+  PolygonBuilder(float density) {
     this.polygonOptions = new PolygonOptions();
+    this.density = density;
   }
 
   PolygonOptions build() {
@@ -57,7 +59,7 @@ class PolygonBuilder implements PolygonOptionsSink {
 
   @Override
   public void setStrokeWidth(float width) {
-    polygonOptions.strokeWidth(width);
+    polygonOptions.strokeWidth(width * density);
   }
 
   @Override

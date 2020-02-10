@@ -125,9 +125,9 @@ final class GoogleMapController
     this.registrar = registrar;
     this.activityHashCode = registrarActivityHashCode;
     this.markersController = new MarkersController(methodChannel);
-    this.polygonsController = new PolygonsController(methodChannel);
+    this.polygonsController = new PolygonsController(methodChannel, density);
     this.polylinesController = new PolylinesController(methodChannel, density);
-    this.circlesController = new CirclesController(methodChannel);
+    this.circlesController = new CirclesController(methodChannel, density);
   }
 
   @Override

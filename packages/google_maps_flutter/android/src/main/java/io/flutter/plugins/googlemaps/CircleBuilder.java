@@ -9,10 +9,12 @@ import com.google.android.gms.maps.model.LatLng;
 
 class CircleBuilder implements CircleOptionsSink {
   private final CircleOptions circleOptions;
+  private final float density;
   private boolean consumeTapEvents;
 
-  CircleBuilder() {
+  CircleBuilder(float density) {
     this.circleOptions = new CircleOptions();
+    this.density = density;
   }
 
   CircleOptions build() {
@@ -56,7 +58,7 @@ class CircleBuilder implements CircleOptionsSink {
 
   @Override
   public void setStrokeWidth(float strokeWidth) {
-    circleOptions.strokeWidth(strokeWidth);
+    circleOptions.strokeWidth(strokeWidth * density);
   }
 
   @Override

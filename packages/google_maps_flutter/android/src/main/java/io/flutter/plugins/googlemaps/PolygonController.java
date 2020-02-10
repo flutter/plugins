@@ -12,10 +12,12 @@ import java.util.List;
 class PolygonController implements PolygonOptionsSink {
   private final Polygon polygon;
   private final String googleMapsPolygonId;
+  private final float density;
   private boolean consumeTapEvents;
 
-  PolygonController(Polygon polygon, boolean consumeTapEvents) {
+  PolygonController(Polygon polygon, boolean consumeTapEvents, float density) {
     this.polygon = polygon;
+    this.density = density;
     this.consumeTapEvents = consumeTapEvents;
     this.googleMapsPolygonId = polygon.getId();
   }
@@ -57,7 +59,7 @@ class PolygonController implements PolygonOptionsSink {
 
   @Override
   public void setStrokeWidth(float width) {
-    polygon.setStrokeWidth(width);
+    polygon.setStrokeWidth(width * density);
   }
 
   @Override
