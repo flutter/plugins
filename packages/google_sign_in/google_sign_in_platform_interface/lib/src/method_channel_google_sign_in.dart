@@ -78,4 +78,20 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
       <String, String>{'token': token},
     );
   }
+
+  @override
+  Future<bool> hasGrantedScope(String scope) {
+    return channel.invokeMethod<bool>(
+      'hasGrantedScope', 
+      <String, String>{'scope': scope},
+    );
+  }
+
+  @override
+  Future<bool> requestScope(String scope) {
+    return channel.invokeMethod<bool>(
+      'requestScope', 
+      <String, String>{'scope': scope},
+    );
+  }
 }

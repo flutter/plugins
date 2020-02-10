@@ -121,4 +121,14 @@ abstract class GoogleSignInPlatform {
   Future<void> clearAuthCache({@required String token}) async {
     throw UnimplementedError('clearAuthCache() has not been implemented.');
   }
+
+  /// Indicates whether this Oauth [scope] has been granted.
+  Future<bool> hasGrantedScope(String scope) async {
+    throw UnimplementedError('hasGrantedScope() has not been implmented.');
+  }
+
+  /// Requests the user grant an additional Oauth [scope].
+  Future<bool> requestScope(String scope) async {
+    throw UnimplementedError('requestScope() has not been implmented.');
+  }
 }
