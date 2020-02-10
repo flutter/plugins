@@ -17,12 +17,14 @@ class PolygonsController {
   private final Map<String, PolygonController> polygonIdToController;
   private final Map<String, String> googleMapsPolygonIdToDartPolygonId;
   private final MethodChannel methodChannel;
+  private final float density;
   private GoogleMap googleMap;
 
-  PolygonsController(MethodChannel methodChannel) {
+  PolygonsController(MethodChannel methodChannel, float density) {
     this.polygonIdToController = new HashMap<>();
     this.googleMapsPolygonIdToDartPolygonId = new HashMap<>();
     this.methodChannel = methodChannel;
+    this.density = density;
   }
 
   void setGoogleMap(GoogleMap googleMap) {
@@ -79,7 +81,7 @@ class PolygonsController {
     if (polygon == null) {
       return;
     }
-    PolygonBuilder polygonBuilder = new PolygonBuilder();
+    PolygonBuilder polygonBuilder = new PolygonBuilder(density);
     String polygonId = Convert.interpretPolygonOptions(polygon, polygonBuilder);
     PolygonOptions options = polygonBuilder.build();
     addPolygon(polygonId, options, polygonBuilder.consumeTapEvents());
@@ -88,7 +90,7 @@ class PolygonsController {
   private void addPolygon(
       String polygonId, PolygonOptions polygonOptions, boolean consumeTapEvents) {
     final Polygon polygon = googleMap.addPolygon(polygonOptions);
-    PolygonController controller = new PolygonController(polygon, consumeTapEvents);
+    PolygonController controller = new PolygonController(polygon, consumeTapEvents, density);
     polygonIdToController.put(polygonId, controller);
     googleMapsPolygonIdToDartPolygonId.put(polygon.getId(), polygonId);
   }

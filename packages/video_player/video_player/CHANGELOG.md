@@ -1,6 +1,11 @@
-## 0.10.6+1
+## 0.10.7+1
 
 * Fixed an issue on iOS where the platform video player says it is initialized before it has a valid Presentation Size, and causes a white frame to render indefinitely.
+
+## 0.10.7
+
+* `VideoPlayerController` support for reading closed caption files. 
+* `VideoPlayerValue` has a `caption` field for reading the current closed caption at any given time.
 
 ## 0.10.6
 

@@ -1,3 +1,7 @@
+## 0.3.19+6
+
+* Enable opening links that target the "_blank" window (links open in same window).
+
 ## 0.3.19+5
 
 * On iOS, always keep contentInsets of the WebView to be 0.

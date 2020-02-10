@@ -29,12 +29,20 @@ void main() {
       expect(canLaunch('https://google.com'), completion(isTrue));
     });
 
+    test('can launch "mailto" URLs', () {
+      expect(canLaunch('mailto:name@mydomain.com'), completion(isTrue));
+    });
+
     test('cannot launch "tel" URLs', () {
       expect(canLaunch('tel:5551234567'), completion(isFalse));
     });
 
     test('launching a URL returns true', () {
       expect(launch('https://www.google.com'), completion(isTrue));
+    });
+
+    test('launching a "mailto" returns true', () {
+      expect(launch('mailto:name@mydomain.com'), completion(isTrue));
     });
 
     test('the window that is launched is a new window', () {
