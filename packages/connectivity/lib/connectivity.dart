@@ -61,13 +61,14 @@ class Connectivity {
 
   static Connectivity _singleton;
 
-  static const EventChannel _eventChannel = EventChannel('plugins.flutter.io/connectivity_status');
+  @visibleForTesting
+  static const EventChannel eventChannel = EventChannel('plugins.flutter.io/connectivity_status');
   Stream<ConnectivityResult> _onConnectivityChanged;
 
    /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = _eventChannel
+      _onConnectivityChanged = eventChannel
           .receiveBroadcastStream()
           .map((dynamic event) => _parseConnectivityResult(event));
     }
@@ -125,7 +126,11 @@ class Connectivity {
   /// From android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the SSID.
   Future<String> getWifiName() async {
-    return _platform.getWifiName();
+    String wifiName = await _platform.getWifiName();
+    // as Android might return <unknown ssid>, uniforming result
+    // our iOS implementation will return null
+    if (wifiName == '<unknown ssid>') wifiName = null;
+    return wifiName;
   }
 
   /// Obtains the wifi BSSID of the connected network.

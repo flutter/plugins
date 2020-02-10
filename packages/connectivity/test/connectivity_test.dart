@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/services.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  final MockConnectivity mock = MockConnectivity();
+  ConnectivityPlatform.instance = mock;
+
 
   group('$Connectivity', () {
     final List<MethodCall> log = <MethodCall>[];
@@ -146,3 +153,7 @@ void main() {
     });
   });
 }
+
+class MockConnectivity extends Mock
+    with MockPlatformInterfaceMixin
+    implements ConnectivityPlatform {}
