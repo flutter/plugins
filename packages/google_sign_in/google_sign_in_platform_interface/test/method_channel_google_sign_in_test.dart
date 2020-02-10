@@ -116,12 +116,14 @@ void main() {
         }),
         () {
           googleSignIn.hasGrantedScope('grantedScope');
-        }: isMethodCall('hasGrantedScope',
-            arguments: <String, dynamic>{'scope': 'grantedScope'}),
+        }: isMethodCall('hasGrantedScope', arguments: <String, dynamic>{
+          'scope': 'grantedScope',
+        }),
         () {
           googleSignIn.requestScope('newScope');
-        }: isMethodCall('requestScope',
-            arguments: <String, dynamic>{'scope': 'newScope'}),
+        }: isMethodCall('requestScope', arguments: <String, dynamic>{
+          'scope': 'newScope',
+        }),
         googleSignIn.signOut: isMethodCall('signOut', arguments: null),
         googleSignIn.disconnect: isMethodCall('disconnect', arguments: null),
         googleSignIn.isSignedIn: isMethodCall('isSignedIn', arguments: null),
