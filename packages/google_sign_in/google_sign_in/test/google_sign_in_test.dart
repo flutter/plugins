@@ -32,6 +32,8 @@ void main() {
       'signOut': null,
       'disconnect': null,
       'isSignedIn': true,
+      'hasGrantedScope': true,
+      'requestScope': true,
       'getTokens': <dynamic, dynamic>{
         'idToken': '123',
         'accessToken': '456',
@@ -375,6 +377,48 @@ void main() {
           isMethodCall('getTokens', arguments: <String, dynamic>{
             'email': 'john.doe@gmail.com',
             'shouldRecoverAuth': true,
+          }),
+        ],
+      );
+    });
+
+    test('hasGrantedScope returns true if scope is granted', () async {
+      await googleSignIn.signIn();
+      final result = await googleSignIn.hasGrantedScope('testScope');
+
+      expect(result, isTrue);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
+            'scopes': <String>[],
+            'hostedDomain': null,
+          }),
+          isMethodCall('signIn', arguments: null),
+          isMethodCall('hasGrantedScope', arguments: <String, dynamic>{
+            'scope': 'testScope',
+          }),
+        ],
+      );
+    });
+
+    test('requestScope returns true once new scope is granted', () async {
+      await googleSignIn.signIn();
+      final result = await googleSignIn.requestScope('testScope');
+
+      expect(result, isTrue);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
+            'scopes': <String>[],
+            'hostedDomain': null,
+          }),
+          isMethodCall('signIn', arguments: null),
+          isMethodCall('requestScope', arguments: <String, dynamic>{
+            'scope': 'testScope',
           }),
         ],
       );

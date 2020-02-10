@@ -367,4 +367,16 @@ class GoogleSignIn {
   /// authentication.
   Future<GoogleSignInAccount> disconnect() =>
       _addMethodCall(GoogleSignInPlatform.instance.disconnect);
+
+  /// Indicates whether this Oauth [scope] has been granted.
+  Future<bool> hasGrantedScope(String scope) async {
+    await _ensureInitialized();
+    return GoogleSignInPlatform.instance.hasGrantedScope(scope);
+  }
+
+  /// Requests the user grant an additional Oauth [scope].
+  Future<bool> requestScope(String scope) async {
+    await _ensureInitialized();
+    return GoogleSignInPlatform.instance.requestScope(scope);
+  }
 }
