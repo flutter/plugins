@@ -46,6 +46,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_DISCONNECT = "disconnect";
   private static final String METHOD_IS_SIGNED_IN = "isSignedIn";
   private static final String METHOD_CLEAR_AUTH_CACHE = "clearAuthCache";
+  private static final String METHOD_HAS_GRANTED_SCOPE = "hasGrantedScope";
+  private static final String METHOD_REQUEST_SCOPE = "requestScope";
 
   private final IDelegate delegate;
 
@@ -98,6 +100,16 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
       case METHOD_IS_SIGNED_IN:
         delegate.isSignedIn(result);
+        break;
+
+      case METHOD_HAS_GRANTED_SCOPE:
+        String scope = call.argument("scope");
+        delegate.hasGrantedScope(result, scope);
+        break;
+
+      case METHOD_REQUEST_SCOPE:
+        scope = call.argument("scope");
+        delegate.requestScope(result, scope);
         break;
 
       default:
@@ -153,6 +165,12 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /** Checks if there is a signed in user. */
     public void isSignedIn(Result result);
+
+    /** Checks to see if the passed Oauth scope has been granted by the user. */
+    public void hasGrantedScope(final Result result, final String scope);
+
+    /** Prompts the user to grant an additional Oauth scope. */
+    public void requestScope(final Result result, final String scope);
   }
 
   /**
@@ -167,6 +185,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public static final class Delegate implements IDelegate, PluginRegistry.ActivityResultListener {
     private static final int REQUEST_CODE_SIGNIN = 53293;
     private static final int REQUEST_CODE_RECOVER_AUTH = 53294;
+    private static final int REQUEST_CODE_REQUEST_SCOPE = 53295;
 
     private static final String ERROR_REASON_EXCEPTION = "exception";
     private static final String ERROR_REASON_STATUS = "status";
@@ -341,6 +360,25 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     public void isSignedIn(final Result result) {
       boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
       result.success(value);
+    }
+
+    @Override
+    public void hasGrantedScope(Result result, String scope) {
+      GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(registrar.context());
+      boolean value = account != null && GoogleSignIn.hasPermissions(account, new Scope(scope));
+      result.success(value);
+    }
+
+    @Override
+    public void requestScope(Result result, String scope) {
+      GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(registrar.context());
+      if (account != null) {
+        GoogleSignIn.requestPermissions(
+            registrar.activity(),
+            REQUEST_CODE_REQUEST_SCOPE,
+            account,
+            new Scope(scope));
+      }
     }
 
     private void onSignInResult(Task<GoogleSignInAccount> completedTask) {
@@ -526,6 +564,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             // data is null which is highly unusual for a sign in result.
             finishWithError(ERROR_REASON_SIGN_IN_FAILED, "Signin failed");
           }
+          return true;
+        case REQUEST_CODE_REQUEST_SCOPE:
+          pendingOperation.result.success(resultCode == Activity.RESULT_OK);
           return true;
         default:
           return false;

@@ -121,6 +121,16 @@ static FlutterError *getFlutterError(NSError *error) {
     // There's nothing to be done here on iOS since the expired/invalid
     // tokens are refreshed automatically by getTokensWithHandler.
     result(nil);
+  } else if ([call.method isEqualToString:@"hasGrantedScope"]) {
+    GIDGoogleUser *user = [GIDSignIn sharedInstance].currentUser;
+    NSString *scope = call.arguments[@"scope"];
+    bool success = [user.grantedScopes containsObject:scope];
+    result(@(success));
+  } else if ([call.method isEqualToString:@"requestScope"]) {
+    NSArray *currentScopes = [GIDSignIn sharedInstance].scopes;
+    NSString *scope = call.arguments[@"scope"];
+    [GIDSignIn sharedInstance].scopes = [currentScopes arrayByAddingObject:scope];
+    [[GIDSignIn sharedInstance] signIn];
   } else {
     result(FlutterMethodNotImplemented);
   }
