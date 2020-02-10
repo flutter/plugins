@@ -162,6 +162,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)();
 @property BOOL enableAudio;
+@property NSInteger exposureCompensation;
 @property(nonatomic) FlutterEventChannel *eventChannel;
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
 @property(nonatomic) FlutterEventSink eventSink;
@@ -195,6 +196,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
+              exposureCompensation:(NSNumber *)exposureCompensation
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
 
@@ -205,6 +207,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopImageStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
+- (void)applyExposureCompensation:(NSNumber*)exposureValue;
 @end
 
 @implementation FLTCam {
@@ -216,6 +219,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
+              exposureCompensation:(NSNumber *)exposureCompensation
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
@@ -261,6 +265,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_motionManager startAccelerometerUpdates];
 
   [self setCaptureSessionPreset:_resolutionPreset];
+    
+  [self applyExposureCompensation:exposureCompensation];
   return self;
 }
 
@@ -759,6 +765,31 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
   }
 }
+
+- (float)getMinExposureTargetBias {
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    return device.minExposureTargetBias;
+}
+
+- (float)getMaxExposureTargetBias {
+    AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    return device.maxExposureTargetBias;
+}
+
+- (void)applyExposureCompensation:(NSNumber*)exposureValue {
+  AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+  [device lockForConfiguration:nil];
+
+  float minExposureTargetBias = [self getMinExposureTargetBias];
+  float maxExposureTargetBias = [self getMaxExposureTargetBias];
+
+  int exposureTargetBias = MIN(exposureValue.intValue, (int)maxExposureTargetBias);
+  exposureTargetBias = MAX(exposureTargetBias, (int)minExposureTargetBias);
+  [device setExposureTargetBias:(float)exposureTargetBias completionHandler:^(CMTime syncTime) {}];
+    
+  [device unlockForConfiguration];
+}
+
 @end
 
 @interface CameraPlugin ()
@@ -832,10 +863,12 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
     NSNumber *enableAudio = call.arguments[@"enableAudio"];
+    NSNumber *exposureCompensation = call.arguments[@"exposureCompensation"];
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
                                          enableAudio:[enableAudio boolValue]
+                                exposureCompensation:exposureCompensation
                                        dispatchQueue:_dispatchQueue
                                                error:&error];
     if (error) {
@@ -871,7 +904,14 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
     result(nil);
-  } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {
+  } else if ([@"applyExposureCompensation" isEqualToString:call.method]) {
+    [_camera applyExposureCompensation:call.arguments[@"exposureCompensation"]];
+    result(nil);
+  } else if ([@"getMinExposureTargetBias" isEqualToString:call.method]) {
+    result(@([_camera getMinExposureTargetBias]));
+  } else if ([@"getMaxExposureTargetBias" isEqualToString:call.method]) {
+    result(@([_camera getMaxExposureTargetBias]));
+   } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {
     [_camera pauseVideoRecording];
     result(nil);
   } else if ([@"resumeVideoRecording" isEqualToString:call.method]) {

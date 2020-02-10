@@ -245,6 +245,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
+    this.exposureCompensation = 0
   }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
@@ -252,6 +253,8 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
+
+  final int exposureCompensation;
 
   int _textureId;
   bool _isDisposed = false;
@@ -275,6 +278,7 @@ class CameraController extends ValueNotifier<CameraValue> {
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
           'enableAudio': enableAudio,
+          'exposureCompensation': exposureCompensation
         },
       );
       _textureId = reply['textureId'];
@@ -564,6 +568,53 @@ class CameraController extends ValueNotifier<CameraValue> {
         'resumeVideoRecording',
         <String, dynamic>{'textureId': _textureId},
       );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  // Set the Exposure Compensation value
+  Future<void> applyExposureCompensation({int exposureValue = 0}) async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController.',
+        'applyExposureCompensation was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      await _channel.invokeMethod<void>(
+          'applyExposureCompensation', <String, dynamic>{'exposureCompensation': exposureValue});
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  Future<double> getMinExposureTargetBias() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController.',
+        'getMinExposureTargetBias was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      return await _channel.invokeMethod<double>('getMinExposureTargetBias');
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  Future<double> getMaxExposureTargetBias() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController.',
+        'getMaxExposureTargetBias was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      return await _channel.invokeMethod<double>('getMaxExposureTargetBias');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

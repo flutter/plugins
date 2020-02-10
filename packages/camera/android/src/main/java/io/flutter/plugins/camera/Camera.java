@@ -22,6 +22,7 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.util.Range;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -40,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Camera {
+  private static final int DEFAULT_MIN_COMPENSATION = -10;
+  private static final int DEFAULT_MAX_COMPENSATION = 10;
   private final SurfaceTextureEntry flutterTexture;
   private final CameraManager cameraManager;
   private final OrientationEventListener orientationEventListener;
@@ -50,6 +53,7 @@ public class Camera {
   private final Size previewSize;
   private final boolean enableAudio;
 
+  private int exposureCompensation;
   private CameraDevice cameraDevice;
   private CameraCaptureSession cameraCaptureSession;
   private ImageReader pictureImageReader;
@@ -77,7 +81,8 @@ public class Camera {
       final DartMessenger dartMessenger,
       final String cameraName,
       final String resolutionPreset,
-      final boolean enableAudio)
+      final boolean enableAudio,
+      final int exposureCompensation)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
@@ -85,6 +90,7 @@ public class Camera {
 
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
+    this.exposureCompensation = exposureCompensation;
     this.flutterTexture = flutterTexture;
     this.dartMessenger = dartMessenger;
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
@@ -250,6 +256,8 @@ public class Camera {
       captureBuilder.addTarget(pictureImageReader.getSurface());
       captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
 
+      applyExposureCompensationRequest(captureBuilder, exposureCompensation);
+
       cameraCaptureSession.capture(
           captureBuilder.build(),
           new CameraCaptureSession.CaptureCallback() {
@@ -320,6 +328,9 @@ public class Camera {
               cameraCaptureSession = session;
               captureRequestBuilder.set(
                   CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+
+              applyExposureCompensationRequest(captureRequestBuilder, exposureCompensation);
+
               cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               if (onSuccessCallback != null) {
                 onSuccessCallback.run();
@@ -473,6 +484,54 @@ public class Camera {
           img.close();
         },
         null);
+  }
+
+  public void applyExposureCompensation(@NonNull final Result result, int value) {
+    try {
+      applyExposureCompensationRequest(captureRequestBuilder, value);
+
+      exposureCompensation = value;
+      cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+
+      result.success(null);
+    } catch (Exception e) {
+      result.error("cameraExposureCompensationFailed", e.getMessage(), null);
+    }
+  }
+
+  public double getMaxExposureTargetBias() {
+    Range<Integer> exposureCompensationRange = getExposureCompensationRange();
+    return exposureCompensationRange.getUpper().doubleValue();
+  }
+
+  public double getMinExposureTargetBias() {
+    Range<Integer> exposureCompensationRange = getExposureCompensationRange();
+    return exposureCompensationRange.getLower().doubleValue();
+  }
+
+  private Range<Integer> getExposureCompensationRange() {
+    Range<Integer> range = Range.create(DEFAULT_MIN_COMPENSATION, DEFAULT_MAX_COMPENSATION);
+
+    try {
+      CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
+      range = characteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
+    } catch (CameraAccessException e) {
+      //In case of error we will send default range
+      e.printStackTrace();
+    }
+
+    return range;
+  }
+
+  private void applyExposureCompensationRequest(CaptureRequest.Builder builderRequest, int value) {
+    Range<Integer> exposureCompensationRange = getExposureCompensationRange();
+    if (value > exposureCompensationRange.getUpper()) {
+      builderRequest.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, exposureCompensationRange.getUpper());
+    } else if (value < exposureCompensationRange.getLower()) {
+      builderRequest.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, exposureCompensationRange.getLower());
+    } else {
+      builderRequest.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, value);
+    }
   }
 
   private void closeCaptureSession() {
