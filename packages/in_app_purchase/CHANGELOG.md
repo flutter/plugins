@@ -1,3 +1,15 @@
+## 0.3.0+3
+
+* Fix pendingCompletePurchase flag status to allow to complete the pruchsase. 
+
+## 0.3.0+2
+
+* Update te example app to avoid using deprecated api.
+
+## 0.3.0+1
+
+* Fixing usage example. No functional changes.
+
 ## 0.3.0
 
 * Migrate the `Google Play Library` to 2.0.3.
