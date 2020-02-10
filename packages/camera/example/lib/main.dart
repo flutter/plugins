@@ -37,12 +37,19 @@ void logError(String code, String message) =>
 
 class _CameraExampleHomeState extends State<CameraExampleHome>
     with WidgetsBindingObserver {
+  static const double initialExposureCompensation =  0.0;
+  static const double initialMinExposureTargetBias =  -10.0;
+  static const double initialMaxExposureTargetBias =  10.0;
   CameraController controller;
   String imagePath;
   String videoPath;
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
+  double exposureCompensation = initialExposureCompensation;
+  double minExposureTargetBias = initialMinExposureTargetBias;
+  double maxExposureTargetBias = initialMaxExposureTargetBias;
+  bool isMinMaxExposureTargetBiasSet = false;
 
   @override
   void initState() {
@@ -103,6 +110,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           ),
           _captureControlRowWidget(),
           _toggleAudioWidget(),
+          Center(child: _changeExposureCompensationWidget()),
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
@@ -269,6 +277,31 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     return Row(children: toggles);
   }
 
+  Widget _changeExposureCompensationWidget() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Slider(
+        value: exposureCompensation,
+        min: minExposureTargetBias,
+        max: maxExposureTargetBias,
+        onChanged: (value) {
+          exposureCompensation = value;
+
+          controller.applyExposureCompensation(exposureValue: exposureCompensation.toInt()).then((value) async {
+            //We should set the device camera's min and max exposure target bias if we have not set it yet.
+            if (!isMinMaxExposureTargetBiasSet) {
+              minExposureTargetBias = await controller.getMinExposureTargetBias();
+              maxExposureTargetBias = await controller.getMaxExposureTargetBias();
+              isMinMaxExposureTargetBiasSet = true;
+              if (mounted) setState(() {});
+            }
+          });
+          if (mounted) setState(() {});
+        },
+      ),
+    );
+  }
+
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
@@ -283,6 +316,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: enableAudio,
+      exposureCompensation: exposureCompensation.toInt()
     );
 
     // If the controller is updated then update the UI.
