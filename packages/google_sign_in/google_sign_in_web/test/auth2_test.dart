@@ -73,5 +73,17 @@ void main() {
 
       expect(actualToken, expectedTokenData);
     });
+
+    test('hasGrantedScope', () async {
+      bool hasScope = await plugin.hasGrantedScope('scope');
+
+      expect(hasScope, isTrue);
+    });
+
+    test('requestScope', () async {
+      bool scopeGranted = await plugin.requestScope('newScope');
+
+      expect(scopeGranted, isTrue);
+    });
   });
 }
