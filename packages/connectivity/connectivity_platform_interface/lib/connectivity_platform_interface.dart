@@ -30,8 +30,6 @@ abstract class ConnectivityPlatform extends PlatformInterface {
 
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [ConnectivityPlatform] when they register themselves.
-  // TODO(amirh): Extract common platform interface logic.
-  // https://github.com/flutter/flutter/issues/43368
   static set instance(ConnectivityPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
