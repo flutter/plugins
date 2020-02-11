@@ -26,14 +26,16 @@ static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictio
   }
   return self;
 }
-- (void)showInfoWIndow {
+- (void)showInfoWindow {
   _mapView.selectedMarker = _marker;
 }
-- (void)hideInfoWIndow {
-  _mapView.selectedMarker = nil;
+- (void)hideInfoWindow {
+  if (_mapView.selectedMarker == _marker) {
+    _mapView.selectedMarker = nil;
+  }
 }
 - (BOOL)isInfoWindowShown {
-  return false;
+  return _mapView.selectedMarker == _marker;
 }
 - (BOOL)consumeTapEvents {
   return _consumeTapEvents;
@@ -309,17 +311,37 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
     [_methodChannel invokeMethod:@"infoWindow#onTap" arguments:@{@"markerId" : markerId}];
   }
 }
-- (void)showMarkerInfoWindow:(NSString*)markerId {
+- (void)showMarkerInfoWindow:(NSString*)markerId result:(FlutterResult)result {
   FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
-  [controller showInfoWIndow];
+  if (controller) {
+    [controller showInfoWindow];
+    result(nil);
+  } else {
+    result([FlutterError errorWithCode:@"Invalid markerId"
+                               message:@"showInfoWindow called with invalid markerId"
+                               details:nil]);
+  }
 }
-- (void)hideMarkerInfoWindow:(NSString*)markerId {
+- (void)hideMarkerInfoWindow:(NSString*)markerId result:(FlutterResult)result {
   FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
-  [controller hideInfoWIndow];
+  if (controller) {
+    [controller hideInfoWindow];
+    result(nil);
+  } else {
+    result([FlutterError errorWithCode:@"Invalid markerId"
+                               message:@"hideInfoWindow called with invalid markerId"
+                               details:nil]);
+  }
 }
-- (BOOL)isMarkerInfoWindowShown:(NSString*)markerId {
+- (void)isMarkerInfoWindowShown:(NSString*)markerId result:(FlutterResult)result {
   FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
-  return ([controller isInfoWindowShown]);
+  if (controller) {
+    result(@([controller isInfoWindowShown]));
+  } else {
+    result([FlutterError errorWithCode:@"Invalid markerId"
+                               message:@"isInfoWindowShown called with invalid markerId"
+                               details:nil]);
+  }
 }
 
 + (CLLocationCoordinate2D)getPosition:(NSDictionary*)marker {

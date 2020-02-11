@@ -188,19 +188,29 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"markers#showInfoWindow"]) {
     id markerId = call.arguments[@"markerId"];
     if ([markerId isKindOfClass:[NSString class]]) {
-      [_markersController showMarkerInfoWindow:markerId];
+      [_markersController showMarkerInfoWindow:markerId result:result];
+    } else {
+      result([FlutterError errorWithCode:@"Invalid markerId"
+                                 message:@"showInfoWindow called with invalid markerId"
+                                 details:nil]);
     }
-    result(nil);
   } else if ([call.method isEqualToString:@"markers#hideInfoWindow"]) {
     id markerId = call.arguments[@"markerId"];
     if ([markerId isKindOfClass:[NSString class]]) {
-      [_markersController hideMarkerInfoWindow:markerId];
+      [_markersController hideMarkerInfoWindow:markerId result:result];
+    } else {
+      result([FlutterError errorWithCode:@"Invalid markerId"
+                                 message:@"hideInfoWindow called with invalid markerId"
+                                 details:nil]);
     }
-    result(nil);
   } else if ([call.method isEqualToString:@"markers#isInfoWindowShown"]) {
     id markerId = call.arguments[@"markerId"];
     if ([markerId isKindOfClass:[NSString class]]) {
-      result([NSNumber numberWithBool:[_markersController isMarkerInfoWindowShown:markerId]]);
+      [_markersController isMarkerInfoWindowShown:markerId result:result];
+    } else {
+      result([FlutterError errorWithCode:@"Invalid markerId"
+                                 message:@"isInfoWindowShown called with invalid markerId"
+                                 details:nil]);
     }
   } else if ([call.method isEqualToString:@"polygons#update"]) {
     id polygonsToAdd = call.arguments[@"polygonsToAdd"];

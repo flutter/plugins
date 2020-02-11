@@ -47,9 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)onMarkerTap:(NSString*)markerId;
 - (void)onMarkerDragEnd:(NSString*)markerId coordinate:(CLLocationCoordinate2D)coordinate;
 - (void)onInfoWindowTap:(NSString*)markerId;
-- (void)showMarkerInfoWindow:(NSString*)markerId;
-- (void)hideMarkerInfoWindow:(NSString*)markerId;
-- (BOOL)isMarkerInfoWindowShown:(NSString*)markerId;
+- (void)showMarkerInfoWindow:(NSString*)markerId result:(FlutterResult)result;
+- (void)hideMarkerInfoWindow:(NSString*)markerId result:(FlutterResult)result;
+- (void)isMarkerInfoWindowShown:(NSString*)markerId result:(FlutterResult)result;
 @end
 
 NS_ASSUME_NONNULL_END
