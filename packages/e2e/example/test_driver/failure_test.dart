@@ -11,7 +11,7 @@ Future<void> main() async {
     await driver.close();
     expect(
       result,
-      'failure',
+      'fail',
     );
   });
 }
