@@ -1,6 +1,6 @@
 ## 0.3.19+7
 
-* Remove the Flutter SDK contraint upper bound.
+* Remove the Flutter SDK constraint upper bound.
 
 ## 0.3.19+6
 
