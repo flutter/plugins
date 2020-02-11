@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:e2e/e2e.dart';
@@ -17,7 +16,7 @@ void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('success', (WidgetTester tester) async {
-    expect(1+1, 2); // This should pass
+    expect(1 + 1, 2); // This should pass
   });
 
   testWidgets('failure 1', (WidgetTester tester) async {
@@ -27,15 +26,14 @@ void main() {
     // Verify that platform version is retrieved.
     expect(
       find.byWidgetPredicate(
-            (Widget widget) =>
-        widget is Text &&
-            widget.data.startsWith('This should fail'),
+        (Widget widget) =>
+            widget is Text && widget.data.startsWith('This should fail'),
       ),
       findsOneWidget,
     );
   });
 
   testWidgets('failure 2', (WidgetTester tester) async {
-    expect(1+1, 3); // This should fail
+    expect(1 + 1, 3); // This should fail
   });
 }
