@@ -43,14 +43,14 @@ void main() {
       log.add(methodCall);
     });
 
-    final MethodChannelConnectivity launcher = MethodChannelConnectivity();
+    final MethodChannelConnectivity connectivity = MethodChannelConnectivity();
 
     tearDown(() {
       log.clear();
     });
 
     test('checkConnectivity', () async {
-      await launcher.checkConnectivity();
+      await connectivity.checkConnectivity();
       expect(
         log,
         <Matcher>[
@@ -60,7 +60,7 @@ void main() {
     });
 
     test('getWifiName', () async {
-      await launcher.getWifiName();
+      await connectivity.getWifiName();
       expect(
         log,
         <Matcher>[
@@ -70,7 +70,7 @@ void main() {
     });
 
     test('getWifiBSSID', () async {
-      await launcher.getWifiBSSID();
+      await connectivity.getWifiBSSID();
       expect(
         log,
         <Matcher>[
@@ -80,7 +80,7 @@ void main() {
     });
 
     test('getWifiIP', () async {
-      await launcher.getWifiIP();
+      await connectivity.getWifiIP();
       expect(
         log,
         <Matcher>[
@@ -90,7 +90,7 @@ void main() {
     });
 
     test('requestLocationServiceAuthorization requestLocationServiceAuthorization set to false (default)', () async {
-      await launcher.requestLocationServiceAuthorization();
+      await connectivity.requestLocationServiceAuthorization();
       expect(
         log,
         <Matcher>[
@@ -100,7 +100,7 @@ void main() {
     });
 
     test('requestLocationServiceAuthorization requestLocationServiceAuthorization set to true', () async {
-      await launcher.requestLocationServiceAuthorization(requestAlwaysLocationUsage: true);
+      await connectivity.requestLocationServiceAuthorization(requestAlwaysLocationUsage: true);
       expect(
         log,
         <Matcher>[
@@ -110,7 +110,7 @@ void main() {
     });
 
     test('getLocationServiceAuthorization', () async {
-      await launcher.getLocationServiceAuthorization();
+      await connectivity.getLocationServiceAuthorization();
       expect(
         log,
         <Matcher>[

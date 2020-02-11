@@ -22,11 +22,7 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
 
   @override
   Future<String> getWifiName() async {
-    String wifiName = await method_channel.invokeMethod<String>('wifiName');
-    // as Android might return <unknown ssid>, uniforming result
-    // our iOS implementation will return null
-    if (wifiName == '<unknown ssid>') wifiName = null;
-    return wifiName;
+    return method_channel.invokeMethod<String>('wifiName');
   }
 
   @override
@@ -35,7 +31,6 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
   }
 
   @override
-  /// Obtains the IP address of the connected wifi network
   Future<String> getWifiIP() async {
     return await method_channel.invokeMethod<String>('wifiIPAddress');
   }

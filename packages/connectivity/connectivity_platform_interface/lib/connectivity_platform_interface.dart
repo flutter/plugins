@@ -10,7 +10,7 @@ import 'method_channel_connectivity.dart';
 
 /// The interface that implementations of connectivity must implement.
 ///
-/// Platform implementations should extend this class rather than implement it as `connectivity`
+/// Platform implementations should extend this class rather than implement it as `Connectivity`
 /// does not consider newly added methods to be breaking changes. Extending this class
 /// (using `extends`) ensures that the subclass will get the default implementation, while
 /// platform implementations that `implements` this interface will be broken by newly added
