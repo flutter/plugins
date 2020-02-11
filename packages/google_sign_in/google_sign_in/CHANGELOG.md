@@ -1,3 +1,24 @@
+## 4.1.3
+
+* Make plugin example meet naming convention.
+
+## 4.1.2
+
+* Added a new error code `network_error`, and return it when a network error occurred.
+
+## 4.1.1
+
+* Support passing `clientId` to the web plugin programmatically.
+
+## 4.1.0
+
+* Support web by default.
+* Require Flutter SDK `v1.12.13+hotfix.4` or greater.
+
+## 4.0.17
+
+* Add missing documentation and fix an unawaited future in the example app.
+
 ## 4.0.16
 
 * Remove the deprecated `author:` field from pubspec.yaml
@@ -57,8 +78,8 @@
 
 ## 4.0.3
 
-* Update guava to `27.0.1-android`.	
-* Add correct @NonNull annotations to reduce compiler warnings.	
+* Update guava to `27.0.1-android`.
+* Add correct @NonNull annotations to reduce compiler warnings.
 
 ## 4.0.2
 

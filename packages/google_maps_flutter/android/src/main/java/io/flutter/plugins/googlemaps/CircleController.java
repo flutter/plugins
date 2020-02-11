@@ -11,11 +11,13 @@ import com.google.android.gms.maps.model.LatLng;
 class CircleController implements CircleOptionsSink {
   private final Circle circle;
   private final String googleMapsCircleId;
+  private final float density;
   private boolean consumeTapEvents;
 
-  CircleController(Circle circle, boolean consumeTapEvents) {
+  CircleController(Circle circle, boolean consumeTapEvents, float density) {
     this.circle = circle;
     this.consumeTapEvents = consumeTapEvents;
+    this.density = density;
     this.googleMapsCircleId = circle.getId();
   }
 
@@ -56,7 +58,7 @@ class CircleController implements CircleOptionsSink {
 
   @Override
   public void setStrokeWidth(float strokeWidth) {
-    circle.setStrokeWidth(strokeWidth);
+    circle.setStrokeWidth(strokeWidth * density);
   }
 
   @Override

@@ -1,4 +1,4 @@
-name: example
+name: google_sign_in_example
 description: Example of Google Sign-In plugin.
 
 dependencies:

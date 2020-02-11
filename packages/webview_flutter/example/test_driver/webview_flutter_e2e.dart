@@ -245,7 +245,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           key: _globalKey,
-          initialUrl: 'https://flutter.dev/',
+          initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent1',
           onWebViewCreated: (WebViewController controller) {
@@ -263,7 +263,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           key: _globalKey,
-          initialUrl: 'https://flutter.dev/',
+          initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent2',
         ),
@@ -301,7 +301,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           key: _globalKey,
-          initialUrl: 'https://flutter.dev/',
+          initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent',
         ),
@@ -315,7 +315,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           key: _globalKey,
-          initialUrl: 'https://flutter.dev/',
+          initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
         ),
       ),
@@ -651,6 +651,59 @@ void main() {
       final String currentUrl = await controller.currentUrl();
       expect(currentUrl, 'https://www.google.com/');
     });
+  });
+
+  testWidgets('launches with gestureNavigationEnabled on iOS',
+      (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: SizedBox(
+          width: 400,
+          height: 300,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: 'https://flutter.dev/',
+            gestureNavigationEnabled: true,
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+          ),
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final String currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'https://flutter.dev/');
+  });
+
+  testWidgets('target _blank opens in same window',
+      (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final Completer<void> pageLoaded = Completer<void>();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+          onPageFinished: (String url) {
+            pageLoaded.complete(null);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    await controller.evaluateJavascript('window.open("about:blank", "_blank")');
+    await pageLoaded.future;
+    final String currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'about:blank');
   });
 }
 

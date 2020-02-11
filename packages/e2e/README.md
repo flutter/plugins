@@ -151,4 +151,33 @@ You can pass additional parameters on the command line, such as the
 devices you want to test on. See
 [gcloud firebase test android run](https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run).
 
-iOS support for Firebase Test Lab is not yet available, but is planned.
+## iOS device testing
+
+You need to change `iOS/Podfile` to avoid test target statically linking to the plugins. One way is to
+link all of the plugins dynamically:
+
+```
+target 'Runner' do
+  use_frameworks!
+  ...
+end
+```
+
+To e2e test on your iOS device (simulator or real), rebuild your iOS targets with Flutter tool.
+
+```
+flutter build ios -t test_driver/<package_name>_e2e.dart (--simulator)
+```
+
+Open Xcode project (by default, it's `ios/Runner.xcodeproj`). Create a test target
+(navigating `File > New > Target...` and set up the values) and a test file `RunnerTests.m` and
+change the code. You can change `RunnerTests.m` to the name of your choice.
+
+```objective-c
+#import <XCTest/XCTest.h>
+#import <e2e/E2EIosTest.h>
+
+E2E_IOS_RUNNER(RunnerTests)
+```
+
+Now you can start RunnerTests to kick out e2e tests!

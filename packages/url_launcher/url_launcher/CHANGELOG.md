@@ -1,3 +1,11 @@
+## 5.4.1
+
+* Update unit tests to work with the PlatformInterface from package `plugin_platform_interface`.
+
+## 5.4.0
+
+* Support macos by default.
+
 ## 5.3.0
 
 * Support web by default.
