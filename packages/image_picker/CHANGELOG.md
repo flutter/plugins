@@ -1,6 +1,6 @@
 ## 0.6.3+3
 
-* Android: Fix a crash when `externalFilesDirectory` does not exist
+* Android: Fix a crash when `externalFilesDirectory` does not exist.
 
 ## 0.6.3+2
 
