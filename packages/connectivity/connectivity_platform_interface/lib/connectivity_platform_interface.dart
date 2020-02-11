@@ -60,11 +60,13 @@ abstract class ConnectivityPlatform extends PlatformInterface {
   /// Request to authorize the location service (Only on iOS).
   Future<String> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false}) {
-    throw UnimplementedError('requestLocationServiceAuthorization() has not been implemented.');
+    throw UnimplementedError(
+        'requestLocationServiceAuthorization() has not been implemented.');
   }
 
   /// Get the current location service authorization (Only on iOS).
   Future<String> getLocationServiceAuthorization() {
-    throw UnimplementedError('getLocationServiceAuthorization() has not been implemented.');
+    throw UnimplementedError(
+        'getLocationServiceAuthorization() has not been implemented.');
   }
 }

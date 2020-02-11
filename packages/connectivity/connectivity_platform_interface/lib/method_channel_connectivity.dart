@@ -11,7 +11,8 @@ import 'connectivity_platform_interface.dart';
 
 /// The method channel used to interact with the native platform.
 @visibleForTesting
-const MethodChannel method_channel = MethodChannel('plugins.flutter.io/connectivity');
+const MethodChannel method_channel =
+    MethodChannel('plugins.flutter.io/connectivity');
 
 /// An implementation of [ConnectivityPlatform] that uses method channels.
 class MethodChannelConnectivity extends ConnectivityPlatform {

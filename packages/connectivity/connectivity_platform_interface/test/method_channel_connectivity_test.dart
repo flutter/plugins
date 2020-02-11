@@ -53,9 +53,7 @@ void main() {
       await connectivity.checkConnectivity();
       expect(
         log,
-        <Matcher>[
-          isMethodCall('check', arguments: null)
-        ],
+        <Matcher>[isMethodCall('check', arguments: null)],
       );
     });
 
@@ -63,9 +61,7 @@ void main() {
       await connectivity.getWifiName();
       expect(
         log,
-        <Matcher>[
-          isMethodCall('wifiName', arguments: null)
-        ],
+        <Matcher>[isMethodCall('wifiName', arguments: null)],
       );
     });
 
@@ -73,9 +69,7 @@ void main() {
       await connectivity.getWifiBSSID();
       expect(
         log,
-        <Matcher>[
-          isMethodCall('wifiBSSID', arguments: null)
-        ],
+        <Matcher>[isMethodCall('wifiBSSID', arguments: null)],
       );
     });
 
@@ -83,28 +77,33 @@ void main() {
       await connectivity.getWifiIP();
       expect(
         log,
-        <Matcher>[
-          isMethodCall('wifiIPAddress', arguments: null)
-        ],
+        <Matcher>[isMethodCall('wifiIPAddress', arguments: null)],
       );
     });
 
-    test('requestLocationServiceAuthorization requestLocationServiceAuthorization set to false (default)', () async {
+    test(
+        'requestLocationServiceAuthorization requestLocationServiceAuthorization set to false (default)',
+        () async {
       await connectivity.requestLocationServiceAuthorization();
       expect(
         log,
         <Matcher>[
-          isMethodCall('requestLocationServiceAuthorization', arguments: <bool>[false])
+          isMethodCall('requestLocationServiceAuthorization',
+              arguments: <bool>[false])
         ],
       );
     });
 
-    test('requestLocationServiceAuthorization requestLocationServiceAuthorization set to true', () async {
-      await connectivity.requestLocationServiceAuthorization(requestAlwaysLocationUsage: true);
+    test(
+        'requestLocationServiceAuthorization requestLocationServiceAuthorization set to true',
+        () async {
+      await connectivity.requestLocationServiceAuthorization(
+          requestAlwaysLocationUsage: true);
       expect(
         log,
         <Matcher>[
-          isMethodCall('requestLocationServiceAuthorization', arguments: <bool>[true])
+          isMethodCall('requestLocationServiceAuthorization',
+              arguments: <bool>[true])
         ],
       );
     });
