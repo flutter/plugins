@@ -49,231 +49,73 @@ void main() {
       log.clear();
     });
 
-    test('canLaunch', () async {
-      await launcher.canLaunch('http://example.com/');
+    test('checkConnectivity', () async {
+      await launcher.checkConnectivity();
       expect(
         log,
         <Matcher>[
-          isMethodCall('canLaunch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-          })
+          isMethodCall('check')
         ],
       );
     });
 
-    test('launch', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
+    test('getWifiName', () async {
+      await launcher.getWifiName();
       expect(
         log,
         <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': false,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
+          isMethodCall('wifiName')
         ],
       );
     });
 
-    test('launch with headers', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{'key': 'value'},
-      );
+    test('getWifiBSSID', () async {
+      await launcher.getWifiBSSID();
       expect(
         log,
         <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': false,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{'key': 'value'},
-          })
+          isMethodCall('wifiBSSID')
         ],
       );
     });
 
-    test('launch force SafariVC', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
+    test('getWifiIP', () async {
+      await launcher.getWifiIP();
       expect(
         log,
         <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': false,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
+          isMethodCall('wifiIPAddress')
         ],
       );
     });
 
-    test('launch universal links only', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: false,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: true,
-        headers: const <String, String>{},
-      );
+    test('requestLocationServiceAuthorization requestLocationServiceAuthorization set to false (default)', () async {
+      await launcher.requestLocationServiceAuthorization();
       expect(
         log,
         <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': false,
-            'useWebView': false,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': true,
-            'headers': <String, String>{},
-          })
+          isMethodCall('requestLocationServiceAuthorization', arguments: <bool>[false])
         ],
       );
     });
 
-    test('launch force WebView', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: true,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
+    test('requestLocationServiceAuthorization requestLocationServiceAuthorization set to true', () async {
+      await launcher.requestLocationServiceAuthorization(requestAlwaysLocationUsage: true);
       expect(
         log,
         <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': true,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
+          isMethodCall('requestLocationServiceAuthorization', arguments: <bool>[true])
         ],
       );
     });
 
-    test('launch force WebView enable javascript', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: true,
-        enableJavaScript: true,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
+    test('getLocationServiceAuthorization', () async {
+      await launcher.getLocationServiceAuthorization();
       expect(
         log,
         <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': true,
-            'enableJavaScript': true,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
+          isMethodCall('getLocationServiceAuthorization')
         ],
-      );
-    });
-
-    test('launch force WebView enable DOM storage', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: true,
-        useWebView: true,
-        enableJavaScript: false,
-        enableDomStorage: true,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': true,
-            'useWebView': true,
-            'enableJavaScript': false,
-            'enableDomStorage': true,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
-        ],
-      );
-    });
-
-    test('launch force SafariVC to false', () async {
-      await launcher.launch(
-        'http://example.com/',
-        useSafariVC: false,
-        useWebView: false,
-        enableJavaScript: false,
-        enableDomStorage: false,
-        universalLinksOnly: false,
-        headers: const <String, String>{},
-      );
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('launch', arguments: <String, Object>{
-            'url': 'http://example.com/',
-            'useSafariVC': false,
-            'useWebView': false,
-            'enableJavaScript': false,
-            'enableDomStorage': false,
-            'universalLinksOnly': false,
-            'headers': <String, String>{},
-          })
-        ],
-      );
-    });
-
-    test('closeWebView default behavior', () async {
-      await launcher.closeWebView();
-      expect(
-        log,
-        <Matcher>[isMethodCall('closeWebView', arguments: null)],
       );
     });
   });
