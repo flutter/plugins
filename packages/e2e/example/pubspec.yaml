@@ -22,6 +22,7 @@ dev_dependencies:
     path: ../
   e2e_macos:
     path: ../e2e_macos
+  test: any
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
