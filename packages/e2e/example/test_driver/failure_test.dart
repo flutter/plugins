@@ -11,8 +11,7 @@ Future<void> main() async {
     await driver.close();
     expect(
       result,
-      'failure',
-      skip: true, // https://github.com/flutter/flutter/issues/48601
+      'fail',
     );
   });
 }
