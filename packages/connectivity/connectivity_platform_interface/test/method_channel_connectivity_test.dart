@@ -54,7 +54,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('check')
+          isMethodCall('check', arguments: null)
         ],
       );
     });
@@ -64,7 +64,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('wifiName')
+          isMethodCall('wifiName', arguments: null)
         ],
       );
     });
@@ -74,7 +74,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('wifiBSSID')
+          isMethodCall('wifiBSSID', arguments: null)
         ],
       );
     });
@@ -84,7 +84,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('wifiIPAddress')
+          isMethodCall('wifiIPAddress', arguments: null)
         ],
       );
     });
@@ -114,7 +114,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('getLocationServiceAuthorization')
+          isMethodCall('getLocationServiceAuthorization', arguments: null)
         ],
       );
     });
