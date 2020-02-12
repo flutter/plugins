@@ -1,3 +1,7 @@
+## 4.1.4
+
+* Fix crash on iOS caused by null hostedDomain.
+
 ## 4.1.3
 
 * Make plugin example meet naming convention.

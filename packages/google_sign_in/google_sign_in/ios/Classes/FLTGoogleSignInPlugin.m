@@ -98,7 +98,6 @@ static FlutterError *getFlutterError(NSError *error) {
         [[GIDSignIn sharedInstance] signIn];
       } @catch (NSException *e) {
         result([FlutterError errorWithCode:@"google_sign_in" message:e.reason details:e.name]);
-        [e raise];
       }
     }
   } else if ([call.method isEqualToString:@"getTokens"]) {
