@@ -1,3 +1,7 @@
+## 0.2.4+1
+
+* Registering web service extension for using e2e with web.
+
 ## 0.2.4
 
 * Fixed problem with XCTest in XCode 11.3 where the testing bundles were getting
