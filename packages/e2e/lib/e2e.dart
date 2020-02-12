@@ -82,7 +82,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';
-      _allTestsPassed.complete(false);
+      if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(false);
       valueBeforeTest(details, testDescription);
     };
     await super.runTest(testBody, invariantTester,

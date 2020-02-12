@@ -17,12 +17,14 @@ class CirclesController {
   private final Map<String, CircleController> circleIdToController;
   private final Map<String, String> googleMapsCircleIdToDartCircleId;
   private final MethodChannel methodChannel;
+  private final float density;
   private GoogleMap googleMap;
 
-  CirclesController(MethodChannel methodChannel) {
+  CirclesController(MethodChannel methodChannel, float density) {
     this.circleIdToController = new HashMap<>();
     this.googleMapsCircleIdToDartCircleId = new HashMap<>();
     this.methodChannel = methodChannel;
+    this.density = density;
   }
 
   void setGoogleMap(GoogleMap googleMap) {
@@ -79,7 +81,7 @@ class CirclesController {
     if (circle == null) {
       return;
     }
-    CircleBuilder circleBuilder = new CircleBuilder();
+    CircleBuilder circleBuilder = new CircleBuilder(density);
     String circleId = Convert.interpretCircleOptions(circle, circleBuilder);
     CircleOptions options = circleBuilder.build();
     addCircle(circleId, options, circleBuilder.consumeTapEvents());
@@ -87,7 +89,7 @@ class CirclesController {
 
   private void addCircle(String circleId, CircleOptions circleOptions, boolean consumeTapEvents) {
     final Circle circle = googleMap.addCircle(circleOptions);
-    CircleController controller = new CircleController(circle, consumeTapEvents);
+    CircleController controller = new CircleController(circle, consumeTapEvents, density);
     circleIdToController.put(circleId, controller);
     googleMapsCircleIdToDartCircleId.put(circle.getId(), circleId);
   }

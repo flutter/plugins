@@ -1,17 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'method_channel_connectivity.dart';
 
 /// The interface that implementations of connectivity must implement.
 ///
-/// Platform implementations should extend this class rather than implement it as `connectivity`
+/// Platform implementations should extend this class rather than implement it as `Connectivity`
 /// does not consider newly added methods to be breaking changes. Extending this class
 /// (using `extends`) ensures that the subclass will get the default implementation, while
 /// platform implementations that `implements` this interface will be broken by newly added
@@ -31,8 +30,6 @@ abstract class ConnectivityPlatform extends PlatformInterface {
 
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [ConnectivityPlatform] when they register themselves.
-  // TODO(amirh): Extract common platform interface logic.
-  // https://github.com/flutter/flutter/issues/43368
   static set instance(ConnectivityPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
@@ -61,11 +58,13 @@ abstract class ConnectivityPlatform extends PlatformInterface {
   /// Request to authorize the location service (Only on iOS).
   Future<String> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false}) {
-    throw UnimplementedError('requestLocationServiceAuthorization() has not been implemented.');
+    throw UnimplementedError(
+        'requestLocationServiceAuthorization() has not been implemented.');
   }
 
   /// Get the current location service authorization (Only on iOS).
   Future<String> getLocationServiceAuthorization() {
-    throw UnimplementedError('getLocationServiceAuthorization() has not been implemented.');
+    throw UnimplementedError(
+        'getLocationServiceAuthorization() has not been implemented.');
   }
 }
