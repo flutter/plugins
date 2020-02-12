@@ -251,6 +251,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Whether to include audio when recording a video.
   final bool enableAudio;
 
+  /// The exposure compensation value which is 0 by default.
   final int exposureCompensation;
 
   int _textureId;
@@ -570,7 +571,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-  // Set the Exposure Compensation value
+  /// Set the exposure compensation value
+  ///
+  /// Throws a [CameraException] if setting exposure compensation fails.
   Future<void> applyExposureCompensation({int exposureValue = 0}) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
@@ -587,6 +590,10 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  /// Get the minimum exposure target bias value
+  ///
+  /// Throws a [CameraException] if getting minimum exposure
+  /// target bias fails.
   Future<double> getMinExposureTargetBias() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
@@ -602,6 +609,10 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  /// Get the maximum exposure target bias value
+  ///
+  /// Throws a [CameraException] if getting maximum exposure
+  /// target bias fails.
   Future<double> getMaxExposureTargetBias() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(

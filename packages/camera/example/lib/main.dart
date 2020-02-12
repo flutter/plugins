@@ -277,6 +277,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     return Row(children: toggles);
   }
 
+  // Display an exposure compensation slider to change the value of it.
   Widget _changeExposureCompensationWidget() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -298,10 +299,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               maxExposureTargetBias =
                   await controller.getMaxExposureTargetBias();
               isMinMaxExposureTargetBiasSet = true;
-              if (mounted) setState(() {});
+              if (mounted) setState(() { /* We should set state to refresh the ui and see the changed min and max values for the slider */ });
             }
           });
-          if (mounted) setState(() {});
+          if (mounted) setState(() { /* We should set state to refresh the ui and see the changed compensation effect in the camera view */ });
         },
       ),
     );
