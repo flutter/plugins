@@ -1,3 +1,7 @@
+## 0.5.8
+
+* Add feature to set exposure compensation value (brightness).
+
 ## 0.5.7+3
 
 * Fix an Android crash when permissions are requested multiple times.
