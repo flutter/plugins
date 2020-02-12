@@ -526,9 +526,11 @@ public class Camera {
   private void applyExposureCompensationRequest(CaptureRequest.Builder builderRequest, int value) {
     Range<Integer> exposureCompensationRange = getExposureCompensationRange();
     if (value > exposureCompensationRange.getUpper()) {
-      builderRequest.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, exposureCompensationRange.getUpper());
+      builderRequest.set(
+          CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, exposureCompensationRange.getUpper());
     } else if (value < exposureCompensationRange.getLower()) {
-      builderRequest.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, exposureCompensationRange.getLower());
+      builderRequest.set(
+          CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, exposureCompensationRange.getLower());
     } else {
       builderRequest.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, value);
     }

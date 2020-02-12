@@ -241,12 +241,9 @@ class CameraValue {
 ///
 /// To show the camera preview on the screen use a [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
-  CameraController(
-    this.description,
-    this.resolutionPreset, {
-    this.enableAudio = true,
-    this.exposureCompensation = 0
-  }) : super(const CameraValue.uninitialized());
+  CameraController(this.description, this.resolutionPreset,
+      {this.enableAudio = true, this.exposureCompensation = 0})
+      : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
@@ -583,8 +580,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      await _channel.invokeMethod<void>(
-          'applyExposureCompensation', <String, dynamic>{'exposureCompensation': exposureValue});
+      await _channel.invokeMethod<void>('applyExposureCompensation',
+          <String, dynamic>{'exposureCompensation': exposureValue});
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
