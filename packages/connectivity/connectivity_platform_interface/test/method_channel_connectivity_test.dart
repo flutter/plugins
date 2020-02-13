@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,8 @@ void main() {
             await ServicesBinding.instance.defaultBinaryMessenger
                 .handlePlatformMessage(
               methodChannelConnectivity.eventChannel.name,
-              methodChannelConnectivity.eventChannel.codec.encodeSuccessEnvelope('wifi'),
+              methodChannelConnectivity.eventChannel.codec
+                  .encodeSuccessEnvelope('wifi'),
               (_) {},
             );
             break;
