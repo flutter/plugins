@@ -1,3 +1,7 @@
+## 0.5.23
+
+* Add methods to programmatically control markers info windows.
+
 ## 0.5.22+3
 
 * Fix polygon and circle stroke width according to device density
