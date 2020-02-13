@@ -763,30 +763,32 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 
 - (float)getMinExposureCompensation {
-    return _captureDevice.minExposureTargetBias;
+  return _captureDevice.minExposureTargetBias;
 }
 
 - (float)getMaxExposureCompensation {
-    return _captureDevice.maxExposureTargetBias;
+  return _captureDevice.maxExposureTargetBias;
 }
 
-- (void)applyExposureCompensation:(NSNumber*)exposureValue result:(FlutterResult)result  {
+- (void)applyExposureCompensation:(NSNumber *)exposureValue result:(FlutterResult)result {
 
   NSError *error = nil;
   [_captureDevice lockForConfiguration:&error];
   if (error) {
-      result(getFlutterError(error));
+    result(getFlutterError(error));
   } else {
-      float minExposureCompensation = [self getMinExposureCompensation];
-      float maxExposureCompensation = [self getMaxExposureCompensation];
+    float minExposureCompensation = [self getMinExposureCompensation];
+    float maxExposureCompensation = [self getMaxExposureCompensation];
 
-      int exposureCompensation = MIN(exposureValue.intValue, (int)maxExposureCompensation);
-      exposureCompensation = MAX(exposureCompensation, (int)minExposureCompensation);
-      [_captureDevice setExposureTargetBias:(float)exposureCompensation completionHandler:^(CMTime syncTime) {}];
+    int exposureCompensation = MIN(exposureValue.intValue, (int)maxExposureCompensation);
+    exposureCompensation = MAX(exposureCompensation, (int)minExposureCompensation);
+    [_captureDevice setExposureTargetBias:(float)exposureCompensation
+                        completionHandler:^(CMTime syncTime) {
+                        }];
     
-      [_captureDevice unlockForConfiguration];
+    [_captureDevice unlockForConfiguration];
       
-      result(nil);
+    result(nil);
   }
 }
 
@@ -908,7 +910,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     result(@([_camera getMinExposureCompensation]));
   } else if ([@"getMaxExposureCompensation" isEqualToString:call.method]) {
     result(@([_camera getMaxExposureCompensation]));
-   } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {
+  } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {
     [_camera pauseVideoRecording];
     result(nil);
   } else if ([@"resumeVideoRecording" isEqualToString:call.method]) {
