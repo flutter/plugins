@@ -262,7 +262,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_motionManager startAccelerometerUpdates];
 
   [self setCaptureSessionPreset:_resolutionPreset];
-    
+
   return self;
 }
 
@@ -771,7 +771,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 
 - (void)applyExposureCompensation:(NSNumber *)exposureValue result:(FlutterResult)result {
-
   NSError *error = nil;
   [_captureDevice lockForConfiguration:&error];
   if (error) {
@@ -783,11 +782,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     int exposureCompensation = MIN(exposureValue.intValue, (int)maxExposureCompensation);
     exposureCompensation = MAX(exposureCompensation, (int)minExposureCompensation);
     [_captureDevice setExposureTargetBias:(float)exposureCompensation
-                        completionHandler:^(CMTime syncTime) {
+                        completionHandler:^(CMTime syncTime){
                         }];
-    
+
     [_captureDevice unlockForConfiguration];
-      
+
     result(nil);
   }
 }

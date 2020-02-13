@@ -243,8 +243,8 @@ class CameraValue {
 class CameraController extends ValueNotifier<CameraValue> {
   CameraController(
     this.description,
-    this.resolutionPreset,
-    {this.enableAudio = true,
+    this.resolutionPreset, {
+    this.enableAudio = true,
   }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
