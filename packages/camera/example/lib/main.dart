@@ -38,8 +38,8 @@ void logError(String code, String message) =>
 class _CameraExampleHomeState extends State<CameraExampleHome>
     with WidgetsBindingObserver {
   static const double initialExposureCompensation = 0.0;
-  static const double initialMinExposureTargetBias = -10.0;
-  static const double initialMaxExposureTargetBias = 10.0;
+  static const double initialMinExposureCompensation = -10.0;
+  static const double initialMaxExposureCompensation = 10.0;
   CameraController controller;
   String imagePath;
   String videoPath;
@@ -47,9 +47,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
   double exposureCompensation = initialExposureCompensation;
-  double minExposureTargetBias = initialMinExposureTargetBias;
-  double maxExposureTargetBias = initialMaxExposureTargetBias;
-  bool isMinMaxExposureTargetBiasSet = false;
+  double minExposureCompensation = initialMinExposureCompensation;
+  double maxExposureCompensation = initialMaxExposureCompensation;
+  bool isMinMaxExposureCompensationSet = false;
 
   @override
   void initState() {
@@ -283,8 +283,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       padding: const EdgeInsets.all(8.0),
       child: Slider(
         value: exposureCompensation,
-        min: minExposureTargetBias,
-        max: maxExposureTargetBias,
+        min: minExposureCompensation,
+        max: maxExposureCompensation,
         onChanged: (value) {
           exposureCompensation = value;
 
@@ -292,13 +292,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               .applyExposureCompensation(
                   exposureValue: exposureCompensation.toInt())
               .then((value) async {
-            //We should set the device camera's min and max exposure target bias if we have not set it yet.
-            if (!isMinMaxExposureTargetBiasSet) {
-              minExposureTargetBias =
-                  await controller.getMinExposureTargetBias();
-              maxExposureTargetBias =
-                  await controller.getMaxExposureTargetBias();
-              isMinMaxExposureTargetBiasSet = true;
+            //We should get and set the device camera's min and max exposure target bias once if we have not set it yet.
+            if (!isMinMaxExposureCompensationSet) {
+              minExposureCompensation =
+                  await controller.getMinExposureCompensation();
+              maxExposureCompensation =
+                  await controller.getMaxExposureCompensation();
+              isMinMaxExposureCompensationSet = true;
               if (mounted) {
                 setState(() {
                   /* We should set state to refresh the ui and see the changed min and max values for the slider */
@@ -327,12 +327,16 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       await controller.dispose();
     }
     controller = CameraController(cameraDescription, ResolutionPreset.medium,
-        enableAudio: enableAudio,
-        exposureCompensation: exposureCompensation.toInt());
+        enableAudio: enableAudio);
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
-      if (mounted) setState(() {});
+      if (mounted) {
+        setState(() {
+          //Reset the exposure compensation when the user switches between cameras.
+          exposureCompensation = 0;
+        });
+      }
       if (controller.value.hasError) {
         showInSnackBar('Camera error ${controller.value.errorDescription}');
       }

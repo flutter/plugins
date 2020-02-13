@@ -53,7 +53,6 @@ public class Camera {
   private final Size previewSize;
   private final boolean enableAudio;
 
-  private int exposureCompensation;
   private CameraDevice cameraDevice;
   private CameraCaptureSession cameraCaptureSession;
   private ImageReader pictureImageReader;
@@ -81,8 +80,7 @@ public class Camera {
       final DartMessenger dartMessenger,
       final String cameraName,
       final String resolutionPreset,
-      final boolean enableAudio,
-      final int exposureCompensation)
+      final boolean enableAudio)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
@@ -90,7 +88,6 @@ public class Camera {
 
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
-    this.exposureCompensation = exposureCompensation;
     this.flutterTexture = flutterTexture;
     this.dartMessenger = dartMessenger;
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
@@ -256,8 +253,6 @@ public class Camera {
       captureBuilder.addTarget(pictureImageReader.getSurface());
       captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
 
-      applyExposureCompensationRequest(captureBuilder, exposureCompensation);
-
       cameraCaptureSession.capture(
           captureBuilder.build(),
           new CameraCaptureSession.CaptureCallback() {
@@ -328,8 +323,6 @@ public class Camera {
               cameraCaptureSession = session;
               captureRequestBuilder.set(
                   CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-
-              applyExposureCompensationRequest(captureRequestBuilder, exposureCompensation);
 
               cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               if (onSuccessCallback != null) {
@@ -490,7 +483,6 @@ public class Camera {
     try {
       applyExposureCompensationRequest(captureRequestBuilder, value);
 
-      exposureCompensation = value;
       cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
 
       result.success(null);
@@ -499,12 +491,12 @@ public class Camera {
     }
   }
 
-  public double getMaxExposureTargetBias() {
+  public double getMaxExposureCompensation() {
     Range<Integer> exposureCompensationRange = getExposureCompensationRange();
     return exposureCompensationRange.getUpper().doubleValue();
   }
 
-  public double getMinExposureTargetBias() {
+  public double getMinExposureCompensation() {
     Range<Integer> exposureCompensationRange = getExposureCompensationRange();
     return exposureCompensationRange.getLower().doubleValue();
   }

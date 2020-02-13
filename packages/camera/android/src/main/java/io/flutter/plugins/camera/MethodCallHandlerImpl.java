@@ -128,14 +128,14 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           camera.applyExposureCompensation(result, call.argument("exposureCompensation"));
           break;
         }
-      case "getMaxExposureTargetBias":
+      case "getMaxExposureCompensation":
         {
-          result.success(camera.getMaxExposureTargetBias());
+          result.success(camera.getMaxExposureCompensation());
           break;
         }
-      case "getMinExposureTargetBias":
+      case "getMinExposureCompensation":
         {
-          result.success(camera.getMinExposureTargetBias());
+          result.success(camera.getMinExposureCompensation());
           break;
         }
       case "dispose":
@@ -160,7 +160,6 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     String cameraName = call.argument("cameraName");
     String resolutionPreset = call.argument("resolutionPreset");
     boolean enableAudio = call.argument("enableAudio");
-    int exposureCompensation = call.argument("exposureCompensation");
     TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture =
         textureRegistry.createSurfaceTexture();
     DartMessenger dartMessenger = new DartMessenger(messenger, flutterSurfaceTexture.id());
@@ -171,8 +170,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
             dartMessenger,
             cameraName,
             resolutionPreset,
-            enableAudio,
-            exposureCompensation);
+            enableAudio);
 
     camera.open(result);
   }
