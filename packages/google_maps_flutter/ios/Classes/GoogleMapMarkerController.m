@@ -26,6 +26,17 @@ static void InterpretInfoWindow(id<FLTGoogleMapMarkerOptionsSink> sink, NSDictio
   }
   return self;
 }
+- (void)showInfoWindow {
+  _mapView.selectedMarker = _marker;
+}
+- (void)hideInfoWindow {
+  if (_mapView.selectedMarker == _marker) {
+    _mapView.selectedMarker = nil;
+  }
+}
+- (BOOL)isInfoWindowShown {
+  return _mapView.selectedMarker == _marker;
+}
 - (BOOL)consumeTapEvents {
   return _consumeTapEvents;
 }
@@ -298,6 +309,38 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
 - (void)onInfoWindowTap:(NSString*)markerId {
   if (markerId && _markerIdToController[markerId]) {
     [_methodChannel invokeMethod:@"infoWindow#onTap" arguments:@{@"markerId" : markerId}];
+  }
+}
+- (void)showMarkerInfoWindow:(NSString*)markerId result:(FlutterResult)result {
+  FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
+  if (controller) {
+    [controller showInfoWindow];
+    result(nil);
+  } else {
+    result([FlutterError errorWithCode:@"Invalid markerId"
+                               message:@"showInfoWindow called with invalid markerId"
+                               details:nil]);
+  }
+}
+- (void)hideMarkerInfoWindow:(NSString*)markerId result:(FlutterResult)result {
+  FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
+  if (controller) {
+    [controller hideInfoWindow];
+    result(nil);
+  } else {
+    result([FlutterError errorWithCode:@"Invalid markerId"
+                               message:@"hideInfoWindow called with invalid markerId"
+                               details:nil]);
+  }
+}
+- (void)isMarkerInfoWindowShown:(NSString*)markerId result:(FlutterResult)result {
+  FLTGoogleMapMarkerController* controller = _markerIdToController[markerId];
+  if (controller) {
+    result(@([controller isInfoWindowShown]));
+  } else {
+    result([FlutterError errorWithCode:@"Invalid markerId"
+                               message:@"isInfoWindowShown called with invalid markerId"
+                               details:nil]);
   }
 }
 

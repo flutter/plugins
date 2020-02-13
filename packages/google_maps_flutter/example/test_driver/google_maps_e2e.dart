@@ -753,4 +753,39 @@ void main() {
     final LatLngBounds bounds2 = await controller.getVisibleRegion();
     expect(bounds1, bounds2);
   });
+
+  testWidgets('testToggleInfoWindow', (WidgetTester tester) async {
+    final Marker marker = Marker(
+        markerId: MarkerId("marker"),
+        infoWindow: InfoWindow(title: "InfoWindow"));
+    final Set<Marker> markers = <Marker>{marker};
+
+    Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        initialCameraPosition: const CameraPosition(target: LatLng(10.0, 15.0)),
+        markers: markers,
+        onMapCreated: (GoogleMapController googleMapController) {
+          controllerCompleter.complete(googleMapController);
+        },
+      ),
+    ));
+
+    GoogleMapController controller = await controllerCompleter.future;
+
+    bool iwVisibleStatus =
+        await controller.isMarkerInfoWindowShown(marker.markerId);
+    expect(iwVisibleStatus, false);
+
+    await controller.showMarkerInfoWindow(marker.markerId);
+    iwVisibleStatus = await controller.isMarkerInfoWindowShown(marker.markerId);
+    expect(iwVisibleStatus, true);
+
+    await controller.hideMarkerInfoWindow(marker.markerId);
+    iwVisibleStatus = await controller.isMarkerInfoWindowShown(marker.markerId);
+    expect(iwVisibleStatus, false);
+  });
 }

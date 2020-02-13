@@ -63,6 +63,35 @@ class MarkersController {
     }
   }
 
+  void showMarkerInfoWindow(String markerId, MethodChannel.Result result) {
+    MarkerController markerController = markerIdToController.get(markerId);
+    if (markerController != null) {
+      markerController.showInfoWindow();
+      result.success(null);
+    } else {
+      result.error("Invalid markerId", "showInfoWindow called with invalid markerId", null);
+    }
+  }
+
+  void hideMarkerInfoWindow(String markerId, MethodChannel.Result result) {
+    MarkerController markerController = markerIdToController.get(markerId);
+    if (markerController != null) {
+      markerController.hideInfoWindow();
+      result.success(null);
+    } else {
+      result.error("Invalid markerId", "hideInfoWindow called with invalid markerId", null);
+    }
+  }
+
+  void isInfoWindowShown(String markerId, MethodChannel.Result result) {
+    MarkerController markerController = markerIdToController.get(markerId);
+    if (markerController != null) {
+      result.success(markerController.isInfoWindowShown());
+    } else {
+      result.error("Invalid markerId", "isInfoWindowShown called with invalid markerId", null);
+    }
+  }
+
   boolean onMarkerTap(String googleMarkerId) {
     String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
     if (markerId == null) {
