@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
@@ -47,6 +48,30 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   VideoFormat get formatHint => null;
+
+  @override
+  Future<ClosedCaptionFile> get closedCaptionFile => _loadClosedCaption();
+}
+
+Future<ClosedCaptionFile> _loadClosedCaption() async =>
+    _FakeClosedCaptionFile();
+
+class _FakeClosedCaptionFile extends ClosedCaptionFile {
+  @override
+  List<Caption> get captions {
+    return <Caption>[
+      Caption(
+        text: 'one',
+        start: Duration(milliseconds: 100),
+        end: Duration(milliseconds: 200),
+      ),
+      Caption(
+        text: 'two',
+        start: Duration(milliseconds: 300),
+        end: Duration(milliseconds: 400),
+      ),
+    ];
+  }
 }
 
 void main() {
@@ -82,6 +107,51 @@ void main() {
           (Widget widget) => widget is Texture && widget.textureId == 102,
         ),
         findsOneWidget);
+  });
+
+  group('ClosedCaption widget', () {
+    testWidgets('uses a default text style', (WidgetTester tester) async {
+      final String text = 'foo';
+      await tester.pumpWidget(MaterialApp(home: ClosedCaption(text: text)));
+
+      final Text textWidget = tester.widget<Text>(find.text(text));
+      expect(textWidget.style.fontSize, 36.0);
+      expect(textWidget.style.color, Colors.white);
+    });
+
+    testWidgets('uses given text and style', (WidgetTester tester) async {
+      final String text = 'foo';
+      final TextStyle textStyle = TextStyle(fontSize: 14.725);
+      await tester.pumpWidget(MaterialApp(
+        home: ClosedCaption(
+          text: text,
+          textStyle: textStyle,
+        ),
+      ));
+      expect(find.text(text), findsOneWidget);
+
+      final Text textWidget = tester.widget<Text>(find.text(text));
+      expect(textWidget.style.fontSize, textStyle.fontSize);
+    });
+
+    testWidgets('handles null text', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: ClosedCaption(text: null)));
+      expect(find.byType(Text), findsNothing);
+    });
+
+    testWidgets('Passes text contrast ratio guidelines',
+        (WidgetTester tester) async {
+      final String text = 'foo';
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          backgroundColor: Colors.white,
+          body: ClosedCaption(text: text),
+        ),
+      ));
+      expect(find.text(text), findsOneWidget);
+
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+    }, skip: isBrowser);
   });
 
   group('VideoPlayerController', () {
@@ -270,6 +340,34 @@ void main() {
       });
     });
 
+    group('caption', () {
+      test('works when seeking', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          closedCaptionFile: _loadClosedCaption(),
+        );
+
+        await controller.initialize();
+        expect(controller.value.position, const Duration());
+        expect(controller.value.caption.text, isNull);
+
+        await controller.seekTo(const Duration(milliseconds: 100));
+        expect(controller.value.caption.text, 'one');
+
+        await controller.seekTo(const Duration(milliseconds: 250));
+        expect(controller.value.caption.text, isNull);
+
+        await controller.seekTo(const Duration(milliseconds: 300));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 500));
+        expect(controller.value.caption.text, isNull);
+
+        await controller.seekTo(const Duration(milliseconds: 300));
+        expect(controller.value.caption.text, 'two');
+      });
+    });
+
     group('Platform callbacks', () {
       testWidgets('playing completed', (WidgetTester tester) async {
         final VideoPlayerController controller = VideoPlayerController.network(
@@ -359,6 +457,7 @@ void main() {
 
       expect(uninitialized.duration, isNull);
       expect(uninitialized.position, equals(const Duration(seconds: 0)));
+      expect(uninitialized.caption, equals(const Caption()));
       expect(uninitialized.buffered, isEmpty);
       expect(uninitialized.isPlaying, isFalse);
       expect(uninitialized.isLooping, isFalse);
@@ -378,6 +477,7 @@ void main() {
 
       expect(error.duration, isNull);
       expect(error.position, equals(const Duration(seconds: 0)));
+      expect(error.caption, equals(const Caption()));
       expect(error.buffered, isEmpty);
       expect(error.isPlaying, isFalse);
       expect(error.isLooping, isFalse);
@@ -395,6 +495,7 @@ void main() {
       const Duration duration = Duration(seconds: 5);
       const Size size = Size(400, 300);
       const Duration position = Duration(seconds: 1);
+      const Caption caption = Caption(text: 'foo');
       final List<DurationRange> buffered = <DurationRange>[
         DurationRange(const Duration(seconds: 0), const Duration(seconds: 4))
       ];
@@ -407,6 +508,7 @@ void main() {
           duration: duration,
           size: size,
           position: position,
+          caption: caption,
           buffered: buffered,
           isPlaying: isPlaying,
           isLooping: isLooping,
@@ -414,7 +516,7 @@ void main() {
           volume: volume);
 
       expect(value.toString(),
-          'VideoPlayerValue(duration: 0:00:05.000000, size: Size(400.0, 300.0), position: 0:00:01.000000, buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], isPlaying: true, isLooping: true, isBuffering: truevolume: 0.5, errorDescription: null)');
+          'VideoPlayerValue(duration: 0:00:05.000000, size: Size(400.0, 300.0), position: 0:00:01.000000, caption: Instance of \'Caption\', buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], isPlaying: true, isLooping: true, isBuffering: truevolume: 0.5, errorDescription: null)');
     });
 
     test('copyWith()', () {
