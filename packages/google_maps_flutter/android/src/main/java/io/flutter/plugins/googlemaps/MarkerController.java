@@ -93,4 +93,16 @@ class MarkerController implements MarkerOptionsSink {
   boolean consumeTapEvents() {
     return consumeTapEvents;
   }
+
+  public void showInfoWindow() {
+    marker.showInfoWindow();
+  }
+
+  public void hideInfoWindow() {
+    marker.hideInfoWindow();
+  }
+
+  public boolean isInfoWindowShown() {
+    return marker.isInfoWindowShown();
+  }
 }

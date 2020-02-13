@@ -236,4 +236,46 @@ class GoogleMapController {
         'map#getLatLng', screenCoordinate._toJson());
     return LatLng(latLng[0], latLng[1]);
   }
+
+  /// Programmatically show the Info Window for a [Marker].
+  ///
+  /// The `markerId` must match one of the markers on the map.
+  /// An invalid `markerId` triggers an "Invalid markerId" error.
+  ///
+  /// * See also:
+  ///   * [hideMarkerInfoWindow] to hide the Info Window.
+  ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
+  Future<void> showMarkerInfoWindow(MarkerId markerId) async {
+    assert(markerId != null);
+    await channel.invokeMethod<void>(
+        'markers#showInfoWindow', <String, String>{'markerId': markerId.value});
+  }
+
+  /// Programmatically hide the Info Window for a [Marker].
+  ///
+  /// The `markerId` must match one of the markers on the map.
+  /// An invalid `markerId` triggers an "Invalid markerId" error.
+  ///
+  /// * See also:
+  ///   * [showMarkerInfoWindow] to show the Info Window.
+  ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
+  Future<void> hideMarkerInfoWindow(MarkerId markerId) async {
+    assert(markerId != null);
+    await channel.invokeMethod<void>(
+        'markers#hideInfoWindow', <String, String>{'markerId': markerId.value});
+  }
+
+  /// Returns `true` when the [InfoWindow] is showing, `false` otherwise.
+  ///
+  /// The `markerId` must match one of the markers on the map.
+  /// An invalid `markerId` triggers an "Invalid markerId" error.
+  ///
+  /// * See also:
+  ///   * [showMarkerInfoWindow] to show the Info Window.
+  ///   * [hideMarkerInfoWindow] to hide the Info Window.
+  Future<bool> isMarkerInfoWindowShown(MarkerId markerId) async {
+    assert(markerId != null);
+    return await channel.invokeMethod<bool>('markers#isInfoWindowShown',
+        <String, String>{'markerId': markerId.value});
+  }
 }
