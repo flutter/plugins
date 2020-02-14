@@ -5,7 +5,7 @@ dependencies:
   flutter:
     sdk: flutter
   connectivity:
-    path: ../../connectivity
+    path: ../
   connectivity_macos:
     path: ../../connectivity_macos
 
