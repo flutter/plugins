@@ -1,3 +1,11 @@
+## 0.5.23+1
+
+* Move core plugin to its own subdirectory, to prepare for federation.
+
+## 0.5.23
+
+* Add methods to programmatically control markers info windows.
+
 ## 0.5.22+3
 
 * Fix polygon and circle stroke width according to device density

@@ -27,9 +27,18 @@ static NSString *const kMethodTestFinished = @"allTestsFinished";
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  // No initialization happens here because of the way XCTest loads the testing
+  // bundles.  Setup on static variables can be disregarded when a new static
+  // instance of E2EPlugin is allocated when the bundle is reloaded.
+  // See also: https://github.com/flutter/plugins/pull/2465
+}
+
+- (void)setupChannels:(id<FlutterBinaryMessenger>)binaryMessenger {
   FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:kE2EPluginChannel
-                                                              binaryMessenger:registrar.messenger];
-  [registrar addMethodCallDelegate:[E2EPlugin instance] channel:channel];
+                                                              binaryMessenger:binaryMessenger];
+  [channel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
+    [self handleMethodCall:call result:result];
+  }];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

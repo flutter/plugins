@@ -303,6 +303,24 @@ final class GoogleMapController
           result.success(null);
           break;
         }
+      case "markers#showInfoWindow":
+        {
+          Object markerId = call.argument("markerId");
+          markersController.showMarkerInfoWindow((String) markerId, result);
+          break;
+        }
+      case "markers#hideInfoWindow":
+        {
+          Object markerId = call.argument("markerId");
+          markersController.hideMarkerInfoWindow((String) markerId, result);
+          break;
+        }
+      case "markers#isInfoWindowShown":
+        {
+          Object markerId = call.argument("markerId");
+          markersController.isInfoWindowShown((String) markerId, result);
+          break;
+        }
       case "polygons#update":
         {
           Object polygonsToAdd = call.argument("polygonsToAdd");
