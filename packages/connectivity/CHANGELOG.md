@@ -1,7 +1,3 @@
-## 0.4.7
-
-* Migrate the plugin to use the ConnectivityMethodChannel implementation from the connectivity_platform_interface package.
-
 ## 0.4.6+2
 
 * Migrate deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
