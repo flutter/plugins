@@ -42,7 +42,7 @@ void main() {
         final MockCameraConfigurator configurator = MockCameraConfigurator();
 
         final CameraController controller1 =
-            CameraController.customConfigurator(
+        CameraController.customConfigurator(
           description: description,
           configurator: configurator,
         );
@@ -50,7 +50,7 @@ void main() {
         controller1.initialize();
 
         final CameraController controller2 =
-            CameraController.customConfigurator(
+        CameraController.customConfigurator(
           description: description,
           configurator: configurator,
         );
@@ -58,12 +58,12 @@ void main() {
         controller2.initialize();
 
         expect(
-          () => controller1.start(),
+              () => controller1.start(),
           throwsA(isInstanceOf<AssertionError>()),
         );
 
         expect(
-          () => controller1.stop(),
+              () => controller1.stop(),
           throwsA(isInstanceOf<AssertionError>()),
         );
 
