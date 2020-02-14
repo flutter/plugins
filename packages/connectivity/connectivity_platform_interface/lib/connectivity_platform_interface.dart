@@ -6,7 +6,10 @@ import 'dart:async';
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'method_channel_connectivity.dart';
+import 'src/enums.dart';
+import 'src/method_channel_connectivity.dart';
+
+export 'src/enums.dart';
 
 /// The interface that implementations of connectivity must implement.
 ///
@@ -36,8 +39,14 @@ abstract class ConnectivityPlatform extends PlatformInterface {
   }
 
   /// Checks the connection status of the device.
-  Future<String> checkConnectivity() {
+  Future<ConnectivityResult> checkConnectivity() {
     throw UnimplementedError('checkConnectivity() has not been implemented.');
+  }
+
+  /// Returns a Stream of ConnectivityResults changes.
+  Stream<ConnectivityResult> get onConnectivityChanged {
+    throw UnimplementedError(
+        'get onConnectivityChanged has not been implemented.');
   }
 
   /// Obtains the wifi name (SSID) of the connected network
@@ -56,14 +65,14 @@ abstract class ConnectivityPlatform extends PlatformInterface {
   }
 
   /// Request to authorize the location service (Only on iOS).
-  Future<String> requestLocationServiceAuthorization(
+  Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false}) {
     throw UnimplementedError(
         'requestLocationServiceAuthorization() has not been implemented.');
   }
 
   /// Get the current location service authorization (Only on iOS).
-  Future<String> getLocationServiceAuthorization() {
+  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
     throw UnimplementedError(
         'getLocationServiceAuthorization() has not been implemented.');
   }

@@ -2,129 +2,152 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:mockito/mockito.dart';
+import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
-import 'package:connectivity_platform_interface/method_channel_connectivity.dart';
-import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
+import 'package:connectivity_platform_interface/src/method_channel_connectivity.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$ConnectivityPlatform', () {
-    test('$MethodChannelConnectivity() is the default instance', () {
-      expect(ConnectivityPlatform.instance,
-          isInstanceOf<MethodChannelConnectivity>());
-    });
-
-    test('Cannot be implemented with `implements`', () {
-      expect(() {
-        ConnectivityPlatform.instance = ImplementsConnectivityPlatform();
-      }, throwsA(isInstanceOf<AssertionError>()));
-    });
-
-    test('Can be mocked with `implements`', () {
-      final ConnectivityPlatformMock mock = ConnectivityPlatformMock();
-      ConnectivityPlatform.instance = mock;
-    });
-
-    test('Can be extended', () {
-      ConnectivityPlatform.instance = ExtendsConnectivityPlatform();
-    });
-  });
-
   group('$MethodChannelConnectivity', () {
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/connectivity');
     final List<MethodCall> log = <MethodCall>[];
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      log.add(methodCall);
-    });
+    MethodChannelConnectivity methodChannelConnectivity;
 
-    final MethodChannelConnectivity connectivity = MethodChannelConnectivity();
+    setUp(() async {
+      methodChannelConnectivity = MethodChannelConnectivity();
 
-    tearDown(() {
+      methodChannelConnectivity.methodChannel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
+        log.add(methodCall);
+        switch (methodCall.method) {
+          case 'check':
+            return 'wifi';
+          case 'wifiName':
+            return '1337wifi';
+          case 'wifiBSSID':
+            return 'c0:ff:33:c0:d3:55';
+          case 'wifiIPAddress':
+            return '127.0.0.1';
+          case 'requestLocationServiceAuthorization':
+            return 'authorizedAlways';
+          case 'getLocationServiceAuthorization':
+            return 'authorizedAlways';
+          default:
+            return null;
+        }
+      });
       log.clear();
+      MethodChannel(methodChannelConnectivity.eventChannel.name)
+          .setMockMethodCallHandler((MethodCall methodCall) async {
+        switch (methodCall.method) {
+          case 'listen':
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+              methodChannelConnectivity.eventChannel.name,
+              methodChannelConnectivity.eventChannel.codec
+                  .encodeSuccessEnvelope('wifi'),
+              (_) {},
+            );
+            break;
+          case 'cancel':
+          default:
+            return null;
+        }
+      });
     });
 
-    test('checkConnectivity', () async {
-      await connectivity.checkConnectivity();
-      expect(
-        log,
-        <Matcher>[isMethodCall('check', arguments: null)],
-      );
+    test('onConnectivityChanged', () async {
+      final ConnectivityResult result =
+          await methodChannelConnectivity.onConnectivityChanged.first;
+      expect(result, ConnectivityResult.wifi);
     });
 
     test('getWifiName', () async {
-      await connectivity.getWifiName();
-      expect(
-        log,
-        <Matcher>[isMethodCall('wifiName', arguments: null)],
-      );
-    });
-
-    test('getWifiBSSID', () async {
-      await connectivity.getWifiBSSID();
-      expect(
-        log,
-        <Matcher>[isMethodCall('wifiBSSID', arguments: null)],
-      );
-    });
-
-    test('getWifiIP', () async {
-      await connectivity.getWifiIP();
-      expect(
-        log,
-        <Matcher>[isMethodCall('wifiIPAddress', arguments: null)],
-      );
-    });
-
-    test(
-        'requestLocationServiceAuthorization requestLocationServiceAuthorization set to false (default)',
-        () async {
-      await connectivity.requestLocationServiceAuthorization();
+      final String result = await methodChannelConnectivity.getWifiName();
+      expect(result, '1337wifi');
       expect(
         log,
         <Matcher>[
-          isMethodCall('requestLocationServiceAuthorization',
-              arguments: <bool>[false])
+          isMethodCall(
+            'wifiName',
+            arguments: null,
+          ),
         ],
       );
     });
 
-    test(
-        'requestLocationServiceAuthorization requestLocationServiceAuthorization set to true',
-        () async {
-      await connectivity.requestLocationServiceAuthorization(
-          requestAlwaysLocationUsage: true);
+    test('getWifiBSSID', () async {
+      final String result = await methodChannelConnectivity.getWifiBSSID();
+      expect(result, 'c0:ff:33:c0:d3:55');
       expect(
         log,
         <Matcher>[
-          isMethodCall('requestLocationServiceAuthorization',
-              arguments: <bool>[true])
+          isMethodCall(
+            'wifiBSSID',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
+    test('getWifiIP', () async {
+      final String result = await methodChannelConnectivity.getWifiIP();
+      expect(result, '127.0.0.1');
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'wifiIPAddress',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
+    test('requestLocationServiceAuthorization', () async {
+      final LocationAuthorizationStatus result =
+          await methodChannelConnectivity.requestLocationServiceAuthorization();
+      expect(result, LocationAuthorizationStatus.authorizedAlways);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'requestLocationServiceAuthorization',
+            arguments: <bool>[false],
+          ),
         ],
       );
     });
 
     test('getLocationServiceAuthorization', () async {
-      await connectivity.getLocationServiceAuthorization();
+      final LocationAuthorizationStatus result =
+          await methodChannelConnectivity.getLocationServiceAuthorization();
+      expect(result, LocationAuthorizationStatus.authorizedAlways);
       expect(
         log,
         <Matcher>[
-          isMethodCall('getLocationServiceAuthorization', arguments: null)
+          isMethodCall(
+            'getLocationServiceAuthorization',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
+    test('checkConnectivity', () async {
+      final ConnectivityResult result =
+          await methodChannelConnectivity.checkConnectivity();
+      expect(result, ConnectivityResult.wifi);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'check',
+            arguments: null,
+          ),
         ],
       );
     });
   });
 }
-
-class ConnectivityPlatformMock extends Mock
-    with MockPlatformInterfaceMixin
-    implements ConnectivityPlatform {}
-
-class ImplementsConnectivityPlatform extends Mock
-    implements ConnectivityPlatform {}
-
-class ExtendsConnectivityPlatform extends ConnectivityPlatform {}
