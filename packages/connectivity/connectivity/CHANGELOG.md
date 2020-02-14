@@ -1,3 +1,7 @@
+## 0.4.8
+
+* Adds macOS as an endorsed platform.
+
 ## 0.4.7
 
 * Migrate the plugin to use the ConnectivityMethodChannel implementation from the connectivity_platform_interface package.
