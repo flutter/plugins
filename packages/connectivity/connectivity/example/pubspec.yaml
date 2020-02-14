@@ -5,9 +5,9 @@ dependencies:
   flutter:
     sdk: flutter
   connectivity:
-    path: ../
+    path: ../../connectivity
   connectivity_macos:
-    path: ../connectivity_macos
+    path: ../../connectivity_macos
 
 dev_dependencies:
   flutter_driver:
