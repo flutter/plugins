@@ -390,6 +390,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return nil;
 }
 
+/// This method allows you to dispose without touching the event channel.  This
+/// is useful for the case where the Engine is in the process of deconstruction
+/// so the channel is going to die or is already dead.
 - (void)disposeSansEventChannel {
   _disposed = true;
   [_displayLink invalidate];
@@ -422,7 +425,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 @property(readonly, weak, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
 @property(readonly, nonatomic) NSMutableDictionary* players;
 @property(readonly, weak, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
-
 @end
 
 @implementation FLTVideoPlayerPlugin
