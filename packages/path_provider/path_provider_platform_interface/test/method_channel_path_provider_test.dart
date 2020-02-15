@@ -11,7 +11,8 @@ void main() {
 
   group('$PathProviderPlatform', () {
     test('$MethodChannelPathProvider() is the default instance', () {
-      expect(PathProviderPlatform.instance, isInstanceOf<MethodChannelPathProvider>());
+      expect(PathProviderPlatform.instance,
+          isInstanceOf<MethodChannelPathProvider>());
     });
 
     test('Cannot be implemented with `implements`', () {
@@ -31,7 +32,8 @@ void main() {
   });
 
   group('$MethodChannelPathProvider', () {
-    const MethodChannel channel = MethodChannel('plugins.flutter.io/path_provider');
+    const MethodChannel channel =
+        MethodChannel('plugins.flutter.io/path_provider');
     final List<MethodCall> log = <MethodCall>[];
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       log.add(methodCall);
@@ -54,7 +56,9 @@ void main() {
       await pathProvider.getApplicationSupportDirectory();
       expect(
         log,
-        <Matcher>[isMethodCall('getApplicationSupportDirectory', arguments: null)],
+        <Matcher>[
+          isMethodCall('getApplicationSupportDirectory', arguments: null)
+        ],
       );
     });
 
@@ -70,7 +74,9 @@ void main() {
       await pathProvider.getApplicationDocumentsDirectory();
       expect(
         log,
-        <Matcher>[isMethodCall('getApplicationDocumentsDirectory', arguments: null)],
+        <Matcher>[
+          isMethodCall('getApplicationDocumentsDirectory', arguments: null)
+        ],
       );
     });
 
@@ -95,7 +101,8 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('getExternalStorageDirectories', arguments: <String, Object>{'type': null})
+          isMethodCall('getExternalStorageDirectories',
+              arguments: <String, Object>{'type': null})
         ],
       );
     });
@@ -106,7 +113,8 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('getExternalStorageDirectories', arguments: <String, Object>{'type': type.index})
+            isMethodCall('getExternalStorageDirectories',
+                arguments: <String, Object>{'type': type.index})
           ],
         );
         log.clear();
@@ -123,8 +131,11 @@ void main() {
   });
 }
 
-class PathProviderPlatformMock extends Mock with MockPlatformInterfaceMixin implements PathProviderPlatform {}
+class PathProviderPlatformMock extends Mock
+    with MockPlatformInterfaceMixin
+    implements PathProviderPlatform {}
 
-class ImplementsPathProviderPlatform extends Mock implements PathProviderPlatform {}
+class ImplementsPathProviderPlatform extends Mock
+    implements PathProviderPlatform {}
 
 class ExtendsPathProviderPlatform extends PathProviderPlatform {}
