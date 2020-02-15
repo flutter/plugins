@@ -9,6 +9,7 @@ import 'path_provider_platform_interface.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/path_provider');
 
+/// The MethodChannel implementation of the [PathProviderPlatform].
 class MethodChannelPathProvider extends PathProviderPlatform {
   /// Path to the temporary directory on the device that is not backed up and is
   /// suitable for storing caches of downloaded files.
