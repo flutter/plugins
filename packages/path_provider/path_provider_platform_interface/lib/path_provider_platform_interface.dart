@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' show Directory;
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 

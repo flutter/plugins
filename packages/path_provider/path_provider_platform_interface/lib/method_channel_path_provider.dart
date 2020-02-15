@@ -5,22 +5,11 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
-import 'package:platform/platform.dart';
 import 'path_provider_platform_interface.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/path_provider');
 
 class MethodChannelPathProvider extends PathProviderPlatform {
-  Platform _platform = const LocalPlatform();
-
-  /// This API is only exposed for the unit tests. It should not be used by
-  /// any code outside of the plugin itself.
-  @visibleForTesting
-  void setMockPathProviderPlatform(Platform platform) {
-    _platform = platform;
-  }
-
   /// Path to the temporary directory on the device that is not backed up and is
   /// suitable for storing caches of downloaded files.
   ///
