@@ -157,4 +157,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
     };
   }
+
+  @override
+  Future<void> setInitialScale(int scaleInPercent) {
+    return _channel.invokeMethod<void>("setInitialScale", scaleInPercent);
+  }
 }

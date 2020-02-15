@@ -167,6 +167,11 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView getTitle is not implemented on the current platform");
   }
+
+  Future<void> setInitialScale(int scaleInPercent) {
+    throw UnimplementedError(
+        "WebView setInitialScale is not implemented on the current platform");
+  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.

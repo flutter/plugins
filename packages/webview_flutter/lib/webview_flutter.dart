@@ -659,6 +659,10 @@ class WebViewController {
   Future<String> getTitle() {
     return _webViewPlatformController.getTitle();
   }
+
+  Future<void> setInitialScale(int scaleInPercent) {
+    return _webViewPlatformController.setInitialScale(scaleInPercent);
+  }
 }
 
 /// Manages cookies pertaining to all [WebView]s.

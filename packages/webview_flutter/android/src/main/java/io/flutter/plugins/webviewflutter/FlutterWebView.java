@@ -158,6 +158,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getTitle":
         getTitle(result);
         break;
+      case "setInitialScale":
+        setInitialScale(methodCall, result);
+        break;
       default:
         result.notImplemented();
     }
@@ -252,6 +255,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void getTitle(Result result) {
     result.success(webView.getTitle());
+  }
+
+  private void setInitialScale(MethodCall methodCall, Result result) {
+    final Integer scaleInPercent = (Integer) methodCall.arguments;
+    webView.setInitialScale(scaleInPercent);
+    result.success(null);
   }
 
   private void applySettings(Map<String, Object> settings) {
