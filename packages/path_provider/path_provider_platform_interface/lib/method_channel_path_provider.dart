@@ -3,15 +3,13 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Directory;
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
 import 'path_provider_platform_interface.dart';
 
-const MethodChannel _channel =
-    MethodChannel('plugins.flutter.io/path_provider');
+const MethodChannel _channel = MethodChannel('plugins.flutter.io/path_provider');
 
 class MethodChannelPathProvider extends PathProviderPlatform {
   Platform _platform = const LocalPlatform();
@@ -35,13 +33,8 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   ///
   /// On Android, this uses the `getCacheDir` API on the context.
   @override
-  Future<Directory> getTemporaryDirectory() async {
-    final String path =
-        await _channel.invokeMethod<String>('getTemporaryDirectory');
-    if (path == null) {
-      return null;
-    }
-    return Directory(path);
+  Future<String> getTemporaryDirectory() {
+    return _channel.invokeMethod<String>('getTemporaryDirectory');
   }
 
   /// Path to a directory where the application may place application support
@@ -55,14 +48,8 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   ///
   /// On Android, this function uses the `getFilesDir` API on the context.
   @override
-  Future<Directory> getApplicationSupportDirectory() async {
-    final String path =
-        await _channel.invokeMethod<String>('getApplicationSupportDirectory');
-    if (path == null) {
-      return null;
-    }
-
-    return Directory(path);
+  Future<String> getApplicationSupportDirectory() {
+    return _channel.invokeMethod<String>('getApplicationSupportDirectory');
   }
 
   /// Path to the directory where application can store files that are persistent,
@@ -71,16 +58,8 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   /// On Android, this function throws an [UnsupportedError] as no equivalent
   /// path exists.
   @override
-  Future<Directory> getLibraryDirectory() async {
-    if (_platform.isAndroid) {
-      throw UnsupportedError('Functionality not available on Android');
-    }
-    final String path =
-        await _channel.invokeMethod<String>('getLibraryDirectory');
-    if (path == null) {
-      return null;
-    }
-    return Directory(path);
+  Future<String> getLibraryDirectory() {
+    return _channel.invokeMethod<String>('getLibraryDirectory');
   }
 
   /// Path to a directory where the application may place data that is
@@ -93,13 +72,8 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   /// using [getExternalStorageDirectory] instead if data is intended to be visible
   /// to the user.
   @override
-  Future<Directory> getApplicationDocumentsDirectory() async {
-    final String path =
-        await _channel.invokeMethod<String>('getApplicationDocumentsDirectory');
-    if (path == null) {
-      return null;
-    }
-    return Directory(path);
+  Future<String> getApplicationDocumentsDirectory() {
+    return _channel.invokeMethod<String>('getApplicationDocumentsDirectory');
   }
 
   /// Path to a directory where the application may access top level storage.
@@ -111,16 +85,8 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   ///
   /// On Android this uses the `getExternalFilesDir(null)`.
   @override
-  Future<Directory> getExternalStorageDirectory() async {
-    if (_platform.isIOS) {
-      throw UnsupportedError('Functionality not available on iOS');
-    }
-    final String path =
-        await _channel.invokeMethod<String>('getStorageDirectory');
-    if (path == null) {
-      return null;
-    }
-    return Directory(path);
+  Future<String> getExternalStorageDirectory() {
+    return _channel.invokeMethod<String>('getStorageDirectory');
   }
 
   /// Paths to directories where application specific external cache data can be
@@ -137,14 +103,8 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   /// On Android this returns Context.getExternalCacheDirs() or
   /// Context.getExternalCacheDir() on API levels below 19.
   @override
-  Future<List<Directory>> getExternalCacheDirectories() async {
-    if (_platform.isIOS) {
-      throw UnsupportedError('Functionality not available on iOS');
-    }
-    final List<String> paths =
-        await _channel.invokeListMethod<String>('getExternalCacheDirectories');
-
-    return paths.map((String path) => Directory(path)).toList();
+  Future<List<String>> getExternalCacheDirectories() {
+    return _channel.invokeListMethod<String>('getExternalCacheDirectories');
   }
 
   /// Paths to directories where application specific data can be stored.
@@ -160,20 +120,15 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   /// On Android this returns Context.getExternalFilesDirs(String type) or
   /// Context.getExternalFilesDir(String type) on API levels below 19.
   @override
-  Future<List<Directory>> getExternalStorageDirectories({
+  Future<List<String>> getExternalStorageDirectories({
     /// Optional parameter. See [StorageDirectory] for more informations on
     /// how this type translates to Android storage directories.
     StorageDirectory type,
-  }) async {
-    if (_platform.isIOS) {
-      throw UnsupportedError('Functionality not available on iOS');
-    }
-    final List<String> paths = await _channel.invokeListMethod<String>(
+  }) {
+    return _channel.invokeListMethod<String>(
       'getExternalStorageDirectories',
       <String, dynamic>{'type': type?.index},
     );
-
-    return paths.map((String path) => Directory(path)).toList();
   }
 
   /// Path to the directory where downloaded files can be stored.
@@ -182,18 +137,7 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   /// On Android and on iOS, this function throws an [UnsupportedError] as no equivalent
   /// path exists.
   @override
-  Future<Directory> getDownloadsDirectory() async {
-    if (_platform.isAndroid) {
-      throw UnsupportedError('Functionality not available on Android');
-    }
-    if (_platform.isIOS) {
-      throw UnsupportedError('Functionality not available on iOS');
-    }
-    final String path =
-        await _channel.invokeMethod<String>('getDownloadsDirectory');
-    if (path == null) {
-      return null;
-    }
-    return Directory(path);
+  Future<String> getDownloadsDirectory() {
+    return _channel.invokeMethod<String>('getDownloadsDirectory');
   }
 }
