@@ -7,7 +7,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'path_provider_platform_interface.dart';
 
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/path_provider');
+const MethodChannel _channel =
+    MethodChannel('plugins.flutter.io/path_provider');
 
 /// The MethodChannel implementation of the [PathProviderPlatform].
 class MethodChannelPathProvider extends PathProviderPlatform {

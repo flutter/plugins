@@ -43,7 +43,8 @@ abstract class PathProviderPlatform extends PlatformInterface {
   ///
   /// On Android, this uses the `getCacheDir` API on the context.
   Future<String> getTemporaryDirectory() {
-    throw UnimplementedError('getTemporaryDirectory() has not been implemented.');
+    throw UnimplementedError(
+        'getTemporaryDirectory() has not been implemented.');
   }
 
   /// Path to a directory where the application may place application support
@@ -57,7 +58,8 @@ abstract class PathProviderPlatform extends PlatformInterface {
   ///
   /// On Android, this function uses the `getFilesDir` API on the context.
   Future<String> getApplicationSupportDirectory() {
-    throw UnimplementedError('getApplicationSupportDirectory() has not been implemented.');
+    throw UnimplementedError(
+        'getApplicationSupportDirectory() has not been implemented.');
   }
 
   /// Path to the directory where application can store files that are persistent,
@@ -80,7 +82,8 @@ abstract class PathProviderPlatform extends PlatformInterface {
   /// using [getExternalStorageDirectory] instead if data is intended to be visible
   /// to the user.
   Future<String> getApplicationDocumentsDirectory() {
-    throw UnimplementedError('getApplicationDocumentsDirectory() has not been implemented.');
+    throw UnimplementedError(
+        'getApplicationDocumentsDirectory() has not been implemented.');
   }
 
   /// Path to a directory where the application may access top level storage.
@@ -92,7 +95,8 @@ abstract class PathProviderPlatform extends PlatformInterface {
   ///
   /// On Android this uses the `getExternalFilesDir(null)`.
   Future<String> getExternalStorageDirectory() {
-    throw UnimplementedError('getExternalStorageDirectory() has not been implemented.');
+    throw UnimplementedError(
+        'getExternalStorageDirectory() has not been implemented.');
   }
 
   /// Paths to directories where application specific external cache data can be
@@ -109,7 +113,8 @@ abstract class PathProviderPlatform extends PlatformInterface {
   /// On Android this returns Context.getExternalCacheDirs() or
   /// Context.getExternalCacheDir() on API levels below 19.
   Future<List<String>> getExternalCacheDirectories() {
-    throw UnimplementedError('getExternalCacheDirectories() has not been implemented.');
+    throw UnimplementedError(
+        'getExternalCacheDirectories() has not been implemented.');
   }
 
   /// Paths to directories where application specific data can be stored.
@@ -129,7 +134,8 @@ abstract class PathProviderPlatform extends PlatformInterface {
     /// how this type translates to Android storage directories.
     StorageDirectory type,
   }) {
-    throw UnimplementedError('getExternalCacheDirectories() has not been implemented.');
+    throw UnimplementedError(
+        'getExternalCacheDirectories() has not been implemented.');
   }
 
   /// Path to the directory where downloaded files can be stored.
@@ -138,7 +144,8 @@ abstract class PathProviderPlatform extends PlatformInterface {
   /// On Android and on iOS, this function throws an [UnsupportedError] as no equivalent
   /// path exists.
   Future<String> getDownloadsDirectory() {
-    throw UnimplementedError('getDownloadsDirectory() has not been implemented.');
+    throw UnimplementedError(
+        'getDownloadsDirectory() has not been implemented.');
   }
 }
 
