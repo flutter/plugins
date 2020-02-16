@@ -1,3 +1,7 @@
+## 0.3.19+8
+
+* Enable programmatic scrolling using Android's WebView.scrollTo & iOS WKWebView.scrollView.contentOffset.
+
 ## 0.3.19+7
 
 * Remove the Flutter SDK constraint upper bound.
