@@ -60,6 +60,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   Future<ClosedCaptionFile> get closedCaptionFile => _loadClosedCaption();
+
+  @override
+  Future<void> setMuted(bool muted) async {}
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -81,9 +84,6 @@ class _FakeClosedCaptionFile extends ClosedCaptionFile {
       ),
     ];
   }
-
-  @override
-  Future<void> setMuted(bool muted) async {}
 }
 
 void main() {
