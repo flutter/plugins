@@ -8,8 +8,12 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart' show required, visibleForTesting;
+import 'package:video_player_platform_interface/src/closed_caption_file.dart';
 
 import 'method_channel_video_player.dart';
+
+export 'package:video_player_platform_interface/src/closed_caption_file.dart';
+export 'package:video_player_platform_interface/src/sub_rip.dart';
 
 /// The interface that implementations of video_player must implement.
 ///
@@ -140,12 +144,16 @@ class DataSource {
   ///
   /// The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
+  ///
+  /// The [closedCaptionFile] argument is optional field to specify a file
+  /// containing the closed captioning.
   DataSource({
     @required this.sourceType,
     this.uri,
     this.formatHint,
     this.asset,
     this.package,
+    this.closedCaptionFile,
   }) : assert(uri == null || asset == null);
 
   /// Describes the type of data source this [VideoPlayerController]
@@ -189,6 +197,13 @@ class DataSource {
   /// The package that the asset was loaded from. Only set for
   /// [DataSourceType.asset] videos.
   final String package;
+
+  /// Optional field to specify a file containing the closed
+  /// captioning.
+  ///
+  /// This future will be awaited and the file will be loaded when
+  /// [initialize()] is called.
+  final Future<ClosedCaptionFile> closedCaptionFile;
 
   /// Key to compare DataSource
   String get key {
@@ -374,10 +389,10 @@ class DurationRange {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DurationRange &&
-          runtimeType == other.runtimeType &&
-          start == other.start &&
-          end == other.end;
+          other is DurationRange &&
+              runtimeType == other.runtimeType &&
+              start == other.start &&
+              end == other.end;
 
   @override
   int get hashCode => start.hashCode ^ end.hashCode;

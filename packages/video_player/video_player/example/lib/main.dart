@@ -155,13 +155,15 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/Butterfly-209.mp4');
+    _controller = VideoPlayerController();
 
     _controller.addListener(() {
       setState(() {});
     });
     _controller.setLooping(true);
-    _controller.initialize().then((_) => setState(() {}));
+    _controller
+        .setAssetDataSource('assets/Butterfly-209.mp4')
+        .then((_) => setState(() {}));
     _controller.play();
   }
 
@@ -217,16 +219,16 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-      closedCaptionFile: _loadCaptions(),
-    );
+    _controller = VideoPlayerController();
 
     _controller.addListener(() {
       setState(() {});
     });
     _controller.setLooping(true);
-    _controller.initialize();
+    _controller.setNetworkDataSource(
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      closedCaptionFile: _loadCaptions(),
+    );
   }
 
   @override

@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player/src/closed_caption_file.dart';
-import 'package:video_player/video_player.dart';
+import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 void main() {
   test('Parses SubRip file', () {

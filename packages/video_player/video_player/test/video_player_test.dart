@@ -44,18 +44,28 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<void> setLooping(bool looping) async {}
 
   @override
-  Future<void> setAssetDataSource(String dataSource, {String package}) async {}
+  Future<void> setAssetDataSource(
+    String dataSource, {
+    String package,
+    Future<ClosedCaptionFile> closedCaptionFile,
+  }) async {}
 
   @override
-  Future<void> setFileDataSource(File file) async {}
+  Future<void> setFileDataSource(
+    File file, {
+    Future<ClosedCaptionFile> closedCaptionFile,
+  }) async {}
 
   @override
-  Future<void> setNetworkDataSource(String dataSource,
-      {VideoFormat formatHint}) async {}
-
-  @override
-  Future<ClosedCaptionFile> get closedCaptionFile => _loadClosedCaption();
+  Future<void> setNetworkDataSource(
+    String dataSource, {
+    VideoFormat formatHint,
+    Future<ClosedCaptionFile> closedCaptionFile,
+  }) async {}
 }
+
+Future<ClosedCaptionFile> _loadClosedCaption() async =>
+    _FakeClosedCaptionFile();
 
 class _FakeClosedCaptionFile extends ClosedCaptionFile {
   @override
@@ -383,12 +393,12 @@ void main() {
 
     group('caption', () {
       test('works when seeking', () async {
-        final VideoPlayerController controller = VideoPlayerController.network(
+        final VideoPlayerController controller = VideoPlayerController();
+
+        await controller.setNetworkDataSource(
           'https://127.0.0.1',
           closedCaptionFile: _loadClosedCaption(),
         );
-
-        await controller.initialize();
         expect(controller.value.position, const Duration());
         expect(controller.value.caption.text, isNull);
 

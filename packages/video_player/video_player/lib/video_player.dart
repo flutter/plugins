@@ -13,10 +13,12 @@ import 'package:pedantic/pedantic.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show DurationRange, DataSourceType, VideoFormat;
-
-import 'src/closed_caption_file.dart';
-export 'src/closed_caption_file.dart';
+    show
+        DurationRange,
+        DataSourceType,
+        VideoFormat,
+        ClosedCaptionFile,
+        SubRipCaptionFile;
 
 final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
 // This will clear all open videos on the platform when a full restart is
@@ -172,22 +174,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   DataSource _dataSource;
 
-  ДОБАВЬ В DATASOURCE
-
-  /// Describes the type of data source this [VideoPlayerController]
-  /// is constructed with.
-  final DataSourceType dataSourceType;
-
-  /// Only set for [asset] videos. The package that the asset was loaded from.
-  final String package;
-
-  /// Optional field to specify a file containing the closed
-  /// captioning.
-  ///
-  /// This future will be awaited and the file will be loaded when
-  /// [initialize()] is called.
-  final Future<ClosedCaptionFile> closedCaptionFile;
-
   ClosedCaptionFile _closedCaptionFile;
   Timer _timer;
   bool _isDisposed = false;
@@ -243,13 +229,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       }
     }
 
-    if (closedCaptionFile != null) {
-      if (_closedCaptionFile == null) {
-        _closedCaptionFile = await closedCaptionFile;
-      }
-      value = value.copyWith(caption: _getCaptionAt(value.position));
-    }
-
     void errorListener(Object obj) {
       final PlatformException e = obj;
       value = VideoPlayerValue.erroneous(e.message);
@@ -272,13 +251,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<void> setAssetDataSource(
     String dataSource, {
     String package,
-    this.closedCaptionFile,
+    Future<ClosedCaptionFile> closedCaptionFile,
   }) {
     return _setDataSource(
       DataSource(
         sourceType: DataSourceType.asset,
         asset: dataSource,
         package: package,
+        closedCaptionFile: closedCaptionFile,
       ),
     );
   }
@@ -293,13 +273,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<void> setNetworkDataSource(
     String dataSource, {
     VideoFormat formatHint,
-    this.closedCaptionFile,
+    Future<ClosedCaptionFile> closedCaptionFile,
   }) {
     return _setDataSource(
       DataSource(
         sourceType: DataSourceType.network,
         uri: dataSource,
         formatHint: formatHint,
+        closedCaptionFile: closedCaptionFile,
       ),
     );
   }
@@ -308,11 +289,15 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
-  Future<void> setFileDataSource(File file, {this.closedCaptionFile}) {
+  Future<void> setFileDataSource(
+    File file, {
+    Future<ClosedCaptionFile> closedCaptionFile,
+  }) {
     return _setDataSource(
       DataSource(
         sourceType: DataSourceType.file,
         uri: 'file://${file.path}',
+        closedCaptionFile: closedCaptionFile,
       ),
     );
   }
@@ -332,6 +317,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
 
     if (!_creatingCompleter.isCompleted) await _creatingCompleter.future;
+
+    if (dataSourceDescription.closedCaptionFile != null) {
+      if (_closedCaptionFile == null) {
+        _closedCaptionFile = await dataSourceDescription.closedCaptionFile;
+      }
+      value = value.copyWith(caption: _getCaptionAt(value.position));
+    }
 
     if (_lifeCycleObserver == null) {
       _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
