@@ -16,7 +16,12 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   meta: ^1.1.7
-  video_player_platform_interface: ^1.0.5
+  video_player_platform_interface: #^1.0.5
+    # workaround for success build checks in PR
+    git:
+      url: git://github.com/sanekyy/plugins.git
+      ref: muted-attribute
+      path: packages/video_player/video_player_platform_interface
 
 dev_dependencies:
   flutter_test:
