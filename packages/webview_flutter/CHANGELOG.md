@@ -1,3 +1,7 @@
+## 0.3.19+7
+
+* Remove the Flutter SDK constraint upper bound.
+
 ## 0.3.19+6
 
 * Enable opening links that target the "_blank" window (links open in same window).
