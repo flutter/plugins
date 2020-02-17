@@ -1,6 +1,6 @@
 ## 0.5.24
 
-* Exposed `getZoomLevel` in `GoogleMapController`
+* Exposed `getZoomLevel` in `GoogleMapController`.
 
 ## 0.5.23+1
 
