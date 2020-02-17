@@ -56,18 +56,6 @@ void main() {
     test('connects on initialization', () {
       expect(stubPlatform.countPreviousCalls(startConnectionCall), equals(1));
     });
-
-    test('disconnects on app pause', () {
-      expect(stubPlatform.countPreviousCalls(endConnectionCall), equals(0));
-      connection.didChangeAppLifecycleState(AppLifecycleState.paused);
-      expect(stubPlatform.countPreviousCalls(endConnectionCall), equals(1));
-    });
-
-    test('reconnects on app resume', () {
-      expect(stubPlatform.countPreviousCalls(startConnectionCall), equals(1));
-      connection.didChangeAppLifecycleState(AppLifecycleState.resumed);
-      expect(stubPlatform.countPreviousCalls(startConnectionCall), equals(2));
-    });
   });
 
   group('isAvailable', () {

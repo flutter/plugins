@@ -1,3 +1,11 @@
+## 0.0.1+5
+
+* Fix readme
+
+## 0.0.1+4
+
+* Bump gradle version to avoid bugs with android projects
+
 ## 0.0.1+3
 
 * Update README.
