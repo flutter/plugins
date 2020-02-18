@@ -410,6 +410,7 @@ final class GoogleMapController
       case "map#getZoomLevel":
         {
           result.success(googleMap.getCameraPosition().zoom);
+          break;
         }
       case "map#setStyle":
         {
