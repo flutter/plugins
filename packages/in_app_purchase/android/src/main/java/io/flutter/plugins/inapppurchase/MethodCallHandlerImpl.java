@@ -9,7 +9,9 @@ import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 /** Handles method channel for the plugin. */
-class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
+class MethodCallHandlerImpl
+    implements MethodChannel.MethodCallHandler, Application.ActivityLifecycleCallbacks {
 
   private static final String TAG = "InAppPurchasePlugin";
 
@@ -64,6 +67,36 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    */
   void setActivity(@Nullable Activity activity) {
     this.activity = activity;
+  }
+
+  @Override
+  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+
+  @Override
+  public void onActivityStarted(Activity activity) {}
+
+  @Override
+  public void onActivityResumed(Activity activity) {}
+
+  @Override
+  public void onActivityPaused(Activity activity) {}
+
+  @Override
+  public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+
+  @Override
+  public void onActivityDestroyed(Activity activity) {
+    if (this.activity == activity && this.applicationContext != null) {
+      ((Application) this.applicationContext).unregisterActivityLifecycleCallbacks(this);
+      endBillingClientConnection();
+    }
+  }
+
+  @Override
+  public void onActivityStopped(Activity activity) {}
+
+  void onDetachedFromActivity() {
+    endBillingClientConnection();
   }
 
   @Override
@@ -113,11 +146,15 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   }
 
   private void endConnection(final MethodChannel.Result result) {
+    endBillingClientConnection();
+    result.success(null);
+  }
+
+  private void endBillingClientConnection() {
     if (billingClient != null) {
       billingClient.endConnection();
       billingClient = null;
     }
-    result.success(null);
   }
 
   private void isReady(MethodChannel.Result result) {
