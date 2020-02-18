@@ -1,3 +1,7 @@
+## 0.5.6+2
+
+Fix deprecated API usage warning.
+
 ## 0.5.6+1
 
 * Updated README
