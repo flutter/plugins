@@ -536,6 +536,35 @@ void main() {
     expect(title, 'Some title');
   });
 
+  testWidgets('setInitialScale', (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+        ),
+      ),
+    );
+
+    final WebViewController controller = await controllerCompleter.future;
+    expect(controller.setInitialScale(50), completes);
+    expect(
+      () => controller.setInitialScale(-1),
+      throwsA(isA<AssertionError>()),
+    );
+    expect(
+      () => controller.setInitialScale(150),
+      throwsA(isA<AssertionError>()),
+    );
+  });
+
   group('NavigationDelegate', () {
     final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
     final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
