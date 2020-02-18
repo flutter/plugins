@@ -563,7 +563,7 @@ void main() {
       () => controller.setInitialScale(150),
       throwsA(isA<AssertionError>()),
     );
-  });
+  }, skip: defaultTargetPlatform != TargetPlatform.android);
 
   group('NavigationDelegate', () {
     final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";

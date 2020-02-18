@@ -682,6 +682,7 @@ class WebViewController {
   Future<void> setInitialScale(int scaleInPercent) {
     assert(scaleInPercent >= 0);
     assert(scaleInPercent <= 100);
+    assert(defaultTargetPlatform == TargetPlatform.android);
     return _webViewPlatformController.setInitialScale(scaleInPercent);
   }
 }
