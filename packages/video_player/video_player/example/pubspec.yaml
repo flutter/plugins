@@ -1,5 +1,6 @@
 name: video_player_example
 description: Demonstrates how to use the video_player plugin.
+publish_to: 'none'
 
 dependencies:
   flutter:

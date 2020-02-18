@@ -1,6 +1,7 @@
 name: image_picker_example
 description: Demonstrates how to use the image_picker plugin.
 author: Flutter Team <flutter-dev@googlegroups.com>
+publish_to: 'none'
 
 dependencies:
   video_player: ^0.10.3
