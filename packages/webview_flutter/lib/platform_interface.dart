@@ -168,6 +168,25 @@ abstract class WebViewPlatformController {
         "WebView getTitle is not implemented on the current platform");
   }
 
+  /// Sets the initial scale of page content.
+  ///
+  /// Only supported on Android.
+  ///
+  /// [scaleInPercent] must be between 0 and 100 inclusive.
+  ///
+  /// The behavior for the default initial scale depends on whether the WebView
+  /// supports the "viewport" HTML meta tag, whether the WebView is set to use a
+  /// wide viewport, and whether the WebView loads pages in overview mode, that
+  /// is, zooms out the content to fit on screen by width.
+  ///
+  /// If the content fits into the WebView control by width, then the zoom is
+  /// set to 100%. When loading wide content and the WebView is supporting wide
+  /// content, the content will be zoomed out to be fit by width into the
+  /// WebView control, otherwise not. If initial scale is greater than 0,
+  /// WebView starts with this value as initial scale.
+  ///
+  /// Please note that unlike the scale properties in the viewport meta tag,
+  /// this method doesn't take the screen density into account.
   Future<void> setInitialScale(int scaleInPercent) {
     throw UnimplementedError(
         "WebView setInitialScale is not implemented on the current platform");
