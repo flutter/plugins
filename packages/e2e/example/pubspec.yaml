@@ -18,8 +18,18 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   e2e:
+    # When depending on this package from a real application you should use:
+    #   e2e: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
     path: ../
   e2e_macos:
+    # When depending on this package from a real application you should use:
+    #   e2e_macos: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
     path: ../e2e_macos
   test: any
   pedantic: ^1.8.0
