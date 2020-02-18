@@ -45,9 +45,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
 
-    // #has <select> bug, seems to have partially solved <Android7 keyboard input (dismiss keyboard still flaky)
-    // # self patched <select> bug
-    // # https://github.com/flutter/flutter/issues/25767
+    /// has <select> bug, seems to have partially solved <Android7 keyboard input (dismiss keyboard still flaky)
+    /// https://github.com/flutter/flutter/issues/25767
     Context activityContext = context;
     Context appContext = context.getApplicationContext();
     if (appContext instanceof FlutterApplication) {
