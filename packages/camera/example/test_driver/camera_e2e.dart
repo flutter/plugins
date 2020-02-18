@@ -244,30 +244,29 @@ void main() {
         'Getting minimum exposure compensation of camera ${controller.description.name}');
 
     // Get minimum exposure compensation
-    double minimumExposureCompensation = await controller.getMinExposureCompensation();
+    double minimumExposureCompensation =
+        await controller.getMinExposureCompensation();
 
     // Verify minimum exposure compensation is negative
     expect(minimumExposureCompensation, isNegative);
     return minimumExposureCompensation < 0;
   }
 
-  testWidgets('Get minimum exposure compensation',
-          (WidgetTester tester) async {
-        final List<CameraDescription> cameras = await availableCameras();
-        if (cameras.isEmpty) {
-          return;
-        }
-        for (CameraDescription cameraDescription in cameras) {
-          final CameraController controller =
+  testWidgets('Get minimum exposure compensation', (WidgetTester tester) async {
+    final List<CameraDescription> cameras = await availableCameras();
+    if (cameras.isEmpty) {
+      return;
+    }
+    for (CameraDescription cameraDescription in cameras) {
+      final CameraController controller =
           CameraController(cameraDescription, ResolutionPreset.medium);
-          await controller.initialize();
-          final bool isSuccess =
+      await controller.initialize();
+      final bool isSuccess =
           await testGettingMinimumExposureCompensation(controller);
-          assert(isSuccess);
-          await controller.dispose();
-        }
-      }, skip: !Platform.isAndroid);
-
+      assert(isSuccess);
+      await controller.dispose();
+    }
+  }, skip: !Platform.isAndroid);
 
   // This tests that the maximum exposure compensation is always a positive value.
   // Returns whether the maximum value is positive or not.
@@ -277,27 +276,27 @@ void main() {
         'Getting maximum exposure compensation of camera ${controller.description.name}');
 
     // Get maximum exposure compensation
-    double maximumExposureCompensation = await controller.getMaxExposureCompensation();
+    double maximumExposureCompensation =
+        await controller.getMaxExposureCompensation();
 
     // Verify maximum exposure compensation is positive
     expect(maximumExposureCompensation, isPositive);
     return maximumExposureCompensation > 0;
   }
 
-  testWidgets('Get maximum exposure compensation',
-          (WidgetTester tester) async {
-        final List<CameraDescription> cameras = await availableCameras();
-        if (cameras.isEmpty) {
-          return;
-        }
-        for (CameraDescription cameraDescription in cameras) {
-          final CameraController controller =
+  testWidgets('Get maximum exposure compensation', (WidgetTester tester) async {
+    final List<CameraDescription> cameras = await availableCameras();
+    if (cameras.isEmpty) {
+      return;
+    }
+    for (CameraDescription cameraDescription in cameras) {
+      final CameraController controller =
           CameraController(cameraDescription, ResolutionPreset.medium);
-          await controller.initialize();
-          final bool isSuccess =
+      await controller.initialize();
+      final bool isSuccess =
           await testGettingMaximumExposureCompensation(controller);
-          assert(isSuccess);
-          await controller.dispose();
-        }
-      }, skip: !Platform.isAndroid);
+      assert(isSuccess);
+      await controller.dispose();
+    }
+  }, skip: !Platform.isAndroid);
 }
