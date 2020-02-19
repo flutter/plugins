@@ -3,22 +3,13 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
+import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 
-/// Connection status check result.
-enum ConnectivityResult {
-  /// WiFi: Device connected via Wi-Fi
-  wifi,
-
-  /// Mobile: Device connected to cellular network
-  mobile,
-
-  /// None: Device not connected to any network
-  none
-}
+// Export enums from the platform_interface so plugin users can use them directly.
+export 'package:connectivity_platform_interface/connectivity_platform_interface.dart'
+    show ConnectivityResult, LocationAuthorizationStatus;
 
 /// Discover network connectivity configurations: Distinguish between WI-FI and cellular, check WI-FI status and more.
 class Connectivity {
@@ -27,7 +18,7 @@ class Connectivity {
   /// [Connectivity] is designed to work as a singleton.
   // When a second instance is created, the first instance will not be able to listen to the
   // EventChannel because it is overridden. Forcing the class to be a singleton class can prevent
-  // misusage of creating a second instance from a programmer.
+  // misuse of creating a second instance from a programmer.
   factory Connectivity() {
     if (_singleton == null) {
       _singleton = Connectivity._();
@@ -39,28 +30,11 @@ class Connectivity {
 
   static Connectivity _singleton;
 
-  Stream<ConnectivityResult> _onConnectivityChanged;
-
-  /// Exposed for testing purposes and should not be used by users of the plugin.
-  @visibleForTesting
-  static const MethodChannel methodChannel = MethodChannel(
-    'plugins.flutter.io/connectivity',
-  );
-
-  /// Exposed for testing purposes and should not be used by users of the plugin.
-  @visibleForTesting
-  static const EventChannel eventChannel = EventChannel(
-    'plugins.flutter.io/connectivity_status',
-  );
+  static ConnectivityPlatform get _platform => ConnectivityPlatform.instance;
 
   /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
-    if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _parseConnectivityResult(event));
-    }
-    return _onConnectivityChanged;
+    return _platform.onConnectivityChanged;
   }
 
   /// Checks the connection status of the device.
@@ -69,9 +43,8 @@ class Connectivity {
   /// make a network request. It only gives you the radio status.
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
-  Future<ConnectivityResult> checkConnectivity() async {
-    final String result = await methodChannel.invokeMethod<String>('check');
-    return _parseConnectivityResult(result);
+  Future<ConnectivityResult> checkConnectivity() {
+    return _platform.checkConnectivity();
   }
 
   /// Obtains the wifi name (SSID) of the connected network
@@ -80,12 +53,8 @@ class Connectivity {
   ///
   /// From android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the SSID.
-  Future<String> getWifiName() async {
-    String wifiName = await methodChannel.invokeMethod<String>('wifiName');
-    // as Android might return <unknown ssid>, uniforming result
-    // our iOS implementation will return null
-    if (wifiName == '<unknown ssid>') wifiName = null;
-    return wifiName;
+  Future<String> getWifiName() {
+    return _platform.getWifiName();
   }
 
   /// Obtains the wifi BSSID of the connected network.
@@ -94,13 +63,13 @@ class Connectivity {
   ///
   /// From Android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the BSSID.
-  Future<String> getWifiBSSID() async {
-    return await methodChannel.invokeMethod<String>('wifiBSSID');
+  Future<String> getWifiBSSID() {
+    return _platform.getWifiBSSID();
   }
 
   /// Obtains the IP address of the connected wifi network
-  Future<String> getWifiIP() async {
-    return await methodChannel.invokeMethod<String>('wifiIPAddress');
+  Future<String> getWifiIP() {
+    return _platform.getWifiIP();
   }
 
   /// Request to authorize the location service (Only on iOS).
@@ -151,14 +120,12 @@ class Connectivity {
   /// Ideally, a location service authorization should only be requested if the current authorization status is not determined.
   ///
   /// See also [getLocationServiceAuthorization] to obtain current location service status.
-  Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
-      {bool requestAlwaysLocationUsage = false}) async {
-    //Just `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
-    assert(!Platform.isAndroid);
-    final String result = await methodChannel.invokeMethod<String>(
-        'requestLocationServiceAuthorization',
-        <bool>[requestAlwaysLocationUsage]);
-    return _convertLocationStatusString(result);
+  Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
+    bool requestAlwaysLocationUsage = false,
+  }) {
+    return _platform.requestLocationServiceAuthorization(
+      requestAlwaysLocationUsage: requestAlwaysLocationUsage,
+    );
   }
 
   /// Get the current location service authorization (Only on iOS).
@@ -197,61 +164,7 @@ class Connectivity {
   /// ```
   ///
   /// See also [requestLocationServiceAuthorization] for requesting a location service authorization.
-  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
-    //Just `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
-    assert(!Platform.isAndroid);
-    final String result = await methodChannel
-        .invokeMethod<String>('getLocationServiceAuthorization');
-    return _convertLocationStatusString(result);
+  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
+    return _platform.getLocationServiceAuthorization();
   }
-
-  LocationAuthorizationStatus _convertLocationStatusString(String result) {
-    switch (result) {
-      case 'notDetermined':
-        return LocationAuthorizationStatus.notDetermined;
-      case 'restricted':
-        return LocationAuthorizationStatus.restricted;
-      case 'denied':
-        return LocationAuthorizationStatus.denied;
-      case 'authorizedAlways':
-        return LocationAuthorizationStatus.authorizedAlways;
-      case 'authorizedWhenInUse':
-        return LocationAuthorizationStatus.authorizedWhenInUse;
-      default:
-        return LocationAuthorizationStatus.unknown;
-    }
-  }
-}
-
-ConnectivityResult _parseConnectivityResult(String state) {
-  switch (state) {
-    case 'wifi':
-      return ConnectivityResult.wifi;
-    case 'mobile':
-      return ConnectivityResult.mobile;
-    case 'none':
-    default:
-      return ConnectivityResult.none;
-  }
-}
-
-/// The status of the location service authorization.
-enum LocationAuthorizationStatus {
-  /// The authorization of the location service is not determined.
-  notDetermined,
-
-  /// This app is not authorized to use location.
-  restricted,
-
-  /// User explicitly denied the location service.
-  denied,
-
-  /// User authorized the app to access the location at any time.
-  authorizedAlways,
-
-  /// User authorized the app to access the location when the app is visible to them.
-  authorizedWhenInUse,
-
-  /// Status unknown.
-  unknown
 }
