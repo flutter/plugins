@@ -1,7 +1,7 @@
 ## 0.1.0
 
 * Adds an example app to trigger CI tests. Bumped the MINOR version to
-avoid compatibility issues once this packages is endoresed.
+avoid compatibility issues once this packages is endorsed.
 
 ## 0.0.2+1
 
