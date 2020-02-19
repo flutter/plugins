@@ -1,7 +1,7 @@
 // This is a generated file; do not edit or check into version control.
 FLUTTER_ROOT=/Users/franciscojma/Developer/flutter
 FLUTTER_APPLICATION_PATH=/Users/franciscojma/Developer/plugins/packages/connectivity/connectivity_macos/example
-FLUTTER_TARGET=/Users/franciscojma/Developer/plugins/packages/connectivity/connectivity_macos/example/lib/main.dart
+FLUTTER_TARGET=/Users/franciscojma/Developer/plugins/packages/connectivity/connectivity_macos/example/test_driver/test/connectivity_e2e.dart
 FLUTTER_BUILD_DIR=build
 FLUTTER_FRAMEWORK_DIR=/Users/franciscojma/Developer/flutter/bin/cache/artifacts/engine/darwin-x64
 FLUTTER_BUILD_NAME=1.0.0
