@@ -4,7 +4,7 @@ description: Demonstrates how to use the connectivity plugin.
 dependencies:
   flutter:
     sdk: flutter
-  connectivity: ^0.4.8
+  connectivity: any
   connectivity_macos:
     path: ../
 
