@@ -24,7 +24,7 @@ dev_dependencies:
   test: ^1.5.2
   shared_preferences: ^0.5.2
   e2e: ^0.2.0
-  pedantic: ^1.9.0
+  pedantic: ^1.8.0
 
 flutter:
   plugin:

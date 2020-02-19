@@ -17,7 +17,7 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  pedantic: ^1.9.0
+  pedantic: ^1.8.0
 
 flutter:
   plugin:
