@@ -2,6 +2,10 @@
 
 * Add feature to set exposure compensation value (brightness).
 
+## 0.5.7+4
+
+* Add `pedantic` to dev_dependency.
+
 ## 0.5.7+3
 
 * Fix an Android crash when permissions are requested multiple times.
