@@ -1,3 +1,7 @@
+## 1.6.2
+
+* Move package contents into `path_provider` for platform federation.
+
 ## 1.6.1
 
 * Make the pedantic dev_dependency explicit.
