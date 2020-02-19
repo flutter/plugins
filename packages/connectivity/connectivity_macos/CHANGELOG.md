@@ -1,6 +1,7 @@
-## 0.0.3
+## 0.1.0
 
-* Adds an example app to trigger CI tests.
+* Adds an example app to trigger CI tests. Bumped the MINOR version to
+avoid compatibility issues once this packages is endoresed.
 
 ## 0.0.2+1
 
