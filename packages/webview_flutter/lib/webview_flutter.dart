@@ -152,6 +152,7 @@ class WebView extends StatefulWidget {
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.initialScale,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         super(key: key);
@@ -319,6 +320,27 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
+  /// Sets the initial scale of page content.
+  ///
+  /// Only supported on Android.
+  ///
+  /// Must be between 0 and 100 inclusive.
+  ///
+  /// The behavior for the default initial scale depends on whether the WebView
+  /// supports the "viewport" HTML meta tag, whether the WebView is set to use a
+  /// wide viewport, and whether the WebView loads pages in overview mode, that
+  /// is, zooms out the content to fit on screen by width.
+  ///
+  /// If the content fits into the WebView control by width, then the zoom is
+  /// set to 100%. When loading wide content and the WebView is supporting wide
+  /// content, the content will be zoomed out to be fit by width into the
+  /// WebView control, otherwise not. If initial scale is greater than 0,
+  /// WebView starts with this value as initial scale.
+  ///
+  /// Please note that unlike the scale properties in the viewport meta tag,
+  /// this method doesn't take the screen density into account.
+  final double initialScale;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -393,12 +415,15 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     userAgent: WebSetting<String>.of(widget.userAgent),
+    initialScale: widget.initialScale,
   );
 }
 
 // This method assumes that no fields in `currentValue` are null.
 WebSettings _clearUnchangedWebSettings(
-    WebSettings currentValue, WebSettings newValue) {
+  WebSettings currentValue,
+  WebSettings newValue,
+) {
   assert(currentValue.javascriptMode != null);
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.debuggingEnabled != null);
@@ -406,11 +431,13 @@ WebSettings _clearUnchangedWebSettings(
   assert(newValue.javascriptMode != null);
   assert(newValue.hasNavigationDelegate != null);
   assert(newValue.debuggingEnabled != null);
+  assert(newValue.initialScale != null);
   assert(newValue.userAgent.isPresent);
 
   JavascriptMode javascriptMode;
   bool hasNavigationDelegate;
   bool debuggingEnabled;
+  double initialScale;
   WebSetting<String> userAgent = WebSetting<String>.absent();
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
@@ -421,6 +448,9 @@ WebSettings _clearUnchangedWebSettings(
   if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
     debuggingEnabled = newValue.debuggingEnabled;
   }
+  if (currentValue.initialScale != newValue.initialScale) {
+    initialScale = newValue.initialScale;
+  }
   if (currentValue.userAgent != newValue.userAgent) {
     userAgent = newValue.userAgent;
   }
@@ -430,6 +460,7 @@ WebSettings _clearUnchangedWebSettings(
     hasNavigationDelegate: hasNavigationDelegate,
     debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,
+    initialScale: initialScale,
   );
 }
 
@@ -658,32 +689,6 @@ class WebViewController {
   /// Returns the title of the currently loaded page.
   Future<String> getTitle() {
     return _webViewPlatformController.getTitle();
-  }
-
-  /// Sets the initial scale of page content.
-  ///
-  /// Only supported on Android.
-  ///
-  /// [scaleInPercent] must be between 0 and 100 inclusive.
-  ///
-  /// The behavior for the default initial scale depends on whether the WebView
-  /// supports the "viewport" HTML meta tag, whether the WebView is set to use a
-  /// wide viewport, and whether the WebView loads pages in overview mode, that
-  /// is, zooms out the content to fit on screen by width.
-  ///
-  /// If the content fits into the WebView control by width, then the zoom is
-  /// set to 100%. When loading wide content and the WebView is supporting wide
-  /// content, the content will be zoomed out to be fit by width into the
-  /// WebView control, otherwise not. If initial scale is greater than 0,
-  /// WebView starts with this value as initial scale.
-  ///
-  /// Please note that unlike the scale properties in the viewport meta tag,
-  /// this method doesn't take the screen density into account.
-  Future<void> setInitialScale(int scaleInPercent) {
-    assert(scaleInPercent >= 0);
-    assert(scaleInPercent <= 100);
-    assert(defaultTargetPlatform == TargetPlatform.android);
-    return _webViewPlatformController.setInitialScale(scaleInPercent);
   }
 }
 

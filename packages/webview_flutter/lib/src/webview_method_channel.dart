@@ -138,7 +138,10 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull('hasNavigationDelegate', settings.hasNavigationDelegate);
     _addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
     _addIfNonNull(
-        'gestureNavigationEnabled', settings.gestureNavigationEnabled);
+      'gestureNavigationEnabled',
+      settings.gestureNavigationEnabled,
+    );
+    _addIfNonNull('initialScale', settings.initialScale);
     _addSettingIfPresent('userAgent', settings.userAgent);
     return map;
   }
@@ -148,7 +151,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   /// This is used for the `creationParams` argument of the platform views created by
   /// [AndroidWebViewBuilder] and [CupertinoWebViewBuilder].
   static Map<String, dynamic> creationParamsToMap(
-      CreationParams creationParams) {
+    CreationParams creationParams,
+  ) {
     return <String, dynamic>{
       'initialUrl': creationParams.initialUrl,
       'settings': _webSettingsToMap(creationParams.webSettings),
@@ -156,10 +160,5 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
     };
-  }
-
-  @override
-  Future<void> setInitialScale(int scaleInPercent) {
-    return _channel.invokeMethod<void>("setInitialScale", scaleInPercent);
   }
 }

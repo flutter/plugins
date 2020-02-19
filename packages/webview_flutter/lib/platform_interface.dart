@@ -167,30 +167,6 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView getTitle is not implemented on the current platform");
   }
-
-  /// Sets the initial scale of page content.
-  ///
-  /// Only supported on Android.
-  ///
-  /// [scaleInPercent] must be between 0 and 100 inclusive.
-  ///
-  /// The behavior for the default initial scale depends on whether the WebView
-  /// supports the "viewport" HTML meta tag, whether the WebView is set to use a
-  /// wide viewport, and whether the WebView loads pages in overview mode, that
-  /// is, zooms out the content to fit on screen by width.
-  ///
-  /// If the content fits into the WebView control by width, then the zoom is
-  /// set to 100%. When loading wide content and the WebView is supporting wide
-  /// content, the content will be zoomed out to be fit by width into the
-  /// WebView control, otherwise not. If initial scale is greater than 0,
-  /// WebView starts with this value as initial scale.
-  ///
-  /// Please note that unlike the scale properties in the viewport meta tag,
-  /// this method doesn't take the screen density into account.
-  Future<void> setInitialScale(int scaleInPercent) {
-    throw UnimplementedError(
-        "WebView setInitialScale is not implemented on the current platform");
-  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.
@@ -256,8 +232,11 @@ class WebSettings {
     this.hasNavigationDelegate,
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
+    this.initialScale,
     @required this.userAgent,
-  }) : assert(userAgent != null);
+  })  : assert(initialScale == null || initialScale >= 0),
+        assert(initialScale == null || initialScale <= 100),
+        assert(userAgent != null);
 
   /// The JavaScript execution mode to be used by the webview.
   final JavascriptMode javascriptMode;
@@ -285,9 +264,30 @@ class WebSettings {
   /// See also: [WebView.gestureNavigationEnabled]
   final bool gestureNavigationEnabled;
 
+  /// Sets the initial scale of page content.
+  ///
+  /// Only supported on Android.
+  ///
+  /// Must be between 0 and 100 inclusive.
+  ///
+  /// The behavior for the default initial scale depends on whether the WebView
+  /// supports the "viewport" HTML meta tag, whether the WebView is set to use a
+  /// wide viewport, and whether the WebView loads pages in overview mode, that
+  /// is, zooms out the content to fit on screen by width.
+  ///
+  /// If the content fits into the WebView control by width, then the zoom is
+  /// set to 100%. When loading wide content and the WebView is supporting wide
+  /// content, the content will be zoomed out to be fit by width into the
+  /// WebView control, otherwise not. If initial scale is greater than 0,
+  /// WebView starts with this value as initial scale.
+  ///
+  /// Please note that unlike the scale properties in the viewport meta tag,
+  /// this method doesn't take the screen density into account.
+  final double initialScale;
+
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, initialScale: $initialScale)';
   }
 }
 
