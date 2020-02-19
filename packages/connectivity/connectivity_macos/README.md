@@ -21,12 +21,5 @@ dependencies:
   ...
 ```
 
-If you wish to use the macos package only, you can add  `connectivity_macos` as a
-dependency:
+Refer to the `connectivity` [documentation](https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity) for more details.
 
-```yaml
-...
-dependencies:
-  ...
-  connectivity_macos: ^0.0.2
-  ...

@@ -1,3 +1,7 @@
+## 0.3.1+1
+
+* Add `pedantic` to dev_dependency.
+
 ## 0.3.1
 
 * Android: Fix a bug where the `BillingClient` is disconnected when app goes to the background.
