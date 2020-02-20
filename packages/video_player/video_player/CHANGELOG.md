@@ -1,3 +1,7 @@
+## 0.10.10
+
+* Migrated to [pigeon](https://pub.dev/packages/pigeon).
+
 ## 0.10.9+2
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
