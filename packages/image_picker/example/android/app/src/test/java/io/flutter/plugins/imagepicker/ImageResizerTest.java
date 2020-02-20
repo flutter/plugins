@@ -62,4 +62,12 @@ public class ImageResizerTest {
     String outoutFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, 50.0, null);
     assertThat(outoutFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
   }
+
+  @Test
+  public void onResizeImageIfNeeded_WhenParentDirectoryDoesNotExists_ShouldNotCrash() {
+    File nonExistentDirectory = new File(externalDirectory, "/nonExistent");
+    ImageResizer invalidResizer = new ImageResizer(nonExistentDirectory, new ExifDataCopier());
+    String outoutFile = invalidResizer.resizeImageIfNeeded(imageFile.getPath(), null, 50.0, null);
+    assertThat(outoutFile, equalTo(nonExistentDirectory.getPath() + "/scaled_pngImage.png"));
+  }
 }
