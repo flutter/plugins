@@ -7,7 +7,7 @@
 packages/android_alarm_manager/*              @bkonyi
 packages/android_intent/*                     @mklim @matthew-carroll
 packages/battery/*                            @amirh @matthew-carroll
-packages/camera/*                             @bparrishMines @mklim
+packages/camera/*                             @bparrishMines
 packages/connectivity/*                       @cyanglaz @matthew-carroll
 packages/device_info/*                        @matthew-carroll
 packages/e2e/*                                @collinjackson @digiter
