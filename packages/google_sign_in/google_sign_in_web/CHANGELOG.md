@@ -1,3 +1,7 @@
+## 0.8.3+2
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.8.3+1
 
 * Updated documentation with more instructions about Google Sign In web setup.

@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Explicitly declare dependency on pedantic.
+
 ## 1.0.2
 
 * Adds a `shared_preferences_macos` package.

@@ -1,3 +1,7 @@
+## 4.1.4
+
+* Explicitly declare dependency on pedantic.
+
 ## 4.1.3
 
 * Make plugin example meet naming convention.

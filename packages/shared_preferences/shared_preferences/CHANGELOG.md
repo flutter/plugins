@@ -1,3 +1,7 @@
+## 0.5.6+2
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.5.6+1
 
 * Updated README

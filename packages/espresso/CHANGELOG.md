@@ -1,3 +1,7 @@
+## 0.0.1+3
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.0.1+2
 
 * Update te example app to avoid using deprecated api.

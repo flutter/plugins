@@ -1,3 +1,7 @@
+## 0.4.1+8
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.4.1+7
 
 * Fixed example userAccelerometerEvent in documentation

@@ -1,3 +1,7 @@
+## 0.2.4+2
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.2.4+1
 
 * Registering web service extension for using e2e with web.

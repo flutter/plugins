@@ -1,3 +1,7 @@
+## 0.4.7+1
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.4.7
 
 * Migrate the plugin to use the ConnectivityPlatform.instance defined in the connectivity_platform_interface package.

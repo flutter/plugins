@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Explicitly declare dependency on pedantic.
+
 ## 1.0.2
 
 * Bring ConnectivityResult and LocationAuthorizationStatus enums from the core package.

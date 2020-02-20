@@ -1,3 +1,7 @@
+## 0.1.2+4
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.1.2+3
 
 * Bump gradle version to avoid bugs with android projects

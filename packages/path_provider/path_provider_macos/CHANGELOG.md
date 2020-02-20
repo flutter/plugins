@@ -1,3 +1,7 @@
+## 0.0.3+1
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.0.3
 
 * Added support for user's downloads directory.

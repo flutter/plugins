@@ -1,3 +1,7 @@
+## 0.3.19+8
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.3.19+7
 
 * Remove the Flutter SDK constraint upper bound.

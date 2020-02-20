@@ -1,3 +1,7 @@
+## 1.6.1
+
+* Explicitly declare dependency on pedantic.
+
 ## 1.6.0
 
 * Support for retrieving the downloads directory was added.

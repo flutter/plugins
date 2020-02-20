@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Explicitly declare dependency on pedantic.
+
 ## 1.0.5
 
 * Add notice in example this plugin only provides Android Lifecycle API.

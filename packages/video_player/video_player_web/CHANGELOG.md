@@ -1,3 +1,7 @@
+## 0.1.2+1
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.1.2
 
 * Add a `PlatformException` to the player's `eventController` when there's a `videoElement.onError`. Fixes https://github.com/flutter/flutter/issues/48884.

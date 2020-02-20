@@ -1,3 +1,7 @@
+## 0.3.1+8
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.3.1+7
 
 * Clean up various Android workarounds no longer needed after framework v1.12.

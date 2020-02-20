@@ -1,3 +1,7 @@
+## 0.6.1+3
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.6.1+2
 
 * Support v2 embedding.

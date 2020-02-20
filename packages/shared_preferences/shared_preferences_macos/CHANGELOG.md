@@ -1,3 +1,7 @@
+## 0.0.1+6
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.0.1+5
 
 * Fix readme

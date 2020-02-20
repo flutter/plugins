@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.1.0
 
 * Adds an example app to trigger CI tests. Bumped the MINOR version to

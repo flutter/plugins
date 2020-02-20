@@ -1,3 +1,7 @@
+## 0.10.7+1
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.10.7
 
 * `VideoPlayerController` support for reading closed caption files. 

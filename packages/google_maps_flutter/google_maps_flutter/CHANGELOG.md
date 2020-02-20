@@ -1,3 +1,7 @@
+## 0.5.24+1
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.5.24
 
 * Exposed `getZoomLevel` in `GoogleMapController`.

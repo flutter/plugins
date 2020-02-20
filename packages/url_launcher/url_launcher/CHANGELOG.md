@@ -1,3 +1,7 @@
+## 5.4.2
+
+* Explicitly declare dependency on pedantic.
+
 ## 5.4.1
 
 * Update unit tests to work with the PlatformInterface from package `plugin_platform_interface`.

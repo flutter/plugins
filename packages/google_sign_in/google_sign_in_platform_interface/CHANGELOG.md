@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Explicitly declare dependency on pedantic.
+
 ## 1.0.3
 
 * Remove the deprecated `author:` field from pubspec.yaml

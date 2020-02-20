@@ -1,3 +1,7 @@
+## 0.4.5+4
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.4.5+3
 
 * Fixed issue where callback lookup would fail while running in the background.

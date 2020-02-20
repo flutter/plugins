@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Explicitly declare dependency on pedantic.
+
 ## 1.0.5
 
 * Make the `PlatformInterface` `_token` non `const` (as `const` `Object`s are not unique).

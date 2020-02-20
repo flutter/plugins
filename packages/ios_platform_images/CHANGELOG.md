@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.1.0+1
 
 * Removed Android support from the pubspec.

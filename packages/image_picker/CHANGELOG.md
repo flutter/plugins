@@ -1,3 +1,7 @@
+## 0.6.3+3
+
+* Explicitly declare dependency on pedantic.
+
 ## 0.6.3+2
 
 * Bump RoboElectric dependency to 4.3.1 and update resource usage.
