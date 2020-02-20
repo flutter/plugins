@@ -21,7 +21,6 @@ Pods/
 **/Flutter/flutter_assets/
 ServiceDefinitions.json
 xcuserdata/
-*.xcworkspace
 **/DerivedData/
 
 local.properties

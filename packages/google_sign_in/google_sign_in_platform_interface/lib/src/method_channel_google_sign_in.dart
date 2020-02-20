@@ -13,6 +13,8 @@ import 'utils.dart';
 
 /// An implementation of [GoogleSignInPlatform] that uses method channels.
 class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
+  /// This is only exposed for test purposes. It shouldn't be used by clients of
+  /// the plugin as it may break or change at any time.
   @visibleForTesting
   MethodChannel channel =
       const MethodChannel('plugins.flutter.io/google_sign_in');

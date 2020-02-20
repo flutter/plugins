@@ -33,7 +33,7 @@ accelerometerEvents.listen((AccelerometerEvent event) {
 });
 // [AccelerometerEvent (x: 0.0, y: 9.8, z: 0.0)]
 
-userAccelerometerEvents.listen((AccelerometerEvent event) {
+userAccelerometerEvents.listen((UserAccelerometerEvent event) {
   print(event);
 });
 // [UserAccelerometerEvent (x: 0.0, y: 0.0, z: 0.0)]

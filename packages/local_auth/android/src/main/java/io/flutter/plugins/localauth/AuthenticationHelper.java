@@ -19,8 +19,12 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 import io.flutter.plugin.common.MethodCall;
 import java.util.concurrent.Executor;
 
@@ -32,7 +36,7 @@ import java.util.concurrent.Executor;
  */
 @SuppressWarnings("deprecation")
 class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
-    implements Application.ActivityLifecycleCallbacks {
+    implements Application.ActivityLifecycleCallbacks, DefaultLifecycleObserver {
 
   /** The callback that handles the result of this authentication process. */
   interface AuthCompletionHandler {
@@ -56,6 +60,8 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     void onError(String code, String error);
   }
 
+  // This is null when not using v2 embedding;
+  private final Lifecycle lifecycle;
   private final FragmentActivity activity;
   private final AuthCompletionHandler completionHandler;
   private final MethodCall call;
@@ -65,8 +71,12 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   private boolean activityPaused = false;
   private BiometricPrompt biometricPrompt;
 
-  public AuthenticationHelper(
-      FragmentActivity activity, MethodCall call, AuthCompletionHandler completionHandler) {
+  AuthenticationHelper(
+      Lifecycle lifecycle,
+      FragmentActivity activity,
+      MethodCall call,
+      AuthCompletionHandler completionHandler) {
+    this.lifecycle = lifecycle;
     this.activity = activity;
     this.completionHandler = completionHandler;
     this.call = call;
@@ -83,14 +93,18 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   }
 
   /** Start the fingerprint listener. */
-  public void authenticate() {
-    activity.getApplication().registerActivityLifecycleCallbacks(this);
+  void authenticate() {
+    if (lifecycle != null) {
+      lifecycle.addObserver(this);
+    } else {
+      activity.getApplication().registerActivityLifecycleCallbacks(this);
+    }
     biometricPrompt = new BiometricPrompt(activity, uiThreadExecutor, this);
     biometricPrompt.authenticate(promptInfo);
   }
 
   /** Cancels the fingerprint authentication. */
-  public void stopAuthentication() {
+  void stopAuthentication() {
     if (biometricPrompt != null) {
       biometricPrompt.cancelAuthentication();
       biometricPrompt = null;
@@ -99,6 +113,10 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
 
   /** Stops the fingerprint listener. */
   private void stop() {
+    if (lifecycle != null) {
+      lifecycle.removeObserver(this);
+      return;
+    }
     activity.getApplication().unregisterActivityLifecycleCallbacks(this);
   }
 
@@ -185,6 +203,16 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     }
   }
 
+  @Override
+  public void onPause(@NonNull LifecycleOwner owner) {
+    onActivityPaused(null);
+  }
+
+  @Override
+  public void onResume(@NonNull LifecycleOwner owner) {
+    onActivityResumed(null);
+  }
+
   // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
   @SuppressLint("InflateParams")
   private void showGoToSettingsDialog() {
@@ -236,8 +264,20 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   @Override
   public void onActivityDestroyed(Activity activity) {}
 
+  @Override
+  public void onDestroy(@NonNull LifecycleOwner owner) {}
+
+  @Override
+  public void onStop(@NonNull LifecycleOwner owner) {}
+
+  @Override
+  public void onStart(@NonNull LifecycleOwner owner) {}
+
+  @Override
+  public void onCreate(@NonNull LifecycleOwner owner) {}
+
   private static class UiThreadExecutor implements Executor {
-    public final Handler handler = new Handler(Looper.getMainLooper());
+    final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     public void execute(Runnable command) {

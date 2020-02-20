@@ -40,6 +40,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       case 'onPageFinished':
         _platformCallbacksHandler.onPageFinished(call.arguments['url']);
         return null;
+      case 'onPageStarted':
+        _platformCallbacksHandler.onPageStarted(call.arguments['url']);
+        return null;
     }
     throw MissingPluginException(
         '${call.method} was invoked but has no handler');
@@ -134,6 +137,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull('jsMode', settings.javascriptMode?.index);
     _addIfNonNull('hasNavigationDelegate', settings.hasNavigationDelegate);
     _addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
+    _addIfNonNull(
+        'gestureNavigationEnabled', settings.gestureNavigationEnabled);
     _addSettingIfPresent('userAgent', settings.userAgent);
     return map;
   }

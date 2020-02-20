@@ -27,9 +27,8 @@ void main() {
 
   GoogleSignInPlugin plugin;
 
-  setUp(() async {
+  setUp(() {
     plugin = GoogleSignInPlugin();
-    await plugin.initialized;
   });
 
   test('Init requires clientId', () async {
@@ -48,11 +47,12 @@ void main() {
 
   group('Successful .init, then', () {
     setUp(() async {
-      plugin.init(
+      await plugin.init(
         hostedDomain: 'foo',
         scopes: <String>['some', 'scope'],
         clientId: '1234',
       );
+      await plugin.initialized;
     });
 
     test('signInSilently', () async {

@@ -1,6 +1,12 @@
 ## 0.5.0
 * Added indicator for a firebase test lab device.
 
+## 0.4.1+4
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
 ## 0.4.1+3
 
 * Fix pedantic errors. Adds some missing documentation and fixes unawaited

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.Manifest.permission;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import io.flutter.plugin.common.PluginRegistry;
@@ -59,29 +60,38 @@ final class CameraPermissions {
         == PackageManager.PERMISSION_GRANTED;
   }
 
-  private static class CameraRequestPermissionsListener
+  @VisibleForTesting
+  static final class CameraRequestPermissionsListener
       implements PluginRegistry.RequestPermissionsResultListener {
+
+    // There's no way to unregister permission listeners in the v1 embedding, so we'll be called
+    // duplicate times in cases where the user denies and then grants a permission. Keep track of if
+    // we've responded before and bail out of handling the callback manually if this is a repeat
+    // call.
+    boolean alreadyCalled = false;
 
     final ResultCallback callback;
 
-    private CameraRequestPermissionsListener(ResultCallback callback) {
+    @VisibleForTesting
+    CameraRequestPermissionsListener(ResultCallback callback) {
       this.callback = callback;
     }
 
     @Override
     public boolean onRequestPermissionsResult(int id, String[] permissions, int[] grantResults) {
-      if (id == CAMERA_REQUEST_ID) {
-        if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-          callback.onResult("cameraPermission", "MediaRecorderCamera permission not granted");
-        } else if (grantResults.length > 1
-            && grantResults[1] != PackageManager.PERMISSION_GRANTED) {
-          callback.onResult("cameraPermission", "MediaRecorderAudio permission not granted");
-        } else {
-          callback.onResult(null, null);
-        }
-        return true;
+      if (alreadyCalled || id != CAMERA_REQUEST_ID) {
+        return false;
       }
-      return false;
+
+      alreadyCalled = true;
+      if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+        callback.onResult("cameraPermission", "MediaRecorderCamera permission not granted");
+      } else if (grantResults.length > 1 && grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+        callback.onResult("cameraPermission", "MediaRecorderAudio permission not granted");
+      } else {
+        callback.onResult(null, null);
+      }
+      return true;
     }
   }
 }
