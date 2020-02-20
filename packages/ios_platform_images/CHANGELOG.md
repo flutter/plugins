@@ -1,6 +1,6 @@
 ## 0.1.0+2
 
-* Explicitly declare dependency on pedantic.
+* Make the pedantic dev_dependency explicit.
 
 ## 0.1.0+1
 

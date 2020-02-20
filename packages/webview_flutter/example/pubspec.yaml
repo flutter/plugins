@@ -1,6 +1,5 @@
 name: webview_flutter_example
 description: Demonstrates how to use the webview_flutter plugin.
-publish
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"

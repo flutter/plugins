@@ -1,6 +1,6 @@
 ## 5.4.2
 
-* Explicitly declare dependency on pedantic.
+* Make the pedantic dev_dependency explicit.
 
 ## 5.4.1
 
