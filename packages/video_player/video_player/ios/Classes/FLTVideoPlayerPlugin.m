@@ -423,8 +423,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 @interface FLTVideoPlayerPlugin ()
 @property(readonly, weak, nonatomic) NSObject<FlutterTextureRegistry>* registry;
 @property(readonly, weak, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
-@property(readonly, nonatomic) NSMutableDictionary* players;
-@property(readonly, weak, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+@property(readonly, strong, nonatomic) NSMutableDictionary* players;
+@property(readonly, strong, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
 @end
 
 @implementation FLTVideoPlayerPlugin
