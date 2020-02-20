@@ -1,6 +1,10 @@
-## 0.4.7+1
+## 0.4.8+1
 
 * Explicitly declare dependency on pedantic.
+
+## 0.4.8
+
+* Adds macOS as an endorsed platform.
 
 ## 0.4.7
 
