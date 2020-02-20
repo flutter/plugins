@@ -1,7 +1,7 @@
 name: url_launcher_web
 description: Web platform implementation of url_launcher
 homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_web
-version: 0.1.1
+version: 0.1.1+1
 
 flutter:
   plugin:
@@ -22,6 +22,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   url_launcher: ^5.2.5
+  pedantic: ^1.8.0
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"

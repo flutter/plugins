@@ -1,3 +1,7 @@
+## 0.4.8+1
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.4.8
 
 * Adds macOS as an endorsed platform.

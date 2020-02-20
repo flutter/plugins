@@ -1,3 +1,7 @@
+## 0.5.24+1
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.5.24
 
 * Exposed `getZoomLevel` in `GoogleMapController`.
