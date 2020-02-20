@@ -1,3 +1,7 @@
+## 0.4.1+8
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.4.1+7
 
 * Fixed example userAccelerometerEvent in documentation
