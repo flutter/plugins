@@ -92,7 +92,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   }
 
   /**
-   * A simple firebase test lab detection. It reads a system property that is provided by Test Lab
+   * A simple Firebase Test Lab detection. It reads a system property that is provided by Test Lab
    * to implement different behavior when running in Test Lab.
    */
   private boolean isTestLabDevice() {

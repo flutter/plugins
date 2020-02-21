@@ -124,7 +124,7 @@ class AndroidDeviceInfo {
   /// `false` if the application is running in an emulator, `true` otherwise.
   final bool isPhysicalDevice;
 
-  /// `true` if the application is running on a firebase test lab device, `false` otherwise.
+  /// `true` if the application is running on a Firebase Test Lab device, `false` otherwise.
   final bool isTestLabDevice;
 
   /// The Android hardware device ID that is unique between the device + user and app signing.
