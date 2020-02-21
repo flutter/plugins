@@ -556,8 +556,8 @@ class Convert {
     final List<?> data = toList(o);
     final List<LatLng> points = new ArrayList<>(data.size());
 
-    for (Object ob : data) {
-      final List<?> point = toList(ob);
+    for (Object rawPoint : data) {
+      final List<?> point = toList(rawPoint);
       points.add(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))));
     }
     return points;
@@ -567,8 +567,8 @@ class Convert {
     final List<?> data = toList(o);
     final List<List<LatLng>> holes = new ArrayList<>(data.size());
 
-    for (Object ob : data) {
-      holes.add(toPoints(ob));
+    for (Object rawHole : data) {
+      holes.add(toPoints(rawHole));
     }
     return holes;
   }
