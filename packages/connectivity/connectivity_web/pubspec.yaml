@@ -11,9 +11,10 @@ flutter:
         fileName: connectivity_web.dart
 
 dependencies:
+  connectivity_platform_interface: ^1.0.3
+  js: ^0.6.1+1
   flutter:
     sdk: flutter
-  connectivity_platform_interface: ^1.0.3
 
 dev_dependencies:
   flutter_test:
