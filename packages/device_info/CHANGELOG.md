@@ -1,4 +1,4 @@
-## 0.5.0
+## 0.4.2
 * Added indicator for a firebase test lab device.
 
 ## 0.4.1+4
