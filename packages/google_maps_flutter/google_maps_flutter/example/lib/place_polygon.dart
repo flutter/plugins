@@ -97,6 +97,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
     setState(() {
       polygons[polygonId] = polygon;
       polygonOffsets[polygonId] = _polygonIdCounter.ceilToDouble();
+      // increment _polygonIdCounter to have unique polygon id each time
       _polygonIdCounter++;
     });
   }
