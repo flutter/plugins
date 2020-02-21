@@ -13,6 +13,8 @@ flutter:
 dependencies:
   connectivity_platform_interface: ^1.0.3
   js: ^0.6.1+1
+  flutter_web_plugins:
+    sdk: flutter
   flutter:
     sdk: flutter
 
