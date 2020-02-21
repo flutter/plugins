@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         String wifiName, wifiBSSID, wifiIP;
 
         try {
-          if (Platform.isIOS) {
+          if (!kIsWeb && Platform.isIOS) {
             LocationAuthorizationStatus status =
                 await _connectivity.getLocationServiceAuthorization();
             if (status == LocationAuthorizationStatus.notDetermined) {
@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         try {
-          if (Platform.isIOS) {
+          if (!kIsWeb && Platform.isIOS) {
             LocationAuthorizationStatus status =
                 await _connectivity.getLocationServiceAuthorization();
             if (status == LocationAuthorizationStatus.notDetermined) {
