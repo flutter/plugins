@@ -1,6 +1,7 @@
 ## 0.3.19+8
 
 - Added patch for select button crash
+* Make the pedantic dev_dependency explicit.
 
 ## 0.3.19+7
 
