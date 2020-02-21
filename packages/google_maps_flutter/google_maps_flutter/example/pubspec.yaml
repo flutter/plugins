@@ -17,6 +17,7 @@ dev_dependencies:
     sdk: flutter
   test: ^1.6.0
   e2e: ^0.2.1
+  pedantic: ^1.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
