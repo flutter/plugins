@@ -1,6 +1,6 @@
 ## 0.5.24
 
-* Add support for holes in Polygons
+* Add support for holes in Polygons.
 
 ## 0.5.23+1
 
