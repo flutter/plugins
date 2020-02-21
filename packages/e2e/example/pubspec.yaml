@@ -1,6 +1,5 @@
 name: e2e_example
 description: Demonstrates how to use the e2e plugin.
-version: 0.0.1
 publish_to: 'none'
 
 environment:
@@ -23,6 +22,7 @@ dev_dependencies:
   e2e_macos:
     path: ../e2e_macos
   test: any
+  pedantic: ^1.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

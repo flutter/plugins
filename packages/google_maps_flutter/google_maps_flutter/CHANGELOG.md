@@ -1,6 +1,14 @@
+## 0.5.25
+
+* Add support for holes in Polygons.
+
+## 0.5.24+1
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.5.24
 
-* Add support for holes in Polygons
+* Exposed `getZoomLevel` in `GoogleMapController`.
 
 ## 0.5.23+1
 

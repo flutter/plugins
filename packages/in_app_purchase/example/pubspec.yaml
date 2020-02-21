@@ -15,6 +15,7 @@ dev_dependencies:
   in_app_purchase:
     path: ../
   e2e: ^0.2.0
+  pedantic: ^1.8.0
 
 flutter:
   uses-material-design: true
