@@ -2,10 +2,15 @@
 
 * iOS: fixed some videos being rendered black
 
+## 0.10.8+1
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.10.8
 
 * Added support for cleaning up the plugin if used for add-to-app (Flutter
   v1.15.3 is required for that feature).
+
 
 ## 0.10.7
 

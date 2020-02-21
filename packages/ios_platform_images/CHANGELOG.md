@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.1.0+1
 
 * Removed Android support from the pubspec.

@@ -1,3 +1,7 @@
+## 0.0.3+1
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.0.3
 
 * Added support for user's downloads directory.

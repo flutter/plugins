@@ -1,3 +1,7 @@
+## 0.6.3+4
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.6.3+3
 
 * Android: Fix a crash when `externalFilesDirectory` does not exist.
