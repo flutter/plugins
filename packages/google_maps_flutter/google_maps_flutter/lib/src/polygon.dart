@@ -196,7 +196,7 @@ class Polygon {
     return result;
   }
 
-  dynamic _holesToJson() {
+  List<dynamic> _holesToJson() {
     final List<dynamic> result = <dynamic>[];
     for (final List<LatLng> hole in holes) {
       final List<dynamic> jsonHole = <dynamic>[];
