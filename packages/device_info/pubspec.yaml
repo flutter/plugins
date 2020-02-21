@@ -22,6 +22,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   e2e: ^0.2.0
+  pedantic: ^1.8.0
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"

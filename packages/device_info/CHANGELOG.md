@@ -1,5 +1,9 @@
 ## 0.4.2
-* Added indicator for a Firebase Test Lab device.
+* Add indicator for a Firebase Test Lab device.
+
+## 0.4.1+5
+
+* Make the pedantic dev_dependency explicit.
 
 ## 0.4.1+4
 

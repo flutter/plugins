@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.1.0
 
 * Adds an example app to trigger CI tests. Bumped the MINOR version to
