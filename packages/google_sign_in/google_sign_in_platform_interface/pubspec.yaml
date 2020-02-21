@@ -5,7 +5,6 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/google_sign_in
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
 version: 1.1.0
 
-
 dependencies:
   flutter:
     sdk: flutter
