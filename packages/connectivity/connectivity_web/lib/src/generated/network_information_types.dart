@@ -2,7 +2,7 @@
 library network_information_types;
 
 import "package:js/js.dart";
-import "dart:html" show Navigator, EventTarget;
+import "dart:html" show EventListener, EventTarget;
 
 /// W3C Spec Draft http://wicg.github.io/netinfo/
 /// Edition: Draft Community Group Report 20 February 2019
@@ -77,3 +77,6 @@ abstract class NetworkInformation implements EventTarget {
   external EventListener get onchange;
   external set onchange(EventListener v);
 }
+
+@JS()
+external NavigatorNetworkInformation get navigator;
