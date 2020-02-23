@@ -1,6 +1,10 @@
-## 0.3.19+8
+## 0.3.19+9
 
 * Enable programmatic scrolling using Android's WebView.scrollTo & iOS WKWebView.scrollView.contentOffset.
+
+## 0.3.19+8
+
+* Make the pedantic dev_dependency explicit.
 
 ## 0.3.19+7
 

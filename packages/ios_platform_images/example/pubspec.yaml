@@ -17,9 +17,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   ios_platform_images:
     path: ../
+  pedantic: ^1.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

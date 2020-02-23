@@ -683,6 +683,41 @@ void main() {
     expect(topLeft, northWest);
   });
 
+  testWidgets('testGetZoomLevel', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
+    // initialization. https://github.com/flutter/flutter/issues/24806
+    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
+    // still being investigated.
+    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
+    // https://github.com/flutter/flutter/issues/27550
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    double zoom = await controller.getZoomLevel();
+    expect(zoom, _kInitialZoomLevel);
+
+    await controller.moveCamera(CameraUpdate.zoomTo(7));
+    await tester.pumpAndSettle();
+    zoom = await controller.getZoomLevel();
+    expect(zoom, equals(7));
+  });
+
   testWidgets('testScreenCoordinate', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapController> controllerCompleter =
