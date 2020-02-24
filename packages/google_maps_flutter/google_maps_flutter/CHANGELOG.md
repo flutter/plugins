@@ -1,4 +1,4 @@
-## 0.5.24
+## 0.5.25
 
 * Android: Add liteModeEnabled option.
 
