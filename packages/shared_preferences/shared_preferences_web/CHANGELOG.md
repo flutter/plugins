@@ -1,3 +1,7 @@
+## 0.1.2+4
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.1.2+3
 
 * Bump gradle version to avoid bugs with android projects

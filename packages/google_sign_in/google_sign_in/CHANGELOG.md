@@ -1,3 +1,7 @@
+## 4.1.4
+
+* Make the pedantic dev_dependency explicit.
+
 ## 4.1.3
 
 * Make plugin example meet naming convention.
