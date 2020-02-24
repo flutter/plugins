@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'fake_maps_controllers.dart';
+import '../../test/fake_maps_controllers.dart';
 
 Set<TileOverlay> _toSet({TileOverlay t1, TileOverlay t2, TileOverlay t3}) {
   final Set<TileOverlay> res = Set<TileOverlay>.identity();
