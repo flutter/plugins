@@ -1,3 +1,11 @@
+# 0.1.1+1
+
+- Make the pedantic dev_dependency explicit.
+
+# 0.1.1
+
+- Added support for mailto scheme
+
 # 0.1.0+2
 
 - Remove androidx references from the no-op android implemenation.

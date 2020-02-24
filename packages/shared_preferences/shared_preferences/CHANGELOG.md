@@ -1,3 +1,7 @@
+## 0.5.6+2
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.5.6+1
 
 * Updated README

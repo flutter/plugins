@@ -1,3 +1,18 @@
+## 0.10.8+1
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.10.8
+
+* Added support for cleaning up the plugin if used for add-to-app (Flutter
+  v1.15.3 is required for that feature).
+
+
+## 0.10.7
+
+* `VideoPlayerController` support for reading closed caption files. 
+* `VideoPlayerValue` has a `caption` field for reading the current closed caption at any given time.
+
 ## 0.10.6
 
 * `ClosedCaptionFile` and `SubRipCaptionFile` classes added to read
