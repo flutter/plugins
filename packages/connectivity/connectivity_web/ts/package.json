@@ -12,6 +12,6 @@
   "license": "MIT",
   "dependencies": {
     "network-information-types": "0.1.0",
-    "dart_js_facade_gen": "^0.0.6"
+    "dart_js_facade_gen": "^0.0.7"
   }
 }
