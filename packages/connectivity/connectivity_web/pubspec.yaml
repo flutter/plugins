@@ -19,7 +19,8 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  flutter_test:
+  test: any
+  flutter_driver:
     sdk: flutter
 
 environment:
