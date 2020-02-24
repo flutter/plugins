@@ -1,4 +1,4 @@
-## 0.5.20+1
+## 0.5.21
 
 * Breaking change fix for BitmapDescriptor scaling override
 
