@@ -228,8 +228,12 @@ public class GoogleMapsPlugin
             new OnMapReadyCallback() {
               @Override
               public void onMapReady(GoogleMap googleMap) {
-                fragmentManager.beginTransaction().remove(mapFragment).commit();
-                result.success(null);
+                try {
+                  fragmentManager.beginTransaction().remove(mapFragment).commit();
+                  result.success(null);
+                } catch (Exception ex) {
+                  result.error("WarmUp error", ex.getMessage(), ex.getLocalizedMessage());
+                }
               }
             });
         break;
