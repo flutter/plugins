@@ -52,6 +52,7 @@ import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -73,6 +74,7 @@ public class MethodCallHandlerTest {
   @Spy Result result;
   @Mock Activity activity;
   @Mock Context context;
+  @Mock ActivityPluginBinding mockActivityPluginBinding;
 
   @Before
   public void setUp() {
@@ -82,6 +84,7 @@ public class MethodCallHandlerTest {
             @NonNull MethodChannel channel,
             boolean enablePendingPurchases) -> mockBillingClient;
     methodChannelHandler = new MethodCallHandlerImpl(activity, context, mockMethodChannel, factory);
+    when(mockActivityPluginBinding.getActivity()).thenReturn(activity);
   }
 
   @Test
@@ -549,6 +552,15 @@ public class MethodCallHandlerTest {
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
     verify(result, times(1)).success(fromBillingResult(billingResult));
+  }
+
+  @Test
+  public void endConnection_if_activity_dettached() {
+    InAppPurchasePlugin plugin = new InAppPurchasePlugin();
+    plugin.setMethodCallHandler(methodChannelHandler);
+    mockStartConnection();
+    plugin.onDetachedFromActivity();
+    verify(mockBillingClient).endConnection();
   }
 
   private ArgumentCaptor<BillingClientStateListener> mockStartConnection() {

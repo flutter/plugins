@@ -27,8 +27,9 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     final Uri parsedUrl = Uri.tryParse(url);
     if (parsedUrl == null) return Future<bool>.value(false);
 
-    return Future<bool>.value(
-        parsedUrl.isScheme('http') || parsedUrl.isScheme('https'));
+    return Future<bool>.value(parsedUrl.isScheme('http') ||
+        parsedUrl.isScheme('https') ||
+        parsedUrl.isScheme('mailto'));
   }
 
   @override

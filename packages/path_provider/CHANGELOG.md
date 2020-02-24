@@ -1,3 +1,7 @@
+## 1.6.1
+
+* Make the pedantic dev_dependency explicit.
+
 ## 1.6.0
 
 * Support for retrieving the downloads directory was added.
