@@ -8,5 +8,8 @@ dependencies:
     path: ../
   http: ^0.12.0
 
+dev_dependencies:
+  pedantic: ^1.8.0
+
 flutter:
   uses-material-design: true

@@ -6,12 +6,10 @@ The macos implementation of [`connectivity`].
 
 ### Import the package
 
-To use this plugin in your Flutter Web app, simply add it as a dependency in
-your `pubspec.yaml` alongside the base `connectivity` plugin.
 
-_(This is only temporary: in the future we hope to make this package an
-"endorsed" implementation of `connectivity`, so that it is automatically
-included in your Flutter macos app when you depend on `package:connectivity_macos`.)_
+This package has been endorsed, meaning that you only need to add `connectivity`
+as a dependency in your `pubspec.yaml`. It will be automatically included in your app
+when you depend on `package:connectivity`.
 
 This is what the above means to your `pubspec.yaml`:
 
@@ -19,12 +17,9 @@ This is what the above means to your `pubspec.yaml`:
 ...
 dependencies:
   ...
-  connectivity: ^0.4.6
-  connectivity_macos: ^0.0.1
+  connectivity: ^0.4.8
   ...
 ```
 
-### Use the plugin
+Refer to the `connectivity` [documentation](https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity) for more details.
 
-Once you have the `connectivity_macos` dependency in your pubspec, you should
-be able to use `package:connectivity` as normal.
