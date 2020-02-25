@@ -113,11 +113,11 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   }
 
   private void callLoadRewardedVideoAd(MethodCall call, Result result) {
-    if (rewardedWrapper.getStatus() != RewardedVideoAdWrapper.Status.CREATED
+    /*if (rewardedWrapper.getStatus() != RewardedVideoAdWrapper.Status.CREATED
         && rewardedWrapper.getStatus() != RewardedVideoAdWrapper.Status.FAILED) {
       result.success(Boolean.TRUE); // The ad was already loading or loaded.
       return;
-    }
+    }*/
 
     String adUnitId = call.argument("adUnitId");
     if (adUnitId == null || adUnitId.isEmpty()) {
