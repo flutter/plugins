@@ -8,6 +8,11 @@ import 'dart:io' show Directory;
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
+
+export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
+    show AndroidStorageDirectory;
+
 
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/path_provider');
