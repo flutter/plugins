@@ -1,3 +1,7 @@
+## 0.2.4+4
+
+* Add timeout to invokeMethod call, for tests do not use MethodChannel.
+
 ## 0.2.4+3
 
 * Fixed code snippet in the readme under the "Using Flutter driver to run tests" section.
