@@ -19,10 +19,16 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
       try {
-        await _channel.invokeMethod<void>(
-            'allTestsFinished', <String, dynamic>{'results': _results});
+        // For web integration tests we are not using the
+        // `plugins.flutter.io/e2e`. Therefore tests won't complete and fail
+        // unless we add a timeout.
+        await _channel.invokeMethod<void>('allTestsFinished', <String, dynamic>{
+          'results': _results
+        }).timeout(Duration(seconds: 10));
       } on MissingPluginException {
         print('Warning: E2E test plugin was not detected.');
+      } on TimeoutException {
+        print('Warning: Channel timed out');
       }
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });

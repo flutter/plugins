@@ -45,6 +45,18 @@ task:
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh apk
+    - name: e2e_web_smoke_test
+      # Tests e2e example test in web.
+      only_if: "changesInclude('.cirrus.yml', 'packages/e2e/**') || $CIRRUS_PR == ''"
+      script:
+        - flutter config --enable-web
+        - git clone https://github.com/flutter/web_installers.git
+        - cd web_installers/packages/web_drivers/
+        - pub get
+        - dart lib/web_driver_installer.dart &
+        - sleep 20
+        - cd ../../../packages/e2e/example/
+        - flutter drive -v --target=test_driver/example_e2e_web.dart -d web-server --release --browser-name=chrome
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
