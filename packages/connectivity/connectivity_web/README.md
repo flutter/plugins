@@ -40,7 +40,8 @@ Tests are a crucial to contributions to this package. All new contributions shou
 In order to run tests in this package, do:
 
 ```
-flutter test --platform chrome -j1
+cd test
+flutter run -d chrome
 ```
 
 Contributions to this package are welcome. Read the [Contributing to Flutter Plugins](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md) guide to get started.
