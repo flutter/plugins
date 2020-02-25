@@ -6,11 +6,10 @@ import 'dart:async';
 import 'dart:io' show Directory;
 
 import 'package:meta/meta.dart';
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show AndroidStorageDirectory;
-
 
 /// This API is only exposed for the unit tests. It should not be used by
 // /// any code outside of the plugin itself.
@@ -18,7 +17,7 @@ export 'package:path_provider_platform_interface/path_provider_platform_interfac
 // void setMockPathProviderPlatform(Platform platform) {
 //   _platform = platform;
 // }
-static PathProviderPlatform get _platform => PathProviderPlatform.instance;
+PathProviderPlatform get _platform => PathProviderPlatform.instance;
 
 /// Path to the temporary directory on the device that is not backed up and is
 /// suitable for storing caches of downloaded files.
@@ -140,7 +139,8 @@ Future<List<Directory>> getExternalStorageDirectories({
   /// how this type translates to Android storage directories.
   AndroidStorageDirectory type,
 }) async {
-  final List<String> paths = await _platform.getExternalStoragePaths(type);
+  final List<String> paths =
+      await _platform.getExternalStoragePaths(type: type);
 
   return paths.map((String path) => Directory(path)).toList();
 }
