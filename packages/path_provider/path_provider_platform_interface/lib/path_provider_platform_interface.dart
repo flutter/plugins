@@ -40,12 +40,15 @@ abstract class PathProviderPlatform extends PlatformInterface {
   /// Path to the temporary directory on the device that is not backed up and is
   /// suitable for storing caches of downloaded files.
   Future<Directory> getTemporaryDirectory() {
-    throw UnimplementedError('getTemporaryDirectory() has not been implemented.');
+    throw UnimplementedError(
+        'getTemporaryDirectory() has not been implemented.');
   }
+
   /// Path to a directory where the application may place application support
   /// files.
   Future<Directory> getApplicationSupportDirectory() {
-    throw UnimplementedError('getApplicationSupportDirectory() has not been implemented.');
+    throw UnimplementedError(
+        'getApplicationSupportDirectory() has not been implemented.');
   }
 
   /// Path to the directory where application can store files that are persistent,
@@ -57,14 +60,16 @@ abstract class PathProviderPlatform extends PlatformInterface {
   /// Path to a directory where the application may place data that is
   /// user-generated, or that cannot otherwise be recreated by your application.
   Future<Directory> getApplicationDocumentsDirectory() {
-    throw UnimplementedError('getApplicationDocumentsDirectory() has not been implemented.');
+    throw UnimplementedError(
+        'getApplicationDocumentsDirectory() has not been implemented.');
   }
 
   /// Path to a directory where the application may access top level storage.
   /// The current operating system should be determined before issuing this
   /// function call, as this functionality is only available on Android.
   Future<Directory> getExternalStorageDirectory() {
-    throw UnimplementedError('getExternalStorageDirectory() has not been implemented.');
+    throw UnimplementedError(
+        'getExternalStorageDirectory() has not been implemented.');
   }
 
   /// Paths to directories where application specific external cache data can be
@@ -72,7 +77,8 @@ abstract class PathProviderPlatform extends PlatformInterface {
   /// partitions or SD cards. Phones may have multiple storage directories
   /// available.
   Future<List<Directory>> getExternalCacheDirectories() {
-    throw UnimplementedError('getExternalCacheDirectories() has not been implemented.');
+    throw UnimplementedError(
+        'getExternalCacheDirectories() has not been implemented.');
   }
 
   /// Paths to directories where application specific data can be stored.
@@ -83,13 +89,14 @@ abstract class PathProviderPlatform extends PlatformInterface {
     /// how this type translates to Android storage directories.
     AndroidStorageDirectory type,
   }) {
-    throw UnimplementedError('getExternalStorageDirectories() has not been implemented.');
+    throw UnimplementedError(
+        'getExternalStorageDirectories() has not been implemented.');
   }
-
 
   /// Path to the directory where downloaded files can be stored.
   /// This is typically only relevant on desktop operating systems.
   Future<Directory> getDownloadsDirectory() {
-    throw UnimplementedError('getDownloadsDirectory() has not been implemented.');
+    throw UnimplementedError(
+        'getDownloadsDirectory() has not been implemented.');
   }
 }

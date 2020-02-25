@@ -9,11 +9,14 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.0.5
+  platform: ^2.0.0
   plugin_platform_interface: ^1.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  pedantic: ^1.8.0
+  test: any
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"

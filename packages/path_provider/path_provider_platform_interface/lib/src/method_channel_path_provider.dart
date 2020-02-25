@@ -5,10 +5,14 @@
 import 'dart:async';
 import 'dart:io' show Directory;
 
+import 'enums.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:platform/platform.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// An implementation of [PathProviderPlatform] that uses method channels.
 class MethodChannelPathProvider extends PathProviderPlatform {
@@ -25,7 +29,7 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   @visibleForTesting
   void setMockPathProviderPlatform(Platform platform) {
     _platform = platform;
-}
+  }
 
   Future<Directory> getTemporaryDirectory() async {
     final String path =
@@ -37,8 +41,8 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   }
 
   Future<Directory> getApplicationSupportDirectory() async {
-    final String path =
-        await _channel.invokeMethod<String>('getApplicationSupportDirectory');
+    final String path = await methodChannel
+        .invokeMethod<String>('getApplicationSupportDirectory');
     if (path == null) {
       return null;
     }
@@ -49,11 +53,12 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   /// Path to the directory where application can store files that are persistent,
   /// backed up, and not visible to the user, such as sqlite.db.
   Future<Directory> getLibraryDirectory() async {
-    if (!_platform.isIOS || !_platform.isMacOS) {
+    print(_platform.isAndroid);
+    if (!_platform.isIOS && !_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on iOS/macOS');
     }
     final String path =
-        await _channel.invokeMethod<String>('getLibraryDirectory');
+        await methodChannel.invokeMethod<String>('getLibraryDirectory');
     if (path == null) {
       return null;
     }
@@ -61,42 +66,70 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   }
 
   Future<Directory> getApplicationDocumentsDirectory() async {
-    final String path =
-        await _channel.invokeMethod<String>('getApplicationDocumentsDirectory');
+    final String path = await methodChannel
+        .invokeMethod<String>('getApplicationDocumentsDirectory');
     if (path == null) {
       return null;
     }
     return Directory(path);
   }
 
-  Future<Directory> getExternalStorageDirectory() {
-  if (!_platform.ispath);
+  Future<Directory> getExternalStorageDirectory() async {
+    if (!_platform.isAndroid) {
+      throw UnsupportedError('Functionality only available on Android');
+    }
+    final String path =
+        await methodChannel.invokeMethod<String>('getStorageDirectory');
+    if (path == null) {
+      return null;
+    }
+    return Directory(path);
   }
 
   /// Paths to directories where application specific external cache data can be
   /// stored. These paths typically reside on external storage like separate
   /// partitions or SD cards. Phones may have multiple storage directories
   /// available.
-  Future<List<Directory>> getExternalCacheDirectories() {
-    throw UnimplementedError('getExternalCacheDirectories() has not been implemented.');
+  Future<List<Directory>> getExternalCacheDirectories() async {
+    if (!_platform.isAndroid) {
+      throw UnsupportedError('Functionality only available on Android');
+    }
+    final List<String> paths = await methodChannel
+        .invokeListMethod<String>('getExternalCacheDirectories');
+
+    return paths.map((String path) => Directory(path)).toList();
   }
 
   /// Paths to directories where application specific data can be stored.
   /// These paths typically reside on external storage like separate partitions
   /// or SD cards. Phones may have multiple storage directories available.
   Future<List<Directory>> getExternalStorageDirectories({
-    /// Optional parameter. See [AndroidStorageDirectory] for more informations on
+    /// Optional parameter. See [StorageDirectory] for more informations on
     /// how this type translates to Android storage directories.
     AndroidStorageDirectory type,
-  }) {
-    throw UnimplementedError('getExternalStorageDirectories() has not been implemented.');
-  }
+  }) async {
+    if (!_platform.isAndroid) {
+      throw UnsupportedError('Functionality only available on Android');
+    }
+    final List<String> paths = await methodChannel.invokeListMethod<String>(
+      'getExternalStorageDirectories',
+      <String, dynamic>{'type': type?.index},
+    );
 
+    return paths.map((String path) => Directory(path)).toList();
+  }
 
   /// Path to the directory where downloaded files can be stored.
   /// This is typically only relevant on desktop operating systems.
-  Future<Directory> getDownloadsDirectory() {
-    throw UnimplementedError('getDownloadsDirectory() has not been implemented.');
+  Future<Directory> getDownloadsDirectory() async {
+    if (!_platform.isMacOS) {
+      throw UnsupportedError('Functionality only available on macOS');
+    }
+    final String path =
+        await methodChannel.invokeMethod<String>('getDownloadsDirectory');
+    if (path == null) {
+      return null;
+    }
+    return Directory(path);
   }
-
 }
