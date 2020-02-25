@@ -53,6 +53,7 @@ void main() {
           await methodChannelPathProvider.getTemporaryDirectory();
       expect(result.path, kTemporaryDirectory);
     });
+
     test('getApplicationSupportDirectory', () async {
       final Directory result =
           await methodChannelPathProvider.getApplicationSupportDirectory();
@@ -66,11 +67,13 @@ void main() {
           await methodChannelPathProvider.getLibraryDirectory();
       expect(result.path, kLibraryDirectory);
     });
+
     test('getApplicationDocumentsDirectory', () async {
       final Directory result =
           await methodChannelPathProvider.getApplicationDocumentsDirectory();
       expect(result.path, kApplicationDocumentsDirectory);
     });
+
     test('getExternalCacheDirectories', () async {
       methodChannelPathProvider.setMockPathProviderPlatform(
           FakePlatform(operatingSystem: 'android'));
@@ -80,6 +83,7 @@ void main() {
       expect(result.length, 1);
       expect(result.first.path, kExternalCacheDirectories);
     });
+
     test('getExternalStorageDirectories', () async {
       methodChannelPathProvider.setMockPathProviderPlatform(
           FakePlatform(operatingSystem: 'android'));
@@ -89,6 +93,7 @@ void main() {
       expect(result.length, 1);
       expect(result.first.path, kExternalStorageDirectories);
     });
+
     test('getDownloadsDirectory', () async {
       methodChannelPathProvider
           .setMockPathProviderPlatform(FakePlatform(operatingSystem: 'macos'));

@@ -19,7 +19,9 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   MethodChannel methodChannel =
       MethodChannel('plugins.flutter.io/path_provider');
 
-  // TODO(franciscojma): Remove once all the platforms have been moved to its own package and endorsed.
+  // Ideally, this property shouldn't exist, and each platform should
+  // just implement the supported methods. Once all the platforms are
+  // federated, this property should be removed.
   Platform _platform = const LocalPlatform();
 
   /// This API is only exposed for the unit tests. It should not be used by
@@ -48,8 +50,6 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     return Directory(path);
   }
 
-  /// Path to the directory where application can store files that are persistent,
-  /// backed up, and not visible to the user, such as sqlite.db.
   Future<Directory> getLibraryDirectory() async {
     if (!_platform.isIOS && !_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on iOS/macOS');
@@ -83,10 +83,6 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     return Directory(path);
   }
 
-  /// Paths to directories where application specific external cache data can be
-  /// stored. These paths typically reside on external storage like separate
-  /// partitions or SD cards. Phones may have multiple storage directories
-  /// available.
   Future<List<Directory>> getExternalCacheDirectories() async {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');
@@ -97,12 +93,7 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     return paths.map((String path) => Directory(path)).toList();
   }
 
-  /// Paths to directories where application specific data can be stored.
-  /// These paths typically reside on external storage like separate partitions
-  /// or SD cards. Phones may have multiple storage directories available.
   Future<List<Directory>> getExternalStorageDirectories({
-    /// Optional parameter. See [StorageDirectory] for more informations on
-    /// how this type translates to Android storage directories.
     AndroidStorageDirectory type,
   }) async {
     if (!_platform.isAndroid) {
@@ -116,8 +107,6 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     return paths.map((String path) => Directory(path)).toList();
   }
 
-  /// Path to the directory where downloaded files can be stored.
-  /// This is typically only relevant on desktop operating systems.
   Future<Directory> getDownloadsDirectory() async {
     if (!_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on macOS');
