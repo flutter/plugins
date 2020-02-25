@@ -6,13 +6,11 @@ import 'dart:async';
 import 'dart:io' show Directory;
 
 import 'enums.dart';
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:platform/platform.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// An implementation of [PathProviderPlatform] that uses method channels.
 class MethodChannelPathProvider extends PathProviderPlatform {
