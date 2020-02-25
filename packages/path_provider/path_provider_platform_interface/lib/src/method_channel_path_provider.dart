@@ -37,6 +37,7 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     if (path == null) {
       return null;
     }
+
     return Directory(path);
   }
 
