@@ -1,8 +1,9 @@
-import 'package:connectivity_web_example/src/connectivity_mocks.dart';
 import 'package:e2e/e2e.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 import 'package:connectivity_web/connectivity_web.dart';
+
+import 'src/connectivity_mocks.dart';
 
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();

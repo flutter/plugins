@@ -9,13 +9,15 @@ dependencies:
   js: ^0.6.1+1
   flutter_web_plugins:
     sdk: flutter
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_driver:
     sdk: flutter
   e2e: ^0.2.4+3
-  flutter:
-    sdk: flutter
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
