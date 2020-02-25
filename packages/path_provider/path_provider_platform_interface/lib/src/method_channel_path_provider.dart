@@ -53,7 +53,6 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   /// Path to the directory where application can store files that are persistent,
   /// backed up, and not visible to the user, such as sqlite.db.
   Future<Directory> getLibraryDirectory() async {
-    print(_platform.isAndroid);
     if (!_platform.isIOS && !_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on iOS/macOS');
     }
