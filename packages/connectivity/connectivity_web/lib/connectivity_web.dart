@@ -17,13 +17,11 @@ class ConnectivityPlugin extends ConnectivityPlatform {
     ConnectivityPlatform.instance = ConnectivityPlugin();
   }
 
-  dom.NetworkInformation _networkInformation;
-  bool _networkInformationApiSupported;
+  final dom.NetworkInformation _networkInformation;
+  final bool _networkInformationApiSupported;
 
   /// The constructor of the plugin.
-  ConnectivityPlugin() {
-    ConnectivityPlugin.withConnection(dom.navigator?.connection);
-  }
+  ConnectivityPlugin() : this.withConnection(dom.navigator?.connection);
 
   /// Creates the plugin, with an override of the NetworkInformation object.
   @visibleForTesting
