@@ -4,13 +4,9 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import 'page.dart';
 
 class PlaceClusterPage extends Page {
