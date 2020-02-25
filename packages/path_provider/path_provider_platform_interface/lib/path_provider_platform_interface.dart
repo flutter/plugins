@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Directory;
 
 import 'src/enums.dart';
 import 'src/method_channel_path_provider.dart';
@@ -39,64 +38,62 @@ abstract class PathProviderPlatform extends PlatformInterface {
 
   /// Path to the temporary directory on the device that is not backed up and is
   /// suitable for storing caches of downloaded files.
-  Future<Directory> getTemporaryDirectory() {
-    throw UnimplementedError(
-        'getTemporaryDirectory() has not been implemented.');
+  Future<String> getTemporaryPath() {
+    throw UnimplementedError('getTemporaryPath() has not been implemented.');
   }
 
   /// Path to a directory where the application may place application support
   /// files.
-  Future<Directory> getApplicationSupportDirectory() {
+  Future<String> getApplicationSupportPath() {
     throw UnimplementedError(
-        'getApplicationSupportDirectory() has not been implemented.');
+        'getApplicationSupportPath() has not been implemented.');
   }
 
   /// Path to the directory where application can store files that are persistent,
   /// backed up, and not visible to the user, such as sqlite.db.
-  Future<Directory> getLibraryDirectory() {
-    throw UnimplementedError('getLibraryDirectory() has not been implemented.');
+  Future<String> getLibraryPath() {
+    throw UnimplementedError('getLibraryPath() has not been implemented.');
   }
 
   /// Path to a directory where the application may place data that is
   /// user-generated, or that cannot otherwise be recreated by your application.
-  Future<Directory> getApplicationDocumentsDirectory() {
+  Future<String> getApplicationDocumentsPath() {
     throw UnimplementedError(
-        'getApplicationDocumentsDirectory() has not been implemented.');
+        'getApplicationDocumentsPath() has not been implemented.');
   }
 
   /// Path to a directory where the application may access top level storage.
   /// The current operating system should be determined before issuing this
   /// function call, as this functionality is only available on Android.
-  Future<Directory> getExternalStorageDirectory() {
+  Future<String> getExternalStoragePath() {
     throw UnimplementedError(
-        'getExternalStorageDirectory() has not been implemented.');
+        'getExternalStoragePath() has not been implemented.');
   }
 
   /// Paths to directories where application specific external cache data can be
   /// stored. These paths typically reside on external storage like separate
   /// partitions or SD cards. Phones may have multiple storage directories
   /// available.
-  Future<List<Directory>> getExternalCacheDirectories() {
+  Future<List<String>> getExternalCachePaths() {
     throw UnimplementedError(
-        'getExternalCacheDirectories() has not been implemented.');
+        'getExternalCachePaths() has not been implemented.');
   }
 
   /// Paths to directories where application specific data can be stored.
   /// These paths typically reside on external storage like separate partitions
   /// or SD cards. Phones may have multiple storage directories available.
-  Future<List<Directory>> getExternalStorageDirectories({
+  Future<List<String>> getExternalStoragePaths({
     /// Optional parameter. See [AndroidStorageDirectory] for more informations on
     /// how this type translates to Android storage directories.
     AndroidStorageDirectory type,
   }) {
     throw UnimplementedError(
-        'getExternalStorageDirectories() has not been implemented.');
+        'getExternalStoragePaths() has not been implemented.');
   }
 
   /// Path to the directory where downloaded files can be stored.
   /// This is typically only relevant on desktop operating systems.
-  Future<Directory> getDownloadsDirectory() {
-    throw UnimplementedError(
-        'getDownloadsDirectory() has not been implemented.');
+  Future<String> getDownloadsPath() {
+    throw UnimplementedError('getDownloadsPath() has not been implemented.');
   }
 }

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Directory;
 
 import 'enums.dart';
 
@@ -31,27 +30,27 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     _platform = platform;
   }
 
-  Future<Directory> getTemporaryDirectory() async {
+  Future<String> getTemporaryPath() async {
     final String path =
         await methodChannel.invokeMethod<String>('getTemporaryDirectory');
     if (path == null) {
       return null;
     }
 
-    return Directory(path);
+    return path;
   }
 
-  Future<Directory> getApplicationSupportDirectory() async {
+  Future<String> getApplicationSupportPath() async {
     final String path = await methodChannel
         .invokeMethod<String>('getApplicationSupportDirectory');
     if (path == null) {
       return null;
     }
 
-    return Directory(path);
+    return path;
   }
 
-  Future<Directory> getLibraryDirectory() async {
+  Future<String> getLibraryPath() async {
     if (!_platform.isIOS && !_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on iOS/macOS');
     }
@@ -60,19 +59,19 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     if (path == null) {
       return null;
     }
-    return Directory(path);
+    return path;
   }
 
-  Future<Directory> getApplicationDocumentsDirectory() async {
+  Future<String> getApplicationDocumentsPath() async {
     final String path = await methodChannel
         .invokeMethod<String>('getApplicationDocumentsDirectory');
     if (path == null) {
       return null;
     }
-    return Directory(path);
+    return path;
   }
 
-  Future<Directory> getExternalStorageDirectory() async {
+  Future<String> getExternalStoragePath() async {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');
     }
@@ -81,20 +80,20 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     if (path == null) {
       return null;
     }
-    return Directory(path);
+    return path;
   }
 
-  Future<List<Directory>> getExternalCacheDirectories() async {
+  Future<List<String>> getExternalCachePaths() async {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');
     }
     final List<String> paths = await methodChannel
         .invokeListMethod<String>('getExternalCacheDirectories');
 
-    return paths.map((String path) => Directory(path)).toList();
+    return paths.map((String path) => path).toList();
   }
 
-  Future<List<Directory>> getExternalStorageDirectories({
+  Future<List<String>> getExternalStoragePaths({
     AndroidStorageDirectory type,
   }) async {
     if (!_platform.isAndroid) {
@@ -105,10 +104,10 @@ class MethodChannelPathProvider extends PathProviderPlatform {
       <String, dynamic>{'type': type?.index},
     );
 
-    return paths.map((String path) => Directory(path)).toList();
+    return paths.map((String path) => path).toList();
   }
 
-  Future<Directory> getDownloadsDirectory() async {
+  Future<String> getDownloadsPath() async {
     if (!_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on macOS');
     }
@@ -117,6 +116,6 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     if (path == null) {
       return null;
     }
-    return Directory(path);
+    return path;
   }
 }
