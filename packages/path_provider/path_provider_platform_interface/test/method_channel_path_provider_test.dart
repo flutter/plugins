@@ -47,8 +47,7 @@ void main() {
     });
 
     test('getTemporaryPath', () async {
-      final String result =
-          await methodChannelPathProvider.getTemporaryPath();
+      final String result = await methodChannelPathProvider.getTemporaryPath();
       expect(result, kTemporaryPath);
     });
 
@@ -61,8 +60,7 @@ void main() {
     test('getLibraryPath', () async {
       methodChannelPathProvider
           .setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
-      final String result =
-          await methodChannelPathProvider.getLibraryPath();
+      final String result = await methodChannelPathProvider.getLibraryPath();
       expect(result, kLibraryPath);
     });
 
@@ -95,8 +93,7 @@ void main() {
     test('getDownloadsPath', () async {
       methodChannelPathProvider
           .setMockPathProviderPlatform(FakePlatform(operatingSystem: 'macos'));
-      final String result =
-          await methodChannelPathProvider.getDownloadsPath();
+      final String result = await methodChannelPathProvider.getDownloadsPath();
 
       expect(result, kDownloadsPath);
     });
