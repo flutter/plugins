@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io' show Directory;
-
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/src/method_channel_path_provider.dart';
@@ -11,13 +9,13 @@ import 'package:platform/platform.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const String kTemporaryDirectory = 'temporaryDirectory';
-  const String kApplicationSupportDirectory = 'applicationSupportDirectory';
-  const String kLibraryDirectory = 'libraryDirectory';
-  const String kApplicationDocumentsDirectory = 'applicationDocumentsDirectory';
-  const String kExternalCacheDirectories = 'externalCacheDirectories';
-  const String kExternalStorageDirectories = 'externalStorageDirectories';
-  const String kDownloadsDirectory = 'downloadsDirectory';
+  const String kTemporaryPath = 'temporaryPath';
+  const String kApplicationSupportPath = 'applicationSupportPath';
+  const String kLibraryPath = 'libraryPath';
+  const String kApplicationDocumentsPath = 'applicationDocumentsPath';
+  const String kExternalCachePaths = 'externalCachePaths';
+  const String kExternalStoragePaths = 'externalStoragePaths';
+  const String kDownloadsPath = 'downloadsPath';
 
   group('$MethodChannelPathProvider', () {
     MethodChannelPathProvider methodChannelPathProvider;
@@ -29,78 +27,78 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         switch (methodCall.method) {
           case 'getTemporaryDirectory':
-            return kTemporaryDirectory;
+            return kTemporaryPath;
           case 'getApplicationSupportDirectory':
-            return kApplicationSupportDirectory;
+            return kApplicationSupportPath;
           case 'getLibraryDirectory':
-            return kLibraryDirectory;
+            return kLibraryPath;
           case 'getApplicationDocumentsDirectory':
-            return kApplicationDocumentsDirectory;
+            return kApplicationDocumentsPath;
           case 'getExternalStorageDirectories':
-            return <String>[kExternalStorageDirectories];
+            return <String>[kExternalStoragePaths];
           case 'getExternalCacheDirectories':
-            return <String>[kExternalCacheDirectories];
+            return <String>[kExternalCachePaths];
           case 'getDownloadsDirectory':
-            return kDownloadsDirectory;
+            return kDownloadsPath;
           default:
             return null;
         }
       });
     });
 
-    test('getTemporaryDirectory', () async {
-      final Directory result =
-          await methodChannelPathProvider.getTemporaryDirectory();
-      expect(result.path, kTemporaryDirectory);
+    test('getTemporaryPath', () async {
+      final String result =
+          await methodChannelPathProvider.getTemporaryPath();
+      expect(result, kTemporaryPath);
     });
 
-    test('getApplicationSupportDirectory', () async {
-      final Directory result =
-          await methodChannelPathProvider.getApplicationSupportDirectory();
-      expect(result.path, kApplicationSupportDirectory);
+    test('getApplicationSupportPath', () async {
+      final String result =
+          await methodChannelPathProvider.getApplicationSupportPath();
+      expect(result, kApplicationSupportPath);
     });
 
-    test('getLibraryDirectory', () async {
+    test('getLibraryPath', () async {
       methodChannelPathProvider
           .setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
-      final Directory result =
-          await methodChannelPathProvider.getLibraryDirectory();
-      expect(result.path, kLibraryDirectory);
+      final String result =
+          await methodChannelPathProvider.getLibraryPath();
+      expect(result, kLibraryPath);
     });
 
-    test('getApplicationDocumentsDirectory', () async {
-      final Directory result =
-          await methodChannelPathProvider.getApplicationDocumentsDirectory();
-      expect(result.path, kApplicationDocumentsDirectory);
+    test('getApplicationDocumentsPath', () async {
+      final String result =
+          await methodChannelPathProvider.getApplicationDocumentsPath();
+      expect(result, kApplicationDocumentsPath);
     });
 
-    test('getExternalCacheDirectories', () async {
+    test('getExternalCachePaths', () async {
       methodChannelPathProvider.setMockPathProviderPlatform(
           FakePlatform(operatingSystem: 'android'));
-      final List<Directory> result =
-          await methodChannelPathProvider.getExternalCacheDirectories();
+      final List<String> result =
+          await methodChannelPathProvider.getExternalCachePaths();
 
       expect(result.length, 1);
-      expect(result.first.path, kExternalCacheDirectories);
+      expect(result.first, kExternalCachePaths);
     });
 
-    test('getExternalStorageDirectories', () async {
+    test('getExternalStoragePaths', () async {
       methodChannelPathProvider.setMockPathProviderPlatform(
           FakePlatform(operatingSystem: 'android'));
-      final List<Directory> result =
-          await methodChannelPathProvider.getExternalStorageDirectories();
+      final List<String> result =
+          await methodChannelPathProvider.getExternalStoragePaths();
 
       expect(result.length, 1);
-      expect(result.first.path, kExternalStorageDirectories);
+      expect(result.first, kExternalStoragePaths);
     });
 
-    test('getDownloadsDirectory', () async {
+    test('getDownloadsPath', () async {
       methodChannelPathProvider
           .setMockPathProviderPlatform(FakePlatform(operatingSystem: 'macos'));
-      final Directory result =
-          await methodChannelPathProvider.getDownloadsDirectory();
+      final String result =
+          await methodChannelPathProvider.getDownloadsPath();
 
-      expect(result.path, kDownloadsDirectory);
+      expect(result, kDownloadsPath);
     });
   });
 }

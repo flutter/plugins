@@ -31,56 +31,30 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   }
 
   Future<String> getTemporaryPath() async {
-    final String path =
-        await methodChannel.invokeMethod<String>('getTemporaryDirectory');
-    if (path == null) {
-      return null;
-    }
-
-    return path;
+    return methodChannel.invokeMethod<String>('getTemporaryDirectory');
   }
 
   Future<String> getApplicationSupportPath() async {
-    final String path = await methodChannel
-        .invokeMethod<String>('getApplicationSupportDirectory');
-    if (path == null) {
-      return null;
-    }
-
-    return path;
+    return methodChannel.invokeMethod<String>('getApplicationSupportDirectory');
   }
 
   Future<String> getLibraryPath() async {
     if (!_platform.isIOS && !_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on iOS/macOS');
     }
-    final String path =
-        await methodChannel.invokeMethod<String>('getLibraryDirectory');
-    if (path == null) {
-      return null;
-    }
-    return path;
+    return methodChannel.invokeMethod<String>('getLibraryDirectory');
   }
 
   Future<String> getApplicationDocumentsPath() async {
-    final String path = await methodChannel
+    return methodChannel
         .invokeMethod<String>('getApplicationDocumentsDirectory');
-    if (path == null) {
-      return null;
-    }
-    return path;
   }
 
   Future<String> getExternalStoragePath() async {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');
     }
-    final String path =
-        await methodChannel.invokeMethod<String>('getStorageDirectory');
-    if (path == null) {
-      return null;
-    }
-    return path;
+    return methodChannel.invokeMethod<String>('getStorageDirectory');
   }
 
   Future<List<String>> getExternalCachePaths() async {
@@ -111,11 +85,6 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     if (!_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on macOS');
     }
-    final String path =
-        await methodChannel.invokeMethod<String>('getDownloadsDirectory');
-    if (path == null) {
-      return null;
-    }
-    return path;
+    return methodChannel.invokeMethod<String>('getDownloadsDirectory');
   }
 }
