@@ -1,3 +1,7 @@
+## 0.6.3+7
+
+* Updated gradle version of example.
+
 ## 0.6.3+6
 
 * Make the pedantic dev_dependency explicit.
