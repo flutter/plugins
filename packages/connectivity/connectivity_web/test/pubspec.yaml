@@ -13,9 +13,11 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  test: any
+  flutter_test:
+    sdk: flutter
   flutter_driver:
     sdk: flutter
+  e2e: ^0.2.4+3
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
