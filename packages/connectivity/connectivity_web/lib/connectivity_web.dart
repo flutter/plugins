@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:js';
 
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:js/js.dart';
 
 import 'src/generated/network_information_types.dart' as dom;
 import 'src/utils/connectivity_result.dart';
