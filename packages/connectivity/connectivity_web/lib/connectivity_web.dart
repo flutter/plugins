@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:js';
 
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
@@ -16,22 +17,27 @@ class ConnectivityPlugin extends ConnectivityPlatform {
     ConnectivityPlatform.instance = ConnectivityPlugin();
   }
 
-  bool _networkInformationApiSupported = false;
+  dom.NetworkInformation _networkInformation;
+  bool _networkInformationApiSupported;
 
   /// The constructor of the plugin.
   ConnectivityPlugin() {
-    // Check and cache if the browser supports the API.
-    _networkInformationApiSupported = dom.navigator?.connection != null;
+    ConnectivityPlugin.withConnection(dom.navigator?.connection);
   }
 
-  @override
+  /// Creates the plugin, with an override of the NetworkInformation object.
+  @visibleForTesting
+  ConnectivityPlugin.withConnection(dom.NetworkInformation connection)
+      : _networkInformationApiSupported = connection != null,
+        _networkInformation = connection;
 
   /// Checks the connection status of the device.
+  @override
   Future<ConnectivityResult> checkConnectivity() async {
     if (!_networkInformationApiSupported) {
       return ConnectivityResult.none;
     }
-    return networkInformationToConnectivityResult(dom.navigator.connection);
+    return networkInformationToConnectivityResult(_networkInformation);
   }
 
   Stream<ConnectivityResult> get _noopStream async* {
@@ -40,26 +46,24 @@ class ConnectivityPlugin extends ConnectivityPlatform {
 
   StreamController<ConnectivityResult> _connectivityResult;
 
-  @override
-
   /// Returns a Stream of ConnectivityResults changes.
+  @override
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (!_networkInformationApiSupported) {
       return _noopStream;
     }
     if (_connectivityResult == null) {
       _connectivityResult = StreamController<ConnectivityResult>();
-      dom.navigator.connection.onchange = allowInterop((dynamic e) {
+      _networkInformation.onchange = allowInterop((_) {
         _connectivityResult
-            .add(networkInformationToConnectivityResult(e.target));
+            .add(networkInformationToConnectivityResult(_networkInformation));
       });
     }
     return _connectivityResult.stream;
   }
 
-  @override
-
   /// Obtains the wifi name (SSID) of the connected network
+  @override
   Future<String> getWifiName() {
     throw PlatformException(
       code: 'UNSUPPORTED_OPERATION',
@@ -67,9 +71,8 @@ class ConnectivityPlugin extends ConnectivityPlatform {
     );
   }
 
-  @override
-
   /// Obtains the wifi BSSID of the connected network.
+  @override
   Future<String> getWifiBSSID() {
     throw PlatformException(
       code: 'UNSUPPORTED_OPERATION',
@@ -77,9 +80,8 @@ class ConnectivityPlugin extends ConnectivityPlatform {
     );
   }
 
-  @override
-
   /// Obtains the IP address of the connected wifi network
+  @override
   Future<String> getWifiIP() {
     throw PlatformException(
       code: 'UNSUPPORTED_OPERATION',
@@ -87,9 +89,8 @@ class ConnectivityPlugin extends ConnectivityPlatform {
     );
   }
 
-  @override
-
   /// Request to authorize the location service (Only on iOS).
+  @override
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false}) {
     throw PlatformException(
@@ -99,9 +100,8 @@ class ConnectivityPlugin extends ConnectivityPlatform {
     );
   }
 
-  @override
-
   /// Get the current location service authorization (Only on iOS).
+  @override
   Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
     throw PlatformException(
       code: 'UNSUPPORTED_OPERATION',
