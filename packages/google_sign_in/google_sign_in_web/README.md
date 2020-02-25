@@ -30,10 +30,32 @@ On your `web/index.html` file, add the following `meta` tag, somewhere in the
 <meta name="google-signin-client_id" content="YOUR_GOOGLE_SIGN_IN_OAUTH_CLIENT_ID.apps.googleusercontent.com">
 ```
 
+For this client to work correctly, the last step is to configure the **Authorized JavaScript origins**, which _identify the domains from which your application can send API requests._ When in local development, this is normally `localhost` and some port.
+
+You can do this by:
+
+1. Going to the [Credentials page](https://console.developers.google.com/apis/credentials).
+2. Clicking "Edit" in the OAuth 2.0 Web application client that you created above.
+3. Adding the URIs you want to the **Authorized JavaScript origins**.
+
+For local development, may add a `localhost` entry, for example: `http://localhost:7357`
+
+#### Starting flutter in http://localhost:7357
+
+Normally `flutter run` starts in a random port. In the case where you need to deal with authentication like the above, that's not the most appropriate behavior.
+
+You can tell `flutter run` to listen for requests in a specific host and port with the following:
+
+```
+flutter run -d chrome --web-hostname localhost --web-port 7357
+```
+
+### Other APIs
+
 Read the rest of the instructions if you need to add extra APIs (like Google People API).
 
 
-### Use the plugin
+### Using the plugin
 Add the following import to your Dart code:
 
 ```dart
