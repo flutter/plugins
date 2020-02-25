@@ -207,8 +207,6 @@ final class GoogleMapController
     this.googleMap.setTrafficEnabled(this.trafficEnabled);
     this.googleMap.setBuildingsEnabled(this.buildingsEnabled);
     googleMap.setOnInfoWindowClickListener(this);
-    CustomClusterRenderer customRenderer =
-        new CustomClusterRenderer(context, googleMap, clusterManager);
     if (mapReadyResult != null) {
       mapReadyResult.success(null);
       mapReadyResult = null;
@@ -236,7 +234,6 @@ final class GoogleMapController
     clusterManager.setOnClusterClickListener(clusterController);
     clusterManager.setOnClusterInfoWindowClickListener(clusterController);
     clusterManager.setOnClusterItemInfoWindowClickListener(clusterController);
-    clusterManager.setRenderer(customRenderer);
     updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
