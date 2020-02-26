@@ -23,11 +23,8 @@ void main() {
     // Build our app and trigger a frame.
     app.main();
 
-    // Trigger a frame.
-    await tester.pumpAndSettle();
-
     // Verify that platform version is retrieved.
-    expect(
+    await expectLater(
       find.byWidgetPredicate(
         (Widget widget) =>
             widget is Text && widget.data.startsWith('This should fail'),
