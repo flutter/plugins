@@ -1,6 +1,10 @@
-## 1.0.5
+## 1.0.6
 
 * Add `muted` attribute
+
+## 1.0.5
+
+* Make the pedantic dev_dependency explicit.
 
 ## 1.0.4
 

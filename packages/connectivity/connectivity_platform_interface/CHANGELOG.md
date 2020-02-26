@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Make the pedantic dev_dependency explicit.
+
 ## 1.0.2
 
 * Bring ConnectivityResult and LocationAuthorizationStatus enums from the core package.
