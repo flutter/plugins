@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Directory> _tempDirectory;
   Future<Directory> _appSupportDirectory;
   Future<Directory> _appDocumentsDirectory;
+  Future<Directory> _appLibraryDirectory;
   Future<Directory> _downloadsDirectory;
 
   void _requestTempDirectory() {
@@ -130,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             FutureBuilder<Directory>(
-                future: _appSupportDirectory, builder: _buildDirectory),
+                future: _appLibraryDirectory, builder: _buildDirectory),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: RaisedButton(
