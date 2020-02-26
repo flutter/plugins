@@ -36,55 +36,6 @@ void main() {
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
     }
   });
-
-  testWidgets('getExternalStorageDirectory', (WidgetTester tester) async {
-    if (Platform.isIOS) {
-      final Future<Directory> result = getExternalStorageDirectory();
-      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
-    } else if (Platform.isAndroid) {
-      final Directory result = await getExternalStorageDirectory();
-      _verifySampleFile(result, 'externalStorage');
-    }
-  });
-
-  testWidgets('getExternalCacheDirectories', (WidgetTester tester) async {
-    if (Platform.isIOS) {
-      final Future<List<Directory>> result = getExternalCacheDirectories();
-      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
-    } else if (Platform.isAndroid) {
-      final List<Directory> directories = await getExternalCacheDirectories();
-      for (Directory result in directories) {
-        _verifySampleFile(result, 'externalCache');
-      }
-    }
-  });
-
-  final List<StorageDirectory> _allDirs = <StorageDirectory>[
-    null,
-    StorageDirectory.music,
-    StorageDirectory.podcasts,
-    StorageDirectory.ringtones,
-    StorageDirectory.alarms,
-    StorageDirectory.notifications,
-    StorageDirectory.pictures,
-    StorageDirectory.movies,
-  ];
-
-  for (StorageDirectory type in _allDirs) {
-    test('getExternalStorageDirectories (type: $type)', () async {
-      if (Platform.isIOS) {
-        final Future<List<Directory>> result =
-            getExternalStorageDirectories(type: null);
-        expect(result, throwsA(isInstanceOf<UnsupportedError>()));
-      } else if (Platform.isAndroid) {
-        final List<Directory> directories =
-            await getExternalStorageDirectories(type: type);
-        for (Directory result in directories) {
-          _verifySampleFile(result, '$type');
-        }
-      }
-    });
-  }
 }
 
 /// Verify a file called [name] in [directory] by recreating it with test
