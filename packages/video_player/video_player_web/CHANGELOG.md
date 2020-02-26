@@ -7,6 +7,10 @@
 `VideoPlayerController.setFileDataSource`. All this three methods set this data source to video player
  on both Dart and platform side and return Future which completes after the data source is ready to play.
 
+## 0.1.2+1
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.1.2
 
 * Add a `PlatformException` to the player's `eventController` when there's a `videoElement.onError`. Fixes https://github.com/flutter/flutter/issues/48884.

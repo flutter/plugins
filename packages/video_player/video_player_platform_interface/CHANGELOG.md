@@ -7,6 +7,10 @@ This method set data source to video player associated with passed textureId on 
 `VideoEvent` now contains `key` field to match events from platform with concrete data source and avoid raise condition when we changed data source on Dart side and after this receive event from old data source.
 So platform implementers should use this key do determine is this `VideoEvent` relate to current data source or not.
 
+## 1.0.5
+
+* Make the pedantic dev_dependency explicit.
+
 ## 1.0.4
 
 * Remove the deprecated `author:` field from pubspec.yaml

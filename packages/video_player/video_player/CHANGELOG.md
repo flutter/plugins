@@ -7,6 +7,16 @@
 `VideoPlayerController.setFileDataSource`. All this three methods set this data source to video player
  on both Dart and platform side and return Future which completes after the data source is ready to play.
 
+## 0.10.8+1
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.10.8
+
+* Added support for cleaning up the plugin if used for add-to-app (Flutter
+  v1.15.3 is required for that feature).
+
+
 ## 0.10.7
 
 * `VideoPlayerController` support for reading closed caption files. 

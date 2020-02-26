@@ -105,7 +105,11 @@ class ImageResizer {
   }
 
   private File createFile(File externalFilesDirectory, String child) {
-    return new File(externalFilesDirectory, child);
+    File image = new File(externalFilesDirectory, child);
+    if (!image.getParentFile().exists()) {
+      image.getParentFile().mkdirs();
+    }
+    return image;
   }
 
   private FileOutputStream createOutputStream(File imageFile) throws IOException {
