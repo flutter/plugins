@@ -5,7 +5,6 @@
 import 'dart:async';
 import 'dart:io' show Directory;
 
-import 'package:meta/meta.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
