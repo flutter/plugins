@@ -18,8 +18,7 @@ dependencies:
     sdk: flutter
   platform: ^2.0.0
   meta: ^1.0.5
-  path_provider_platform_interface:
-    path: ../path_provider_platform_interface
+  path_provider_platform_interface: ^1.0.0
 
 dev_dependencies:
   e2e: ^0.2.1

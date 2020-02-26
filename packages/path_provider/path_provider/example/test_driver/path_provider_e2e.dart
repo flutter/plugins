@@ -59,18 +59,18 @@ void main() {
     }
   });
 
-  final List<StorageDirectory> _allDirs = <StorageDirectory>[
+  final List<AndroidStorageDirectory> _allDirs = <AndroidStorageDirectory>[
     null,
-    StorageDirectory.music,
-    StorageDirectory.podcasts,
-    StorageDirectory.ringtones,
-    StorageDirectory.alarms,
-    StorageDirectory.notifications,
-    StorageDirectory.pictures,
-    StorageDirectory.movies,
+    AndroidStorageDirectory.music,
+    AndroidStorageDirectory.podcasts,
+    AndroidStorageDirectory.ringtones,
+    AndroidStorageDirectory.alarms,
+    AndroidStorageDirectory.notifications,
+    AndroidStorageDirectory.pictures,
+    AndroidStorageDirectory.movies,
   ];
 
-  for (StorageDirectory type in _allDirs) {
+  for (AndroidStorageDirectory type in _allDirs) {
     test('getExternalStorageDirectories (type: $type)', () async {
       if (Platform.isIOS) {
         final Future<List<Directory>> result =
