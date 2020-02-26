@@ -1,3 +1,11 @@
+## 0.8.3+2
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.8.3+1
+
+* Updated documentation with more instructions about Google Sign In web setup.
+
 ## 0.8.3
 
 * Fix initialization error that causes https://github.com/flutter/flutter/issues/48527

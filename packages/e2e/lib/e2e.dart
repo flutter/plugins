@@ -8,6 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
+
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
 class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
@@ -70,6 +72,10 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
       };
     }
 
+    if (kIsWeb) {
+      registerWebServiceExtension(callback);
+    }
+
     registerServiceExtension(name: 'driver', callback: callback);
   }
 
@@ -82,7 +88,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';
-      _allTestsPassed.complete(false);
+      if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(false);
       valueBeforeTest(details, testDescription);
     };
     await super.runTest(testBody, invariantTester,
