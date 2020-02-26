@@ -6,6 +6,10 @@
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
 
+#if !__has_feature(objc_arc)
+#error Code Requires ARC.
+#endif
+
 int64_t FLTCMTimeToMillis(CMTime time) {
   if (time.timescale == 0) return 0;
   return time.value * 1000 / time.timescale;
@@ -13,7 +17,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 
 @interface FLTFrameUpdater : NSObject
 @property(nonatomic) int64_t textureId;
-@property(nonatomic, readonly) NSObject<FlutterTextureRegistry>* registry;
+@property(nonatomic, weak, readonly) NSObject<FlutterTextureRegistry>* registry;
 - (void)onDisplayLink:(CADisplayLink*)link;
 @end
 
@@ -386,7 +390,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return nil;
 }
 
-- (void)dispose {
+/// This method allows you to dispose without touching the event channel.  This
+/// is useful for the case where the Engine is in the process of deconstruction
+/// so the channel is going to die or is already dead.
+- (void)disposeSansEventChannel {
   _disposed = true;
   [_displayLink invalidate];
   [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
@@ -404,17 +411,20 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                                 context:playbackBufferFullContext];
   [_player replaceCurrentItemWithPlayerItem:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)dispose {
+  [self disposeSansEventChannel];
   [_eventChannel setStreamHandler:nil];
 }
 
 @end
 
 @interface FLTVideoPlayerPlugin ()
-@property(readonly, nonatomic) NSObject<FlutterTextureRegistry>* registry;
-@property(readonly, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
-@property(readonly, nonatomic) NSMutableDictionary* players;
-@property(readonly, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
-
+@property(readonly, weak, nonatomic) NSObject<FlutterTextureRegistry>* registry;
+@property(readonly, weak, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
+@property(readonly, strong, nonatomic) NSMutableDictionary* players;
+@property(readonly, strong, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
 @end
 
 @implementation FLTVideoPlayerPlugin
@@ -424,6 +434,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                                   binaryMessenger:[registrar messenger]];
   FLTVideoPlayerPlugin* instance = [[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
   [registrar addMethodCallDelegate:instance channel:channel];
+  [registrar publish:instance];
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -434,6 +445,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _registrar = registrar;
   _players = [NSMutableDictionary dictionaryWithCapacity:1];
   return self;
+}
+
+- (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+  for (NSNumber* textureId in _players.allKeys) {
+    FLTVideoPlayer* player = _players[textureId];
+    [player disposeSansEventChannel];
+  }
+  [_players removeAllObjects];
 }
 
 - (void)onPlayerSetup:(FLTVideoPlayer*)player
@@ -485,7 +504,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     } else {
       result(FlutterMethodNotImplemented);
     }
-
   } else {
     NSDictionary* argsMap = call.arguments;
     int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
