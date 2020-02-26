@@ -1,6 +1,15 @@
-## 0.10.8
+## 0.10.9
 
 * Add caching functionality to videos from network sources.
+
+## 0.10.8+1
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.10.8
+
+* Added support for cleaning up the plugin if used for add-to-app (Flutter
+  v1.15.3 is required for that feature).
 
 ## 0.10.7
 

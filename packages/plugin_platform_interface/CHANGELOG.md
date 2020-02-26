@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Make the pedantic dev_dependency explicit.
+
 ## 1.0.1
 
 * Fixed a bug that made all platform interfaces appear as mocks in release builds (https://github.com/flutter/flutter/issues/46941).
