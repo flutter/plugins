@@ -1,6 +1,6 @@
 ## 0.2.4+4
 
-* Add timeout to invokeMethod call, for tests do not use MethodChannel.
+* Fixed a hang that occurred on platforms that don't have a `MethodChannel` listener registered..
 
 ## 0.2.4+3
 
