@@ -38,7 +38,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Future<Directory> _tempDirectory;
   Future<Directory> _appSupportDirectory;
-  Future<Directory> _appLibraryDirectory;
   Future<Directory> _appDocumentsDirectory;
   Future<Directory> _downloadsDirectory;
 
@@ -56,23 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
         text = Text('Error: ${snapshot.error}');
       } else if (snapshot.hasData) {
         text = Text('path: ${snapshot.data.path}');
-      } else {
-        text = const Text('path unavailable');
-      }
-    }
-    return Padding(padding: const EdgeInsets.all(16.0), child: text);
-  }
-
-  Widget _buildDirectories(
-      BuildContext context, AsyncSnapshot<List<Directory>> snapshot) {
-    Text text = const Text('');
-    if (snapshot.connectionState == ConnectionState.done) {
-      if (snapshot.hasError) {
-        text = Text('Error: ${snapshot.error}');
-      } else if (snapshot.hasData) {
-        final String combined =
-            snapshot.data.map((Directory d) => d.path).join(', ');
-        text = Text('paths: $combined');
       } else {
         text = const Text('path unavailable');
       }
