@@ -6,6 +6,8 @@ task:
     dockerfile: .ci/Dockerfile
     cpu: 8
     memory: 16G
+  env:
+    E2E_PATH: "./packages/e2e"
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -48,14 +50,18 @@ task:
     - name: e2e_web_smoke_test
       # Tests e2e example test in web.
       only_if: "changesInclude('.cirrus.yml', 'packages/e2e/**') || $CIRRUS_PR == ''"
-      script:
+      install_script:
         - flutter config --enable-web
         - git clone https://github.com/flutter/web_installers.git
         - cd web_installers/packages/web_drivers/
         - pub get
         - dart lib/web_driver_installer.dart chromedriver install-only
-        - ./chromedriver/chromedriver --port=4444 &
-        - cd ../../../packages/e2e/example/
+      start_emulator_background_script:
+        - pwd
+        - ./chromedriver/chromedriver --port=4444
+      test_script:
+        - pwd
+        - cd $E2E_PATH/example/
         - flutter drive -v --target=test_driver/example_e2e_web.dart -d web-server --release --browser-name=chrome
     - name: build-apks+java-test+firebase-test-lab
       env:
