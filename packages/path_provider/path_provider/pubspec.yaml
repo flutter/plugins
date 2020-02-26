@@ -30,6 +30,7 @@ dev_dependencies:
   uuid: "^1.0.0"
   pedantic: ^1.8.0
   mockito: ^4.1.1
+  plugin_platform_interface: ^1.0.0
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
