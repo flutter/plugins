@@ -20,6 +20,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "instrumentation_adapter"
   "path_provider_macos"
   "path_provider_platform_interface"
+  "path_provider_web"
   "plugin_platform_interface"
   "shared_preferences_macos"
   "shared_preferences_platform_interface"
