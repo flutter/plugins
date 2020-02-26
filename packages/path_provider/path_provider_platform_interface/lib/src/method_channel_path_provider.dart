@@ -30,41 +30,39 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     _platform = platform;
   }
 
-  Future<String> getTemporaryPath() async {
+  Future<String> getTemporaryPath() {
     return methodChannel.invokeMethod<String>('getTemporaryDirectory');
   }
 
-  Future<String> getApplicationSupportPath() async {
+  Future<String> getApplicationSupportPath() {
     return methodChannel.invokeMethod<String>('getApplicationSupportDirectory');
   }
 
-  Future<String> getLibraryPath() async {
+  Future<String> getLibraryPath() {
     if (!_platform.isIOS && !_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on iOS/macOS');
     }
     return methodChannel.invokeMethod<String>('getLibraryDirectory');
   }
 
-  Future<String> getApplicationDocumentsPath() async {
+  Future<String> getApplicationDocumentsPath() {
     return methodChannel
         .invokeMethod<String>('getApplicationDocumentsDirectory');
   }
 
-  Future<String> getExternalStoragePath() async {
+  Future<String> getExternalStoragePath() {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');
     }
     return methodChannel.invokeMethod<String>('getStorageDirectory');
   }
 
-  Future<List<String>> getExternalCachePaths() async {
+  Future<List<String>> getExternalCachePaths() {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');
     }
-    final List<String> paths = await methodChannel
+    return methodChannel
         .invokeListMethod<String>('getExternalCacheDirectories');
-
-    return paths.map((String path) => path).toList();
   }
 
   Future<List<String>> getExternalStoragePaths({
@@ -73,15 +71,13 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');
     }
-    final List<String> paths = await methodChannel.invokeListMethod<String>(
+    return methodChannel.invokeListMethod<String>(
       'getExternalStorageDirectories',
       <String, dynamic>{'type': type?.index},
     );
-
-    return paths.map((String path) => path).toList();
   }
 
-  Future<String> getDownloadsPath() async {
+  Future<String> getDownloadsPath() {
     if (!_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on macOS');
     }
