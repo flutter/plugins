@@ -5,6 +5,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:platform/platform.dart';
 import 'package:e2e/e2e.dart';
 
 void main() {
@@ -26,6 +27,9 @@ void main() {
   });
 
   testWidgets('getLibraryDirectory', (WidgetTester tester) async {
+    if (!Platform.isMacOS) {
+      return;
+    }
     final Directory result = await getLibraryDirectory();
     _verifySampleFile(result, 'library');
   });
