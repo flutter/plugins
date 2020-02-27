@@ -445,7 +445,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 @property(readonly, weak, nonatomic) NSObject<FlutterTextureRegistry>* registry;
 @property(readonly, weak, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
 @property(readonly, strong, nonatomic) NSMutableDictionary* players;
-@property(readonly, strong, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;@property(readonly, nonatomic) long maxCacheSize;
+@property(readonly, strong, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+@property(readonly, nonatomic) long maxCacheSize;
 @property(readonly, nonatomic) long maxCacheFileSize;
 @end
 
