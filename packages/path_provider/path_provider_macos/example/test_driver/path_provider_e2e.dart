@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'dart:io';
+import 'dart:io' show Directory;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:e2e/e2e.dart';
@@ -28,13 +28,8 @@ void main() {
   });
 
   testWidgets('getLibraryDirectory', (WidgetTester tester) async {
-    if (Platform.isIOS) {
-      final Directory result = await getLibraryDirectory();
-      _verifySampleFile(result, 'library');
-    } else if (Platform.isAndroid) {
-      final Future<Directory> result = getLibraryDirectory();
-      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
-    }
+    final Directory result = await getLibraryDirectory();
+    _verifySampleFile(result, 'library');
   });
 }
 
