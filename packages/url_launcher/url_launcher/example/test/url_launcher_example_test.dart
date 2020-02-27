@@ -13,7 +13,9 @@ void main() {
     await tester.pumpWidget(MyApp());
     const String defaultUrl = 'https://www.cylog.org/headers/';
     when(mock.canLaunch(defaultUrl)).thenAnswer((_) => Future.value(true));
-    const Map<String, String> defaultHeaders = {'my_header_key': 'my_header_value'};
+    const Map<String, String> defaultHeaders = {
++      'my_header_key': 'my_header_value'
++    };
     verifyNever(mock.launch(defaultUrl,
         useSafariVC: false,
         useWebView: false,
@@ -22,7 +24,8 @@ void main() {
         universalLinksOnly: false,
         headers: defaultHeaders));
 
-    Finder browserlaunchBtn = find.widgetWithText(RaisedButton, 'Launch in browser');
++    Finder browserlaunchBtn =
++        find.widgetWithText(RaisedButton, 'Launch in browser');
     expect(browserlaunchBtn, findsOneWidget);
     await tester.tap(browserlaunchBtn);
 
@@ -37,4 +40,6 @@ void main() {
   });
 }
 
-class MockUrlLauncher extends Mock with MockPlatformInterfaceMixin implements UrlLauncherPlatform {}
++class MockUrlLauncher extends Mock
++    with MockPlatformInterfaceMixin
++    implements UrlLauncherPlatform {}
