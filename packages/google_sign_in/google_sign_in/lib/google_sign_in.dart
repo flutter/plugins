@@ -375,8 +375,8 @@ class GoogleSignIn {
   }
 
   /// Requests the user grant an additional Oauth [scope].
-  Future<bool> requestScope(String scope) async {
+  Future<bool> requestScopes(List<String> scopes) async {
     await _ensureInitialized();
-    return GoogleSignInPlatform.instance.requestScope(scope);
+    return GoogleSignInPlatform.instance.requestScopes(scopes);
   }
 }

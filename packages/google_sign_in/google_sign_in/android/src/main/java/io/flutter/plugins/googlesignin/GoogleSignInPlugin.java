@@ -108,8 +108,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         break;
 
       case METHOD_REQUEST_SCOPE:
-        scope = call.argument("scope");
-        delegate.requestScope(result, scope);
+        List<String> scopes = call.argument("scope");
+        delegate.requestScopes(result, scopes);
         break;
 
       default:
@@ -169,8 +169,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     /** Checks to see if the passed Oauth scope has been granted by the user. */
     public void hasGrantedScope(final Result result, final String scope);
 
-    /** Prompts the user to grant an additional Oauth scope. */
-    public void requestScope(final Result result, final String scope);
+    /** Prompts the user to grant an additional Oauth scopes. */
+    public void requestScopes(final Result result, final List<String> scopes);
   }
 
   /**
@@ -370,11 +370,16 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     }
 
     @Override
-    public void requestScope(Result result, String scope) {
+    public void requestScopes(Result result, List<String> scopes) {
       GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(registrar.context());
       if (account != null) {
+        Scope[] wrappedScopes = new Scope[scopes.size()];
+        for (int i = 0; i < scopes.size(); i++) {
+          wrappedScopes[i] = new Scope(scopes.get(i));
+        }
+
         GoogleSignIn.requestPermissions(
-            registrar.activity(), REQUEST_CODE_REQUEST_SCOPE, account, new Scope(scope));
+            registrar.activity(), REQUEST_CODE_REQUEST_SCOPE, account, wrappedScopes);
       }
     }
 

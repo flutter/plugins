@@ -126,10 +126,10 @@ static FlutterError *getFlutterError(NSError *error) {
     NSString *scope = call.arguments[@"scope"];
     bool success = [user.grantedScopes containsObject:scope];
     result(@(success));
-  } else if ([call.method isEqualToString:@"requestScope"]) {
+  } else if ([call.method isEqualToString:@"requestScopes"]) {
     NSArray *currentScopes = [GIDSignIn sharedInstance].scopes;
-    NSString *scope = call.arguments[@"scope"];
-    [GIDSignIn sharedInstance].scopes = [currentScopes arrayByAddingObject:scope];
+    NSArray *scope = call.arguments[@"scopes"];
+    [GIDSignIn sharedInstance].scopes = [currentScopes arrayByAddingObjectsFromArray:scopes];
     [[GIDSignIn sharedInstance] signIn];
   } else {
     result(FlutterMethodNotImplemented);
