@@ -174,8 +174,15 @@ final class VideoPlayer {
           public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
             if (playbackState == Player.STATE_BUFFERING) {
               sendBufferingUpdate();
+              Map<String, Object> event = new HashMap<>();
+              event.put("event", "bufferingStart");
+              eventSink.success(event);
             } else if (playbackState == Player.STATE_READY) {
-              if (!isInitialized) {
+              if (isInitialized) {
+                Map<String, Object> event = new HashMap<>();
+                event.put("event", "bufferingEnd");
+                eventSink.success(event);
+              } else {
                 isInitialized = true;
                 sendInitialized();
               }
