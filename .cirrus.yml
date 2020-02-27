@@ -55,12 +55,9 @@ task:
         - git clone https://github.com/flutter/web_installers.git
         - cd web_installers/packages/web_drivers/
         - pub get
-        - dart lib/web_driver_installer.dart chromedriver install-only
-      start_emulator_background_script:
-        - pwd
-        - ./chromedriver/chromedriver --port=4444
+        - dart lib/web_driver_installer.dart chromedriver --install-only
+      driver_background_script: ./chromedriver/chromedriver --port=4444
       test_script:
-        - pwd
         - cd $E2E_PATH/example/
         - flutter drive -v --target=test_driver/example_e2e_web.dart -d web-server --release --browser-name=chrome
     - name: build-apks+java-test+firebase-test-lab
