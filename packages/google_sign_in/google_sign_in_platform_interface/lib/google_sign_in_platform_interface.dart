@@ -128,7 +128,7 @@ abstract class GoogleSignInPlatform {
   }
 
   /// Requests the user grant an additional Oauth [scope].
-  Future<bool> requestScope(String scope) async {
-    throw UnimplementedError('requestScope() has not been implmented.');
+  Future<bool> requestScopes(List<String> scopes) async {
+    throw UnimplementedError('requestScopes() has not been implmented.');
   }
 }
