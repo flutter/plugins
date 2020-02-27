@@ -1,3 +1,8 @@
+## 2.0.0
+
+* Added `ConnectivityResult.unknown`, for the cases where the plugin is unable to determine the
+connectivity status of the device. _(This happens mostly in the `web` platform.)_
+
 ## 1.0.3
 
 * Make the pedantic dev_dependency explicit.
