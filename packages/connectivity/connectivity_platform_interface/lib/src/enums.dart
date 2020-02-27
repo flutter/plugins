@@ -7,7 +7,10 @@ enum ConnectivityResult {
   mobile,
 
   /// None: Device not connected to any network
-  none
+  none,
+
+  /// Unknown: The plugin wasn't able to determine the connectivity status of the device
+  unknown,
 }
 
 /// The status of the location service authorization.

@@ -8,8 +8,9 @@ ConnectivityResult parseConnectivityResult(String state) {
     case 'mobile':
       return ConnectivityResult.mobile;
     case 'none':
-    default:
       return ConnectivityResult.none;
+    default:
+      return ConnectivityResult.unknown;
   }
 }
 
