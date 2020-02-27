@@ -1,7 +1,3 @@
-## 1.0.3+1
-
-* Remove bad `2.0.0` version.
-
 ## 1.0.3
 
 * Make the pedantic dev_dependency explicit.
