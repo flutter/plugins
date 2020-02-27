@@ -374,10 +374,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(registrar.context());
       if (account != null) {
         GoogleSignIn.requestPermissions(
-            registrar.activity(),
-            REQUEST_CODE_REQUEST_SCOPE,
-            account,
-            new Scope(scope));
+            registrar.activity(), REQUEST_CODE_REQUEST_SCOPE, account, new Scope(scope));
       }
     }
 
