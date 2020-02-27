@@ -191,14 +191,14 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   }
 
   @override
-  Future<bool> requestScope(String scope) async {
+  Future<bool> requestScopes(List<String> scopes) async {
     await initialized;
 
     return auth2
             .getAuthInstance()
             ?.currentUser
             ?.get()
-            ?.grant(auth2.SigninOptions(scope: scope)) ??
+            ?.grant(auth2.SigninOptions(scope: scopes.join(" "))) ??
         false;
   }
 }

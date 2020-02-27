@@ -81,7 +81,7 @@ void main() {
     });
 
     test('requestScope', () async {
-      bool scopeGranted = await plugin.requestScope('newScope');
+      bool scopeGranted = await plugin.requestScopes(['newScope']);
 
       expect(scopeGranted, isTrue);
     });
