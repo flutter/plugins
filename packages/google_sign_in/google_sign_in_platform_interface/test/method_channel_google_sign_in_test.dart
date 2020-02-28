@@ -115,11 +115,6 @@ void main() {
           'token': 'abc',
         }),
         () {
-          googleSignIn.listMissingScopes(['grantedScope']);
-        }: isMethodCall('listMissingScopes', arguments: <String, dynamic>{
-          'scopes': ['grantedScope'],
-        }),
-        () {
           googleSignIn.requestScopes(['newScope', 'anotherScope']);
         }: isMethodCall('requestScopes', arguments: <String, dynamic>{
           'scopes': ['newScope', 'anotherScope'],

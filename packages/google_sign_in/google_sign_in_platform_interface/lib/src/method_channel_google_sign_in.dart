@@ -80,14 +80,6 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
   }
 
   @override
-  Future<List<String>> listMissingScopes(List<String> scopes) {
-    return channel.invokeMethod<List<dynamic>>(
-      'listMissingScopes',
-      <String, List<String>>{'scopes': scopes},
-    ).then((result) => result != null ? List<String>.from(result) : null);
-  }
-
-  @override
   Future<bool> requestScopes(List<String> scopes) {
     return channel.invokeMethod<bool>(
       'requestScopes',
