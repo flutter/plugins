@@ -7,7 +7,8 @@
 
 import 'package:e2e/e2e.dart';
 
-import 'example_e2e_io.dart' if (dart.library.html) 'example_e2e_web.dart' as tests;
+import 'example_e2e_io.dart' if (dart.library.html) 'example_e2e_web.dart'
+    as tests;
 
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
