@@ -147,8 +147,8 @@ void main() {
       }
     });
 
-    for (AndroidStorageDirectory type
-        in AndroidStorageDirectory.values + <AndroidStorageDirectory>[null]) {
+    for (StorageDirectory type
+        in StorageDirectory.values + <StorageDirectory>[null]) {
       test('getExternalStoragePaths (type: $type) android succeeds', () async {
         final List<String> result =
             await methodChannelPathProvider.getExternalStoragePaths(type: type);
