@@ -80,10 +80,10 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
   }
 
   @override
-  Future<bool> hasGrantedScope(String scope) {
-    return channel.invokeMethod<bool>(
-      'hasGrantedScope',
-      <String, String>{'scope': scope},
+  Future<List<String>> listMissingScopes(List<String> scopes) {
+    return channel.invokeMethod<List<String>>(
+      'listMissingScopes',
+      <String, List<String>>{'scopes': scopes},
     );
   }
 

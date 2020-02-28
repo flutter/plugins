@@ -115,9 +115,9 @@ void main() {
           'token': 'abc',
         }),
         () {
-          googleSignIn.hasGrantedScope('grantedScope');
-        }: isMethodCall('hasGrantedScope', arguments: <String, dynamic>{
-          'scope': 'grantedScope',
+          googleSignIn.listMissingScopes(['grantedScope']);
+        }: isMethodCall('listMissingScopes', arguments: <String, dynamic>{
+          'scopes': ['grantedScope'],
         }),
         () {
           googleSignIn.requestScopes(['newScope', 'anotherScope']);

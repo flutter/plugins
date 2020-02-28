@@ -122,8 +122,8 @@ abstract class GoogleSignInPlatform {
     throw UnimplementedError('clearAuthCache() has not been implemented.');
   }
 
-  /// Indicates whether this Oauth [scope] has been granted.
-  Future<bool> hasGrantedScope(String scope) async {
+  /// Checks to see if [scopes] have been granted, returns those which have not.
+  Future<List<String>> listMissingScopes(List<String> scopes) async {
     throw UnimplementedError('hasGrantedScope() has not been implmented.');
   }
 
