@@ -124,7 +124,7 @@ abstract class GoogleSignInPlatform {
 
   /// Checks to see if [scopes] have been granted, returns those which have not.
   Future<List<String>> listMissingScopes(List<String> scopes) async {
-    throw UnimplementedError('hasGrantedScope() has not been implmented.');
+    throw UnimplementedError('listMissingScopes() has not been implmented.');
   }
 
   /// Requests the user grant an additional Oauth [scope].
