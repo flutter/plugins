@@ -74,13 +74,7 @@ void main() {
       expect(actualToken, expectedTokenData);
     });
 
-    test('hasGrantedScope', () async {
-      bool hasScope = await plugin.hasGrantedScope('scope');
-
-      expect(hasScope, isTrue);
-    });
-
-    test('requestScope', () async {
+    test('requestScopes', () async {
       bool scopeGranted = await plugin.requestScopes(['newScope']);
 
       expect(scopeGranted, isTrue);
