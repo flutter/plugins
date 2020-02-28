@@ -27,6 +27,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +47,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_DISCONNECT = "disconnect";
   private static final String METHOD_IS_SIGNED_IN = "isSignedIn";
   private static final String METHOD_CLEAR_AUTH_CACHE = "clearAuthCache";
-  private static final String METHOD_HAS_GRANTED_SCOPE = "hasGrantedScope";
-  private static final String METHOD_REQUEST_SCOPE = "requestScope";
+  private static final String METHOD_LIST_MISSING_SCOPES = "listMissingScopes";
+  private static final String METHOD_REQUEST_SCOPES = "requestScopes";
 
   private final IDelegate delegate;
 
@@ -102,13 +103,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         delegate.isSignedIn(result);
         break;
 
-      case METHOD_HAS_GRANTED_SCOPE:
-        String scope = call.argument("scope");
-        delegate.hasGrantedScope(result, scope);
-        break;
-
-      case METHOD_REQUEST_SCOPE:
-        List<String> scopes = call.argument("scope");
+      case METHOD_REQUEST_SCOPES:
+        List<String> scopes = call.argument("scopes");
         delegate.requestScopes(result, scopes);
         break;
 
@@ -165,9 +161,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /** Checks if there is a signed in user. */
     public void isSignedIn(Result result);
-
-    /** Checks to see if the passed Oauth scope has been granted by the user. */
-    public void hasGrantedScope(final Result result, final String scope);
 
     /** Prompts the user to grant an additional Oauth scopes. */
     public void requestScopes(final Result result, final List<String> scopes);
@@ -363,24 +356,32 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     }
 
     @Override
-    public void hasGrantedScope(Result result, String scope) {
-      GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(registrar.context());
-      boolean value = account != null && GoogleSignIn.hasPermissions(account, new Scope(scope));
-      result.success(value);
-    }
-
-    @Override
     public void requestScopes(Result result, List<String> scopes) {
       GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(registrar.context());
-      if (account != null) {
-        Scope[] wrappedScopes = new Scope[scopes.size()];
-        for (int i = 0; i < scopes.size(); i++) {
-          wrappedScopes[i] = new Scope(scopes.get(i));
-        }
-
-        GoogleSignIn.requestPermissions(
-            registrar.activity(), REQUEST_CODE_REQUEST_SCOPE, account, wrappedScopes);
+      if (account == null) {
+        result.error(ERROR_REASON_SIGN_IN_REQUIRED, "No account to grant scopes.", null);
+        return;
       }
+
+      List<Scope> wrappedScopes = new ArrayList<>();
+
+      for (String scope : scopes) {
+        Scope wrappedScope = new Scope(scope);
+        if (!GoogleSignIn.hasPermissions(account, wrappedScope)) {
+          wrappedScopes.add(wrappedScope);
+        }
+      }
+
+      if (wrappedScopes.isEmpty()) {
+        result.success(true);
+        return;
+      }
+
+      GoogleSignIn.requestPermissions(
+          registrar.activity(),
+          REQUEST_CODE_REQUEST_SCOPE,
+          account,
+          wrappedScopes.toArray(new Scope[0]));
     }
 
     private void onSignInResult(Task<GoogleSignInAccount> completedTask) {
