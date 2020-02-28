@@ -81,10 +81,10 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
 
   @override
   Future<List<String>> listMissingScopes(List<String> scopes) {
-    return channel.invokeMethod<List<String>>(
+    return channel.invokeMethod<List<dynamic>>(
       'listMissingScopes',
       <String, List<String>>{'scopes': scopes},
-    );
+    ).then((result) => List<String>.from(result));
   }
 
   @override
