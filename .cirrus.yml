@@ -59,7 +59,7 @@ task:
         - ./chromedriver/chromedriver --port=4444 &
       test_script:
         - cd $E2E_PATH/example/
-        - flutter drive -v --target=test_driver/example_e2e_web.dart -d web-server --release --browser-name=chrome
+        - flutter drive -v --target=test_driver/example_e2e.dart -d web-server --release --browser-name=chrome
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
