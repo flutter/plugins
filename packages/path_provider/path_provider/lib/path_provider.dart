@@ -10,13 +10,6 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
 
-/// This API is only exposed for the unit tests. It should not be used by
-/// any code outside of the plugin itself.
-@visibleForTesting
-void setMockPathProviderPlatform(Platform platform) {
-  _platform = platform;
-}
-
 PathProviderPlatform get _platform => PathProviderPlatform.instance;
 
 /// Path to the temporary directory on the device that is not backed up and is
