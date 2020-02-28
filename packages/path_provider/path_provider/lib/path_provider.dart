@@ -8,7 +8,7 @@ import 'dart:io' show Directory;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
-    show AndroidStorageDirectory;
+    show StorageDirectory;
 
 PathProviderPlatform get _platform => PathProviderPlatform.instance;
 
@@ -128,9 +128,9 @@ Future<List<Directory>> getExternalCacheDirectories() async {
 /// On Android this returns Context.getExternalFilesDirs(String type) or
 /// Context.getExternalFilesDir(String type) on API levels below 19.
 Future<List<Directory>> getExternalStorageDirectories({
-  /// Optional parameter. See [AndroidStorageDirectory] for more informations on
+  /// Optional parameter. See [StorageDirectory] for more informations on
   /// how this type translates to Android storage directories.
-  AndroidStorageDirectory type,
+  StorageDirectory type,
 }) async {
   final List<String> paths =
       await _platform.getExternalStoragePaths(type: type);
