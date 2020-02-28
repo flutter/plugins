@@ -69,6 +69,15 @@ cd example
 flutter drive --driver=test_driver/<package_name>_test.dart test/<package_name>_e2e.dart
 ```
 
+You can run tests on web on release mode.
+
+First you need to make sure you have downloaded the driver for the browser.
+
+```
+cd example
+flutter drive -v --target=test_driver/<package_name>dart -d web-server --release --browser-name=chrome
+```
+
 ## Android device testing
 
 Create an instrumentation test file in your application's
