@@ -1,3 +1,7 @@
+## 5.4.3
+
+* Fixed the launchUniversalLinkIos method.
+
 ## 5.4.2
 
 * Make the pedantic dev_dependency explicit.
