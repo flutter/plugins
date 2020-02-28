@@ -1,4 +1,4 @@
-## 1.1.0
+## 1.0.1
 
 * Rename enum to StorageDirectory for backwards compatibility.
 
