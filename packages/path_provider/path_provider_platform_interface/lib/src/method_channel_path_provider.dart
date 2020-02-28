@@ -66,7 +66,7 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   }
 
   Future<List<String>> getExternalStoragePaths({
-    AndroidStorageDirectory type,
+    StorageDirectory type,
   }) async {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');
