@@ -12,6 +12,10 @@ flutter:
         pluginClass: PathProviderPlugin
       ios:
         pluginClass: FLTPathProviderPlugin
+      macis:
+        pluginClass: FLTPathProviderPlugin
+        default_package: path_provider_macos
+
 
 dependencies:
   flutter:
@@ -19,6 +23,7 @@ dependencies:
   platform: ^2.0.0
   meta: ^1.0.5
   path_provider_platform_interface: ^1.0.1
+  path_provider_macos: ^0.0.4
 
 dev_dependencies:
   e2e: ^0.2.1
