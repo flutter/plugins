@@ -11,7 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-const String kTemproraryPath = 'temporaryPath';
+const String kTemporaryPath = 'temporaryPath';
 const String kApplicationSupportPath = 'applicationSupportPath';
 const String kDownloadsPath = 'downloadsPath';
 const String kLibraryPath = 'libraryPath';
@@ -29,7 +29,7 @@ void main() {
 
     test('getTemporaryDirectory', () async {
       Directory result = await getTemporaryDirectory();
-      expect(result.path, kTemproraryPath);
+      expect(result.path, kTemporaryPath);
     });
 
     test('getApplicationSupportDirectory', () async {
@@ -75,7 +75,7 @@ class MockPathProviderPlatform extends Mock
     with MockPlatformInterfaceMixin
     implements PathProviderPlatform {
   Future<String> getTemporaryPath() async {
-    return kTemproraryPath;
+    return kTemporaryPath;
   }
 
   Future<String> getApplicationSupportPath() async {
