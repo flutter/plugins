@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class BackgroundExecutionTest {
   private SharedPreferences prefs;
+  static final String COUNT_KEY = "flutter.count";
 
   @Rule
   public ActivityTestRule<MainActivity> myActivityTestRule =
@@ -33,18 +34,19 @@ public class BackgroundExecutionTest {
   public void setUp() throws Exception {
     Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
     prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
+    prefs.edit().putLong(COUNT_KEY, 0).apply();
+
     ActivityScenario.launch(MainActivity.class);
   }
 
   @Test
   public void startBackgroundIsolate() throws Exception {
-    final String countKey = "flutter.count";
 
     // Register a one shot alarm which will go off in ~5 seconds.
     onFlutterWidget(withValueKey("RegisterOneShotAlarm")).perform(click());
 
     // The alarm count should be 0 after installation.
-    assertEquals(prefs.getLong(countKey, -1), 0);
+    assertEquals(prefs.getLong(COUNT_KEY, -1), 0);
 
     // Close the application to background it.
     pressBackUnconditionally();
@@ -53,10 +55,11 @@ public class BackgroundExecutionTest {
     // background isolate, and then increment the counter in the shared
     // preferences. Timeout after 20s, just to be safe.
     int tries = 0;
-    while ((prefs.getLong(countKey, -1) == 0) && (tries < 200)) {
+    while ((prefs.getLong(COUNT_KEY, -1) == 0) && (tries < 200)) {
+      android.util.Log.v("flutter", "JACKSON looping to wake up application");
       Thread.sleep(100);
       ++tries;
     }
-    assertEquals(prefs.getLong(countKey, -1), 1);
+    assertEquals(prefs.getLong(COUNT_KEY, -1), 1);
   }
 }
