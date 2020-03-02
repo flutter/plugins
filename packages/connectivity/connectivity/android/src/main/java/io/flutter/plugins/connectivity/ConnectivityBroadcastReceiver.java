@@ -33,7 +33,7 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   @Override
   public void onListen(Object arguments, EventChannel.EventSink events) {
     this.events = events;
-    context.registerReceiver(this, new IntentFilter(ConnectivityManager.CONNECTIVITY_CHANGE));
+    context.registerReceiver(this, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
   }
 
   @Override
