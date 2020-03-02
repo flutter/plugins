@@ -33,6 +33,8 @@ class Connectivity {
   static ConnectivityPlatform get _platform => ConnectivityPlatform.instance;
 
   /// Fires whenever the connectivity state changes.
+  ///
+  /// Apps targeting Android N do not receive notifications in the background.
   Stream<ConnectivityResult> get onConnectivityChanged {
     return _platform.onConnectivityChanged;
   }
