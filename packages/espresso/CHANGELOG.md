@@ -1,3 +1,7 @@
+## 0.0.1+2
+
+* Remove Swift dependency.
+
 ## 0.0.1+1
 
 * Updates to README to avoid unnecessary imports and warnings.
