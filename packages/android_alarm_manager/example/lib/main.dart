@@ -39,7 +39,6 @@ Future<void> main() async {
     await prefs.setInt(countKey, 0);
   }
   runApp(AlarmManagerExampleApp());
-  print("hello world!");
 }
 
 /// Example app for Espresso plugin.
@@ -138,7 +137,6 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
               ),
               key: ValueKey('RegisterOneShotAlarm'),
               onPressed: () async {
-                print('Scheduling!');
                 await AndroidAlarmManager.oneShot(
                   const Duration(seconds: 5),
                   // Ensure we have a unique alarm ID.
