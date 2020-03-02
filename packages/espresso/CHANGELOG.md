@@ -1,10 +1,6 @@
-## 0.0.1+3
-
-* Make the pedantic dev_dependency explicit.
-
 ## 0.0.1+2
 
-* Update te example app to avoid using deprecated api.
+* Remove Swift file that was causing build failures on iOS.
 
 ## 0.0.1+1
 
