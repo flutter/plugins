@@ -44,14 +44,12 @@ Future<int> readCounter() async {
 
 Future<void> incrementCounter() async {
   final int value = await readCounter();
-  print('incrementCounter to: ${value + 1}');
   await writeCounter(value + 1);
 }
 
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
 
-  print('main');
   setUp(() async {
     await AndroidAlarmManager.initialize();
   });
