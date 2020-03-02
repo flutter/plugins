@@ -161,19 +161,6 @@ class GooglePlayConnection
         'The method <refreshPurchaseVerificationData> only works on iOS.');
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.paused:
-        _disconnect();
-        break;
-      case AppLifecycleState.resumed:
-        _readyFuture = _connect();
-        break;
-      default:
-    }
-  }
-
   @visibleForTesting
   static void reset() => _instance = null;
 
@@ -188,8 +175,6 @@ class GooglePlayConnection
 
   Future<void> _connect() =>
       billingClient.startConnection(onBillingServiceDisconnected: () {});
-
-  Future<void> _disconnect() => billingClient.endConnection();
 
   /// Query the product detail list.
   ///

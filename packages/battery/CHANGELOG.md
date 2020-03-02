@@ -1,3 +1,7 @@
+## 0.3.1+8
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.3.1+7
 
 * Clean up various Android workarounds no longer needed after framework v1.12.
