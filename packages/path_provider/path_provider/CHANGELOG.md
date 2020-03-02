@@ -1,3 +1,7 @@
+## 1.6.5
+
+* Remove unused class name in pubspec.
+
 ## 1.6.4
 
 * Endorsed macOS implementation.
