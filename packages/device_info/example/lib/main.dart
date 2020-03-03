@@ -85,6 +85,7 @@ class _MyAppState extends State<MyApp> {
       'type': build.type,
       'isPhysicalDevice': build.isPhysicalDevice,
       'androidId': build.androidId,
+      'systemFeatures': build.systemFeatures,
     };
   }
 
@@ -114,7 +115,6 @@ class _MyAppState extends State<MyApp> {
               Platform.isAndroid ? 'Android Device Info' : 'iOS Device Info'),
         ),
         body: ListView(
-          shrinkWrap: true,
           children: _deviceData.keys.map((String property) {
             return Row(
               children: <Widget>[
@@ -132,6 +132,7 @@ class _MyAppState extends State<MyApp> {
                   padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                   child: Text(
                     '${_deviceData[property]}',
+                    maxLines: 10,
                     overflow: TextOverflow.ellipsis,
                   ),
                 )),
