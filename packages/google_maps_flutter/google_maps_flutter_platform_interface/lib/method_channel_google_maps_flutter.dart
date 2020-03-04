@@ -12,9 +12,8 @@ MethodChannel _channel;
 
 /// An implementation of [GoogleMapsFlutterPlatform] that uses method channels.
 class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
-
-///Initialize control of a [MethodChannelGoogleMapsFlutter] with [id].
-  MethodChannelGoogleMapsFlutter(int id){
+  ///Initialize control of a [MethodChannelGoogleMapsFlutter] with [id].
+  MethodChannelGoogleMapsFlutter(int id) {
     _channel = MethodChannel('plugins.flutter.io/google_maps_$id');
   }
 
@@ -125,7 +124,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// style reference for more information regarding the supported styles.
   Future<void> setMapStyle(String mapStyle) async {
     final List<dynamic> successAndError =
-    await _channel.invokeMethod<List<dynamic>>('map#setStyle', mapStyle);
+        await _channel.invokeMethod<List<dynamic>>('map#setStyle', mapStyle);
     final bool success = successAndError[0];
     if (!success) {
       throw MapStyleException(successAndError[1]);
@@ -134,7 +133,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
   /// Return [Map<String, dynamic>] defining the region that is visible in a map.
   Future<Map<String, dynamic>> getVisibleRegion() async {
-    return await _channel.invokeMapMethod<String, dynamic>('map#getVisibleRegion');
+    return await _channel
+        .invokeMapMethod<String, dynamic>('map#getVisibleRegion');
   }
 
   /// Returns [List] corresponding to the [ScreenCoordinate] in the current map view.
@@ -154,7 +154,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// * See also:
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> showMarkerInfoWindow( String markerId ) async {
+  Future<void> showMarkerInfoWindow(String markerId) async {
     assert(markerId != null);
     await _channel.invokeMethod<void>(
         'markers#showInfoWindow', <String, String>{'markerId': markerId});
@@ -168,7 +168,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> hideMarkerInfoWindow(String markerId ) async {
+  Future<void> hideMarkerInfoWindow(String markerId) async {
     assert(markerId != null);
     await _channel.invokeMethod<void>(
         'markers#hideInfoWindow', <String, String>{'markerId': markerId});
@@ -182,16 +182,16 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
-  Future<bool> isMarkerInfoWindowShown(String markerId ) async {
+  Future<bool> isMarkerInfoWindowShown(String markerId) async {
     assert(markerId != null);
-    return await _channel.invokeMethod<bool>('markers#isInfoWindowShown',
-        <String, String>{'markerId': markerId});
+    return await _channel.invokeMethod<bool>(
+        'markers#isInfoWindowShown', <String, String>{'markerId': markerId});
   }
 
   /// Returns the current zoom level of the map
   Future<double> getZoomLevel() async {
     final double zoomLevel =
-    await _channel.invokeMethod<double>('map#getZoomLevel');
+        await _channel.invokeMethod<double>('map#getZoomLevel');
     return zoomLevel;
   }
 }
