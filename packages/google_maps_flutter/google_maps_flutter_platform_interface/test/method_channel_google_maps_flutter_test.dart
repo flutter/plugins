@@ -39,7 +39,7 @@ void main() {
 
   group('$MethodChannelGoogleMapsFlutter', () {
     const MethodChannel channel =
-    MethodChannel('plugins.flutter.io/google_maps_flutter');
+        MethodChannel('plugins.flutter.io/google_maps_flutter');
     final List<MethodCall> log = <MethodCall>[];
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       log.add(methodCall);
@@ -55,8 +55,7 @@ void main() {
 //      await map.foo();
       expect(
         log,
-        <Matcher>[
-        ],
+        <Matcher>[],
       );
     });
   });
