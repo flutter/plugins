@@ -1,4 +1,4 @@
-## 0.1.1+4
+## 0.0.1+4
 
 * Remove Swift file that was causing build failures on iOS.
 
