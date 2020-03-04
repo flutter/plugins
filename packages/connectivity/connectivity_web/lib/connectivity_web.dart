@@ -33,13 +33,13 @@ class ConnectivityPlugin extends ConnectivityPlatform {
   @override
   Future<ConnectivityResult> checkConnectivity() async {
     if (!_networkInformationApiSupported) {
-      return ConnectivityResult.none;
+      return null;
     }
     return networkInformationToConnectivityResult(_networkInformation);
   }
 
   Stream<ConnectivityResult> get _noopStream async* {
-    yield ConnectivityResult.none;
+    yield null;
   }
 
   StreamController<ConnectivityResult> _connectivityResult;

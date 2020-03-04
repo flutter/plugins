@@ -52,10 +52,9 @@ void main() {
     });
 
     group('unsupported browsers', () {
-      test('null connection -> none', () {
+      test('null connection -> null', () {
         ConnectivityPlugin plugin = ConnectivityPlugin.withConnection(null);
-        expect(plugin.checkConnectivity(),
-            completion(equals(ConnectivityResult.none)));
+        expect(plugin.checkConnectivity(), completion(null));
       });
     });
   });
@@ -83,10 +82,9 @@ void main() {
     });
 
     group('unsupported browsers', () {
-      test('null connection -> none', () {
+      test('null connection -> null', () {
         ConnectivityPlugin plugin = ConnectivityPlugin.withConnection(null);
-        expect(plugin.onConnectivityChanged.last,
-            completion(equals(ConnectivityResult.none)));
+        expect(plugin.onConnectivityChanged.last, completion(null));
       });
     });
   });

@@ -33,6 +33,10 @@ On desktop browsers, the API only returns a very broad set of connectivity statu
 
 Other than the approximate "downlink" speed, and due to security and privacy concerns, this Web API will not provide any specific information about the actual network your users' device is connected to, like the SSID on a Wi-Fi, or the MAC address of their device, in any web platform (mobile or desktop).
 
+### `null` connectivity results
+
+Because of the limitations above, unsupported browsers will return `null` connectivity results, both on the `checkConnectivity` call, and the `onConnectivityChanged` stream.
+
 ## Contributions and Testing
 
 Tests are a crucial to contributions to this package. All new contributions should be reasonably tested.
