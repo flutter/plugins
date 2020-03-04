@@ -43,7 +43,7 @@ void main() {
       log.add(methodCall);
     });
 
-    final MethodChannelGoogleMapsFlutter map = MethodChannelGoogleMapsFlutter(0);
+//    final MethodChannelGoogleMapsFlutter map = MethodChannelGoogleMapsFlutter(0);
 
     tearDown(() {
       log.clear();
