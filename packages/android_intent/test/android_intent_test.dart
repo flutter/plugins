@@ -43,6 +43,14 @@ void main() {
       }));
     });
 
+    test('asserts on missing action & component', () {
+      try {
+        AndroidIntent(data: 'https://flutter.io');
+      } on AssertionError catch (e) {
+        expect(e.message, 'action or component (or both) must be specified');
+      }
+    });
+
     test('call in ios platform', () async {
       androidIntent = AndroidIntent.private(
           action: null,

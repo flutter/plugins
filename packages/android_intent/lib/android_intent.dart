@@ -29,7 +29,7 @@ class AndroidIntent {
   /// If not null, then [package] but also be provided.
   /// [type] refers to the type of the intent, can be null.
   const AndroidIntent({
-    @required this.action,
+    this.action,
     this.flags,
     this.category,
     this.data,
@@ -38,7 +38,8 @@ class AndroidIntent {
     this.componentName,
     Platform platform,
     this.type,
-  })  : assert(action != null),
+  })  : assert(action != null || componentName != null,
+            'action or component (or both) must be specified'),
         _channel = const MethodChannel(_kChannelName),
         _platform = platform ?? const LocalPlatform();
 
