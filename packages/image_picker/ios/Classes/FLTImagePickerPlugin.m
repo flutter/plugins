@@ -293,11 +293,11 @@ static const int SOURCE_GALLERY = 1;
       [self saveImageWithPickerInfo:info image:image imageQuality:imageQuality];
     } else {
       __weak typeof(self) weakSelf = self;
-      /// iOS 13.0+ has deprecated requestImageDataForAsset instance,
-      /// using requestImageDataAndOrientationForAsset instead.
+      // iOS 13.0+ has deprecated requestImageDataForAsset instance,
+      // using requestImageDataAndOrientationForAsset instead.
       if (@available(iOS 13.0, *)) {
-        /// The image data returned to resultHandler will become JPEG format, if the [options] is not provided
-        /// or [options.version] is not set as PHImageRequestOptionsVersionOriginal.
+        // The image data returned to resultHandler will become JPEG format, if the [options] is not provided
+        // or [options.version] is not set as PHImageRequestOptionsVersionOriginal.
         PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
         options.version = PHImageRequestOptionsVersionOriginal;
         [[PHImageManager defaultManager]
