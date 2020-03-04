@@ -47,9 +47,9 @@ class AndroidIntent {
   /// app code, it may break without warning.
   @visibleForTesting
   AndroidIntent.private({
-    @required this.action,
     @required Platform platform,
     @required MethodChannel channel,
+    this.action,
     this.flags,
     this.category,
     this.data,
@@ -57,7 +57,9 @@ class AndroidIntent {
     this.package,
     this.componentName,
     this.type,
-  })  : _channel = channel,
+  })  : assert(action != null || componentName != null,
+            'action or component (or both) must be specified'),
+        _channel = channel,
         _platform = platform;
 
   /// This is the general verb that the intent should attempt to do. This
@@ -132,7 +134,10 @@ class AndroidIntent {
     if (!_platform.isAndroid) {
       return;
     }
-    final Map<String, dynamic> args = <String, dynamic>{'action': action};
+    final Map<String, dynamic> args = <String, dynamic>{};
+    if (action != null) {
+      args['action'] = action;
+    }
     if (flags != null) {
       args['flags'] = convertFlags(flags);
     }
