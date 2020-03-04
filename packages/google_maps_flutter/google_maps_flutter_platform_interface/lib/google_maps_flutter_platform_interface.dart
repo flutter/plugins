@@ -22,7 +22,6 @@ class MapStyleException implements Exception {
   final String cause;
 }
 
-
 /// Represents a point coordinate in the [GoogleMap]'s view.
 ///
 /// The screen location is specified in screen pixels (not display pixels) relative
@@ -75,7 +74,8 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static GoogleMapsFlutterPlatform _instance = MethodChannelGoogleMapsFlutter(0);
+  static GoogleMapsFlutterPlatform _instance =
+      MethodChannelGoogleMapsFlutter(0);
 
   /// The default instance of [GoogleMapsFlutterPlatform] to use.
   ///
@@ -193,8 +193,9 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// * See also:
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> showMarkerInfoWindow( String markerId ) async {
-    throw UnimplementedError('showMarkerInfoWindow() has not been implemented.');
+  Future<void> showMarkerInfoWindow(String markerId) async {
+    throw UnimplementedError(
+        'showMarkerInfoWindow() has not been implemented.');
   }
 
   /// Programmatically hide the Info Window for a [Marker].
@@ -205,8 +206,9 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> hideMarkerInfoWindow(String markerId ) async {
-    throw UnimplementedError('hideMarkerInfoWindow() has not been implemented.');
+  Future<void> hideMarkerInfoWindow(String markerId) async {
+    throw UnimplementedError(
+        'hideMarkerInfoWindow() has not been implemented.');
   }
 
   /// Returns `true` when the [InfoWindow] is showing, `false` otherwise.
@@ -217,7 +219,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
-  Future<bool> isMarkerInfoWindowShown(String markerId ) async {
+  Future<bool> isMarkerInfoWindowShown(String markerId) async {
     throw UnimplementedError('updateMapOptions() has not been implemented.');
   }
 
