@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
+
+const String _extensionMethodName = 'driver';
+const String _extensionMethod = 'ext.flutter.$_extensionMethodName';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
@@ -56,33 +60,18 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
   @override
   void initServiceExtensions() {
     super.initServiceExtensions();
-    Future<Map<String, dynamic>> callback(Map<String, String> params) async {
-      final String command = params['command'];
-      Map<String, String> response;
-      switch (command) {
-        case 'request_data':
-          final bool allTestsPassed = await _allTestsPassed.future;
-          response = <String, String>{
-            'message': allTestsPassed ? 'pass' : 'fail',
-          };
-          break;
-        case 'get_health':
-          response = <String, String>{'status': 'ok'};
-          break;
-        default:
-          throw UnimplementedError('$command is not implemented');
-      }
-      return <String, dynamic>{
-        'isError': false,
-        'response': response,
-      };
+    Future<String> handler(_) async {
+      final bool allTestsPassed = await _allTestsPassed.future;
+      return allTestsPassed ? 'pass' : 'fail';
     }
-
+    final FlutterDriverExtension extension = FlutterDriverExtension(handler, false);
+    registerServiceExtension(
+      name: _extensionMethodName,
+      callback: extension.call,
+    );
     if (kIsWeb) {
-      registerWebServiceExtension(callback);
+      registerWebServiceExtension(extension.call);
     }
-
-    registerServiceExtension(name: 'driver', callback: callback);
   }
 
   @override
