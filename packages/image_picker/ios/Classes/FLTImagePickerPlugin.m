@@ -293,18 +293,38 @@ static const int SOURCE_GALLERY = 1;
       [self saveImageWithPickerInfo:info image:image imageQuality:imageQuality];
     } else {
       __weak typeof(self) weakSelf = self;
-      [[PHImageManager defaultManager]
-          requestImageDataForAsset:originalAsset
-                           options:nil
-                     resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                     UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                       // maxWidth and maxHeight are used only for GIF images.
-                       [weakSelf saveImageWithOriginalImageData:imageData
-                                                          image:image
-                                                       maxWidth:maxWidth
-                                                      maxHeight:maxHeight
-                                                   imageQuality:imageQuality];
-                     }];
+      // iOS 13.0+ has deprecated requestImageDataForAsset instance, using requestImageDataAndOrientationForAsset instead.
+      if (@available(iOS 13.0, *)) {
+        // The image data returned to resultHandler will become JPEG format, if the PHImageRequestOptions.version
+        // is not set to PHImageRequestOptionsVersionOriginal while requesting.
+        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+        options.version = PHImageRequestOptionsVersionOriginal;
+        [[PHImageManager defaultManager]
+            requestImageDataAndOrientationForAsset:originalAsset
+                                           options:options
+                                     resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                                    CGImagePropertyOrientation orientation, NSDictionary *_Nullable info) {
+                          // maxWidth and maxHeight are used only for GIF images.
+                          [weakSelf saveImageWithOriginalImageData:imageData
+                                                             image:image
+                                                          maxWidth:maxWidth
+                                                         maxHeight:maxHeight
+                                                      imageQuality:imageQuality];
+                       }];
+      } else {
+        [[PHImageManager defaultManager]
+            requestImageDataForAsset:originalAsset
+                            options:nil
+                      resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                      UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                        // maxWidth and maxHeight are used only for GIF images.
+                        [weakSelf saveImageWithOriginalImageData:imageData
+                                                            image:image
+                                                        maxWidth:maxWidth
+                                                        maxHeight:maxHeight
+                                                    imageQuality:imageQuality];
+                      }];
+      }
     }
   }
   _arguments = nil;
