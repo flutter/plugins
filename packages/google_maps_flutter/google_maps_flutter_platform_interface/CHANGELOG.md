@@ -1,11 +1,14 @@
-## 1.0.0
+## 1.0.0+3
+* Clean up format
 
-* Initial release.
+## 1.0.0+2
+
+* Add PlatformInterface methods according to GoogleMapsFlutter
 
 ## 1.0.0+1
 
 * Update README
 
-## 1.0.0+2
+## 1.0.0
 
-* Add PlatformInterface methods according to GoogleMapsFlutter
+* Initial release.
