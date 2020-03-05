@@ -1,3 +1,6 @@
+## 0.5.25
+* Move MethodChannel code to MethodChannelGoogleMapsFlutter(Flutter Platform Interface)
+
 ## 0.5.24+1
 
 * Make the pedantic dev_dependency explicit.

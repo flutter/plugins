@@ -1,3 +1,6 @@
+## 1.0.0+4
+* Add init method and Move MethodChannel code to MethodChannelGoogleMapsFlutter 
+
 ## 1.0.0+3
 * Clean up format
 
