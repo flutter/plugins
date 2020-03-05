@@ -123,6 +123,9 @@ abstract class GoogleSignInPlatform {
   }
 
   /// Requests the user grants additional Oauth [scopes].
+  /// 
+  /// Scopes should come from the full  list
+  /// [here](https://developers.google.com/identity/protocols/googlescopes).
   Future<bool> requestScopes(List<String> scopes) async {
     throw UnimplementedError('requestScopes() has not been implmented.');
   }
