@@ -1,3 +1,7 @@
+## 0.10.8+2
+
+* Fixed issue where audio file streaming doesn't works on iOS.
+
 ## 0.10.8+1
 
 * Make the pedantic dev_dependency explicit.
