@@ -307,7 +307,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     CGFloat width = size.width;
     CGFloat height = size.height;
 
-    // The player has not yet initialized.
+    // The player has not yet initialized for video asset.
     if (height == CGSizeZero.height && width == CGSizeZero.width &&
         [[self.player currentItem].asset tracksWithMediaType:AVMediaTypeAudio].count == 0) {
       return;
