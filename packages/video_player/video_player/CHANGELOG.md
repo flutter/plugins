@@ -1,3 +1,7 @@
+## 0.10.9
+
+* Updated video player on iOS to update frame if seeking while paused. 
+
 ## 0.10.8+1
 
 * Make the pedantic dev_dependency explicit.
