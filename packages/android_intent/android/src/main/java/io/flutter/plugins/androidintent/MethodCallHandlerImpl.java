@@ -91,6 +91,10 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
   }
 
   private static String convertAction(String action) {
+    if (action == null) {
+      return null;
+    }
+
     switch (action) {
       case "action_view":
         return Intent.ACTION_VIEW;
