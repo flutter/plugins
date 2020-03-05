@@ -17,6 +17,22 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     _channel = MethodChannel('plugins.flutter.io/google_maps_$id');
   }
 
+  /// /// Initializes the platform interface with [id].
+  ///
+  /// This method is called when the plugin is first initialized.
+  Future<void> init(int id) async {
+    _channel = MethodChannel('plugins.flutter.io/google_maps_$id');
+    await _channel.invokeMethod<void>('map#waitForMap');
+  }
+
+  MethodChannel get channel {
+    return _channel;
+  }
+
+  void setMethodCallHandler(dynamic call) {
+    _channel.setMethodCallHandler(call);
+  }
+
   /// Updates configuration options of the map user interface.
   ///
   /// Change listeners are notified once the update has been made on the
@@ -137,11 +153,23 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         .invokeMapMethod<String, dynamic>('map#getVisibleRegion');
   }
 
+  /// Return point [Map<String, int>] of the [screenCoordinateInJson] in the current map view.
+  ///
+  /// A projection is used to translate between on screen location and geographic coordinates.
+  /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
+  /// of the map, not necessarily of the whole screen.
+  Future<Map<String, int>> getScreenCoordinate(
+      dynamic screenCoordinateInJson) async {
+    final Map<String, int> point = await _channel.invokeMapMethod<String, int>(
+        'map#getScreenCoordinate', screenCoordinateInJson);
+    return point;
+  }
+
   /// Returns [List] corresponding to the [ScreenCoordinate] in the current map view.
   ///
   /// Returned [List] corresponds to a screen location. The screen location is specified in screen
   /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
-  Future<List<dynamic>> getLatLng(ScreenCoordinate screenCoordinate) async {
+  Future<List<dynamic>> getLatLng(dynamic screenCoordinate) async {
     return await _channel.invokeMethod<List<dynamic>>(
         'map#getLatLng', screenCoordinate.toJson());
   }

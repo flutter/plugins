@@ -7,6 +7,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^1.0.0
+  google_maps_flutter_platform_interface:
+  google_maps_flutter_web:
 
 dev_dependencies:
   flutter_test:
@@ -27,6 +29,8 @@ flutter:
         pluginClass: GoogleMapsPlugin
       ios:
         pluginClass: FLTGoogleMapsPlugin
+      web:
+        default_package: google_maps_flutter_web
 
 environment:
   sdk: ">=2.0.0-dev.47.0 <3.0.0"
