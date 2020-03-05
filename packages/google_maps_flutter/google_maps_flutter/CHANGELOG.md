@@ -1,3 +1,7 @@
+## 0.6.0
+
+* Move MethodChannel code to MethodChannelGoogleMapsFlutter (Flutter Platform Interface)
+
 ## 0.5.25+3
 
 * Rename 'Page' in the example app to avoid type conflict with the Flutter Framework.
