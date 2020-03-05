@@ -1,3 +1,8 @@
+## 0.3.6
+
+* Marks the `action` parameter as optional
+* Adds an assertion to ensure the intent receives an action, component or both.
+
 ## 0.3.5+1
 
 * Make the pedantic dev_dependency explicit.
