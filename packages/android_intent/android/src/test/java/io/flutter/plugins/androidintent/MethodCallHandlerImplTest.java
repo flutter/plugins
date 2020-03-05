@@ -218,8 +218,9 @@ public class MethodCallHandlerImplTest {
     assertNotNull(intent);
     assertNotNull(intent.getComponent());
     assertEquals("foo", intent.getAction());
-    assertEquals(expectedComponent.getPackageName(), intent.getPackage());
-    assertEquals(expectedComponent.flattenToString(), intent.getComponent().flattenToString());
+    assertEquals("io.flutter.plugins.androidintent", intent.getPackage());
+    assertEquals(
+        "io.flutter.plugins.androidintent/MainActivity", intent.getComponent().flattenToString());
   }
 
   @Test
@@ -241,8 +242,9 @@ public class MethodCallHandlerImplTest {
     Intent intent = shadowOf((Application) context).getNextStartedActivity();
     assertNotNull(intent);
     assertNotNull(intent.getComponent());
-    assertEquals(expectedComponent.getPackageName(), intent.getPackage());
-    assertEquals(expectedComponent.flattenToString(), intent.getComponent().flattenToString());
+    assertEquals("io.flutter.plugins.androidintent", intent.getPackage());
+    assertEquals(
+        "io.flutter.plugins.androidintent/MainActivity", intent.getComponent().flattenToString());
   }
 
   @Test
