@@ -16,8 +16,8 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
-public class FlutterRunner extends Runner {
-  private static final String TAG = "FlutterRunner";
+public class FlutterTestRunner extends Runner {
+  private static final String TAG = "FlutterTestRunner";
 
   final Class testClass;
   ActivityTestRule<Activity> rule;
