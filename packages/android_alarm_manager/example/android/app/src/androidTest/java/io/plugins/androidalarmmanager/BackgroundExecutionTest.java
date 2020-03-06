@@ -36,7 +36,7 @@ public class BackgroundExecutionTest {
     prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     prefs.edit().putLong(COUNT_KEY, 0).apply();
 
-    ActivityScenario.launch(MainActivity.class);
+    ActivityScenario.launch(DriverExtensionActivity.class);
   }
 
   @Test
