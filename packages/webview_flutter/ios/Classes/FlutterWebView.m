@@ -8,12 +8,14 @@
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
+  NSObject<FlutterPluginRegistrar>* _registrar;
 }
 
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   self = [super init];
   if (self) {
-    _messenger = messenger;
+    _registrar = registrar;
+    _messenger = registrar.messenger;
   }
   return self;
 }
@@ -28,7 +30,7 @@
   FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
                                                                          viewIdentifier:viewId
                                                                               arguments:args
-                                                                        binaryMessenger:_messenger];
+                                                                        registrar:_registrar];
   return webviewController;
 }
 
@@ -64,17 +66,18 @@
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
   FLTWKNavigationDelegate* _navigationDelegate;
+  NSObject<FlutterPluginRegistrar>* _registrar;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+              registrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
   if (self = [super init]) {
     _viewId = viewId;
-
+    _registrar = registrar;
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
-    _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
+    _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:_registrar.messenger];
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
 
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
@@ -182,6 +185,17 @@
 - (void)onLoadAssetHtmlFile:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSString* url = [call arguments];
   if (![self loadAssetHtmlFile:url]) {
+    result([FlutterError errorWithCode:@"loadAssetHtmlFile_failed"
+                               message:@"Failed parsing the URL"
+                               details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
+  } else {
+    result(nil);
+  }
+}
+
+- (void)onLoadLocalHtmlFile:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* url = [call arguments];
+  if (![self loadLocalHtmlFile:url]) {
     result([FlutterError errorWithCode:@"loadAssetHtmlFile_failed"
                                message:@"Failed parsing the URL"
                                details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
@@ -397,6 +411,33 @@
   NSURL* baseURL = [[NSBundle mainBundle] URLForResource:key withExtension:nil];
   if (!baseURL) {
       return false;
+   }
+  NSURL* newUrl = baseURL;
+  if ([array count] > 1) {
+    NSString* queryString = [array objectAtIndex:1];
+    NSLog(@"%@%@", @"queryString: ", queryString);
+    NSString* queryPart = [NSString stringWithFormat:@"%@%@", @"?", queryString];
+    NSLog(@"%@%@", @"queryPart: ", queryPart);
+    newUrl = [NSURL URLWithString:queryPart relativeToURL:baseURL];
+  }
+  if (@available(iOS 9.0, *)) {
+    [_webView loadFileURL:newUrl allowingReadAccessToURL:[NSURL URLWithString:@"file:///"]];
+  } else {
+    return false;
+  }
+  return true;
+}
+
+- (bool)loadLocalHtmlFile:(NSString*)url {
+  NSArray* array = [url componentsSeparatedByString:@"?"];
+  NSString* pathString = [array objectAtIndex:0];
+  NSLog(@"%@%@", @"pathString: ", pathString);
+  NSString* key = [_registrar lookupKeyForAsset:pathString];
+  NSURL* baseURL = [[NSBundle mainBundle] URLForResource:key withExtension:nil];
+  if (!baseURL) {
+      [_webView loadFileURL:[NSURL fileURLWithPath:pathString] allowingReadAccessToURL:[NSURL fileURLWithPath:pathString]];
+      return true;
+
    }
   NSURL* newUrl = baseURL;
   if ([array count] > 1) {
