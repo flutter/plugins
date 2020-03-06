@@ -20,7 +20,7 @@ public class FlutterTestRunner extends Runner {
   private static final String TAG = "FlutterTestRunner";
 
   final Class testClass;
-  final ActivityTestRule<Activity> rule;
+  ActivityTestRule<Activity> rule = null;
 
   public FlutterTestRunner(Class<?> testClass) {
     super();
@@ -49,6 +49,9 @@ public class FlutterTestRunner extends Runner {
 
   @Override
   public void run(RunNotifier notifier) {
+    if (rule == null) {
+      throw new RuntimeException("Unable to run tests due to missing activity rule");
+    }
     try {
       rule.launchActivity(null);
     } catch (RuntimeException e) {
