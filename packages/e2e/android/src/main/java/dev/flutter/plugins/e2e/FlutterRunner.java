@@ -18,6 +18,7 @@ import org.junit.runner.notification.RunNotifier;
 public class FlutterRunner extends Runner {
 
   final Class testClass;
+  ActivityTestRule<Activity> rule;
 
   public FlutterRunner(Class<?> testClass) {
     super();
@@ -29,7 +30,7 @@ public class FlutterRunner extends Runner {
       if (field.isAnnotationPresent(Rule.class)) {
         try {
           Object instance = testClass.newInstance();
-          ActivityTestRule<Activity> rule = (ActivityTestRule<Activity>) field.get(instance);
+          rule = (ActivityTestRule<Activity>) field.get(instance);
           rule.launchActivity(null);
         } catch (InstantiationException | IllegalAccessException e) {
           // This might occur if the developer did not make the rule public.
@@ -47,6 +48,7 @@ public class FlutterRunner extends Runner {
 
   @Override
   public void run(RunNotifier notifier) {
+    rule.launchActivity(null);
     Map<String, String> results = null;
     try {
       results = E2EPlugin.testResults.get();
