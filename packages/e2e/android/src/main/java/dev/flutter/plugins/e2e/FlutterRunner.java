@@ -5,6 +5,7 @@
 package dev.flutter.plugins.e2e;
 
 import android.app.Activity;
+import android.util.Log;
 import androidx.test.rule.ActivityTestRule;
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 public class FlutterRunner extends Runner {
+  private static final String TAG = "FlutterRunner";
 
   final Class testClass;
   ActivityTestRule<Activity> rule;
@@ -31,7 +33,7 @@ public class FlutterRunner extends Runner {
         try {
           Object instance = testClass.newInstance();
           rule = (ActivityTestRule<Activity>) field.get(instance);
-          // Launching the activity here keeps us from being terminated early
+          // Launching the activity here seems to keep us from being terminated early
           rule.launchActivity(null);
         } catch (InstantiationException | IllegalAccessException e) {
           // This might occur if the developer did not make the rule public.
@@ -49,10 +51,15 @@ public class FlutterRunner extends Runner {
 
   @Override
   public void run(RunNotifier notifier) {
+    // TODO(jackson): It should only be necessary to do this once, but when
+    // running multiple tests there's a race condition where
+    // sometimes the first launch doesn't work.
+    // https://github.com/flutter/flutter/issues/51781
     try {
       rule.launchActivity(null);
     } catch (RuntimeException e) {
-    } // Activity is already running
+      Log.v(TAG, e);
+    }
     Map<String, String> results = null;
     try {
       results = E2EPlugin.testResults.get();
