@@ -27,8 +27,8 @@ public class BackgroundExecutionTest {
   static final String COUNT_KEY = "flutter.count";
 
   @Rule
-  public ActivityTestRule<MainActivity> myActivityTestRule =
-      new ActivityTestRule<>(MainActivity.class, true, false);
+  public ActivityTestRule<DriverExtensionActivity> myActivityTestRule =
+      new ActivityTestRule<>(DriverExtensionActivity.class, true, false);
 
   @Before
   public void setUp() throws Exception {

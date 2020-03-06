@@ -4,9 +4,11 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:android_alarm_manager_example/main.dart' as app;
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:e2e/e2e.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_driver/driver_extension.dart';
 import 'package:path_provider/path_provider.dart';
 
 // From https://flutter.dev/docs/cookbook/persistence/reading-writing-files
@@ -45,6 +47,11 @@ Future<int> readCounter() async {
 Future<void> incrementCounter() async {
   final int value = await readCounter();
   await writeCounter(value + 1);
+}
+
+void driverExtensionMain() {
+  enableFlutterDriverExtension();
+  app.main();
 }
 
 void main() {
