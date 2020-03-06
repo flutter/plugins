@@ -33,8 +33,6 @@ public class FlutterTestRunner extends Runner {
         try {
           Object instance = testClass.newInstance();
           rule = (ActivityTestRule<Activity>) field.get(instance);
-          // Launching the activity here seems to keep us from being terminated early
-          rule.launchActivity(null);
         } catch (InstantiationException | IllegalAccessException e) {
           // This might occur if the developer did not make the rule public.
           // We could call field.setAccessible(true) but it seems better to throw.
@@ -55,7 +53,7 @@ public class FlutterTestRunner extends Runner {
       rule.launchActivity(null);
     } catch (RuntimeException e) {
       Log.v(TAG, e);
-      Log.v(TAG, "launchActivity failed, possibly because the activity was already running.")
+      Log.v(TAG, "launchActivity failed, possibly because the activity was already running.");
       Log.v(TAG, "Try disabling auto-launch of the activity, e.g. ActivityTestRule<>(MainActivity.class, true, false);");
     }
     Map<String, String> results = null;
