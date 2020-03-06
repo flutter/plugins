@@ -31,6 +31,7 @@ public class FlutterRunner extends Runner {
         try {
           Object instance = testClass.newInstance();
           rule = (ActivityTestRule<Activity>) field.get(instance);
+          // Launching the activity here keeps us from being terminated early
           rule.launchActivity(null);
         } catch (InstantiationException | IllegalAccessException e) {
           // This might occur if the developer did not make the rule public.
@@ -48,7 +49,9 @@ public class FlutterRunner extends Runner {
 
   @Override
   public void run(RunNotifier notifier) {
-    rule.launchActivity(null);
+    try {
+      rule.launchActivity(null);
+    } catch (RuntimeException e) { } // Activity is already running
     Map<String, String> results = null;
     try {
       results = E2EPlugin.testResults.get();
