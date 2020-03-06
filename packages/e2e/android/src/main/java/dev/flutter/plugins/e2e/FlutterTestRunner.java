@@ -20,7 +20,7 @@ public class FlutterTestRunner extends Runner {
   private static final String TAG = "FlutterTestRunner";
 
   final Class testClass;
-  ActivityTestRule<Activity> rule;
+  final ActivityTestRule<Activity> rule;
 
   public FlutterTestRunner(Class<?> testClass) {
     super();
