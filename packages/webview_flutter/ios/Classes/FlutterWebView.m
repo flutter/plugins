@@ -128,6 +128,10 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"loadAssetHtmlFile"]) {
+    [self onLoadAssetHtmlFile:call result:result];
+  }  else if ([[call method] isEqualToString:@"loadLocalHtmlFile"]) {
+    [self onLoadLocalHtmlFile:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -170,6 +174,17 @@
         errorWithCode:@"loadUrl_failed"
               message:@"Failed parsing the URL"
               details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
+  } else {
+    result(nil);
+  }
+}
+
+- (void)onLoadAssetHtmlFile:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* url = [call arguments];
+  if (![self loadAssetHtmlFile:url]) {
+    result([FlutterError errorWithCode:@"loadAssetHtmlFile_failed"
+                               message:@"Failed parsing the URL"
+                               details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
   } else {
     result(nil);
   }
@@ -371,6 +386,31 @@
   NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
   [request setAllHTTPHeaderFields:headers];
   [_webView loadRequest:request];
+  return true;
+}
+
+- (bool)loadAssetHtmlFile:(NSString*)url {
+  NSArray* array = [url componentsSeparatedByString:@"?"];
+  NSString* pathString = [array objectAtIndex:0];
+  NSLog(@"%@%@", @"pathString: ", pathString);
+  NSString* key = [_registrar lookupKeyForAsset:pathString];
+  NSURL* baseURL = [[NSBundle mainBundle] URLForResource:key withExtension:nil];
+  if (!baseURL) {
+      return false;
+   }
+  NSURL* newUrl = baseURL;
+  if ([array count] > 1) {
+    NSString* queryString = [array objectAtIndex:1];
+    NSLog(@"%@%@", @"queryString: ", queryString);
+    NSString* queryPart = [NSString stringWithFormat:@"%@%@", @"?", queryString];
+    NSLog(@"%@%@", @"queryPart: ", queryPart);
+    newUrl = [NSURL URLWithString:queryPart relativeToURL:baseURL];
+  }
+  if (@available(iOS 9.0, *)) {
+    [_webView loadFileURL:newUrl allowingReadAccessToURL:[NSURL URLWithString:@"file:///"]];
+  } else {
+    return false;
+  }
   return true;
 }
 
