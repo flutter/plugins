@@ -72,7 +72,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-                    registrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
+                    registrar:(nonnull NSObject<FlutterPluginRegistrar>*)registrar {
   if (self = [super init]) {
     _viewId = viewId;
     _registrar = registrar;
