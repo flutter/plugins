@@ -1,3 +1,7 @@
+## 0.2.4+5
+
+* Flake fix; more deterministic behavior for launching activity.
+
 ## 0.2.4+4
 
 * Fixed a hang that occurred on platforms that don't have a `MethodChannel` listener registered..
