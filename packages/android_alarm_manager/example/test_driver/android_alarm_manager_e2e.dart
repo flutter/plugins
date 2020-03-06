@@ -49,7 +49,7 @@ Future<void> incrementCounter() async {
   await writeCounter(value + 1);
 }
 
-void driverExtensionMain() {
+void appMain() {
   enableFlutterDriverExtension();
   app.main();
 }

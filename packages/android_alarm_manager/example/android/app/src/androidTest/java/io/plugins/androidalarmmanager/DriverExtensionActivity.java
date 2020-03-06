@@ -10,6 +10,6 @@ public class DriverExtensionActivity extends MainActivity {
     @Override
     @NonNull
     public String getDartEntrypointFunctionName() {
-        return "driverExtensionMain";
+        return "appMain";
     }
 }
