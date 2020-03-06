@@ -11,10 +11,16 @@ source "$SCRIPT_DIR/common.sh"
 check_changed_packages > /dev/null
 
 readonly EXCLUDED_PLUGINS_LIST=(
+  "connectivity_macos"
+  "connectivity_platform_interface"
+  "connectivity_web"
   "flutter_plugin_android_lifecycle"
   "google_sign_in_platform_interface"
   "google_sign_in_web"
   "instrumentation_adapter"
+  "path_provider_macos"
+  "path_provider_platform_interface"
+  "path_provider_web"
   "plugin_platform_interface"
   "shared_preferences_macos"
   "shared_preferences_platform_interface"

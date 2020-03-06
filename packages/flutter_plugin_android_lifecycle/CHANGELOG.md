@@ -1,3 +1,11 @@
+## 1.0.7
+
+* Update Gradle version. Fixes https://github.com/flutter/flutter/issues/48724.
+
+## 1.0.6
+
+* Make the pedantic dev_dependency explicit.
+
 ## 1.0.5
 
 * Add notice in example this plugin only provides Android Lifecycle API.
