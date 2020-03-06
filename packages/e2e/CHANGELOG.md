@@ -1,6 +1,7 @@
 ## 0.3.0
 
-* Flake fix; more deterministic behavior for launching activity.
+* Updates documentation to instruct developers not to launch the activity since
+  we are doing it for them.
 * Renames `FlutterRunner` to `FlutterTestRunner` to avoid conflict with Fuchsia.
 
 ## 0.2.4+4
