@@ -10,6 +10,7 @@ dependencies:
   e2e: 0.3.0
   path_provider: ^1.3.1
 
+# TODO(jackson): Remove after landing https://github.com/flutter/plugins/pull/2584
 dependency_overrides:
   e2e:
     git: 
