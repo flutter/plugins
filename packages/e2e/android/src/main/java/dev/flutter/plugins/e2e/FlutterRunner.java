@@ -51,14 +51,12 @@ public class FlutterRunner extends Runner {
 
   @Override
   public void run(RunNotifier notifier) {
-    // TODO(jackson): It should only be necessary to do this once, but when
-    // running multiple tests there's a race condition where
-    // sometimes the first launch doesn't work.
-    // https://github.com/flutter/flutter/issues/51781
     try {
       rule.launchActivity(null);
     } catch (RuntimeException e) {
       Log.v(TAG, e);
+      Log.v(TAG, "launchActivity failed, possibly because the activity was already running.")
+      Log.v(TAG, "Try disabling auto-launch of the activity, e.g. ActivityTestRule<>(MainActivity.class, true, false);");
     }
     Map<String, String> results = null;
     try {
