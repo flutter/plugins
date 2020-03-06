@@ -56,7 +56,9 @@ public class FlutterTestRunner extends Runner {
       rule.launchActivity(null);
     } catch (RuntimeException e) {
       Log.v(TAG, "launchActivity failed, possibly because the activity was already running. " + e);
-      Log.v(TAG, "Try disabling auto-launch of the activity, e.g. ActivityTestRule<>(MainActivity.class, true, false);");
+      Log.v(
+          TAG,
+          "Try disabling auto-launch of the activity, e.g. ActivityTestRule<>(MainActivity.class, true, false);");
     }
     Map<String, String> results = null;
     try {
