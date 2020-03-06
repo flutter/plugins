@@ -11,7 +11,7 @@
   NSObject<FlutterPluginRegistrar>* _registrar;
 }
 
-- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   self = [super init];
   if (self) {
     _registrar = registrar;
@@ -30,7 +30,7 @@
   FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
                                                                          viewIdentifier:viewId
                                                                               arguments:args
-                                                                        registrar:_registrar];
+                                                                              registrar:_registrar];
   return webviewController;
 }
 
@@ -72,12 +72,13 @@
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-              registrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
+                    registrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
   if (self = [super init]) {
     _viewId = viewId;
     _registrar = registrar;
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
-    _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:_registrar.messenger];
+    _channel = [FlutterMethodChannel methodChannelWithName:channelName
+                                           binaryMessenger:_registrar.messenger];
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
 
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
@@ -133,7 +134,7 @@
     [self onLoadUrl:call result:result];
   } else if ([[call method] isEqualToString:@"loadAssetHtmlFile"]) {
     [self onLoadAssetHtmlFile:call result:result];
-  }  else if ([[call method] isEqualToString:@"loadLocalHtmlFile"]) {
+  } else if ([[call method] isEqualToString:@"loadLocalHtmlFile"]) {
     [self onLoadLocalHtmlFile:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
@@ -410,8 +411,8 @@
   NSString* key = [_registrar lookupKeyForAsset:pathString];
   NSURL* baseURL = [[NSBundle mainBundle] URLForResource:key withExtension:nil];
   if (!baseURL) {
-      return false;
-   }
+    return false;
+  }
   NSURL* newUrl = baseURL;
   if ([array count] > 1) {
     NSString* queryString = [array objectAtIndex:1];
@@ -435,10 +436,10 @@
   NSString* key = [_registrar lookupKeyForAsset:pathString];
   NSURL* baseURL = [[NSBundle mainBundle] URLForResource:key withExtension:nil];
   if (!baseURL) {
-      [_webView loadFileURL:[NSURL fileURLWithPath:pathString] allowingReadAccessToURL:[NSURL fileURLWithPath:pathString]];
-      return true;
-
-   }
+    [_webView loadFileURL:[NSURL fileURLWithPath:pathString]
+        allowingReadAccessToURL:[NSURL fileURLWithPath:pathString]];
+    return true;
+  }
   NSURL* newUrl = baseURL;
   if ([array count] > 1) {
     NSString* queryString = [array objectAtIndex:1];
