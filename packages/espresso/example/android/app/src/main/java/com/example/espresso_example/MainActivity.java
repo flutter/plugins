@@ -7,10 +7,4 @@ import io.flutter.embedding.engine.FlutterEngine;
 public class MainActivity extends FlutterActivity {
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {}
-
-  @Override
-  @NonNull
-  public String getDartEntrypointFunctionName() {
-    return "driverExtensionMain";
-  }
 }

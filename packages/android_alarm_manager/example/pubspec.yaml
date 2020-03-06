@@ -12,8 +12,7 @@ dependencies:
 
 
 dev_dependencies:
-  espresso:
-    path: ../../espresso
+  espresso: ^0.0.1+3
   flutter_driver:
     sdk: flutter
   flutter_test:

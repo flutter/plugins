@@ -13,7 +13,6 @@ import static androidx.test.espresso.flutter.matcher.FlutterMatchers.withTooltip
 import static androidx.test.espresso.flutter.matcher.FlutterMatchers.withValueKey;
 import static com.google.common.truth.Truth.assertThat;
 
-import androidx.annotation.NonNull;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.flutter.EspressoFlutter.WidgetInteraction;
 import androidx.test.espresso.flutter.assertion.FlutterAssertions;
