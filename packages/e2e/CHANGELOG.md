@@ -1,3 +1,9 @@
+## 0.3.0
+
+* Updates documentation to instruct developers not to launch the activity since
+  we are doing it for them.
+* Renames `FlutterRunner` to `FlutterTestRunner` to avoid conflict with Fuchsia.
+
 ## 0.2.4+4
 
 * Fixed a hang that occurred on platforms that don't have a `MethodChannel` listener registered..
