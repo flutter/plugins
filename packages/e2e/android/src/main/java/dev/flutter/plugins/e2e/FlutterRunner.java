@@ -5,7 +5,6 @@
 package dev.flutter.plugins.e2e;
 
 import android.app.Activity;
-import android.util.Log;
 import androidx.test.rule.ActivityTestRule;
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -17,10 +16,8 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 public class FlutterRunner extends Runner {
-  private static final String TAG = "FlutterRunner";
 
   final Class testClass;
-  ActivityTestRule<Activity> rule;
 
   public FlutterRunner(Class<?> testClass) {
     super();
@@ -32,8 +29,7 @@ public class FlutterRunner extends Runner {
       if (field.isAnnotationPresent(Rule.class)) {
         try {
           Object instance = testClass.newInstance();
-          rule = (ActivityTestRule<Activity>) field.get(instance);
-          // Launching the activity here seems to keep us from being terminated early
+          ActivityTestRule<Activity> rule = (ActivityTestRule<Activity>) field.get(instance);
           rule.launchActivity(null);
         } catch (InstantiationException | IllegalAccessException e) {
           // This might occur if the developer did not make the rule public.
@@ -51,13 +47,6 @@ public class FlutterRunner extends Runner {
 
   @Override
   public void run(RunNotifier notifier) {
-    try {
-      rule.launchActivity(null);
-    } catch (RuntimeException e) {
-      Log.v(TAG, e);
-      Log.v(TAG, "launchActivity failed, possibly because the activity was already running.")
-      Log.v(TAG, "Try disabling auto-launch of the activity, e.g. ActivityTestRule<>(MainActivity.class, true, false);");
-    }
     Map<String, String> results = null;
     try {
       results = E2EPlugin.testResults.get();
