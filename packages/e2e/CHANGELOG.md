@@ -1,3 +1,7 @@
+## 0.2.4+5
+
+* Support for running E2E and Espresso tests together.
+
 ## 0.2.4+4
 
 * Fixed a hang that occurred on platforms that don't have a `MethodChannel` listener registered..
