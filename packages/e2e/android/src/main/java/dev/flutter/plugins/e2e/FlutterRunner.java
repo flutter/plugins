@@ -51,7 +51,8 @@ public class FlutterRunner extends Runner {
   public void run(RunNotifier notifier) {
     try {
       rule.launchActivity(null);
-    } catch (RuntimeException e) { } // Activity is already running
+    } catch (RuntimeException e) {
+    } // Activity is already running
     Map<String, String> results = null;
     try {
       results = E2EPlugin.testResults.get();
