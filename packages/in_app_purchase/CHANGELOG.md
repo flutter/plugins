@@ -1,3 +1,7 @@
+## 0.3.1+2
+
+* Fix potential casting crash on Android v1 embedding when registering life cycle callbacks.
+
 ## 0.3.1+1
 
 * Add `pedantic` to dev_dependency.
