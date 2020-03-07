@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.inapppurchase;
 
 import static org.mockito.Mockito.when;
@@ -18,7 +22,6 @@ public class InAppPurchasePluginTest {
   @Mock PluginRegistry.Registrar mockRegistrar; // For v1 embedding
   @Mock BinaryMessenger mockMessenger;
   @Mock Application mockApplication;
-  @Mock Context mockApplicatonContext;
 
   @Before
   public void setUp() {
@@ -29,20 +32,8 @@ public class InAppPurchasePluginTest {
   }
 
   @Test
-  public void registerWith_doNotCrashWhenApplicationContextIsTypeContext() {
-    when(context.getApplicationContext()).thenReturn(mockApplicatonContext);
-    InAppPurchasePlugin.registerWith(mockRegistrar);
-  }
-
-  @Test
   public void registerWith_doNotCrashWhenApplicationContextIsTypeApplication() {
     when(context.getApplicationContext()).thenReturn(mockApplication);
-    InAppPurchasePlugin.registerWith(mockRegistrar);
-  }
-
-  @Test
-  public void registerWith_doNotCrashWhenApplicationContextIsNull() {
-    when(context.getApplicationContext()).thenReturn(null);
     InAppPurchasePlugin.registerWith(mockRegistrar);
   }
 }
