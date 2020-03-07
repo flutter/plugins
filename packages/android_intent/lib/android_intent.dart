@@ -139,16 +139,18 @@ class AndroidIntent {
   }
 
   /// Constructs the map of arguments which is passed to the plugin.
-  Map<String, dynamic> _buildArguments() => {
-        if (action != null) 'action': action,
-        if (flags != null) 'flags': convertFlags(flags),
-        if (category != null) 'category': category,
-        if (data != null) 'data': data,
-        if (arguments != null) 'arguments': arguments,
-        if (package != null) ...{
-          'package': package,
-          if (componentName != null) 'componentName': componentName,
-        },
-        if (type != null) 'type': type,
-      };
+  Map<String, dynamic> _buildArguments() {
+    return {
+      if (action != null) 'action': action,
+      if (flags != null) 'flags': convertFlags(flags),
+      if (category != null) 'category': category,
+      if (data != null) 'data': data,
+      if (arguments != null) 'arguments': arguments,
+      if (package != null) ...{
+        'package': package,
+        if (componentName != null) 'componentName': componentName,
+      },
+      if (type != null) 'type': type,
+    };
+  }
 }
