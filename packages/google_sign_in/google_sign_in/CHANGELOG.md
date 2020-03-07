@@ -1,3 +1,7 @@
+## 4.1.5
+
+* Fix flutter/flutter#48602 iOS flow shows account selection, if user is signed in to Google on the device.
+
 ## 4.1.4
 
 * Make the pedantic dev_dependency explicit.
