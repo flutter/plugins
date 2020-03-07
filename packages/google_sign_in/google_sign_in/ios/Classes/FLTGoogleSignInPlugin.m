@@ -76,7 +76,11 @@ static FlutterError *getFlutterError(NSError *error) {
         NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
         [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
         [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
-        [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+        if (call.arguments[@"hostedDomain"] == [NSNull null]) {
+          [GIDSignIn sharedInstance].hostedDomain = nil;
+        } else {
+          [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+        }
         result(nil);
       } else {
         result([FlutterError errorWithCode:@"missing-config"
