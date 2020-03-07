@@ -4,6 +4,7 @@
 * Bump the minimum Dart version to 2.3.0.
 * Uses Darts spread operator to build plugin arguments internally.
 * Remove deprecated API usage warning in AndroidIntentPlugin.java.
+* Migrates the Android example to V2 embedding.
 
 ## 0.3.6
 
