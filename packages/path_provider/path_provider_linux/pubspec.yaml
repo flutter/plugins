@@ -16,6 +16,7 @@ environment:
 
 dependencies:
   path: ^1.6.4
+  xdg_directories: ^0.1.0
   path_provider_platform_interface: ^1.0.1
   flutter:
     sdk: flutter

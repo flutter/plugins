@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 
-import 'package:path/path.dart' as p;
+import 'package:xdg_directories/xdg_directories.dart' as xdg;
+import 'package:path/path.dart' as path;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 /// The linux implementation of [PathProviderPlatform]
@@ -13,27 +14,29 @@ class PathProviderLinux extends PathProviderPlatform {
     PathProviderPlatform.instance = PathProviderLinux();
   }
 
-  static Map<String, dynamic> getXDGDefaults() {
-    final file = File("/");
-  }
-
   @override
   Future<String> getTemporaryPath() {
     return Future.value("/tmp");
   }
 
   @override
-  Future<String> getApplicationSupportPath() {
-    throw UnimplementedError('getApplicationSupportPath() has not been implemented.');
+  Future<String> getApplicationSupportPath() async {
+    final processName = await File('/proc/self/exe').readAsString();
+    final directory = Directory(path.join(xdg.dataHome.path, processName));
+    // Creating the directory if it doesn't exist, because mobile implementations assume the directory exists
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+    return directory.path;
   }
 
   @override
   Future<String> getApplicationDocumentsPath() {
-    return Future.value(p.join(Platform.environment['HOME'], 'Documents'));
+    return Future.value(xdg.getUserDirectory('DOCUMENTS').path);
   }
 
   @override
   Future<String> getDownloadsPath() {
-    return Future.value(p.join(Platform.environment['HOME'], 'Downloads'));
+    return Future.value(xdg.getUserDirectory('DOWNLOAD').path);
   }
 }
