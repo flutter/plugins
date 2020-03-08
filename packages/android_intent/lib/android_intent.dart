@@ -134,31 +134,23 @@ class AndroidIntent {
     if (!_platform.isAndroid) {
       return;
     }
-    final Map<String, dynamic> args = <String, dynamic>{};
-    if (action != null) {
-      args['action'] = action;
-    }
-    if (flags != null) {
-      args['flags'] = convertFlags(flags);
-    }
-    if (category != null) {
-      args['category'] = category;
-    }
-    if (data != null) {
-      args['data'] = data;
-    }
-    if (arguments != null) {
-      args['arguments'] = arguments;
-    }
-    if (package != null) {
-      args['package'] = package;
-      if (componentName != null) {
-        args['componentName'] = componentName;
-      }
-    }
-    if (type != null) {
-      args['type'] = type;
-    }
-    await _channel.invokeMethod<void>('launch', args);
+
+    await _channel.invokeMethod<void>('launch', _buildArguments());
+  }
+
+  /// Constructs the map of arguments which is passed to the plugin.
+  Map<String, dynamic> _buildArguments() {
+    return {
+      if (action != null) 'action': action,
+      if (flags != null) 'flags': convertFlags(flags),
+      if (category != null) 'category': category,
+      if (data != null) 'data': data,
+      if (arguments != null) 'arguments': arguments,
+      if (package != null) ...{
+        'package': package,
+        if (componentName != null) 'componentName': componentName,
+      },
+      if (type != null) 'type': type,
+    };
   }
 }
