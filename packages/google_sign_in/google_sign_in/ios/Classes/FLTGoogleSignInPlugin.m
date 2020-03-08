@@ -138,7 +138,6 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
-  NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
   return [[GIDSignIn sharedInstance] handleURL:url];
 }
 
