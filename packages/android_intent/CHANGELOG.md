@@ -1,4 +1,4 @@
-## 0.4.0
+## 0.3.6+1
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.
 * Bump the minimum Dart version to 2.3.0.
