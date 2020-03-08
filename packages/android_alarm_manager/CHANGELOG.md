@@ -1,3 +1,7 @@
+## 0.4.5+5
+
+* Added an Espresso test.
+
 ## 0.4.5+4
 
 * Make the pedantic dev_dependency explicit.

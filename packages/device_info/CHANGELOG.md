@@ -1,3 +1,7 @@
+## 0.4.2
+
+* Add systemFeatures to AndroidDeviceInfo.
+
 ## 0.4.1+5
 
 * Make the pedantic dev_dependency explicit.
