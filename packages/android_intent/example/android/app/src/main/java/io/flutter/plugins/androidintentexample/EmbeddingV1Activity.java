@@ -12,7 +12,7 @@ public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    AndroidIntentPlugin.registerWith(registrarFor(
-        "io.flutter.plugins.androidintent.AndroidIntentPlugin"));
+    AndroidIntentPlugin.registerWith(
+        registrarFor("io.flutter.plugins.androidintent.AndroidIntentPlugin"));
   }
 }
