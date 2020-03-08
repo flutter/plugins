@@ -7,7 +7,7 @@ flutter:
   plugin:
     platforms:
       linux:
-        pluginClass: PathProviderPlugin
+        pluginClass: PathProviderLinux
         fileName: path_provider_linux.dart
 
 environment:

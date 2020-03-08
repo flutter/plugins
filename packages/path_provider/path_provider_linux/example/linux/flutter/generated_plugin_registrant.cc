@@ -4,9 +4,9 @@
 
 #include "generated_plugin_registrant.h"
 
-#include <path_provider_plugin.h>
+#include <path_provider_linux.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
-  PathProviderPluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("PathProviderPlugin"));
+  PathProviderLinuxRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("PathProviderLinux"));
 }
