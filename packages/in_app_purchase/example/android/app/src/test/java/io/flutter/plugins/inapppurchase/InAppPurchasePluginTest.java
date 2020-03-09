@@ -32,8 +32,9 @@ public class InAppPurchasePluginTest {
   }
 
   @Test
-  public void registerWith_doNotCrashWhenApplicationContextIsTypeApplication() {
-    when(context.getApplicationContext()).thenReturn(mockApplication);
+  public void registerWith_doNotCrashWhenRegisterContextIsActivity_V1Embedding() {
+    when(mockRegistrar.context()).thenReturn(activity);
+    when(activity.getApplicationContext()).thenReturn(mockApplication);
     InAppPurchasePlugin.registerWith(mockRegistrar);
   }
 }
