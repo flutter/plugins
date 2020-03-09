@@ -12,7 +12,6 @@ public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    DeviceInfoPlugin.registerWith(
-        registrarFor("io.flutter.plugins.deviceinfo.DeviceInfoPlugin"));
+    DeviceInfoPlugin.registerWith(registrarFor("io.flutter.plugins.deviceinfo.DeviceInfoPlugin"));
   }
 }
