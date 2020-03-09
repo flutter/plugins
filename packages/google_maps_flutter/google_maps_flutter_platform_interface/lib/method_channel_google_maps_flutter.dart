@@ -4,24 +4,27 @@
 
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 
 import 'google_maps_flutter_platform_interface.dart';
 
 MethodChannel _channel;
 
+
 /// An implementation of [GoogleMapsFlutterPlatform] that uses method channels.
 class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
-  ///Initialize control of a [MethodChannelGoogleMapsFlutter] with [id].
-  MethodChannelGoogleMapsFlutter(int id) {
-    _channel = MethodChannel('plugins.flutter.io/google_maps_$id');
-  }
+
+  int _id;
 
   /// /// Initializes the platform interface with [id].
   ///
   /// This method is called when the plugin is first initialized.
   Future<void> init(int id) async {
-    _channel = MethodChannel('plugins.flutter.io/google_maps_$id');
+    this._id = id;
+    _channel = MethodChannel('plugins.flutter.io/google_maps_$_id');
     await _channel.invokeMethod<void>('map#waitForMap');
   }
 
@@ -222,4 +225,31 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         await _channel.invokeMethod<double>('map#getZoomLevel');
     return zoomLevel;
   }
+
+  Widget buildView(
+      Map<String, dynamic> creationParams,
+      Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+      PlatformViewCreatedCallback onPlatformViewCreated) {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return AndroidView(
+        viewType: 'plugins.flutter.io/google_maps',
+        onPlatformViewCreated: onPlatformViewCreated,
+        gestureRecognizers: gestureRecognizers,
+        creationParams: creationParams,
+        creationParamsCodec: const StandardMessageCodec(),
+      );
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return UiKitView(
+        viewType: 'plugins.flutter.io/google_maps',
+        onPlatformViewCreated: onPlatformViewCreated,
+        gestureRecognizers: gestureRecognizers,
+        creationParams: creationParams,
+        creationParamsCodec: const StandardMessageCodec(),
+      );
+    }
+    return Text(
+        '$defaultTargetPlatform is not yet supported by the maps plugin');
+  }
+
+
 }
