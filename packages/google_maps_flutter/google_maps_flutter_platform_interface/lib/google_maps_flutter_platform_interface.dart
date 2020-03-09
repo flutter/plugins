@@ -4,8 +4,11 @@
 
 import 'dart:async';
 import 'dart:ui';
-
+import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:meta/meta.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -37,11 +40,11 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   static final Object _token = Object();
 
   static GoogleMapsFlutterPlatform _instance =
-      MethodChannelGoogleMapsFlutter(0);
+      MethodChannelGoogleMapsFlutter();
 
   /// The default instance of [GoogleMapsFlutterPlatform] to use.
   ///
-  /// Defaults to [MethodChannelUrlLauncher].
+  /// Defaults to [MethodChannelGoogleMapsFlutter].
   static GoogleMapsFlutterPlatform get instance => _instance;
 
   /// Platform-specific plugins should set this with their own platform-specific
@@ -212,5 +215,13 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// Returns the current zoom level of the map
   Future<double> getZoomLevel() {
     throw UnimplementedError('getZoomLevel() has not been implemented.');
+  }
+
+  ///TODO
+  Widget buildView(
+      Map<String, dynamic> creationParams,
+      Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+      PlatformViewCreatedCallback onPlatformViewCreated) {
+    throw UnimplementedError('buildView() has not been implemented.');
   }
 }
