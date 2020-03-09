@@ -1,3 +1,9 @@
+## 0.4.2+1
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Remove deprecated API usage warning in AndroidIntentPlugin.java.
+* Migrates the Android example to V2 embedding.
+
 ## 0.4.2
 
 * Add systemFeatures to AndroidDeviceInfo.
