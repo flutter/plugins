@@ -9,8 +9,8 @@ dependencies:
   flutter_plugin_android_lifecycle: ^1.0.0
   google_maps_flutter_platform_interface:
     path: ../google_maps_flutter_platform_interface
-#  google_maps_flutter_web:
-#    path: ../google_maps_flutter_web
+  google_maps_flutter_web:
+    path: ../google_maps_flutter_web
 
 dev_dependencies:
   flutter_test:

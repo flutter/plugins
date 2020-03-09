@@ -219,26 +219,11 @@ class _GoogleMapState extends State<GoogleMap> {
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'circlesToAdd': _serializeCircleSet(widget.circles),
     };
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return AndroidView(
-        viewType: 'plugins.flutter.io/google_maps',
-        onPlatformViewCreated: onPlatformViewCreated,
-        gestureRecognizers: widget.gestureRecognizers,
-        creationParams: creationParams,
-        creationParamsCodec: const StandardMessageCodec(),
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return UiKitView(
-        viewType: 'plugins.flutter.io/google_maps',
-        onPlatformViewCreated: onPlatformViewCreated,
-        gestureRecognizers: widget.gestureRecognizers,
-        creationParams: creationParams,
-        creationParamsCodec: const StandardMessageCodec(),
-      );
-    }
-
-    return Text(
-        '$defaultTargetPlatform is not yet supported by the maps plugin');
+    return _googleMapsFlutterPlatform.buildView(
+      creationParams,
+      widget.gestureRecognizers,
+      onPlatformViewCreated,
+    );
   }
 
   @override
