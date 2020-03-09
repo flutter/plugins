@@ -84,7 +84,7 @@ Future<bool> launch(
         : SystemUiOverlayStyle.light);
   }
   final bool result = await UrlLauncherPlatform.instance.launch(
-    urlString,
+    url.toString(),
     useSafariVC: forceSafariVC ?? isWebURL,
     useWebView: forceWebView ?? false,
     enableJavaScript: enableJavaScript ?? false,
@@ -105,7 +105,7 @@ Future<bool> canLaunch(String urlString) async {
   if (urlString == null) {
     return false;
   }
-  return await UrlLauncherPlatform.instance.canLaunch(urlString);
+  return await UrlLauncherPlatform.instance.canLaunch(urlString.trimLeft());
 }
 
 /// Closes the current WebView, if one was previously opened via a call to [launch].
