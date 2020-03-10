@@ -11,10 +11,12 @@
 }
 - (instancetype)initPolylineWithPath:(GMSMutablePath*)path
                           polylineId:(NSString*)polylineId
+                            geodesic:(BOOL)geodesic
                              mapView:(GMSMapView*)mapView {
   self = [super init];
   if (self) {
     _polyline = [GMSPolyline polylineWithPath:path];
+    _polyline = geodisc;
     _mapView = mapView;
     _polylineId = polylineId;
     _polyline.userData = @[ polylineId ];
