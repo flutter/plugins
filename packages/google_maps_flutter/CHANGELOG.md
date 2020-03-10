@@ -1,6 +1,6 @@
 ## 0.5.21
 
-* Breaking change fix for BitmapDescriptor scaling override
+* Breaking change fix for BitmapDescriptor scaling override. Add an optional param mipmaps for BitmapDescriptor.fromAssetImage.
 
 ## 0.5.20
 

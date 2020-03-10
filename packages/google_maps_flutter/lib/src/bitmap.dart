@@ -53,6 +53,7 @@ class BitmapDescriptor {
   /// https://flutter.dev/docs/development/ui/assets-and-images#declaring-resolution-aware-image-assets
   /// This method takes into consideration various asset resolutions
   /// and scales the images to the right resolution depending on the dpi.
+  /// Set mipmaps to false to load the exact dpi version of the image, mipmaps is true by default.
   static Future<BitmapDescriptor> fromAssetImage(
     ImageConfiguration configuration,
     String assetName, {
