@@ -123,4 +123,3 @@ static void sendData6(Float64 x1, Float64 y1, Float64 z1, Float64 x2, Float64 y2
 }
 
 @end
-
