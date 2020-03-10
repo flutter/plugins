@@ -42,7 +42,7 @@ class Response {
 
 /// Method for formating the test failures' details.
 String formatFailures(Map<String, String> failureDetails) {
-  if(failureDetails.isEmpty) {
+  if (failureDetails.isEmpty) {
     return '';
   }
   StringBuffer sb = StringBuffer();

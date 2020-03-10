@@ -11,7 +11,7 @@ Future<void> main() async {
   common.Response response = common.Response.fromJson(jsonResult);
   await driver.close();
 
-  if(response.result == 'pass') {
+  if (response.result == 'pass') {
     exit(0);
   } else {
     print('Failure Details:\n${response.failureDetails}');
