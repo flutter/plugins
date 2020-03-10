@@ -838,6 +838,6 @@ void main() {
       scaled.toJson().forEach((dynamic x) => print(x));
       return Future<bool>.value(true);
     });
-    Future.wait(futures);
+    await Future.wait(futures);
   });
 }
