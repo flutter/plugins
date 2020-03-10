@@ -186,4 +186,5 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
 + (NSNumber *)isGeodesic:(NSDictionary*)polyline {
   return polyline[@"geodesic"];
 }
+
 @end
