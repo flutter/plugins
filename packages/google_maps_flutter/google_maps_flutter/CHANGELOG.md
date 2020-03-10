@@ -1,3 +1,6 @@
+## 0.5.25
+Geodesic Polyline support for iOS
+
 ## 0.5.24+1
 
 * Make the pedantic dev_dependency explicit.

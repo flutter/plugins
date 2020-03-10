@@ -11,10 +11,12 @@
 }
 - (instancetype)initPolylineWithPath:(GMSMutablePath*)path
                           polylineId:(NSString*)polylineId
+                            geodesic:(BOOL)geodesic
                              mapView:(GMSMapView*)mapView {
   self = [super init];
   if (self) {
     _polyline = [GMSPolyline polylineWithPath:path];
+    _polyline.geodesic = geodesic;
     _mapView = mapView;
     _polylineId = polylineId;
     _polyline.userData = @[ polylineId ];
@@ -119,9 +121,11 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   for (NSDictionary* polyline in polylinesToAdd) {
     GMSMutablePath* path = [FLTPolylinesController getPath:polyline];
     NSString* polylineId = [FLTPolylinesController getPolylineId:polyline];
+    NSNumber* geodisc = [FLTPolylinesController isGeodesic:polyline];
     FLTGoogleMapPolylineController* controller =
         [[FLTGoogleMapPolylineController alloc] initPolylineWithPath:path
                                                           polylineId:polylineId
+                                                             geodesic:geodisc.boolValue
                                                              mapView:_mapView];
     InterpretPolylineOptions(polyline, controller, _registrar);
     _polylineIdToController[polylineId] = controller;
@@ -177,5 +181,9 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
 }
 + (NSString*)getPolylineId:(NSDictionary*)polyline {
   return polyline[@"polylineId"];
+}
+
++ (NSNumber *)isGeodesic:(NSDictionary*)polyline {
+  return polyline[@"geodesic"];
 }
 @end
