@@ -834,7 +834,9 @@ void main() {
       final BitmapDescriptor scaled = await BitmapDescriptor.fromAssetImage(
           imageConfiguration, 'red_square.png',
           mipmaps: false);
+      // ignore: invalid_use_of_visible_for_testing_member
       mip.toJson().forEach((dynamic x) => print(x));
+      // ignore: invalid_use_of_visible_for_testing_member
       scaled.toJson().forEach((dynamic x) => print(x));
       return Future<bool>.value(true);
     });

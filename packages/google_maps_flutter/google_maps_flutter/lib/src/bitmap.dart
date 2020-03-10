@@ -106,6 +106,8 @@ class BitmapDescriptor {
 
   final dynamic _json;
 
+  /// Convert the object to a Json format.
+  /// Used for testing only.
   @visibleForTesting
   dynamic toJson() => _json;
 
