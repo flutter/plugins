@@ -16,7 +16,7 @@
   self = [super init];
   if (self) {
     _polyline = [GMSPolyline polylineWithPath:path];
-    _polyline = geodisc;
+    _polyline.geodesic = geodesic;
     _mapView = mapView;
     _polylineId = polylineId;
     _polyline.userData = @[ polylineId ];
@@ -182,4 +182,9 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
 + (NSString*)getPolylineId:(NSDictionary*)polyline {
   return polyline[@"polylineId"];
 }
+
++ (NSNumber *)isGeodesic:(NSDictionary*)polyline {
+  return polyline[@"geodesic"];
+}
+
 @end
