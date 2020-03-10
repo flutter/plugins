@@ -1,3 +1,94 @@
+## 0.4.5+5
+
+* Added an Espresso test.
+
+## 0.4.5+4
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.4.5+3
+
+* Fixed issue where callback lookup would fail while running in the background.
+
+## 0.4.5+2
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.5+1
+
+* Loosen Flutter version restriction to 1.9.1. **NOTE: plugin registration
+  for the background isolate will not work correctly for applications using the
+  V2 Flutter Android embedding for Flutter versions lower than 1.12.**
+
+## 0.4.5
+
+* Add support for Flutter Android embedding V2
+
+## 0.4.4+3
+
+* Add unit tests and DartDocs.
+
+## 0.4.4+2
+
+* Remove AndroidX warning.
+
+## 0.4.4+1
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
+## 0.4.4
+
+* Add `id` to `callback` if it is of type `Function(int)`
+
+## 0.4.3
+
+* Added `oneShotAt` method to run `callback` at a given DateTime `time`.
+
+## 0.4.2
+
+* Added support for setting alarms which work when the phone is in doze mode.
+
+## 0.4.1+8
+
+* Remove dependency on google-services in the Android example.
+
+## 0.4.1+7
+
+* Fix possible crash on Android devices with APIs below 19.
+
+## 0.4.1+6
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
+## 0.4.1+5
+
+* Update AlarmService to throw a `PluginRegistrantException` if
+  `AlarmService.setPluginRegistrant` has not been called to set a
+  PluginRegistrantCallback. This improves the error message seen when the
+  `AlarmService.setPluginRegistrant` call is omitted.
+
+## 0.4.1+4
+
+* Updated example to remove dependency on Firebase.
+
+## 0.4.1+3
+
+* Update README.md to include instructions for setting the WAKE_LOCK permission.
+* Updated example application to use the WAKE_LOCK permission.
+
+## 0.4.1+2
+
+* Include a missing API dependency.
+
+## 0.4.1+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.4.1
 * Added support for setting alarms which persist across reboots.
   * Both `AndroidAlarmManager.oneShot` and `AndroidAlarmManager.periodic` have
@@ -23,6 +114,7 @@
     ```
 
 ## 0.4.0
+
 * **Breaking change**. Migrated the underlying AlarmService to utilize a
   BroadcastReceiver with a JobIntentService instead of a Service to handle
   processing of alarms. This requires AndroidManifest.xml to be updated to

@@ -4,12 +4,17 @@ function error() {
   echo "$@" 1>&2
 }
 
+function get_branch_base_sha() {
+  local branch_base_sha="$(git merge-base --fork-point FETCH_HEAD HEAD || git merge-base FETCH_HEAD HEAD)"
+  echo "$branch_base_sha"
+}
+
 function check_changed_packages() {
   # Try get a merge base for the branch and calculate affected packages.
   # We need this check because some CIs can do a single branch clones with a limited history of commits.
   local packages
-  local branch_base_sha="$(git merge-base --fork-point FETCH_HEAD HEAD || git merge-base FETCH_HEAD HEAD)"
-  if [[ "$?" == 0 ]]; then
+  local branch_base_sha="$(get_branch_base_sha)"
+  if [[ "$branch_base_sha" != "" ]]; then
     echo "Checking for changed packages from $branch_base_sha"
     IFS=$'\n' packages=( $(git diff --name-only "$branch_base_sha" HEAD | grep -o "packages/[^/]*" | sed -e "s/packages\///g" | sort | uniq) )
   else
@@ -18,12 +23,12 @@ function check_changed_packages() {
     return 1
   fi
 
-  # Filter out any packages that don't have a pubspec.yaml: they have probably
-  # been deleted in this PR.
   CHANGED_PACKAGES=""
   CHANGED_PACKAGE_LIST=()
+
+  # Filter out packages that have been deleted.
   for package in "${packages[@]}"; do
-    if [[ -f "$REPO_DIR/packages/$package/pubspec.yaml" ]]; then
+    if [ -d "$REPO_DIR/packages/$package" ]; then
       CHANGED_PACKAGES="${CHANGED_PACKAGES},$package"
       CHANGED_PACKAGE_LIST=("${CHANGED_PACKAGE_LIST[@]}" "$package")
     fi

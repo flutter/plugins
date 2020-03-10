@@ -1,3 +1,68 @@
+## 0.3.1+8
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.3.1+7
+
+* Clean up various Android workarounds no longer needed after framework v1.12.
+
+## 0.3.1+6
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.3.1+5
+
+* Fix pedantic linter errors.
+
+## 0.3.1+4
+
+* Update and migrate iOS example project.
+
+## 0.3.1+3
+
+* Remove AndroidX warning.
+
+## 0.3.1+2
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.3.1+1
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.3.1
+
+* Support the v2 Android embedder.
+
+## 0.3.0+6
+
+* Define clang module for iOS.
+
+## 0.3.0+5
+
+* Fix Gradle version.
+
+## 0.3.0+4
+
+* Update Dart code to conform to current Dart formatter.
+
+## 0.3.0+3
+
+* Fix `batteryLevel` usage example in README
+
+## 0.3.0+2
+
+* Bump the minimum Flutter version to 1.2.0.
+* Add template type parameter to `invokeMethod` calls.
+
+## 0.3.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.3.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support

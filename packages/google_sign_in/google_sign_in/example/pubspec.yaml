@@ -1,0 +1,15 @@
+name: google_sign_in_example
+description: Example of Google Sign-In plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_sign_in:
+    path: ../
+  http: ^0.12.0
+
+dev_dependencies:
+  pedantic: ^1.8.0
+
+flutter:
+  uses-material-design: true

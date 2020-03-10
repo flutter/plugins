@@ -10,13 +10,13 @@
 @interface FIAPRequestHandler () <SKProductsRequestDelegate>
 
 @property(copy, nonatomic) ProductRequestCompletion completion;
-@property(strong, nonatomic) SKProductsRequest *request;
+@property(strong, nonatomic) SKRequest *request;
 
 @end
 
 @implementation FIAPRequestHandler
 
-- (instancetype)initWithRequest:(SKProductsRequest *)request {
+- (instancetype)initWithRequest:(SKRequest *)request {
   self = [super init];
   if (self) {
     self.request = request;
@@ -34,11 +34,16 @@
      didReceiveResponse:(SKProductsResponse *)response {
   if (self.completion) {
     self.completion(response, nil);
+    // set the completion to nil here so self.completion won't be triggered again in
+    // requestDidFinish for SKProductRequest.
+    self.completion = nil;
   }
 }
 
-// Reserved for other SKRequests.
 - (void)requestDidFinish:(SKRequest *)request {
+  if (self.completion) {
+    self.completion(nil, nil);
+  }
 }
 
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {

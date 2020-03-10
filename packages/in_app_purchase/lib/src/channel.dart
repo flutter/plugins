@@ -6,3 +6,6 @@ import 'package:flutter/services.dart';
 
 const MethodChannel channel =
     MethodChannel('plugins.flutter.io/in_app_purchase');
+
+const MethodChannel callbackChannel =
+    MethodChannel('plugins.flutter.io/in_app_purchase_callback');
