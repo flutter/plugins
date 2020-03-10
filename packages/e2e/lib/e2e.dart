@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'common.dart';
 import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
@@ -36,6 +37,11 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
+  /// Map which stores failure details.
+  ///
+  /// Method names are used as key.
+  final Map<String, String> _failureMethodsDetails = Map<String, String>();
+
   /// Similar to [WidgetsFlutterBinding.ensureInitialized].
   ///
   /// Returns an instance of the [E2EWidgetsFlutterBinding], creating and
@@ -63,7 +69,9 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         case 'request_data':
           final bool allTestsPassed = await _allTestsPassed.future;
           response = <String, String>{
-            'message': allTestsPassed ? 'pass' : 'fail',
+            'message':
+                Response(allTestsPassed, formatFailures(_failureMethodsDetails))
+                    .toJson(),
           };
           break;
         case 'get_health':
@@ -94,6 +102,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';
+      _failureMethodsDetails[testDescription] = details.toString();
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(false);
       valueBeforeTest(details, testDescription);
     };
