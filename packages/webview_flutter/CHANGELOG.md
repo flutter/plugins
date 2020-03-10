@@ -1,3 +1,6 @@
+## 0.3.19+10
+
+* add the zoom to the web view .
 ## 0.3.19+9
 
 * Remove example app's iOS workspace settings.
