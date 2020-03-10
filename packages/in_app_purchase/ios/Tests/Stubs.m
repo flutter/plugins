@@ -180,8 +180,8 @@
   if (self) {
     [self setValue:map[@"transactionIdentifier"] forKey:@"transactionIdentifier"];
     [self setValue:map[@"transactionState"] forKey:@"transactionState"];
-    if (map[@"originalTransaction"] &&
-        ![map[@"originalTransaction"] isKindOfClass:[NSNull class]]) {
+    if (map[@"originalTransaction"] && !
+                                       [map[@"originalTransaction"] isKindOfClass:[NSNull class]]) {
       [self setValue:[[SKPaymentTransactionStub alloc] initWithMap:map[@"originalTransaction"]]
               forKey:@"originalTransaction"];
     }
