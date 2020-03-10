@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:android_intent/android_intent.dart';
+import 'package:android_intent/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:platform/platform.dart';
 
@@ -10,6 +11,7 @@ void main() {
   runApp(MyApp());
 }
 
+/// A sample app for launching intents.
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -28,6 +30,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// Holds the different intent widgets.
 class MyHomePage extends StatelessWidget {
   void _createAlarm() {
     final AndroidIntent intent = const AndroidIntent(
@@ -79,9 +82,11 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+/// Launches intents to specific Android activities.
 class ExplicitIntentsWidget extends StatelessWidget {
-  const ExplicitIntentsWidget();
+  const ExplicitIntentsWidget(); // ignore: public_member_api_docs
 
+  // ignore: public_member_api_docs
   static const String routeName = "/explicitIntents";
 
   void _openGoogleMapsStreetView() {
@@ -117,11 +122,35 @@ class ExplicitIntentsWidget extends StatelessWidget {
     intent.launch();
   }
 
+  void _startActivityInNewTask() {
+    final AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      data: Uri.encodeFull('https://flutter.io'),
+      flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+    );
+    intent.launch();
+  }
+
   void _testExplicitIntentFallback() {
     final AndroidIntent intent = AndroidIntent(
         action: 'action_view',
         data: Uri.encodeFull('https://flutter.io'),
         package: 'com.android.chrome.implicit.fallback');
+    intent.launch();
+  }
+
+  void _openLocationSettingsConfiguration() {
+    final AndroidIntent intent = const AndroidIntent(
+      action: 'action_location_source_settings',
+    );
+    intent.launch();
+  }
+
+  void _openApplicationDetails() {
+    final AndroidIntent intent = const AndroidIntent(
+      action: 'action_application_details_settings',
+      data: 'package:io.flutter.plugins.androidintentexample',
+    );
     intent.launch();
   }
 
@@ -156,10 +185,26 @@ class ExplicitIntentsWidget extends StatelessWidget {
                 onPressed: _openLinkInGoogleChrome,
               ),
               RaisedButton(
+                child: const Text('Tap here to start activity in new task.'),
+                onPressed: _startActivityInNewTask,
+              ),
+              RaisedButton(
                 child: const Text(
                     'Tap here to test explicit intent fallback to implicit.'),
                 onPressed: _testExplicitIntentFallback,
               ),
+              RaisedButton(
+                child: const Text(
+                  'Tap here to open Location Settings Configuration',
+                ),
+                onPressed: _openLocationSettingsConfiguration,
+              ),
+              RaisedButton(
+                child: const Text(
+                  'Tap here to open Application Details',
+                ),
+                onPressed: _openApplicationDetails,
+              )
             ],
           ),
         ),

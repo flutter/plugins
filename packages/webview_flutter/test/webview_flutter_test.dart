@@ -16,6 +16,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 typedef void VoidCallback();
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final _FakePlatformViewsController fakePlatformViewsController =
       _FakePlatformViewsController();
 
@@ -81,7 +83,7 @@ void main() {
 
     expect(controller, isNotNull);
 
-    controller.loadUrl('https://flutter.io');
+    await controller.loadUrl('https://flutter.io');
 
     expect(await controller.currentUrl(), 'https://flutter.io');
   });
@@ -270,11 +272,11 @@ void main() {
 
     expect(await controller.currentUrl(), 'https://youtube.com');
 
-    controller.loadUrl('https://flutter.io');
+    await controller.loadUrl('https://flutter.io');
 
     expect(await controller.currentUrl(), 'https://flutter.io');
 
-    controller.goBack();
+    await controller.goBack();
 
     expect(await controller.currentUrl(), 'https://youtube.com');
   });
@@ -294,15 +296,15 @@ void main() {
 
     expect(await controller.currentUrl(), 'https://youtube.com');
 
-    controller.loadUrl('https://flutter.io');
+    await controller.loadUrl('https://flutter.io');
 
     expect(await controller.currentUrl(), 'https://flutter.io');
 
-    controller.goBack();
+    await controller.goBack();
 
     expect(await controller.currentUrl(), 'https://youtube.com');
 
-    controller.goForward();
+    await controller.goForward();
 
     expect(await controller.currentUrl(), 'https://flutter.io');
   });
@@ -322,13 +324,13 @@ void main() {
     // Test a WebView without an explicitly set first URL.
     expect(await controller.currentUrl(), isNull);
 
-    controller.loadUrl('https://youtube.com');
+    await controller.loadUrl('https://youtube.com');
     expect(await controller.currentUrl(), 'https://youtube.com');
 
-    controller.loadUrl('https://flutter.io');
+    await controller.loadUrl('https://flutter.io');
     expect(await controller.currentUrl(), 'https://flutter.io');
 
-    controller.goBack();
+    await controller.goBack();
     expect(await controller.currentUrl(), 'https://youtube.com');
   });
 
@@ -349,12 +351,12 @@ void main() {
     expect(platformWebView.currentUrl, 'https://flutter.io');
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
 
-    controller.reload();
+    await controller.reload();
 
     expect(platformWebView.currentUrl, 'https://flutter.io');
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 1);
 
-    controller.loadUrl('https://youtube.com');
+    await controller.loadUrl('https://youtube.com');
 
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
   });
@@ -452,6 +454,7 @@ void main() {
     final JavascriptMessageHandler noOp = (JavascriptMessage msg) {};
     JavascriptChannel(name: 'Tts1', onMessageReceived: noOp);
     JavascriptChannel(name: '_Alarm', onMessageReceived: noOp);
+    JavascriptChannel(name: 'foo_bar_', onMessageReceived: noOp);
 
     VoidCallback createChannel(String name) {
       return () {
@@ -596,6 +599,63 @@ void main() {
     platformWebView.fakeJavascriptPostMessage('Tts', 'World');
 
     expect(ttsMessagesReceived, <String>['Hello', 'World']);
+  });
+
+  group('$PageStartedCallback', () {
+    testWidgets('onPageStarted is not null', (WidgetTester tester) async {
+      String returnedUrl;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: (String url) {
+          returnedUrl = url;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnPageStartedCallback();
+
+      expect(platformWebView.currentUrl, returnedUrl);
+    });
+
+    testWidgets('onPageStarted is null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: null,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      // The platform side will always invoke a call for onPageStarted. This is
+      // to test that it does not crash on a null callback.
+      platformWebView.fakeOnPageStartedCallback();
+    });
+
+    testWidgets('onPageStarted changed', (WidgetTester tester) async {
+      String returnedUrl;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: (String url) {},
+      ));
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: (String url) {
+          returnedUrl = url;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView.fakeOnPageStartedCallback();
+
+      expect(platformWebView.currentUrl, returnedUrl);
+    });
   });
 
   group('$PageFinishedCallback', () {
@@ -762,6 +822,7 @@ void main() {
       await tester.pumpWidget(
         const WebView(
           initialUrl: 'https://youtube.com',
+          gestureNavigationEnabled: true,
         ),
       );
 
@@ -776,6 +837,8 @@ void main() {
               javascriptMode: JavascriptMode.disabled,
               hasNavigationDelegate: false,
               debuggingEnabled: false,
+              userAgent: WebSetting<String>.of(null),
+              gestureNavigationEnabled: true,
             ),
             // TODO(iskakaushik): Remove this when collection literals makes it to stable.
             // ignore: prefer_collection_literals
@@ -807,6 +870,25 @@ void main() {
       expect(platform.lastRequestHeaders, headers);
     });
   });
+  testWidgets('Set UserAgent', (WidgetTester tester) async {
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+    ));
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.userAgent, isNull);
+
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+      userAgent: 'UA',
+    ));
+
+    expect(platformWebView.userAgent, 'UA');
+  });
 }
 
 class FakePlatformWebView {
@@ -826,7 +908,7 @@ class FakePlatformWebView {
     hasNavigationDelegate =
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
-
+    userAgent = params['settings']['userAgent'];
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -845,6 +927,7 @@ class FakePlatformWebView {
 
   bool hasNavigationDelegate;
   bool debuggingEnabled;
+  String userAgent;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -862,6 +945,7 @@ class FakePlatformWebView {
         if (call.arguments['debuggingEnabled'] != null) {
           debuggingEnabled = call.arguments['debuggingEnabled'];
         }
+        userAgent = call.arguments['userAgent'];
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => currentPosition > 0);
@@ -910,11 +994,8 @@ class FakePlatformWebView {
     };
     final ByteData data = codec
         .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(
-        channel.name, data, (ByteData data) {});
+    ServicesBinding.instance.defaultBinaryMessenger
+        .handlePlatformMessage(channel.name, data, (ByteData data) {});
   }
 
   // Fakes a main frame navigation that was initiated by the webview, e.g when
@@ -932,15 +1013,28 @@ class FakePlatformWebView {
     };
     final ByteData data =
         codec.encodeMethodCall(MethodCall('navigationRequest', arguments));
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(channel.name, data, (ByteData data) {
+    ServicesBinding.instance.defaultBinaryMessenger
+        .handlePlatformMessage(channel.name, data, (ByteData data) {
       final bool allow = codec.decodeEnvelope(data);
       if (allow) {
         _loadUrl(url);
       }
     });
+  }
+
+  void fakeOnPageStartedCallback() {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+
+    final ByteData data = codec.encodeMethodCall(MethodCall(
+      'onPageStarted',
+      <dynamic, dynamic>{'url': currentUrl},
+    ));
+
+    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+      channel.name,
+      data,
+      (ByteData data) {},
+    );
   }
 
   void fakeOnPageFinishedCallback() {
@@ -951,10 +1045,7 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(
+    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
       channel.name,
       data,
       (ByteData data) {},
@@ -1092,7 +1183,10 @@ class MatchesWebSettings extends Matcher {
     return _webSettings.javascriptMode == webSettings.javascriptMode &&
         _webSettings.hasNavigationDelegate ==
             webSettings.hasNavigationDelegate &&
-        _webSettings.debuggingEnabled == webSettings.debuggingEnabled;
+        _webSettings.debuggingEnabled == webSettings.debuggingEnabled &&
+        _webSettings.gestureNavigationEnabled ==
+            webSettings.gestureNavigationEnabled &&
+        _webSettings.userAgent == webSettings.userAgent;
   }
 }
 

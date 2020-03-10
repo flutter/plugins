@@ -12,14 +12,21 @@ import 'common/camera_interface.dart';
 ///
 /// Use [CameraController.availableCameras] to get a list of available cameras.
 ///
-/// This class is used as a simple interface that works for Android and iOS.
+/// This class is used as a simple interface to control a camera on Android or
+/// iOS.
 ///
-/// When using iOS, simultaneously calling [start] on two [CameraController]s
-/// will throw a [PlatformException].
+/// Only one instance of [CameraController] can be active at a time. If you call
+/// [initialize] on a [CameraController] while another is active, the old
+/// controller will be disposed before initializing the new controller.
 ///
-/// When using Android, simultaneously calling [start] on two
-/// [CameraController]s may throw a [PlatformException] depending on the
-/// hardware resources of the device.
+/// Example using [CameraController]:
+///
+/// ```dart
+/// final List<CameraDescription> cameras = async CameraController.availableCameras();
+/// final CameraController controller = CameraController(description: cameras[0]);
+/// controller.initialize();
+/// controller.start();
+/// ```
 class CameraController {
   /// Default constructor.
   ///
@@ -28,7 +35,6 @@ class CameraController {
   ///
   /// This will choose the best [CameraConfigurator] for the current device.
   factory CameraController({@required CameraDescription description}) {
-    assert(description != null);
     return CameraController._(
       description: description,
       configurator: _createDefaultConfigurator(description),
@@ -59,6 +65,14 @@ class CameraController {
     );
   }
 
+  static const String _isNotInitializedMessage = 'Initialize was not called.';
+  static const String _isDisposedMessage = 'This controller has been disposed.';
+
+  // Keep only one active instance of CameraController.
+  static CameraController _instance;
+
+  bool _isDisposed = false;
+
   /// Details for the camera this controller accesses.
   final CameraDescription description;
 
@@ -68,6 +82,8 @@ class CameraController {
   /// Api used by the [configurator].
   final CameraApi api;
 
+  bool get isDisposed => _isDisposed;
+
   /// Retrieves a list of available cameras for the current device.
   ///
   /// This will choose the best [CameraAPI] for the current device.
@@ -75,14 +91,54 @@ class CameraController {
     throw UnimplementedError('$defaultTargetPlatform not supported');
   }
 
-  /// Begins the flow of data between the inputs and outputs connected the camera instance.
-  Future<void> start() => configurator.start();
+  /// Initializes the camera on the device.
+  ///
+  /// You must call [dispose] when you are done using the camera, otherwise it
+  /// will remain locked and be unavailable to other applications.
+  ///
+  /// Only one instance of [CameraController] can be active at a time. If you
+  /// call [initialize] on a [CameraController] while another is active, the old
+  /// controller will be disposed before initializing the new controller.
+  Future<void> initialize() {
+    if (_instance == this) {
+      return Future<void>.value();
+    }
 
-  /// Stops the flow of data between the inputs and outputs connected the camera instance.
-  Future<void> stop() => configurator.stop();
+    final Completer<void> completer = Completer<void>();
+
+    if (_instance != null) {
+      _instance
+          .dispose()
+          .then((_) => configurator.initialize())
+          .then((_) => completer.complete());
+    }
+    _instance = this;
+
+    return completer.future;
+  }
+
+  /// Begins the flow of data between the inputs and outputs connected to the camera instance.
+  Future<void> start() {
+    assert(!_isDisposed, _isDisposedMessage);
+    assert(_instance != this, _isNotInitializedMessage);
+
+    return configurator.start();
+  }
+
+  /// Stops the flow of data between the inputs and outputs connected to the camera instance.
+  Future<void> stop() {
+    assert(!_isDisposed, _isDisposedMessage);
+    assert(_instance != this, _isNotInitializedMessage);
+
+    return configurator.stop();
+  }
 
   /// Deallocate all resources and disables further use of the controller.
-  Future<void> dispose() => configurator.dispose();
+  Future<void> dispose() {
+    _instance = null;
+    _isDisposed = true;
+    return configurator.dispose();
+  }
 
   static CameraConfigurator _createDefaultConfigurator(
     CameraDescription description,
@@ -101,10 +157,15 @@ class CameraController {
   }
 
   static CameraApi _getCameraApi(CameraDescription description) {
+    return CameraApi.iOS;
+
+    // TODO(bparrishMines): Uncomment this when platform specific code is added.
+    /*
     throw ArgumentError.value(
       description.runtimeType,
       'description.runtimeType',
       'Failed to get $CameraApi from',
     );
+    */
   }
 }

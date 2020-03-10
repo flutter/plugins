@@ -1,8 +1,13 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
@@ -18,14 +23,27 @@ import android.webkit.WebView;
  * <p>See also {@link ThreadedInputConnectionProxyAdapterView}.
  */
 final class InputAwareWebView extends WebView {
-  private final View containerView;
-
+  private static final String TAG = "InputAwareWebView";
   private View threadedInputConnectionProxyView;
   private ThreadedInputConnectionProxyAdapterView proxyAdapterView;
+  private View containerView;
 
   InputAwareWebView(Context context, View containerView) {
     super(context);
     this.containerView = containerView;
+  }
+
+  void setContainerView(View containerView) {
+    this.containerView = containerView;
+
+    if (proxyAdapterView == null) {
+      return;
+    }
+
+    Log.w(TAG, "The containerView has changed while the proxyAdapterView exists.");
+    if (containerView != null) {
+      setInputConnectionTarget(proxyAdapterView);
+    }
   }
 
   /**
@@ -43,20 +61,22 @@ final class InputAwareWebView extends WebView {
 
   /** Sets the proxy adapter view back to its default behavior. */
   void unlockInputConnection() {
-    if (proxyAdapterView != null) {
-      proxyAdapterView.setLocked(false);
+    if (proxyAdapterView == null) {
+      return;
     }
 
-    // Restart the input connection to avoid ViewRootImpl assuming an incorrect window state.
-    InputMethodManager imm =
-        (InputMethodManager) containerView.getContext().getSystemService(INPUT_METHOD_SERVICE);
-    imm.restartInput(containerView);
+    proxyAdapterView.setLocked(false);
+  }
+
+  /** Restore the original InputConnection, if needed. */
+  void dispose() {
+    resetInputConnection();
   }
 
   /**
    * Creates an InputConnection from the IME thread when needed.
    *
-   * <p>We only need to create a {@link ThreadedInputConnectionProxy} and create an
+   * <p>We only need to create a {@link ThreadedInputConnectionProxyAdapterView} and create an
    * InputConnectionProxy on the IME thread when WebView is doing the same thing. So we rely on the
    * system calling this method for WebView's proxy view in order to know when we need to create our
    * own.
@@ -75,41 +95,95 @@ final class InputAwareWebView extends WebView {
       // This isn't a new ThreadedInputConnectionProxyView. Ignore it.
       return super.checkInputConnectionProxy(view);
     }
+    if (containerView == null) {
+      Log.e(
+          TAG,
+          "Can't create a proxy view because there's no container view. Text input may not work.");
+      return super.checkInputConnectionProxy(view);
+    }
 
     // We've never seen this before, so we make the assumption that this is WebView's
     // ThreadedInputConnectionProxyView. We are making the assumption that the only view that could
-    // possibly be interacting the the IMM here is WebView's ThreadedInputConnectionProxyView.
+    // possibly be interacting with the IMM here is WebView's ThreadedInputConnectionProxyView.
     proxyAdapterView =
         new ThreadedInputConnectionProxyAdapterView(
             /*containerView=*/ containerView,
             /*targetView=*/ view,
             /*imeHandler=*/ view.getHandler());
-    final View container = this;
-    proxyAdapterView.requestFocus();
-    // This is the crucial trick that gets the InputConnection creation to happen on the correct
-    // thread.
-    // https://cs.chromium.org/chromium/src/content/public/android/java/src/org/chromium/content/browser/input/ThreadedInputConnectionFactory.java?l=169&rcl=f0698ee3e4483fad5b0c34159276f71cfaf81f3a
-    post(
+    setInputConnectionTarget(/*targetView=*/ proxyAdapterView);
+    return super.checkInputConnectionProxy(view);
+  }
+
+  /**
+   * Ensure that input creation happens back on {@link #containerView}'s thread once this view no
+   * longer has focus.
+   *
+   * <p>The logic in {@link #checkInputConnectionProxy} forces input creation to happen on Webview's
+   * thread for all connections. We undo it here so users will be able to go back to typing in
+   * Flutter UIs as expected.
+   */
+  @Override
+  public void clearFocus() {
+    super.clearFocus();
+    resetInputConnection();
+  }
+
+  /**
+   * Ensure that input creation happens back on {@link #containerView}.
+   *
+   * <p>The logic in {@link #checkInputConnectionProxy} forces input creation to happen on Webview's
+   * thread for all connections. We undo it here so users will be able to go back to typing in
+   * Flutter UIs as expected.
+   */
+  private void resetInputConnection() {
+    if (proxyAdapterView == null) {
+      // No need to reset the InputConnection to the default thread if we've never changed it.
+      return;
+    }
+    if (containerView == null) {
+      Log.e(TAG, "Can't reset the input connection to the container view because there is none.");
+      return;
+    }
+    setInputConnectionTarget(/*targetView=*/ containerView);
+  }
+
+  /**
+   * This is the crucial trick that gets the InputConnection creation to happen on the correct
+   * thread pre Android N.
+   * https://cs.chromium.org/chromium/src/content/public/android/java/src/org/chromium/content/browser/input/ThreadedInputConnectionFactory.java?l=169&rcl=f0698ee3e4483fad5b0c34159276f71cfaf81f3a
+   *
+   * <p>{@code targetView} should have a {@link View#getHandler} method with the thread that future
+   * InputConnections should be created on.
+   */
+  private void setInputConnectionTarget(final View targetView) {
+    if (containerView == null) {
+      Log.e(
+          TAG,
+          "Can't set the input connection target because there is no containerView to use as a handler.");
+      return;
+    }
+
+    targetView.requestFocus();
+    containerView.post(
         new Runnable() {
           @Override
           public void run() {
             InputMethodManager imm =
                 (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
-            // This is a hack to make InputMethodManager believe that the proxy view now has focus.
-            // As a result, InputMethodManager will think that proxyAdapterView is focused, and will
-            // call getHandler() of the view when creating input connection.
+            // This is a hack to make InputMethodManager believe that the target view now has focus.
+            // As a result, InputMethodManager will think that targetView is focused, and will call
+            // getHandler() of the view when creating input connection.
 
-            // Step 1: Set proxyAdapterView as InputMethodManager#mNextServedView. This does not
-            // affect the real window focus.
-            proxyAdapterView.onWindowFocusChanged(true);
+            // Step 1: Set targetView as InputMethodManager#mNextServedView. This does not affect
+            // the real window focus.
+            targetView.onWindowFocusChanged(true);
 
-            // Step 2: Have InputMethodManager focus in on proxyAdapterView. As a result, IMM will
-            // call onCreateInputConnection() on proxyAdapterView on the same thread as
-            // proxyAdapterView.getHandler(). It will also call subsequent InputConnection methods
-            // on this IME thread.
+            // Step 2: Have InputMethodManager focus in on targetView. As a result, IMM will call
+            // onCreateInputConnection() on targetView on the same thread as
+            // targetView.getHandler(). It will also call subsequent InputConnection methods on this
+            // thread. This is the IME thread in cases where targetView is our proxyAdapterView.
             imm.isActive(containerView);
           }
         });
-    return super.checkInputConnectionProxy(view);
   }
 }

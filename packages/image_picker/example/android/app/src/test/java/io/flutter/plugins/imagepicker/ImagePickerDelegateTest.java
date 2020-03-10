@@ -24,8 +24,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class ImagePickerDelegateTest {
-  private static final double WIDTH = 10.0;
-  private static final double HEIGHT = 10.0;
+  private static final Double WIDTH = 10.0;
+  private static final Double HEIGHT = 10.0;
+  private static final Integer IMAGE_QUALITY = 90;
 
   @Mock Activity mockActivity;
   @Mock ImageResizer mockImageResizer;
@@ -35,6 +36,7 @@ public class ImagePickerDelegateTest {
   @Mock ImagePickerDelegate.IntentResolver mockIntentResolver;
   @Mock FileUtils mockFileUtils;
   @Mock Intent mockIntent;
+  @Mock ImagePickerCache cache;
 
   ImagePickerDelegate.FileUriResolver mockFileUriResolver;
 
@@ -60,12 +62,15 @@ public class ImagePickerDelegateTest {
     when(mockFileUtils.getPathFromUri(any(Context.class), any(Uri.class)))
         .thenReturn("pathFromUri");
 
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null, null))
         .thenReturn("originalPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null, IMAGE_QUALITY))
+        .thenReturn("originalPath");
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT, null))
         .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null)).thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null, null))
+        .thenReturn("scaledPath");
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT, null))
         .thenReturn("scaledPath");
 
     mockFileUriResolver = new MockFileUriResolver();
@@ -375,6 +380,7 @@ public class ImagePickerDelegateTest {
         mockImageResizer,
         null,
         null,
+        cache,
         mockPermissionManager,
         mockIntentResolver,
         mockFileUriResolver,
@@ -388,6 +394,7 @@ public class ImagePickerDelegateTest {
         mockImageResizer,
         mockResult,
         mockMethodCall,
+        cache,
         mockPermissionManager,
         mockIntentResolver,
         mockFileUriResolver,

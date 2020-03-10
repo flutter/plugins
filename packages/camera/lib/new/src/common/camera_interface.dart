@@ -38,12 +38,15 @@ abstract class CameraConfigurator {
   /// You must call [addPreviewTexture] first or this will only return null.
   int get previewTextureId;
 
-  /// Begins the flow of data between the inputs and outputs connected the camera instance.
+  /// Initializes the camera on the device.
+  Future<void> initialize();
+
+  /// Begins the flow of data between the inputs and outputs connected to the camera instance.
   ///
   /// This will start updating the texture with id: [previewTextureId].
   Future<void> start();
 
-  /// Stops the flow of data between the inputs and outputs connected the camera instance.
+  /// Stops the flow of data between the inputs and outputs connected to the camera instance.
   Future<void> stop();
 
   /// Dispose all resources and disables further use of this configurator.

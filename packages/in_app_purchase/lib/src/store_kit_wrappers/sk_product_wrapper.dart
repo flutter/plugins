@@ -304,7 +304,8 @@ class SKProductWrapper {
 //                 https://github.com/flutter/flutter/issues/26610
 @JsonSerializable()
 class SKPriceLocaleWrapper {
-  SKPriceLocaleWrapper({@required this.currencySymbol});
+  SKPriceLocaleWrapper(
+      {@required this.currencySymbol, @required this.currencyCode});
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
@@ -318,6 +319,9 @@ class SKPriceLocaleWrapper {
   ///The currency symbol for the locale, e.g. $ for US locale.
   final String currencySymbol;
 
+  ///The currency code for the locale, e.g. USD for US locale.
+  final String currencyCode;
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) {
@@ -327,9 +331,10 @@ class SKPriceLocaleWrapper {
       return false;
     }
     final SKPriceLocaleWrapper typedOther = other;
-    return typedOther.currencySymbol == currencySymbol;
+    return typedOther.currencySymbol == currencySymbol &&
+        typedOther.currencyCode == currencyCode;
   }
 
   @override
-  int get hashCode => this.currencySymbol.hashCode;
+  int get hashCode => hashValues(this.currencySymbol, this.currencyCode);
 }

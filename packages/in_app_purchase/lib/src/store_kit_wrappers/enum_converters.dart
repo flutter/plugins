@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';

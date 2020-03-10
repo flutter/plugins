@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+/// Denotes that an image is being picked.
 const String kTypeImage = 'image';
+
+/// Denotes that a video is being picked.
 const String kTypeVideo = 'video';
 
 /// Specifies the source where the picked image should come from.
@@ -20,27 +23,35 @@ enum ImageSource {
   gallery,
 }
 
+/// Provides an easy way to pick an image/video from the image library,
+/// or to take a picture/video with the camera.
 class ImagePicker {
   static const MethodChannel _channel =
       MethodChannel('plugins.flutter.io/image_picker');
 
   /// Returns a [File] object pointing to the image that was picked.
   ///
-  /// The [source] argument controls where the image comes from. This can
+  /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
-  /// If specified, the image will be at most [maxWidth] wide and
-  /// [maxHeight] tall. Otherwise the image will be returned at it's
+  /// If specified, the image will be at most `maxWidth` wide and
+  /// `maxHeight` tall. Otherwise the image will be returned at it's
   /// original width and height.
+  /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
+  /// where 100 is the original/max quality. If `imageQuality` is null, the image with
+  /// the original quality will be returned. Compression is only supportted for certain
+  /// image types such as JPEG. If compression is not supported for the image that is picked,
+  /// an warning message will be logged.
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  static Future<File> pickImage({
-    @required ImageSource source,
-    double maxWidth,
-    double maxHeight,
-  }) async {
+  static Future<File> pickImage(
+      {@required ImageSource source,
+      double maxWidth,
+      double maxHeight,
+      int imageQuality}) async {
     assert(source != null);
+    assert(imageQuality == null || (imageQuality >= 0 && imageQuality <= 100));
 
     if (maxWidth != null && maxWidth < 0) {
       throw ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
@@ -56,6 +67,7 @@ class ImagePicker {
         'source': source.index,
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
+        'imageQuality': imageQuality
       },
     );
 
@@ -134,14 +146,17 @@ class ImagePicker {
 /// See also:
 /// * [ImagePicker.retrieveLostData] for more details on retrieving lost data.
 class LostDataResponse {
+  /// Creates an instance with the given [file], [exception], and [type]. Any of
+  /// the params may be null, but this is never considered to be empty.
   LostDataResponse({this.file, this.exception, this.type});
 
+  /// Initializes an instance with all member params set to null and considered
+  /// to be empty.
   LostDataResponse.empty()
       : file = null,
         exception = null,
-        type = null {
-    _empty = true;
-  }
+        type = null,
+        _empty = true;
 
   /// Whether it is an empty response.
   ///
@@ -169,4 +184,10 @@ class LostDataResponse {
 }
 
 /// The type of the retrieved data in a [LostDataResponse].
-enum RetrieveType { image, video }
+enum RetrieveType {
+  /// A static picture. See [ImagePicker.pickImage].
+  image,
+
+  /// A video. See [ImagePicker.pickVideo].
+  video
+}
