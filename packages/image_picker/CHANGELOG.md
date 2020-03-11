@@ -1,3 +1,7 @@
+## 0.6.3+5
+
+* iOS: Fixes an issue where picking PNG image from Gallery would be turned into JPEG on iOS 13.
+
 ## 0.6.3+4
 
 * Make the pedantic dev_dependency explicit.
