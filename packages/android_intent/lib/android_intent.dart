@@ -138,6 +138,17 @@ class AndroidIntent {
     await _channel.invokeMethod<void>('launch', _buildArguments());
   }
 
+  /// Check whether the intent can be resolved to an activity.
+  ///
+  /// This works only on Android platforms.
+  Future<bool> canResolve() async {
+    if (!_platform.isAndroid) {
+      return false;
+    }
+
+    return await _channel.invokeMethod<bool>('canResolve', _buildArguments());
+  }
+
   /// Constructs the map of arguments which is passed to the plugin.
   Map<String, dynamic> _buildArguments() {
     return {
