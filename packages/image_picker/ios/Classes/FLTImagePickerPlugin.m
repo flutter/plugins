@@ -293,31 +293,36 @@ static const int SOURCE_GALLERY = 1;
       [self saveImageWithPickerInfo:info image:image imageQuality:imageQuality];
     } else {
       __weak typeof(self) weakSelf = self;
-      // According to Apple development documentation, requestImageDataForAsset is introduced in iOS 8
-      // and deprecated in iOS 13. Thus, we have to use requestImageDataAndOrientationForAsset on iOS 13.
+      // According to Apple development documentation, requestImageDataForAsset is introduced in iOS
+      // 8 and deprecated in iOS 13. Thus, we have to use requestImageDataAndOrientationForAsset on
+      // iOS 13.
       if (@available(iOS 13.0, *)) {
         // The image data returned to resultHandler will be turned into JPEG format,
-        // if the [options] is not provide or [options.version] is not PHImageRequestOptionsVersionOriginal.
+        // if the [options] is not provide or [options.version] is not
+        // PHImageRequestOptionsVersionOriginal.
         PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
         options.version = PHImageRequestOptionsVersionOriginal;
         [[PHImageManager defaultManager]
             requestImageDataAndOrientationForAsset:originalAsset
                                            options:options
-                                     resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                                     CGImagePropertyOrientation orientation, NSDictionary *_Nullable info) {
-                         // maxWidth and maxHeight are used only for GIF images.
-                         [weakSelf saveImageWithOriginalImageData:imageData
-                                                            image:image
-                                                         maxWidth:maxWidth
-                                                        maxHeight:maxHeight
-                                                     imageQuality:imageQuality];
-                       }];
+                                     resultHandler:^(NSData *_Nullable imageData,
+                                                     NSString *_Nullable dataUTI,
+                                                     CGImagePropertyOrientation orientation,
+                                                     NSDictionary *_Nullable info) {
+                                       // maxWidth and maxHeight are used only for GIF images.
+                                       [weakSelf saveImageWithOriginalImageData:imageData
+                                                                          image:image
+                                                                       maxWidth:maxWidth
+                                                                      maxHeight:maxHeight
+                                                                   imageQuality:imageQuality];
+                                     }];
       } else {
         [[PHImageManager defaultManager]
             requestImageDataForAsset:originalAsset
                              options:nil
                        resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                       UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                                       UIImageOrientation orientation,
+                                       NSDictionary *_Nullable info) {
                          // maxWidth and maxHeight are used only for GIF images.
                          [weakSelf saveImageWithOriginalImageData:imageData
                                                             image:image
