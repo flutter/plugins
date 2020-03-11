@@ -37,6 +37,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 @implementation FLTGoogleSignInPlugin {
   FlutterResult _accountRequest;
+  NSArray *_additionalScopesRequest;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -122,6 +123,7 @@ static FlutterError *getFlutterError(NSError *error) {
     // tokens are refreshed automatically by getTokensWithHandler.
     result(nil);
   } else if ([call.method isEqualToString:@"requestScopes"]) {
+    GIDGoogleUser *user = [GIDSignIn sharedInstance].currentUser;
     NSArray *currentScopes = [GIDSignIn sharedInstance].scopes;
     NSArray *scopes = call.arguments[@"scopes"];
     NSArray *missingScopes = [scopes
@@ -129,8 +131,23 @@ static FlutterError *getFlutterError(NSError *error) {
                                         predicateWithBlock:^BOOL(id scope, NSDictionary *bindings) {
                                           return ![user.grantedScopes containsObject:scope];
                                         }]];
-    [GIDSignIn sharedInstance].scopes = [currentScopes arrayByAddingObjectsFromArray:missingScopes];
-    [[GIDSignIn sharedInstance] signIn];
+
+    if (!missingScopes || !missingScopes.count) {
+      result(@(YES));
+      return;
+    }
+
+    if([self setAccountRequest:result]) {
+      _additionalScopesRequest = missingScopes;
+      [GIDSignIn sharedInstance].scopes = [currentScopes arrayByAddingObjectsFromArray:missingScopes];
+      [GIDSignIn sharedInstance].presentingViewController = [self topViewController];
+      [GIDSignIn sharedInstance].loginHint = user.profile.email;
+      @try {
+        [[GIDSignIn sharedInstance] signIn];
+      } @catch (NSException *e) {
+        result([FlutterError errorWithCode:@"request_scopes" message:e.reason details:e.name]);
+        }
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -172,6 +189,20 @@ static FlutterError *getFlutterError(NSError *error) {
     // Forward all errors and let Dart side decide how to handle.
     [self respondWithAccount:nil error:error];
   } else {
+    if(_additionalScopesRequest) {
+      bool granted = YES;
+      for(NSString *scope in _additionalScopesRequest) {
+        if(![user.grantedScopes containsObject:scope])  {
+          granted = NO;
+          break;
+        }
+      }
+      _accountRequest(@(granted));
+      _accountRequest = nil;
+      _additionalScopesRequest = nil;
+      return;
+    } else {
+
     NSURL *photoUrl;
     if (user.profile.hasImage) {
       // Placeholder that will be replaced by on the Dart side based on screen
@@ -185,6 +216,7 @@ static FlutterError *getFlutterError(NSError *error) {
       @"photoUrl" : [photoUrl absoluteString] ?: [NSNull null],
     }
                        error:nil];
+    }
   }
 }
 
