@@ -47,7 +47,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_DISCONNECT = "disconnect";
   private static final String METHOD_IS_SIGNED_IN = "isSignedIn";
   private static final String METHOD_CLEAR_AUTH_CACHE = "clearAuthCache";
-  private static final String METHOD_LIST_MISSING_SCOPES = "listMissingScopes";
   private static final String METHOD_REQUEST_SCOPES = "requestScopes";
 
   private final IDelegate delegate;
