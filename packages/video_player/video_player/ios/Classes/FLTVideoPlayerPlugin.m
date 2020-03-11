@@ -158,7 +158,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink = [CADisplayLink displayLinkWithTarget:frameUpdater
                                              selector:@selector(onDisplayLink:)];
   [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-  _displayLink.paused = YES;
+  _displayLink.paused = NO;
 }
 
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
@@ -298,7 +298,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   } else {
     [_player pause];
   }
-  _displayLink.paused = !_isPlaying;
 }
 
 - (void)sendInitialized {
