@@ -32,7 +32,7 @@ static FlutterError *getFlutterError(NSError *error) {
                              details:error.localizedDescription];
 }
 
-@interface FLTGoogleSignInPlugin () <GIDSignInDelegate>
+@interface FLTGoogleSignInPlugin ()<GIDSignInDelegate>
 @end
 
 @implementation FLTGoogleSignInPlugin {
@@ -71,8 +71,8 @@ static FlutterError *getFlutterError(NSError *error) {
                                  message:@"Games sign in is not supported on iOS"
                                  details:nil]);
     } else {
-      NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info"
-                                                       ofType:@"plist"];
+      NSString *path =
+          [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
       if (path) {
         NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
         [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
@@ -137,16 +137,17 @@ static FlutterError *getFlutterError(NSError *error) {
       return;
     }
 
-    if([self setAccountRequest:result]) {
+    if ([self setAccountRequest:result]) {
       _additionalScopesRequest = missingScopes;
-      [GIDSignIn sharedInstance].scopes = [currentScopes arrayByAddingObjectsFromArray:missingScopes];
+      [GIDSignIn sharedInstance].scopes =
+          [currentScopes arrayByAddingObjectsFromArray:missingScopes];
       [GIDSignIn sharedInstance].presentingViewController = [self topViewController];
       [GIDSignIn sharedInstance].loginHint = user.profile.email;
       @try {
         [[GIDSignIn sharedInstance] signIn];
       } @catch (NSException *e) {
         result([FlutterError errorWithCode:@"request_scopes" message:e.reason details:e.name]);
-        }
+      }
     }
   } else {
     result(FlutterMethodNotImplemented);
@@ -189,10 +190,10 @@ static FlutterError *getFlutterError(NSError *error) {
     // Forward all errors and let Dart side decide how to handle.
     [self respondWithAccount:nil error:error];
   } else {
-    if(_additionalScopesRequest) {
+    if (_additionalScopesRequest) {
       bool granted = YES;
-      for(NSString *scope in _additionalScopesRequest) {
-        if(![user.grantedScopes containsObject:scope])  {
+      for (NSString *scope in _additionalScopesRequest) {
+        if (![user.grantedScopes containsObject:scope]) {
           granted = NO;
           break;
         }
@@ -202,20 +203,19 @@ static FlutterError *getFlutterError(NSError *error) {
       _additionalScopesRequest = nil;
       return;
     } else {
-
-    NSURL *photoUrl;
-    if (user.profile.hasImage) {
-      // Placeholder that will be replaced by on the Dart side based on screen
-      // size
-      photoUrl = [user.profile imageURLWithDimension:1337];
-    }
-    [self respondWithAccount:@{
-      @"displayName" : user.profile.name ?: [NSNull null],
-      @"email" : user.profile.email ?: [NSNull null],
-      @"id" : user.userID ?: [NSNull null],
-      @"photoUrl" : [photoUrl absoluteString] ?: [NSNull null],
-    }
-                       error:nil];
+      NSURL *photoUrl;
+      if (user.profile.hasImage) {
+        // Placeholder that will be replaced by on the Dart side based on screen
+        // size
+        photoUrl = [user.profile imageURLWithDimension:1337];
+      }
+      [self respondWithAccount:@{
+        @"displayName" : user.profile.name ?: [NSNull null],
+        @"email" : user.profile.email ?: [NSNull null],
+        @"id" : user.userID ?: [NSNull null],
+        @"photoUrl" : [photoUrl absoluteString] ?: [NSNull null],
+      }
+                         error:nil];
     }
   }
 }
