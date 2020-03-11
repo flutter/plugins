@@ -32,7 +32,7 @@ static FlutterError *getFlutterError(NSError *error) {
                              details:error.localizedDescription];
 }
 
-@interface FLTGoogleSignInPlugin ()<GIDSignInDelegate>
+@interface FLTGoogleSignInPlugin () <GIDSignInDelegate>
 @end
 
 @implementation FLTGoogleSignInPlugin {
@@ -71,8 +71,8 @@ static FlutterError *getFlutterError(NSError *error) {
                                  message:@"Games sign in is not supported on iOS"
                                  details:nil]);
     } else {
-      NSString *path =
-          [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+      NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info"
+                                                       ofType:@"plist"];
       if (path) {
         NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
         [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
