@@ -1,3 +1,18 @@
+## 0.3.1+1
+
+* Add `pedantic` to dev_dependency.
+
+## 0.3.1
+
+* Android: Fix a bug where the `BillingClient` is disconnected when app goes to the background.
+* Android: Make sure the `BillingClient` object is disconnected before the activity is destroyed.
+* Android: Fix minor compiler warning.
+* Fix typo in CHANGELOG.
+
+## 0.3.0+3
+
+* Fix pendingCompletePurchase flag status to allow to complete purchases.
+
 ## 0.3.0+2
 
 * Update te example app to avoid using deprecated api.
