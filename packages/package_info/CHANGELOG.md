@@ -1,3 +1,7 @@
+## 0.4.0+17
+
+* Clean up various Android workarounds no longer needed after framework v1.12, complete v2 embedding support.
+
 ## 0.4.0+16
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
