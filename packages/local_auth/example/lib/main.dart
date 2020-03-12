@@ -21,10 +21,19 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final LocalAuthentication auth = LocalAuthentication();
+  
+  bool _isSupported;
   bool _canCheckBiometrics;
   List<BiometricType> _availableBiometrics;
   String _authorized = 'Not Authorized';
   bool _isAuthenticating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    auth.isDeviceSupported().then((isSupported) => setState(() => _isSupported = isSupported));
+  }
+
 
   Future<void> _checkBiometrics() async {
     bool canCheckBiometrics;
@@ -122,6 +131,8 @@ class _MyAppState extends State<MyApp> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                if (_isSupported == null) CircularProgressIndicator() else if (_isSupported) Text("This device is supported") else Text("This device is not supported"),
+                Divider(height: 100),
                 Text('Can check biometrics: $_canCheckBiometrics\n'),
                 RaisedButton(
                   child: const Text('Check biometrics'),

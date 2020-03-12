@@ -25,6 +25,8 @@
     [self authenticate:call.arguments withFlutterResult:result];
   } else if ([@"getAvailableBiometrics" isEqualToString:call.method]) {
     [self getAvailableBiometrics:result];
+  } else if ([@"isDeviceSupported" isEqualToString:call.method]) {
+    result(@YES);
   } else {
     result(FlutterMethodNotImplemented);
   }
