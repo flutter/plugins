@@ -32,7 +32,7 @@ public class PackageInfoPlugin implements MethodCallHandler, FlutterPlugin {
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     onAttachedToEngine(
-        binding.getApplicationContext(), binding.getFlutterEngine().getDartExecutor());
+        binding.getApplicationContext(), binding.getBinaryMessenger());
   }
 
   private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {

@@ -13,7 +13,7 @@ public class EspressoPlugin implements FlutterPlugin, MethodCallHandler {
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     final MethodChannel channel =
-        new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "espresso");
+        new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "espresso");
     channel.setMethodCallHandler(new EspressoPlugin());
   }
 

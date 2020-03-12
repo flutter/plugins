@@ -1,3 +1,7 @@
+## 0.4.8+3
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
 ## 0.4.8+2
 
 * Remove hard coded ios workspace setting of the example app.
