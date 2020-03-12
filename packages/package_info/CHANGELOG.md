@@ -1,6 +1,8 @@
 ## 0.4.0+17
 
-* Clean up various Android workarounds no longer needed after framework v1.12, complete v2 embedding support.
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Clean up various Android workarounds no longer needed after framework v1.12.
+* Complete v2 embedding support.
 
 ## 0.4.0+16
 
