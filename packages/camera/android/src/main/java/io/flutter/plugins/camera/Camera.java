@@ -340,6 +340,7 @@ public class Camera {
     List<Surface> surfaceList = new ArrayList<>();
     surfaceList.add(flutterSurface);
     surfaceList.addAll(remainingSurfaces);
+    surfaceList.add(pictureImageReader.getSurface());
     // Start the session
     cameraDevice.createCaptureSession(surfaceList, callback, null);
   }
