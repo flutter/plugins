@@ -1,3 +1,7 @@
+## 0.4.1+9
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
 ## 0.4.1+8
 
 * Make the pedantic dev_dependency explicit.

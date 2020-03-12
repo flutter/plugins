@@ -1,3 +1,7 @@
+## 0.3.0+1
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
 ## 0.3.0
 
 * Updates documentation to instruct developers not to launch the activity since

@@ -1,3 +1,7 @@
+## 0.4.5+6
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
 ## 0.4.5+5
 
 * Added an Espresso test.
