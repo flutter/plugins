@@ -1,3 +1,7 @@
+## 0.5.7+5
+
+* Fix IllegalArgumentException on Android when taking pictures.
+
 ## 0.5.7+4
 
 * Add `pedantic` to dev_dependency.
