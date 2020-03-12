@@ -1,3 +1,7 @@
+## 1.6.6
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
 ## 1.6.5
 
 * Remove unused class name in pubspec.

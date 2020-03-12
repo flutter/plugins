@@ -1,3 +1,7 @@
+## 5.4.4
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
 ## 5.4.3
 
 * Fixed the launchUniversalLinkIos method.
