@@ -63,8 +63,7 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    onAttachedToEngine(
-        binding.getApplicationContext(), binding.getBinaryMessenger());
+    onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
   }
 
   public void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
