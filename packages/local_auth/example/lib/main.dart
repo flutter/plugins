@@ -152,48 +152,43 @@ class _MyAppState extends State<MyApp> {
                 ),
                 Divider(height: 100),
                 Text('Current State: $_authorized\n'),
-                Visibility(
-                  visible: !_isAuthenticating,
-                  child: Column(
-                    children: [
-                      RaisedButton(
+                (_isAuthenticating)
+                    ? RaisedButton(
+                        onPressed: _cancelAuthentication,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text('Authenticate'),
-                            Icon(Icons.perm_device_information),
+                            Text("Cancel Authentication"),
+                            Icon(Icons.cancel),
                           ],
                         ),
-                        onPressed: _authenticate,
+                      )
+                    : Column(
+                        children: [
+                          RaisedButton(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Authenticate'),
+                                Icon(Icons.perm_device_information),
+                              ],
+                            ),
+                            onPressed: _authenticate,
+                          ),
+                          RaisedButton(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(_isAuthenticating
+                                    ? 'Cancel'
+                                    : 'Authenticate: biometrics only'),
+                                Icon(Icons.fingerprint),
+                              ],
+                            ),
+                            onPressed: _authenticateWithBiometrics,
+                          ),
+                        ],
                       ),
-                      RaisedButton(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(_isAuthenticating
-                                ? 'Cancel'
-                                : 'Authenticate: biometrics only'),
-                            Icon(Icons.fingerprint),
-                          ],
-                        ),
-                        onPressed: _authenticateWithBiometrics,
-                      ),
-                    ],
-                  ),
-                ),
-                Visibility(
-                  visible: _isAuthenticating,
-                  child: RaisedButton(
-                    onPressed: _cancelAuthentication,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text("Cancel Authentication"),
-                        Icon(Icons.cancel),
-                      ],
-                    ),
-                  ),
-                ),
               ],
             ),
           ],
