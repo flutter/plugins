@@ -8,7 +8,7 @@ Future<void> main() async {
   final FlutterDriver driver = await FlutterDriver.connect();
   final String jsonResult =
       await driver.requestData(null, timeout: const Duration(minutes: 1));
-  common.Response response = common.Response.fromJson(jsonResult);
+  final common.Response response = common.Response.fromJson(jsonResult);
   await driver.close();
 
   if (response.result == 'pass') {
