@@ -1,3 +1,7 @@
+## 0.3.1+9
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
 ## 0.3.1+8
 
 * Make the pedantic dev_dependency explicit.
