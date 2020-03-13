@@ -37,9 +37,9 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
-  /// Map which stores failure details.
+  /// Stores failure details.
   ///
-  /// Method names are used as key.
+  /// Failed test method's names used as key.
   final Map<String, String> _failureMethodsDetails = Map<String, String>();
 
   /// Similar to [WidgetsFlutterBinding.ensureInitialized].
@@ -69,8 +69,10 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         case 'request_data':
           final bool allTestsPassed = await _allTestsPassed.future;
           response = <String, String>{
-            'message':
-                Response(allTestsPassed, formatFailures(_failureMethodsDetails))
+            'message': allTestsPassed
+                ? Response.allTestsPassed()
+                : Response.someTestsFailed(
+                        formatFailures(_failureMethodsDetails))
                     .toJson(),
           };
           break;

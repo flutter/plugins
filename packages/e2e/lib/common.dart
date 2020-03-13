@@ -7,23 +7,26 @@ import 'dart:convert';
 /// An object sent from e2e back to the Flutter Driver in response to
 /// `request_data` command.
 class Response {
-  String _failureDetails;
+  final String _failureDetails;
 
   final bool _allTestsPassed;
 
-  /// Constructor which receives tests results' flag and failure details.
-  Response(this._allTestsPassed, String failureDetails) {
-    this._failureDetails = failureDetails;
-  }
+  /// Constructor to use for positive response.
+  Response.allTestsPassed()
+      : this._allTestsPassed = true,
+        this._failureDetails = '';
 
-  /// Whether the test run successfully or not.
+  /// Constructor for failure response.
+  Response.someTestsFailed(this._failureDetails) : this._allTestsPassed = false;
+
+  /// Whether the test ran successfully or not.
   String get result => _allTestsPassed ? 'pass' : 'fail';
 
   /// If the result are failures get the formatted details.
   String get failureDetails => _allTestsPassed ? '' : _failureDetails;
 
   /// Convert a string pass/fail result to a boolean.
-  static bool allTestsPassed(String result) => (result == 'pass')
+  static bool testsPassed(String result) => (result == 'pass')
       ? true
       : (result == 'fail') ? false : throw 'Invalid State for result.';
 
@@ -36,7 +39,11 @@ class Response {
   /// Deserializes the result from JSON.
   static Response fromJson(String source) {
     Map<String, dynamic> result = json.decode(source);
-    return Response(allTestsPassed(result['result']), result['failureDetails']);
+    if (testsPassed(result['result'])) {
+      return Response.allTestsPassed();
+    } else {
+      return Response.someTestsFailed(result['failureDetails']);
+    }
   }
 }
 

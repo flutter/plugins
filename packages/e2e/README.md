@@ -51,7 +51,7 @@ Future<void> main() async {
   final FlutterDriver driver = await FlutterDriver.connect();
   final String jsonResult =
       await driver.requestData(null, timeout: const Duration(minutes: 1));
-  common.Response response = common.Response.fromJson(jsonResult);
+  final common.Response response = common.Response.fromJson(jsonResult);
   await driver.close();
   exit(response.result == 'pass' ? 0 : 1);
 }
@@ -71,7 +71,7 @@ cd example
 flutter drive --driver=test_driver/<package_name>_test.dart test/<package_name>_e2e.dart
 ```
 
-You can run tests on web on release or profile mode.
+You can run tests on web in release or profile mode.
 
 First you need to make sure you have downloaded the driver for the browser.
 
