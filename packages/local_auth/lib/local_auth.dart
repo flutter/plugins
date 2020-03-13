@@ -188,7 +188,8 @@ class LocalAuthentication {
   /// fail over to device credentials.
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> isDeviceSupported() => _channel.invokeMethod<bool>('isDeviceSupported');
+  Future<bool> isDeviceSupported() =>
+      _channel.invokeMethod<bool>('isDeviceSupported');
 
   /// Returns a list of enrolled biometrics
   ///
