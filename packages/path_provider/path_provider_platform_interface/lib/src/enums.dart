@@ -1,7 +1,7 @@
 /// Corresponds to constants defined in Androids `android.os.Environment` class.
 ///
 /// https://developer.android.com/reference/android/os/Environment.html#fields_1
-enum AndroidStorageDirectory {
+enum StorageDirectory {
   /// Contains audio files that should be treated as music.
   ///
   /// See https://developer.android.com/reference/android/os/Environment.html#DIRECTORY_MUSIC.
