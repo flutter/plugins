@@ -178,7 +178,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       UIGraphicsImageRenderer* renderer =
           [[UIGraphicsImageRenderer alloc] initWithSize:_mapView.frame.size format:format];
 
-      UIImage* image = [renderer imageWithActions:^(UIGraphicsImageRendererContext* context){
+      UIImage* image = [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
         [_mapView.layer renderInContext:context.CGContext];
       }];
       result([FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)]);
