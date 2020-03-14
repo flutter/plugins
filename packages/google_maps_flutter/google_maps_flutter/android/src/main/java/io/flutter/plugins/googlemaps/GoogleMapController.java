@@ -279,7 +279,7 @@ final class GoogleMapController
           }
           break;
         }
-      case "map#takeScreenshot":
+      case "map#takeSnapshot":
         {
           if (googleMap != null) {
             final MethodChannel.Result _result = result;

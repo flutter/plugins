@@ -825,7 +825,7 @@ void main() {
     expect(iwVisibleStatus, false);
   });
 
-  testWidgets('testTakeScreenshot', (WidgetTester tester) async {
+  testWidgets('testTakeSnapshot', (WidgetTester tester) async {
     Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
@@ -847,7 +847,7 @@ void main() {
     await tester.pumpAndSettle(const Duration(seconds: 3));
 
     final GoogleMapInspector inspector = await inspectorCompleter.future;
-    final Uint8List bytes = await inspector.takeScreenshot();
+    final Uint8List bytes = await inspector.takeSnapshot();
     expect(bytes, isNotNull);
     expect(bytes.isNotEmpty, true);
   });

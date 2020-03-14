@@ -66,7 +66,7 @@ class GoogleMapInspector {
     return await _channel.invokeMethod<bool>('map#isBuildingsEnabled');
   }
 
-  Future<Uint8List> takeScreenshot() async {
-    return await _channel.invokeMethod<Uint8List>('map#takeScreenshot');
+  Future<Uint8List> takeSnapshot() async {
+    return await _channel.invokeMethod<Uint8List>('map#takeSnapshot');
   }
 }

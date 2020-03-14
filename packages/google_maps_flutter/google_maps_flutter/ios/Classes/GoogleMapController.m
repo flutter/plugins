@@ -171,7 +171,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     }
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
-  } else if ([call.method isEqualToString:@"map#takeScreenshot"]) {
+  } else if ([call.method isEqualToString:@"map#takeSnapshot"]) {
     if (_mapView != nil) {
       UIGraphicsImageRendererFormat* format = [UIGraphicsImageRendererFormat defaultFormat];
       format.scale = [[UIScreen mainScreen] scale];

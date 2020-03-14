@@ -48,9 +48,9 @@ class _SnapshotBodyState extends State<_SnapshotBody> {
             ),
           ),
           FlatButton(
-            child: Text('Take a screenshot'),
+            child: Text('Take a snapshot'),
             onPressed: () async {
-              final imageBytes = await _mapController?.takeScreenshot();
+              final imageBytes = await _mapController?.takeSnapshot();
               setState(() {
                 _imageBytes = imageBytes;
               });
