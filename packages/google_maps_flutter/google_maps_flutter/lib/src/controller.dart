@@ -285,4 +285,9 @@ class GoogleMapController {
         await channel.invokeMethod<double>('map#getZoomLevel');
     return zoomLevel;
   }
+
+  /// Returns the image bytes of the map
+  Future<Uint8List> takeScreenshot() async {
+    return channel.invokeMethod<Uint8List>('map#takeScreenshot');
+  }
 }
