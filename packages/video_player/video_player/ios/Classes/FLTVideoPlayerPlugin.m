@@ -295,8 +295,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
   if (_isPlaying) {
     [_player play];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
   } else {
     [_player pause];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
   }
   _displayLink.paused = !_isPlaying;
 }

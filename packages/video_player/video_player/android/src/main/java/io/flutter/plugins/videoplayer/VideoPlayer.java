@@ -6,6 +6,7 @@ import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -44,6 +45,7 @@ final class VideoPlayer {
   private static final String FORMAT_DASH = "dash";
   private static final String FORMAT_HLS = "hls";
   private static final String FORMAT_OTHER = "other";
+  private static final String TAG = "FlutterPlugin:VideoPlayer";
 
   private SimpleExoPlayer exoPlayer;
 
@@ -57,6 +59,8 @@ final class VideoPlayer {
 
   private boolean isInitialized = false;
 
+  private PowerManager.WakeLock wakeLock;
+
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
@@ -66,6 +70,11 @@ final class VideoPlayer {
       String formatHint) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
+
+    PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+    wakeLock =
+        powerManager.newWakeLock(
+            PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
 
     TrackSelector trackSelector = new DefaultTrackSelector();
     exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
@@ -220,10 +229,14 @@ final class VideoPlayer {
 
   void play() {
     exoPlayer.setPlayWhenReady(true);
+    wakeLock.acquire();
   }
 
   void pause() {
     exoPlayer.setPlayWhenReady(false);
+    if (wakeLock.isHeld()) {
+      wakeLock.release();
+    }
   }
 
   void setLooping(boolean value) {

@@ -1,3 +1,9 @@
+## 0.10.10
+
+* Avoid screen dim when video playing.\
+  NOTE: Android need add permision:
+  > `<uses-permission android:name="android.permission.WAKE_LOCK"/>`
+
 ## 0.10.9+1
 
 * Readme updated to include web support and details on how to use for web
@@ -20,7 +26,6 @@
 
 * Added support for cleaning up the plugin if used for add-to-app (Flutter
   v1.15.3 is required for that feature).
-
 
 ## 0.10.7
 
