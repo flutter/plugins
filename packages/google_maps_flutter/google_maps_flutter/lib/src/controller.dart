@@ -288,6 +288,6 @@ class GoogleMapController {
 
   /// Returns the image bytes of the map
   Future<Uint8List> takeScreenshot() async {
-    return channel.invokeMethod<Uint8List>('map#takeScreenshot');
+    return await channel.invokeMethod<Uint8List>('map#takeScreenshot');
   }
 }
