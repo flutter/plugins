@@ -173,15 +173,15 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     result(nil);
   } else if ([call.method isEqualToString:@"map#takeScreenshot"]) {
     if (_mapView != nil) {
-      UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat defaultFormat];
+      UIGraphicsImageRendererFormat* format = [UIGraphicsImageRendererFormat defaultFormat];
       format.scale = [[UIScreen mainScreen] scale];
-      UIGraphicsImageRenderer *renderer =
+      UIGraphicsImageRenderer* renderer =
             [[UIGraphicsImageRenderer alloc] initWithSize:_mapView.frame.size format:format];
 
-      UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context){
+      UIImage* image = [renderer imageWithActions:^(UIGraphicsImageRendererContext* context){
         [_mapView.layer renderInContext: context.CGContext];
       }];
-      result([FlutterStandardTypedData typedDataWithBytes: UIImagePNGRepresentation(image)]);
+      result([FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)]);
     } else {
       result([FlutterError errorWithCode:@"GoogleMap uninitialized"
                                  message:@"takeScreenshot called prior to map initialization"
