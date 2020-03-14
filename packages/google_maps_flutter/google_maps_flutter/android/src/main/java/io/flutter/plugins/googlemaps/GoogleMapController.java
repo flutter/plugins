@@ -283,16 +283,17 @@ final class GoogleMapController
         {
           if (googleMap != null) {
             final MethodChannel.Result _result = result;
-            googleMap.snapshot(new SnapshotReadyCallback() {
-              @Override
-              public void onSnapshotReady(Bitmap bitmap) {
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
-                bitmap.recycle();
-                _result.success(byteArray);
-              }
-            });
+            googleMap.snapshot(
+                new SnapshotReadyCallback() {
+                  @Override
+                  public void onSnapshotReady(Bitmap bitmap) {
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] byteArray = stream.toByteArray();
+                    bitmap.recycle();
+                    _result.success(byteArray);
+                  }
+                });
           } else {
             result.error("GoogleMap uninitialized", "takeScreenshot", null);
           }

@@ -176,10 +176,10 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       UIGraphicsImageRendererFormat* format = [UIGraphicsImageRendererFormat defaultFormat];
       format.scale = [[UIScreen mainScreen] scale];
       UIGraphicsImageRenderer* renderer =
-            [[UIGraphicsImageRenderer alloc] initWithSize:_mapView.frame.size format:format];
+          [[UIGraphicsImageRenderer alloc] initWithSize:_mapView.frame.size format:format];
 
       UIImage* image = [renderer imageWithActions:^(UIGraphicsImageRendererContext* context){
-        [_mapView.layer renderInContext: context.CGContext];
+        [_mapView.layer renderInContext:context.CGContext];
       }];
       result([FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)]);
     } else {
