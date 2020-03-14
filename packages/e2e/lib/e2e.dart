@@ -70,7 +70,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
           final bool allTestsPassed = await _allTestsPassed.future;
           response = <String, String>{
             'message': allTestsPassed
-                ? Response.allTestsPassed()
+                ? Response.allTestsPassed().toJson()
                 : Response.someTestsFailed(
                         formatFailures(_failureMethodsDetails))
                     .toJson(),
