@@ -4,12 +4,13 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:e2e/e2e.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:e2e/e2e.dart';
 
 import 'google_map_inspector.dart';
 
@@ -822,5 +823,32 @@ void main() {
     await controller.hideMarkerInfoWindow(marker.markerId);
     iwVisibleStatus = await controller.isMarkerInfoWindowShown(marker.markerId);
     expect(iwVisibleStatus, false);
+  });
+
+  testWidgets('testTakeScreenshot', (WidgetTester tester) async {
+    Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: _kInitialCameraPosition,
+          onMapCreated: (GoogleMapController controller) {
+            final GoogleMapInspector inspector =
+                // ignore: invalid_use_of_visible_for_testing_member
+                GoogleMapInspector(controller.channel);
+            inspectorCompleter.complete(inspector);
+          },
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    final Uint8List bytes = await inspector.takeScreenshot();
+    expect(bytes, isNotNull);
+    expect(bytes.isNotEmpty, true);
   });
 }
