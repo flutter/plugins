@@ -17,15 +17,15 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 * `NSCameraUsageDescription` - describe why your app needs access to the camera. This is called _Privacy - Camera Usage Description_ in the visual editor.
 * `NSMicrophoneUsageDescription` - describe why your app needs access to the microphone, if you intend to record videos. This is called _Privacy - Microphone Usage Description_ in the visual editor.
 
-#### Code Sample : 
-
-<img width="1257" alt="image_picker_ios_flutter" src="https://user-images.githubusercontent.com/55942632/75086290-8ed49180-5558-11ea-9a0f-4238067b1fd9.png">
-
-make sure to have this code after array or string not after key
-
-#### It will be shown to user like this (you can describe accordingly, meme_generator is app name):
-
-<img width="235" alt="image_picker_ios_example_camera" src="https://user-images.githubusercontent.com/55942632/75086383-7dd85000-5559-11ea-8bdc-b1c62e8da5bf.png"> <img width="236" alt="image_picker_ios_example_gallery" src="https://user-images.githubusercontent.com/55942632/75086389-a06a6900-5559-11ea-97b8-4dee0eacff9c.png">
+Simply open your Info.plist file and add the following:
+``` xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Used to demonstrate image picker plugin</string>
+<key>NSCameraUsageDescription</key>
+<string>Used to demonstrate image picker plugin</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Used to capture audio for image picker plugin</string>
+```
 
 ### Android
 
