@@ -85,9 +85,9 @@ abstract class PathProviderPlatform extends PlatformInterface {
   /// These paths typically reside on external storage like separate partitions
   /// or SD cards. Phones may have multiple storage directories available.
   Future<List<String>> getExternalStoragePaths({
-    /// Optional parameter. See [AndroidStorageDirectory] for more informations on
+    /// Optional parameter. See [StorageDirectory] for more informations on
     /// how this type translates to Android storage directories.
-    AndroidStorageDirectory type,
+    StorageDirectory type,
   }) {
     throw UnimplementedError(
         'getExternalStoragePaths() has not been implemented.');

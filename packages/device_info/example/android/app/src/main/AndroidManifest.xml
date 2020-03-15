@@ -12,15 +12,20 @@
                   android:exported="true"
                   android:windowSoftInputMode="adjustResize">
         </activity>
-        <activity android:name=".MainActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
-            android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+
+        <activity android:name="io.flutter.embedding.android.FlutterActivity"
+          android:theme="@android:style/Theme.Black.NoTitleBar"
+          android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
+          android:hardwareAccelerated="true"
+          android:windowSoftInputMode="adjustResize">
+          <meta-data
+            android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
+            android:value="true" />
+          <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+          </intent-filter>
+        </activity>        
+        <meta-data android:name="flutterEmbedding" android:value="2"/>
     </application>
 </manifest>

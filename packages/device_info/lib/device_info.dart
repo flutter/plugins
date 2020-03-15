@@ -62,9 +62,11 @@ class AndroidDeviceInfo {
     this.type,
     this.isPhysicalDevice,
     this.androidId,
+    List<String> systemFeatures,
   })  : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
         supported64BitAbis = List<String>.unmodifiable(supported64BitAbis),
-        supportedAbis = List<String>.unmodifiable(supportedAbis);
+        supportedAbis = List<String>.unmodifiable(supportedAbis),
+        systemFeatures = List<String>.unmodifiable(systemFeatures);
 
   /// Android operating system version values derived from `android.os.Build.VERSION`.
   final AndroidBuildVersion version;
@@ -126,6 +128,22 @@ class AndroidDeviceInfo {
   /// The Android hardware device ID that is unique between the device + user and app signing.
   final String androidId;
 
+  /// Describes what features are available on the current device.
+  ///
+  /// This can be used to check if the device has, for example, a front-facing
+  /// camera, or a touchscreen. However, in many cases this is not the best
+  /// API to use. For example, if you are interested in bluetooth, this API
+  /// can tell you if the device has a bluetooth radio, but it cannot tell you
+  /// if bluetooth is currently enabled, or if you have been granted the
+  /// necessary permissions to use it. Please *only* use this if there is no
+  /// other way to determine if a feature is supported.
+  ///
+  /// This data comes from Android's PackageManager.getSystemAvailableFeatures,
+  /// and many of the common feature strings to look for are available in
+  /// PackageManager's public documentation:
+  /// https://developer.android.com/reference/android/content/pm/PackageManager
+  final List<String> systemFeatures;
+
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo _fromMap(Map<String, dynamic> map) {
     return AndroidDeviceInfo._(
@@ -150,6 +168,7 @@ class AndroidDeviceInfo {
       type: map['type'],
       isPhysicalDevice: map['isPhysicalDevice'],
       androidId: map['androidId'],
+      systemFeatures: _fromList(map['systemFeatures']),
     );
   }
 

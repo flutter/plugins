@@ -1,6 +1,10 @@
-## 0.10.8+2
+## 0.10.8+3
 
 * Fixed an issue on iOS where the platform video player says it is initialized before it has a valid Presentation Size, and causes a white frame to render indefinitely.
+
+## 0.10.8+2
+
+* Replace deprecated `getFlutterEngine` call on Android.
 
 ## 0.10.8+1
 
