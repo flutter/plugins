@@ -1,3 +1,7 @@
+# 0.1.1+2
+
+- Update Gradle version.
+
 # 0.1.1+1
 
 - Make the pedantic dev_dependency explicit.
