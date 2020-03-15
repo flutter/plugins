@@ -1,6 +1,10 @@
-## 0.10.8+2
+## 0.10.8+3
 
 * Fixes issue Flutter's video plugin can cause crashes after a closing a flutter view on simulator model iPhone X or higher
+
+## 0.10.8+2
+
+* Replace deprecated `getFlutterEngine` call on Android.
 
 ## 0.10.8+1
 

@@ -5,27 +5,12 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'dart:io' show Platform;
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:e2e/e2e.dart';
 
-import 'package:e2e_example/main.dart';
+import 'example_e2e_io.dart' if (dart.library.html) 'example_e2e_web.dart'
+    as tests;
 
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
-  testWidgets('verify text', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
-
-    // Verify that platform version is retrieved.
-    expect(
-      find.byWidgetPredicate(
-        (Widget widget) =>
-            widget is Text &&
-            widget.data.startsWith('Platform: ${Platform.operatingSystem}'),
-      ),
-      findsOneWidget,
-    );
-  });
+  tests.main();
 }

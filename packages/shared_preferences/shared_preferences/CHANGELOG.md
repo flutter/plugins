@@ -1,3 +1,7 @@
+## 0.5.6+3
+
+* Fix deprecated API usage warning.
+
 ## 0.5.6+2
 
 * Make the pedantic dev_dependency explicit.

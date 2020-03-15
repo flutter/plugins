@@ -29,7 +29,7 @@ class AndroidIntent {
   /// If not null, then [package] but also be provided.
   /// [type] refers to the type of the intent, can be null.
   const AndroidIntent({
-    @required this.action,
+    this.action,
     this.flags,
     this.category,
     this.data,
@@ -38,7 +38,8 @@ class AndroidIntent {
     this.componentName,
     Platform platform,
     this.type,
-  })  : assert(action != null),
+  })  : assert(action != null || componentName != null,
+            'action or component (or both) must be specified'),
         _channel = const MethodChannel(_kChannelName),
         _platform = platform ?? const LocalPlatform();
 
@@ -46,9 +47,9 @@ class AndroidIntent {
   /// app code, it may break without warning.
   @visibleForTesting
   AndroidIntent.private({
-    @required this.action,
     @required Platform platform,
     @required MethodChannel channel,
+    this.action,
     this.flags,
     this.category,
     this.data,
@@ -56,7 +57,9 @@ class AndroidIntent {
     this.package,
     this.componentName,
     this.type,
-  })  : _channel = channel,
+  })  : assert(action != null || componentName != null,
+            'action or component (or both) must be specified'),
+        _channel = channel,
         _platform = platform;
 
   /// This is the general verb that the intent should attempt to do. This
@@ -131,28 +134,23 @@ class AndroidIntent {
     if (!_platform.isAndroid) {
       return;
     }
-    final Map<String, dynamic> args = <String, dynamic>{'action': action};
-    if (flags != null) {
-      args['flags'] = convertFlags(flags);
-    }
-    if (category != null) {
-      args['category'] = category;
-    }
-    if (data != null) {
-      args['data'] = data;
-    }
-    if (arguments != null) {
-      args['arguments'] = arguments;
-    }
-    if (package != null) {
-      args['package'] = package;
-      if (componentName != null) {
-        args['componentName'] = componentName;
-      }
-    }
-    if (type != null) {
-      args['type'] = type;
-    }
-    await _channel.invokeMethod<void>('launch', args);
+
+    await _channel.invokeMethod<void>('launch', _buildArguments());
+  }
+
+  /// Constructs the map of arguments which is passed to the plugin.
+  Map<String, dynamic> _buildArguments() {
+    return {
+      if (action != null) 'action': action,
+      if (flags != null) 'flags': convertFlags(flags),
+      if (category != null) 'category': category,
+      if (data != null) 'data': data,
+      if (arguments != null) 'arguments': arguments,
+      if (package != null) ...{
+        'package': package,
+        if (componentName != null) 'componentName': componentName,
+      },
+      if (type != null) 'type': type,
+    };
   }
 }
