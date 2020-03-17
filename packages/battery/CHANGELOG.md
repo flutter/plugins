@@ -1,3 +1,29 @@
+## 0.3.1+9
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.3.1+8
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.3.1+7
+
+* Clean up various Android workarounds no longer needed after framework v1.12.
+
+## 0.3.1+6
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.3.1+5
+
+* Fix pedantic linter errors.
+
+## 0.3.1+4
+
+* Update and migrate iOS example project.
+
 ## 0.3.1+3
 
 * Remove AndroidX warning.

@@ -17,7 +17,10 @@ interface BillingClientFactory {
    *
    * @param context The context used to create the {@link BillingClient}.
    * @param channel The method channel used to create the {@link BillingClient}.
+   * @param enablePendingPurchases Whether to enable pending purchases. Throws an exception if it is
+   *     false.
    * @return The {@link BillingClient} object that is created.
    */
-  BillingClient createBillingClient(@NonNull Context context, @NonNull MethodChannel channel);
+  BillingClient createBillingClient(
+      @NonNull Context context, @NonNull MethodChannel channel, boolean enablePendingPurchases);
 }

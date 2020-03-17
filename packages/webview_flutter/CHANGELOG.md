@@ -1,3 +1,72 @@
+## 0.3.19+10
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.3.19+9
+
+* Remove example app's iOS workspace settings.
+
+## 0.3.19+8
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.3.19+7
+
+* Remove the Flutter SDK constraint upper bound.
+
+## 0.3.19+6
+
+* Enable opening links that target the "_blank" window (links open in same window).
+
+## 0.3.19+5
+
+* On iOS, always keep contentInsets of the WebView to be 0.
+* Fix XCTest case to follow XCTest naming convention.
+
+## 0.3.19+4
+
+* On iOS, fix the scroll view content inset is automatically adjusted. After the fix, the content position of the WebView is customizable by Flutter.
+* Fix an iOS 13 bug where the scroll indicator shows at random location.
+
+## 0.3.19+3
+
+* Setup XCTests.
+
+## 0.3.19+2
+
+* Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+
+## 0.3.19+1
+
+* Raise min Flutter SDK requirement to the latest stable. v2 embedding apps no
+  longer need to special case their Flutter SDK requirement like they have
+  since v0.3.15+3.
+
+## 0.3.19
+
+* Add setting for iOS to allow gesture based navigation.
+
+## 0.3.18+1
+
+* Be explicit that keyboard is not ready for production in README.md.
+
+## 0.3.18
+
+* Add support for onPageStarted event.
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate to the new pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.3.17
+
+* Fix pedantic lint errors. Added missing documentation and awaited some futures
+  in tests and the example app.
+
+## 0.3.16
+
+* Add support for async NavigationDelegates. Synchronous NavigationDelegates
+  should still continue to function without any change in behavior.
+
 ## 0.3.15+3
 
 * Re-land support for the v2 Android embedding. This correctly sets the minimum

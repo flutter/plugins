@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -89,15 +91,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _launchUniversalLinkIos(String url) async {
-    if (await canLaunch('https://youtube.com')) {
+    if (await canLaunch(url)) {
       final bool nativeAppLaunchSucceeded = await launch(
-        'https://youtube.com',
+        url,
         forceSafariVC: false,
         universalLinksOnly: true,
       );
       if (!nativeAppLaunchSucceeded) {
         await launch(
-          'https://youtube.com',
+          url,
           forceSafariVC: true,
         );
       }
