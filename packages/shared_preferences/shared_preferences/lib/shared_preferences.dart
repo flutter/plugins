@@ -151,6 +151,15 @@ class SharedPreferences {
     return _store.clear();
   }
 
+  /// Set App Domain / Group
+  /// This method only works for iOS and does nothing in Android
+  Future<void> setDomain(String domain) {
+    final Map<String, dynamic> params = <String, dynamic>{
+      'domain': domain,
+    };
+    _kChannel.invokeMethod<void>('setDomain', params);
+  }
+
   /// Fetches the latest values from the host platform.
   ///
   /// Use this method to observe modifications that were made in native code
