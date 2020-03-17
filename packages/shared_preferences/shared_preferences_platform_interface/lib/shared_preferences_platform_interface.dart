@@ -96,7 +96,12 @@ class InMemorySharedPreferencesStore extends SharedPreferencesStorePlatform {
     _data.clear();
     return true;
   }
-  
+
+  @override
+  Future<bool> setDomain(Map<String, dynamic> params) async {
+    return true;
+  }
+
   @override
   Future<Map<String, Object>> getAll() async {
     return Map<String, Object>.from(_data);

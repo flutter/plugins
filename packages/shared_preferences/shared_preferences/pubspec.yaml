@@ -12,23 +12,24 @@ flutter:
         pluginClass: SharedPreferencesPlugin
       ios:
         pluginClass: FLTSharedPreferencesPlugin
-      macos:
-        default_package: shared_preferences_macos
-      web:
-        default_package: shared_preferences_web
+#      macos:
+#        default_package: shared_preferences_macos
+#      web:
+#        default_package: shared_preferences_web
 
 dependencies:
   meta: ^1.0.4
   flutter:
     sdk: flutter
-  shared_preferences_platform_interface: ^1.0.0
+  shared_preferences_platform_interface:
+    path: ../shared_preferences_platform_interface
   # The design on https://flutter.dev/go/federated-plugins was to leave
   # this constraint as "any". We cannot do it right now as it fails pub publish
   # validation, so we set a ^ constraint.
   # TODO(franciscojma): Revisit this (either update this part in the  design or the pub tool).
   # https://github.com/flutter/flutter/issues/46264
-  shared_preferences_macos: ^0.0.1
-  shared_preferences_web: ^0.1.2
+#  shared_preferences_macos: ^0.0.1
+#  shared_preferences_web: ^0.1.2
 
 dev_dependencies:
   flutter_test:

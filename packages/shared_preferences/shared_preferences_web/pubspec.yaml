@@ -11,7 +11,8 @@ flutter:
         fileName: shared_preferences_web.dart
 
 dependencies:
-  shared_preferences_platform_interface: ^1.0.0
+  shared_preferences_platform_interface:
+    path: ../shared_preferences_platform_interface
   flutter:
     sdk: flutter
   flutter_web_plugins:

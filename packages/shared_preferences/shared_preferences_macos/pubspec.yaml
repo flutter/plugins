@@ -14,7 +14,8 @@ environment:
   flutter: ">=1.12.8 <2.0.0"
 
 dependencies:
-  shared_preferences_platform_interface: ^1.0.0
+  shared_preferences_platform_interface:
+    path: ../shared_preferences_platform_interface
   flutter:
     sdk: flutter
 dev_dependencies:
