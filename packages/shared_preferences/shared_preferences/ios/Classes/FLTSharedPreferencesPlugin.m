@@ -67,6 +67,10 @@ NSString *customDomain;
       }
       [domainUserDefaults() synchronize];
       result(@YES);
+    } else if ([method isEqualToString:@"setDomain"]) {
+      customDomain = arguments[@"domain"];
+      NSLog(@"Domain set to: %@", customDomain);
+      result(@YES);
     } else {
       result(FlutterMethodNotImplemented);
     }
