@@ -25,6 +25,11 @@ class MethodChannelSharedPreferencesStore
   }
 
   @override
+  Future<bool> setDomain(Map<String, dynamic> params) {
+    return _invokeBoolMethod('setDomain', params);
+  }
+
+  @override
   Future<bool> setValue(String valueType, String key, Object value) {
     return _invokeBoolMethod('set$valueType', <String, dynamic>{
       'key': key,

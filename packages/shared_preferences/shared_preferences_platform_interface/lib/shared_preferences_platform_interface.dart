@@ -63,6 +63,9 @@ abstract class SharedPreferencesStorePlatform {
   /// Removes all keys and values in the store.
   Future<bool> clear();
 
+  /// Sets the domain in which to store the shared preferences (Valid for iOS only)
+  Future<bool> setDomain(Map<String, dynamic> params);
+
   /// Returns all key/value pairs persisted in this store.
   Future<Map<String, Object>> getAll();
 
@@ -93,7 +96,7 @@ class InMemorySharedPreferencesStore extends SharedPreferencesStorePlatform {
     _data.clear();
     return true;
   }
-
+  
   @override
   Future<Map<String, Object>> getAll() async {
     return Map<String, Object>.from(_data);
