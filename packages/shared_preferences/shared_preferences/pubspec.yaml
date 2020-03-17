@@ -22,7 +22,10 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences_platform_interface:
-    path: ../shared_preferences_platform_interface
+    git:
+      url: https://github.com/luismarquesfreire/plugins.git
+      ref: feature/app-group-support
+      path: packages/shared_preferences/shared_preferences_platform_interface
   # The design on https://flutter.dev/go/federated-plugins was to leave
   # this constraint as "any". We cannot do it right now as it fails pub publish
   # validation, so we set a ^ constraint.
