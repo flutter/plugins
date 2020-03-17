@@ -36,6 +36,29 @@ android {
 dependencies {
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     implementation 'com.google.guava:guava:20.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.17.0'
+}
+
+afterEvaluate {
+    def containsEmbeddingDependencies = false
+    for (def configuration : configurations.all) {
+        for (def dependency : configuration.dependencies) {
+            if (dependency.group == 'io.flutter' &&
+                dependency.name.startsWith('flutter_embedding') &&
+                dependency.isTransitive())
+            {
+                containsEmbeddingDependencies = true
+                break
+            }
+        }
+    }
+    if (!containsEmbeddingDependencies) {
+        android {
+            dependencies {
+                def lifecycle_version = "1.1.1"
+                compileOnly "android.arch.lifecycle:runtime:$lifecycle_version"
+                compileOnly "android.arch.lifecycle:common:$lifecycle_version"
+                compileOnly "android.arch.lifecycle:common-java8:$lifecycle_version"
+            }
+        }
+    }
 }

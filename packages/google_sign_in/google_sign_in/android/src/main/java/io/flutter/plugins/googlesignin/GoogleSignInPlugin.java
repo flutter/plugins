@@ -6,7 +6,10 @@ package io.flutter.plugins.googlesignin;
 
 import android.accounts.Account;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.VisibleForTesting;
+
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -53,12 +56,12 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-    final GoogleSignInPlugin instance = new GoogleSignInPlugin(registrar);
+    final GoogleSignInPlugin instance = new GoogleSignInPlugin(registrar, new GoogleSignInWrapper());
     channel.setMethodCallHandler(instance);
   }
 
-  private GoogleSignInPlugin(PluginRegistry.Registrar registrar) {
-    delegate = new Delegate(registrar);
+  GoogleSignInPlugin(PluginRegistry.Registrar registrar, GoogleSignInWrapper googleSignInWrapper) {
+    delegate = new Delegate(registrar, googleSignInWrapper);
   }
 
   @Override
@@ -194,13 +197,15 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     private final PluginRegistry.Registrar registrar;
     private final BackgroundTaskRunner backgroundTaskRunner = new BackgroundTaskRunner(1);
+    private final GoogleSignInWrapper googleSignInWrapper;
 
     private GoogleSignInClient signInClient;
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
 
-    public Delegate(PluginRegistry.Registrar registrar) {
+    public Delegate(PluginRegistry.Registrar registrar, GoogleSignInWrapper googleSignInWrapper) {
       this.registrar = registrar;
+      this.googleSignInWrapper = googleSignInWrapper;
       registrar.addActivityResultListener(this);
     }
 
@@ -356,7 +361,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     @Override
     public void requestScopes(Result result, List<String> scopes) {
-      GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(registrar.context());
+      GoogleSignInAccount account = googleSignInWrapper.getLastSignedInAccount(registrar.context());
       if (account == null) {
         result.error(ERROR_REASON_SIGN_IN_REQUIRED, "No account to grant scopes.", null);
         return;
@@ -574,5 +579,20 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           return false;
       }
     }
+  }
+}
+
+/**
+ * A wrapper object that calls static method in GoogleSignIn.
+ *
+ * Because GoogleSignIn uses static method mostly, which is hard for unit testing. We use this wrapper
+ * class to use instance method which calls the corresponding GoogleSignIn static methods.
+ *
+ * Warning! This class should stay true that each method calls a GoogleSignIn static method with the same name and same parameters.
+ */
+class GoogleSignInWrapper {
+
+  GoogleSignInAccount getLastSignedInAccount(Context context) {
+    return GoogleSignIn.getLastSignedInAccount(context);
   }
 }
