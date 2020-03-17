@@ -20,7 +20,7 @@ const EventChannel _gyroscopeEventChannel =
 /// simply, you can use accelerometer readings to tell if the device is moving in
 /// a particular direction.
 class AccelerometerEvent {
-  /// Contructs an instance with the given [x], [y], and [z] values.
+  /// Constructs an instance with the given [x], [y], and [z] values.
   AccelerometerEvent(this.x, this.y, this.z);
 
   /// Acceleration force along the x axis (including gravity) measured in m/s^2.
@@ -50,7 +50,7 @@ class AccelerometerEvent {
 /// Discrete reading from a gyroscope. Gyroscopes measure the rate or rotation of
 /// the device in 3D space.
 class GyroscopeEvent {
-  /// Contructs an instance with the given [x], [y], and [z] values.
+  /// Constructs an instance with the given [x], [y], and [z] values.
   GyroscopeEvent(this.x, this.y, this.z);
 
   /// Rate of rotation around the x axis measured in rad/s.
@@ -83,7 +83,7 @@ class GyroscopeEvent {
 /// and measures the velocity of the device. However, unlike
 /// [AccelerometerEvent], this event does not include the effects of gravity.
 class UserAccelerometerEvent {
-  /// Contructs an instance with the given [x], [y], and [z] values.
+  /// Constructs an instance with the given [x], [y], and [z] values.
   UserAccelerometerEvent(this.x, this.y, this.z);
 
   /// Acceleration force along the x axis (excluding gravity) measured in m/s^2.
@@ -110,7 +110,12 @@ class UserAccelerometerEvent {
   String toString() => '[UserAccelerometerEvent (x: $x, y: $y, z: $z)]';
 }
 
+/// Like [AccelerometerEvent] and [UserAccelerometerEvent], this is a discrete
+/// reading from an accelerometer and measures the gravity force on the device.
+/// Simply put, this is the difference between [AccelerometerEvent] and
+/// [UserAccelerometerEvent].
 class GravityEvent {
+  /// Constructs an instance with the given [x], [y], and [z] values.
   GravityEvent(this.x, this.y, this.z);
 
   /// Gravity force along the x axis measured in m/s^2.
@@ -144,7 +149,6 @@ GyroscopeEvent _listToGyroscopeEvent(List<double> list) {
 
 Stream<AccelerometerEvent> _accelerometerEvents;
 Stream<GyroscopeEvent> _gyroscopeEvents;
-Stream<List<double>> _userAccelerometerGravityEvents;
 Stream<UserAccelerometerEvent> _userAccelerometerEvents;
 Stream<GravityEvent> _gravityEvents;
 
@@ -170,12 +174,9 @@ Stream<GyroscopeEvent> get gyroscopeEvents {
 }
 
 Stream<List<double>> get _userAccelerometerAndGravityEvents {
-  if (_userAccelerometerGravityEvents == null) {
-    _userAccelerometerGravityEvents = _userAccelerometerGravityEventChannel
-        .receiveBroadcastStream()
-        .map((dynamic event) => event.cast<double>());
-  }
-  return _userAccelerometerGravityEvents;
+  return _userAccelerometerGravityEventChannel
+      .receiveBroadcastStream()
+      .map((dynamic event) => event.cast<double>());
 }
 
 /// Events from the device accelerometer with gravity removed.
@@ -190,10 +191,8 @@ Stream<UserAccelerometerEvent> get userAccelerometerEvents {
 /// Events from the device accelerometer, gravity only.
 Stream<GravityEvent> get gravityEvents {
   if (_gravityEvents == null) {
-    _gravityEvents =
-        _userAccelerometerAndGravityEvents.map((List<double> data) {
-      return _listToGravityEvent(data);
-    });
+    _gravityEvents = _userAccelerometerAndGravityEvents
+        .map((List<double> data) => _listToGravityEvent(data));
   }
   return _gravityEvents;
 }
