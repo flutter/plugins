@@ -149,6 +149,7 @@ GyroscopeEvent _listToGyroscopeEvent(List<double> list) {
 
 Stream<AccelerometerEvent> _accelerometerEvents;
 Stream<GyroscopeEvent> _gyroscopeEvents;
+Stream<List<double>> _userAccelerometerGravityEvents;
 Stream<UserAccelerometerEvent> _userAccelerometerEvents;
 Stream<GravityEvent> _gravityEvents;
 
@@ -174,9 +175,12 @@ Stream<GyroscopeEvent> get gyroscopeEvents {
 }
 
 Stream<List<double>> get _userAccelerometerAndGravityEvents {
-  return _userAccelerometerGravityEventChannel
-      .receiveBroadcastStream()
-      .map((dynamic event) => event.cast<double>());
+  if (_userAccelerometerGravityEvents == null) {
+    _userAccelerometerGravityEvents = _userAccelerometerGravityEventChannel
+        .receiveBroadcastStream()
+        .map((dynamic event) => event.cast<double>());
+  }
+  return _userAccelerometerGravityEvents;
 }
 
 /// Events from the device accelerometer with gravity removed.

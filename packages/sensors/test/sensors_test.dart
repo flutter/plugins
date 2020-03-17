@@ -47,18 +47,6 @@ void main() {
     expect(event.y, sensorData[1]);
     expect(event.z, sensorData[2]);
   });
-
-  test('$gravityEvents are streamed', () async {
-    const String channelName = 'plugins.flutter.io/sensors/user_accel_gravity';
-    const List<double> sensorData = <double>[2.0, 4.0, 6.0, 8.0, 10.0, 12.0];
-    _initializeFakeSensorChannel(channelName, sensorData);
-
-    final GravityEvent event = await gravityEvents.first;
-
-    expect(event.x, sensorData[3]);
-    expect(event.y, sensorData[4]);
-    expect(event.z, sensorData[5]);
-  });
 }
 
 void _initializeFakeSensorChannel(String channelName, List<double> sensorData) {
