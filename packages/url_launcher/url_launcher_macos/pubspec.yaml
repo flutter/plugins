@@ -1,6 +1,6 @@
 name: url_launcher_macos
 description: macOS implementation of the url_launcher plugin.
-version: 0.0.1+4
+version: 0.0.1+5
 homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_macos
 
 flutter:

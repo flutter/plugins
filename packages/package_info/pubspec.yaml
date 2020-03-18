@@ -2,7 +2,10 @@ name: package_info
 description: Flutter plugin for querying information about the application
   package, such as CFBundleVersion on iOS or versionCode on Android.
 homepage: https://github.com/flutter/plugins/tree/master/packages/package_info
-version: 0.4.0+14
+# 0.4.y+z is compatible with 1.0.0, if you land a breaking change bump
+# the version to 2.0.0.
+# See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+version: 0.4.0+17
 
 flutter:
   plugin:
@@ -28,4 +31,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=1.10.0 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"

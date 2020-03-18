@@ -10,6 +10,7 @@ import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 import io.flutter.plugins.androidalarmmanager.AndroidAlarmManagerPlugin;
 import io.flutter.plugins.pathprovider.PathProviderPlugin;
+import io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin;
 
 public class MainActivity extends FlutterActivity {
   // TODO(bkonyi): Remove this once v2 of GeneratedPluginRegistrant rolls to stable. https://github.com/flutter/flutter/issues/42694
@@ -18,6 +19,7 @@ public class MainActivity extends FlutterActivity {
     ShimPluginRegistry shimPluginRegistry = new ShimPluginRegistry(flutterEngine);
     flutterEngine.getPlugins().add(new AndroidAlarmManagerPlugin());
     flutterEngine.getPlugins().add(new E2EPlugin());
+    flutterEngine.getPlugins().add(new SharedPreferencesPlugin());
     PathProviderPlugin.registerWith(
         shimPluginRegistry.registrarFor("io.flutter.plugins.pathprovider.PathProviderPlugin"));
   }

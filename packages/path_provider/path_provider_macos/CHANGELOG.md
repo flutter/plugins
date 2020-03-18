@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Adds an example app to run integration tests.
+
 ## 0.0.3+1
 
 * Make the pedantic dev_dependency explicit.

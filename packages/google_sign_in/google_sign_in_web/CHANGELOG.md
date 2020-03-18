@@ -1,3 +1,7 @@
+## 0.8.4
+
+* Remove all `fakeConstructor$` from the generated facade. JS interop classes do not support non-external constructors.
+
 ## 0.8.3+2
 
 * Make the pedantic dev_dependency explicit.
