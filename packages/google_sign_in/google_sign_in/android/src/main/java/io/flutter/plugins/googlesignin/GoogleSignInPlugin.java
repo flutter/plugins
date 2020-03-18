@@ -180,7 +180,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public static final class Delegate implements IDelegate, PluginRegistry.ActivityResultListener {
     private static final int REQUEST_CODE_SIGNIN = 53293;
     private static final int REQUEST_CODE_RECOVER_AUTH = 53294;
-    private static final int REQUEST_CODE_REQUEST_SCOPE = 53295;
+    @VisibleForTesting static final int REQUEST_CODE_REQUEST_SCOPE = 53295;
 
     private static final String ERROR_REASON_EXCEPTION = "exception";
     private static final String ERROR_REASON_STATUS = "status";
@@ -361,6 +361,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     @Override
     public void requestScopes(Result result, List<String> scopes) {
+      checkAndSetPendingOperation(METHOD_REQUEST_SCOPES, result);
+
       GoogleSignInAccount account = googleSignInWrapper.getLastSignedInAccount(registrar.context());
       if (account == null) {
         result.error(ERROR_REASON_SIGN_IN_REQUIRED, "No account to grant scopes.", null);
@@ -371,7 +373,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
       for (String scope : scopes) {
         Scope wrappedScope = new Scope(scope);
-        if (!GoogleSignIn.hasPermissions(account, wrappedScope)) {
+        if (!googleSignInWrapper.hasPermissions(account, wrappedScope)) {
           wrappedScopes.add(wrappedScope);
         }
       }
@@ -381,7 +383,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         return;
       }
 
-      GoogleSignIn.requestPermissions(
+      googleSignInWrapper.requestPermissions(
           registrar.activity(),
           REQUEST_CODE_REQUEST_SCOPE,
           account,
@@ -573,7 +575,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           }
           return true;
         case REQUEST_CODE_REQUEST_SCOPE:
-          pendingOperation.result.success(resultCode == Activity.RESULT_OK);
+          finishWithSuccess(resultCode == Activity.RESULT_OK);
           return true;
         default:
           return false;
@@ -594,5 +596,13 @@ class GoogleSignInWrapper {
 
   GoogleSignInAccount getLastSignedInAccount(Context context) {
     return GoogleSignIn.getLastSignedInAccount(context);
+  }
+
+  boolean hasPermissions(GoogleSignInAccount account, Scope scope) {
+    return GoogleSignIn.hasPermissions(account, scope);
+  }
+
+  void requestPermissions(Activity activity, int requestCode, GoogleSignInAccount account, Scope[] scopes) {
+    GoogleSignIn.requestPermissions(activity, requestCode, account, scopes);
   }
 }

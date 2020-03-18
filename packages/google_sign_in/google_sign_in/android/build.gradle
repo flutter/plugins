@@ -32,3 +32,8 @@ android {
         disable 'InvalidPackage'
     }
 }
+
+dependencies {
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    implementation 'com.google.guava:guava:20.0'
+}
