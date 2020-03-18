@@ -6,6 +6,8 @@ package io.flutter.plugins.deviceinfo;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.pm.FeatureInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 import io.flutter.plugin.common.MethodCall;
@@ -20,14 +22,16 @@ import java.util.Map;
  */
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
-  private ContentResolver contentResolver;
+  private final ContentResolver contentResolver;
+  private final PackageManager packageManager;
 
   /** Substitute for missing values. */
   private static final String[] EMPTY_STRING_LIST = new String[] {};
 
-  /** Constructs DeviceInfo. The {@code contentResolver} must not be null. */
-  MethodCallHandlerImpl(ContentResolver contentResolver) {
+  /** Constructs DeviceInfo. {@code contentResolver} and {@code packageManager} must not be null. */
+  MethodCallHandlerImpl(ContentResolver contentResolver, PackageManager packageManager) {
     this.contentResolver = contentResolver;
+    this.packageManager = packageManager;
   }
 
   @Override
@@ -60,6 +64,8 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       build.put("isPhysicalDevice", !isEmulator());
       build.put("androidId", getAndroidId());
 
+      build.put("systemFeatures", Arrays.asList(getSystemFeatures()));
+
       Map<String, Object> version = new HashMap<>();
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         version.put("baseOS", Build.VERSION.BASE_OS);
@@ -76,6 +82,18 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     } else {
       result.notImplemented();
     }
+  }
+
+  private String[] getSystemFeatures() {
+    FeatureInfo[] featureInfos = packageManager.getSystemAvailableFeatures();
+    if (featureInfos == null) {
+      return EMPTY_STRING_LIST;
+    }
+    String[] features = new String[featureInfos.length];
+    for (int i = 0; i < featureInfos.length; i++) {
+      features[i] = featureInfos[i].name;
+    }
+    return features;
   }
 
   /**
