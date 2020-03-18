@@ -825,21 +825,17 @@ void main() {
   });
 
   testWidgets("fromAssetImage", (WidgetTester tester) async {
-    final Iterable<Future<bool>> futures =
-        <double>[1, 2, 3].map((double pixelRatio) async {
-      final ImageConfiguration imageConfiguration =
-          ImageConfiguration(devicePixelRatio: pixelRatio);
-      final BitmapDescriptor mip = await BitmapDescriptor.fromAssetImage(
-          imageConfiguration, 'red_square.png');
-      final BitmapDescriptor scaled = await BitmapDescriptor.fromAssetImage(
-          imageConfiguration, 'red_square.png',
-          mipmaps: false);
-      // ignore: invalid_use_of_visible_for_testing_member
-      mip.toJson().forEach((dynamic x) => print(x));
-      // ignore: invalid_use_of_visible_for_testing_member
-      scaled.toJson().forEach((dynamic x) => print(x));
-      return Future<bool>.value(true);
-    });
-    await Future.wait(futures);
+    double pixelRatio = 2;
+    final ImageConfiguration imageConfiguration =
+        ImageConfiguration(devicePixelRatio: pixelRatio);
+    final BitmapDescriptor mip = await BitmapDescriptor.fromAssetImage(
+        imageConfiguration, 'red_square.png');
+    final BitmapDescriptor scaled = await BitmapDescriptor.fromAssetImage(
+        imageConfiguration, 'red_square.png',
+        mipmaps: false);
+    // ignore: invalid_use_of_visible_for_testing_member
+    expect(mip.toJson()[2], 1);
+    // ignore: invalid_use_of_visible_for_testing_member
+    expect(scaled.toJson()[2], 2);
   });
 }
