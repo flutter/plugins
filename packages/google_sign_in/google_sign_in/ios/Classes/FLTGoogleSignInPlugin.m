@@ -124,6 +124,11 @@ static FlutterError *getFlutterError(NSError *error) {
     result(nil);
   } else if ([call.method isEqualToString:@"requestScopes"]) {
     GIDGoogleUser *user = [GIDSignIn sharedInstance].currentUser;
+    if(user == nil) {
+      result([FlutterError errorWithCode:@"sign_in_required" message:@"No account to grant scopes." details:nil]);
+      return;
+    }
+
     NSArray *currentScopes = [GIDSignIn sharedInstance].scopes;
     NSArray *scopes = call.arguments[@"scopes"];
     NSArray *missingScopes = [scopes
