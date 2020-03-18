@@ -6,6 +6,8 @@ package io.flutter.plugins.share;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Environment;
 import androidx.annotation.NonNull;
@@ -84,6 +86,13 @@ class Share {
     if (subject != null) shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
     shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
+
+    List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY);
+    for (ResolveInfo resolveInfo : resInfoList) {
+      String packageName = resolveInfo.activityInfo.packageName;
+      activity.grantUriPermission(packageName, fileUris.get(0), Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
     if (activity != null) {
       activity.startActivity(chooserIntent);
     } else {
