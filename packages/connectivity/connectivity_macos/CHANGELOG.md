@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* Remove hard coded ios workspace setting of the example app.
+
 ## 0.1.0+1
 
 * Make the pedantic dev_dependency explicit.
