@@ -84,7 +84,8 @@ public class GoogleSignInPluginTests {
 
     plugin.onMethodCall(methodCall, result);
 
-    verify(mockGoogleSignIn).requestPermissions(mockActivity, 53295, account, new Scope[] {requestedScope});
+    verify(mockGoogleSignIn)
+        .requestPermissions(mockActivity, 53295, account, new Scope[] {requestedScope});
   }
 
   @Test
@@ -94,7 +95,8 @@ public class GoogleSignInPluginTests {
     MethodCall methodCall = new MethodCall("requestScopes", arguments);
     Scope requestedScope = new Scope("requestedScope");
 
-    ArgumentCaptor<ActivityResultListener> captor = ArgumentCaptor.forClass(ActivityResultListener.class);
+    ArgumentCaptor<ActivityResultListener> captor =
+        ArgumentCaptor.forClass(ActivityResultListener.class);
     verify(mockRegistrar).addActivityResultListener(captor.capture());
     ActivityResultListener listener = captor.getValue();
 
@@ -103,7 +105,8 @@ public class GoogleSignInPluginTests {
     when(mockGoogleSignIn.hasPermissions(account, requestedScope)).thenReturn(false);
 
     plugin.onMethodCall(methodCall, result);
-    listener.onActivityResult(Delegate.REQUEST_CODE_REQUEST_SCOPE, Activity.RESULT_CANCELED, new Intent());
+    listener.onActivityResult(
+        Delegate.REQUEST_CODE_REQUEST_SCOPE, Activity.RESULT_CANCELED, new Intent());
 
     verify(result).success(false);
   }
@@ -115,7 +118,8 @@ public class GoogleSignInPluginTests {
     MethodCall methodCall = new MethodCall("requestScopes", arguments);
     Scope requestedScope = new Scope("requestedScope");
 
-    ArgumentCaptor<ActivityResultListener> captor = ArgumentCaptor.forClass(ActivityResultListener.class);
+    ArgumentCaptor<ActivityResultListener> captor =
+        ArgumentCaptor.forClass(ActivityResultListener.class);
     verify(mockRegistrar).addActivityResultListener(captor.capture());
     ActivityResultListener listener = captor.getValue();
 
@@ -124,7 +128,8 @@ public class GoogleSignInPluginTests {
     when(mockGoogleSignIn.hasPermissions(account, requestedScope)).thenReturn(false);
 
     plugin.onMethodCall(methodCall, result);
-    listener.onActivityResult(Delegate.REQUEST_CODE_REQUEST_SCOPE, Activity.RESULT_OK, new Intent());
+    listener.onActivityResult(
+        Delegate.REQUEST_CODE_REQUEST_SCOPE, Activity.RESULT_OK, new Intent());
 
     verify(result).success(true);
   }

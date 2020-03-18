@@ -35,22 +35,22 @@
   [super tearDown];
 }
 
--(void)testRequestScopesResultErrorIfNotSignedIn {
+- (void)testRequestScopesResultErrorIfNotSignedIn {
   OCMStub(self.mockSharedInstance.currentUser).andReturn(nil);
 
-   FlutterMethodCall *methodCall =
-        [FlutterMethodCall methodCallWithMethodName:@"requestScopes"
-                                          arguments:@{@"scopes" : @[ @"mockScope1" ]}];
+  FlutterMethodCall *methodCall =
+      [FlutterMethodCall methodCallWithMethodName:@"requestScopes"
+                                        arguments:@{@"scopes" : @[ @"mockScope1" ]}];
 
-    XCTestExpectation *expectation = [self expectationWithDescription:@"expect result returns true"];
-    __block id result;
-    [self.plugin handleMethodCall:methodCall
-                           result:^(id r) {
-                             [expectation fulfill];
-                             result = r;
-                           }];
-    [self waitForExpectations:@[ expectation ] timeout:5];
-    XCTAssertEqualObjects([((FlutterError*) result) code], @"sign_in_required");
+  XCTestExpectation *expectation = [self expectationWithDescription:@"expect result returns true"];
+  __block id result;
+  [self.plugin handleMethodCall:methodCall
+                         result:^(id r) {
+                           [expectation fulfill];
+                           result = r;
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertEqualObjects([((FlutterError *)result) code], @"sign_in_required");
 }
 
 - (void)testRequestScopesIfNoMissingScope {

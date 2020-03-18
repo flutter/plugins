@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.VisibleForTesting;
-
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -56,7 +55,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-    final GoogleSignInPlugin instance = new GoogleSignInPlugin(registrar, new GoogleSignInWrapper());
+    final GoogleSignInPlugin instance =
+        new GoogleSignInPlugin(registrar, new GoogleSignInWrapper());
     channel.setMethodCallHandler(instance);
   }
 
@@ -587,10 +587,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 /**
  * A wrapper object that calls static method in GoogleSignIn.
  *
- * Because GoogleSignIn uses static method mostly, which is hard for unit testing. We use this wrapper
- * class to use instance method which calls the corresponding GoogleSignIn static methods.
+ * <p>Because GoogleSignIn uses static method mostly, which is hard for unit testing. We use this
+ * wrapper class to use instance method which calls the corresponding GoogleSignIn static methods.
  *
- * Warning! This class should stay true that each method calls a GoogleSignIn static method with the same name and same parameters.
+ * <p>Warning! This class should stay true that each method calls a GoogleSignIn static method with
+ * the same name and same parameters.
  */
 class GoogleSignInWrapper {
 
@@ -602,7 +603,8 @@ class GoogleSignInWrapper {
     return GoogleSignIn.hasPermissions(account, scope);
   }
 
-  void requestPermissions(Activity activity, int requestCode, GoogleSignInAccount account, Scope[] scopes) {
+  void requestPermissions(
+      Activity activity, int requestCode, GoogleSignInAccount account, Scope[] scopes) {
     GoogleSignIn.requestPermissions(activity, requestCode, account, scopes);
   }
 }
