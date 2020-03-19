@@ -8,7 +8,7 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
