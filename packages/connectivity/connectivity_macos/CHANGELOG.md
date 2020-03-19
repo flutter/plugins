@@ -1,3 +1,9 @@
+## 0.1.0+3
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Clean up various Android workarounds no longer needed after framework v1.12.
+* Complete v2 embedding support.
+
 ## 0.1.0+2
 
 * Remove hard coded ios workspace setting of the example app.
