@@ -5,6 +5,7 @@
 package dev.flutter.plugins.e2e;
 
 import android.app.Activity;
+import android.util.Log;
 import androidx.test.rule.ActivityTestRule;
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -15,11 +16,13 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
-public class FlutterRunner extends Runner {
+public class FlutterTestRunner extends Runner {
+  private static final String TAG = "FlutterTestRunner";
 
   final Class testClass;
+  ActivityTestRule<Activity> rule = null;
 
-  public FlutterRunner(Class<?> testClass) {
+  public FlutterTestRunner(Class<?> testClass) {
     super();
     this.testClass = testClass;
 
@@ -29,8 +32,7 @@ public class FlutterRunner extends Runner {
       if (field.isAnnotationPresent(Rule.class)) {
         try {
           Object instance = testClass.newInstance();
-          ActivityTestRule<Activity> rule = (ActivityTestRule<Activity>) field.get(instance);
-          rule.launchActivity(null);
+          rule = (ActivityTestRule<Activity>) field.get(instance);
         } catch (InstantiationException | IllegalAccessException e) {
           // This might occur if the developer did not make the rule public.
           // We could call field.setAccessible(true) but it seems better to throw.
@@ -47,6 +49,17 @@ public class FlutterRunner extends Runner {
 
   @Override
   public void run(RunNotifier notifier) {
+    if (rule == null) {
+      throw new RuntimeException("Unable to run tests due to missing activity rule");
+    }
+    try {
+      rule.launchActivity(null);
+    } catch (RuntimeException e) {
+      Log.v(TAG, "launchActivity failed, possibly because the activity was already running. " + e);
+      Log.v(
+          TAG,
+          "Try disabling auto-launch of the activity, e.g. ActivityTestRule<>(MainActivity.class, true, false);");
+    }
     Map<String, String> results = null;
     try {
       results = E2EPlugin.testResults.get();

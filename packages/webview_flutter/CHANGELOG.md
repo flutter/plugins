@@ -1,6 +1,15 @@
-## 0.3.19+9
+## 0.3.19+11
 
 * Add progress tracking support.
+
+## 0.3.19+10
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.3.19+9
+
+* Remove example app's iOS workspace settings.
+
 
 ## 0.3.19+8
 
