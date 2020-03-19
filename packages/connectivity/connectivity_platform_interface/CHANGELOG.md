@@ -1,4 +1,4 @@
-## 1.0.3+1
+## 1.0.4
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.
 
