@@ -28,7 +28,7 @@ public class ConnectivityPlugin implements FlutterPlugin {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    setupChannels(binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
+    setupChannels(binding.getBinaryMessenger(), binding.getApplicationContext());
   }
 
   @Override

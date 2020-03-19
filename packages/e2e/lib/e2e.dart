@@ -19,6 +19,12 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
       try {
+        // For web integration tests we are not using the
+        // `plugins.flutter.io/e2e`. Mark the tests as complete before invoking
+        // the channel.
+        if (kIsWeb) {
+          if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
+        }
         await _channel.invokeMethod<void>(
             'allTestsFinished', <String, dynamic>{'results': _results});
       } on MissingPluginException {
