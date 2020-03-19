@@ -42,7 +42,7 @@ public final class IntentSender {
    * back to {@code applicationContext} and adds {@link Intent#FLAG_ACTIVITY_NEW_TASK} to the intent
    * before launching it.
    *
-   * @param action the Intent action, such as {@code ACTION_VIEW}.
+   * @param action the Intent action, such as {@code ACTION_VIEW} if non-null.
    * @param flags forwarded to {@link Intent#addFlags(int)} if non-null.
    * @param category forwarded to {@link Intent#addCategory(String)} if non-null.
    * @param data forwarded to {@link Intent#setData(Uri)} if non-null and 'type' parameter is null.
@@ -57,7 +57,7 @@ public final class IntentSender {
    *     Intent#setDataAndType(Uri, String)}
    */
   void send(
-      String action,
+      @Nullable String action,
       @Nullable Integer flags,
       @Nullable String category,
       @Nullable Uri data,
@@ -70,8 +70,11 @@ public final class IntentSender {
       return;
     }
 
-    Intent intent = new Intent(action);
+    Intent intent = new Intent();
 
+    if (action != null) {
+      intent.setAction(action);
+    }
     if (flags != null) {
       intent.addFlags(flags);
     }
