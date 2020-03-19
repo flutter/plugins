@@ -19,7 +19,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: "^1.0.5"
-  connectivity_platform_interface: ^1.0.4
+  connectivity_platform_interface: ^1.0.2
   connectivity_macos: ^0.1.0
 
 dev_dependencies:
