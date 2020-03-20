@@ -37,7 +37,9 @@ class GoogleMapController {
   ///
   /// Accessible only for testing.
   @visibleForTesting
-  MethodChannel channel;
+  MethodChannel get channel {
+    return _googleMapsFlutterPlatform.channel;
+  }
 
   final _GoogleMapState _googleMapState;
 
