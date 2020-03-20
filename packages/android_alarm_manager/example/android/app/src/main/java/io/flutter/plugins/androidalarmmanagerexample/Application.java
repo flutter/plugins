@@ -3,8 +3,8 @@ package io.flutter.plugins.androidalarmmanagerexample;
 import io.flutter.app.FlutterApplication;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
-import io.flutter.plugins.androidalarmmanager.AndroidAlarmManagerPlugin;
 import io.flutter.plugins.androidalarmmanager.AlarmService;
+import io.flutter.plugins.androidalarmmanager.AndroidAlarmManagerPlugin;
 
 public class Application extends FlutterApplication implements PluginRegistrantCallback {
   @Override
