@@ -22,10 +22,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// /// Initializes the platform interface with [id].
   ///
   /// This method is called when the plugin is first initialized.
-  Future<void> init(int id) async {
+  Future<void> init(int id) {
     this._id = id;
     _channel = MethodChannel('plugins.flutter.io/google_maps_$_id');
-    await _channel.invokeMethod<void>('map#waitForMap');
+    _channel.invokeMethod<void>('map#waitForMap');
   }
 
   MethodChannel get channel {
@@ -42,9 +42,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updateMapOptions(Map<String, dynamic> optionsUpdate) async {
+  Future<void> updateMapOptions(Map<String, dynamic> optionsUpdate) {
     assert(optionsUpdate != null);
-    await _channel.invokeMethod<void>(
+    _channel.invokeMethod<void>(
       'map#update',
       <String, dynamic>{
         'options': optionsUpdate,
@@ -58,9 +58,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updateMarkers(Map<String, dynamic> markerUpdates) async {
+  Future<void> updateMarkers(Map<String, dynamic> markerUpdates) {
     assert(markerUpdates != null);
-    await _channel.invokeMethod<void>(
+    _channel.invokeMethod<void>(
       'markers#update',
       markerUpdates,
     );
@@ -72,9 +72,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updatePolygons(Map<String, dynamic> polygonUpdates) async {
+  Future<void> updatePolygons(Map<String, dynamic> polygonUpdates) {
     assert(polygonUpdates != null);
-    await _channel.invokeMethod<void>(
+    _channel.invokeMethod<void>(
       'polygons#update',
       polygonUpdates,
     );
@@ -86,9 +86,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updatePolylines(Map<String, dynamic> polylineUpdates) async {
+  Future<void> updatePolylines(Map<String, dynamic> polylineUpdates) {
     assert(polylineUpdates != null);
-    await _channel.invokeMethod<void>(
+    _channel.invokeMethod<void>(
       'polylines#update',
       polylineUpdates,
     );
@@ -100,9 +100,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updateCircles(Map<String, dynamic> circleUpdates) async {
+  Future<void> updateCircles(Map<String, dynamic> circleUpdates) {
     assert(circleUpdates != null);
-    await _channel.invokeMethod<void>(
+    _channel.invokeMethod<void>(
       'circles#update',
       circleUpdates,
     );
@@ -112,8 +112,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
-  Future<void> animateCamera(dynamic cameraUpdate) async {
-    await _channel.invokeMethod<void>('camera#animate', <String, dynamic>{
+  Future<void> animateCamera(dynamic cameraUpdate) {
+    _channel.invokeMethod<void>('camera#animate', <String, dynamic>{
       'cameraUpdate': cameraUpdate,
     });
   }
@@ -122,8 +122,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
-  Future<void> moveCamera(dynamic cameraUpdate) async {
-    await _channel.invokeMethod<void>('camera#move', <String, dynamic>{
+  Future<void> moveCamera(dynamic cameraUpdate) {
+    _channel.invokeMethod<void>('camera#move', <String, dynamic>{
       'cameraUpdate': cameraUpdate,
     });
   }
@@ -151,8 +151,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }
 
   /// Return [Map<String, dynamic>] defining the region that is visible in a map.
-  Future<Map<String, dynamic>> getVisibleRegion() async {
-    return await _channel
+  Future<Map<String, dynamic>> getVisibleRegion() {
+    return _channel
         .invokeMapMethod<String, dynamic>('map#getVisibleRegion');
   }
 
@@ -172,8 +172,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// Returned [List] corresponds to a screen location. The screen location is specified in screen
   /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
-  Future<List<dynamic>> getLatLng(dynamic screenCoordinate) async {
-    return await _channel.invokeMethod<List<dynamic>>(
+  Future<List<dynamic>> getLatLng(dynamic screenCoordinate) {
+    return _channel.invokeMethod<List<dynamic>>(
         'map#getLatLng', screenCoordinate.toJson());
   }
 
@@ -185,9 +185,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// * See also:
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> showMarkerInfoWindow(String markerId) async {
+  Future<void> showMarkerInfoWindow(String markerId) {
     assert(markerId != null);
-    await _channel.invokeMethod<void>(
+    _channel.invokeMethod<void>(
         'markers#showInfoWindow', <String, String>{'markerId': markerId});
   }
 
@@ -199,9 +199,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> hideMarkerInfoWindow(String markerId) async {
+  Future<void> hideMarkerInfoWindow(String markerId) {
     assert(markerId != null);
-    await _channel.invokeMethod<void>(
+    _channel.invokeMethod<void>(
         'markers#hideInfoWindow', <String, String>{'markerId': markerId});
   }
 
@@ -213,9 +213,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
-  Future<bool> isMarkerInfoWindowShown(String markerId) async {
+  Future<bool> isMarkerInfoWindowShown(String markerId) {
     assert(markerId != null);
-    return await _channel.invokeMethod<bool>(
+    return _channel.invokeMethod<bool>(
         'markers#isInfoWindowShown', <String, String>{'markerId': markerId});
   }
 
