@@ -42,8 +42,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 //        ..style.border = 'none'
         ;
     _mapOptions = MapOptions()
-      ..zoom = 8
-      ..center = LatLng(-34.397, 150.644)
+      ..zoom = 7
+      ..center = LatLng(4.7438427,107.9170665)
     ;
     GMap(_map, _mapOptions);
     ui.platformViewRegistry.registerViewFactory(
