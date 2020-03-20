@@ -15,6 +15,7 @@ public class Application extends FlutterApplication implements PluginRegistrantC
 
   @Override
   public void registerWith(PluginRegistry registry) {
-    AndroidAlarmManagerPlugin.registerWith(registry);
+    AndroidAlarmManagerPlugin.registerWith(
+        registry.registrarFor("io.flutter.plugins.androidalarmmanager.AndroidAlarmManagerPlugin"));
   }
 }
