@@ -61,8 +61,23 @@ abstract class GoogleSignInPlatform {
   /// if the provided instance is a class implemented with `implements`.
   void _verifyProvidesDefaultImplementations() {}
 
-  /// Initializes the plugin. You must call this method before calling other methods.
-  /// See: https://developers.google.com/identity/sign-in/web/reference#gapiauth2initparams
+  /// Initializes the plugin. You must call this method before calling other
+  /// methods.
+  ///
+  /// The [hostedDomain] argument specifies a hosted domain restriction. By
+  /// setting this, sign in will be restricted to accounts of the user in the
+  /// specified domain. By default, the list of accounts will not be restricted.
+  ///
+  /// The list of [scopes] are OAuth scope codes to request when signing in.
+  /// These scope codes will determine the level of data access that is granted
+  /// to your application by the user. The full list of available scopes can be
+  /// found here: <https://developers.google.com/identity/protocols/googlescopes>
+  ///
+  /// The [signInOption] determines the user experience. [SigninOption.games] is
+  /// only supported on Android.
+  ///
+  /// See:
+  /// https://developers.google.com/identity/sign-in/web/reference#gapiauth2initparams
   Future<void> init(
       {@required String hostedDomain,
       List<String> scopes,
@@ -105,5 +120,13 @@ abstract class GoogleSignInPlatform {
   /// Clears any cached information that the plugin may be holding on to.
   Future<void> clearAuthCache({@required String token}) async {
     throw UnimplementedError('clearAuthCache() has not been implemented.');
+  }
+
+  /// Requests the user grants additional Oauth [scopes].
+  ///
+  /// Scopes should come from the full  list
+  /// [here](https://developers.google.com/identity/protocols/googlescopes).
+  Future<bool> requestScopes(List<String> scopes) async {
+    throw UnimplementedError('requestScopes() has not been implmented.');
   }
 }

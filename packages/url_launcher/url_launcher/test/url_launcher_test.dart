@@ -7,13 +7,13 @@ import 'dart:ui';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter/foundation.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 import 'package:flutter/services.dart' show PlatformException;
 
 void main() {
   final MockUrlLauncher mock = MockUrlLauncher();
-  when(mock.isMock).thenReturn(true);
   UrlLauncherPlatform.instance = mock;
 
   test('closeWebView default behavior', () async {
@@ -208,4 +208,6 @@ void main() {
   });
 }
 
-class MockUrlLauncher extends Mock implements UrlLauncherPlatform {}
+class MockUrlLauncher extends Mock
+    with MockPlatformInterfaceMixin
+    implements UrlLauncherPlatform {}

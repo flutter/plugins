@@ -33,21 +33,19 @@ class ImageResizer {
       @Nullable Double maxWidth,
       @Nullable Double maxHeight,
       @Nullable Integer imageQuality) {
-    boolean shouldScale =
-        maxWidth != null || maxHeight != null || isImageQualityValid(imageQuality);
-    String[] pathParts = imagePath.split("/");
-    String imageName = pathParts[pathParts.length - 1];
-    File file;
     Bitmap bmp = decodeFile(imagePath);
     if (bmp == null) {
       return null;
     }
+    boolean shouldScale =
+        maxWidth != null || maxHeight != null || isImageQualityValid(imageQuality);
+    if (!shouldScale) {
+      return imagePath;
+    }
     try {
-      if (!shouldScale) {
-        file = createImageOnExternalDirectory(imageName, bmp, 100);
-      } else {
-        file = resizedImage(bmp, maxWidth, maxHeight, imageQuality, imageName);
-      }
+      String[] pathParts = imagePath.split("/");
+      String imageName = pathParts[pathParts.length - 1];
+      File file = resizedImage(bmp, maxWidth, maxHeight, imageQuality, imageName);
       copyExif(imagePath, file.getPath());
       return file.getPath();
     } catch (IOException e) {
@@ -107,7 +105,11 @@ class ImageResizer {
   }
 
   private File createFile(File externalFilesDirectory, String child) {
-    return new File(externalFilesDirectory, child);
+    File image = new File(externalFilesDirectory, child);
+    if (!image.getParentFile().exists()) {
+      image.getParentFile().mkdirs();
+    }
+    return image;
   }
 
   private FileOutputStream createOutputStream(File imageFile) throws IOException {

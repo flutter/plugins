@@ -8,13 +8,23 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
+
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
 class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
+  /// Sets up a listener to report that the tests are finished when everything is
+  /// torn down.
   E2EWidgetsFlutterBinding() {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
       try {
+        // For web integration tests we are not using the
+        // `plugins.flutter.io/e2e`. Mark the tests as complete before invoking
+        // the channel.
+        if (kIsWeb) {
+          if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
+        }
         await _channel.invokeMethod<void>(
             'allTestsFinished', <String, dynamic>{'results': _results});
       } on MissingPluginException {
@@ -26,6 +36,10 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
+  /// Similar to [WidgetsFlutterBinding.ensureInitialized].
+  ///
+  /// Returns an instance of the [E2EWidgetsFlutterBinding], creating and
+  /// initializing it if necessary.
   static WidgetsBinding ensureInitialized() {
     if (WidgetsBinding.instance == null) {
       E2EWidgetsFlutterBinding();
@@ -64,6 +78,10 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
       };
     }
 
+    if (kIsWeb) {
+      registerWebServiceExtension(callback);
+    }
+
     registerServiceExtension(name: 'driver', callback: callback);
   }
 
@@ -76,7 +94,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';
-      _allTestsPassed.complete(false);
+      if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(false);
       valueBeforeTest(details, testDescription);
     };
     await super.runTest(testBody, invariantTester,
