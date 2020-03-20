@@ -1,6 +1,6 @@
 ## 0.5.25
 
-* Add an optional param `mipmaps` for BitmapDescriptor.fromAssetImage.
+* Add an optional param `mipmaps` for `BitmapDescriptor.fromAssetImage`.
 
 ## 0.5.24+1
 
