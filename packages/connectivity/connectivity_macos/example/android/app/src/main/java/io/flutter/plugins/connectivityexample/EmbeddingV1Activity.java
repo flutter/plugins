@@ -13,6 +13,6 @@ public class EmbeddingV1Activity extends FlutterActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     ConnectivityPlugin.registerWith(
-    		registrarFor("io.flutter.plugins.connectivity.ConnectivityPlugin"));
+    	registrarFor("io.flutter.plugins.connectivity.ConnectivityPlugin"));
   }
 }
