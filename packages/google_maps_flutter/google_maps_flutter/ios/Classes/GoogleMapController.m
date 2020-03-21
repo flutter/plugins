@@ -184,7 +184,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       result([FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)]);
     } else {
       result([FlutterError errorWithCode:@"GoogleMap uninitialized"
-                                 message:@"takeScreenshot called prior to map initialization"
+                                 message:@"takeSnapshot called prior to map initialization"
                                  details:nil]);
     }
   } else if ([call.method isEqualToString:@"markers#update"]) {

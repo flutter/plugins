@@ -295,7 +295,7 @@ final class GoogleMapController
                   }
                 });
           } else {
-            result.error("GoogleMap uninitialized", "takeScreenshot", null);
+            result.error("GoogleMap uninitialized", "takeSnapshot", null);
           }
           break;
         }

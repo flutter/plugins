@@ -840,7 +840,7 @@ void main() {
     expect(scaled.toJson()[2], 2);
   });
 
-    testWidgets('testTakeSnapshot', (WidgetTester tester) async {
+  testWidgets('testTakeSnapshot', (WidgetTester tester) async {
     Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 
@@ -863,7 +863,6 @@ void main() {
 
     final GoogleMapInspector inspector = await inspectorCompleter.future;
     final Uint8List bytes = await inspector.takeSnapshot();
-    expect(bytes, isNotNull);
-    expect(bytes.isNotEmpty, true);
+    expect(bytes?.isNotEmpty, true);
   });
 }
