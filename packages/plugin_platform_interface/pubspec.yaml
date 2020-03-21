@@ -19,6 +19,8 @@ homepage: https://github.com/flutter/plugins/plugin_platform_interface
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
+
+
 dependencies:
   meta: ^1.0.0
 
@@ -26,3 +28,4 @@ dev_dependencies:
   mockito: ^4.1.1
   test: ^1.9.4
   pedantic: ^1.8.0
+

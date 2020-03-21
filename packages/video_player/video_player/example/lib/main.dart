@@ -11,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+@override
 void main() {
   runApp(
     MaterialApp(
@@ -18,15 +19,40 @@ void main() {
     ),
   );
 }
+int i=0;
+bool bl;
 
-class _App extends StatelessWidget {
+
+
+
+class _App extends StatefulWidget {
+  _MyApp createState() => new _MyApp();
+}
+
+class _MyApp extends State<_App>{
   @override
+
+  bool val=false ;
+  Color bar,screen;
+
+   thm(bool bl){
+    if(bl==true) {
+      bar = Colors.black87;
+      screen = Colors.black26;
+    }
+
+    else {
+      bar = Colors.blue;
+      screen = Colors.white;
+    }
+  }
   Widget build(BuildContext context) {
     return DefaultTabController(
+
       length: 3,
       child: Scaffold(
         key: const ValueKey<String>('home_page'),
-        appBar: AppBar(
+        appBar: AppBar(backgroundColor: bar,
           title: const Text('Video player example'),
           actions: <Widget>[
             IconButton(
@@ -40,7 +66,14 @@ class _App extends StatelessWidget {
                   ),
                 );
               },
-            )
+            ),
+            Switch(value: val, onChanged: (bool Newval){
+              setState(() {
+                val = Newval;
+                thm(Newval);
+
+              });
+            },activeColor: Colors.white,inactiveThumbColor: Colors.black,)
           ],
           bottom: const TabBar(
             isScrollable: true,
@@ -61,6 +94,7 @@ class _App extends StatelessWidget {
             _ButterFlyAssetVideoInList(),
           ],
         ),
+        backgroundColor: screen,
       ),
     );
   }
