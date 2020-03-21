@@ -825,7 +825,22 @@ void main() {
     expect(iwVisibleStatus, false);
   });
 
-  testWidgets('testTakeSnapshot', (WidgetTester tester) async {
+  testWidgets("fromAssetImage", (WidgetTester tester) async {
+    double pixelRatio = 2;
+    final ImageConfiguration imageConfiguration =
+        ImageConfiguration(devicePixelRatio: pixelRatio);
+    final BitmapDescriptor mip = await BitmapDescriptor.fromAssetImage(
+        imageConfiguration, 'red_square.png');
+    final BitmapDescriptor scaled = await BitmapDescriptor.fromAssetImage(
+        imageConfiguration, 'red_square.png',
+        mipmaps: false);
+    // ignore: invalid_use_of_visible_for_testing_member
+    expect(mip.toJson()[2], 1);
+    // ignore: invalid_use_of_visible_for_testing_member
+    expect(scaled.toJson()[2], 2);
+  });
+
+    testWidgets('testTakeSnapshot', (WidgetTester tester) async {
     Completer<GoogleMapInspector> inspectorCompleter =
         Completer<GoogleMapInspector>();
 

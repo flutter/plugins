@@ -1,6 +1,10 @@
-## 0.5.25
+## 0.5.25+1
 
 * Added function for taking a snapshot of the map.
+
+## 0.5.25
+
+* Add an optional param `mipmaps` for `BitmapDescriptor.fromAssetImage`.
 
 ## 0.5.24+1
 
