@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -71,8 +72,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
           response = <String, String>{
             'message': allTestsPassed
                 ? Response.allTestsPassed().toJson()
-                : Response.someTestsFailed(
-                        formatFailures(_failureMethodsDetails))
+                : Response.someTestsFailed(_failureMethodsDetails)
                     .toJson(),
           };
           break;

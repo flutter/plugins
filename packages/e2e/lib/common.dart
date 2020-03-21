@@ -7,58 +7,61 @@ import 'dart:convert';
 /// An object sent from e2e back to the Flutter Driver in response to
 /// `request_data` command.
 class Response {
-  final String _failureDetails;
+  final Map<String, dynamic> _failureDetails;
 
   final bool _allTestsPassed;
 
   /// Constructor to use for positive response.
   Response.allTestsPassed()
       : this._allTestsPassed = true,
-        this._failureDetails = '';
+        this._failureDetails = null;
 
   /// Constructor for failure response.
   Response.someTestsFailed(this._failureDetails) : this._allTestsPassed = false;
 
   /// Whether the test ran successfully or not.
-  String get result => _allTestsPassed ? 'pass' : 'fail';
+  bool get allTestsPassed => _allTestsPassed;
 
   /// If the result are failures get the formatted details.
-  String get failureDetails => _allTestsPassed ? '' : _failureDetails;
+  String get formattedFailureDetails =>
+      _allTestsPassed ? '' : formatFailures(_failureDetails);
 
-  /// Convert a string pass/fail result to a boolean.
-  static bool testsPassed(String result) => (result == 'pass')
-      ? true
-      : (result == 'fail') ? false : throw 'Invalid State for result.';
+  /// Failure details as a map.
+  Map<String, dynamic> get failureDetails => _failureDetails;
 
   /// Serializes this message to a JSON map.
   String toJson() => json.encode(<String, String>{
-        'result': result,
-        'failureDetails': _failureDetails,
+        'result': allTestsPassed.toString(),
+        'failureDetails': json.encode(_failureDetails),
       });
 
   /// Deserializes the result from JSON.
   static Response fromJson(String source) {
     Map<String, dynamic> result = json.decode(source);
-    if (testsPassed(result['result'])) {
+    if (result['result'] == 'true') {
       return Response.allTestsPassed();
     } else {
-      return Response.someTestsFailed(result['failureDetails']);
+      final Map<String, dynamic> failureDetailsAsMap =
+          json.decode(result['failureDetails']);
+
+      return Response.someTestsFailed(failureDetailsAsMap);
     }
   }
-}
 
-/// Method for formating the test failures' details.
-String formatFailures(Map<String, String> failureDetails) {
-  if (failureDetails.isEmpty) {
-    return '';
+  /// Method for formating the test failures' details.
+  String formatFailures(Map<String, dynamic> failureDetails) {
+    if (failureDetails.isEmpty) {
+      return '';
+    }
+
+    StringBuffer sb = StringBuffer();
+    int failureCount = 1;
+    failureDetails.forEach((methodName, details) {
+      sb.writeln('Failure in method: $methodName');
+      sb.writeln('$details');
+      sb.writeln('end of failure ${failureCount.toString()}\n\n');
+      failureCount++;
+    });
+    return sb.toString();
   }
-  StringBuffer sb = StringBuffer();
-  int failureCount = 1;
-  failureDetails.forEach((methodName, details) {
-    sb.writeln('Failure in method: $methodName');
-    sb.writeln('$details');
-    sb.writeln('end of failure ${failureCount.toString()}\n\n');
-    failureCount++;
-  });
-  return sb.toString();
 }

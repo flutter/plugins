@@ -1,4 +1,4 @@
-## 0.3.1
+## 0.4.0
 
 * **Breaking change** Driver request_data call's response has changed to
   encapsulate the failure details.

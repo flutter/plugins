@@ -11,10 +11,12 @@ Future<void> main() async {
   final common.Response response = common.Response.fromJson(jsonResult);
   await driver.close();
 
-  if (response.result == 'pass') {
+  if (response.allTestsPassed) {
+    print('All tests passed.');
     exit(0);
   } else {
-    print('Failure Details:\n${response.failureDetails}');
+    response.formattedFailureDetails;
+    print('Failure Details:\n${response.formattedFailureDetails}');
     exit(1);
   }
 }

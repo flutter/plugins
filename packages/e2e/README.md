@@ -53,7 +53,7 @@ Future<void> main() async {
       await driver.requestData(null, timeout: const Duration(minutes: 1));
   final common.Response response = common.Response.fromJson(jsonResult);
   await driver.close();
-  exit(response.result == 'pass' ? 0 : 1);
+  exit(response.allTestsPassed ? 0 : 1);
 }
 ```
 

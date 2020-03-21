@@ -12,8 +12,8 @@ Future<void> main() async {
     common.Response response = common.Response.fromJson(jsonResult);
     await driver.close();
     expect(
-      response.result,
-      'fail',
+      response.allTestsPassed,
+      false,
     );
   });
 }
