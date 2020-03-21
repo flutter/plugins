@@ -72,8 +72,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
           response = <String, String>{
             'message': allTestsPassed
                 ? Response.allTestsPassed().toJson()
-                : Response.someTestsFailed(_failureMethodsDetails)
-                    .toJson(),
+                : Response.someTestsFailed(_failureMethodsDetails).toJson(),
           };
           break;
         case 'get_health':
