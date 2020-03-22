@@ -114,6 +114,11 @@ void main() {
         }: isMethodCall('clearAuthCache', arguments: <String, dynamic>{
           'token': 'abc',
         }),
+        () {
+          googleSignIn.requestScopes(['newScope', 'anotherScope']);
+        }: isMethodCall('requestScopes', arguments: <String, dynamic>{
+          'scopes': ['newScope', 'anotherScope'],
+        }),
         googleSignIn.signOut: isMethodCall('signOut', arguments: null),
         googleSignIn.disconnect: isMethodCall('disconnect', arguments: null),
         googleSignIn.isSignedIn: isMethodCall('isSignedIn', arguments: null),
