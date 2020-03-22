@@ -3,16 +3,14 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:meta/meta.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'method_channel_google_maps_flutter.dart';
+import 'src/method_channel/method_channel_google_maps_flutter.dart';
 
 /// Exception when a map style is invalid or was unable to be set.
 ///
@@ -60,8 +58,6 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   Future<void> init(int id) {
     throw UnimplementedError('init() has not been implemented.');
   }
-
-  MethodChannel get channel {}
 
   void setMethodCallHandler(dynamic call) {
     throw UnimplementedError(
@@ -217,7 +213,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('getZoomLevel() has not been implemented.');
   }
 
-  ///TODO
+  /// TODO
   Widget buildView(
       Map<String, dynamic> creationParams,
       Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
