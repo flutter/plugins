@@ -22,8 +22,6 @@ import "package:js/js_util.dart" show promiseToFuture;
 /// request additional scopes, and sign out from the current account.
 @JS("gapi.auth2.GoogleAuth")
 class GoogleAuth {
-  // @Ignore
-  GoogleAuth.fakeConstructor$();
   external IsSignedIn get isSignedIn;
   external set isSignedIn(IsSignedIn v);
   external CurrentUser get currentUser;
@@ -212,8 +210,6 @@ abstract class ClientConfig {
 
 @JS("gapi.auth2.SigninOptionsBuilder")
 class SigninOptionsBuilder {
-  // @Ignore
-  SigninOptionsBuilder.fakeConstructor$();
   external dynamic setAppPackageName(String name);
   external dynamic setFetchBasicProfile(bool fetch);
   external dynamic setPrompt(String prompt);

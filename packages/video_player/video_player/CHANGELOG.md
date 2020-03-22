@@ -1,6 +1,10 @@
-## 0.10.8+2
+## 0.10.8+3
 
 * Fix issue where `isBuffering` is not updating on Android.
+
+## 0.10.8+2
+
+* Replace deprecated `getFlutterEngine` call on Android.
 
 ## 0.10.8+1
 
