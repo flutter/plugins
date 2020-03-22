@@ -37,8 +37,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static GoogleMapsFlutterPlatform _instance =
-      MethodChannelGoogleMapsFlutter();
+  static GoogleMapsFlutterPlatform _instance = MethodChannelGoogleMapsFlutter();
 
   /// The default instance of [GoogleMapsFlutterPlatform] to use.
   ///

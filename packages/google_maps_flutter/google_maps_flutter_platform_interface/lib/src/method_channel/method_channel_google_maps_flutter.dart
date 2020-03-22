@@ -13,7 +13,6 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 
 /// An implementation of [GoogleMapsFlutterPlatform] that uses method channels.
 class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
-
   int _id;
 
   MethodChannel _channel;
@@ -166,8 +165,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// Return [Map<String, dynamic>] defining the region that is visible in a map.
   @override
   Future<Map<String, dynamic>> getVisibleRegion() {
-    return _channel
-        .invokeMapMethod<String, dynamic>('map#getVisibleRegion');
+    return _channel.invokeMapMethod<String, dynamic>('map#getVisibleRegion');
   }
 
   /// Return point [Map<String, int>] of the [screenCoordinateInJson] in the current map view.
@@ -176,8 +174,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
   @override
-  Future<Map<String, int>> getScreenCoordinate(
-      dynamic screenCoordinateInJson) {
+  Future<Map<String, int>> getScreenCoordinate(dynamic screenCoordinateInJson) {
     return _channel.invokeMapMethod<String, int>(
         'map#getScreenCoordinate', screenCoordinateInJson);
   }
@@ -268,6 +265,4 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return Text(
         '$defaultTargetPlatform is not yet supported by the maps plugin');
   }
-
-
 }
