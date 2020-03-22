@@ -93,7 +93,7 @@
   NSError *authError = nil;
   lastCallArgs = nil;
   lastResult = nil;
-  context.localizedFallbackTitle = @"";
+  context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"];
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
