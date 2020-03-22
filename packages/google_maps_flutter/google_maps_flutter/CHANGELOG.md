@@ -1,7 +1,11 @@
-## 0.5.25
+## 0.5.26
 
 * Fix references to `myLocationButtonEnabled` in test and example app.
 * Added `isMyLocationEnabled` to `GoogleMapsInspector`.
+
+## 0.5.25
+
+* Add an optional param `mipmaps` for `BitmapDescriptor.fromAssetImage`.
 
 ## 0.5.24+1
 

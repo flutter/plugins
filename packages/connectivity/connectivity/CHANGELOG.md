@@ -1,3 +1,11 @@
+## 0.4.8+3
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.4.8+2
+
+* Remove hard coded ios workspace setting of the example app.
+
 ## 0.4.8+1
 
 * Make the pedantic dev_dependency explicit.

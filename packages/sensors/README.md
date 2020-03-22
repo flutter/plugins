@@ -1,5 +1,12 @@
 # sensors
 
+**Please set your constraint to `sensors: '>=0.4.y+x <2.0.0'`**
+
+## Backward compatible 1.0.0 version is coming
+The sensors plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.4.y+z`.
+Please use `sensors: '>=0.4.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
+For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+
 A Flutter plugin to access the accelerometer and gyroscope sensors.
 
 
