@@ -26,7 +26,7 @@ class GoogleMapController {
     _GoogleMapState googleMapState,
   ) async {
     assert(id != null);
-    _googleMapsFlutterPlatform.init(id);
+    await _googleMapsFlutterPlatform.init(id);
     return GoogleMapController._(
       initialCameraPosition,
       googleMapState,
@@ -36,9 +36,11 @@ class GoogleMapController {
   /// Used to communicate with the native platform.
   ///
   /// Accessible only for testing.
+  // TODO: Remove this once tests are migrated to not need this.
   @visibleForTesting
   MethodChannel get channel {
-    return _googleMapsFlutterPlatform.channel;
+    return (_googleMapsFlutterPlatform as MethodChannelGoogleMapsFlutter)
+        .channel;
   }
 
   final _GoogleMapState _googleMapState;
