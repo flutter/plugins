@@ -1,3 +1,7 @@
+## 5.4.5
+
+* Fix package name typo in pubspec.yaml.
+
 ## 5.4.4
 
 * Replace deprecated `getFlutterEngine` call on Android.
