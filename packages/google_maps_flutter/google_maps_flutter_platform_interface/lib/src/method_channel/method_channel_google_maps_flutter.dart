@@ -9,31 +9,36 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
 
-import 'google_maps_flutter_platform_interface.dart';
-
-MethodChannel _channel;
-
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
 /// An implementation of [GoogleMapsFlutterPlatform] that uses method channels.
 class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
   int _id;
 
-  /// /// Initializes the platform interface with [id].
-  ///
-  /// This method is called when the plugin is first initialized.
-  Future<void> init(int id) {
-    this._id = id;
-    _channel = MethodChannel('plugins.flutter.io/google_maps_$_id');
-    _channel.invokeMethod<void>('map#waitForMap');
-  }
+  MethodChannel _channel;
 
+  /// The MethodChannel backing this implementation.
+  @visibleForTesting
   MethodChannel get channel {
     return _channel;
   }
 
+  // TODO: Remove this, and have a private MethodCallHandler that funnels
+  // events to the appropriate Stream.
   void setMethodCallHandler(dynamic call) {
     _channel.setMethodCallHandler(call);
+  }
+
+  /// Initializes the platform interface with [id].
+  ///
+  /// This method is called when the plugin is first initialized.
+  @override
+  Future<void> init(int id) {
+    this._id = id;
+    _channel = MethodChannel('plugins.flutter.io/google_maps_$_id');
+    // TODO: Install the internal methodCallHandler here.
+    return _channel.invokeMethod<void>('map#waitForMap');
   }
 
   /// Updates configuration options of the map user interface.
@@ -42,9 +47,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
+  @override
   Future<void> updateMapOptions(Map<String, dynamic> optionsUpdate) {
     assert(optionsUpdate != null);
-    _channel.invokeMethod<void>(
+    return _channel.invokeMethod<void>(
       'map#update',
       <String, dynamic>{
         'options': optionsUpdate,
@@ -58,9 +64,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
+  @override
   Future<void> updateMarkers(Map<String, dynamic> markerUpdates) {
     assert(markerUpdates != null);
-    _channel.invokeMethod<void>(
+    return _channel.invokeMethod<void>(
       'markers#update',
       markerUpdates,
     );
@@ -72,9 +79,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
+  @override
   Future<void> updatePolygons(Map<String, dynamic> polygonUpdates) {
     assert(polygonUpdates != null);
-    _channel.invokeMethod<void>(
+    return _channel.invokeMethod<void>(
       'polygons#update',
       polygonUpdates,
     );
@@ -86,9 +94,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
+  @override
   Future<void> updatePolylines(Map<String, dynamic> polylineUpdates) {
     assert(polylineUpdates != null);
-    _channel.invokeMethod<void>(
+    return _channel.invokeMethod<void>(
       'polylines#update',
       polylineUpdates,
     );
@@ -100,9 +109,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
+  @override
   Future<void> updateCircles(Map<String, dynamic> circleUpdates) {
     assert(circleUpdates != null);
-    _channel.invokeMethod<void>(
+    return _channel.invokeMethod<void>(
       'circles#update',
       circleUpdates,
     );
@@ -112,8 +122,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
+  @override
   Future<void> animateCamera(dynamic cameraUpdate) {
-    _channel.invokeMethod<void>('camera#animate', <String, dynamic>{
+    return _channel.invokeMethod<void>('camera#animate', <String, dynamic>{
       'cameraUpdate': cameraUpdate,
     });
   }
@@ -122,8 +133,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
+  @override
   Future<void> moveCamera(dynamic cameraUpdate) {
-    _channel.invokeMethod<void>('camera#move', <String, dynamic>{
+    return _channel.invokeMethod<void>('camera#move', <String, dynamic>{
       'cameraUpdate': cameraUpdate,
     });
   }
@@ -141,6 +153,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// Also, refer [iOS](https://developers.google.com/maps/documentation/ios-sdk/style-reference)
   /// and [Android](https://developers.google.com/maps/documentation/android-sdk/style-reference)
   /// style reference for more information regarding the supported styles.
+  @override
   Future<void> setMapStyle(String mapStyle) async {
     final List<dynamic> successAndError =
         await _channel.invokeMethod<List<dynamic>>('map#setStyle', mapStyle);
@@ -151,6 +164,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }
 
   /// Return [Map<String, dynamic>] defining the region that is visible in a map.
+  @override
   Future<Map<String, dynamic>> getVisibleRegion() {
     return _channel
         .invokeMapMethod<String, dynamic>('map#getVisibleRegion');
@@ -161,17 +175,18 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// A projection is used to translate between on screen location and geographic coordinates.
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
+  @override
   Future<Map<String, int>> getScreenCoordinate(
-      dynamic screenCoordinateInJson) async {
-    final Map<String, int> point = await _channel.invokeMapMethod<String, int>(
+      dynamic screenCoordinateInJson) {
+    return _channel.invokeMapMethod<String, int>(
         'map#getScreenCoordinate', screenCoordinateInJson);
-    return point;
   }
 
   /// Returns [List] corresponding to the [ScreenCoordinate] in the current map view.
   ///
   /// Returned [List] corresponds to a screen location. The screen location is specified in screen
   /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
+  @override
   Future<List<dynamic>> getLatLng(dynamic screenCoordinate) {
     return _channel.invokeMethod<List<dynamic>>(
         'map#getLatLng', screenCoordinate.toJson());
@@ -185,9 +200,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// * See also:
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
+  @override
   Future<void> showMarkerInfoWindow(String markerId) {
     assert(markerId != null);
-    _channel.invokeMethod<void>(
+    return _channel.invokeMethod<void>(
         'markers#showInfoWindow', <String, String>{'markerId': markerId});
   }
 
@@ -199,9 +215,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
+  @override
   Future<void> hideMarkerInfoWindow(String markerId) {
     assert(markerId != null);
-    _channel.invokeMethod<void>(
+    return _channel.invokeMethod<void>(
         'markers#hideInfoWindow', <String, String>{'markerId': markerId});
   }
 
@@ -213,6 +230,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
+  @override
   Future<bool> isMarkerInfoWindowShown(String markerId) {
     assert(markerId != null);
     return _channel.invokeMethod<bool>(
@@ -220,12 +238,12 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }
 
   /// Returns the current zoom level of the map
-  Future<double> getZoomLevel() async {
-    final double zoomLevel =
-        await _channel.invokeMethod<double>('map#getZoomLevel');
-    return zoomLevel;
+  @override
+  Future<double> getZoomLevel() {
+    return _channel.invokeMethod<double>('map#getZoomLevel');
   }
 
+  @override
   Widget buildView(
       Map<String, dynamic> creationParams,
       Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
