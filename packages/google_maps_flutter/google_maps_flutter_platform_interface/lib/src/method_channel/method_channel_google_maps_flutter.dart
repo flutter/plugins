@@ -18,7 +18,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   MethodChannel _channel;
 
   /// The MethodChannel backing this implementation.
-  @visibleForTesting
+  /// Used in e2e tests (in other package).
   MethodChannel get channel {
     return _channel;
   }
