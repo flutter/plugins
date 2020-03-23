@@ -93,7 +93,7 @@
   NSError *authError = nil;
   lastCallArgs = nil;
   lastResult = nil;
-  if (arguments[@"localizedFallbackTitle"] != (NSString*) [NSNull null]) {
+  if (arguments[@"localizedFallbackTitle"] != (NSString *) [NSNull null]) {
     context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"];
   } else {
     context.localizedFallbackTitle = @"";
