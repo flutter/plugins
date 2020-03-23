@@ -58,6 +58,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('init() has not been implemented.');
   }
 
+  /// This is only needed by the MethodChannel implementation
   void setMethodCallHandler(dynamic call) {
     throw UnimplementedError(
         'setMethodCallHandler() has not been implemented.');

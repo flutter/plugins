@@ -39,8 +39,11 @@ class GoogleMapController {
   // TODO: Remove this once tests are migrated to not need this.
   @visibleForTesting
   MethodChannel get channel {
-    return (_googleMapsFlutterPlatform as MethodChannelGoogleMapsFlutter)
-        .channel;
+    if (_googleMapsFlutterPlatform is MethodChannelGoogleMapsFlutter) {
+      return (_googleMapsFlutterPlatform as MethodChannelGoogleMapsFlutter)
+          .channel;
+    }
+    return null;
   }
 
   final _GoogleMapState _googleMapState;
