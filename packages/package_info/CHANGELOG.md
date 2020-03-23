@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Add support for macos.
+
 ## 0.4.0+17
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.
