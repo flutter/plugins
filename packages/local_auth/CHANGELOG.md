@@ -1,3 +1,7 @@
+## 0.6.1+5
+
+* Add support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.
+
 ## 0.6.1+4
 
 * Replace deprecated `getFlutterEngine` call on Android.
