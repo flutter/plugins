@@ -52,42 +52,44 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     try {
       switch (call.method) {
         case "setBool":
-          commitAsync(preferences.edit().putBoolean(key, (boolean) call.argument("value")), result);
+          preferences.edit().putBoolean(key, (boolean) call.argument("value")).apply();
+          result.success(true);
           break;
         case "setDouble":
           double doubleValue = ((Number) call.argument("value")).doubleValue();
           String doubleValueStr = Double.toString(doubleValue);
-          commitAsync(preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr), result);
+          preferences.edit().putString(key, DOUBLE_PREFIX + doubleValueStr).apply();
+          result.success(true);
           break;
         case "setInt":
           Number number = call.argument("value");
           if (number instanceof BigInteger) {
             BigInteger integerValue = (BigInteger) number;
-            commitAsync(
-                preferences
+            preferences
                     .edit()
                     .putString(
-                        key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX)),
-                result);
+                            key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX)).apply();
           } else {
-            commitAsync(preferences.edit().putLong(key, number.longValue()), result);
+            preferences.edit().putLong(key, number.longValue()).apply();
           }
+          result.success(true);
           break;
         case "setString":
           String value = (String) call.argument("value");
-          if (value.startsWith(LIST_IDENTIFIER) || value.startsWith(BIG_INTEGER_PREFIX)) {
+          if(value!=null && (value.startsWith(LIST_IDENTIFIER) || value.startsWith(BIG_INTEGER_PREFIX))){
             result.error(
-                "StorageError",
-                "This string cannot be stored as it clashes with special identifier prefixes.",
-                null);
-            return;
+                    "StorageError",
+                    "This string cannot be stored as it clashes with special identifier prefixes.",
+                    null);
+          }else{
+            preferences.edit().putString(key, value).apply();
+            result.success(true);
           }
-          commitAsync(preferences.edit().putString(key, value), result);
           break;
         case "setStringList":
           List<String> list = call.argument("value");
-          commitAsync(
-              preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)), result);
+          preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)).apply();
+          result.success(true);
           break;
         case "commit":
           // We've been committing the whole time.
@@ -97,7 +99,8 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           result.success(getAllPrefs());
           return;
         case "remove":
-          commitAsync(preferences.edit().remove(key), result);
+          preferences.edit().remove(key).apply();
+          result.success(true);
           break;
         case "clear":
           Set<String> keySet = getAllPrefs().keySet();
@@ -105,7 +108,8 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           for (String keyToDelete : keySet) {
             clearEditor.remove(keyToDelete);
           }
-          commitAsync(clearEditor, result);
+          clearEditor.apply();
+          result.success(true);
           break;
         default:
           result.notImplemented();
