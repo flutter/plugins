@@ -18,7 +18,7 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 import 'package:google_maps_flutter_platform_interface/src/method_channel/method_channel_google_maps_flutter.dart';
 
 export 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
-  show LatLng, LatLngBounds;
+  show LatLng, LatLngBounds, MapType, CameraTargetBounds, MinMaxZoomPreference, MapStyleException;
 
 part 'src/bitmap.dart';
 part 'src/callbacks.dart';
@@ -37,4 +37,3 @@ part 'src/polygon_updates.dart';
 part 'src/polyline.dart';
 part 'src/polyline_updates.dart';
 part 'src/screen_coordinate.dart';
-part 'src/ui.dart';
