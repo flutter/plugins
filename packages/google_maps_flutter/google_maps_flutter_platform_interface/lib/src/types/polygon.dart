@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of google_maps_flutter;
+import 'package:flutter/foundation.dart' show listEquals, VoidCallback;
+import 'package:flutter/material.dart' show Color, Colors;
+import 'package:meta/meta.dart' show immutable, required;
+
+import 'types.dart';
 
 /// Uniquely identifies a [Polygon] among [GoogleMap] polygons.
 ///
@@ -127,7 +131,7 @@ class Polygon {
     return copyWith(pointsParam: List<LatLng>.of(points));
   }
 
-  dynamic _toJson() {
+  dynamic toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {
@@ -174,25 +178,8 @@ class Polygon {
   dynamic _pointsToJson() {
     final List<dynamic> result = <dynamic>[];
     for (final LatLng point in points) {
-      result.add(point._toJson());
+      result.add(point.toJson());
     }
     return result;
   }
-}
-
-Map<PolygonId, Polygon> _keyByPolygonId(Iterable<Polygon> polygons) {
-  if (polygons == null) {
-    return <PolygonId, Polygon>{};
-  }
-  return Map<PolygonId, Polygon>.fromEntries(polygons.map((Polygon polygon) =>
-      MapEntry<PolygonId, Polygon>(polygon.polygonId, polygon.clone())));
-}
-
-List<Map<String, dynamic>> _serializePolygonSet(Set<Polygon> polygons) {
-  if (polygons == null) {
-    return null;
-  }
-  return polygons
-      .map<Map<String, dynamic>>((Polygon p) => p._toJson())
-      .toList();
 }

@@ -4,7 +4,7 @@
 
 import 'dart:ui' show hashValues;
 
-import 'location.dart';
+import 'types.dart';
 
 /// Type of map tiles to display.
 // Enum constants must be indexed to match the corresponding int constants of

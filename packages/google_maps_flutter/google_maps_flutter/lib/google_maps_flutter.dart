@@ -18,22 +18,28 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 import 'package:google_maps_flutter_platform_interface/src/method_channel/method_channel_google_maps_flutter.dart';
 
 export 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
-  show LatLng, LatLngBounds, MapType, CameraTargetBounds, MinMaxZoomPreference, MapStyleException;
+  show 
+    BitmapDescriptor,
+    CameraTargetBounds, 
+    Cap,
+    JointType,
+    LatLng, 
+    LatLngBounds, 
+    MapStyleException,
+    MapType, 
+    MinMaxZoomPreference,
+    PatternItem,
+    Polygon,
+    PolygonId,
+    Polyline,
+    PolylineId;
 
-part 'src/bitmap.dart';
 part 'src/callbacks.dart';
 part 'src/camera.dart';
-part 'src/cap.dart';
 part 'src/circle.dart';
 part 'src/circle_updates.dart';
 part 'src/controller.dart';
 part 'src/google_map.dart';
-part 'src/joint_type.dart';
 part 'src/marker.dart';
 part 'src/marker_updates.dart';
-part 'src/pattern_item.dart';
-part 'src/polygon.dart';
-part 'src/polygon_updates.dart';
-part 'src/polyline.dart';
-part 'src/polyline_updates.dart';
 part 'src/screen_coordinate.dart';
