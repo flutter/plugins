@@ -17,6 +17,9 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 // TODO: Remove this import after e2e tests have been migrated.
 import 'package:google_maps_flutter_platform_interface/src/method_channel/method_channel_google_maps_flutter.dart';
 
+export 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
+  show LatLng, LatLngBounds;
+
 part 'src/bitmap.dart';
 part 'src/callbacks.dart';
 part 'src/camera.dart';
@@ -26,7 +29,6 @@ part 'src/circle_updates.dart';
 part 'src/controller.dart';
 part 'src/google_map.dart';
 part 'src/joint_type.dart';
-part 'src/location.dart';
 part 'src/marker.dart';
 part 'src/marker_updates.dart';
 part 'src/pattern_item.dart';
