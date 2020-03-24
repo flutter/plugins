@@ -12,18 +12,6 @@ import 'package:flutter/gestures.dart';
 import 'package:google_maps_flutter_platform_interface/src/method_channel/method_channel_google_maps_flutter.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-/// Exception when a map style is invalid or was unable to be set.
-///
-/// See also: `setStyle` on [GoogleMapController] for why this exception
-/// might be thrown.
-class MapStyleException implements Exception {
-  /// Default constructor for [MapStyleException].
-  const MapStyleException(this.cause);
-
-  /// The reason `GoogleMapController.setStyle` would throw this exception.
-  final String cause;
-}
-
 /// The interface that implementations of google_maps_flutter must implement.
 ///
 /// Platform implementations should extend this class rather than implement it as `google_maps_flutter`
