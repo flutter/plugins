@@ -43,18 +43,11 @@ Put the a file named `<package_name>_e2e_test.dart` in the app' `test_driver` di
 
 ```dart
 import 'dart:async';
-import 'dart:io';
-import 'package:e2e/common.dart' as common;
-import 'package:flutter_driver/flutter_driver.dart';
 
-Future<void> main() async {
-  final FlutterDriver driver = await FlutterDriver.connect();
-  final String jsonResult =
-      await driver.requestData(null, timeout: const Duration(minutes: 1));
-  final common.Response response = common.Response.fromJson(jsonResult);
-  await driver.close();
-  exit(response.allTestsPassed ? 0 : 1);
-}
+import 'package:e2e/e2e_driver.dart' as e2e;
+
+Future<void> main() async => e2e.main();
+
 ```
 
 To run a example app test with Flutter driver:
