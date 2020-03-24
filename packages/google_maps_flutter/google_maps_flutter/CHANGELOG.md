@@ -1,6 +1,6 @@
 ## 0.5.25+1
 
-* Added function for taking a snapshot of the map.
+* Add takeSnapshot that takes a snapshot of the map.
 
 ## 0.5.25
 
