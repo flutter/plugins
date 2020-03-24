@@ -1,6 +1,6 @@
 ## 0.4.1
 
-* Add support for macos.
+* Add support for macOS.
 
 ## 0.4.0+17
 
