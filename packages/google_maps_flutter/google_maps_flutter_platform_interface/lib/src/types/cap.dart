@@ -1,8 +1,9 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'package:meta/meta.dart' show immutable;
 
-part of google_maps_flutter;
+import 'types.dart';
 
 /// Cap that can be applied at the start or end vertex of a [Polyline].
 @immutable
@@ -43,10 +44,10 @@ class Cap {
   }) {
     assert(bitmapDescriptor != null);
     assert(refWidth > 0.0);
-    return Cap._(<dynamic>['customCap', bitmapDescriptor._toJson(), refWidth]);
+    return Cap._(<dynamic>['customCap', bitmapDescriptor.toJson(), refWidth]);
   }
 
   final dynamic _json;
 
-  dynamic _toJson() => _json;
+  dynamic toJson() => _json;
 }

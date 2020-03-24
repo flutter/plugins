@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of google_maps_flutter;
+import 'dart:ui' show hashValues;
+
+import 'package:flutter/foundation.dart' show setEquals;
+
+import 'utils/polyline.dart';
+import 'types.dart';
 
 /// [Polyline] update events to be applied to the [GoogleMap].
 ///
 /// Used in [GoogleMapController] when the map is updated.
-class _PolylineUpdates {
-  /// Computes [_PolylineUpdates] given previous and current [Polyline]s.
-  _PolylineUpdates.from(Set<Polyline> previous, Set<Polyline> current) {
+// (Do not re-export)
+class PolylineUpdates {
+  /// Computes [PolylineUpdates] given previous and current [Polyline]s.
+  PolylineUpdates.from(Set<Polyline> previous, Set<Polyline> current) {
     if (previous == null) {
       previous = Set<Polyline>.identity();
     }
@@ -19,9 +25,9 @@ class _PolylineUpdates {
     }
 
     final Map<PolylineId, Polyline> previousPolylines =
-        _keyByPolylineId(previous);
+        keyByPolylineId(previous);
     final Map<PolylineId, Polyline> currentPolylines =
-        _keyByPolylineId(current);
+        keyByPolylineId(current);
 
     final Set<PolylineId> prevPolylineIds = previousPolylines.keys.toSet();
     final Set<PolylineId> currentPolylineIds = currentPolylines.keys.toSet();
@@ -69,8 +75,8 @@ class _PolylineUpdates {
       }
     }
 
-    addIfNonNull('polylinesToAdd', _serializePolylineSet(polylinesToAdd));
-    addIfNonNull('polylinesToChange', _serializePolylineSet(polylinesToChange));
+    addIfNonNull('polylinesToAdd', serializePolylineSet(polylinesToAdd));
+    addIfNonNull('polylinesToChange', serializePolylineSet(polylinesToChange));
     addIfNonNull('polylineIdsToRemove',
         polylineIdsToRemove.map<dynamic>((PolylineId m) => m.value).toList());
 
@@ -81,7 +87,7 @@ class _PolylineUpdates {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final _PolylineUpdates typedOther = other;
+    final PolylineUpdates typedOther = other;
     return setEquals(polylinesToAdd, typedOther.polylinesToAdd) &&
         setEquals(polylineIdsToRemove, typedOther.polylineIdsToRemove) &&
         setEquals(polylinesToChange, typedOther.polylinesToChange);

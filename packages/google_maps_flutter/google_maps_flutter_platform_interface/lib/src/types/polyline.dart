@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of google_maps_flutter;
+import 'package:flutter/foundation.dart' show listEquals, VoidCallback;
+import 'package:flutter/material.dart' show Color, Colors;
+import 'package:meta/meta.dart' show immutable, required;
+
+import 'types.dart';
 
 /// Uniquely identifies a [Polyline] among [GoogleMap] polylines.
 ///
@@ -169,7 +173,7 @@ class Polyline {
     );
   }
 
-  dynamic _toJson() {
+  dynamic toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {
@@ -181,10 +185,10 @@ class Polyline {
     addIfPresent('polylineId', polylineId.value);
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('color', color.value);
-    addIfPresent('endCap', endCap?._toJson());
+    addIfPresent('endCap', endCap?.toJson());
     addIfPresent('geodesic', geodesic);
     addIfPresent('jointType', jointType?.value);
-    addIfPresent('startCap', startCap?._toJson());
+    addIfPresent('startCap', startCap?.toJson());
     addIfPresent('visible', visible);
     addIfPresent('width', width);
     addIfPresent('zIndex', zIndex);
@@ -225,7 +229,7 @@ class Polyline {
   dynamic _pointsToJson() {
     final List<dynamic> result = <dynamic>[];
     for (final LatLng point in points) {
-      result.add(point._toJson());
+      result.add(point.toJson());
     }
     return result;
   }
@@ -234,27 +238,9 @@ class Polyline {
     final List<dynamic> result = <dynamic>[];
     for (final PatternItem patternItem in patterns) {
       if (patternItem != null) {
-        result.add(patternItem._toJson());
+        result.add(patternItem.toJson());
       }
     }
     return result;
   }
-}
-
-Map<PolylineId, Polyline> _keyByPolylineId(Iterable<Polyline> polylines) {
-  if (polylines == null) {
-    return <PolylineId, Polyline>{};
-  }
-  return Map<PolylineId, Polyline>.fromEntries(polylines.map(
-      (Polyline polyline) => MapEntry<PolylineId, Polyline>(
-          polyline.polylineId, polyline.clone())));
-}
-
-List<Map<String, dynamic>> _serializePolylineSet(Set<Polyline> polylines) {
-  if (polylines == null) {
-    return null;
-  }
-  return polylines
-      .map<Map<String, dynamic>>((Polyline p) => p._toJson())
-      .toList();
 }
