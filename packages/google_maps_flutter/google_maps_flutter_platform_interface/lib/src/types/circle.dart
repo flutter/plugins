@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of google_maps_flutter;
+import 'package:flutter/foundation.dart' show VoidCallback;
+import 'package:flutter/material.dart' show Color, Colors;
+import 'package:meta/meta.dart' show immutable, required;
+
+import 'types.dart';
 
 /// Uniquely identifies a [Circle] among [GoogleMap] circles.
 ///
@@ -119,7 +123,7 @@ class Circle {
   /// Creates a new [Circle] object whose values are the same as this instance.
   Circle clone() => copyWith();
 
-  dynamic _toJson() {
+  dynamic toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {
@@ -131,7 +135,7 @@ class Circle {
     addIfPresent('circleId', circleId.value);
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('fillColor', fillColor.value);
-    addIfPresent('center', center._toJson());
+    addIfPresent('center', center.toJson());
     addIfPresent('radius', radius);
     addIfPresent('strokeColor', strokeColor.value);
     addIfPresent('strokeWidth', strokeWidth);
@@ -159,19 +163,4 @@ class Circle {
 
   @override
   int get hashCode => circleId.hashCode;
-}
-
-Map<CircleId, Circle> _keyByCircleId(Iterable<Circle> circles) {
-  if (circles == null) {
-    return <CircleId, Circle>{};
-  }
-  return Map<CircleId, Circle>.fromEntries(circles.map((Circle circle) =>
-      MapEntry<CircleId, Circle>(circle.circleId, circle.clone())));
-}
-
-List<Map<String, dynamic>> _serializeCircleSet(Set<Circle> circles) {
-  if (circles == null) {
-    return null;
-  }
-  return circles.map<Map<String, dynamic>>((Circle p) => p._toJson()).toList();
 }

@@ -2,8 +2,12 @@
 
 export 'bitmap.dart';
 export 'cap.dart';
+export 'circle_updates.dart';
+export 'circle.dart';
 export 'joint_type.dart';
 export 'location.dart';
+export 'marker_updates.dart';
+export 'marker.dart';
 export 'pattern_item.dart';
 export 'polygon_updates.dart';
 export 'polygon.dart';
