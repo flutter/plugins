@@ -1,6 +1,5 @@
 name: package_info_example
 description: Demonstrates how to use the package_info plugin.
-version: 1.0.0+42
 
 dependencies:
   flutter:
