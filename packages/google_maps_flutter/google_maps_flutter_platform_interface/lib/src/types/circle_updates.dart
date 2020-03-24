@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of google_maps_flutter;
+import 'dart:ui' show hashValues;
+
+import 'package:flutter/foundation.dart' show setEquals;
+
+import 'types.dart';
+import 'utils/circle.dart';
 
 /// [Circle] update events to be applied to the [GoogleMap].
 ///
 /// Used in [GoogleMapController] when the map is updated.
-class _CircleUpdates {
-  /// Computes [_CircleUpdates] given previous and current [Circle]s.
-  _CircleUpdates.from(Set<Circle> previous, Set<Circle> current) {
+// (Do not re-export)
+class CircleUpdates {
+  /// Computes [CircleUpdates] given previous and current [Circle]s.
+  CircleUpdates.from(Set<Circle> previous, Set<Circle> current) {
     if (previous == null) {
       previous = Set<Circle>.identity();
     }
@@ -18,8 +24,8 @@ class _CircleUpdates {
       current = Set<Circle>.identity();
     }
 
-    final Map<CircleId, Circle> previousCircles = _keyByCircleId(previous);
-    final Map<CircleId, Circle> currentCircles = _keyByCircleId(current);
+    final Map<CircleId, Circle> previousCircles = keyByCircleId(previous);
+    final Map<CircleId, Circle> currentCircles = keyByCircleId(current);
 
     final Set<CircleId> prevCircleIds = previousCircles.keys.toSet();
     final Set<CircleId> currentCircleIds = currentCircles.keys.toSet();
@@ -67,8 +73,8 @@ class _CircleUpdates {
       }
     }
 
-    addIfNonNull('circlesToAdd', _serializeCircleSet(circlesToAdd));
-    addIfNonNull('circlesToChange', _serializeCircleSet(circlesToChange));
+    addIfNonNull('circlesToAdd', serializeCircleSet(circlesToAdd));
+    addIfNonNull('circlesToChange', serializeCircleSet(circlesToChange));
     addIfNonNull('circleIdsToRemove',
         circleIdsToRemove.map<dynamic>((CircleId m) => m.value).toList());
 
@@ -79,7 +85,7 @@ class _CircleUpdates {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final _CircleUpdates typedOther = other;
+    final CircleUpdates typedOther = other;
     return setEquals(circlesToAdd, typedOther.circlesToAdd) &&
         setEquals(circleIdsToRemove, typedOther.circleIdsToRemove) &&
         setEquals(circlesToChange, typedOther.circlesToChange);

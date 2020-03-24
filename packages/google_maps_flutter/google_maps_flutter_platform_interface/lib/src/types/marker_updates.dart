@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of google_maps_flutter;
+import 'dart:ui' show hashValues;
+
+import 'package:flutter/foundation.dart' show setEquals;
+
+import 'types.dart';
+import 'utils/marker.dart';
 
 /// [Marker] update events to be applied to the [GoogleMap].
 ///
 /// Used in [GoogleMapController] when the map is updated.
-class _MarkerUpdates {
-  /// Computes [_MarkerUpdates] given previous and current [Marker]s.
-  _MarkerUpdates.from(Set<Marker> previous, Set<Marker> current) {
+// (Do not re-export)
+class MarkerUpdates {
+  /// Computes [MarkerUpdates] given previous and current [Marker]s.
+  MarkerUpdates.from(Set<Marker> previous, Set<Marker> current) {
     if (previous == null) {
       previous = Set<Marker>.identity();
     }
@@ -18,8 +24,8 @@ class _MarkerUpdates {
       current = Set<Marker>.identity();
     }
 
-    final Map<MarkerId, Marker> previousMarkers = _keyByMarkerId(previous);
-    final Map<MarkerId, Marker> currentMarkers = _keyByMarkerId(current);
+    final Map<MarkerId, Marker> previousMarkers = keyByMarkerId(previous);
+    final Map<MarkerId, Marker> currentMarkers = keyByMarkerId(current);
 
     final Set<MarkerId> prevMarkerIds = previousMarkers.keys.toSet();
     final Set<MarkerId> currentMarkerIds = currentMarkers.keys.toSet();
@@ -67,8 +73,8 @@ class _MarkerUpdates {
       }
     }
 
-    addIfNonNull('markersToAdd', _serializeMarkerSet(markersToAdd));
-    addIfNonNull('markersToChange', _serializeMarkerSet(markersToChange));
+    addIfNonNull('markersToAdd', serializeMarkerSet(markersToAdd));
+    addIfNonNull('markersToChange', serializeMarkerSet(markersToChange));
     addIfNonNull('markerIdsToRemove',
         markerIdsToRemove.map<dynamic>((MarkerId m) => m.value).toList());
 
@@ -79,7 +85,7 @@ class _MarkerUpdates {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final _MarkerUpdates typedOther = other;
+    final MarkerUpdates typedOther = other;
     return setEquals(markersToAdd, typedOther.markersToAdd) &&
         setEquals(markerIdsToRemove, typedOther.markerIdsToRemove) &&
         setEquals(markersToChange, typedOther.markersToChange);

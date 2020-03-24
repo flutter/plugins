@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of google_maps_flutter;
+import 'dart:ui' show hashValues, Offset;
+
+import 'package:flutter/foundation.dart' show ValueChanged, VoidCallback;
+import 'package:meta/meta.dart' show immutable, required;
+
+import 'types.dart';
 
 dynamic _offsetToJson(Offset offset) {
   if (offset == null) {
@@ -262,7 +267,7 @@ class Marker {
   /// Creates a new [Marker] object whose values are the same as this instance.
   Marker clone() => copyWith();
 
-  Map<String, dynamic> _toJson() {
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {
@@ -277,9 +282,9 @@ class Marker {
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('draggable', draggable);
     addIfPresent('flat', flat);
-    addIfPresent('icon', icon?._toJson());
+    addIfPresent('icon', icon?.toJson());
     addIfPresent('infoWindow', infoWindow?._toJson());
-    addIfPresent('position', position?._toJson());
+    addIfPresent('position', position?.toJson());
     addIfPresent('rotation', rotation);
     addIfPresent('visible', visible);
     addIfPresent('zIndex', zIndex);
@@ -315,19 +320,4 @@ class Marker {
         'icon: $icon, infoWindow: $infoWindow, position: $position, rotation: $rotation, '
         'visible: $visible, zIndex: $zIndex, onTap: $onTap}';
   }
-}
-
-Map<MarkerId, Marker> _keyByMarkerId(Iterable<Marker> markers) {
-  if (markers == null) {
-    return <MarkerId, Marker>{};
-  }
-  return Map<MarkerId, Marker>.fromEntries(markers.map((Marker marker) =>
-      MapEntry<MarkerId, Marker>(marker.markerId, marker.clone())));
-}
-
-List<Map<String, dynamic>> _serializeMarkerSet(Set<Marker> markers) {
-  if (markers == null) {
-    return null;
-  }
-  return markers.map<Map<String, dynamic>>((Marker m) => m._toJson()).toList();
 }
