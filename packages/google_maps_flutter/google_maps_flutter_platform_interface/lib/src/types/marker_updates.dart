@@ -64,7 +64,7 @@ class MarkerUpdates {
   Set<MarkerId> markerIdsToRemove;
   Set<Marker> markersToChange;
 
-  Map<String, dynamic> _toMap() {
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
 
     void addIfNonNull(String fieldName, dynamic value) {

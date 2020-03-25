@@ -214,10 +214,10 @@ class _GoogleMapState extends State<GoogleMap> {
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'initialCameraPosition': widget.initialCameraPosition?.toMap(),
       'options': _googleMapOptions.toMap(),
-      'markersToAdd': _serializeMarkerSet(widget.markers),
-      'polygonsToAdd': _serializePolygonSet(widget.polygons),
-      'polylinesToAdd': _serializePolylineSet(widget.polylines),
-      'circlesToAdd': _serializeCircleSet(widget.circles),
+      'markersToAdd': serializeMarkerSet(widget.markers),
+      'polygonsToAdd': serializePolygonSet(widget.polygons),
+      'polylinesToAdd': serializePolylineSet(widget.polylines),
+      'circlesToAdd': serializeCircleSet(widget.circles),
     };
     return _googleMapsFlutterPlatform.buildView(
       creationParams,
@@ -230,10 +230,10 @@ class _GoogleMapState extends State<GoogleMap> {
   void initState() {
     super.initState();
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
-    _markers = _keyByMarkerId(widget.markers);
-    _polygons = _keyByPolygonId(widget.polygons);
-    _polylines = _keyByPolylineId(widget.polylines);
-    _circles = _keyByCircleId(widget.circles);
+    _markers = keyByMarkerId(widget.markers);
+    _polygons = keyByPolygonId(widget.polygons);
+    _polylines = keyByPolylineId(widget.polylines);
+    _circles = keyByCircleId(widget.circles);
   }
 
   @override
@@ -263,32 +263,32 @@ class _GoogleMapState extends State<GoogleMap> {
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updateMarkers(
-        _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
-    _markers = _keyByMarkerId(widget.markers);
+        MarkerUpdates.from(_markers.values.toSet(), widget.markers));
+    _markers = keyByMarkerId(widget.markers);
   }
 
   void _updatePolygons() async {
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updatePolygons(
-        _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
-    _polygons = _keyByPolygonId(widget.polygons);
+        PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
+    _polygons = keyByPolygonId(widget.polygons);
   }
 
   void _updatePolylines() async {
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updatePolylines(
-        _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
-    _polylines = _keyByPolylineId(widget.polylines);
+        PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
+    _polylines = keyByPolylineId(widget.polylines);
   }
 
   void _updateCircles() async {
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updateCircles(
-        _CircleUpdates.from(_circles.values.toSet(), widget.circles));
-    _circles = _keyByCircleId(widget.circles);
+        CircleUpdates.from(_circles.values.toSet(), widget.circles));
+    _circles = keyByCircleId(widget.circles);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -450,9 +450,9 @@ class _GoogleMapOptions {
 
     addIfNonNull('compassEnabled', compassEnabled);
     addIfNonNull('mapToolbarEnabled', mapToolbarEnabled);
-    addIfNonNull('cameraTargetBounds', cameraTargetBounds?._toJson());
+    addIfNonNull('cameraTargetBounds', cameraTargetBounds?.toJson());
     addIfNonNull('mapType', mapType?.index);
-    addIfNonNull('minMaxZoomPreference', minMaxZoomPreference?._toJson());
+    addIfNonNull('minMaxZoomPreference', minMaxZoomPreference?.toJson());
     addIfNonNull('rotateGesturesEnabled', rotateGesturesEnabled);
     addIfNonNull('scrollGesturesEnabled', scrollGesturesEnabled);
     addIfNonNull('tiltGesturesEnabled', tiltGesturesEnabled);
