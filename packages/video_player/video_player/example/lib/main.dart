@@ -38,7 +38,7 @@ class _App extends StatefulWidget {
   _MyApp createState() => _MyApp();
 }
 
-class _MyApp extends State<_App>{
+class _MyApp extends State<_App> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
