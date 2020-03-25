@@ -208,10 +208,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
   @override
-  Future<void> showMarkerInfoWindow(String markerId) {
+  Future<void> showMarkerInfoWindow(MarkerId markerId) {
     assert(markerId != null);
     return _channel.invokeMethod<void>(
-        'markers#showInfoWindow', <String, String>{'markerId': markerId});
+        'markers#showInfoWindow', <String, String>{'markerId': markerId.value});
   }
 
   /// Programmatically hide the Info Window for a [Marker].
@@ -223,10 +223,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
   @override
-  Future<void> hideMarkerInfoWindow(String markerId) {
+  Future<void> hideMarkerInfoWindow(MarkerId markerId) {
     assert(markerId != null);
     return _channel.invokeMethod<void>(
-        'markers#hideInfoWindow', <String, String>{'markerId': markerId});
+        'markers#hideInfoWindow', <String, String>{'markerId': markerId.value});
   }
 
   /// Returns `true` when the [InfoWindow] is showing, `false` otherwise.
@@ -238,10 +238,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   @override
-  Future<bool> isMarkerInfoWindowShown(String markerId) {
+  Future<bool> isMarkerInfoWindowShown(MarkerId markerId) {
     assert(markerId != null);
     return _channel.invokeMethod<bool>(
-        'markers#isInfoWindowShown', <String, String>{'markerId': markerId});
+        'markers#isInfoWindowShown', <String, String>{'markerId': markerId.value});
   }
 
   /// Returns the current zoom level of the map
