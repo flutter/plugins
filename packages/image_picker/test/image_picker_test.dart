@@ -37,14 +37,14 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraPosition': 0
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 1,
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraPosition': 0
+              'cameraDevice': 0
             }),
           ],
         );
@@ -83,49 +83,49 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraPosition': 0
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraPosition': 0
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': null,
-              'cameraPosition': 0
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': null,
-              'cameraPosition': 0
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': 70,
-              'cameraPosition': 0
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': 70,
-              'cameraPosition': 0
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': 70,
-              'cameraPosition': 0
+              'cameraDevice': 0
             }),
           ],
         );
@@ -162,7 +162,7 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraPosition': 0,
+              'cameraDevice': 0,
             }),
           ],
         );
@@ -170,7 +170,7 @@ void main() {
 
       test('camera position can set to front', () async {
         await ImagePicker.pickImage(
-            source: ImageSource.camera, cameraPosition: CameraPosition.front);
+            source: ImageSource.camera, cameraDevice: CameraDevice.front);
 
         expect(
           log,
@@ -180,7 +180,7 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraPosition': 1,
+              'cameraDevice': 1,
             }),
           ],
         );
@@ -197,11 +197,11 @@ void main() {
           <Matcher>[
             isMethodCall('pickVideo', arguments: <String, dynamic>{
               'source': 0,
-              'cameraPosition': 0,
+              'cameraDevice': 0,
             }),
             isMethodCall('pickVideo', arguments: <String, dynamic>{
               'source': 1,
-              'cameraPosition': 0,
+              'cameraDevice': 0,
             }),
           ],
         );
@@ -223,7 +223,7 @@ void main() {
           <Matcher>[
             isMethodCall('pickVideo', arguments: <String, dynamic>{
               'source': 0,
-              'cameraPosition': 0,
+              'cameraDevice': 0,
             }),
           ],
         );
@@ -231,14 +231,14 @@ void main() {
 
       test('camera position can set to front', () async {
         await ImagePicker.pickVideo(
-            source: ImageSource.camera, cameraPosition: CameraPosition.front);
+            source: ImageSource.camera, cameraDevice: CameraDevice.front);
 
         expect(
           log,
           <Matcher>[
             isMethodCall('pickVideo', arguments: <String, dynamic>{
               'source': 0,
-              'cameraPosition': 1,
+              'cameraDevice': 1,
             }),
           ],
         );
