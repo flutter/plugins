@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of google_maps_flutter;
-
 /// Callback function taking a single argument.
 typedef void ArgumentCallback<T>(T argument);
 

@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of google_maps_flutter;
+import 'dart:ui' show hashValues, Offset;
+
+import 'package:meta/meta.dart' show required;
+
+import 'types.dart';
 
 /// The position of the map "camera", the view point from which the world is shown in the map view.
 ///
@@ -61,7 +65,7 @@ class CameraPosition {
   /// Mainly for internal use when calling [CameraUpdate.newCameraPosition].
   dynamic toMap() => <String, dynamic>{
         'bearing': bearing,
-        'target': target._toJson(),
+        'target': target.toJson(),
         'tilt': tilt,
         'zoom': zoom,
       };
@@ -75,7 +79,7 @@ class CameraPosition {
     }
     return CameraPosition(
       bearing: json['bearing'],
-      target: LatLng._fromJson(json['target']),
+      target: LatLng.fromJson(json['target']),
       tilt: json['tilt'],
       zoom: json['zoom'],
     );
@@ -115,7 +119,7 @@ class CameraUpdate {
   /// Returns a camera update that moves the camera target to the specified
   /// geographical location.
   static CameraUpdate newLatLng(LatLng latLng) {
-    return CameraUpdate._(<dynamic>['newLatLng', latLng._toJson()]);
+    return CameraUpdate._(<dynamic>['newLatLng', latLng.toJson()]);
   }
 
   /// Returns a camera update that transforms the camera so that the specified
@@ -125,7 +129,7 @@ class CameraUpdate {
   static CameraUpdate newLatLngBounds(LatLngBounds bounds, double padding) {
     return CameraUpdate._(<dynamic>[
       'newLatLngBounds',
-      bounds._toList(),
+      bounds.toJson(),
       padding,
     ]);
   }
@@ -134,7 +138,7 @@ class CameraUpdate {
   /// geographical location and zoom level.
   static CameraUpdate newLatLngZoom(LatLng latLng, double zoom) {
     return CameraUpdate._(
-      <dynamic>['newLatLngZoom', latLng._toJson(), zoom],
+      <dynamic>['newLatLngZoom', latLng.toJson(), zoom],
     );
   }
 
@@ -188,5 +192,5 @@ class CameraUpdate {
 
   final dynamic _json;
 
-  dynamic _toJson() => _json;
+  dynamic toJson() => _json;
 }
