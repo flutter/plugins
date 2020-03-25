@@ -28,23 +28,18 @@ void thm(bool bl) {
     bar = Colors.black87;
     screen = Colors.black26;
   }
-
-  else {
+  else{
     bar = Colors.blue;
     screen = Colors.white;
   }
 }
-
-
 class _App extends StatefulWidget {
   _MyApp createState() =>  _MyApp();
 }
-
 class _MyApp extends State<_App>{
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-
       length: 3,
       child: Scaffold(
         key: const ValueKey<String>('home_page'),
@@ -67,7 +62,6 @@ class _MyApp extends State<_App>{
               setState(() {
                 val = new_val;
                 thm(new_val);
-
               });
             },activeColor: Colors.white,inactiveThumbColor: Colors.black,)
           ],
@@ -139,9 +133,7 @@ class _ButterFlyAssetVideoInList extends StatelessWidget {
 /// A filler card to show the video in a list of scrolling contents.
 class _ExampleCard extends StatelessWidget {
   const _ExampleCard({Key key, this.title}) : super(key: key);
-
   final String title;
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -181,12 +173,10 @@ class _ButterFlyAssetVideo extends StatefulWidget {
 
 class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
   VideoPlayerController _controller;
-
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.asset('assets/Butterfly-209.mp4');
-
     _controller.addListener(() {
       setState(() {});
     });
