@@ -187,13 +187,8 @@ class GoogleMapController {
   }
 
   /// Return [LatLngBounds] defining the region that is visible in a map.
-  Future<LatLngBounds> getVisibleRegion() async {
-    final Map<String, dynamic> latLngBounds =
-        await _googleMapsFlutterPlatform.getVisibleRegion();
-    final LatLng southwest = LatLng.fromJson(latLngBounds['southwest']);
-    final LatLng northeast = LatLng.fromJson(latLngBounds['northeast']);
-
-    return LatLngBounds(northeast: northeast, southwest: southwest);
+  Future<LatLngBounds> getVisibleRegion() {
+    return _googleMapsFlutterPlatform.getVisibleRegion();
   }
 
   /// Return [ScreenCoordinate] of the [LatLng] in the current map view.
@@ -201,20 +196,16 @@ class GoogleMapController {
   /// A projection is used to translate between on screen location and geographic coordinates.
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
-  Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
-    final Map<String, int> point =
-        await _googleMapsFlutterPlatform.getScreenCoordinate(latLng.toJson());
-    return ScreenCoordinate(x: point['x'], y: point['y']);
+  Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) {
+    return _googleMapsFlutterPlatform.getScreenCoordinate(latLng);
   }
 
   /// Returns [LatLng] corresponding to the [ScreenCoordinate] in the current map view.
   ///
   /// Returned [LatLng] corresponds to a screen location. The screen location is specified in screen
   /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
-  Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) async {
-    final List<dynamic> latLng =
-        await _googleMapsFlutterPlatform.getLatLng(screenCoordinate.toJson());
-    return LatLng(latLng[0], latLng[1]);
+  Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) {
+    return _googleMapsFlutterPlatform.getLatLng(screenCoordinate);
   }
 
   /// Programmatically show the Info Window for a [Marker].
