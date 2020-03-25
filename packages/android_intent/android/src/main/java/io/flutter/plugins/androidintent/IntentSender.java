@@ -74,7 +74,7 @@ public final class IntentSender {
    */
   boolean canResolveActivity(Intent intent) {
     if (applicationContext == null) {
-      Log.wtf(TAG, "Trying to send an intent before the applicationContext was initialized.");
+      Log.wtf(TAG, "Trying to resolve an activity before the applicationContext was initialized.");
       return false;
     }
 
@@ -121,7 +121,7 @@ public final class IntentSender {
       @Nullable ComponentName componentName,
       @Nullable String type) {
     if (applicationContext == null) {
-      Log.wtf(TAG, "Trying to send an intent before the applicationContext was initialized.");
+      Log.wtf(TAG, "Trying to build an intent before the applicationContext was initialized.");
       return null;
     }
 
