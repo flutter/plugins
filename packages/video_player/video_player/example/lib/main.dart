@@ -20,7 +20,6 @@ void main() {
   );
 }
 
-int i = 0;
 bool bl, val = false;
 Color bar, screen;
 
