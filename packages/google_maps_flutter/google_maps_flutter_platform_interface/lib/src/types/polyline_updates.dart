@@ -26,8 +26,7 @@ class PolylineUpdates {
 
     final Map<PolylineId, Polyline> previousPolylines =
         keyByPolylineId(previous);
-    final Map<PolylineId, Polyline> currentPolylines =
-        keyByPolylineId(current);
+    final Map<PolylineId, Polyline> currentPolylines = keyByPolylineId(current);
 
     final Set<PolylineId> prevPolylineIds = previousPolylines.keys.toSet();
     final Set<PolylineId> currentPolylineIds = currentPolylines.keys.toSet();
