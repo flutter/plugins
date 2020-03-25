@@ -19,12 +19,12 @@ void main() {
     ),
   );
 }
-int i=0;
-bool bl,val = false;
-Color bar,screen;
+int i = 0;
+bool bl, val = false;
+Color bar, screen;
 
-void thm(bool bl){
-  if(bl==true) {
+void thm(bool bl) {
+  if(bl == true) {
     bar = Colors.black87;
     screen = Colors.black26;
   }
