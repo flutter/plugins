@@ -63,10 +63,10 @@ class _MyApp extends State<_App>{
                 );
               },
             ),
-            Switch(value: val, onChanged: (bool newval){
+            Switch(value: val, onChanged: (bool new_val){
               setState(() {
-                val = newval;
-                thm(newval);
+                val = new_val;
+                thm(new_val);
 
               });
             },activeColor: Colors.white,inactiveThumbColor: Colors.black,)
