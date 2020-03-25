@@ -66,7 +66,7 @@ class Response {
   /// Create a list of Strings from [_failureDetails].
   List<String> _failureDetailsAsString() {
     final List<String> list = List<String>();
-    if(_failureDetails == null || _failureDetails.isEmpty) {
+    if (_failureDetails == null || _failureDetails.isEmpty) {
       return list;
     }
 
