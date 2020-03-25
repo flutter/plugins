@@ -13,57 +13,68 @@
 @implementation ImagePickerPluginTests
 
 #pragma mark - Test camera devices, no op on simulators
-- (void)testPluginPickImageDeviceBack{
+- (void)testPluginPickImageDeviceBack {
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     return;
   }
-  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImage" arguments:@{
-    @"source": @(0),
-    @"cameraDevice": @(0)
-  }];
-  [plugin handleMethodCall:call result:^(id  _Nullable r) {}];
-  XCTAssertEqual([plugin getImagePickerController].cameraDevice, UIImagePickerControllerCameraDeviceRear);
+  FLTImagePickerPlugin *plugin =
+      [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
+  FlutterMethodCall *call =
+      [FlutterMethodCall methodCallWithMethodName:@"pickImage"
+                                        arguments:@{@"source" : @(0), @"cameraDevice" : @(0)}];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+  XCTAssertEqual([plugin getImagePickerController].cameraDevice,
+                 UIImagePickerControllerCameraDeviceRear);
 }
 
-- (void)testPluginPickImageDeviceFront{
+- (void)testPluginPickImageDeviceFront {
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     return;
   }
-  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickImage" arguments:@{
-    @"source": @(0),
-    @"cameraDevice": @(1)
-  }];
-  [plugin handleMethodCall:call result:^(id  _Nullable r) {}];
-  XCTAssertEqual([plugin getImagePickerController].cameraDevice, UIImagePickerControllerCameraDeviceFront);
+  FLTImagePickerPlugin *plugin =
+      [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
+  FlutterMethodCall *call =
+      [FlutterMethodCall methodCallWithMethodName:@"pickImage"
+                                        arguments:@{@"source" : @(0), @"cameraDevice" : @(1)}];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+  XCTAssertEqual([plugin getImagePickerController].cameraDevice,
+                 UIImagePickerControllerCameraDeviceFront);
 }
 
-- (void)testPluginPickVideoDeviceBack{
+- (void)testPluginPickVideoDeviceBack {
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     return;
   }
-  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickVideo" arguments:@{
-    @"source": @(0),
-    @"cameraDevice": @(0)
-  }];
-  [plugin handleMethodCall:call result:^(id  _Nullable r) {}];
-  XCTAssertEqual([plugin getImagePickerController].cameraDevice, UIImagePickerControllerCameraDeviceRear);
+  FLTImagePickerPlugin *plugin =
+      [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
+  FlutterMethodCall *call =
+      [FlutterMethodCall methodCallWithMethodName:@"pickVideo"
+                                        arguments:@{@"source" : @(0), @"cameraDevice" : @(0)}];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+  XCTAssertEqual([plugin getImagePickerController].cameraDevice,
+                 UIImagePickerControllerCameraDeviceRear);
 }
 
-- (void)testPluginPickVideoDeviceFront{
+- (void)testPluginPickVideoDeviceFront {
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     return;
   }
-  FLTImagePickerPlugin *plugin = [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
-  FlutterMethodCall *call = [FlutterMethodCall methodCallWithMethodName:@"pickVideo" arguments:@{
-    @"source": @(0),
-    @"cameraDevice": @(1)
-  }];
-  [plugin handleMethodCall:call result:^(id  _Nullable r) {}];
-  XCTAssertEqual([plugin getImagePickerController].cameraDevice, UIImagePickerControllerCameraDeviceFront);
+  FLTImagePickerPlugin *plugin =
+      [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
+  FlutterMethodCall *call =
+      [FlutterMethodCall methodCallWithMethodName:@"pickVideo"
+                                        arguments:@{@"source" : @(0), @"cameraDevice" : @(1)}];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+  XCTAssertEqual([plugin getImagePickerController].cameraDevice,
+                 UIImagePickerControllerCameraDeviceFront);
 }
-
 
 @end
