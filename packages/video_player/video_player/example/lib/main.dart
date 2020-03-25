@@ -19,6 +19,7 @@ void main() {
     ),
   );
 }
+
 int i = 0;
 bool bl, val = false;
 Color bar, screen;
@@ -36,6 +37,7 @@ void thm(bool bl) {
 class _App extends StatefulWidget {
   _MyApp createState() => _MyApp();
 }
+
 class _MyApp extends State<_App>{
   @override
   Widget build(BuildContext context) {
