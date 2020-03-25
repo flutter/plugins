@@ -64,11 +64,11 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// The returned [Future] completes after listeners have been notified.
   @override
-  Future<void> updateMarkers(Map<String, dynamic> markerUpdates) {
+  Future<void> updateMarkers(MarkerUpdates markerUpdates) {
     assert(markerUpdates != null);
     return _channel.invokeMethod<void>(
       'markers#update',
-      markerUpdates,
+      markerUpdates.toJson(),
     );
   }
 
@@ -79,11 +79,11 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// The returned [Future] completes after listeners have been notified.
   @override
-  Future<void> updatePolygons(Map<String, dynamic> polygonUpdates) {
+  Future<void> updatePolygons(PolygonUpdates polygonUpdates) {
     assert(polygonUpdates != null);
     return _channel.invokeMethod<void>(
       'polygons#update',
-      polygonUpdates,
+      polygonUpdates.toJson(),
     );
   }
 
@@ -94,11 +94,11 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// The returned [Future] completes after listeners have been notified.
   @override
-  Future<void> updatePolylines(Map<String, dynamic> polylineUpdates) {
+  Future<void> updatePolylines(PolylineUpdates polylineUpdates) {
     assert(polylineUpdates != null);
     return _channel.invokeMethod<void>(
       'polylines#update',
-      polylineUpdates,
+      polylineUpdates.toJson(),
     );
   }
 
@@ -109,11 +109,11 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// The returned [Future] completes after listeners have been notified.
   @override
-  Future<void> updateCircles(Map<String, dynamic> circleUpdates) {
+  Future<void> updateCircles(CircleUpdates circleUpdates) {
     assert(circleUpdates != null);
     return _channel.invokeMethod<void>(
       'circles#update',
-      circleUpdates,
+      circleUpdates.toJson(),
     );
   }
 
@@ -122,9 +122,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
   @override
-  Future<void> animateCamera(dynamic cameraUpdate) {
+  Future<void> animateCamera(CameraUpdate cameraUpdate) {
     return _channel.invokeMethod<void>('camera#animate', <String, dynamic>{
-      'cameraUpdate': cameraUpdate,
+      'cameraUpdate': cameraUpdate.toJson(),
     });
   }
 
@@ -133,9 +133,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   @override
-  Future<void> moveCamera(dynamic cameraUpdate) {
+  Future<void> moveCamera(CameraUpdate cameraUpdate) {
     return _channel.invokeMethod<void>('camera#move', <String, dynamic>{
-      'cameraUpdate': cameraUpdate,
+      'cameraUpdate': cameraUpdate.toJson(),
     });
   }
 

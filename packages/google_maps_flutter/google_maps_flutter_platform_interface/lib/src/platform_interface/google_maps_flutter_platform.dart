@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 
 import 'package:google_maps_flutter_platform_interface/src/method_channel/method_channel_google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// The interface that implementations of google_maps_flutter must implement.
@@ -68,7 +69,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updateMarkers(Map<String, dynamic> markerUpdates) {
+  Future<void> updateMarkers(MarkerUpdates markerUpdates) {
     throw UnimplementedError('updateMarkers() has not been implemented.');
   }
 
@@ -78,7 +79,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updatePolygons(Map<String, dynamic> polygonUpdates) {
+  Future<void> updatePolygons(PolygonUpdates polygonUpdates) {
     throw UnimplementedError('updatePolygons() has not been implemented.');
   }
 
@@ -88,7 +89,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updatePolylines(Map<String, dynamic> polylineUpdates) {
+  Future<void> updatePolylines(PolylineUpdates polylineUpdates) {
     throw UnimplementedError('updatePolylines() has not been implemented.');
   }
 
@@ -98,7 +99,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updateCircles(Map<String, dynamic> circleUpdates) {
+  Future<void> updateCircles(CircleUpdates circleUpdates) {
     throw UnimplementedError('updateCircles() has not been implemented.');
   }
 
@@ -106,7 +107,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   ///
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
-  Future<void> animateCamera(dynamic cameraUpdate) {
+  Future<void> animateCamera(CameraUpdate cameraUpdate) {
     throw UnimplementedError('animateCamera() has not been implemented.');
   }
 
@@ -114,7 +115,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   ///
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
-  Future<void> moveCamera(dynamic cameraUpdate) {
+  Future<void> moveCamera(CameraUpdate cameraUpdate) {
     throw UnimplementedError('moveCamera() has not been implemented.');
   }
 
