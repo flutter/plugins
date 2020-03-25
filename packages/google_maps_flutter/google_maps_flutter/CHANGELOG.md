@@ -1,3 +1,11 @@
+## 0.5.25+1
+
+* Add takeSnapshot that takes a snapshot of the map.
+
+## 0.5.25
+
+* Add an optional param `mipmaps` for `BitmapDescriptor.fromAssetImage`.
+
 ## 0.5.24+1
 
 * Make the pedantic dev_dependency explicit.

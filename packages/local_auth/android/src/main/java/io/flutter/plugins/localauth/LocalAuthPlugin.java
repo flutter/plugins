@@ -169,7 +169,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    channel = new MethodChannel(binding.getFlutterEngine().getDartExecutor(), CHANNEL_NAME);
+    channel = new MethodChannel(binding.getBinaryMessenger(), CHANNEL_NAME);
   }
 
   @Override
