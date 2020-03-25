@@ -48,6 +48,10 @@ static const int SOURCE_GALLERY = 1;
   return self;
 }
 
+- (UIImagePickerController *)getImagePickerController {
+  return _imagePickerController;
+}
+
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (self.result) {
     self.result([FlutterError errorWithCode:@"multiple_request"
