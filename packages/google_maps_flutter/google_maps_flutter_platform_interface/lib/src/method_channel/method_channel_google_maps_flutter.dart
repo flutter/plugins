@@ -162,10 +162,15 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     }
   }
 
-  /// Return [Map<String, dynamic>] defining the region that is visible in a map.
+  /// Return the region that is visible in a map.
   @override
-  Future<Map<String, dynamic>> getVisibleRegion() {
-    return _channel.invokeMapMethod<String, dynamic>('map#getVisibleRegion');
+  Future<LatLngBounds> getVisibleRegion() async {
+    final Map<String, dynamic> latLngBounds =
+        await _channel.invokeMapMethod<String, dynamic>('map#getVisibleRegion');
+    final LatLng southwest = LatLng.fromJson(latLngBounds['southwest']);
+    final LatLng northeast = LatLng.fromJson(latLngBounds['northeast']);
+
+    return LatLngBounds(northeast: northeast, southwest: southwest);
   }
 
   /// Return point [Map<String, int>] of the [screenCoordinateInJson] in the current map view.
@@ -174,19 +179,24 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
   @override
-  Future<Map<String, int>> getScreenCoordinate(dynamic screenCoordinateInJson) {
-    return _channel.invokeMapMethod<String, int>(
-        'map#getScreenCoordinate', screenCoordinateInJson);
+  Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
+    final Map<String, int> point =
+        await _channel.invokeMapMethod<String, int>(
+        'map#getScreenCoordinate', latLng.toJson());
+
+    return ScreenCoordinate(x: point['x'], y: point['y']);
   }
 
-  /// Returns [List] corresponding to the [ScreenCoordinate] in the current map view.
+  /// Returns [LatLng] corresponding to the [ScreenCoordinate] in the current map view.
   ///
-  /// Returned [List] corresponds to a screen location. The screen location is specified in screen
+  /// Returned [LatLng] corresponds to a screen location. The screen location is specified in screen
   /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
   @override
-  Future<List<dynamic>> getLatLng(dynamic screenCoordinate) {
-    return _channel.invokeMethod<List<dynamic>>(
+  Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) async {
+    final List<dynamic> latLng =
+        await _channel.invokeMethod<List<dynamic>>(
         'map#getLatLng', screenCoordinate.toJson());
+    return LatLng(latLng[0], latLng[1]);
   }
 
   /// Programmatically show the Info Window for a [Marker].

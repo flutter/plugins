@@ -136,27 +136,27 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('setMapStyle() has not been implemented.');
   }
 
-  /// Return [Map<String, dynamic>] defining the region that is visible in a map.
-  Future<Map<String, dynamic>> getVisibleRegion() {
+  /// Return the region that is visible in a map.
+  Future<LatLngBounds> getVisibleRegion() {
     throw UnimplementedError('getVisibleRegion() has not been implemented.');
   }
 
-  /// Return point [Map<String, int>] of the [latLngInJson] in the current map view.
+  /// Return [ScreenCoordinate] of the [LatLng] in the current map view.
   ///
   /// A projection is used to translate between on screen location and geographic coordinates.
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
-  Future<List<dynamic>> getLatLng(dynamic latLng) {
-    throw UnimplementedError('getLatLng() has not been implemented.');
+  Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) {
+    throw UnimplementedError('getScreenCoordinate() has not been implemented.');
   }
 
-  /// Return point [Map<String, int>] of the [screenCoordinateInJson] in the current map view.
+  /// Returns [LatLng] corresponding to the [ScreenCoordinate] in the current map view.
   ///
   /// A projection is used to translate between on screen location and geographic coordinates.
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
-  Future<Map<String, int>> getScreenCoordinate(dynamic screenCoordinateInJson) {
-    throw UnimplementedError('getScreenCoordinate() has not been implemented.');
+  Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) {
+    throw UnimplementedError('getLatLng() has not been implemented.');
   }
 
   /// Programmatically show the Info Window for a [Marker].
