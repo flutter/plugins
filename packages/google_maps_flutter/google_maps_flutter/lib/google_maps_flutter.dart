@@ -13,13 +13,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-// TODO: Remove this import after e2e tests have been migrated.
 import 'package:google_maps_flutter_platform_interface/src/method_channel/method_channel_google_maps_flutter.dart';
 
 export 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
   show 
+    ArgumentCallbacks,
+    ArgumentCallback,
     BitmapDescriptor,
+    CameraPosition,
     CameraTargetBounds, 
+    CameraUpdate,
     Cap,
     Circle,
     CircleId,
@@ -36,10 +39,8 @@ export 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
     Polygon,
     PolygonId,
     Polyline,
-    PolylineId;
+    PolylineId,
+    ScreenCoordinate;
 
-part 'src/callbacks.dart';
-part 'src/camera.dart';
 part 'src/controller.dart';
 part 'src/google_map.dart';
-part 'src/screen_coordinate.dart';
