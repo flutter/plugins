@@ -90,7 +90,9 @@ class Response {
 
 /// Representing a failure includes the method name and the failure details.
 class Failure {
+  /// The name of the test method which failed.
   final String methodName;
+  /// The details of the failure such as stack trace.
   final String details;
 
   /// Constructor requiring all fields during initialization.
