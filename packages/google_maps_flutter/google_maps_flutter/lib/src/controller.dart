@@ -218,7 +218,7 @@ class GoogleMapController {
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
   Future<void> showMarkerInfoWindow(MarkerId markerId) async {
     assert(markerId != null);
-    await _googleMapsFlutterPlatform.showMarkerInfoWindow(markerId.value);
+    await _googleMapsFlutterPlatform.showMarkerInfoWindow(markerId);
   }
 
   /// Programmatically hide the Info Window for a [Marker].
@@ -231,7 +231,7 @@ class GoogleMapController {
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
   Future<void> hideMarkerInfoWindow(MarkerId markerId) async {
     assert(markerId != null);
-    await _googleMapsFlutterPlatform.hideMarkerInfoWindow(markerId.value);
+    await _googleMapsFlutterPlatform.hideMarkerInfoWindow(markerId);
   }
 
   /// Returns `true` when the [InfoWindow] is showing, `false` otherwise.
@@ -244,7 +244,7 @@ class GoogleMapController {
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   Future<bool> isMarkerInfoWindowShown(MarkerId markerId) async {
     assert(markerId != null);
-    return _googleMapsFlutterPlatform.isMarkerInfoWindowShown(markerId.value);
+    return _googleMapsFlutterPlatform.isMarkerInfoWindowShown(markerId);
   }
 
   /// Returns the current zoom level of the map

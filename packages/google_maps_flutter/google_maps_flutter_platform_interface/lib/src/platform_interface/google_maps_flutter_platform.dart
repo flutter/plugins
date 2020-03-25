@@ -167,7 +167,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// * See also:
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> showMarkerInfoWindow(String markerId) {
+  Future<void> showMarkerInfoWindow(MarkerId markerId) {
     throw UnimplementedError(
         'showMarkerInfoWindow() has not been implemented.');
   }
@@ -180,7 +180,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> hideMarkerInfoWindow(String markerId) {
+  Future<void> hideMarkerInfoWindow(MarkerId markerId) {
     throw UnimplementedError(
         'hideMarkerInfoWindow() has not been implemented.');
   }
@@ -193,7 +193,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
-  Future<bool> isMarkerInfoWindowShown(String markerId) {
+  Future<bool> isMarkerInfoWindowShown(MarkerId markerId) {
     throw UnimplementedError('updateMapOptions() has not been implemented.');
   }
 
