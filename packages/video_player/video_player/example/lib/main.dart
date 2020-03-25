@@ -20,32 +20,28 @@ void main() {
   );
 }
 int i=0;
-bool bl;
+bool bl,val = false;
+Color bar,screen;
 
+void thm(bool bl){
+  if(bl==true) {
+    bar = Colors.black87;
+    screen = Colors.black26;
+  }
 
+  else {
+    bar = Colors.blue;
+    screen = Colors.white;
+  }
+}
 
 
 class _App extends StatefulWidget {
-  _MyApp createState() => new _MyApp();
+  _MyApp createState() =>  _MyApp();
 }
 
 class _MyApp extends State<_App>{
   @override
-
-  bool val=false ;
-  Color bar,screen;
-
-   thm(bool bl){
-    if(bl==true) {
-      bar = Colors.black87;
-      screen = Colors.black26;
-    }
-
-    else {
-      bar = Colors.blue;
-      screen = Colors.white;
-    }
-  }
   Widget build(BuildContext context) {
     return DefaultTabController(
 
@@ -67,10 +63,10 @@ class _MyApp extends State<_App>{
                 );
               },
             ),
-            Switch(value: val, onChanged: (bool Newval){
+            Switch(value: val, onChanged: (bool newval){
               setState(() {
-                val = Newval;
-                thm(Newval);
+                val = newval;
+                thm(newval);
 
               });
             },activeColor: Colors.white,inactiveThumbColor: Colors.black,)
