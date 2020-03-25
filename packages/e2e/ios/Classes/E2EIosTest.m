@@ -3,8 +3,7 @@
 
 @implementation E2EIosTestResult
 
-- (instancetype)initWithTestCase:(NSString *)testCase
-                      withResult:(NSString *)result {
+- (instancetype)initWithTestCase:(NSString *)testCase withResult:(NSString *)result {
   self = [super init];
   if (self) {
     _testCase = testCase;
@@ -41,9 +40,9 @@ NSArray<NSInvocation *> *E2EMakeTestInvocations(Class xcTestCase) {
   NSCharacterSet *whiteSpaceSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
   NSMutableArray<NSInvocation *> *invocations = [@[] mutableCopy];
   for (NSString *testCase in e2ePlugin.testResults.allKeys) {
-    NSString *formattedTestCase =
-        [[testCase stringByTrimmingCharactersInSet:whiteSpaceSet]
-            stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+    NSString *formattedTestCase = [[testCase stringByTrimmingCharactersInSet:whiteSpaceSet]
+        stringByReplacingOccurrencesOfString:@" "
+                                  withString:@"_"];
     results[formattedTestCase] =
         [[E2EIosTestResult alloc] initWithTestCase:testCase
                                         withResult:e2ePlugin.testResults[testCase]];
@@ -53,7 +52,7 @@ NSArray<NSInvocation *> *E2EMakeTestInvocations(Class xcTestCase) {
     invocation.selector = testSelector;
     [invocations addObject:invocation];
   }
-  objc_setAssociatedObject(xcTestCase, @selector(printTestResult),
-                           results, OBJC_ASSOCIATION_RETAIN);
+  objc_setAssociatedObject(xcTestCase, @selector(printTestResult), results,
+                           OBJC_ASSOCIATION_RETAIN);
   return invocations;
 }
