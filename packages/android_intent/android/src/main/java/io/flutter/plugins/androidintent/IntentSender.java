@@ -95,7 +95,7 @@ public final class IntentSender {
 
   /**
    * Constructs a new intent with the data specified.
-   * 
+   *
    * @param action the Intent action, such as {@code ACTION_VIEW}.
    * @param flags forwarded to {@link Intent#addFlags(int)} if non-null.
    * @param category forwarded to {@link Intent#addCategory(String)} if non-null.
