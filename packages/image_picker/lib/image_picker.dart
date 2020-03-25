@@ -23,6 +23,21 @@ enum ImageSource {
   gallery,
 }
 
+/// Which camera to use when picking images/videos while source is `ImageSource.camera`.
+///
+/// Not every device supports both of the positions.
+enum CameraPosition {
+  /// Use the back camera.
+  ///
+  /// In most of the cases, it is the default configuration.
+  back,
+
+  /// Use the front camera.
+  ///
+  /// Supported on all iPhones/iPads and some Android devices.
+  front,
+}
+
 /// Provides an easy way to pick an image/video from the image library,
 /// or to take a picture/video with the camera.
 class ImagePicker {
@@ -43,13 +58,18 @@ class ImagePicker {
   /// image types such as JPEG. If compression is not supported for the image that is picked,
   /// an warning message will be logged.
   ///
+  ///
+  /// Use `cameraPosition` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `cameraPosition` is ignored when `source` is [ImageSource.gallery]
+  ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   static Future<File> pickImage(
       {@required ImageSource source,
       double maxWidth,
       double maxHeight,
-      int imageQuality}) async {
+      int imageQuality,
+      CameraPosition cameraPosition = CameraPosition.back}) async {
     assert(source != null);
     assert(imageQuality == null || (imageQuality >= 0 && imageQuality <= 100));
 
@@ -67,7 +87,8 @@ class ImagePicker {
         'source': source.index,
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
-        'imageQuality': imageQuality
+        'imageQuality': imageQuality,
+        'cameraPosition': cameraPosition.index
       },
     );
 
@@ -79,16 +100,20 @@ class ImagePicker {
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
+  /// Use `cameraPosition` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `cameraPosition` is ignored when `source` is [ImageSource.gallery]
+  ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  static Future<File> pickVideo({
-    @required ImageSource source,
-  }) async {
+  static Future<File> pickVideo(
+      {@required ImageSource source,
+      CameraPosition cameraPosition = CameraPosition.back}) async {
     assert(source != null);
     final String path = await _channel.invokeMethod<String>(
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
+        'cameraPosition': cameraPosition.index
       },
     );
     return path == null ? null : File(path);
