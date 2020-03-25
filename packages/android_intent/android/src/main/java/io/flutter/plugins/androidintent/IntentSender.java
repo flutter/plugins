@@ -72,7 +72,7 @@ public final class IntentSender {
    * @return Whether the package manager found {@link android.content.pm.ResolveInfo} using its
    *     {@link PackageManager#resolveActivity(Intent, int)} method.
    */
-  boolean canResolve(Intent intent) {
+  boolean canResolveActivity(Intent intent) {
     if (applicationContext == null) {
       Log.wtf(TAG, "Trying to send an intent before the applicationContext was initialized.");
       return false;

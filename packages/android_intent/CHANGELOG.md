@@ -1,8 +1,8 @@
 ## 0.3.7
 
-* Add a `Future<bool> canResolve` method to the AndroidIntent class. It can be 
-  used to determine whether a device supports a particular intent or has an
-  app installed that can resolve it. It is based on PackageManager
+* Add a `Future<bool> canResolveActivity` method to the AndroidIntent class. It 
+  can be used to determine whether a device supports a particular intent or has 
+  an app installed that can resolve it. It is based on PackageManager
   [resolveActivity](https://developer.android.com/reference/android/content/pm/PackageManager#resolveActivity(android.content.Intent,%20int)).
 
 ## 0.3.6+1

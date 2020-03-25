@@ -141,12 +141,15 @@ class AndroidIntent {
   /// Check whether the intent can be resolved to an activity.
   ///
   /// This works only on Android platforms.
-  Future<bool> canResolve() async {
+  Future<bool> canResolveActivity() async {
     if (!_platform.isAndroid) {
       return false;
     }
 
-    return await _channel.invokeMethod<bool>('canResolve', _buildArguments());
+    return await _channel.invokeMethod<bool>(
+      'canResolveActivity',
+      _buildArguments(),
+    );
   }
 
   /// Constructs the map of arguments which is passed to the plugin.
