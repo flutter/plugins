@@ -12,6 +12,7 @@ dev_dependencies:
     sdk: flutter
   test: any
   e2e: ^0.2.0
+  pedantic: ^1.8.0
 
 flutter:
   uses-material-design: true

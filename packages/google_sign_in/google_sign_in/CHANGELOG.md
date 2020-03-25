@@ -1,3 +1,15 @@
+## 4.2.0
+
+* Migrate to AndroidX.
+
+## 4.1.5
+
+* Remove unused variable.
+
+## 4.1.4
+
+* Make the pedantic dev_dependency explicit.
+
 ## 4.1.3
 
 * Make plugin example meet naming convention.

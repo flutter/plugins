@@ -1,3 +1,15 @@
+## 5.4.4
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 5.4.3
+
+* Fixed the launchUniversalLinkIos method.
+
+## 5.4.2
+
+* Make the pedantic dev_dependency explicit.
+
 ## 5.4.1
 
 * Update unit tests to work with the PlatformInterface from package `plugin_platform_interface`.
