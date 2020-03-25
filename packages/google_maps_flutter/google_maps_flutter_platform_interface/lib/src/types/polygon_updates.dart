@@ -12,7 +12,7 @@ import 'utils/polygon.dart';
 /// [Polygon] update events to be applied to the [GoogleMap].
 ///
 /// Used in [GoogleMapController] when the map is updated.
-// (Do not re-export from plugin)
+// (Do not re-export)
 class PolygonUpdates {
   /// Computes [PolygonUpdates] given previous and current [Polygon]s.
   PolygonUpdates.from(Set<Polygon> previous, Set<Polygon> current) {
