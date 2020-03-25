@@ -12,7 +12,5 @@ List<Map<String, dynamic>> serializePolygonSet(Set<Polygon> polygons) {
   if (polygons == null) {
     return null;
   }
-  return polygons
-      .map<Map<String, dynamic>>((Polygon p) => p.toJson())
-      .toList();
+  return polygons.map<Map<String, dynamic>>((Polygon p) => p.toJson()).toList();
 }

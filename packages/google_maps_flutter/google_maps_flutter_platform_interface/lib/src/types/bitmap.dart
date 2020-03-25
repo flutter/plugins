@@ -5,7 +5,8 @@
 import 'dart:async' show Future;
 import 'dart:typed_data' show Uint8List;
 
-import 'package:flutter/material.dart' show ImageConfiguration, AssetImage, AssetBundleImageKey;
+import 'package:flutter/material.dart'
+    show ImageConfiguration, AssetImage, AssetBundleImageKey;
 import 'package:flutter/services.dart' show AssetBundle;
 import 'package:meta/meta.dart' show visibleForTesting;
 
