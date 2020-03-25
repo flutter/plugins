@@ -24,17 +24,17 @@ bool bl, val = false;
 Color bar, screen;
 
 void thm(bool bl) {
-  if(bl == true) {
+  if (bl == true) {
     bar = Colors.black87;
     screen = Colors.black26;
-  }
-  else{
+  } else {
     bar = Colors.blue;
     screen = Colors.white;
   }
 }
+
 class _App extends StatefulWidget {
-  _MyApp createState() =>  _MyApp();
+  _MyApp createState() => _MyApp();
 }
 class _MyApp extends State<_App>{
   @override
@@ -43,7 +43,8 @@ class _MyApp extends State<_App>{
       length: 3,
       child: Scaffold(
         key: const ValueKey<String>('home_page'),
-        appBar: AppBar(backgroundColor: bar,
+        appBar: AppBar(
+          backgroundColor: bar,
           title: const Text('Video player example'),
           actions: <Widget>[
             IconButton(
@@ -58,12 +59,17 @@ class _MyApp extends State<_App>{
                 );
               },
             ),
-            Switch(value: val, onChanged: (bool new_val){
-              setState(() {
-                val = new_val;
-                thm(new_val);
-              });
-            },activeColor: Colors.white,inactiveThumbColor: Colors.black,)
+            Switch(
+              value: val,
+              onChanged: (bool new_val) {
+                setState(() {
+                  val = new_val;
+                  thm(new_val);
+                });
+              },
+              activeColor: Colors.white,
+              inactiveThumbColor: Colors.black,
+            )
           ],
           bottom: const TabBar(
             isScrollable: true,
