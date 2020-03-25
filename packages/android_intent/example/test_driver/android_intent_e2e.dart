@@ -50,6 +50,16 @@ void main() {
     }));
   }, skip: !Platform.isAndroid);
 
+  testWidgets('#canResolveActivity returns true when example Activity is found',
+      (WidgetTester tester) async {
+    AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      package: 'io.flutter.plugins.androidintentexample',
+      componentName: 'io.flutter.embedding.android.FlutterActivity',
+    );
+    await expectLater(() async => await intent.canResolveActivity(), isFalse);
+  }, skip: !Platform.isAndroid);
+
   testWidgets('#canResolveActivity throws when no Activity is found',
       (WidgetTester tester) async {
     // We can't test that any of this is really working, this is mostly just
