@@ -64,7 +64,7 @@ class PolygonUpdates {
   Set<PolygonId> polygonIdsToRemove;
   Set<Polygon> polygonsToChange;
 
-  Map<String, dynamic> _toMap() {
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
 
     void addIfNonNull(String fieldName, dynamic value) {

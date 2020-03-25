@@ -66,7 +66,7 @@ class PolylineUpdates {
   Set<PolylineId> polylineIdsToRemove;
   Set<Polyline> polylinesToChange;
 
-  Map<String, dynamic> _toMap() {
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
 
     void addIfNonNull(String fieldName, dynamic value) {

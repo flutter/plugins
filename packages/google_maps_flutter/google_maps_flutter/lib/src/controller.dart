@@ -72,7 +72,7 @@ class GoogleMapController {
         break;
       case 'marker#onDragEnd':
         _googleMapState.onMarkerDragEnd(call.arguments['markerId'],
-            LatLng._fromJson(call.arguments['position']));
+            LatLng.fromJson(call.arguments['position']));
         break;
       case 'infoWindow#onTap':
         _googleMapState.onInfoWindowTap(call.arguments['markerId']);
@@ -87,11 +87,11 @@ class GoogleMapController {
         _googleMapState.onCircleTap(call.arguments['circleId']);
         break;
       case 'map#onTap':
-        _googleMapState.onTap(LatLng._fromJson(call.arguments['position']));
+        _googleMapState.onTap(LatLng.fromJson(call.arguments['position']));
         break;
       case 'map#onLongPress':
         _googleMapState
-            .onLongPress(LatLng._fromJson(call.arguments['position']));
+            .onLongPress(LatLng.fromJson(call.arguments['position']));
         break;
       default:
         throw MissingPluginException();
@@ -115,9 +115,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateMarkers(_MarkerUpdates markerUpdates) async {
+  Future<void> _updateMarkers(MarkerUpdates markerUpdates) async {
     assert(markerUpdates != null);
-    await _googleMapsFlutterPlatform.updateMarkers(markerUpdates._toMap());
+    await _googleMapsFlutterPlatform.updateMarkers(markerUpdates.toJson());
   }
 
   /// Updates polygon configuration.
@@ -126,9 +126,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updatePolygons(_PolygonUpdates polygonUpdates) async {
+  Future<void> _updatePolygons(PolygonUpdates polygonUpdates) async {
     assert(polygonUpdates != null);
-    await _googleMapsFlutterPlatform.updatePolygons(polygonUpdates._toMap());
+    await _googleMapsFlutterPlatform.updatePolygons(polygonUpdates.toJson());
   }
 
   /// Updates polyline configuration.
@@ -137,9 +137,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updatePolylines(_PolylineUpdates polylineUpdates) async {
+  Future<void> _updatePolylines(PolylineUpdates polylineUpdates) async {
     assert(polylineUpdates != null);
-    await _googleMapsFlutterPlatform.updatePolylines(polylineUpdates._toMap());
+    await _googleMapsFlutterPlatform.updatePolylines(polylineUpdates.toJson());
   }
 
   /// Updates circle configuration.
@@ -148,9 +148,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateCircles(_CircleUpdates circleUpdates) async {
+  Future<void> _updateCircles(CircleUpdates circleUpdates) async {
     assert(circleUpdates != null);
-    await _googleMapsFlutterPlatform.updateCircles(circleUpdates._toMap());
+    await _googleMapsFlutterPlatform.updateCircles(circleUpdates.toJson());
   }
 
   /// Starts an animated change of the map camera position.
@@ -158,7 +158,7 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
   Future<void> animateCamera(CameraUpdate cameraUpdate) async {
-    await _googleMapsFlutterPlatform.animateCamera(cameraUpdate._toJson());
+    await _googleMapsFlutterPlatform.animateCamera(cameraUpdate.toJson());
   }
 
   /// Changes the map camera position.
@@ -166,7 +166,7 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> moveCamera(CameraUpdate cameraUpdate) async {
-    await _googleMapsFlutterPlatform.moveCamera(cameraUpdate._toJson());
+    await _googleMapsFlutterPlatform.moveCamera(cameraUpdate.toJson());
   }
 
   /// Sets the styling of the base map.
@@ -190,8 +190,8 @@ class GoogleMapController {
   Future<LatLngBounds> getVisibleRegion() async {
     final Map<String, dynamic> latLngBounds =
         await _googleMapsFlutterPlatform.getVisibleRegion();
-    final LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
-    final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
+    final LatLng southwest = LatLng.fromJson(latLngBounds['southwest']);
+    final LatLng northeast = LatLng.fromJson(latLngBounds['northeast']);
 
     return LatLngBounds(northeast: northeast, southwest: southwest);
   }
@@ -203,7 +203,7 @@ class GoogleMapController {
   /// of the map, not necessarily of the whole screen.
   Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
     final Map<String, int> point =
-        await _googleMapsFlutterPlatform.getScreenCoordinate(latLng._toJson());
+        await _googleMapsFlutterPlatform.getScreenCoordinate(latLng.toJson());
     return ScreenCoordinate(x: point['x'], y: point['y']);
   }
 
@@ -213,7 +213,7 @@ class GoogleMapController {
   /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
   Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) async {
     final List<dynamic> latLng =
-        await _googleMapsFlutterPlatform.getLatLng(screenCoordinate._toJson());
+        await _googleMapsFlutterPlatform.getLatLng(screenCoordinate.toJson());
     return LatLng(latLng[0], latLng[1]);
   }
 
