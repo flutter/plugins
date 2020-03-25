@@ -117,7 +117,7 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMarkers(MarkerUpdates markerUpdates) async {
     assert(markerUpdates != null);
-    await _googleMapsFlutterPlatform.updateMarkers(markerUpdates.toJson());
+    await _googleMapsFlutterPlatform.updateMarkers(markerUpdates);
   }
 
   /// Updates polygon configuration.
@@ -128,7 +128,7 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updatePolygons(PolygonUpdates polygonUpdates) async {
     assert(polygonUpdates != null);
-    await _googleMapsFlutterPlatform.updatePolygons(polygonUpdates.toJson());
+    await _googleMapsFlutterPlatform.updatePolygons(polygonUpdates);
   }
 
   /// Updates polyline configuration.
@@ -139,7 +139,7 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updatePolylines(PolylineUpdates polylineUpdates) async {
     assert(polylineUpdates != null);
-    await _googleMapsFlutterPlatform.updatePolylines(polylineUpdates.toJson());
+    await _googleMapsFlutterPlatform.updatePolylines(polylineUpdates);
   }
 
   /// Updates circle configuration.
@@ -150,7 +150,7 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateCircles(CircleUpdates circleUpdates) async {
     assert(circleUpdates != null);
-    await _googleMapsFlutterPlatform.updateCircles(circleUpdates.toJson());
+    await _googleMapsFlutterPlatform.updateCircles(circleUpdates);
   }
 
   /// Starts an animated change of the map camera position.
@@ -158,7 +158,7 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
   Future<void> animateCamera(CameraUpdate cameraUpdate) async {
-    await _googleMapsFlutterPlatform.animateCamera(cameraUpdate.toJson());
+    await _googleMapsFlutterPlatform.animateCamera(cameraUpdate);
   }
 
   /// Changes the map camera position.
@@ -166,7 +166,7 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> moveCamera(CameraUpdate cameraUpdate) async {
-    await _googleMapsFlutterPlatform.moveCamera(cameraUpdate.toJson());
+    await _googleMapsFlutterPlatform.moveCamera(cameraUpdate);
   }
 
   /// Sets the styling of the base map.
