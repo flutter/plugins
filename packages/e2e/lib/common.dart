@@ -92,6 +92,7 @@ class Response {
 class Failure {
   /// The name of the test method which failed.
   final String methodName;
+
   /// The details of the failure such as stack trace.
   final String details;
 
