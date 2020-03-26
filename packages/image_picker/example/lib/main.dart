@@ -74,8 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
               source: source,
               maxWidth: maxWidth,
               maxHeight: maxHeight,
-              imageQuality: quality,
-              cameraDevice: CameraDevice.front);
+              imageQuality: quality);
           setState(() {});
         } catch (e) {
           _pickImageError = e;

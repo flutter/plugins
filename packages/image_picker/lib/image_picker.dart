@@ -60,7 +60,8 @@ class ImagePicker {
   ///
   ///
   /// Use `cameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
-  /// The `cameraDevice` is ignored when `source` is [ImageSource.gallery]. Defaults to [CameraDevice.rear].
+  /// The `cameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear].
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
@@ -101,7 +102,8 @@ class ImagePicker {
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
   /// Use `cameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
-  /// The `cameraDevice` is ignored when `source` is [ImageSource.gallery]. Defaults to [CameraDevice.rear].
+  /// The `cameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear].
   ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
