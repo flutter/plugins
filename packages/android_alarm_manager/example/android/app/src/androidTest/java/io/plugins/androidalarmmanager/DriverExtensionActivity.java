@@ -6,7 +6,7 @@ package io.flutter.plugins.androidalarmmanagerexample;
 
 import androidx.annotation.NonNull;
 
-public class DriverExtensionActivity extends MainActivity {
+public class DriverExtensionActivity extends FlutterActivity {
   @Override
   @NonNull
   public String getDartEntrypointFunctionName() {
