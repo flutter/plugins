@@ -4,6 +4,9 @@
 
 part of google_maps_flutter;
 
+// TODO: the _googleMapsFlutterPlatform is currently stateful (needs to keep
+// subscriptions that are related to the mapId), however this is a singleton.
+// We need to be able to create configured instances of the platform.
 final GoogleMapsFlutterPlatform _googleMapsFlutterPlatform =
     GoogleMapsFlutterPlatform.instance;
 
@@ -104,9 +107,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) async {
+  Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) {
     assert(optionsUpdate != null);
-    await _googleMapsFlutterPlatform.updateMapOptions(optionsUpdate);
+    return _googleMapsFlutterPlatform.updateMapOptions(optionsUpdate);
   }
 
   /// Updates marker configuration.
@@ -115,9 +118,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateMarkers(MarkerUpdates markerUpdates) async {
+  Future<void> _updateMarkers(MarkerUpdates markerUpdates) {
     assert(markerUpdates != null);
-    await _googleMapsFlutterPlatform.updateMarkers(markerUpdates);
+    return _googleMapsFlutterPlatform.updateMarkers(markerUpdates);
   }
 
   /// Updates polygon configuration.
@@ -126,9 +129,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updatePolygons(PolygonUpdates polygonUpdates) async {
+  Future<void> _updatePolygons(PolygonUpdates polygonUpdates) {
     assert(polygonUpdates != null);
-    await _googleMapsFlutterPlatform.updatePolygons(polygonUpdates);
+    return _googleMapsFlutterPlatform.updatePolygons(polygonUpdates);
   }
 
   /// Updates polyline configuration.
@@ -137,9 +140,9 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updatePolylines(PolylineUpdates polylineUpdates) async {
+  Future<void> _updatePolylines(PolylineUpdates polylineUpdates) {
     assert(polylineUpdates != null);
-    await _googleMapsFlutterPlatform.updatePolylines(polylineUpdates);
+    return _googleMapsFlutterPlatform.updatePolylines(polylineUpdates);
   }
 
   /// Updates circle configuration.
@@ -148,25 +151,25 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateCircles(CircleUpdates circleUpdates) async {
+  Future<void> _updateCircles(CircleUpdates circleUpdates) {
     assert(circleUpdates != null);
-    await _googleMapsFlutterPlatform.updateCircles(circleUpdates);
+    return _googleMapsFlutterPlatform.updateCircles(circleUpdates);
   }
 
   /// Starts an animated change of the map camera position.
   ///
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
-  Future<void> animateCamera(CameraUpdate cameraUpdate) async {
-    await _googleMapsFlutterPlatform.animateCamera(cameraUpdate);
+  Future<void> animateCamera(CameraUpdate cameraUpdate) {
+    return _googleMapsFlutterPlatform.animateCamera(cameraUpdate);
   }
 
   /// Changes the map camera position.
   ///
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
-  Future<void> moveCamera(CameraUpdate cameraUpdate) async {
-    await _googleMapsFlutterPlatform.moveCamera(cameraUpdate);
+  Future<void> moveCamera(CameraUpdate cameraUpdate) {
+    return _googleMapsFlutterPlatform.moveCamera(cameraUpdate);
   }
 
   /// Sets the styling of the base map.
@@ -182,8 +185,8 @@ class GoogleMapController {
   /// Also, refer [iOS](https://developers.google.com/maps/documentation/ios-sdk/style-reference)
   /// and [Android](https://developers.google.com/maps/documentation/android-sdk/style-reference)
   /// style reference for more information regarding the supported styles.
-  Future<void> setMapStyle(String mapStyle) async {
-    await _googleMapsFlutterPlatform.setMapStyle(mapStyle);
+  Future<void> setMapStyle(String mapStyle) {
+    return _googleMapsFlutterPlatform.setMapStyle(mapStyle);
   }
 
   /// Return [LatLngBounds] defining the region that is visible in a map.
@@ -216,9 +219,9 @@ class GoogleMapController {
   /// * See also:
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> showMarkerInfoWindow(MarkerId markerId) async {
+  Future<void> showMarkerInfoWindow(MarkerId markerId) {
     assert(markerId != null);
-    await _googleMapsFlutterPlatform.showMarkerInfoWindow(markerId);
+    return _googleMapsFlutterPlatform.showMarkerInfoWindow(markerId);
   }
 
   /// Programmatically hide the Info Window for a [Marker].
@@ -229,9 +232,9 @@ class GoogleMapController {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> hideMarkerInfoWindow(MarkerId markerId) async {
+  Future<void> hideMarkerInfoWindow(MarkerId markerId) {
     assert(markerId != null);
-    await _googleMapsFlutterPlatform.hideMarkerInfoWindow(markerId);
+    return _googleMapsFlutterPlatform.hideMarkerInfoWindow(markerId);
   }
 
   /// Returns `true` when the [InfoWindow] is showing, `false` otherwise.
@@ -242,15 +245,14 @@ class GoogleMapController {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
-  Future<bool> isMarkerInfoWindowShown(MarkerId markerId) async {
+  Future<bool> isMarkerInfoWindowShown(MarkerId markerId) {
     assert(markerId != null);
     return _googleMapsFlutterPlatform.isMarkerInfoWindowShown(markerId);
   }
 
   /// Returns the current zoom level of the map
-  Future<double> getZoomLevel() async {
-    final double zoomLevel = await _googleMapsFlutterPlatform.getZoomLevel();
-    return zoomLevel;
+  Future<double> getZoomLevel() {
+    return _googleMapsFlutterPlatform.getZoomLevel();
   }
 
   /// Returns the image bytes of the map
