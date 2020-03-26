@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:e2e/common.dart' as e2ecommon;
+import 'package:e2e/common.dart' as e2e;
 import 'package:flutter_driver/flutter_driver.dart';
 
 Future<void> main() async {
   final FlutterDriver driver = await FlutterDriver.connect();
   final String jsonResult =
       await driver.requestData(null, timeout: const Duration(minutes: 1));
-  final e2ecommon.Response response = e2ecommon.Response.fromJson(jsonResult);
+  final e2e.Response response = e2e.Response.fromJson(jsonResult);
   await driver.close();
 
   if (response.allTestsPassed) {
