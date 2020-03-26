@@ -170,7 +170,8 @@ void main() {
 
       test('camera position can set to front', () async {
         await ImagePicker.pickImage(
-            source: ImageSource.camera, cameraDevice: CameraDevice.front);
+            source: ImageSource.camera,
+            preferredCameraDevice: CameraDevice.front);
 
         expect(
           log,
@@ -231,7 +232,8 @@ void main() {
 
       test('camera position can set to front', () async {
         await ImagePicker.pickVideo(
-            source: ImageSource.camera, cameraDevice: CameraDevice.front);
+            source: ImageSource.camera,
+            preferredCameraDevice: CameraDevice.front);
 
         expect(
           log,

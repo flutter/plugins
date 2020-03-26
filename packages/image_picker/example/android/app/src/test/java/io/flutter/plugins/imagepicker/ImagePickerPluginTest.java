@@ -7,11 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -94,10 +91,9 @@ public class ImagePickerPluginTest {
   }
 
   @Test
-  public void
-  onMethodCall_PickingImage_WhenSourceIsCamera_InvokesTakeImageWithCamera_RearCamera() {
+  public void onMethodCall_PickingImage_WhenSourceIsCamera_InvokesTakeImageWithCamera_RearCamera() {
     MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
-    HashMap<String, Object> arguments = (HashMap<String, Object>)call.arguments;
+    HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
     arguments.put("cameraDevice", 0);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).setCameraDevice(eq(CameraDevice.REAR));
@@ -105,19 +101,18 @@ public class ImagePickerPluginTest {
 
   @Test
   public void
-  onMethodCall_PickingImage_WhenSourceIsCamera_InvokesTakeImageWithCamera_FrontCamera() {
+      onMethodCall_PickingImage_WhenSourceIsCamera_InvokesTakeImageWithCamera_FrontCamera() {
     MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
-    HashMap<String, Object> arguments = (HashMap<String, Object>)call.arguments;
+    HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
     arguments.put("cameraDevice", 1);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).setCameraDevice(eq(CameraDevice.FRONT));
   }
 
   @Test
-  public void
-  onMethodCall_PickingVideo_WhenSourceIsCamera_InvokesTakeImageWithCamera_RearCamera() {
+  public void onMethodCall_PickingVideo_WhenSourceIsCamera_InvokesTakeImageWithCamera_RearCamera() {
     MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
-    HashMap<String, Object> arguments = (HashMap<String, Object>)call.arguments;
+    HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
     arguments.put("cameraDevice", 0);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).setCameraDevice(eq(CameraDevice.REAR));
@@ -125,9 +120,9 @@ public class ImagePickerPluginTest {
 
   @Test
   public void
-  onMethodCall_PickingVideo_WhenSourceIsCamera_InvokesTakeImageWithCamera_FrontCamera() {
+      onMethodCall_PickingVideo_WhenSourceIsCamera_InvokesTakeImageWithCamera_FrontCamera() {
     MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
-    HashMap<String, Object> arguments = (HashMap<String, Object>)call.arguments;
+    HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
     arguments.put("cameraDevice", 1);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).setCameraDevice(eq(CameraDevice.FRONT));
