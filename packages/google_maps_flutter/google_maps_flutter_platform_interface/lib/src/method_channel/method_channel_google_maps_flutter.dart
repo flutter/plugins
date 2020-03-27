@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
 
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 /// An implementation of [GoogleMapsFlutterPlatform] that uses method channels.
 class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
@@ -42,155 +43,125 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   //
   // It is a `broadcast` because multiple controllers will connect to
   // different stream views of this Controller.
-  StreamController<MapEvent> _events = StreamController<MapEvent>.broadcast();
+  StreamController<MapEvent> _controller = StreamController<MapEvent>.broadcast();
+
+  // Returns a filtered view of the events in the _controller, by mapId.
+  Stream<MapEvent> _events(int mapId) => _controller.stream.where((event) => event.mapId == mapId);
 
   @override
   Stream<CameraMoveStartedEvent> onCameraMoveStarted({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is CameraMoveStartedEvent)
-        .map((event) => event as CameraMoveStartedEvent);
+    return _events(mapId).whereType<CameraMoveStartedEvent>();
   }
 
   @override
   Stream<CameraMoveEvent> onCameraMove({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is CameraMoveEvent)
-        .map((event) => event as CameraMoveEvent);
+    return _events(mapId).whereType<CameraMoveEvent>();
   }
 
   @override
   Stream<CameraIdleEvent> onCameraIdle({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is CameraIdleEvent)
-        .map((event) => event as CameraIdleEvent);
+    return _events(mapId).whereType<CameraIdleEvent>();
   }
 
   @override
   Stream<MarkerTapEvent> onMarkerTap({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is MarkerTapEvent)
-        .map((event) => event as MarkerTapEvent);
+    return _events(mapId).whereType<MarkerTapEvent>();
   }
 
   @override
   Stream<InfoWindowTapEvent> onInfoWindowTap({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is InfoWindowTapEvent)
-        .map((event) => event as InfoWindowTapEvent);
+    return _events(mapId).whereType<InfoWindowTapEvent>();
   }
 
   @override
   Stream<MarkerDragEndEvent> onMarkerDragEnd({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is MarkerDragEndEvent)
-        .map((event) => event as MarkerDragEndEvent);
+    return _events(mapId).whereType<MarkerDragEndEvent>();
   }
 
   @override
   Stream<PolylineTapEvent> onPolylineTap({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is PolylineTapEvent)
-        .map((event) => event as PolylineTapEvent);
+    return _events(mapId).whereType<PolylineTapEvent>();
   }
 
   @override
   Stream<PolygonTapEvent> onPolygonTap({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is PolygonTapEvent)
-        .map((event) => event as PolygonTapEvent);
+    return _events(mapId).whereType<PolygonTapEvent>();
   }
 
   @override
   Stream<CircleTapEvent> onCircleTap({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is CircleTapEvent)
-        .map((event) => event as CircleTapEvent);
+    return _events(mapId).whereType<CircleTapEvent>();
   }
 
   @override
   Stream<MapTapEvent> onTap({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is MapTapEvent)
-        .map((event) => event as MapTapEvent);
+    return _events(mapId).whereType<MapTapEvent>();
   }
 
   @override
   Stream<MapLongPressEvent> onLongPress({@required int mapId}) {
-    return _events.stream
-        .where((event) => event.mapId == mapId)
-        .where((event) => event is MapLongPressEvent)
-        .map((event) => event as MapLongPressEvent);
+    return _events(mapId).whereType<MapLongPressEvent>();
   }
 
   Future<dynamic> _handleMethodCall(MethodCall call, int mapId) async {
     switch (call.method) {
       case 'camera#onMoveStarted':
-        _events.add(CameraMoveStartedEvent(mapId));
+        _controller.add(CameraMoveStartedEvent(mapId));
         break;
       case 'camera#onMove':
-        _events.add(CameraMoveEvent(
+        _controller.add(CameraMoveEvent(
           mapId,
           CameraPosition.fromMap(call.arguments['position']),
         ));
         break;
       case 'camera#onIdle':
-        _events.add(CameraIdleEvent(mapId));
+        _controller.add(CameraIdleEvent(mapId));
         break;
       case 'marker#onTap':
-        _events.add(MarkerTapEvent(
+        _controller.add(MarkerTapEvent(
           mapId,
           MarkerId(call.arguments['markerId']),
         ));
         break;
       case 'marker#onDragEnd':
-        _events.add(MarkerDragEndEvent(
+        _controller.add(MarkerDragEndEvent(
           mapId,
           LatLng.fromJson(call.arguments['position']),
           MarkerId(call.arguments['markerId']),
         ));
         break;
       case 'infoWindow#onTap':
-        _events.add(InfoWindowTapEvent(
+        _controller.add(InfoWindowTapEvent(
           mapId,
           MarkerId(call.arguments['markerId']),
         ));
         break;
       case 'polyline#onTap':
-        _events.add(PolylineTapEvent(
+        _controller.add(PolylineTapEvent(
           mapId,
           PolylineId(call.arguments['polylineId']),
         ));
         break;
       case 'polygon#onTap':
-        _events.add(PolygonTapEvent(
+        _controller.add(PolygonTapEvent(
           mapId,
           PolygonId(call.arguments['polygonId']),
         ));
         break;
       case 'circle#onTap':
-        _events.add(CircleTapEvent(
+        _controller.add(CircleTapEvent(
           mapId,
           CircleId(call.arguments['circleId']),
         ));
         break;
       case 'map#onTap':
-        _events.add(MapTapEvent(
+        _controller.add(MapTapEvent(
           mapId,
           LatLng.fromJson(call.arguments['position']),
         ));
         break;
       case 'map#onLongPress':
-        _events.add(MapLongPressEvent(
+        _controller.add(MapLongPressEvent(
           mapId,
           LatLng.fromJson(call.arguments['position']),
         ));
