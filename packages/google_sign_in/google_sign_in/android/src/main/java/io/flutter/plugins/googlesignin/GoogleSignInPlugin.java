@@ -63,14 +63,20 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   public static void registerWith(PluginRegistry.Registrar registrar) {
     GoogleSignInPlugin instance = new GoogleSignInPlugin();
     instance.initInstance(registrar.messenger(), registrar.context(), new GoogleSignInWrapper());
-    instance.delegate.setUpRegistrar(registrar);
+    instance.setUpRegistrar(registrar);
   }
 
   // Visible for testing.
-  public void initInstance(BinaryMessenger messenger, Context context, GoogleSignInWrapper googleSignInWrapper) {
+  public void initInstance(
+      BinaryMessenger messenger, Context context, GoogleSignInWrapper googleSignInWrapper) {
     channel = new MethodChannel(messenger, CHANNEL_NAME);
     delegate = new Delegate(context, googleSignInWrapper);
     channel.setMethodCallHandler(this);
+  }
+
+  // Visible for testing.
+  public void setUpRegistrar(PluginRegistry.Registrar registrar) {
+    delegate.setUpRegistrar(registrar);
   }
 
   private void dispose() {
@@ -92,7 +98,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    initInstance(binding.getBinaryMessenger(), binding.getApplicationContext(), new GoogleSignInWrapper());
+    initInstance(
+        binding.getBinaryMessenger(), binding.getApplicationContext(), new GoogleSignInWrapper());
   }
 
   @Override
