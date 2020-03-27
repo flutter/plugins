@@ -331,8 +331,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         int clientIdIdentifier =
             context
                 .getResources()
-                .getIdentifier(
-                    "default_web_client_id", "string", context.getPackageName());
+                .getIdentifier("default_web_client_id", "string", context.getPackageName());
         if (clientIdIdentifier != 0) {
           optionsBuilder.requestIdToken(context.getString(clientIdIdentifier));
         }
@@ -463,10 +462,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
       }
 
       googleSignInWrapper.requestPermissions(
-          getActivity(),
-          REQUEST_CODE_REQUEST_SCOPE,
-          account,
-          wrappedScopes.toArray(new Scope[0]));
+          getActivity(), REQUEST_CODE_REQUEST_SCOPE, account, wrappedScopes.toArray(new Scope[0]));
     }
 
     private void onSignInResult(Task<GoogleSignInAccount> completedTask) {
