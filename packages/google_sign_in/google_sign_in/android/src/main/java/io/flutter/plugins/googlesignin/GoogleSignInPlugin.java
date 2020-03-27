@@ -94,6 +94,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   private void disposeActivity() {
     activityPluginBinding.removeActivityResultListener(delegate);
     delegate.setActivity(null);
+    activityPluginBinding = null;
   }
 
   @Override
