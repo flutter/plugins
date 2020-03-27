@@ -1,3 +1,7 @@
+## 0.9.0
+
+* Add support for methods introduced in `google_sign_in_platform_interface` 1.1.0.
+
 ## 0.8.4
 
 * Remove all `fakeConstructor$` from the generated facade. JS interop classes do not support non-external constructors.
