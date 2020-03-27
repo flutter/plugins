@@ -8,7 +8,7 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -62,7 +62,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   public static void registerWith(PluginRegistry.Registrar registrar) {
     GoogleSignInPlugin instance = new GoogleSignInPlugin();
     instance.initInstance(registrar.messenger(), registrar.context());
-    delegate.setUpRegistrar(registrar);
+    instance.delegate.setUpRegistrar(registrar);
   }
 
   private void initInstance(BinaryMessenger messenger, Context context) {
