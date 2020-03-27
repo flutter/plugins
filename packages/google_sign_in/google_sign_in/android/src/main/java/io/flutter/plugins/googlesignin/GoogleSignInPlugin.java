@@ -62,13 +62,14 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     GoogleSignInPlugin instance = new GoogleSignInPlugin();
-    instance.initInstance(registrar.messenger(), registrar.context());
+    instance.initInstance(registrar.messenger(), registrar.context(), new GoogleSignInWrapper());
     instance.delegate.setUpRegistrar(registrar);
   }
 
-  private void initInstance(BinaryMessenger messenger, Context context) {
+  // Visible for testing.
+  public void initInstance(BinaryMessenger messenger, Context context, GoogleSignInWrapper wrapper) {
     channel = new MethodChannel(messenger, CHANNEL_NAME);
-    delegate = new Delegate(context);
+    delegate = new Delegate(context, wrapper);
     channel.setMethodCallHandler(this);
   }
 
@@ -91,7 +92,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    initInstance(binding.getBinaryMessenger(), binding.getApplicationContext());
+    initInstance(binding.getBinaryMessenger(), binding.getApplicationContext(), new GoogleSignInWrapper());
   }
 
   @Override
@@ -262,9 +263,9 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
 
-    public Delegate(Context context) {
+    public Delegate(Context context, GoogleSignInWrapper wrapper) {
       this.context = context;
-      this.googleSignInWrapper = new GoogleSignInWrapper();
+      this.googleSignInWrapper = wrapper;
     }
 
     public void setUpRegistrar(PluginRegistry.Registrar registrar) {
