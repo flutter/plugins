@@ -24,6 +24,8 @@ import org.mockito.MockitoAnnotations;
 public class ImagePickerPluginTest {
   private static final int SOURCE_CAMERA = 0;
   private static final int SOURCE_GALLERY = 1;
+  private static final String PICK_IMAGE = "pickImage";
+  private static final String PICK_VIDEO = "pickVideo";
 
   @Rule public ExpectedException exception = ExpectedException.none();
 
@@ -45,7 +47,7 @@ public class ImagePickerPluginTest {
 
   @Test
   public void onMethodCall_WhenActivityIsNull_FinishesWithForegroundActivityRequiredError() {
-    MethodCall call = buildMethodCall(SOURCE_GALLERY);
+    MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_GALLERY);
     ImagePickerPlugin imagePickerPluginWithNullActivity =
         new ImagePickerPlugin(mockImagePickerDelegate, null);
     imagePickerPluginWithNullActivity.onMethodCall(call, mockResult);
@@ -67,14 +69,14 @@ public class ImagePickerPluginTest {
   public void onMethodCall_WhenCalledWithUnknownImageSource_ThrowsException() {
     exception.expect(IllegalArgumentException.class);
     exception.expectMessage("Invalid image source: -1");
-    plugin.onMethodCall(buildMethodCall(-1), mockResult);
+    plugin.onMethodCall(buildMethodCall(PICK_IMAGE, -1), mockResult);
     verifyZeroInteractions(mockImagePickerDelegate);
     verifyZeroInteractions(mockResult);
   }
 
   @Test
   public void onMethodCall_WhenSourceIsGallery_InvokesChooseImageFromGallery() {
-    MethodCall call = buildMethodCall(SOURCE_GALLERY);
+    MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_GALLERY);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).chooseImageFromGallery(eq(call), any());
     verifyZeroInteractions(mockResult);
@@ -82,10 +84,48 @@ public class ImagePickerPluginTest {
 
   @Test
   public void onMethodCall_WhenSourceIsCamera_InvokesTakeImageWithCamera() {
-    MethodCall call = buildMethodCall(SOURCE_CAMERA);
+    MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).takeImageWithCamera(eq(call), any());
     verifyZeroInteractions(mockResult);
+  }
+
+  @Test
+  public void onMethodCall_PickingImage_WhenSourceIsCamera_InvokesTakeImageWithCamera_RearCamera() {
+    MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
+    HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
+    arguments.put("cameraDevice", 0);
+    plugin.onMethodCall(call, mockResult);
+    verify(mockImagePickerDelegate).setCameraDevice(eq(CameraDevice.REAR));
+  }
+
+  @Test
+  public void
+      onMethodCall_PickingImage_WhenSourceIsCamera_InvokesTakeImageWithCamera_FrontCamera() {
+    MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
+    HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
+    arguments.put("cameraDevice", 1);
+    plugin.onMethodCall(call, mockResult);
+    verify(mockImagePickerDelegate).setCameraDevice(eq(CameraDevice.FRONT));
+  }
+
+  @Test
+  public void onMethodCall_PickingVideo_WhenSourceIsCamera_InvokesTakeImageWithCamera_RearCamera() {
+    MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
+    HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
+    arguments.put("cameraDevice", 0);
+    plugin.onMethodCall(call, mockResult);
+    verify(mockImagePickerDelegate).setCameraDevice(eq(CameraDevice.REAR));
+  }
+
+  @Test
+  public void
+      onMethodCall_PickingVideo_WhenSourceIsCamera_InvokesTakeImageWithCamera_FrontCamera() {
+    MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_CAMERA);
+    HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
+    arguments.put("cameraDevice", 1);
+    plugin.onMethodCall(call, mockResult);
+    verify(mockImagePickerDelegate).setCameraDevice(eq(CameraDevice.FRONT));
   }
 
   @Test
@@ -103,10 +143,10 @@ public class ImagePickerPluginTest {
         "No exception thrown when ImagePickerPlugin() ran with context instanceof Activity", true);
   }
 
-  private MethodCall buildMethodCall(final int source) {
+  private MethodCall buildMethodCall(String method, final int source) {
     final Map<String, Object> arguments = new HashMap<>();
     arguments.put("source", source);
 
-    return new MethodCall("pickImage", arguments);
+    return new MethodCall(method, arguments);
   }
 }
