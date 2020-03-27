@@ -48,77 +48,88 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   Stream<CameraMoveStartedEvent> onCameraMoveStarted({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is CameraMoveStartedEvent);
+        .where((event) => event is CameraMoveStartedEvent)
+        .map((event) => event as CameraMoveStartedEvent);
   }
 
   @override
   Stream<CameraMoveEvent> onCameraMove({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is CameraMoveEvent);
+        .where((event) => event is CameraMoveEvent)
+        .map((event) => event as CameraMoveEvent);
   }
 
   @override
   Stream<CameraIdleEvent> onCameraIdle({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is CameraIdleEvent);
+        .where((event) => event is CameraIdleEvent)
+        .map((event) => event as CameraIdleEvent);
   }
 
   @override
   Stream<MarkerTapEvent> onMarkerTap({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is MarkerTapEvent);
+        .where((event) => event is MarkerTapEvent)
+        .map((event) => event as MarkerTapEvent);
   }
 
   @override
   Stream<InfoWindowTapEvent> onInfoWindowTap({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is InfoWindowTapEvent);
+        .where((event) => event is InfoWindowTapEvent)
+        .map((event) => event as InfoWindowTapEvent);
   }
 
   @override
   Stream<MarkerDragEndEvent> onMarkerDragEnd({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is MarkerDragEndEvent);
+        .where((event) => event is MarkerDragEndEvent)
+        .map((event) => event as MarkerDragEndEvent);
   }
 
   @override
   Stream<PolylineTapEvent> onPolylineTap({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is PolylineTapEvent);
+        .where((event) => event is PolylineTapEvent)
+        .map((event) => event as PolylineTapEvent);
   }
 
   @override
   Stream<PolygonTapEvent> onPolygonTap({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is PolygonTapEvent);
+        .where((event) => event is PolygonTapEvent)
+        .map((event) => event as PolygonTapEvent);
   }
 
   @override
   Stream<CircleTapEvent> onCircleTap({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is CircleTapEvent);
+        .where((event) => event is CircleTapEvent)
+        .map((event) => event as CircleTapEvent);
   }
 
   @override
   Stream<MapTapEvent> onTap({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is MapTapEvent);
+        .where((event) => event is MapTapEvent)
+        .map((event) => event as MapTapEvent);
   }
 
   @override
   Stream<MapLongPressEvent> onLongPress({@required int mapId}) {
     return _events.stream
         .where((event) => event.mapId == mapId)
-        .where((event) => event is MapLongPressEvent);
+        .where((event) => event is MapLongPressEvent)
+        .map((event) => event as MapLongPressEvent);
   }
 
   Future<dynamic> _handleMethodCall(MethodCall call, int mapId) async {
