@@ -43,14 +43,8 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// /// Initializes the platform interface with [id].
   ///
   /// This method is called when the plugin is first initialized.
-  Future<void> init(int id) {
+  Future<void> init(int mapId) {
     throw UnimplementedError('init() has not been implemented.');
-  }
-
-  /// This is only needed by the MethodChannel implementation
-  void setMethodCallHandler(dynamic call) {
-    throw UnimplementedError(
-        'setMethodCallHandler() has not been implemented.');
   }
 
   /// Updates configuration options of the map user interface.
@@ -59,7 +53,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updateMapOptions(Map<String, dynamic> optionsUpdate) {
+  Future<void> updateMapOptions(
+    Map<String, dynamic> optionsUpdate, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('updateMapOptions() has not been implemented.');
   }
 
@@ -69,7 +66,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updateMarkers(MarkerUpdates markerUpdates) {
+  Future<void> updateMarkers(
+    MarkerUpdates markerUpdates, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('updateMarkers() has not been implemented.');
   }
 
@@ -79,7 +79,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updatePolygons(PolygonUpdates polygonUpdates) {
+  Future<void> updatePolygons(
+    PolygonUpdates polygonUpdates, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('updatePolygons() has not been implemented.');
   }
 
@@ -89,7 +92,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updatePolylines(PolylineUpdates polylineUpdates) {
+  Future<void> updatePolylines(
+    PolylineUpdates polylineUpdates, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('updatePolylines() has not been implemented.');
   }
 
@@ -99,7 +105,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updateCircles(CircleUpdates circleUpdates) {
+  Future<void> updateCircles(
+    CircleUpdates circleUpdates, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('updateCircles() has not been implemented.');
   }
 
@@ -107,7 +116,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   ///
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
-  Future<void> animateCamera(CameraUpdate cameraUpdate) {
+  Future<void> animateCamera(
+    CameraUpdate cameraUpdate, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('animateCamera() has not been implemented.');
   }
 
@@ -115,7 +127,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   ///
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
-  Future<void> moveCamera(CameraUpdate cameraUpdate) {
+  Future<void> moveCamera(
+    CameraUpdate cameraUpdate, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('moveCamera() has not been implemented.');
   }
 
@@ -132,12 +147,17 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// Also, refer [iOS](https://developers.google.com/maps/documentation/ios-sdk/style-reference)
   /// and [Android](https://developers.google.com/maps/documentation/android-sdk/style-reference)
   /// style reference for more information regarding the supported styles.
-  Future<void> setMapStyle(String mapStyle) {
+  Future<void> setMapStyle(
+    String mapStyle, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('setMapStyle() has not been implemented.');
   }
 
   /// Return the region that is visible in a map.
-  Future<LatLngBounds> getVisibleRegion() {
+  Future<LatLngBounds> getVisibleRegion({
+    @required int mapId,
+  }) {
     throw UnimplementedError('getVisibleRegion() has not been implemented.');
   }
 
@@ -146,7 +166,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// A projection is used to translate between on screen location and geographic coordinates.
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
-  Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) {
+  Future<ScreenCoordinate> getScreenCoordinate(
+    LatLng latLng, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('getScreenCoordinate() has not been implemented.');
   }
 
@@ -155,7 +178,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// A projection is used to translate between on screen location and geographic coordinates.
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
-  Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) {
+  Future<LatLng> getLatLng(
+    ScreenCoordinate screenCoordinate, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('getLatLng() has not been implemented.');
   }
 
@@ -167,7 +193,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// * See also:
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> showMarkerInfoWindow(MarkerId markerId) {
+  Future<void> showMarkerInfoWindow(
+    MarkerId markerId, {
+    @required int mapId,
+  }) {
     throw UnimplementedError(
         'showMarkerInfoWindow() has not been implemented.');
   }
@@ -180,7 +209,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> hideMarkerInfoWindow(MarkerId markerId) {
+  Future<void> hideMarkerInfoWindow(
+    MarkerId markerId, {
+    @required int mapId,
+  }) {
     throw UnimplementedError(
         'hideMarkerInfoWindow() has not been implemented.');
   }
@@ -193,12 +225,17 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
-  Future<bool> isMarkerInfoWindowShown(MarkerId markerId) {
+  Future<bool> isMarkerInfoWindowShown(
+    MarkerId markerId, {
+    @required int mapId,
+  }) {
     throw UnimplementedError('updateMapOptions() has not been implemented.');
   }
 
   /// Returns the current zoom level of the map
-  Future<double> getZoomLevel() {
+  Future<double> getZoomLevel({
+    @required int mapId,
+  }) {
     throw UnimplementedError('getZoomLevel() has not been implemented.');
   }
 
