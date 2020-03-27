@@ -1,3 +1,9 @@
+## 0.4.0
+
+* **Breaking change** Driver request_data call's response has changed to
+  encapsulate the failure details.
+* Details for failure cases are added: failed method name, stack trace.
+
 ## 0.3.0+1
 
 * Replace deprecated `getFlutterEngine` call on Android.
