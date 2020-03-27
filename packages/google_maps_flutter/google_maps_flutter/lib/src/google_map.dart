@@ -303,45 +303,39 @@ class _GoogleMapState extends State<GoogleMap> {
     }
   }
 
-  void onMarkerTap(String markerIdParam) {
-    assert(markerIdParam != null);
-    final MarkerId markerId = MarkerId(markerIdParam);
+  void onMarkerTap(MarkerId markerId) {
+    assert(markerId != null);
     if (_markers[markerId]?.onTap != null) {
       _markers[markerId].onTap();
     }
   }
 
-  void onMarkerDragEnd(String markerIdParam, LatLng position) {
-    assert(markerIdParam != null);
-    final MarkerId markerId = MarkerId(markerIdParam);
+  void onMarkerDragEnd(MarkerId markerId, LatLng position) {
+    assert(markerId != null);
     if (_markers[markerId]?.onDragEnd != null) {
       _markers[markerId].onDragEnd(position);
     }
   }
 
-  void onPolygonTap(String polygonIdParam) {
-    assert(polygonIdParam != null);
-    final PolygonId polygonId = PolygonId(polygonIdParam);
+  void onPolygonTap(PolygonId polygonId) {
+    assert(polygonId != null);
     _polygons[polygonId].onTap();
   }
 
-  void onPolylineTap(String polylineIdParam) {
-    assert(polylineIdParam != null);
-    final PolylineId polylineId = PolylineId(polylineIdParam);
+  void onPolylineTap(PolylineId polylineId) {
+    assert(polylineId != null);
     if (_polylines[polylineId]?.onTap != null) {
       _polylines[polylineId].onTap();
     }
   }
 
-  void onCircleTap(String circleIdParam) {
-    assert(circleIdParam != null);
-    final CircleId circleId = CircleId(circleIdParam);
+  void onCircleTap(CircleId circleId) {
+    assert(circleId != null);
     _circles[circleId].onTap();
   }
 
-  void onInfoWindowTap(String markerIdParam) {
-    assert(markerIdParam != null);
-    final MarkerId markerId = MarkerId(markerIdParam);
+  void onInfoWindowTap(MarkerId markerId) {
+    assert(markerId != null);
     if (_markers[markerId]?.infoWindow?.onTap != null) {
       _markers[markerId].infoWindow.onTap();
     }

@@ -16,7 +16,9 @@ class GoogleMapController {
     CameraPosition initialCameraPosition,
     this._googleMapState, {
     @required this.mapId,
-  }) : assert(_googleMapsFlutterPlatform != null);
+  }) : assert(_googleMapsFlutterPlatform != null) {
+    _connectStreams(mapId);
+  }
 
   /// Initialize control of a [GoogleMap] with [id].
   ///
@@ -44,62 +46,51 @@ class GoogleMapController {
   MethodChannel get channel {
     if (_googleMapsFlutterPlatform is MethodChannelGoogleMapsFlutter) {
       return (_googleMapsFlutterPlatform as MethodChannelGoogleMapsFlutter)
-          .channel(_mapId);
+          .channel(mapId);
     }
     return null;
   }
 
   final _GoogleMapState _googleMapState;
 
-  // Future<dynamic> _handleMethodCall(MethodCall call) async {
-  //   switch (call.method) {
-  //     case 'camera#onMoveStarted':
-  //       if (_googleMapState.widget.onCameraMoveStarted != null) {
-  //         _googleMapState.widget.onCameraMoveStarted();
-  //       }
-  //       break;
-  //     case 'camera#onMove':
-  //       if (_googleMapState.widget.onCameraMove != null) {
-  //         _googleMapState.widget.onCameraMove(
-  //           CameraPosition.fromMap(call.arguments['position']),
-  //         );
-  //       }
-  //       break;
-  //     case 'camera#onIdle':
-  //       if (_googleMapState.widget.onCameraIdle != null) {
-  //         _googleMapState.widget.onCameraIdle();
-  //       }
-  //       break;
-  //     case 'marker#onTap':
-  //       _googleMapState.onMarkerTap(call.arguments['markerId']);
-  //       break;
-  //     case 'marker#onDragEnd':
-  //       _googleMapState.onMarkerDragEnd(call.arguments['markerId'],
-  //           LatLng.fromJson(call.arguments['position']));
-  //       break;
-  //     case 'infoWindow#onTap':
-  //       _googleMapState.onInfoWindowTap(call.arguments['markerId']);
-  //       break;
-  //     case 'polyline#onTap':
-  //       _googleMapState.onPolylineTap(call.arguments['polylineId']);
-  //       break;
-  //     case 'polygon#onTap':
-  //       _googleMapState.onPolygonTap(call.arguments['polygonId']);
-  //       break;
-  //     case 'circle#onTap':
-  //       _googleMapState.onCircleTap(call.arguments['circleId']);
-  //       break;
-  //     case 'map#onTap':
-  //       _googleMapState.onTap(LatLng.fromJson(call.arguments['position']));
-  //       break;
-  //     case 'map#onLongPress':
-  //       _googleMapState
-  //           .onLongPress(LatLng.fromJson(call.arguments['position']));
-  //       break;
-  //     default:
-  //       throw MissingPluginException();
-  //   }
-  // }
+  void _connectStreams(int mapId) {
+    if (_googleMapState.widget.onCameraMoveStarted != null) {
+      _googleMapsFlutterPlatform
+          .onCameraMoveStarted(mapId: mapId)
+          .listen((_) => _googleMapState.widget.onCameraMoveStarted());
+    }
+    if (_googleMapState.widget.onCameraMove != null) {
+      _googleMapsFlutterPlatform.onCameraMove(mapId: mapId).listen(
+          (CameraMoveEvent e) => _googleMapState.widget.onCameraMove(e.value));
+    }
+    if (_googleMapState.widget.onCameraIdle != null) {
+      _googleMapsFlutterPlatform
+          .onCameraIdle(mapId: mapId)
+          .listen((_) => _googleMapState.widget.onCameraIdle());
+    }
+    _googleMapsFlutterPlatform
+        .onMarkerTap(mapId: mapId)
+        .listen((MarkerTapEvent e) => _googleMapState.onMarkerTap(e.value));
+    _googleMapsFlutterPlatform.onMarkerDragEnd(mapId: mapId).listen(
+        (MarkerDragEndEvent e) =>
+            _googleMapState.onMarkerDragEnd(e.value, e.position));
+    _googleMapsFlutterPlatform.onInfoWindowTap(mapId: mapId).listen(
+        (InfoWindowTapEvent e) => _googleMapState.onInfoWindowTap(e.value));
+    _googleMapsFlutterPlatform
+        .onPolylineTap(mapId: mapId)
+        .listen((PolylineTapEvent e) => _googleMapState.onPolylineTap(e.value));
+    _googleMapsFlutterPlatform
+        .onPolygonTap(mapId: mapId)
+        .listen((PolygonTapEvent e) => _googleMapState.onPolygonTap(e.value));
+    _googleMapsFlutterPlatform
+        .onCircleTap(mapId: mapId)
+        .listen((CircleTapEvent e) => _googleMapState.onCircleTap(e.value));
+    _googleMapsFlutterPlatform
+        .onTap(mapId: mapId)
+        .listen((MapTapEvent e) => _googleMapState.onTap(e.position));
+    _googleMapsFlutterPlatform.onLongPress(mapId: mapId).listen(
+        (MapLongPressEvent e) => _googleMapState.onLongPress(e.position));
+  }
 
   /// Updates configuration options of the map user interface.
   ///
@@ -110,7 +101,7 @@ class GoogleMapController {
   Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) {
     assert(optionsUpdate != null);
     return _googleMapsFlutterPlatform.updateMapOptions(optionsUpdate,
-        mapId: _mapId);
+        mapId: mapId);
   }
 
   /// Updates marker configuration.
@@ -122,7 +113,7 @@ class GoogleMapController {
   Future<void> _updateMarkers(MarkerUpdates markerUpdates) {
     assert(markerUpdates != null);
     return _googleMapsFlutterPlatform.updateMarkers(markerUpdates,
-        mapId: _mapId);
+        mapId: mapId);
   }
 
   /// Updates polygon configuration.
@@ -134,7 +125,7 @@ class GoogleMapController {
   Future<void> _updatePolygons(PolygonUpdates polygonUpdates) {
     assert(polygonUpdates != null);
     return _googleMapsFlutterPlatform.updatePolygons(polygonUpdates,
-        mapId: _mapId);
+        mapId: mapId);
   }
 
   /// Updates polyline configuration.
@@ -146,7 +137,7 @@ class GoogleMapController {
   Future<void> _updatePolylines(PolylineUpdates polylineUpdates) {
     assert(polylineUpdates != null);
     return _googleMapsFlutterPlatform.updatePolylines(polylineUpdates,
-        mapId: _mapId);
+        mapId: mapId);
   }
 
   /// Updates circle configuration.
@@ -158,7 +149,7 @@ class GoogleMapController {
   Future<void> _updateCircles(CircleUpdates circleUpdates) {
     assert(circleUpdates != null);
     return _googleMapsFlutterPlatform.updateCircles(circleUpdates,
-        mapId: _mapId);
+        mapId: mapId);
   }
 
   /// Starts an animated change of the map camera position.
@@ -166,8 +157,7 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
   Future<void> animateCamera(CameraUpdate cameraUpdate) {
-    return _googleMapsFlutterPlatform.animateCamera(cameraUpdate,
-        mapId: _mapId);
+    return _googleMapsFlutterPlatform.animateCamera(cameraUpdate, mapId: mapId);
   }
 
   /// Changes the map camera position.
@@ -175,7 +165,7 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> moveCamera(CameraUpdate cameraUpdate) {
-    return _googleMapsFlutterPlatform.moveCamera(cameraUpdate, mapId: _mapId);
+    return _googleMapsFlutterPlatform.moveCamera(cameraUpdate, mapId: mapId);
   }
 
   /// Sets the styling of the base map.
@@ -192,12 +182,12 @@ class GoogleMapController {
   /// and [Android](https://developers.google.com/maps/documentation/android-sdk/style-reference)
   /// style reference for more information regarding the supported styles.
   Future<void> setMapStyle(String mapStyle) {
-    return _googleMapsFlutterPlatform.setMapStyle(mapStyle, mapId: _mapId);
+    return _googleMapsFlutterPlatform.setMapStyle(mapStyle, mapId: mapId);
   }
 
   /// Return [LatLngBounds] defining the region that is visible in a map.
   Future<LatLngBounds> getVisibleRegion() {
-    return _googleMapsFlutterPlatform.getVisibleRegion(mapId: _mapId);
+    return _googleMapsFlutterPlatform.getVisibleRegion(mapId: mapId);
   }
 
   /// Return [ScreenCoordinate] of the [LatLng] in the current map view.
@@ -206,8 +196,7 @@ class GoogleMapController {
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
   Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) {
-    return _googleMapsFlutterPlatform.getScreenCoordinate(latLng,
-        mapId: _mapId);
+    return _googleMapsFlutterPlatform.getScreenCoordinate(latLng, mapId: mapId);
   }
 
   /// Returns [LatLng] corresponding to the [ScreenCoordinate] in the current map view.
@@ -215,8 +204,7 @@ class GoogleMapController {
   /// Returned [LatLng] corresponds to a screen location. The screen location is specified in screen
   /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
   Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) {
-    return _googleMapsFlutterPlatform.getLatLng(screenCoordinate,
-        mapId: _mapId);
+    return _googleMapsFlutterPlatform.getLatLng(screenCoordinate, mapId: mapId);
   }
 
   /// Programmatically show the Info Window for a [Marker].
@@ -230,7 +218,7 @@ class GoogleMapController {
   Future<void> showMarkerInfoWindow(MarkerId markerId) {
     assert(markerId != null);
     return _googleMapsFlutterPlatform.showMarkerInfoWindow(markerId,
-        mapId: _mapId);
+        mapId: mapId);
   }
 
   /// Programmatically hide the Info Window for a [Marker].
@@ -244,7 +232,7 @@ class GoogleMapController {
   Future<void> hideMarkerInfoWindow(MarkerId markerId) {
     assert(markerId != null);
     return _googleMapsFlutterPlatform.hideMarkerInfoWindow(markerId,
-        mapId: _mapId);
+        mapId: mapId);
   }
 
   /// Returns `true` when the [InfoWindow] is showing, `false` otherwise.
@@ -258,12 +246,12 @@ class GoogleMapController {
   Future<bool> isMarkerInfoWindowShown(MarkerId markerId) {
     assert(markerId != null);
     return _googleMapsFlutterPlatform.isMarkerInfoWindowShown(markerId,
-        mapId: _mapId);
+        mapId: mapId);
   }
 
   /// Returns the current zoom level of the map
   Future<double> getZoomLevel() {
-    return _googleMapsFlutterPlatform.getZoomLevel(mapId: _mapId);
+    return _googleMapsFlutterPlatform.getZoomLevel(mapId: mapId);
   }
 
   /// Returns the image bytes of the map
