@@ -239,6 +239,64 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('getZoomLevel() has not been implemented.');
   }
 
+  // The following are the 11 possible streams of data from the native side
+  // into the plugin
+
+  /// The Camera started moving.
+  Stream<CameraMoveStartedEvent> onCameraMoveStarted({@required int mapId}) {
+    throw UnimplementedError('onCameraMoveStarted() has not been implemented.');
+  }
+
+  /// The Camera finished moving to a new [CameraPosition].
+  Stream<CameraMoveEvent> onCameraMove({@required int mapId}) {
+    throw UnimplementedError('onCameraMove() has not been implemented.');
+  }
+
+  /// The Camera is now idle.
+  Stream<CameraIdleEvent> onCameraIdle({@required int mapId}) {
+    throw UnimplementedError('onCameraMove() has not been implemented.');
+  }
+
+  /// A [Marker] has been tapped.
+  Stream<MarkerTapEvent> onMarkerTap({@required int mapId}) {
+    throw UnimplementedError('onMarkerTap() has not been implemented.');
+  }
+
+  /// An [InfoWindow] has been tapped.
+  Stream<InfoWindowTapEvent> onInfoWindowTap({@required int mapId}) {
+    throw UnimplementedError('onInfoWindowTap() has not been implemented.');
+  }
+
+  /// A [Marker] has been dragged to a different [LatLng] position.
+  Stream<MarkerDragEndEvent> onMarkerDragEnd({@required int mapId}) {
+    throw UnimplementedError('onMarkerDragEnd() has not been implemented.');
+  }
+
+  /// A [Polyline] has been tapped.
+  Stream<PolylineTapEvent> onPolylineTap({@required int mapId}) {
+    throw UnimplementedError('onPolylineTap() has not been implemented.');
+  }
+
+  /// A [Polygon] has been tapped.
+  Stream<PolygonTapEvent> onPolygonTap({@required int mapId}) {
+    throw UnimplementedError('onPolygonTap() has not been implemented.');
+  }
+
+  /// A [Circle] has been tapped.
+  Stream<CircleTapEvent> onCircleTap({@required int mapId}) {
+    throw UnimplementedError('onCircleTap() has not been implemented.');
+  }
+
+  /// A Map has been tapped at a certain [LatLng].
+  Stream<MapTapEvent> onTap({@required int mapId}) {
+    throw UnimplementedError('onTap() has not been implemented.');
+  }
+
+  /// A Map has been long-pressed at a certain [LatLng].
+  Stream<MapLongPressEvent> onLongPress({@required int mapId}) {
+    throw UnimplementedError('onLongPress() has not been implemented.');
+  }
+
   /// TODO
   Widget buildView(
       Map<String, dynamic> creationParams,
