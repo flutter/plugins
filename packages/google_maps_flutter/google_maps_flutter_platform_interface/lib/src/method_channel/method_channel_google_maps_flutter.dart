@@ -16,7 +16,7 @@ import 'package:stream_transform/stream_transform.dart';
 class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   // Keep a collection of id -> channel
   // Every method call passes the int mapId
-  Map<int, MethodChannel> _channels = {};
+  final Map<int, MethodChannel> _channels = {};
 
   /// Accesses the MethodChannel associated to the passed mapId.
   MethodChannel channel(int mapId) {
@@ -43,7 +43,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   //
   // It is a `broadcast` because multiple controllers will connect to
   // different stream views of this Controller.
-  StreamController<MapEvent> _controller = StreamController<MapEvent>.broadcast();
+  final StreamController<MapEvent> _controller = StreamController<MapEvent>.broadcast();
 
   // Returns a filtered view of the events in the _controller, by mapId.
   Stream<MapEvent> _events(int mapId) => _controller.stream.where((event) => event.mapId == mapId);
