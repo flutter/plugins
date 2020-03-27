@@ -60,10 +60,8 @@ void main() {
     await expectLater(() async => await intent.canResolveActivity(), isFalse);
   }, skip: !Platform.isAndroid);
 
-  testWidgets('#canResolveActivity throws when no Activity is found',
+  testWidgets('#canResolveActivity returns false when no Activity is found',
       (WidgetTester tester) async {
-    // We can't test that any of this is really working, this is mostly just
-    // checking that the plugin API is registered. Only works on Android.
     const AndroidIntent intent =
         AndroidIntent(action: 'LAUNCH', package: 'foobar');
     await expectLater(() async => await intent.canResolveActivity(), isFalse);
