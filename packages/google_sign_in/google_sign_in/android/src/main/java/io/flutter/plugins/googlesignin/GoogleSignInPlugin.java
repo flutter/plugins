@@ -329,13 +329,12 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         // TODO(jackson): Perhaps we should provide a mechanism to override this
         // behavior.
         int clientIdIdentifier =
-            registrar
-                .context()
+            context
                 .getResources()
                 .getIdentifier(
-                    "default_web_client_id", "string", registrar.context().getPackageName());
+                    "default_web_client_id", "string", context.getPackageName());
         if (clientIdIdentifier != 0) {
-          optionsBuilder.requestIdToken(registrar.context().getString(clientIdIdentifier));
+          optionsBuilder.requestIdToken(context.getString(clientIdIdentifier));
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
@@ -345,7 +344,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         }
 
         this.requestedScopes = requestedScopes;
-        signInClient = GoogleSignIn.getClient(registrar.context(), optionsBuilder.build());
+        signInClient = GoogleSignIn.getClient(context, optionsBuilder.build());
         result.success(null);
       } catch (Exception e) {
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
@@ -380,13 +379,13 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
      */
     @Override
     public void signIn(Result result) {
-      if (registrar.activity() == null) {
+      if (getActivity() == null) {
         throw new IllegalStateException("signIn needs a foreground activity");
       }
       checkAndSetPendingOperation(METHOD_SIGN_IN, result);
 
       Intent signInIntent = signInClient.getSignInIntent();
-      registrar.activity().startActivityForResult(signInIntent, REQUEST_CODE_SIGNIN);
+      getActivity().startActivityForResult(signInIntent, REQUEST_CODE_SIGNIN);
     }
 
     /**
@@ -435,7 +434,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     /** Checks if there is a signed in user. */
     @Override
     public void isSignedIn(final Result result) {
-      boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
+      boolean value = GoogleSignIn.getLastSignedInAccount(context) != null;
       result.success(value);
     }
 
@@ -443,7 +442,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     public void requestScopes(Result result, List<String> scopes) {
       checkAndSetPendingOperation(METHOD_REQUEST_SCOPES, result);
 
-      GoogleSignInAccount account = googleSignInWrapper.getLastSignedInAccount(registrar.context());
+      GoogleSignInAccount account = googleSignInWrapper.getLastSignedInAccount(context);
       if (account == null) {
         result.error(ERROR_REASON_SIGN_IN_REQUIRED, "No account to grant scopes.", null);
         return;
@@ -464,7 +463,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
       }
 
       googleSignInWrapper.requestPermissions(
-          registrar.activity(),
+          getActivity(),
           REQUEST_CODE_REQUEST_SCOPE,
           account,
           wrappedScopes.toArray(new Scope[0]));
@@ -536,7 +535,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
           new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-              GoogleAuthUtil.clearToken(registrar.context(), token);
+              GoogleAuthUtil.clearToken(context, token);
               return null;
             }
           };
@@ -579,7 +578,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
             public String call() throws Exception {
               Account account = new Account(email, "com.google");
               String scopesStr = "oauth2:" + Joiner.on(' ').join(requestedScopes);
-              return GoogleAuthUtil.getToken(registrar.context(), account, scopesStr);
+              return GoogleAuthUtil.getToken(context, account, scopesStr);
             }
           };
 
@@ -599,7 +598,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
               } catch (ExecutionException e) {
                 if (e.getCause() instanceof UserRecoverableAuthException) {
                   if (shouldRecoverAuth && pendingOperation == null) {
-                    Activity activity = registrar.activity();
+                    Activity activity = getActivity();
                     if (activity == null) {
                       result.error(
                           ERROR_USER_RECOVERABLE_AUTH,
