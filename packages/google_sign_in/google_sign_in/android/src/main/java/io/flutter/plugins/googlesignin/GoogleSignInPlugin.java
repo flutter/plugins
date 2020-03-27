@@ -28,6 +28,7 @@ import com.google.common.base.Strings;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -55,7 +56,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   private static final String METHOD_CLEAR_AUTH_CACHE = "clearAuthCache";
   private static final String METHOD_REQUEST_SCOPES = "requestScopes";
 
-  private IDelegate delegate;
+  private Delegate delegate;
   private MethodChannel channel;
   private ActivityPluginBinding activityPluginBinding;
 
