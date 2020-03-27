@@ -1,6 +1,10 @@
+##0.4.5+9
+
+* Bugs Fixed  
+
 ## 0.4.5+8
 
-* Fixed a bug  caused due to the prior version 
+*Remove MainActivity references in android example app and tests
 
 ## 0.4.5+7
 
