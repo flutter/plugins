@@ -37,51 +37,153 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return channel.invokeMethod<void>('map#waitForMap');
   }
 
+  // The controller we need to broadcast the different events coming
+  // from handleMethodCall.
+  //
+  // It is a `broadcast` because multiple controllers will connect to
+  // different stream views of this Controller.
+  StreamController<MapEvent> _events = StreamController<MapEvent>.broadcast();
+
+  @override
+  Stream<CameraMoveStartedEvent> onCameraMoveStarted({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is CameraMoveStartedEvent);
+  }
+
+  @override
+  Stream<CameraMoveEvent> onCameraMove({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is CameraMoveEvent);
+  }
+
+  @override
+  Stream<CameraIdleEvent> onCameraIdle({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is CameraIdleEvent);
+  }
+
+  @override
+  Stream<MarkerTapEvent> onMarkerTap({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is MarkerTapEvent);
+  }
+
+  @override
+  Stream<InfoWindowTapEvent> onInfoWindowTap({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is InfoWindowTapEvent);
+  }
+
+  @override
+  Stream<MarkerDragEndEvent> onMarkerDragEnd({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is MarkerDragEndEvent);
+  }
+
+  @override
+  Stream<PolylineTapEvent> onPolylineTap({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is PolylineTapEvent);
+  }
+
+  @override
+  Stream<PolygonTapEvent> onPolygonTap({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is PolygonTapEvent);
+  }
+
+  @override
+  Stream<CircleTapEvent> onCircleTap({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is CircleTapEvent);
+  }
+
+  @override
+  Stream<MapTapEvent> onTap({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is MapTapEvent);
+  }
+
+  @override
+  Stream<MapLongPressEvent> onLongPress({@required int mapId}) {
+    return _events.stream
+        .where((event) => event.mapId == mapId)
+        .where((event) => event is MapLongPressEvent);
+  }
+
   Future<dynamic> _handleMethodCall(MethodCall call, int mapId) async {
     switch (call.method) {
-      // case 'camera#onMoveStarted':
-      //   if (_googleMapState.widget.onCameraMoveStarted != null) {
-      //     _googleMapState.widget.onCameraMoveStarted();
-      //   }
-      //   break;
-      // case 'camera#onMove':
-      //   if (_googleMapState.widget.onCameraMove != null) {
-      //     _googleMapState.widget.onCameraMove(
-      //       CameraPosition.fromMap(call.arguments['position']),
-      //     );
-      //   }
-      //   break;
-      // case 'camera#onIdle':
-      //   if (_googleMapState.widget.onCameraIdle != null) {
-      //     _googleMapState.widget.onCameraIdle();
-      //   }
-      //   break;
-      // case 'marker#onTap':
-      //   _googleMapState.onMarkerTap(call.arguments['markerId']);
-      //   break;
-      // case 'marker#onDragEnd':
-      //   _googleMapState.onMarkerDragEnd(call.arguments['markerId'],
-      //       LatLng.fromJson(call.arguments['position']));
-      //   break;
-      // case 'infoWindow#onTap':
-      //   _googleMapState.onInfoWindowTap(call.arguments['markerId']);
-      //   break;
-      // case 'polyline#onTap':
-      //   _googleMapState.onPolylineTap(call.arguments['polylineId']);
-      //   break;
-      // case 'polygon#onTap':
-      //   _googleMapState.onPolygonTap(call.arguments['polygonId']);
-      //   break;
-      // case 'circle#onTap':
-      //   _googleMapState.onCircleTap(call.arguments['circleId']);
-      //   break;
-      // case 'map#onTap':
-      //   _googleMapState.onTap(LatLng.fromJson(call.arguments['position']));
-      //   break;
-      // case 'map#onLongPress':
-      //   _googleMapState
-      //       .onLongPress(LatLng.fromJson(call.arguments['position']));
-      //   break;
+      case 'camera#onMoveStarted':
+        _events.add(CameraMoveStartedEvent(mapId));
+        break;
+      case 'camera#onMove':
+        _events.add(CameraMoveEvent(
+          mapId,
+          CameraPosition.fromMap(call.arguments['position']),
+        ));
+        break;
+      case 'camera#onIdle':
+        _events.add(CameraIdleEvent(mapId));
+        break;
+      case 'marker#onTap':
+        _events.add(MarkerTapEvent(
+          mapId,
+          MarkerId(call.arguments['markerId']),
+        ));
+        break;
+      case 'marker#onDragEnd':
+        _events.add(MarkerDragEndEvent(
+          mapId,
+          LatLng.fromJson(call.arguments['position']),
+          MarkerId(call.arguments['markerId']),
+        ));
+        break;
+      case 'infoWindow#onTap':
+        _events.add(InfoWindowTapEvent(
+          mapId,
+          MarkerId(call.arguments['markerId']),
+        ));
+        break;
+      case 'polyline#onTap':
+        _events.add(PolylineTapEvent(
+          mapId,
+          PolylineId(call.arguments['polylineId']),
+        ));
+        break;
+      case 'polygon#onTap':
+        _events.add(PolygonTapEvent(
+          mapId,
+          PolygonId(call.arguments['polygonId']),
+        ));
+        break;
+      case 'circle#onTap':
+        _events.add(CircleTapEvent(
+          mapId,
+          CircleId(call.arguments['circleId']),
+        ));
+        break;
+      case 'map#onTap':
+        _events.add(MapTapEvent(
+          mapId,
+          LatLng.fromJson(call.arguments['position']),
+        ));
+        break;
+      case 'map#onLongPress':
+        _events.add(MapLongPressEvent(
+          mapId,
+          LatLng.fromJson(call.arguments['position']),
+        ));
+        break;
       default:
         throw MissingPluginException();
     }
