@@ -43,10 +43,12 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   //
   // It is a `broadcast` because multiple controllers will connect to
   // different stream views of this Controller.
-  final StreamController<MapEvent> _controller = StreamController<MapEvent>.broadcast();
+  final StreamController<MapEvent> _controller =
+      StreamController<MapEvent>.broadcast();
 
   // Returns a filtered view of the events in the _controller, by mapId.
-  Stream<MapEvent> _events(int mapId) => _controller.stream.where((event) => event.mapId == mapId);
+  Stream<MapEvent> _events(int mapId) =>
+      _controller.stream.where((event) => event.mapId == mapId);
 
   @override
   Stream<CameraMoveStartedEvent> onCameraMoveStarted({@required int mapId}) {
