@@ -1,3 +1,7 @@
+## 0.10.5+2
+
+* Make sure the plugin is correctly initialized
+
 ## 0.10.5+1
 
 * Fixes issue where `initialize()` `Future` stalls when failing to load source
