@@ -66,7 +66,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     instance.setUpRegistrar(registrar);
   }
 
-  // Visible for testing.
+  @VisibleForTesting
   public void initInstance(
       BinaryMessenger messenger, Context context, GoogleSignInWrapper googleSignInWrapper) {
     channel = new MethodChannel(messenger, CHANNEL_NAME);
@@ -74,7 +74,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     channel.setMethodCallHandler(this);
   }
 
-  // Visible for testing.
+  @VisibleForTesting
   public void setUpRegistrar(PluginRegistry.Registrar registrar) {
     delegate.setUpRegistrar(registrar);
   }
