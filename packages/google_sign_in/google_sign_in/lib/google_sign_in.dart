@@ -12,6 +12,7 @@ import 'src/common.dart';
 
 export 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart'
     show SignInOption;
+
 export 'src/common.dart';
 export 'widgets.dart';
 
@@ -140,7 +141,8 @@ class GoogleSignInAccount implements GoogleIdentity {
   }
 
   @override
-  int get hashCode => hashValues(displayName, email, id, photoUrl, _idToken);
+  int get hashCode =>
+      hashValues(displayName, email, id, photoUrl, _idToken, _serverAuthCode);
 
   @override
   String toString() {
