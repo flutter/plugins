@@ -389,9 +389,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _updatePosition(newPosition);
 
           final duration = value?.duration?.inMilliseconds ?? 0;
-          final position = newPosition?.inMilliseconds ?? 0;
+          final _position = newPosition?.inMilliseconds ?? 0;
 
-          if (duration > 0 && position >= duration) {
+          if (duration > 0 && _position >= duration) {
             _timer.cancel();
           }
         },
