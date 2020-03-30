@@ -376,7 +376,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (value.isPlaying) {
       await _videoPlayerPlatform.play(_textureId);
       _timer = Timer.periodic(
-        const Duration(milliseconds: 500),
+        const Duration(seconds: 1),
             (Timer timer) async {
           if (_isDisposed) {
             return;
@@ -391,7 +391,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           final duration = value?.duration?.inMilliseconds ?? 0;
           final _position = newPosition?.inMilliseconds ?? 0;
 
+          print('===> duration $duration - position $_position');
           if (duration > 0 && _position >= duration) {
+            print('===> vao day');
             _timer.cancel();
           }
         },
