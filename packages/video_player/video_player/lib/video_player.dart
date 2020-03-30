@@ -394,6 +394,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           print('===> duration $duration - position $_position');
           if (duration > 0 && _position >= duration) {
             print('===> vao day');
+            timer.cancel();
             _timer.cancel();
           }
         },
