@@ -9,8 +9,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.hardware.camera2.CameraCharacteristics;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
@@ -23,6 +25,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+enum CameraDevice {
+  REAR,
+
+  FRONT
+}
 
 /**
  * A delegate class doing the heavy lifting for the plugin.
@@ -85,6 +93,7 @@ public class ImagePickerDelegate
   private final IntentResolver intentResolver;
   private final FileUriResolver fileUriResolver;
   private final FileUtils fileUtils;
+  private CameraDevice cameraDevice;
 
   interface PermissionManager {
     boolean isPermissionGranted(String permissionName);
@@ -199,6 +208,14 @@ public class ImagePickerDelegate
     this.cache = cache;
   }
 
+  void setCameraDevice(CameraDevice device) {
+    cameraDevice = device;
+  }
+
+  CameraDevice getCameraDevice() {
+    return cameraDevice;
+  }
+
   // Save the state of the image picker so it can be retrieved with `retrieveLostImage`.
   void saveStateBeforeResult() {
     if (methodCall == null) {
@@ -274,6 +291,10 @@ public class ImagePickerDelegate
 
   private void launchTakeVideoWithCameraIntent() {
     Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+    if (cameraDevice == CameraDevice.FRONT) {
+      useFrontCamera(intent);
+    }
+
     boolean canTakePhotos = intentResolver.resolveActivity(intent);
 
     if (!canTakePhotos) {
@@ -325,7 +346,6 @@ public class ImagePickerDelegate
           Manifest.permission.CAMERA, REQUEST_CAMERA_IMAGE_PERMISSION);
       return;
     }
-
     launchTakeImageWithCameraIntent();
   }
 
@@ -338,6 +358,10 @@ public class ImagePickerDelegate
 
   private void launchTakeImageWithCameraIntent() {
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    if (cameraDevice == CameraDevice.FRONT) {
+      useFrontCamera(intent);
+    }
+
     boolean canTakePhotos = intentResolver.resolveActivity(intent);
 
     if (!canTakePhotos) {
@@ -582,5 +606,17 @@ public class ImagePickerDelegate
   private void clearMethodCallAndResult() {
     methodCall = null;
     pendingResult = null;
+  }
+
+  private void useFrontCamera(Intent intent) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+      intent.putExtra(
+          "android.intent.extras.CAMERA_FACING", CameraCharacteristics.LENS_FACING_FRONT);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
+      }
+    } else {
+      intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+    }
   }
 }

@@ -1,6 +1,22 @@
+## 4.4.0
+
+* Add support for getting `serverAuthCode`
+
+## 4.3.0
+
+* Add support for method introduced in `google_sign_in_platform_interface` 1.1.0.
+
 ## 4.2.0
 
-* Added support for getting `serverAuthCode`
+* Migrate to AndroidX.
+
+## 4.1.5
+
+* Remove unused variable.
+
+## 4.1.4
+
+* Make the pedantic dev_dependency explicit.
 
 ## 4.1.3
 
