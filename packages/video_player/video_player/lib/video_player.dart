@@ -381,7 +381,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           if (_isDisposed) {
             return;
           }
-          position.then((duration) {
+          position.then((newPosition) {
             if (_isDisposed) {
               return;
             }
