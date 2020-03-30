@@ -1,3 +1,7 @@
+## 0.4.5+8
+
+* Remove `MainActivity` references in android example app and tests.
+
 ## 0.4.5+7
 
 * Update minimum Flutter version to 1.12.13+hotfix.5

@@ -26,6 +26,7 @@ static const int SOURCE_GALLERY = 1;
   NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
   UIViewController *_viewController;
+  UIImagePickerControllerCameraDevice _device;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -45,6 +46,10 @@ static const int SOURCE_GALLERY = 1;
     _viewController = viewController;
   }
   return self;
+}
+
+- (UIImagePickerController *)getImagePickerController {
+  return _imagePickerController;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -67,9 +72,13 @@ static const int SOURCE_GALLERY = 1;
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
     switch (imageSource) {
-      case SOURCE_CAMERA:
+      case SOURCE_CAMERA: {
+        NSInteger cameraDevice = [[_arguments objectForKey:@"cameraDevice"] intValue];
+        _device = (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
+                                      : UIImagePickerControllerCameraDeviceRear;
         [self checkCameraAuthorization];
         break;
+      }
       case SOURCE_GALLERY:
         [self checkPhotoAuthorization];
         break;
@@ -119,8 +128,10 @@ static const int SOURCE_GALLERY = 1;
     }
   }
   // Camera is not available on simulators
-  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] &&
+      [UIImagePickerController isCameraDeviceAvailable:_device]) {
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+    _imagePickerController.cameraDevice = _device;
     [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
   } else {
     [[[UIAlertView alloc] initWithTitle:@"Error"
