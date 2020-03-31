@@ -10,14 +10,6 @@ part of google_maps_flutter;
 /// map is created.
 typedef void MapCreatedCallback(GoogleMapController controller);
 
-/// Callback that receives updates to the camera position.
-///
-/// This callback is triggered when the platform Google Map
-/// registers a camera movement.
-///
-/// This is used in [GoogleMap.onCameraMove].
-typedef void CameraPositionCallback(CameraPosition position);
-
 /// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
   /// Creates a widget displaying data from Google Maps services.
