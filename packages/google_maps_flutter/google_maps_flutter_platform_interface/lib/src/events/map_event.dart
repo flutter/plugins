@@ -2,7 +2,7 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 
 /// Basic event coming from the native side of Maps.
 ///
-/// All BasicMapEvent contains is the `mapId` that originated the event.
+/// All MapEvents contain the `mapId` that originated the event.
 class MapEvent<T> {
   /// The ID of the Map this event is associated to.
   final int mapId;
@@ -14,7 +14,7 @@ class MapEvent<T> {
   MapEvent(this.mapId, this.value);
 }
 
-/// A `ValueMapEvent` associated to a `position`.
+/// A `MapEvent` associated to a `position`.
 class _PositionedMapEvent<T> extends MapEvent<T> {
   /// The position where this event happened.
   final LatLng position;

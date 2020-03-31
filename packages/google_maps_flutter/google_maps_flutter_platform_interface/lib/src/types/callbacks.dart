@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'types.dart';
+
+/// Callback that receives updates to the camera position.
+///
+/// This callback is triggered when the platform Google Map
+/// registers a camera movement.
+///
+/// This is used in [GoogleMap.onCameraMove].
+typedef void CameraPositionCallback(CameraPosition position);
+
 /// Callback function taking a single argument.
 typedef void ArgumentCallback<T>(T argument);
 
