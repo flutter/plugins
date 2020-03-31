@@ -216,8 +216,7 @@ class Polyline {
         endCap == typedOther.endCap &&
         visible == typedOther.visible &&
         width == typedOther.width &&
-        zIndex == typedOther.zIndex &&
-        onTap == typedOther.onTap;
+        zIndex == typedOther.zIndex;
   }
 
   @override

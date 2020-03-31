@@ -21,5 +21,7 @@ String googleUser(GoogleSignInUserData data) => '''
       access_token: 'access_${data.idToken}',
     }
   },
+  getGrantedScopes: () => 'some scope',
+  grant: () => true,
 }
 ''';

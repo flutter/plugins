@@ -154,8 +154,7 @@ class Circle {
         strokeColor == typedOther.strokeColor &&
         strokeWidth == typedOther.strokeWidth &&
         visible == typedOther.visible &&
-        zIndex == typedOther.zIndex &&
-        onTap == typedOther.onTap;
+        zIndex == typedOther.zIndex;
   }
 
   @override
