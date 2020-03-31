@@ -387,16 +387,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             }
 
             _updatePosition(newPosition);
-
-            final duration = value?.duration?.inMilliseconds ?? 0;
-            final _position = newPosition?.inMilliseconds ?? 0;
-
-            print('===> duration $duration - position $_position');
-            if (duration > 0 && _position >= duration) {
-              print('===> vao day');
-              timer.cancel();
-              _timer.cancel();
-            }
           });
         },
       );
