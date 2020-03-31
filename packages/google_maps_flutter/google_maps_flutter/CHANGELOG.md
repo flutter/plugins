@@ -1,6 +1,18 @@
-## 0.5.25
+## 0.5.26
 
 * Add support for holes in Polygons.
+
+## 0.5.25+2
+
+* Avoid unnecessary map elements updates by ignoring not platform related attributes (eg. onTap)
+
+## 0.5.25+1
+
+* Add takeSnapshot that takes a snapshot of the map.
+
+## 0.5.25
+
+* Add an optional param `mipmaps` for `BitmapDescriptor.fromAssetImage`.
 
 ## 0.5.24+1
 
@@ -76,7 +88,7 @@
 
 ## 0.5.21+8
 
-* Add NS_ASSUME_NONNULL_* macro to reduce iOS compiler warnings.
+* Add NS*ASSUME_NONNULL*\* macro to reduce iOS compiler warnings.
 
 ## 0.5.21+7
 
@@ -149,11 +161,9 @@
 
 ## 0.5.19
 
-
 * Adds support for toggling Indoor View on or off.
 
 * Allow BitmapDescriptor scaling override
-
 
 ## 0.5.18
 

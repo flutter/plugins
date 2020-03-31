@@ -181,8 +181,7 @@ class Polygon {
         visible == typedOther.visible &&
         strokeColor == typedOther.strokeColor &&
         strokeWidth == typedOther.strokeWidth &&
-        zIndex == typedOther.zIndex &&
-        onTap == typedOther.onTap;
+        zIndex == typedOther.zIndex;
   }
 
   @override
