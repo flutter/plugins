@@ -1,3 +1,9 @@
+## 0.4.8+4
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Clean up various Android workarounds no longer needed after framework v1.12.
+* Complete v2 embedding support.
+
 ## 0.4.8+3
 
 * Replace deprecated `getFlutterEngine` call on Android.

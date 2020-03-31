@@ -5,7 +5,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/battery
 # 0.3.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.3.1+9
+version: 0.3.1+10
 
 flutter:
   plugin:
@@ -32,4 +32,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
-  flutter: ">=1.10.0 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"

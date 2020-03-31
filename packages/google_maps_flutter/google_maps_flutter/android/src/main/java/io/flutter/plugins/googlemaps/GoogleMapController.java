@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +28,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,6 +46,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -273,6 +276,26 @@ final class GoogleMapController
           } else {
             result.error(
                 "GoogleMap uninitialized", "getLatLng called prior to map initialization", null);
+          }
+          break;
+        }
+      case "map#takeSnapshot":
+        {
+          if (googleMap != null) {
+            final MethodChannel.Result _result = result;
+            googleMap.snapshot(
+                new SnapshotReadyCallback() {
+                  @Override
+                  public void onSnapshotReady(Bitmap bitmap) {
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] byteArray = stream.toByteArray();
+                    bitmap.recycle();
+                    _result.success(byteArray);
+                  }
+                });
+          } else {
+            result.error("GoogleMap uninitialized", "takeSnapshot", null);
           }
           break;
         }

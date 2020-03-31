@@ -6,7 +6,9 @@ package io.flutter.plugins.googlesignin;
 
 import android.accounts.Account;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import androidx.annotation.VisibleForTesting;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -27,6 +29,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,17 +49,19 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_DISCONNECT = "disconnect";
   private static final String METHOD_IS_SIGNED_IN = "isSignedIn";
   private static final String METHOD_CLEAR_AUTH_CACHE = "clearAuthCache";
+  private static final String METHOD_REQUEST_SCOPES = "requestScopes";
 
   private final IDelegate delegate;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-    final GoogleSignInPlugin instance = new GoogleSignInPlugin(registrar);
+    final GoogleSignInPlugin instance =
+        new GoogleSignInPlugin(registrar, new GoogleSignInWrapper());
     channel.setMethodCallHandler(instance);
   }
 
-  private GoogleSignInPlugin(PluginRegistry.Registrar registrar) {
-    delegate = new Delegate(registrar);
+  GoogleSignInPlugin(PluginRegistry.Registrar registrar, GoogleSignInWrapper googleSignInWrapper) {
+    delegate = new Delegate(registrar, googleSignInWrapper);
   }
 
   @Override
@@ -98,6 +103,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
       case METHOD_IS_SIGNED_IN:
         delegate.isSignedIn(result);
+        break;
+
+      case METHOD_REQUEST_SCOPES:
+        List<String> scopes = call.argument("scopes");
+        delegate.requestScopes(result, scopes);
         break;
 
       default:
@@ -153,6 +163,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /** Checks if there is a signed in user. */
     public void isSignedIn(Result result);
+
+    /** Prompts the user to grant an additional Oauth scopes. */
+    public void requestScopes(final Result result, final List<String> scopes);
   }
 
   /**
@@ -167,6 +180,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public static final class Delegate implements IDelegate, PluginRegistry.ActivityResultListener {
     private static final int REQUEST_CODE_SIGNIN = 53293;
     private static final int REQUEST_CODE_RECOVER_AUTH = 53294;
+    @VisibleForTesting static final int REQUEST_CODE_REQUEST_SCOPE = 53295;
 
     private static final String ERROR_REASON_EXCEPTION = "exception";
     private static final String ERROR_REASON_STATUS = "status";
@@ -183,13 +197,15 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     private final PluginRegistry.Registrar registrar;
     private final BackgroundTaskRunner backgroundTaskRunner = new BackgroundTaskRunner(1);
+    private final GoogleSignInWrapper googleSignInWrapper;
 
     private GoogleSignInClient signInClient;
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
 
-    public Delegate(PluginRegistry.Registrar registrar) {
+    public Delegate(PluginRegistry.Registrar registrar, GoogleSignInWrapper googleSignInWrapper) {
       this.registrar = registrar;
+      this.googleSignInWrapper = googleSignInWrapper;
       registrar.addActivityResultListener(this);
     }
 
@@ -341,6 +357,37 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     public void isSignedIn(final Result result) {
       boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
       result.success(value);
+    }
+
+    @Override
+    public void requestScopes(Result result, List<String> scopes) {
+      checkAndSetPendingOperation(METHOD_REQUEST_SCOPES, result);
+
+      GoogleSignInAccount account = googleSignInWrapper.getLastSignedInAccount(registrar.context());
+      if (account == null) {
+        result.error(ERROR_REASON_SIGN_IN_REQUIRED, "No account to grant scopes.", null);
+        return;
+      }
+
+      List<Scope> wrappedScopes = new ArrayList<>();
+
+      for (String scope : scopes) {
+        Scope wrappedScope = new Scope(scope);
+        if (!googleSignInWrapper.hasPermissions(account, wrappedScope)) {
+          wrappedScopes.add(wrappedScope);
+        }
+      }
+
+      if (wrappedScopes.isEmpty()) {
+        result.success(true);
+        return;
+      }
+
+      googleSignInWrapper.requestPermissions(
+          registrar.activity(),
+          REQUEST_CODE_REQUEST_SCOPE,
+          account,
+          wrappedScopes.toArray(new Scope[0]));
     }
 
     private void onSignInResult(Task<GoogleSignInAccount> completedTask) {
@@ -527,9 +574,37 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             finishWithError(ERROR_REASON_SIGN_IN_FAILED, "Signin failed");
           }
           return true;
+        case REQUEST_CODE_REQUEST_SCOPE:
+          finishWithSuccess(resultCode == Activity.RESULT_OK);
+          return true;
         default:
           return false;
       }
     }
+  }
+}
+
+/**
+ * A wrapper object that calls static method in GoogleSignIn.
+ *
+ * <p>Because GoogleSignIn uses static method mostly, which is hard for unit testing. We use this
+ * wrapper class to use instance method which calls the corresponding GoogleSignIn static methods.
+ *
+ * <p>Warning! This class should stay true that each method calls a GoogleSignIn static method with
+ * the same name and same parameters.
+ */
+class GoogleSignInWrapper {
+
+  GoogleSignInAccount getLastSignedInAccount(Context context) {
+    return GoogleSignIn.getLastSignedInAccount(context);
+  }
+
+  boolean hasPermissions(GoogleSignInAccount account, Scope scope) {
+    return GoogleSignIn.hasPermissions(account, scope);
+  }
+
+  void requestPermissions(
+      Activity activity, int requestCode, GoogleSignInAccount account, Scope[] scopes) {
+    GoogleSignIn.requestPermissions(activity, requestCode, account, scopes);
   }
 }
