@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -425,6 +426,14 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     @required int mapId,
   }) {
     return channel(mapId).invokeMethod<double>('map#getZoomLevel');
+  }
+
+  /// Returns the image bytes of the map
+  @override
+  Future<Uint8List> takeSnapshot({
+    @required int mapId,
+  }) {
+    return channel(mapId).invokeMethod<Uint8List>('map#takeSnapshot');
   }
 
   /// This method builds the appropriate platform view where the map

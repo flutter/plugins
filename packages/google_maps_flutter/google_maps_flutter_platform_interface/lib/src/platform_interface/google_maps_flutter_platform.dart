@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -237,6 +239,13 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     @required int mapId,
   }) {
     throw UnimplementedError('getZoomLevel() has not been implemented.');
+  }
+
+  /// Returns the image bytes of the map
+  Future<Uint8List> takeSnapshot({
+    @required int mapId,
+  }) {
+    throw UnimplementedError('takeSnapshot() has not been implemented.');
   }
 
   // The following are the 11 possible streams of data from the native side

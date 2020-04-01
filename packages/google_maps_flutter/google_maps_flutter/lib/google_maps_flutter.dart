@@ -5,6 +5,7 @@
 library google_maps_flutter;
 
 import 'dart:async';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
