@@ -19,6 +19,7 @@ dependencies:
   google_maps_flutter_platform_interface:
     path: ../google_maps_flutter_platform_interface
   google_maps: ">=3.0.0 <4.0.0"
+  stream_transform: ^1.2.0
 
 dev_dependencies:
   flutter_test:
