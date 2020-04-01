@@ -1,3 +1,7 @@
+## 0.5.25+3
+
+* Rename 'Page' in the example app to avoid type conflict with the Flutter Framework.
+
 ## 0.5.25+2
 
 * Avoid unnecessary map elements updates by ignoring not platform related attributes (eg. onTap)
