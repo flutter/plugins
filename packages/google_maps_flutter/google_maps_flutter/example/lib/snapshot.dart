@@ -14,7 +14,7 @@ import 'page.dart';
 const CameraPosition _kInitialPosition =
     CameraPosition(target: LatLng(-33.852, 151.211), zoom: 11.0);
 
-class SnapshotPage extends Page {
+class SnapshotPage extends GoogleMapExampleAppPage {
   SnapshotPage()
       : super(const Icon(Icons.camera_alt), 'Take a snapshot of the map');
 
