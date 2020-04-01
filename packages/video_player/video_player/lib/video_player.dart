@@ -516,7 +516,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
   _VideoPlayerState() {
     _listener = () {
       final int newTextureId = widget.controller.textureId;
-      if (newTextureId != _textureId) {
+      if (newTextureId != _textureId && mounted) {
         setState(() {
           _textureId = newTextureId;
         });
