@@ -107,6 +107,14 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> nextVideo(int textureId, String path) {
+    return _channel.invokeMethod<void>('nextVideo', <String, dynamic>{
+    'dataSource': path,
+    'textureId': textureId
+    });
+  }
+
+  @override
   Future<Duration> getPosition(int textureId) async {
     return Duration(
       milliseconds: await _channel.invokeMethod<int>(
@@ -127,6 +135,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
           return VideoEvent(
             eventType: VideoEventType.initialized,
             duration: Duration(milliseconds: map['duration']),
+            changedDataSource: map['changedDataSource'],
             size: Size(map['width']?.toDouble() ?? 0.0,
                 map['height']?.toDouble() ?? 0.0),
           );

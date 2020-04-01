@@ -245,10 +245,33 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             duration: event.duration,
             size: event.size,
           );
-          initializingCompleter.complete(null);
-          _applyLooping();
-          _applyVolume();
-          _applyPlayPause();
+          if(!initializingCompleter.isCompleted) {
+            initializingCompleter.complete(null);
+          }
+
+          if(event.changedDataSource == null || !event.changedDataSource) {
+            _applyLooping();
+            _applyVolume();
+            _applyPlayPause();
+          }
+
+          if(event.changedDataSource) {
+            _timer?.cancel();
+            _timer = Timer.periodic(
+              const Duration(milliseconds: 500),
+                  (Timer timer) async {
+                if (_isDisposed) {
+                  return;
+                }
+                final Duration newPosition = await position;
+                if (_isDisposed) {
+                  return;
+                }
+                value = value.copyWith(position: newPosition);
+              },
+            );
+          }
+
           break;
         case VideoEventType.completed:
           value = value.copyWith(isPlaying: false, position: value.duration);
@@ -383,6 +406,19 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await VideoPlayerPlatform.instance.seekTo(_textureId, position);
     value = value.copyWith(position: position);
   }
+
+  /// Sets new datasource of [this].
+  ///
+  /// [dataSource] file url
+  /// linear scale.
+  Future<void> nextVideo(String dataSource) async {
+    if (!value.initialized || _isDisposed) {
+      return;
+    }
+
+    await VideoPlayerPlatform.instance.nextVideo(_textureId, dataSource);
+  }
+
 
   /// Sets the audio volume of [this].
   ///

@@ -13,7 +13,8 @@ flutter:
 
 dependencies:
   meta: "^1.0.5"
-  video_player_platform_interface: ^1.0.1
+  video_player_platform_interface:
+    path: /home/leonetosoft/flutter-plugins/plugins/packages/video_player/video_player_platform_interface
 
   flutter:
     sdk: flutter
