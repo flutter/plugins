@@ -53,7 +53,7 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
     this.flutterState =
         new FlutterState(
             binding.getApplicationContext(),
-            binding.getFlutterEngine().getDartExecutor(),
+            binding.getBinaryMessenger(),
             FlutterMain::getLookupKeyForAsset,
             FlutterMain::getLookupKeyForAsset,
             binding.getFlutterEngine().getRenderer());

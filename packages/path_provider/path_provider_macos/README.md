@@ -19,8 +19,8 @@ This is what the above means to your `pubspec.yaml`:
 ...
 dependencies:
   ...
-  path_provider: ^0.5.4+8
-  path_provider_macos: ^0.1.0
+  path_provider: ^1.5.1
+  path_provider_macos: ^0.0.1
   ...
 ```
 

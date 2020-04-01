@@ -231,6 +231,7 @@ class WebSettings {
     this.javascriptMode,
     this.hasNavigationDelegate,
     this.debuggingEnabled,
+    this.gestureNavigationEnabled,
     @required this.userAgent,
   }) : assert(userAgent != null);
 
@@ -255,9 +256,14 @@ class WebSettings {
   /// See also [WebView.userAgent].
   final WebSetting<String> userAgent;
 
+  /// Whether to allow swipe based navigation in iOS.
+  ///
+  /// See also: [WebView.gestureNavigationEnabled]
+  final bool gestureNavigationEnabled;
+
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, userAgent: $userAgent,)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent)';
   }
 }
 

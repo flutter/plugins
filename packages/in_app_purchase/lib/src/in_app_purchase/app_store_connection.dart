@@ -62,13 +62,16 @@ class AppStoreConnection implements InAppPurchaseConnection {
   }
 
   @override
-  Future<void> completePurchase(PurchaseDetails purchase) {
-    return _skPaymentQueueWrapper
+  Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
+      {String developerPayload}) async {
+    await _skPaymentQueueWrapper
         .finishTransaction(purchase.skPaymentTransaction);
+    return BillingResultWrapper(responseCode: BillingResponse.ok);
   }
 
   @override
-  Future<BillingResponse> consumePurchase(PurchaseDetails purchase) {
+  Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase,
+      {String developerPayload}) {
     throw UnsupportedError('consume purchase is not available on Android');
   }
 
