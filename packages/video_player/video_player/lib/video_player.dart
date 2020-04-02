@@ -550,8 +550,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
   void deactivate() {
     super.deactivate();
 
-    Log.e('===> isDispose ${widget.controller.isDispose} - time ${DateTime
-        .now()}');
+    Log.e('===> isDispose ${widget.controller.isDispose}');
 
     if (widget.controller.isDispose == false) {
       widget.controller.removeListener(_listener);
