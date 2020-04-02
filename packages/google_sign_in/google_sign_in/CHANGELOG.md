@@ -1,3 +1,7 @@
+## 4.4.0
+
+* Migrate to Android v2 embedder.
+
 ## 4.3.0
 
 * Add support for method introduced in `google_sign_in_platform_interface` 1.1.0.
