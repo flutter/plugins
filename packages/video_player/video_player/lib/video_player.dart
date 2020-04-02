@@ -541,7 +541,11 @@ class _VideoPlayerState extends State<VideoPlayer> {
   @override
   void didUpdateWidget(VideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    oldWidget.controller.removeListener(_listener);
+
+    if (oldWidget.controller.isDispose == false) {
+      oldWidget.controller.removeListener(_listener);
+    }
+    
     _textureId = widget.controller.textureId;
     widget.controller.addListener(_listener);
   }
@@ -550,7 +554,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
   void deactivate() {
     super.deactivate();
 
-    Log.e('===> isDispose ${widget.controller.isDispose}');
+    print('===> isDispose ${widget.controller.isDispose}');
 
     if (widget.controller.isDispose == false) {
       widget.controller.removeListener(_listener);
