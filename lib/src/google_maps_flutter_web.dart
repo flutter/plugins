@@ -24,6 +24,9 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
   @override
   Future<void> init(int mapId) {
+    mapId = _id;
+    print('init $mapId');
+//    throw Exception('>>');
   }
 
   @override
@@ -31,7 +34,9 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       Map<String, dynamic> optionsUpdate, {
         @required int mapId,
       }) {
-//    //throw UnimplementedError('updateMapOptions() has not been implemented.');
+    print('mapId:$mapId');
+//    _mapById[mapId].googleMap.options(options);
+//    throw UnimplementedError('updateMapOptions() has not been implemented.');
   }
 
   @override
@@ -39,7 +44,12 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       MarkerUpdates markerUpdates, {
         @required int mapId,
       }) {
-//    //throw UnimplementedError('updateMarkers() has not been implemented.');
+    _mapById[mapId].markersController
+        .addMarkers(markerUpdates.markersToAdd);
+    _mapById[mapId].markersController
+        .changeMarkers(markerUpdates.markersToChange);
+    _mapById[mapId].markersController
+        .removeMarkers(markerUpdates.markerIdsToRemove);
   }
 
   @override
@@ -47,7 +57,12 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       PolygonUpdates polygonUpdates, {
         @required int mapId,
       }) {
-//    //throw UnimplementedError('updatePolygons() has not been implemented.');
+    _mapById[mapId].polygonsController
+        .addPolygons(polygonUpdates.polygonsToAdd);
+    _mapById[mapId].polygonsController
+        .changePolygons(polygonUpdates.polygonsToChange);
+    _mapById[mapId].polygonsController
+        .removePolygons(polygonUpdates.polygonIdsToRemove);
   }
 
   @override
@@ -55,7 +70,12 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       PolylineUpdates polylineUpdates, {
         @required int mapId,
       }) {
-//    //throw UnimplementedError('updatePolylines() has not been implemented.');
+    _mapById[mapId].polylinesController
+        .addPolylines(polylineUpdates.polylinesToAdd);
+    _mapById[mapId].polylinesController
+        .changePolylines(polylineUpdates.polylinesToChange);
+    _mapById[mapId].polylinesController
+        .removePolylines(polylineUpdates.polylineIdsToRemove);
   }
 
   @override
@@ -63,9 +83,12 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       CircleUpdates circleUpdates, {
         @required int mapId,
       }) {
-      _mapById[mapId].circlesController.addCircles(circleUpdates.circlesToAdd);
-      _mapById[mapId].circlesController.changeCircles(circleUpdates.circlesToChange);
-    _mapById[mapId].circlesController.removeCircles(circleUpdates.circleIdsToRemove);
+    _mapById[mapId].circlesController
+        .addCircles(circleUpdates.circlesToAdd);
+    _mapById[mapId].circlesController
+        .changeCircles(circleUpdates.circlesToChange);
+    _mapById[mapId].circlesController
+        .removeCircles(circleUpdates.circleIdsToRemove);
   }
 
   @override
@@ -73,7 +96,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       CameraUpdate cameraUpdate, {
         @required int mapId,
       }) {
-    //throw UnimplementedError('animateCamera() has not been implemented.');
+    throw UnimplementedError('animateCamera() has not been implemented.');
   }
 
   @override
@@ -81,7 +104,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       CameraUpdate cameraUpdate, {
         @required int mapId,
       }) {
-    //throw UnimplementedError('moveCamera() has not been implemented.');
+    throw UnimplementedError('moveCamera() has not been implemented.');
   }
 
   @override
@@ -89,14 +112,14 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       String mapStyle, {
         @required int mapId,
       }) {
-    //throw UnimplementedError('setMapStyle() has not been implemented.');
+    throw UnimplementedError('setMapStyle() has not been implemented.');
   }
 
   @override
   Future<LatLngBounds> getVisibleRegion({
     @required int mapId,
   }) {
-    //throw UnimplementedError('getVisibleRegion() has not been implemented.');
+    throw UnimplementedError('getVisibleRegion() has not been implemented.');
   }
 
   @override
@@ -104,7 +127,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       LatLng latLng, {
         @required int mapId,
       }) {
-    //throw UnimplementedError('getScreenCoordinate() has not been implemented.');
+    throw UnimplementedError('getScreenCoordinate() has not been implemented.');
   }
 
   @override
@@ -112,7 +135,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       ScreenCoordinate screenCoordinate, {
         @required int mapId,
       }) {
-    //throw UnimplementedError('getLatLng() has not been implemented.');
+    throw UnimplementedError('getLatLng() has not been implemented.');
   }
 
   @override
@@ -120,7 +143,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       MarkerId markerId, {
         @required int mapId,
       }) {
-    //throw UnimplementedError(   'showMarkerInfoWindow() has not been implemented.');
+    throw UnimplementedError(   'showMarkerInfoWindow() has not been implemented.');
   }
 
   @override
@@ -128,7 +151,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       MarkerId markerId, {
         @required int mapId,
       }) {
-    //throw UnimplementedError(    'hideMarkerInfoWindow() has not been implemented.');
+    throw UnimplementedError(    'hideMarkerInfoWindow() has not been implemented.');
   }
 
   @override
@@ -136,14 +159,14 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       MarkerId markerId, {
         @required int mapId,
       }) {
-    //throw UnimplementedError('updateMapOptions() has not been implemented.');
+    throw UnimplementedError('updateMapOptions() has not been implemented.');
   }
 
   @override
   Future<double> getZoomLevel({
     @required int mapId,
   }) {
-    //throw UnimplementedError('getZoomLevel() has not been implemented.');
+    throw UnimplementedError('getZoomLevel() has not been implemented.');
   }
 
   // The following are the 11 possible streams of data from the native side
@@ -151,17 +174,17 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
   @override
   Stream<CameraMoveStartedEvent> onCameraMoveStarted({@required int mapId}) {
-    return _events(mapId);
+    return _events(mapId).whereType<CameraMoveStartedEvent>();
   }
 
   @override
   Stream<CameraMoveEvent> onCameraMove({@required int mapId}) {
-    return _events(mapId);
+    return _events(mapId).whereType<CameraMoveEvent>();
   }
 
   @override
   Stream<CameraIdleEvent> onCameraIdle({@required int mapId}) {
-    return _events(mapId);
+    return _events(mapId).whereType<CameraIdleEvent>();
   }
 
   @override
@@ -209,49 +232,58 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       Map<String, dynamic> creationParams,
       Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
       PlatformViewCreatedCallback onPlatformViewCreated) {
-    GoogleMap.MapOptions options;
+    GoogleMap.MapOptions options = GoogleMap.MapOptions();
     CameraPosition position;
 
-    CircleUpdates initialCircles = null;
+    CircleUpdates     initialCircles    = null;
+    PolygonUpdates    initialPolygons   = null;
+    PolylineUpdates   initialPolylines  = null;
+    MarkerUpdates     initialMarkers    = null;
 
     creationParams.forEach((key, value) {
-      if(key == 'options')    {          updateMapOptions(value);}
-//      else if(key == 'markersToAdd')    updateMarkers(value);
-//      else if(key == 'polygonsToAdd')   updatePolygons(value);
-//      else if(key == 'polylinesToAdd')  updatePolylines(value);
-
-      else if(key == 'circlesToAdd')    {
+      if(key == 'options')    {
+        _optionsFromParams(options, value);
+      } else if(key == 'markersToAdd') {
+        initialMarkers = _markerFromParams(value);
+      } else if(key == 'polygonsToAdd') {
+        initialPolygons = _polygonFromParams(value);
+      } else if(key == 'polylinesToAdd') {
+        initialPolylines = _polylineFromParams(value);
+      } else if(key == 'circlesToAdd') {
         initialCircles = _circleFromParams(value);
       } else if(key == 'initialCameraPosition') {
         position = CameraPosition.fromMap(value);
+        options.zoom = position.zoom;
+        options.center = GoogleMap.LatLng(
+            position.target.latitude,
+            position.target.longitude
+        );
       } else {
         print('un-handle >>$key');
       }
     });
 
-    options = GoogleMap.MapOptions()
-      ..zoom = position.zoom
-      ..center = GoogleMap.LatLng(
-          position.target.latitude,
-          position.target.longitude
-      )
-    ;
 
-    _mapById[_id] =
-        GoogleMapController.build(
+
+      _mapById[_id] =
+          GoogleMapController.build(
             mapId: _id,
             streamController: _controller,
             onPlatformViewCreated: onPlatformViewCreated,
             options: options,
             position: position,
-            initialCircles: initialCircles != null ? initialCircles.circlesToAdd : null,
-        )
-    ;
-    ///TODO not create redundent view.
+            initialCircles: initialCircles != null
+                ? initialCircles.circlesToAdd
+                : null,
+            initialPolygons: initialPolygons != null ? initialPolygons
+                .polygonsToAdd : null,
+            initialPolylines: initialPolylines != null ? initialPolylines
+                .polylinesToAdd : null,
+          )
+      ;
+    onPlatformViewCreated.call(_id);
+      ///TODO not create redundent view.
     return _mapById[_id++].html;
   }
-
-
-
 }
 

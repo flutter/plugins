@@ -5,6 +5,7 @@ import 'dart:html';
 import 'dart:ui' as ui;
 import 'dart:math' show sqrt;
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -24,3 +25,10 @@ part 'src/google_maps_flutter_web.dart';
 part 'src/google_map_web.dart';
 part 'src/circle.dart';
 part 'src/circles.dart';
+part 'src/polygon.dart';
+part 'src/polygons.dart';
+part 'src/polyline.dart';
+part 'src/polylines.dart';
+part 'src/marker.dart';
+part 'src/markers.dart';
+part 'src/options.dart';
