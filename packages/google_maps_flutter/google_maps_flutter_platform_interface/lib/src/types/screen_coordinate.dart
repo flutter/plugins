@@ -24,6 +24,7 @@ class ScreenCoordinate {
   /// Represents the number of pixels from the top of the [GoogleMap].
   final int y;
 
+  /// Converts this object to something serializable in JSON.
   dynamic toJson() {
     return <String, int>{
       "x": x,

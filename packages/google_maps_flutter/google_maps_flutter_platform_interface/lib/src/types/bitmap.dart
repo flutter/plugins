@@ -8,7 +8,6 @@ import 'dart:typed_data' show Uint8List;
 import 'package:flutter/material.dart'
     show ImageConfiguration, AssetImage, AssetBundleImageKey;
 import 'package:flutter/services.dart' show AssetBundle;
-import 'package:meta/meta.dart' show visibleForTesting;
 
 /// Defines a bitmap image. For a marker, this class can be used to set the
 /// image of the marker icon. For a ground overlay, it can be used to set the
@@ -113,7 +112,5 @@ class BitmapDescriptor {
   final dynamic _json;
 
   /// Convert the object to a Json format.
-  /// Used for testing only.
-  @visibleForTesting
   dynamic toJson() => _json;
 }

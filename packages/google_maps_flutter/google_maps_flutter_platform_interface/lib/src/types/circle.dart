@@ -123,6 +123,7 @@ class Circle {
   /// Creates a new [Circle] object whose values are the same as this instance.
   Circle clone() => copyWith();
 
+  /// Converts this object to something serializable in JSON.
   dynamic toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 

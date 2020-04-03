@@ -60,10 +60,16 @@ class CircleUpdates {
     circlesToChange = _circlesToChange;
   }
 
+  /// Set of Circles to be added in this update.
   Set<Circle> circlesToAdd;
+
+  /// Set of CircleIds to be removed in this update.
   Set<CircleId> circleIdsToRemove;
+
+  /// Set of Circles to be changed in this update.
   Set<Circle> circlesToChange;
 
+  /// Converts this object to something serializable in JSON.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
 

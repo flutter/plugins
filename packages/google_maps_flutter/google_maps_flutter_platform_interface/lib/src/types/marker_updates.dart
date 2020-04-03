@@ -60,10 +60,16 @@ class MarkerUpdates {
     markersToChange = _markersToChange;
   }
 
+  /// Set of Markers to be added in this update.
   Set<Marker> markersToAdd;
+
+  /// Set of MarkerIds to be removed in this update.
   Set<MarkerId> markerIdsToRemove;
+
+  /// Set of Markers to be changed in this update.
   Set<Marker> markersToChange;
 
+  /// Converts this object to something serializable in JSON.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
 

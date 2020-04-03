@@ -131,6 +131,7 @@ class Polygon {
     return copyWith(pointsParam: List<LatLng>.of(points));
   }
 
+  /// Converts this object to something serializable in JSON.
   dynamic toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 

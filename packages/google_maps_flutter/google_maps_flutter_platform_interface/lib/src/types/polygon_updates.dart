@@ -60,10 +60,16 @@ class PolygonUpdates {
     polygonsToChange = _polygonsToChange;
   }
 
+  /// Set of Polygons to be added in this update.
   Set<Polygon> polygonsToAdd;
+
+  /// Set of PolygonIds to be removed in this update.
   Set<PolygonId> polygonIdsToRemove;
+
+  /// Set of Polygons to be changed in this update.
   Set<Polygon> polygonsToChange;
 
+  /// Converts this object to something serializable in JSON.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
 

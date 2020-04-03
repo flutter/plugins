@@ -44,6 +44,7 @@ class CameraTargetBounds {
   /// Unbounded camera target.
   static const CameraTargetBounds unbounded = CameraTargetBounds(null);
 
+  /// Converts this object to something serializable in JSON.
   dynamic toJson() => <dynamic>[bounds?.toJson()];
 
   @override
@@ -84,6 +85,7 @@ class MinMaxZoomPreference {
   static const MinMaxZoomPreference unbounded =
       MinMaxZoomPreference(null, null);
 
+  /// Converts this object to something serializable in JSON.
   dynamic toJson() => <dynamic>[minZoom, maxZoom];
 
   @override

@@ -267,6 +267,7 @@ class Marker {
   /// Creates a new [Marker] object whose values are the same as this instance.
   Marker clone() => copyWith();
 
+  /// Converts this object to something serializable in JSON.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 

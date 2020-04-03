@@ -173,6 +173,7 @@ class Polyline {
     );
   }
 
+  /// Converts this object to something serializable in JSON.
   dynamic toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
