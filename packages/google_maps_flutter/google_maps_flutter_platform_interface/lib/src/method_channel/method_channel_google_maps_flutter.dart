@@ -44,12 +44,12 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   //
   // It is a `broadcast` because multiple controllers will connect to
   // different stream views of this Controller.
-  final StreamController<MapEvent> _controller =
+  final StreamController<MapEvent> _mapEventStreamController =
       StreamController<MapEvent>.broadcast();
 
   // Returns a filtered view of the events in the _controller, by mapId.
   Stream<MapEvent> _events(int mapId) =>
-      _controller.stream.where((event) => event.mapId == mapId);
+      _mapEventStreamController.stream.where((event) => event.mapId == mapId);
 
   @override
   Stream<CameraMoveStartedEvent> onCameraMoveStarted({@required int mapId}) {
@@ -109,62 +109,62 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   Future<dynamic> _handleMethodCall(MethodCall call, int mapId) async {
     switch (call.method) {
       case 'camera#onMoveStarted':
-        _controller.add(CameraMoveStartedEvent(mapId));
+        _mapEventStreamController.add(CameraMoveStartedEvent(mapId));
         break;
       case 'camera#onMove':
-        _controller.add(CameraMoveEvent(
+        _mapEventStreamController.add(CameraMoveEvent(
           mapId,
           CameraPosition.fromMap(call.arguments['position']),
         ));
         break;
       case 'camera#onIdle':
-        _controller.add(CameraIdleEvent(mapId));
+        _mapEventStreamController.add(CameraIdleEvent(mapId));
         break;
       case 'marker#onTap':
-        _controller.add(MarkerTapEvent(
+        _mapEventStreamController.add(MarkerTapEvent(
           mapId,
           MarkerId(call.arguments['markerId']),
         ));
         break;
       case 'marker#onDragEnd':
-        _controller.add(MarkerDragEndEvent(
+        _mapEventStreamController.add(MarkerDragEndEvent(
           mapId,
           LatLng.fromJson(call.arguments['position']),
           MarkerId(call.arguments['markerId']),
         ));
         break;
       case 'infoWindow#onTap':
-        _controller.add(InfoWindowTapEvent(
+        _mapEventStreamController.add(InfoWindowTapEvent(
           mapId,
           MarkerId(call.arguments['markerId']),
         ));
         break;
       case 'polyline#onTap':
-        _controller.add(PolylineTapEvent(
+        _mapEventStreamController.add(PolylineTapEvent(
           mapId,
           PolylineId(call.arguments['polylineId']),
         ));
         break;
       case 'polygon#onTap':
-        _controller.add(PolygonTapEvent(
+        _mapEventStreamController.add(PolygonTapEvent(
           mapId,
           PolygonId(call.arguments['polygonId']),
         ));
         break;
       case 'circle#onTap':
-        _controller.add(CircleTapEvent(
+        _mapEventStreamController.add(CircleTapEvent(
           mapId,
           CircleId(call.arguments['circleId']),
         ));
         break;
       case 'map#onTap':
-        _controller.add(MapTapEvent(
+        _mapEventStreamController.add(MapTapEvent(
           mapId,
           LatLng.fromJson(call.arguments['position']),
         ));
         break;
       case 'map#onLongPress':
-        _controller.add(MapLongPressEvent(
+        _mapEventStreamController.add(MapLongPressEvent(
           mapId,
           LatLng.fromJson(call.arguments['position']),
         ));
