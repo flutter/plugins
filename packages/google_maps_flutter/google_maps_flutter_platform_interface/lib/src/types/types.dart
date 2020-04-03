@@ -1,5 +1,8 @@
-// All the public types exposed by this package.
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+// All the public types exposed by this package.
 export 'bitmap.dart';
 export 'callbacks.dart';
 export 'camera.dart';
