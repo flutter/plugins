@@ -237,8 +237,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   bool get isDispose => _isDisposed;
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
-  Future<void> initialize() async {
-    _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
+  Future<void> initialize({bool playInBackground = true}) async {
+    _lifeCycleObserver =
+        _VideoAppLifeCycleObserver(this, playInBackground: playInBackground);
     _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
 
@@ -469,10 +470,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 }
 
 class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
-  _VideoAppLifeCycleObserver(this._controller);
+  _VideoAppLifeCycleObserver(this._controller, {this.playInBackground = true});
 
   bool _wasPlayingBeforePause = false;
   final VideoPlayerController _controller;
+  final bool playInBackground;
 
   void initialize() {
     WidgetsBinding.instance.addObserver(this);
@@ -483,8 +485,10 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.paused:
         _wasPlayingBeforePause = _controller.value.isPlaying;
-        if (_wasPlayingBeforePause) {
+        if (_wasPlayingBeforePause && playInBackground) {
           _controller.play();
+        } else {
+          _controller.pause();
         }
         break;
       case AppLifecycleState.resumed:
@@ -545,7 +549,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
     if (oldWidget.controller.isDispose == false) {
       oldWidget.controller.removeListener(_listener);
     }
-    
+
     _textureId = widget.controller.textureId;
     widget.controller.addListener(_listener);
   }
