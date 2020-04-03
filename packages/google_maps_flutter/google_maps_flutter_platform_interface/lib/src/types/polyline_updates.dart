@@ -70,6 +70,7 @@ class PolylineUpdates {
   /// Set of Polylines to be changed in this update.
   Set<Polyline> polylinesToChange;
 
+  /// Converts this object to something serializable in JSON.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
 
