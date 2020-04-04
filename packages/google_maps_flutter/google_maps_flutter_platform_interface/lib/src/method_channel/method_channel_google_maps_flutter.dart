@@ -13,7 +13,16 @@ import 'package:flutter/gestures.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:stream_transform/stream_transform.dart';
 
-/// An implementation of [GoogleMapsFlutterPlatform] that uses method channels.
+/// An implementation of [GoogleMapsFlutterPlatform] that uses [MethodChannel] to communicate with the native code.
+///
+/// The `google_maps_flutter` plugin code itself never talks to the native code directly. It delegates
+/// all those calls to an instance of a class that extends the GoogleMapsFlutterPlatform.
+///
+/// The architecture above allows for platforms that communicate differently with the native side
+/// (like web) to have a common interface to extend.
+///
+/// This is the instance that runs when the native side talks to your Flutter app through MethodChannels,
+/// like the Android and iOS platforms.
 class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   // Keep a collection of id -> channel
   // Every method call passes the int mapId
