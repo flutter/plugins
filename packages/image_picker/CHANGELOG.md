@@ -1,3 +1,6 @@
+## 0.6.5
+* Remove `WRITE_EXTERNAL_STORAGE` permission.
+
 ## 0.6.4
 
 * Add a new parameter to select preferred camera device.
