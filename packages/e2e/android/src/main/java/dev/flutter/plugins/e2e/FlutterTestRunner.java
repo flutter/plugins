@@ -33,7 +33,7 @@ public class FlutterTestRunner extends Runner {
       if (field.isAnnotationPresent(Rule.class)) {
         try {
           Object instance = testClass.newInstance();
-          if (instance instanceof ActivityTestRule) {
+          if (field.get(instance) instanceof ActivityTestRule) {
             rule = (TestRule) field.get(instance);
             break;
           }
