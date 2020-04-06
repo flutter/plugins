@@ -1,4 +1,5 @@
-## 4.3.1
+## 4.4.0
+
 * Migrate to Android v2 embedder.
 
 ## 4.3.0
