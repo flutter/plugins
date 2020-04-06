@@ -6,12 +6,14 @@ package io.flutter.plugins.googlesigninexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
-import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.plugins.googlesignin.GoogleSignInPlugin;
+import io.flutter.view.FlutterMain;
 
-public class MainActivity extends FlutterActivity {
+public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    FlutterMain.startInitialization(this);
     super.onCreate(savedInstanceState);
-    GeneratedPluginRegistrant.registerWith(this);
+    GoogleSignInPlugin.registerWith(registrarFor("io.flutter.plugins.googlesignin"));
   }
 }

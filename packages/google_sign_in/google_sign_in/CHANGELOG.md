@@ -1,6 +1,10 @@
-## 4.4.0
+## 4.1.0
 
 * Add support for getting `serverAuthCode`
+
+## 4.4.0
+
+* Migrate to Android v2 embedder.
 
 ## 4.3.0
 
