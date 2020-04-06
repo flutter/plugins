@@ -536,10 +536,13 @@ class _VideoPlayerState extends State<VideoPlayer> {
   @override
   void initState() {
     super.initState();
-    _textureId = widget.controller.textureId;
-    // Need to listen for initialization events since the actual texture ID
-    // becomes available after asynchronous initialization finishes.
-    widget.controller.addListener(_listener);
+
+    if (widget.controller != null && !widget.controller.isDispose) {
+      _textureId = widget.controller.textureId;
+      // Need to listen for initialization events since the actual texture ID
+      // becomes available after asynchronous initialization finishes.
+      widget.controller.addListener(_listener);
+    }
   }
 
   @override
@@ -557,9 +560,6 @@ class _VideoPlayerState extends State<VideoPlayer> {
   @override
   void deactivate() {
     super.deactivate();
-
-    print('===> isDispose ${widget.controller.isDispose}');
-
     if (widget.controller.isDispose == false) {
       widget.controller.removeListener(_listener);
     }
