@@ -65,4 +65,24 @@
 - (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
   [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
 }
+
+- (void)onReceivedError:(NSError *)error {
+  NSString *errorCode = [NSString stringWithFormat:@"%@: %ld", error.domain, (long)error.code];
+  [_methodChannel invokeMethod:@"onReceivedError" arguments:@{
+    @"errorCode": errorCode,
+    @"description" : error.description,
+  }];
+}
+
+- (void)webView:(WKWebView *)webView
+didFailNavigation:(WKNavigation *)navigation
+      withError:(NSError *)error {
+  [self onReceivedError:error];
+}
+
+- (void)webView:(WKWebView *)webView
+didFailProvisionalNavigation:(WKNavigation *)navigation
+      withError:(NSError *)error {
+  [self onReceivedError:error];
+}
 @end

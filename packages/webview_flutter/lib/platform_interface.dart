@@ -28,6 +28,9 @@ abstract class WebViewPlatformCallbacksHandler {
 
   /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);
+
+  /// Report web resource loading error to the host application.
+  void onReceivedError(String errorCode, String description);
 }
 
 /// Interface for talking to the webview's platform implementation.

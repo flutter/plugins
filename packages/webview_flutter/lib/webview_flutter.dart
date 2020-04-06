@@ -79,6 +79,9 @@ typedef void PageStartedCallback(String url);
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
 
+/// Signature for when a [WebView] has failed to load a resource.
+typedef void ReceivedErrorCallback(String errorCode, String description);
+
 /// Specifies possible restrictions on automatic media playback.
 ///
 /// This is typically used in [WebView.initialMediaPlaybackPolicy].
@@ -147,6 +150,7 @@ class WebView extends StatefulWidget {
     this.gestureRecognizers,
     this.onPageStarted,
     this.onPageFinished,
+    this.onReceivedError,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
@@ -276,6 +280,12 @@ class WebView extends StatefulWidget {
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
+
+  /// Invoked when a web resource has failed to load.
+  ///
+  /// This can be called for any resource (iframe, image, etc.), not just for
+  /// the main page.
+  final ReceivedErrorCallback onReceivedError;
 
   /// Controls whether WebView debugging is enabled.
   ///
@@ -480,6 +490,11 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     if (_widget.onPageFinished != null) {
       _widget.onPageFinished(url);
     }
+  }
+
+  @override
+  void onReceivedError(String errorCode, String description) {
+    _widget?.onReceivedError(errorCode, description);
   }
 
   void _updateJavascriptChannelsFromSet(Set<JavascriptChannel> channels) {

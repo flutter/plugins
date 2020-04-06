@@ -4,14 +4,18 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import androidx.annotation.NonNull;
+import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
@@ -28,6 +32,45 @@ class FlutterWebViewClient {
 
   FlutterWebViewClient(MethodChannel methodChannel) {
     this.methodChannel = methodChannel;
+  }
+
+  private static String errorCodeToString(int errorCode) {
+    switch(errorCode) {
+      case WebViewClient.ERROR_AUTHENTICATION:
+        return "AUTHENTICATION";
+      case WebViewClient.ERROR_BAD_URL:
+        return "BAD_URL";
+      case WebViewClient.ERROR_CONNECT:
+        return "CONNECT";
+      case WebViewClient.ERROR_FAILED_SSL_HANDSHAKE:
+        return "FAILED_SSL_HANDSHAKE";
+      case WebViewClient.ERROR_FILE:
+        return "FILE";
+      case WebViewClient.ERROR_FILE_NOT_FOUND:
+        return "FILE_NOT_FOUND";
+      case WebViewClient.ERROR_HOST_LOOKUP:
+        return "HOST_LOOKUP";
+      case WebViewClient.ERROR_IO:
+        return "IO";
+      case WebViewClient.ERROR_PROXY_AUTHENTICATION:
+        return "PROXY_AUTHENTICATION";
+      case WebViewClient.ERROR_REDIRECT_LOOP:
+        return "REDIRECT_LOOP";
+      case WebViewClient.ERROR_TIMEOUT:
+        return "TIMEOUT";
+      case WebViewClient.ERROR_TOO_MANY_REQUESTS:
+        return "TOO_MANY_REQUESTS";
+      case WebViewClient.ERROR_UNKNOWN:
+        return "UNKNOWN";
+      case WebViewClient.ERROR_UNSAFE_RESOURCE:
+        return "UNSAFE_RESOURCE";
+      case WebViewClient.ERROR_UNSUPPORTED_AUTH_SCHEME:
+        return "UNSUPPORTED_AUTH_SCHEME";
+      case WebViewClient.ERROR_UNSUPPORTED_SCHEME:
+        return "UNSUPPORTED_SCHEME";
+    }
+
+    throw new IllegalArgumentException("" + errorCode);
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -79,6 +122,13 @@ class FlutterWebViewClient {
     methodChannel.invokeMethod("onPageFinished", args);
   }
 
+  private void onReceivedError(final String errorCode, final String description) {
+    final Map<String, Object> args = new HashMap<>();
+    args.put("errorCode", errorCode);
+    args.put("description", description);
+    methodChannel.invokeMethod("onReceivedError", args);
+  }
+
   private void notifyOnNavigationRequest(
       String url, Map<String, String> headers, WebView webview, boolean isMainFrame) {
     HashMap<String, Object> args = new HashMap<>();
@@ -123,6 +173,14 @@ class FlutterWebViewClient {
         FlutterWebViewClient.this.onPageFinished(view, url);
       }
 
+      // We don't need to support the deprecated version since this WebViewClient is only used on
+      // API versions >= N.
+      @TargetApi(Build.VERSION_CODES.M)
+      @Override
+      public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+        FlutterWebViewClient.this.onReceivedError(FlutterWebViewClient.errorCodeToString(error.getErrorCode()), error.getDescription().toString());
+      }
+
       @Override
       public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
         // Deliberately empty. Occasionally the webview will mark events as having failed to be
@@ -152,6 +210,20 @@ class FlutterWebViewClient {
       @Override
       public void onPageFinished(WebView view, String url) {
         FlutterWebViewClient.this.onPageFinished(view, url);
+      }
+
+      // We can suppress this lint since this method is only called when the
+      // WebViewFeature.RECEIVE_WEB_RESOURCE_ERROR feature is enabled. We call the deprecated method
+      // when a device doesn't support this.
+      @SuppressLint("RequiresFeature")
+      @Override
+      public void onReceivedError(@NonNull WebView view, @NonNull WebResourceRequest request, @NonNull WebResourceErrorCompat error) {
+        FlutterWebViewClient.this.onReceivedError(FlutterWebViewClient.errorCodeToString(error.getErrorCode()), error.getDescription().toString());
+      }
+
+      @Override
+      public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+        FlutterWebViewClient.this.onReceivedError(FlutterWebViewClient.errorCodeToString(errorCode), description);
       }
 
       @Override
