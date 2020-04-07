@@ -12,6 +12,11 @@ export 'package:path_provider_platform_interface/path_provider_platform_interfac
 
 PathProviderPlatform get _platform => PathProviderPlatform.instance;
 
+/// Get a [Directory] from [path] string.
+Directory _getDirectory(String path) {
+  return path == null ? path : Directory(path);
+}
+
 /// Path to the temporary directory on the device that is not backed up and is
 /// suitable for storing caches of downloaded files.
 ///
@@ -25,10 +30,7 @@ PathProviderPlatform get _platform => PathProviderPlatform.instance;
 /// On Android, this uses the `getCacheDir` API on the context.
 Future<Directory> getTemporaryDirectory() async {
   final String path = await _platform.getTemporaryPath();
-  if (path == null) {
-    return null;
-  }
-  return Directory(path);
+  return _getDirectory(path);
 }
 
 /// Path to a directory where the application may place application support
@@ -43,11 +45,7 @@ Future<Directory> getTemporaryDirectory() async {
 /// On Android, this function uses the `getFilesDir` API on the context.
 Future<Directory> getApplicationSupportDirectory() async {
   final String path = await _platform.getApplicationSupportPath();
-  if (path == null) {
-    return null;
-  }
-
-  return Directory(path);
+  return _getDirectory(path);
 }
 
 /// Path to the directory where application can store files that are persistent,
@@ -57,10 +55,7 @@ Future<Directory> getApplicationSupportDirectory() async {
 /// path exists.
 Future<Directory> getLibraryDirectory() async {
   final String path = await _platform.getLibraryPath();
-  if (path == null) {
-    return null;
-  }
-  return Directory(path);
+  return _getDirectory(path);
 }
 
 /// Path to a directory where the application may place data that is
@@ -74,10 +69,7 @@ Future<Directory> getLibraryDirectory() async {
 /// to the user.
 Future<Directory> getApplicationDocumentsDirectory() async {
   final String path = await _platform.getApplicationDocumentsPath();
-  if (path == null) {
-    return null;
-  }
-  return Directory(path);
+  return _getDirectory(path);
 }
 
 /// Path to a directory where the application may access top level storage.
@@ -90,10 +82,7 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 /// On Android this uses the `getExternalFilesDir(null)`.
 Future<Directory> getExternalStorageDirectory() async {
   final String path = await _platform.getExternalStoragePath();
-  if (path == null) {
-    return null;
-  }
-  return Directory(path);
+  return _getDirectory(path);
 }
 
 /// Paths to directories where application specific external cache data can be
@@ -145,8 +134,5 @@ Future<List<Directory>> getExternalStorageDirectories({
 /// path exists.
 Future<Directory> getDownloadsDirectory() async {
   final String path = await _platform.getDownloadsPath();
-  if (path == null) {
-    return null;
-  }
-  return Directory(path);
+  return _getDirectory(path);
 }
