@@ -504,7 +504,9 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
 
   @override
   void onReceivedError(String errorCode, String description) {
-    _widget?.onReceivedError(errorCode, description);
+    if (_widget.onReceivedError != null) {
+      _widget.onReceivedError(errorCode, description);
+    }
   }
 
   void _updateJavascriptChannelsFromSet(Set<JavascriptChannel> channels) {

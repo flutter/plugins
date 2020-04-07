@@ -14,11 +14,11 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import androidx.annotation.NonNull;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 // We need to use WebViewClientCompat to get
@@ -70,7 +70,8 @@ class FlutterWebViewClient {
         return "UNSUPPORTED_SCHEME";
     }
 
-    throw new IllegalArgumentException("" + errorCode);
+    final String message = String.format(Locale.getDefault(), "Could not find a string for errorCode: %d", errorCode);
+    throw new IllegalArgumentException(message);
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -174,11 +175,12 @@ class FlutterWebViewClient {
       }
 
       // We don't need to support the deprecated version since this WebViewClient is only used on
-      // API versions >= N.
+      // API versions >= N. See `FlutterWebViewClient.createWebViewClient`.
       @TargetApi(Build.VERSION_CODES.M)
       @Override
       public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-        FlutterWebViewClient.this.onReceivedError(FlutterWebViewClient.errorCodeToString(error.getErrorCode()), error.getDescription().toString());
+        final String errorCode = FlutterWebViewClient.errorCodeToString(error.getErrorCode());
+        FlutterWebViewClient.this.onReceivedError(errorCode, error.getDescription().toString());
       }
 
       @Override
@@ -212,18 +214,19 @@ class FlutterWebViewClient {
         FlutterWebViewClient.this.onPageFinished(view, url);
       }
 
-      // We can suppress this lint since this method is only called when the
-      // WebViewFeature.RECEIVE_WEB_RESOURCE_ERROR feature is enabled. We call the deprecated method
-      // when a device doesn't support this.
+      // This method is only called when the WebViewFeature.RECEIVE_WEB_RESOURCE_ERROR feature is
+      // enabled. The deprecated method is called when a device doesn't support this.
       @SuppressLint("RequiresFeature")
       @Override
-      public void onReceivedError(@NonNull WebView view, @NonNull WebResourceRequest request, @NonNull WebResourceErrorCompat error) {
-        FlutterWebViewClient.this.onReceivedError(FlutterWebViewClient.errorCodeToString(error.getErrorCode()), error.getDescription().toString());
+      public void onReceivedError(WebView view, WebResourceRequest request, WebResourceErrorCompat error) {
+        final String errorCode = FlutterWebViewClient.errorCodeToString(error.getErrorCode());
+        FlutterWebViewClient.this.onReceivedError(errorCode, error.getDescription().toString());
       }
 
       @Override
       public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-        FlutterWebViewClient.this.onReceivedError(FlutterWebViewClient.errorCodeToString(errorCode), description);
+        final String errorCodeString = FlutterWebViewClient.errorCodeToString(errorCode);
+        FlutterWebViewClient.this.onReceivedError(errorCodeString, description);
       }
 
       @Override
