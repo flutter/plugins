@@ -576,6 +576,31 @@ void main() {
       expect(currentUrl, 'https://www.google.com/');
     });
 
+    testWidgets('onReceivedError', (WidgetTester tester) async {
+      final Completer<Map<String, String>> errorCompleter =
+          Completer<Map<String, String>>();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: 'https://www.notawebsite..com',
+            onReceivedError: (String errorCode, String description) {
+              errorCompleter.complete(<String, String>{
+                'errorCode': errorCode,
+                'description': description,
+              });
+            },
+          ),
+        ),
+      );
+
+      final Map<String, String> errorResult = await errorCompleter.future;
+      expect(errorResult['errorCode'], isNotNull);
+      expect(errorResult['description'], isNotNull);
+    });
+
     testWidgets('can block requests', (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
