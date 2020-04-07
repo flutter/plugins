@@ -1,6 +1,6 @@
 ## 4.4.1
 
-* Move GoogleSignInWrapper to a separate class.
+* Android: Move `GoogleSignInWrapper` to a separate class.
 
 ## 4.4.0
 
