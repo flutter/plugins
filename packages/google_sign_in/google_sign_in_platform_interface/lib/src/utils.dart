@@ -10,13 +10,11 @@ GoogleSignInUserData getUserDataFromMap(Map<String, dynamic> data) {
     return null;
   }
   return GoogleSignInUserData(
-    displayName: data['displayName'],
-    email: data['email'],
-    id: data['id'],
-    photoUrl: data['photoUrl'],
-    idToken: data['idToken'],
-    serverAuthCode: data['serverAuthCode'],
-  );
+      displayName: data['displayName'],
+      email: data['email'],
+      id: data['id'],
+      photoUrl: data['photoUrl'],
+      idToken: data['idToken']);
 }
 
 /// Converts token data coming from native code into the proper platform interface type.
