@@ -175,14 +175,18 @@ class FlutterWebViewClient {
         FlutterWebViewClient.this.onPageFinished(view, url);
       }
 
-      // We don't need to support the deprecated version since this WebViewClient is only used on
-      // API versions >= N. See `FlutterWebViewClient.createWebViewClient`.
       @TargetApi(Build.VERSION_CODES.M)
       @Override
       public void onReceivedError(
           WebView view, WebResourceRequest request, WebResourceError error) {
         FlutterWebViewClient.this.onReceivedError(
             error.getErrorCode(), error.getDescription().toString());
+      }
+
+      @Override
+      public void onReceivedError(
+          WebView view, int errorCode, String description, String failingUrl) {
+        FlutterWebViewClient.this.onReceivedError(errorCode, description);
       }
 
       @Override
