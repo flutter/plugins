@@ -123,9 +123,9 @@ class FlutterWebViewClient {
     methodChannel.invokeMethod("onPageFinished", args);
   }
 
-  private void onReceivedError(final String errorCode, final String description) {
+  private void onReceivedError(final int errorCode, final String description) {
     final Map<String, Object> args = new HashMap<>();
-    args.put("errorCode", errorCode);
+    args.put("errorCode", FlutterWebViewClient.errorCodeToString(errorCode));
     args.put("description", description);
     methodChannel.invokeMethod("onReceivedError", args);
   }
@@ -179,8 +179,7 @@ class FlutterWebViewClient {
       @TargetApi(Build.VERSION_CODES.M)
       @Override
       public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-        final String errorCode = FlutterWebViewClient.errorCodeToString(error.getErrorCode());
-        FlutterWebViewClient.this.onReceivedError(errorCode, error.getDescription().toString());
+        FlutterWebViewClient.this.onReceivedError(error.getErrorCode(), error.getDescription().toString());
       }
 
       @Override
@@ -219,14 +218,12 @@ class FlutterWebViewClient {
       @SuppressLint("RequiresFeature")
       @Override
       public void onReceivedError(WebView view, WebResourceRequest request, WebResourceErrorCompat error) {
-        final String errorCode = FlutterWebViewClient.errorCodeToString(error.getErrorCode());
-        FlutterWebViewClient.this.onReceivedError(errorCode, error.getDescription().toString());
+        FlutterWebViewClient.this.onReceivedError(error.getErrorCode(), error.getDescription().toString());
       }
 
       @Override
       public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-        final String errorCodeString = FlutterWebViewClient.errorCodeToString(errorCode);
-        FlutterWebViewClient.this.onReceivedError(errorCodeString, description);
+        FlutterWebViewClient.this.onReceivedError(errorCode, description);
       }
 
       @Override
