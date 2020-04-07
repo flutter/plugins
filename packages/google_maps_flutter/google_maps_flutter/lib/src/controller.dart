@@ -4,20 +4,14 @@
 
 part of google_maps_flutter;
 
-final GoogleMapsFlutterPlatform _googleMapsFlutterPlatform =
-    GoogleMapsFlutterPlatform.instance;
-
 /// Controller for a single GoogleMap instance running on the host platform.
 class GoogleMapController {
-  /// The mapId for this controller
-  final int mapId;
-
   GoogleMapController._(
+    this.channel,
     CameraPosition initialCameraPosition,
-    this._googleMapState, {
-    @required this.mapId,
-  }) : assert(_googleMapsFlutterPlatform != null) {
-    _connectStreams(mapId);
+    this._googleMapState,
+  ) : assert(channel != null) {
+    channel.setMethodCallHandler(_handleMethodCall);
   }
 
   /// Initialize control of a [GoogleMap] with [id].
@@ -30,66 +24,72 @@ class GoogleMapController {
     _GoogleMapState googleMapState,
   ) async {
     assert(id != null);
-    await _googleMapsFlutterPlatform.init(id);
+    final MethodChannel channel =
+        MethodChannel('plugins.flutter.io/google_maps_$id');
+    await channel.invokeMethod<void>('map#waitForMap');
     return GoogleMapController._(
+      channel,
       initialCameraPosition,
       googleMapState,
-      mapId: id,
     );
   }
 
   /// Used to communicate with the native platform.
   ///
   /// Accessible only for testing.
-  // TODO: Remove this once tests are migrated to not need this.
   @visibleForTesting
-  MethodChannel get channel {
-    if (_googleMapsFlutterPlatform is MethodChannelGoogleMapsFlutter) {
-      return (_googleMapsFlutterPlatform as MethodChannelGoogleMapsFlutter)
-          .channel(mapId);
-    }
-    return null;
-  }
+  final MethodChannel channel;
 
   final _GoogleMapState _googleMapState;
 
-  void _connectStreams(int mapId) {
-    if (_googleMapState.widget.onCameraMoveStarted != null) {
-      _googleMapsFlutterPlatform
-          .onCameraMoveStarted(mapId: mapId)
-          .listen((_) => _googleMapState.widget.onCameraMoveStarted());
+  Future<dynamic> _handleMethodCall(MethodCall call) async {
+    switch (call.method) {
+      case 'camera#onMoveStarted':
+        if (_googleMapState.widget.onCameraMoveStarted != null) {
+          _googleMapState.widget.onCameraMoveStarted();
+        }
+        break;
+      case 'camera#onMove':
+        if (_googleMapState.widget.onCameraMove != null) {
+          _googleMapState.widget.onCameraMove(
+            CameraPosition.fromMap(call.arguments['position']),
+          );
+        }
+        break;
+      case 'camera#onIdle':
+        if (_googleMapState.widget.onCameraIdle != null) {
+          _googleMapState.widget.onCameraIdle();
+        }
+        break;
+      case 'marker#onTap':
+        _googleMapState.onMarkerTap(call.arguments['markerId']);
+        break;
+      case 'marker#onDragEnd':
+        _googleMapState.onMarkerDragEnd(call.arguments['markerId'],
+            LatLng._fromJson(call.arguments['position']));
+        break;
+      case 'infoWindow#onTap':
+        _googleMapState.onInfoWindowTap(call.arguments['markerId']);
+        break;
+      case 'polyline#onTap':
+        _googleMapState.onPolylineTap(call.arguments['polylineId']);
+        break;
+      case 'polygon#onTap':
+        _googleMapState.onPolygonTap(call.arguments['polygonId']);
+        break;
+      case 'circle#onTap':
+        _googleMapState.onCircleTap(call.arguments['circleId']);
+        break;
+      case 'map#onTap':
+        _googleMapState.onTap(LatLng._fromJson(call.arguments['position']));
+        break;
+      case 'map#onLongPress':
+        _googleMapState
+            .onLongPress(LatLng._fromJson(call.arguments['position']));
+        break;
+      default:
+        throw MissingPluginException();
     }
-    if (_googleMapState.widget.onCameraMove != null) {
-      _googleMapsFlutterPlatform.onCameraMove(mapId: mapId).listen(
-          (CameraMoveEvent e) => _googleMapState.widget.onCameraMove(e.value));
-    }
-    if (_googleMapState.widget.onCameraIdle != null) {
-      _googleMapsFlutterPlatform
-          .onCameraIdle(mapId: mapId)
-          .listen((_) => _googleMapState.widget.onCameraIdle());
-    }
-    _googleMapsFlutterPlatform
-        .onMarkerTap(mapId: mapId)
-        .listen((MarkerTapEvent e) => _googleMapState.onMarkerTap(e.value));
-    _googleMapsFlutterPlatform.onMarkerDragEnd(mapId: mapId).listen(
-        (MarkerDragEndEvent e) =>
-            _googleMapState.onMarkerDragEnd(e.value, e.position));
-    _googleMapsFlutterPlatform.onInfoWindowTap(mapId: mapId).listen(
-        (InfoWindowTapEvent e) => _googleMapState.onInfoWindowTap(e.value));
-    _googleMapsFlutterPlatform
-        .onPolylineTap(mapId: mapId)
-        .listen((PolylineTapEvent e) => _googleMapState.onPolylineTap(e.value));
-    _googleMapsFlutterPlatform
-        .onPolygonTap(mapId: mapId)
-        .listen((PolygonTapEvent e) => _googleMapState.onPolygonTap(e.value));
-    _googleMapsFlutterPlatform
-        .onCircleTap(mapId: mapId)
-        .listen((CircleTapEvent e) => _googleMapState.onCircleTap(e.value));
-    _googleMapsFlutterPlatform
-        .onTap(mapId: mapId)
-        .listen((MapTapEvent e) => _googleMapState.onTap(e.position));
-    _googleMapsFlutterPlatform.onLongPress(mapId: mapId).listen(
-        (MapLongPressEvent e) => _googleMapState.onLongPress(e.position));
   }
 
   /// Updates configuration options of the map user interface.
@@ -98,10 +98,14 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) {
+  Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) async {
     assert(optionsUpdate != null);
-    return _googleMapsFlutterPlatform.updateMapOptions(optionsUpdate,
-        mapId: mapId);
+    await channel.invokeMethod<void>(
+      'map#update',
+      <String, dynamic>{
+        'options': optionsUpdate,
+      },
+    );
   }
 
   /// Updates marker configuration.
@@ -110,10 +114,12 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateMarkers(MarkerUpdates markerUpdates) {
+  Future<void> _updateMarkers(_MarkerUpdates markerUpdates) async {
     assert(markerUpdates != null);
-    return _googleMapsFlutterPlatform.updateMarkers(markerUpdates,
-        mapId: mapId);
+    await channel.invokeMethod<void>(
+      'markers#update',
+      markerUpdates._toMap(),
+    );
   }
 
   /// Updates polygon configuration.
@@ -122,10 +128,12 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updatePolygons(PolygonUpdates polygonUpdates) {
+  Future<void> _updatePolygons(_PolygonUpdates polygonUpdates) async {
     assert(polygonUpdates != null);
-    return _googleMapsFlutterPlatform.updatePolygons(polygonUpdates,
-        mapId: mapId);
+    await channel.invokeMethod<void>(
+      'polygons#update',
+      polygonUpdates._toMap(),
+    );
   }
 
   /// Updates polyline configuration.
@@ -134,10 +142,12 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updatePolylines(PolylineUpdates polylineUpdates) {
+  Future<void> _updatePolylines(_PolylineUpdates polylineUpdates) async {
     assert(polylineUpdates != null);
-    return _googleMapsFlutterPlatform.updatePolylines(polylineUpdates,
-        mapId: mapId);
+    await channel.invokeMethod<void>(
+      'polylines#update',
+      polylineUpdates._toMap(),
+    );
   }
 
   /// Updates circle configuration.
@@ -146,26 +156,32 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateCircles(CircleUpdates circleUpdates) {
+  Future<void> _updateCircles(_CircleUpdates circleUpdates) async {
     assert(circleUpdates != null);
-    return _googleMapsFlutterPlatform.updateCircles(circleUpdates,
-        mapId: mapId);
+    await channel.invokeMethod<void>(
+      'circles#update',
+      circleUpdates._toMap(),
+    );
   }
 
   /// Starts an animated change of the map camera position.
   ///
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
-  Future<void> animateCamera(CameraUpdate cameraUpdate) {
-    return _googleMapsFlutterPlatform.animateCamera(cameraUpdate, mapId: mapId);
+  Future<void> animateCamera(CameraUpdate cameraUpdate) async {
+    await channel.invokeMethod<void>('camera#animate', <String, dynamic>{
+      'cameraUpdate': cameraUpdate._toJson(),
+    });
   }
 
   /// Changes the map camera position.
   ///
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
-  Future<void> moveCamera(CameraUpdate cameraUpdate) {
-    return _googleMapsFlutterPlatform.moveCamera(cameraUpdate, mapId: mapId);
+  Future<void> moveCamera(CameraUpdate cameraUpdate) async {
+    await channel.invokeMethod<void>('camera#move', <String, dynamic>{
+      'cameraUpdate': cameraUpdate._toJson(),
+    });
   }
 
   /// Sets the styling of the base map.
@@ -181,13 +197,23 @@ class GoogleMapController {
   /// Also, refer [iOS](https://developers.google.com/maps/documentation/ios-sdk/style-reference)
   /// and [Android](https://developers.google.com/maps/documentation/android-sdk/style-reference)
   /// style reference for more information regarding the supported styles.
-  Future<void> setMapStyle(String mapStyle) {
-    return _googleMapsFlutterPlatform.setMapStyle(mapStyle, mapId: mapId);
+  Future<void> setMapStyle(String mapStyle) async {
+    final List<dynamic> successAndError =
+        await channel.invokeMethod<List<dynamic>>('map#setStyle', mapStyle);
+    final bool success = successAndError[0];
+    if (!success) {
+      throw MapStyleException(successAndError[1]);
+    }
   }
 
   /// Return [LatLngBounds] defining the region that is visible in a map.
-  Future<LatLngBounds> getVisibleRegion() {
-    return _googleMapsFlutterPlatform.getVisibleRegion(mapId: mapId);
+  Future<LatLngBounds> getVisibleRegion() async {
+    final Map<String, dynamic> latLngBounds =
+        await channel.invokeMapMethod<String, dynamic>('map#getVisibleRegion');
+    final LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
+    final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
+
+    return LatLngBounds(northeast: northeast, southwest: southwest);
   }
 
   /// Return [ScreenCoordinate] of the [LatLng] in the current map view.
@@ -195,16 +221,20 @@ class GoogleMapController {
   /// A projection is used to translate between on screen location and geographic coordinates.
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
-  Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) {
-    return _googleMapsFlutterPlatform.getScreenCoordinate(latLng, mapId: mapId);
+  Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
+    final Map<String, int> point = await channel.invokeMapMethod<String, int>(
+        'map#getScreenCoordinate', latLng._toJson());
+    return ScreenCoordinate(x: point['x'], y: point['y']);
   }
 
   /// Returns [LatLng] corresponding to the [ScreenCoordinate] in the current map view.
   ///
   /// Returned [LatLng] corresponds to a screen location. The screen location is specified in screen
   /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
-  Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) {
-    return _googleMapsFlutterPlatform.getLatLng(screenCoordinate, mapId: mapId);
+  Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) async {
+    final List<dynamic> latLng = await channel.invokeMethod<List<dynamic>>(
+        'map#getLatLng', screenCoordinate._toJson());
+    return LatLng(latLng[0], latLng[1]);
   }
 
   /// Programmatically show the Info Window for a [Marker].
@@ -215,10 +245,10 @@ class GoogleMapController {
   /// * See also:
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> showMarkerInfoWindow(MarkerId markerId) {
+  Future<void> showMarkerInfoWindow(MarkerId markerId) async {
     assert(markerId != null);
-    return _googleMapsFlutterPlatform.showMarkerInfoWindow(markerId,
-        mapId: mapId);
+    await channel.invokeMethod<void>(
+        'markers#showInfoWindow', <String, String>{'markerId': markerId.value});
   }
 
   /// Programmatically hide the Info Window for a [Marker].
@@ -229,10 +259,10 @@ class GoogleMapController {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
-  Future<void> hideMarkerInfoWindow(MarkerId markerId) {
+  Future<void> hideMarkerInfoWindow(MarkerId markerId) async {
     assert(markerId != null);
-    return _googleMapsFlutterPlatform.hideMarkerInfoWindow(markerId,
-        mapId: mapId);
+    await channel.invokeMethod<void>(
+        'markers#hideInfoWindow', <String, String>{'markerId': markerId.value});
   }
 
   /// Returns `true` when the [InfoWindow] is showing, `false` otherwise.
@@ -243,19 +273,21 @@ class GoogleMapController {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
-  Future<bool> isMarkerInfoWindowShown(MarkerId markerId) {
+  Future<bool> isMarkerInfoWindowShown(MarkerId markerId) async {
     assert(markerId != null);
-    return _googleMapsFlutterPlatform.isMarkerInfoWindowShown(markerId,
-        mapId: mapId);
+    return await channel.invokeMethod<bool>('markers#isInfoWindowShown',
+        <String, String>{'markerId': markerId.value});
   }
 
   /// Returns the current zoom level of the map
-  Future<double> getZoomLevel() {
-    return _googleMapsFlutterPlatform.getZoomLevel(mapId: mapId);
+  Future<double> getZoomLevel() async {
+    final double zoomLevel =
+        await channel.invokeMethod<double>('map#getZoomLevel');
+    return zoomLevel;
   }
 
   /// Returns the image bytes of the map
-  Future<Uint8List> takeSnapshot() {
-    return _googleMapsFlutterPlatform.takeSnapshot(mapId: mapId);
+  Future<Uint8List> takeSnapshot() async {
+    return await channel.invokeMethod<Uint8List>('map#takeSnapshot');
   }
 }
