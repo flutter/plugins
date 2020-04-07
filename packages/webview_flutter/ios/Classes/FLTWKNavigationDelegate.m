@@ -70,7 +70,7 @@
   [_methodChannel invokeMethod:@"onReceivedError"
                      arguments:@{
                        @"errorCode" : @(error.code),
-                       @"domain": error.domain,
+                       @"domain" : error.domain,
                        @"description" : error.description,
                      }];
 }
