@@ -285,6 +285,16 @@ class WebView extends StatefulWidget {
   ///
   /// This can be called for any resource (iframe, image, etc.), not just for
   /// the main page.
+  ///
+  /// On Android, the error code will be a constant from
+  /// [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient#summary).
+  /// (e.g. The error code of `WebViewClient.ERROR_AUTHENTICATION` on Android
+  /// translates to `AUTHENTICATION` in Dart.
+  ///
+  /// On iOS, the error code will represent the "domain" and the "code" for an
+  /// `NSError` in Objective-C. The format will be `$domain: $code`. See
+  /// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ErrorHandlingCocoa/ErrorObjectsDomains/ErrorObjectsDomains.html
+  /// for more information on error handling on iOS.
   final ReceivedErrorCallback onReceivedError;
 
   /// Controls whether WebView debugging is enabled.
