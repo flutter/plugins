@@ -35,7 +35,7 @@ class FlutterWebViewClient {
   }
 
   private static String errorCodeToString(int errorCode) {
-    switch(errorCode) {
+    switch (errorCode) {
       case WebViewClient.ERROR_AUTHENTICATION:
         return "AUTHENTICATION";
       case WebViewClient.ERROR_BAD_URL:
@@ -70,7 +70,8 @@ class FlutterWebViewClient {
         return "UNSUPPORTED_SCHEME";
     }
 
-    final String message = String.format(Locale.getDefault(), "Could not find a string for errorCode: %d", errorCode);
+    final String message =
+        String.format(Locale.getDefault(), "Could not find a string for errorCode: %d", errorCode);
     throw new IllegalArgumentException(message);
   }
 
@@ -178,8 +179,10 @@ class FlutterWebViewClient {
       // API versions >= N. See `FlutterWebViewClient.createWebViewClient`.
       @TargetApi(Build.VERSION_CODES.M)
       @Override
-      public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-        FlutterWebViewClient.this.onReceivedError(error.getErrorCode(), error.getDescription().toString());
+      public void onReceivedError(
+          WebView view, WebResourceRequest request, WebResourceError error) {
+        FlutterWebViewClient.this.onReceivedError(
+            error.getErrorCode(), error.getDescription().toString());
       }
 
       @Override
@@ -217,12 +220,15 @@ class FlutterWebViewClient {
       // enabled. The deprecated method is called when a device doesn't support this.
       @SuppressLint("RequiresFeature")
       @Override
-      public void onReceivedError(WebView view, WebResourceRequest request, WebResourceErrorCompat error) {
-        FlutterWebViewClient.this.onReceivedError(error.getErrorCode(), error.getDescription().toString());
+      public void onReceivedError(
+          WebView view, WebResourceRequest request, WebResourceErrorCompat error) {
+        FlutterWebViewClient.this.onReceivedError(
+            error.getErrorCode(), error.getDescription().toString());
       }
 
       @Override
-      public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+      public void onReceivedError(
+          WebView view, int errorCode, String description, String failingUrl) {
         FlutterWebViewClient.this.onReceivedError(errorCode, description);
       }
 

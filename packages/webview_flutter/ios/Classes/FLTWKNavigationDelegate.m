@@ -5,10 +5,10 @@
 #import "FLTWKNavigationDelegate.h"
 
 @implementation FLTWKNavigationDelegate {
-  FlutterMethodChannel* _methodChannel;
+  FlutterMethodChannel *_methodChannel;
 }
 
-- (instancetype)initWithChannel:(FlutterMethodChannel*)channel {
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
   self = [super init];
   if (self) {
     _methodChannel = channel;
@@ -18,18 +18,18 @@
 
 #pragma mark - WKNavigationDelegate conformance
 
-- (void)webView:(WKWebView*)webView didStartProvisionalNavigation:(WKNavigation*)navigation {
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
   [_methodChannel invokeMethod:@"onPageStarted" arguments:@{@"url" : webView.URL.absoluteString}];
 }
 
-- (void)webView:(WKWebView*)webView
-    decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction
+- (void)webView:(WKWebView *)webView
+    decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
                     decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
   if (!self.hasDartNavigationDelegate) {
     decisionHandler(WKNavigationActionPolicyAllow);
     return;
   }
-  NSDictionary* arguments = @{
+  NSDictionary *arguments = @{
     @"url" : navigationAction.request.URL.absoluteString,
     @"isForMainFrame" : @(navigationAction.targetFrame.isMainFrame)
   };
@@ -56,33 +56,34 @@
                             decisionHandler(WKNavigationActionPolicyAllow);
                             return;
                           }
-                          NSNumber* typedResult = result;
+                          NSNumber *typedResult = result;
                           decisionHandler([typedResult boolValue] ? WKNavigationActionPolicyAllow
                                                                   : WKNavigationActionPolicyCancel);
                         }];
 }
 
-- (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
   [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
 }
 
 - (void)onReceivedError:(NSError *)error {
   NSString *errorCode = [NSString stringWithFormat:@"%@: %ld", error.domain, (long)error.code];
-  [_methodChannel invokeMethod:@"onReceivedError" arguments:@{
-    @"errorCode": errorCode,
-    @"description" : error.description,
-  }];
+  [_methodChannel invokeMethod:@"onReceivedError"
+                     arguments:@{
+                       @"errorCode" : errorCode,
+                       @"description" : error.description,
+                     }];
 }
 
 - (void)webView:(WKWebView *)webView
-didFailNavigation:(WKNavigation *)navigation
-      withError:(NSError *)error {
+    didFailNavigation:(WKNavigation *)navigation
+            withError:(NSError *)error {
   [self onReceivedError:error];
 }
 
 - (void)webView:(WKWebView *)webView
-didFailProvisionalNavigation:(WKNavigation *)navigation
-      withError:(NSError *)error {
+    didFailProvisionalNavigation:(WKNavigation *)navigation
+                       withError:(NSError *)error {
   [self onReceivedError:error];
 }
 @end
