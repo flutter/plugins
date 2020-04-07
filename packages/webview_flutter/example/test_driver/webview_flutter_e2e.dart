@@ -4,12 +4,14 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:e2e/e2e.dart';
 
@@ -577,8 +579,8 @@ void main() {
     });
 
     testWidgets('onReceivedError', (WidgetTester tester) async {
-      final Completer<Map<String, String>> errorCompleter =
-          Completer<Map<String, String>>();
+      final Completer<WebResourceError> errorCompleter =
+          Completer<WebResourceError>();
 
       await tester.pumpWidget(
         Directionality(
@@ -586,19 +588,40 @@ void main() {
           child: WebView(
             key: GlobalKey(),
             initialUrl: 'https://www.notawebsite..com',
-            onReceivedError: (String errorCode, String description) {
-              errorCompleter.complete(<String, String>{
-                'errorCode': errorCode,
-                'description': description,
-              });
+            onWebResourceError: (WebResourceError error) {
+              errorCompleter.complete(error);
             },
           ),
         ),
       );
 
-      final Map<String, String> errorResult = await errorCompleter.future;
-      expect(errorResult['errorCode'], isNotNull);
-      expect(errorResult['description'], isNotNull);
+      final WebResourceError error = await errorCompleter.future;
+      expect(error, isNotNull);
+
+      if (Platform.isIOS) expect(error.domain, isNotNull);
+      if (Platform.isAndroid) expect(error.errorType, isNotNull);
+    });
+
+    testWidgets('onReceivedError is not called with valid url',
+        (WidgetTester tester) async {
+      final Completer<WebResourceError> errorCompleter =
+          Completer<WebResourceError>();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl:
+                'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
+            onWebResourceError: (WebResourceError error) {
+              errorCompleter.complete(error);
+            },
+          ),
+        ),
+      );
+
+      expect(errorCompleter, doesNotComplete);
     });
 
     testWidgets('can block requests', (WidgetTester tester) async {

@@ -30,7 +30,93 @@ abstract class WebViewPlatformCallbacksHandler {
   void onPageFinished(String url);
 
   /// Report web resource loading error to the host application.
-  void onReceivedError(String errorCode, String description);
+  void onWebResourceError(WebResourceError error);
+}
+
+/// Error types used by [WebResourceError] on Android.
+enum WebResourceErrorType {
+  /// User authentication failed on server.
+  authentication,
+  /// Malformed URL.
+  badUrl,
+  /// Failed to connect to the server.
+  connect,
+  /// Failed to perform SSL handshake.
+  failedSslHandshake,
+  /// Generic file error.
+  file,
+  /// File not found.
+  fileNotFound,
+  /// Server or proxy hostname lookup failed.
+  hostLookup,
+  /// Failed to read or write to the server.
+  io,
+  /// User authentication failed on proxy.
+  proxyAuthentication,
+  /// Too many redirects.
+  redirectLoop,
+  /// Connection timed out.
+  timeout,
+  /// Too many requests during this load.
+  tooManyRequests,
+  /// Generic error.
+  unknown,
+  /// Resource load was canceled by Safe Browsing.
+  unsafeResource,
+  /// Unsupported authentication scheme (not basic or digest).
+  unsupportedAuthScheme,
+  /// Unsupported URI scheme.
+  unsupportedScheme,
+}
+
+/// On Android, the error code will be a constant from
+/// [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient#summary).
+///
+/// On iOS, the error code will be a constant from a "code" for an
+/// `NSError` in Objective-C. The format will be `$domain: $code`. See
+/// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ErrorHandlingCocoa/ErrorObjectsDomains/ErrorObjectsDomains.html
+/// for more information on error handling on iOS.
+class WebResourceError {
+  /// Creates a new [WebResourceError]
+  ///
+  /// A user should not need to use this, but can receive on in
+  /// [WebResourceErrorCallback].
+  WebResourceError({
+    @required this.errorCode,
+    @required this.description,
+    this.domain,
+    this.errorType,
+  })  : assert(errorCode != null),
+        assert(description != null);
+
+  /// Error code of the error.
+  ///
+  /// On Android, the error code will be a constant from a
+  /// [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient#summary) and
+  /// will have a corresponding [errorType].
+  ///
+  /// On iOS, the error code will be a constant from `NSError.code` in
+  /// Objective-C. See
+  /// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ErrorHandlingCocoa/ErrorObjectsDomains/ErrorObjectsDomains.html
+  /// for more information on error handling on iOS.
+  final int errorCode;
+
+  /// The domain of where to find the error code.
+  ///
+  /// This field is only available on iOS and represents a "domain" from where
+  /// the [errorCode] is from. This value is taken directly from an `NSError`
+  /// in Objective-C. See
+  /// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ErrorHandlingCocoa/ErrorObjectsDomains/ErrorObjectsDomains.html
+  /// for more information on error handling on iOS.
+  final String domain;
+
+  /// Describes the error.
+  final String description;
+
+  /// The type of error when using an Android device.
+  ///
+  /// This is only available on Android and will be null on iOS.
+  final WebResourceErrorType errorType;
 }
 
 /// Interface for talking to the webview's platform implementation.

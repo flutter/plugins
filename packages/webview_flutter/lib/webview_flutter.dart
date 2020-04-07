@@ -80,7 +80,7 @@ typedef void PageStartedCallback(String url);
 typedef void PageFinishedCallback(String url);
 
 /// Signature for when a [WebView] has failed to load a resource.
-typedef void ReceivedErrorCallback(String errorCode, String description);
+typedef void WebResourceErrorCallback(WebResourceError error);
 
 /// Specifies possible restrictions on automatic media playback.
 ///
@@ -150,7 +150,7 @@ class WebView extends StatefulWidget {
     this.gestureRecognizers,
     this.onPageStarted,
     this.onPageFinished,
-    this.onReceivedError,
+    this.onWebResourceError,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
@@ -285,17 +285,7 @@ class WebView extends StatefulWidget {
   ///
   /// This can be called for any resource (iframe, image, etc.), not just for
   /// the main page.
-  ///
-  /// On Android, the error code will be a constant from
-  /// [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient#summary).
-  /// (e.g. The error code of `WebViewClient.ERROR_AUTHENTICATION` on Android
-  /// translates to `AUTHENTICATION` in Dart.
-  ///
-  /// On iOS, the error code will represent the "domain" and the "code" for an
-  /// `NSError` in Objective-C. The format will be `$domain: $code`. See
-  /// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ErrorHandlingCocoa/ErrorObjectsDomains/ErrorObjectsDomains.html
-  /// for more information on error handling on iOS.
-  final ReceivedErrorCallback onReceivedError;
+  final WebResourceErrorCallback onWebResourceError;
 
   /// Controls whether WebView debugging is enabled.
   ///
@@ -503,9 +493,9 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   }
 
   @override
-  void onReceivedError(String errorCode, String description) {
-    if (_widget.onReceivedError != null) {
-      _widget.onReceivedError(errorCode, description);
+  void onWebResourceError(WebResourceError error) {
+    if (_widget.onWebResourceError != null) {
+      _widget.onWebResourceError(error);
     }
   }
 

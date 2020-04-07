@@ -37,37 +37,37 @@ class FlutterWebViewClient {
   private static String errorCodeToString(int errorCode) {
     switch (errorCode) {
       case WebViewClient.ERROR_AUTHENTICATION:
-        return "AUTHENTICATION";
+        return "authentication";
       case WebViewClient.ERROR_BAD_URL:
-        return "BAD_URL";
+        return "badUrl";
       case WebViewClient.ERROR_CONNECT:
-        return "CONNECT";
+        return "connect";
       case WebViewClient.ERROR_FAILED_SSL_HANDSHAKE:
-        return "FAILED_SSL_HANDSHAKE";
+        return "failedSslHandshake";
       case WebViewClient.ERROR_FILE:
-        return "FILE";
+        return "file";
       case WebViewClient.ERROR_FILE_NOT_FOUND:
-        return "FILE_NOT_FOUND";
+        return "fileNotFound";
       case WebViewClient.ERROR_HOST_LOOKUP:
-        return "HOST_LOOKUP";
+        return "hostLookup";
       case WebViewClient.ERROR_IO:
-        return "IO";
+        return "io";
       case WebViewClient.ERROR_PROXY_AUTHENTICATION:
-        return "PROXY_AUTHENTICATION";
+        return "proxyAuthentication";
       case WebViewClient.ERROR_REDIRECT_LOOP:
-        return "REDIRECT_LOOP";
+        return "redirectLoop";
       case WebViewClient.ERROR_TIMEOUT:
-        return "TIMEOUT";
+        return "timeout";
       case WebViewClient.ERROR_TOO_MANY_REQUESTS:
-        return "TOO_MANY_REQUESTS";
+        return "tooManyRequests";
       case WebViewClient.ERROR_UNKNOWN:
-        return "UNKNOWN";
+        return "unknown";
       case WebViewClient.ERROR_UNSAFE_RESOURCE:
-        return "UNSAFE_RESOURCE";
+        return "unsafeResource";
       case WebViewClient.ERROR_UNSUPPORTED_AUTH_SCHEME:
-        return "UNSUPPORTED_AUTH_SCHEME";
+        return "unsupportedAuthScheme";
       case WebViewClient.ERROR_UNSUPPORTED_SCHEME:
-        return "UNSUPPORTED_SCHEME";
+        return "unsupportedScheme";
     }
 
     final String message =
@@ -126,8 +126,9 @@ class FlutterWebViewClient {
 
   private void onReceivedError(final int errorCode, final String description) {
     final Map<String, Object> args = new HashMap<>();
-    args.put("errorCode", FlutterWebViewClient.errorCodeToString(errorCode));
+    args.put("errorCode", errorCode);
     args.put("description", description);
+    args.put("errorType", FlutterWebViewClient.errorCodeToString(errorCode));
     methodChannel.invokeMethod("onReceivedError", args);
   }
 
