@@ -1,3 +1,7 @@
+## 4.4.1
+
+* Android: Move `GoogleSignInWrapper` to a separate class.
+
 ## 4.4.0
 
 * Migrate to Android v2 embedder.

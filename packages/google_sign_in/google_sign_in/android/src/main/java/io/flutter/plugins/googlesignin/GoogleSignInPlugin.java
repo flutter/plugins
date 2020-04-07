@@ -659,28 +659,3 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     }
   }
 }
-
-/**
- * A wrapper object that calls static method in GoogleSignIn.
- *
- * <p>Because GoogleSignIn uses static method mostly, which is hard for unit testing. We use this
- * wrapper class to use instance method which calls the corresponding GoogleSignIn static methods.
- *
- * <p>Warning! This class should stay true that each method calls a GoogleSignIn static method with
- * the same name and same parameters.
- */
-class GoogleSignInWrapper {
-
-  GoogleSignInAccount getLastSignedInAccount(Context context) {
-    return GoogleSignIn.getLastSignedInAccount(context);
-  }
-
-  boolean hasPermissions(GoogleSignInAccount account, Scope scope) {
-    return GoogleSignIn.hasPermissions(account, scope);
-  }
-
-  void requestPermissions(
-      Activity activity, int requestCode, GoogleSignInAccount account, Scope[] scopes) {
-    GoogleSignIn.requestPermissions(activity, requestCode, account, scopes);
-  }
-}
