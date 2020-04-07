@@ -19,6 +19,10 @@ dev_dependencies:
     sdk: flutter
   e2e:
     path: ../
+  e2e_macos:
+    path: ../e2e_macos
+  test: any
+  pedantic: ^1.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

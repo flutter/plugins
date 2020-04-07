@@ -21,7 +21,7 @@ void main() {
     // Re-pipe to mockito for easier verifies.
     Share.channel.setMockMethodCallHandler((MethodCall call) async {
       // The explicit type can be void as the only method call has a return type of void.
-      mockChannel.invokeMethod<void>(call.method, call.arguments);
+      await mockChannel.invokeMethod<void>(call.method, call.arguments);
     });
   });
 

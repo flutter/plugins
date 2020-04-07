@@ -1,3 +1,33 @@
+## 0.4.0+17
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Clean up various Android workarounds no longer needed after framework v1.12.
+* Complete v2 embedding support.
+
+## 0.4.0+16
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.4.0+15
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.4.0+14
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.4.0+13
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.0+12
+
+* Fix pedantic lints. This involved internally refactoring how the
+  `PackageInfo.fromPlatform` code handled futures, but shouldn't change existing
+  functionality.
+
 ## 0.4.0+11
 
 * Remove AndroidX warnings.

@@ -17,6 +17,10 @@ typedef void QuickActionHandler(String type);
 
 /// Home screen quick-action shortcut item.
 class ShortcutItem {
+  /// Constructs an instance with the given [type], [localizedTitle], and
+  /// [icon].
+  ///
+  /// Only [icon] should be nullable. It will remain `null` if unset.
   const ShortcutItem({
     @required this.type,
     @required this.localizedTitle,
@@ -36,14 +40,21 @@ class ShortcutItem {
 
 /// Quick actions plugin.
 class QuickActions {
+  /// Gets an instance of the plugin with the default methodChannel.
+  ///
+  /// [initialize] should be called before using any other methods.
   factory QuickActions() => _instance;
 
+  /// This is a test-only constructor. Do not call this, it can break at any
+  /// time.
   @visibleForTesting
   QuickActions.withMethodChannel(this.channel);
 
   static final QuickActions _instance =
       QuickActions.withMethodChannel(_kChannel);
 
+  /// This is a test-only accessor. Do not call this, it can break at any time.
+  @visibleForTesting
   final MethodChannel channel;
 
   /// Initializes this plugin.
@@ -54,10 +65,6 @@ class QuickActions {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
-    runLaunchAction(handler);
-  }
-
-  void runLaunchAction(QuickActionHandler handler) async {
     final String action = await channel.invokeMethod<String>('getLaunchAction');
     if (action != null) {
       handler(action);

@@ -1,0 +1,28 @@
+name: plugin_platform_interface
+description: Reusable base class for Flutter plugin platform interfaces.
+
+# DO NOT MAKE A BREAKING CHANGE TO THIS PACKAGE
+# DO NOT INCREASE THE MAJOR VERSION OF THIS PACKAGE
+#
+# This package is used as a second level dependency for many plugins, a major version bump here
+# is guaranteed to lead the ecosystem to a version lock (the first plugin that upgrades to version
+# 2 of this package cannot be used with any other plugin that have not yet migrated).
+#
+# Please consider carefully before bumping the major version of this package, ideally it should only
+# be done when absolutely necessary and after the ecosystem has already migrated to 1.X.Y version
+# that is forward compatible with 2.0.0 (ideally the ecosystem have migrated to depend on:
+# `plugin_platform_interface: >=1.X.Y <3.0.0`).
+version: 1.0.2
+
+homepage: https://github.com/flutter/plugins/plugin_platform_interface
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  meta: ^1.0.0
+
+dev_dependencies:
+  mockito: ^4.1.1
+  test: ^1.9.4
+  pedantic: ^1.8.0

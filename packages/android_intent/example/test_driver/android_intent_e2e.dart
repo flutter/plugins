@@ -1,12 +1,11 @@
 import 'dart:io';
 
+import 'package:android_intent/android_intent.dart';
 import 'package:android_intent_example/main.dart';
 import 'package:e2e/e2e.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../lib/android_intent.dart';
 
 /// This is a smoke test that verifies that the example app builds and loads.
 /// Because this plugin works by launching Android platform UIs it's not
@@ -49,5 +48,22 @@ void main() {
       return e is PlatformException &&
           e.message.contains('No Activity found to handle Intent');
     }));
+  }, skip: !Platform.isAndroid);
+
+  testWidgets('#canResolveActivity returns true when example Activity is found',
+      (WidgetTester tester) async {
+    AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      package: 'io.flutter.plugins.androidintentexample',
+      componentName: 'io.flutter.embedding.android.FlutterActivity',
+    );
+    await expectLater(() async => await intent.canResolveActivity(), isFalse);
+  }, skip: !Platform.isAndroid);
+
+  testWidgets('#canResolveActivity returns false when no Activity is found',
+      (WidgetTester tester) async {
+    const AndroidIntent intent =
+        AndroidIntent(action: 'LAUNCH', package: 'foobar');
+    await expectLater(() async => await intent.canResolveActivity(), isFalse);
   }, skip: !Platform.isAndroid);
 }

@@ -16,6 +16,7 @@ function lint_package() {
   # These podspecs are temporary multi-platform adoption dummy files.
   local skipped_podspecs=(
     "url_launcher_web.podspec"
+    "google_sign_in_web.podspec"
   )
   
   # TODO: These packages have analyzer warnings. Remove plugins from this list as issues are fixed.
@@ -70,16 +71,8 @@ function lint_packages() {
     return
   fi
 
-  # TODO: These packages have linter errors. Remove plugins from this list as linter issues are fixed.
-  local skipped_packages=(
-    'google_maps_flutter'
-  )
-
   local failure_count=0
-  for package_name in "$@"; do
-    if [[ "${skipped_packages[*]}" =~ "${package_name}" ]]; then
-      continue
-    fi      
+  for package_name in "$@"; do   
     lint_package "${package_name}"
     failure_count+="$?"
   done

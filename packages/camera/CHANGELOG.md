@@ -1,6 +1,32 @@
-## 0.5.7
+## 0.5.8
 
 * Add support for Flash and Auto Focus.
+
+## 0.5.7+5
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.5.7+4
+
+* Add `pedantic` to dev_dependency.
+
+## 0.5.7+3
+
+* Fix an Android crash when permissions are requested multiple times.
+
+## 0.5.7+2
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.5.7+1
+
+* Fix example null exception.
+
+## 0.5.7
+
+* Fix unawaited futures.
 
 ## 0.5.6+4
 
@@ -31,7 +57,6 @@
 ## 0.5.5
 
 * Define clang modules for iOS.
->>>>>>> master
 
 ## 0.5.4+3
 

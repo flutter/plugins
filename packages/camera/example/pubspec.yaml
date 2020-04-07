@@ -1,6 +1,5 @@
 name: camera_example
 description: Demonstrates how to use the camera plugin.
-author: Flutter Team <flutter-dev@googlegroups.com>
 
 dependencies:
   camera:
@@ -16,6 +15,7 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
+  pedantic: ^1.8.0
 
 flutter:
   uses-material-design: true

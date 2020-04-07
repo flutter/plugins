@@ -8,7 +8,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+/// Denotes that an image is being picked.
 const String kTypeImage = 'image';
+
+/// Denotes that a video is being picked.
 const String kTypeVideo = 'video';
 
 /// Specifies the source where the picked image should come from.
@@ -20,6 +23,23 @@ enum ImageSource {
   gallery,
 }
 
+/// Which camera to use when picking images/videos while source is `ImageSource.camera`.
+///
+/// Not every device supports both of the positions.
+enum CameraDevice {
+  /// Use the rear camera.
+  ///
+  /// In most of the cases, it is the default configuration.
+  rear,
+
+  /// Use the front camera.
+  ///
+  /// Supported on all iPhones/iPads and some Android devices.
+  front,
+}
+
+/// Provides an easy way to pick an image/video from the image library,
+/// or to take a picture/video with the camera.
 class ImagePicker {
   static const MethodChannel _channel =
       MethodChannel('plugins.flutter.io/image_picker');
@@ -38,13 +58,19 @@ class ImagePicker {
   /// image types such as JPEG. If compression is not supported for the image that is picked,
   /// an warning message will be logged.
   ///
+  ///
+  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear].
+  ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   static Future<File> pickImage(
       {@required ImageSource source,
       double maxWidth,
       double maxHeight,
-      int imageQuality}) async {
+      int imageQuality,
+      CameraDevice preferredCameraDevice = CameraDevice.rear}) async {
     assert(source != null);
     assert(imageQuality == null || (imageQuality >= 0 && imageQuality <= 100));
 
@@ -62,7 +88,8 @@ class ImagePicker {
         'source': source.index,
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
-        'imageQuality': imageQuality
+        'imageQuality': imageQuality,
+        'cameraDevice': preferredCameraDevice.index
       },
     );
 
@@ -74,16 +101,21 @@ class ImagePicker {
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
+  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear].
+  ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  static Future<File> pickVideo({
-    @required ImageSource source,
-  }) async {
+  static Future<File> pickVideo(
+      {@required ImageSource source,
+      CameraDevice preferredCameraDevice = CameraDevice.rear}) async {
     assert(source != null);
     final String path = await _channel.invokeMethod<String>(
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
+        'cameraDevice': preferredCameraDevice.index
       },
     );
     return path == null ? null : File(path);
@@ -141,14 +173,17 @@ class ImagePicker {
 /// See also:
 /// * [ImagePicker.retrieveLostData] for more details on retrieving lost data.
 class LostDataResponse {
+  /// Creates an instance with the given [file], [exception], and [type]. Any of
+  /// the params may be null, but this is never considered to be empty.
   LostDataResponse({this.file, this.exception, this.type});
 
+  /// Initializes an instance with all member params set to null and considered
+  /// to be empty.
   LostDataResponse.empty()
       : file = null,
         exception = null,
-        type = null {
-    _empty = true;
-  }
+        type = null,
+        _empty = true;
 
   /// Whether it is an empty response.
   ///
@@ -176,4 +211,10 @@ class LostDataResponse {
 }
 
 /// The type of the retrieved data in a [LostDataResponse].
-enum RetrieveType { image, video }
+enum RetrieveType {
+  /// A static picture. See [ImagePicker.pickImage].
+  image,
+
+  /// A video. See [ImagePicker.pickVideo].
+  video
+}
