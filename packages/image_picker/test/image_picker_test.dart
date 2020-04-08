@@ -223,14 +223,26 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('pickVideo',
-                arguments: <String, dynamic>{'source': 0, 'maxDuration': null, 'cameraDevice': 0,}),
-            isMethodCall('pickVideo',
-                arguments: <String, dynamic>{'source': 0, 'maxDuration': 10, 'cameraDevice': 0,}),
-            isMethodCall('pickVideo',
-                arguments: <String, dynamic>{'source': 0, 'maxDuration': 60, 'cameraDevice': 0,}),
-            isMethodCall('pickVideo',
-                arguments: <String, dynamic>{'source': 0, 'maxDuration': 3600, 'cameraDevice': 0,}),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'maxDuration': null,
+              'cameraDevice': 0,
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'maxDuration': 10,
+              'cameraDevice': 0,
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'maxDuration': 60,
+              'cameraDevice': 0,
+            }),
+            isMethodCall('pickVideo', arguments: <String, dynamic>{
+              'source': 0,
+              'maxDuration': 3600,
+              'cameraDevice': 0,
+            }),
           ],
         );
       });
