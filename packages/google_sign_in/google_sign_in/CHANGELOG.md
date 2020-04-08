@@ -1,6 +1,10 @@
-## 4.1.0
+## 4.5.0
 
 * Add support for getting `serverAuthCode`
+
+## 4.4.1
+
+* Android: Move `GoogleSignInWrapper` to a separate class.
 
 ## 4.4.0
 
