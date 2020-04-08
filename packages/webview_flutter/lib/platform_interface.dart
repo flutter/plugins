@@ -97,14 +97,6 @@ enum WebResourceErrorType {
 }
 
 /// Error returned in `WebView.onWebResourceError` when a web resource loading error has occurred.
-///
-/// On Android, the error code will be a constant from
-/// [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient#summary).
-///
-/// On iOS, the error code will be a constant from a "code" for an
-/// `NSError` in Objective-C. The format will be `$domain: $code`. See
-/// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ErrorHandlingCocoa/ErrorObjectsDomains/ErrorObjectsDomains.html
-/// for more information on error handling on iOS.
 class WebResourceError {
   /// Creates a new [WebResourceError]
   ///
@@ -118,7 +110,7 @@ class WebResourceError {
   })  : assert(errorCode != null),
         assert(description != null);
 
-  /// Error code of the error.
+  /// Raw code of the error from the respective platform.
   ///
   /// On Android, the error code will be a constant from a
   /// [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient#summary) and
@@ -143,9 +135,9 @@ class WebResourceError {
   /// Description of the error that can be used to communicate the problem to the user.
   final String description;
 
-  /// The type of error this error can be categorized as.
+  /// The type this error can be categorized as.
   ///
-  /// This will never be null on Android, but can be null on iOS.
+  /// This will never be `null` on Android, but can be `null` on iOS.
   final WebResourceErrorType errorType;
 }
 
