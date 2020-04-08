@@ -66,12 +66,30 @@
   [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
 }
 
++ (id)errorCodeToString:(NSUInteger)code {
+  switch (code) {
+    case WKErrorUnknown:
+      return @"unknown";
+    case WKErrorWebContentProcessTerminated:
+      return @"webContentProcessTerminated";
+    case WKErrorWebViewInvalidated:
+      return @"webViewInvalidated";
+    case WKErrorJavaScriptExceptionOccurred:
+      return @"javaScriptExceptionOccurred";
+    case WKErrorJavaScriptResultTypeIsUnsupported:
+      return @"javaScriptResultTypeIsUnsupported";
+  }
+
+  return [NSNull null];
+}
+
 - (void)onReceivedError:(NSError *)error {
   [_methodChannel invokeMethod:@"onReceivedError"
                      arguments:@{
                        @"errorCode" : @(error.code),
                        @"domain" : error.domain,
                        @"description" : error.description,
+                       @"errorType" : [FLTWKNavigationDelegate errorCodeToString:error.code],
                      }];
 }
 

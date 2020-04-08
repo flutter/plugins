@@ -33,7 +33,7 @@ abstract class WebViewPlatformCallbacksHandler {
   void onWebResourceError(WebResourceError error);
 }
 
-/// Error types used by [WebResourceError] on Android.
+/// Error types used by [WebResourceError].
 enum WebResourceErrorType {
   /// User authentication failed on server.
   authentication,
@@ -82,6 +82,18 @@ enum WebResourceErrorType {
 
   /// Unsupported URI scheme.
   unsupportedScheme,
+
+  /// The web content process was terminated.
+  webContentProcessTerminated,
+
+  /// The web view was invalidated.
+  webViewInvalidated,
+
+  /// A JavaScript exception occurred.
+  javaScriptExceptionOccurred,
+
+  /// The result of JavaScript execution could not be returned.
+  javaScriptResultTypeIsUnsupported,
 }
 
 /// On Android, the error code will be a constant from
@@ -113,7 +125,8 @@ class WebResourceError {
   /// On iOS, the error code will be a constant from `NSError.code` in
   /// Objective-C. See
   /// https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ErrorHandlingCocoa/ErrorObjectsDomains/ErrorObjectsDomains.html
-  /// for more information on error handling on iOS.
+  /// for more information on error handling on iOS. Some possible error codes
+  /// can be found at https://developer.apple.com/documentation/webkit/wkerrorcode?language=objc.
   final int errorCode;
 
   /// The domain of where to find the error code.
@@ -128,9 +141,9 @@ class WebResourceError {
   /// Describes the error.
   final String description;
 
-  /// The type of error when using an Android device.
+  /// The type of error.
   ///
-  /// This is only available on Android and will be null on iOS.
+  /// This is will never be null on Android, but can be null on iOS.
   final WebResourceErrorType errorType;
 }
 
