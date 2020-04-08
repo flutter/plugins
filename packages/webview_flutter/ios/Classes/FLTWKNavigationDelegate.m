@@ -83,8 +83,8 @@
   return [NSNull null];
 }
 
-- (void)onReceivedError:(NSError *)error {
-  [_methodChannel invokeMethod:@"onReceivedError"
+- (void)onWebResourceError:(NSError *)error {
+  [_methodChannel invokeMethod:@"onWebResourceError"
                      arguments:@{
                        @"errorCode" : @(error.code),
                        @"domain" : error.domain,
@@ -96,12 +96,12 @@
 - (void)webView:(WKWebView *)webView
     didFailNavigation:(WKNavigation *)navigation
             withError:(NSError *)error {
-  [self onReceivedError:error];
+  [self onWebResourceError:error];
 }
 
 - (void)webView:(WKWebView *)webView
     didFailProvisionalNavigation:(WKNavigation *)navigation
                        withError:(NSError *)error {
-  [self onReceivedError:error];
+  [self onWebResourceError:error];
 }
 @end

@@ -43,13 +43,13 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       case 'onPageStarted':
         _platformCallbacksHandler.onPageStarted(call.arguments['url']);
         return null;
-      case 'onReceivedError':
+      case 'onWebResourceError':
         _platformCallbacksHandler.onWebResourceError(
           WebResourceError(
             errorCode: call.arguments['errorCode'],
             description: call.arguments['description'],
             domain: call.arguments['domain'],
-            errorType: call.arguments['domain'] == null
+            errorType: call.arguments['errorType'] == null
                 ? null
                 : WebResourceErrorType.values.firstWhere(
                     (WebResourceErrorType type) {

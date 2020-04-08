@@ -124,12 +124,12 @@ class FlutterWebViewClient {
     methodChannel.invokeMethod("onPageFinished", args);
   }
 
-  private void onReceivedError(final int errorCode, final String description) {
+  private void onWebResourceError(final int errorCode, final String description) {
     final Map<String, Object> args = new HashMap<>();
     args.put("errorCode", errorCode);
     args.put("description", description);
     args.put("errorType", FlutterWebViewClient.errorCodeToString(errorCode));
-    methodChannel.invokeMethod("onReceivedError", args);
+    methodChannel.invokeMethod("onWebResourceError", args);
   }
 
   private void notifyOnNavigationRequest(
@@ -180,14 +180,14 @@ class FlutterWebViewClient {
       @Override
       public void onReceivedError(
           WebView view, WebResourceRequest request, WebResourceError error) {
-        FlutterWebViewClient.this.onReceivedError(
+        FlutterWebViewClient.this.onWebResourceError(
             error.getErrorCode(), error.getDescription().toString());
       }
 
       @Override
       public void onReceivedError(
           WebView view, int errorCode, String description, String failingUrl) {
-        FlutterWebViewClient.this.onReceivedError(errorCode, description);
+        FlutterWebViewClient.this.onWebResourceError(errorCode, description);
       }
 
       @Override
@@ -227,14 +227,14 @@ class FlutterWebViewClient {
       @Override
       public void onReceivedError(
           WebView view, WebResourceRequest request, WebResourceErrorCompat error) {
-        FlutterWebViewClient.this.onReceivedError(
+        FlutterWebViewClient.this.onWebResourceError(
             error.getErrorCode(), error.getDescription().toString());
       }
 
       @Override
       public void onReceivedError(
           WebView view, int errorCode, String description, String failingUrl) {
-        FlutterWebViewClient.this.onReceivedError(errorCode, description);
+        FlutterWebViewClient.this.onWebResourceError(errorCode, description);
       }
 
       @Override
