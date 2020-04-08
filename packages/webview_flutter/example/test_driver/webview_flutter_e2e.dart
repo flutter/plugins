@@ -621,7 +621,7 @@ void main() {
         ),
       );
 
-      expect(errorCompleter, doesNotComplete);
+      expect(errorCompleter.future, doesNotComplete);
     });
 
     testWidgets('can block requests', (WidgetTester tester) async {
