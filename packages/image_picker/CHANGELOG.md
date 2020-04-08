@@ -1,6 +1,18 @@
-## 0.6.4
+## 0.6.5
 
 * Set maximum duration for video recording.
+
+## 0.6.4
+
+* Add a new parameter to select preferred camera device.
+
+## 0.6.3+4
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.6.3+3
+
+* Android: Fix a crash when `externalFilesDirectory` does not exist.
 
 ## 0.6.3+2
 

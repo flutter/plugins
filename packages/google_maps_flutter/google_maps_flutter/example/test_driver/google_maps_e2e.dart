@@ -4,12 +4,13 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:e2e/e2e.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:e2e/e2e.dart';
 
 import 'google_map_inspector.dart';
 
@@ -683,6 +684,41 @@ void main() {
     expect(topLeft, northWest);
   });
 
+  testWidgets('testGetZoomLevel', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapController> controllerCompleter =
+        Completer<GoogleMapController>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          controllerCompleter.complete(controller);
+        },
+      ),
+    ));
+
+    final GoogleMapController controller = await controllerCompleter.future;
+
+    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
+    // initialization. https://github.com/flutter/flutter/issues/24806
+    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
+    // still being investigated.
+    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
+    // https://github.com/flutter/flutter/issues/27550
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    double zoom = await controller.getZoomLevel();
+    expect(zoom, _kInitialZoomLevel);
+
+    await controller.moveCamera(CameraUpdate.zoomTo(7));
+    await tester.pumpAndSettle();
+    zoom = await controller.getZoomLevel();
+    expect(zoom, equals(7));
+  });
+
   testWidgets('testScreenCoordinate', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapController> controllerCompleter =
@@ -787,5 +823,46 @@ void main() {
     await controller.hideMarkerInfoWindow(marker.markerId);
     iwVisibleStatus = await controller.isMarkerInfoWindowShown(marker.markerId);
     expect(iwVisibleStatus, false);
+  });
+
+  testWidgets("fromAssetImage", (WidgetTester tester) async {
+    double pixelRatio = 2;
+    final ImageConfiguration imageConfiguration =
+        ImageConfiguration(devicePixelRatio: pixelRatio);
+    final BitmapDescriptor mip = await BitmapDescriptor.fromAssetImage(
+        imageConfiguration, 'red_square.png');
+    final BitmapDescriptor scaled = await BitmapDescriptor.fromAssetImage(
+        imageConfiguration, 'red_square.png',
+        mipmaps: false);
+    // ignore: invalid_use_of_visible_for_testing_member
+    expect(mip.toJson()[2], 1);
+    // ignore: invalid_use_of_visible_for_testing_member
+    expect(scaled.toJson()[2], 2);
+  });
+
+  testWidgets('testTakeSnapshot', (WidgetTester tester) async {
+    Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: _kInitialCameraPosition,
+          onMapCreated: (GoogleMapController controller) {
+            final GoogleMapInspector inspector =
+                // ignore: invalid_use_of_visible_for_testing_member
+                GoogleMapInspector(controller.channel);
+            inspectorCompleter.complete(inspector);
+          },
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    final Uint8List bytes = await inspector.takeSnapshot();
+    expect(bytes?.isNotEmpty, true);
   });
 }

@@ -1,3 +1,12 @@
+## 0.3.1+2
+
+* Fix potential casting crash on Android v1 embedding when registering life cycle callbacks.
+* Remove hard-coded legacy xcode build setting.
+
+## 0.3.1+1
+
+* Add `pedantic` to dev_dependency.
+
 ## 0.3.1
 
 * Android: Fix a bug where the `BillingClient` is disconnected when app goes to the background.

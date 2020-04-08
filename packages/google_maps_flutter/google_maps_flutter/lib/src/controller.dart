@@ -278,4 +278,16 @@ class GoogleMapController {
     return await channel.invokeMethod<bool>('markers#isInfoWindowShown',
         <String, String>{'markerId': markerId.value});
   }
+
+  /// Returns the current zoom level of the map
+  Future<double> getZoomLevel() async {
+    final double zoomLevel =
+        await channel.invokeMethod<double>('map#getZoomLevel');
+    return zoomLevel;
+  }
+
+  /// Returns the image bytes of the map
+  Future<Uint8List> takeSnapshot() async {
+    return await channel.invokeMethod<Uint8List>('map#takeSnapshot');
+  }
 }

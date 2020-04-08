@@ -1,3 +1,15 @@
+## 0.3.19+10
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.3.19+9
+
+* Remove example app's iOS workspace settings.
+
+## 0.3.19+8
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.3.19+7
 
 * Remove the Flutter SDK constraint upper bound.
