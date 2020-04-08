@@ -1,6 +1,6 @@
 ## 0.3.20
 
-* Added support for receiving web resource loading errors. See `Webview.onWebResourceError`.
+* Added support for receiving web resource loading errors. See `WebView.onWebResourceError`.
 
 ## 0.3.19+10
 
