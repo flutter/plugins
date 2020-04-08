@@ -53,11 +53,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
                 ? null
                 : WebResourceErrorType.values.firstWhere(
                     (WebResourceErrorType type) {
-                      final String enumName = type.toString().replaceFirst(
-                            '$WebResourceErrorType.',
-                            '',
-                          );
-                      return enumName == call.arguments['errorType'];
+                      return type.toString() ==
+                          '$WebResourceErrorType.${call.arguments['errorType']}';
                     },
                   ),
           ),

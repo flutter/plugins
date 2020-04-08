@@ -33,7 +33,7 @@ abstract class WebViewPlatformCallbacksHandler {
   void onWebResourceError(WebResourceError error);
 }
 
-/// Error types used by [WebResourceError].
+/// Possible error type categorizations used by [WebResourceError].
 enum WebResourceErrorType {
   /// User authentication failed on server.
   authentication,
@@ -96,6 +96,8 @@ enum WebResourceErrorType {
   javaScriptResultTypeIsUnsupported,
 }
 
+/// Error returned in `WebView.onWebResourceError` when a web resource loading error has occurred.
+///
 /// On Android, the error code will be a constant from
 /// [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient#summary).
 ///
@@ -138,12 +140,12 @@ class WebResourceError {
   /// for more information on error handling on iOS.
   final String domain;
 
-  /// Describes the error.
+  /// Description of the error that can be used to communicate the problem to the user.
   final String description;
 
-  /// The type of error.
+  /// The type of error this error can be categorized as.
   ///
-  /// This is will never be null on Android, but can be null on iOS.
+  /// This will never be null on Android, but can be null on iOS.
   final WebResourceErrorType errorType;
 }
 

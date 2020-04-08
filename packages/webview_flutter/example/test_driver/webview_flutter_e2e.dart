@@ -578,7 +578,7 @@ void main() {
       expect(currentUrl, 'https://www.google.com/');
     });
 
-    testWidgets('onReceivedError', (WidgetTester tester) async {
+    testWidgets('onWebResourceError', (WidgetTester tester) async {
       final Completer<WebResourceError> errorCompleter =
           Completer<WebResourceError>();
 
@@ -602,7 +602,7 @@ void main() {
       if (Platform.isAndroid) expect(error.errorType, isNotNull);
     });
 
-    testWidgets('onReceivedError is not called with valid url',
+    testWidgets('onWebResourceError is not called with valid url',
         (WidgetTester tester) async {
       final Completer<WebResourceError> errorCompleter =
           Completer<WebResourceError>();
