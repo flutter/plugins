@@ -1,4 +1,4 @@
-# connectivity_web
+# experimental_connectivity_web
 
 A web implementation of [connectivity](https://pub.dev/connectivity/connectivity). Currently this package uses an experimental API, so not all browsers that Flutter web supports are supported.
 

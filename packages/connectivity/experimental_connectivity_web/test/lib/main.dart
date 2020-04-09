@@ -1,7 +1,7 @@
 import 'package:e2e/e2e.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
-import 'package:connectivity_web/connectivity_web.dart';
+import 'package:experimental_connectivity_web/experimental_connectivity_web.dart';
 
 import 'src/connectivity_mocks.dart';
 
