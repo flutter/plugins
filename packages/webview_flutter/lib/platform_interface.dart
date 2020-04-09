@@ -100,7 +100,7 @@ enum WebResourceErrorType {
 class WebResourceError {
   /// Creates a new [WebResourceError]
   ///
-  /// A user should not need to use this, but can receive on in
+  /// A user should not need to instantiate this class, but will receive one in
   /// [WebResourceErrorCallback].
   WebResourceError({
     @required this.errorCode,
