@@ -1,20 +1,19 @@
 # connectivity_web
 
-The web implementation of [connectivity](https://pub.dev/connectivity/connectivity)
+A web implementation of [connectivity](https://pub.dev/connectivity/connectivity). Currently this package uses an experimental API, so not all browsers that Flutter web supports are supported.
 
 ## Usage
 
 ### Import the package
 
-This package is the endorsed implementation of `connectivity` for the web platform since version `0.4.9`, so it gets automatically added to your dependencies by depending on `connectivity: ^0.4.9`.
-
-No modifications to your pubspec.yaml should be required in a recent enough version of Flutter (`>=1.12.13+hotfix.4`):
+This package is a non-endorsed implementation of `connectivity` for the web platform, so you need to modify your `pubspec.yaml` to use it:
 
 ```yaml
 ...
 dependencies:
   ...
   connectivity: ^0.4.9
+  experimental_connectivity_web: ^0.1.0
   ...
 ...
 ```
@@ -35,7 +34,7 @@ Other than the approximate "downlink" speed, and due to security and privacy con
 
 ### `null` connectivity results
 
-Because of the limitations above, unsupported browsers will return `null` connectivity results, both on the `checkConnectivity` call, and the `onConnectivityChanged` stream.
+Because of the limitations above, unsupported browsers will return `null` connectivity results, both on the `checkConnectivity` call, and the `onConnectivityChanged` stream. You should adapt your app code to check for nulls being returned from calls to the plugin.
 
 ## Contributions and Testing
 
@@ -52,7 +51,7 @@ Contributions to this package are welcome. Read the [Contributing to Flutter Plu
 
 ## Issues and feedback
 
-Please file [issues](https://github.com/flutter/flutter/issues/new)
+Please file an [issue](https://github.com/ditman/plugins/issues/new)
 to send feedback or report a bug.
 
 **Thank you!**
