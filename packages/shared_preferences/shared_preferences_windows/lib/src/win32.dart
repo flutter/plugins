@@ -25,6 +25,11 @@ const kMaxPath = 260;
 //   DWORD  dwFlags,
 //   LPWSTR pszPath
 // );
+//
+// This is a deprecated API. It is being used in place of the recommended
+// API SHGetKnownFolderPath, since it has been challenging to retrieve the REFKNOWNFOLDERID
+// parameter with ffi calls. It is safe to use this API since (per Microsoft's documentation)
+// as of Windows Vista, this function is merely a wrapper for SHGetKnownFolderPath.
 typedef shGetFolderPathNative = Int32 Function(Int64 hwnd, Int32 csidl,
     Int64 hToken, Int32 dwFlags, Pointer<Uint16> pszPath);
 typedef shGetFolderPathDart = int Function(

@@ -27,7 +27,7 @@ class Win32Wrapper {
 
 /// The Windows implementation of [SharedPreferencesStorePlatform].
 ///
-/// This class implements the `package:shared_preferences` functionality for the web.
+/// This class implements the `package:shared_preferences` functionality for Windowds.
 class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   /// The name of the parent directory for [fileName].
   final String fileDirectory = 'Flutter';
@@ -47,8 +47,9 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
     if (_localDataFilePath != null) {
       return _localDataFilePath;
     }
+    String appPath = win32Wrapper.getModuleFileName();
+    String appName = path.basenameWithoutExtension(appPath);
     String localDataPath = win32Wrapper.getLocalDataPath();
-    String appName = _getAppName();
     // Append app-specific identifiers.
     _localDataFilePath = path.join(localDataPath, fileDirectory, '$appName.json');
     return _localDataFilePath;
@@ -69,12 +70,6 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
           : json.decode(stringMap) as Map<String, Object>;
     }
     return _cachedPreferences;
-  }
-
-  String _getAppName() {
-    String appPath = win32Wrapper.getModuleFileName();
-    appPath = appPath.replaceAll(path.extension(appPath), '');
-    return path.basename(appPath);
   }
 
   /// Writes the cached preferences to disk. Returns [true] if the operation
