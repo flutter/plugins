@@ -5,8 +5,10 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
+import 'package:platform/platform.dart';
 
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
+import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
@@ -18,8 +20,12 @@ class SharedPreferences {
   static const String _prefix = 'flutter.';
   static Completer<SharedPreferences> _completer;
 
-  static SharedPreferencesStorePlatform get _store =>
-      SharedPreferencesStorePlatform.instance;
+  static SharedPreferencesStorePlatform get _store {
+    if (LocalPlatform().isWindows) {
+      return SharedPreferencesWindows();
+    }
+    return SharedPreferencesStorePlatform.instance;
+  }
 
   /// Loads and parses the [SharedPreferences] for this app from disk.
   ///

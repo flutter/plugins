@@ -1,3 +1,7 @@
+## 0.5.7
+
+* Adds support for Windows.
+
 ## 0.5.6+3
 
 * Fix deprecated API usage warning.
