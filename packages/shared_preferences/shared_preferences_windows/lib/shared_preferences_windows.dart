@@ -7,7 +7,7 @@ import 'dart:convert' show json;
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 import 'src/win32.dart' as win32;
@@ -47,10 +47,10 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
     if (_localDataFilePath != null) {
       return _localDataFilePath;
     }
-    _localDataFilePath = win32Wrapper.getLocalDataPath();
+    String localDataPath = win32Wrapper.getLocalDataPath();
     String appName = _getAppName();
     // Append app-specific identifiers.
-    _localDataFilePath += '\\$fileDirectory\\$appName.ini';
+    _localDataFilePath = path.join(localDataPath, fileDirectory, '$appName.json');
     return _localDataFilePath;
   }
 
@@ -73,8 +73,8 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
 
   String _getAppName() {
     String appPath = win32Wrapper.getModuleFileName();
-    appPath = appPath.replaceAll(extension(appPath), '');
-    return basename(appPath);
+    appPath = appPath.replaceAll(path.extension(appPath), '');
+    return path.basename(appPath);
   }
 
   /// Writes the cached preferences to disk. Returns [true] if the operation
