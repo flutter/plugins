@@ -91,6 +91,16 @@ await localAuth.authenticateWithBiometrics(
 
 ```
 
+If needed, you can manually stop authentication for android:
+
+```dart
+
+void _cancelAuthentication() {
+    localAuth.stopAuthentication();
+}
+
+```
+
 ### Exceptions
 
 There are 6 types of exceptions: PasscodeNotSet, NotEnrolled, NotAvailable, OtherOperatingSystem, LockedOut and PermanentlyLockedOut.

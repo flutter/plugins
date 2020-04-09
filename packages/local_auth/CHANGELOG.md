@@ -1,3 +1,44 @@
+## 0.6.1+4
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.6.1+3
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.6.1+2
+
+* Support v2 embedding.
+
+## 0.6.1+1
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.6.1
+
+* Added ability to stop authentication (For Android).
+
+## 0.6.0+3
+
+* Remove AndroidX warnings.
+
+## 0.6.0+2
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
+## 0.6.0+1
+
+* Update the `intl` constraint to ">=0.15.1 <0.17.0" (0.16.0 isn't really a breaking change).
+
+## 0.6.0
+
+* Define a new parameter for signaling that the transaction is sensitive.
+* Up the biometric version to beta01.
+* Handle no device credential error.
+
 ## 0.5.3
 
 * Add face id detection as well by not relying on FingerprintCompat.

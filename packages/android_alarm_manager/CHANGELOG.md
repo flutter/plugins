@@ -1,3 +1,58 @@
+## 0.4.5+8
+
+* Remove `MainActivity` references in android example app and tests.
+
+## 0.4.5+7
+
+* Update minimum Flutter version to 1.12.13+hotfix.5
+* Clean up various Android workarounds no longer needed after framework v1.12.
+* Complete v2 embedding support.
+
+## 0.4.5+6
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.4.5+5
+
+* Added an Espresso test.
+
+## 0.4.5+4
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.4.5+3
+
+* Fixed issue where callback lookup would fail while running in the background.
+
+## 0.4.5+2
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.5+1
+
+* Loosen Flutter version restriction to 1.9.1. **NOTE: plugin registration
+  for the background isolate will not work correctly for applications using the
+  V2 Flutter Android embedding for Flutter versions lower than 1.12.**
+
+## 0.4.5
+
+* Add support for Flutter Android embedding V2
+
+## 0.4.4+3
+
+* Add unit tests and DartDocs.
+
+## 0.4.4+2
+
+* Remove AndroidX warning.
+
+## 0.4.4+1
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
 ## 0.4.4
 
 * Add `id` to `callback` if it is of type `Function(int)`
