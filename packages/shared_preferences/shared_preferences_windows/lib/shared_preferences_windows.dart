@@ -41,6 +41,7 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   Win32Wrapper win32Wrapper = Win32Wrapper();
 
   String _localDataFilePath;
+
   /// The path to the file in disk were the preferences are stored.
   @visibleForTesting
   String get getLocalDataFilePath {
@@ -51,11 +52,13 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
     String appName = path.basenameWithoutExtension(appPath);
     String localDataPath = win32Wrapper.getLocalDataPath();
     // Append app-specific identifiers.
-    _localDataFilePath = path.join(localDataPath, fileDirectory, '$appName.json');
+    _localDataFilePath =
+        path.join(localDataPath, fileDirectory, '$appName.json');
     return _localDataFilePath;
   }
 
   Map<String, Object> _cachedPreferences;
+
   /// The in-memory representation of the map saved to a file in disk;
   @visibleForTesting
   Map<String, Object> get getCachedPreferences {
