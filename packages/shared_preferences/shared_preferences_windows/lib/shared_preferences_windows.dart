@@ -63,14 +63,15 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   @visibleForTesting
   Map<String, Object> get getCachedPreferences {
     if (_cachedPreferences == null) {
+      _cachedPreferences = {};
       File localDataFile = fs.file(getLocalDataFilePath);
       if (!localDataFile.existsSync()) {
-        localDataFile.createSync(recursive: true);
+        String stringMap = localDataFile.readAsStringSync();
+        if (stringMap.isNotEmpty) {
+          _cachedPreferences = json.decode(stringMap) as Map<String, Object>;
+        }
+
       }
-      String stringMap = localDataFile.readAsStringSync();
-      _cachedPreferences = stringMap.isEmpty
-          ? {}
-          : json.decode(stringMap) as Map<String, Object>;
     }
     return _cachedPreferences;
   }
