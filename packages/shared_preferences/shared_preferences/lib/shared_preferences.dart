@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
 
@@ -21,7 +22,9 @@ class SharedPreferences {
   static Completer<SharedPreferences> _completer;
 
   static SharedPreferencesStorePlatform get _store {
-    if (LocalPlatform().isWindows) {
+    // This is a workaround until https://github.com/flutter/flutter/issues/52267
+    // is fixed. There is no way currently to register a Dart-only plugin.
+    if (!kIsWeb && LocalPlatform().isWindows) {
       return SharedPreferencesWindows();
     }
     return SharedPreferencesStorePlatform.instance;
