@@ -178,17 +178,18 @@ task:
   windows_container:
     image: cirrusci/windowsservercore:2019
   setup_script:
-    - flutter config --enable-windows-desktop
+    - git clone https://github.com/flutter/flutter.git
+    - ./flutter/bin/flutter config --enable-windows-desktop
   upgrade_script:
-    - flutter channel master
-    - flutter upgrade
+    - ./flutter/bin/flutter channel master
+    - ./flutter/bin/flutter upgrade
     - git fetch origin master
   # activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: build_app
       script:
-        - flutter channel master
-        - flutter create testing
+        - ./flutter/bin/flutter channel master
+        - ./flutter/bin/flutter create testing
     # - name: build_all_plugins_app
     #   script:
     #     - flutter channel master
