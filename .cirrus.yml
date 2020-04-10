@@ -189,6 +189,7 @@ task:
     - name: build_app
       script:
         - ./flutter/bin/flutter channel master
+        - ./flutter/bin/flutter doctor -v
         - ./flutter/bin/flutter create testing
         - cd testing
         - ../flutter/bin/flutter build windows
