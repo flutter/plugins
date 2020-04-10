@@ -178,7 +178,6 @@ task:
   windows_container:
     image: cirrusci/windowsservercore:2019
   setup_script:
-    - pod repo update
     - flutter config --enable-windows-desktop
   upgrade_script:
     - flutter channel master
