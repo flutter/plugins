@@ -190,10 +190,10 @@ task:
       script:
         - flutter channel master
         - flutter create testing
-    - name: build_all_plugins_app
-      script:
-        - flutter channel master
-        - ./script/build_all_plugins_app.sh macos
+    # - name: build_all_plugins_app
+    #   script:
+    #     - flutter channel master
+    #     - ./script/build_all_plugins_app.sh macos
     # - name: lint_darwin_plugins
     #   script: ./script/lint_darwin_plugins.sh
     # - name: build-apps+drive-examples
