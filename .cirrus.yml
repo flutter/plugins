@@ -190,6 +190,9 @@ task:
       script:
         - ./flutter/bin/flutter channel master
         - ./flutter/bin/flutter create testing
+        - cd testing
+        - ../flutter/bin/flutter build windows
+
     # - name: build_all_plugins_app
     #   script:
     #     - flutter channel master
