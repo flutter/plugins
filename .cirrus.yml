@@ -171,3 +171,35 @@ task:
         - flutter channel master
         - ./script/incremental_build.sh build-examples --macos --no-ipa
         - ./script/incremental_build.sh drive-examples --macos
+task:
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
+  windows_container:
+    image: cirrusci/windowsservercore:2019
+  setup_script:
+    - pod repo update
+    - flutter config --enable-windows-desktop
+  upgrade_script:
+    - flutter channel master
+    - flutter upgrade
+    - git fetch origin master
+  # activate_script: pub global activate flutter_plugin_tools
+  matrix:
+    - name: build_app
+      script:
+        - flutter channel master
+        - flutter create testing
+    - name: build_all_plugins_app
+      script:
+        - flutter channel master
+        - ./script/build_all_plugins_app.sh macos
+    # - name: lint_darwin_plugins
+    #   script: ./script/lint_darwin_plugins.sh
+    # - name: build-apps+drive-examples
+    #   env:
+    #     PATH: $PATH:/usr/local/bin
+    #   build_script:
+    #     - flutter channel master
+    #     - ./script/incremental_build.sh build-examples --macos --no-ipa
+    #     - ./script/incremental_build.sh drive-examples --macos
