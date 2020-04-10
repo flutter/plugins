@@ -1,6 +1,10 @@
-## 0.3.19+11
+## 0.3.21
 
-* Add progress tracking support.
+* Added support for progress tracking.
+
+## 0.3.20
+
+* Added support for receiving web resource loading errors. See `WebView.onWebResourceError`.
 
 ## 0.3.19+10
 
