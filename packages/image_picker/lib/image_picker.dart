@@ -101,6 +101,9 @@ class ImagePicker {
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
+  /// The [maxDuration] argument specifies the maximum duration of the captured video. If no [maxDuration] is specified,
+  /// the maximum duration will be infinite.
+  ///
   /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
   /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
   /// Defaults to [CameraDevice.rear].
@@ -109,12 +112,14 @@ class ImagePicker {
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   static Future<File> pickVideo(
       {@required ImageSource source,
-      CameraDevice preferredCameraDevice = CameraDevice.rear}) async {
+      CameraDevice preferredCameraDevice = CameraDevice.rear,
+      Duration maxDuration}) async {
     assert(source != null);
     final String path = await _channel.invokeMethod<String>(
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
+        'maxDuration': maxDuration?.inSeconds,
         'cameraDevice': preferredCameraDevice.index
       },
     );
