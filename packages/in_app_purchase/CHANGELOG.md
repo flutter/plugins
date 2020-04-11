@@ -1,3 +1,9 @@
+## 0.3.2
+
+* iOS: Fix only transactions with SKPaymentTransactionStatePurchased and SKPaymentTransactionStateFailed can be 
+          finished.
+* iOS: Only one pending transaction of a given product is allowed.          
+
 ## 0.3.1
 
 * Android: Fix a bug where the `BillingClient` is disconnected when app goes to the background.
