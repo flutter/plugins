@@ -57,13 +57,13 @@ void main() {
       package: 'io.flutter.plugins.androidintentexample',
       componentName: 'io.flutter.embedding.android.FlutterActivity',
     );
-    await expectLater(() async => await intent.canResolveActivity(), isFalse);
+    await expectLater(await intent.canResolveActivity(), isTrue);
   }, skip: !Platform.isAndroid);
 
   testWidgets('#canResolveActivity returns false when no Activity is found',
       (WidgetTester tester) async {
     const AndroidIntent intent =
         AndroidIntent(action: 'LAUNCH', package: 'foobar');
-    await expectLater(() async => await intent.canResolveActivity(), isFalse);
+    await expectLater(await intent.canResolveActivity(), isFalse);
   }, skip: !Platform.isAndroid);
 }
