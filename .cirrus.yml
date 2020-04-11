@@ -176,7 +176,8 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   windows_container:
-    image: cirrusci/windowsservercore:2019
+    image: cirrusci/windowsservercore:cmake
+    os_version: 2019
   setup_script:
     - git clone https://github.com/flutter/flutter.git
     - ./flutter/bin/flutter config --enable-windows-desktop
