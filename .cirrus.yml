@@ -176,9 +176,11 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   windows_container:
-    image: cirrusci/windowsservercore:cmake
+    image: cirrusci/windowsservercore:2019
     os_version: 2019
   setup_script:
+    - choco install -y visualstudio2019community
+    - choco install -y visualstudio2019-workload-nativedesktop
     - git clone https://github.com/flutter/flutter.git
     - ./flutter/bin/flutter config --enable-windows-desktop
   upgrade_script:
