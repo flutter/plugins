@@ -5,11 +5,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Forms and launches intents. */
 public final class IntentSender {
@@ -68,7 +72,8 @@ public final class IntentSender {
    * <p>This currently only supports resolving activities.
    *
    * @param intent Fully built intent.
-   * @see #buildIntent(String, Integer, String, Uri, Bundle, String, ComponentName, String)
+   * @see #buildIntent(String, Integer, String, Uri, Bundle, String, ComponentName, List, Boolean,
+   *     String)
    * @return Whether the package manager found {@link android.content.pm.ResolveInfo} using its
    *     {@link PackageManager#resolveActivity(Intent, int)} method.
    */
@@ -106,6 +111,9 @@ public final class IntentSender {
    * @param packageName forwarded to {@link Intent#setPackage(String)} if non-null. This is forced
    *     to null if it can't be resolved.
    * @param componentName forwarded to {@link Intent#setComponent(ComponentName)} if non-null.
+   * @param ignoredPackages list of package names that should not by displayed in the chooser and
+   *     should not be used to resolve this intent.
+   * @param showChooser forces to show the default selection dialog.
    * @param type forwarded to {@link Intent#setType(String)} if non-null and 'data' parameter is
    *     null. If both 'data' and 'type' is non-null they're forwarded to {@link
    *     Intent#setDataAndType(Uri, String)}
@@ -119,11 +127,14 @@ public final class IntentSender {
       @Nullable Bundle arguments,
       @Nullable String packageName,
       @Nullable ComponentName componentName,
+      @Nullable List<String> ignoredPackages,
+      @Nullable Boolean showChooser,
       @Nullable String type) {
     if (applicationContext == null) {
       Log.wtf(TAG, "Trying to build an intent before the applicationContext was initialized.");
       return null;
     }
+    showChooser = showChooser != null && showChooser;
 
     Intent intent = new Intent();
 
@@ -156,6 +167,45 @@ public final class IntentSender {
       if (intent.resolveActivity(applicationContext.getPackageManager()) == null) {
         Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
         intent.setPackage(null);
+      }
+    }
+    Boolean needIgnore = ignoredPackages != null && ignoredPackages.size() > 0;
+    if (needIgnore || showChooser) {
+      PackageManager packageManager;
+      if (activity != null) {
+        packageManager = activity.getPackageManager();
+      } else {
+        packageManager = applicationContext.getPackageManager();
+      }
+      List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+      ArrayList<Intent> targetIntents = new ArrayList<Intent>();
+
+      if (needIgnore) {
+        for (ResolveInfo currentInfo : activities) {
+          if (ignoredPackages.indexOf(currentInfo.activityInfo.packageName) == -1) {
+            Intent targetIntent = new Intent(intent);
+            targetIntent.setPackage(currentInfo.activityInfo.packageName);
+            targetIntents.add(targetIntent);
+          }
+        }
+      }
+
+      if (!showChooser) {
+        String packageToLaunch;
+        try {
+          if (ignoredPackages != null) {
+            packageToLaunch = targetIntents.get(0).getPackage();
+          } else {
+            packageToLaunch = activities.get(0).activityInfo.packageName;
+          }
+          intent.setPackage(packageToLaunch);
+          Log.v(TAG, "Resolve this intent with package: " + packageToLaunch);
+        } catch (IndexOutOfBoundsException exception) {
+          Log.v(TAG, "Not found packages to resolve this intent: " + exception);
+        }
+      } else {
+        intent = Intent.createChooser(targetIntents.remove(0), "");
+        intent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetIntents.toArray(new Parcelable[] {}));
       }
     }
 

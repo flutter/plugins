@@ -27,6 +27,10 @@ class AndroidIntent {
   /// [package] refers to the package parameter of the intent, can be null.
   /// [componentName] refers to the component name of the intent, can be null.
   /// If not null, then [package] but also be provided.
+  /// [ignoredPackages] is the list of package names that should not by displayed in the selection dialog and
+  /// should not be used to resolve this intent.
+  /// [showChooser] forces to show the default selection dialog to allow the user to select an application from the list of available ones. If false, this intent will be resolved using the most appropriate
+  /// option from the existing ones (a default app, if set).
   /// [type] refers to the type of the intent, can be null.
   const AndroidIntent({
     this.action,
@@ -36,10 +40,14 @@ class AndroidIntent {
     this.arguments,
     this.package,
     this.componentName,
+    this.ignoredPackages,
+    this.showChooser,
     Platform platform,
     this.type,
   })  : assert(action != null || componentName != null,
             'action or component (or both) must be specified'),
+        assert(package == null || !(showChooser != null && showChooser),
+            'either package can be specified or showChooser can be true'),
         _channel = const MethodChannel(_kChannelName),
         _platform = platform ?? const LocalPlatform();
 
@@ -56,9 +64,13 @@ class AndroidIntent {
     this.arguments,
     this.package,
     this.componentName,
+    this.ignoredPackages,
+    this.showChooser,
     this.type,
   })  : assert(action != null || componentName != null,
             'action or component (or both) must be specified'),
+        assert(package == null || !(showChooser != null && showChooser),
+            'either package can be specified or showChooser can be true'),
         _channel = channel,
         _platform = platform;
 
@@ -100,6 +112,12 @@ class AndroidIntent {
   ///
   /// See https://developer.android.com/reference/android/content/Intent.html#setComponent(android.content.ComponentName).
   final String componentName;
+
+  /// List of package names that will be excluded from the list of applications to resolve the intent.
+  final List<String> ignoredPackages;
+
+  /// Shows the default selection dialog with applications that can resolve the intent (except of applications specified in [ignoredPackages]).
+  final bool showChooser;
   final MethodChannel _channel;
   final Platform _platform;
 
@@ -164,6 +182,9 @@ class AndroidIntent {
         'package': package,
         if (componentName != null) 'componentName': componentName,
       },
+      if (ignoredPackages?.isNotEmpty == true)
+        'ignoredPackages': ignoredPackages,
+      if (showChooser != null) 'showChooser': showChooser,
       if (type != null) 'type': type,
     };
   }

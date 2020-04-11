@@ -28,6 +28,25 @@ void main() {
       }
     });
 
+    test('raises error if package name is specified and showChooser is true',
+        () async {
+      try {
+        androidIntent = AndroidIntent.private(
+          package: 'packageName',
+          componentName: 'componentName',
+          showChooser: true,
+          channel: mockChannel,
+          platform: FakePlatform(operatingSystem: 'android'),
+        );
+        fail('should raise an AssertionError');
+      } on AssertionError catch (e) {
+        expect(e.message,
+            'either package can be specified or showChooser can be true');
+      } catch (e) {
+        fail('should raise an AssertionError');
+      }
+    });
+
     group('launch', () {
       test('pass right params', () async {
         androidIntent = AndroidIntent.private(
@@ -36,6 +55,7 @@ void main() {
             flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
             channel: mockChannel,
             platform: FakePlatform(operatingSystem: 'android'),
+            showChooser: true,
             type: 'video/*');
         await androidIntent.launch();
         verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
@@ -43,6 +63,7 @@ void main() {
           'data': Uri.encodeFull('https://flutter.io'),
           'flags':
               androidIntent.convertFlags(<int>[Flag.FLAG_ACTIVITY_NEW_TASK]),
+          'showChooser': true,
           'type': 'video/*',
         }));
       });
@@ -145,6 +166,7 @@ void main() {
   group('convertFlags ', () {
     androidIntent = const AndroidIntent(
       action: 'action_view',
+      showChooser: false,
     );
     test('add filled flag list', () async {
       final List<int> flags = <int>[];
