@@ -180,7 +180,7 @@ task:
     os_version: 2019
   setup_script:
     - choco install -y visualstudio2019community
-    - choco install -y visualstudio2019-workload-nativedesktop
+    - choco install -y visualstudio2019-workload-nativedesktop --norestart --includeRecommended
     - git clone https://github.com/flutter/flutter.git
     - ./flutter/bin/flutter config --enable-windows-desktop
   upgrade_script:
