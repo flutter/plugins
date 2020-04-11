@@ -65,6 +65,14 @@
   return self;
 }
 
+- (instancetype)initWithProductID:(NSString *)productIdentifier {
+  self = [super init];
+  if (self) {
+    [self setValue:productIdentifier forKey:@"productIdentifier"];
+  }
+  return self;
+}
+
 @end
 
 @interface SKProductRequestStub ()
@@ -132,7 +140,7 @@
 }
 
 - (SKProduct *)getProduct:(NSString *)productID {
-  return [SKProduct new];
+  return [[SKProductStub alloc] initWithProductID:productID];
 }
 
 - (SKReceiptRefreshRequestStub *)getRefreshReceiptRequest:(NSDictionary *)properties {
@@ -155,7 +163,7 @@
 
 - (void)addPayment:(SKPayment *)payment {
   SKPaymentTransactionStub *transaction =
-      [[SKPaymentTransactionStub alloc] initWithState:self.testState];
+  [[SKPaymentTransactionStub alloc] initWithState:self.testState payment:payment];
   [self.observer paymentQueue:self updatedTransactions:@[ transaction ]];
 }
 
@@ -165,7 +173,9 @@
 
 @end
 
-@implementation SKPaymentTransactionStub
+@implementation SKPaymentTransactionStub{
+  SKPayment *_payment;
+}
 
 - (instancetype)initWithID:(NSString *)identifier {
   self = [super init];
@@ -200,6 +210,20 @@
     [self setValue:@(state) forKey:@"transactionState"];
   }
   return self;
+}
+
+- (instancetype)initWithState:(SKPaymentTransactionState)state payment:(SKPayment *)payment {
+  self = [super init];
+  if (self) {
+    [self setValue:@"fakeID" forKey:@"transactionIdentifier"];
+    [self setValue:@(state) forKey:@"transactionState"];
+    _payment = payment;
+  }
+  return self;
+}
+
+-(SKPayment *)payment {
+  return _payment;
 }
 
 @end
