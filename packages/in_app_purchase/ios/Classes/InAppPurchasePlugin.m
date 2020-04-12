@@ -155,11 +155,12 @@
   FlutterError *error;
   if (!product) {
     error = [FlutterError
-             errorWithCode:@"storekit_invalid_payment_object"
-             message:@"You have requested a payment for an invalid product. Either the "
-             @"`productIdentifier` of the payment is not valid or the product has not been "
-             @"fetched before adding the payment to the payment queue."
-             details:call.arguments];
+        errorWithCode:@"storekit_invalid_payment_object"
+              message:
+                  @"You have requested a payment for an invalid product. Either the "
+                  @"`productIdentifier` of the payment is not valid or the product has not been "
+                  @"fetched before adding the payment to the payment queue."
+              details:call.arguments];
   }
   SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
   payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
@@ -172,10 +173,11 @@
 
   if (![self.paymentQueueHandler addPayment:payment]) {
     error = [FlutterError
-    errorWithCode:@"storekit_duplicate_product_object"
-    message:@"There is a pending transaction for the same product identifier. Please either wait"
-    @"for it to be finished or finish it manuelly to avoid possible edge cases."
-    details:call.arguments];
+        errorWithCode:@"storekit_duplicate_product_object"
+              message:@"There is a pending transaction for the same product identifier. Please "
+                      @"either wait"
+                      @"for it to be finished or finish it manuelly to avoid possible edge cases."
+              details:call.arguments];
   }
   result(error);
 }

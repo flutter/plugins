@@ -33,8 +33,8 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 - (void)finishTransaction:(nonnull SKPaymentTransaction *)transaction;
 - (void)restoreTransactions:(nullable NSString *)applicationName;
 
-//This method needs to be called before any other methods.
--(void)startObservingPaymentQueue;
+// This method needs to be called before any other methods.
+- (void)startObservingPaymentQueue;
 
 // Appends a payment to the SKPaymentQueue.
 //

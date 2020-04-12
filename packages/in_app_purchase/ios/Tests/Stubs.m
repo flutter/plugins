@@ -163,7 +163,7 @@
 
 - (void)addPayment:(SKPayment *)payment {
   SKPaymentTransactionStub *transaction =
-  [[SKPaymentTransactionStub alloc] initWithState:self.testState payment:payment];
+      [[SKPaymentTransactionStub alloc] initWithState:self.testState payment:payment];
   [self.observer paymentQueue:self updatedTransactions:@[ transaction ]];
 }
 
@@ -173,7 +173,7 @@
 
 @end
 
-@implementation SKPaymentTransactionStub{
+@implementation SKPaymentTransactionStub {
   SKPayment *_payment;
 }
 
@@ -190,8 +190,8 @@
   if (self) {
     [self setValue:map[@"transactionIdentifier"] forKey:@"transactionIdentifier"];
     [self setValue:map[@"transactionState"] forKey:@"transactionState"];
-    if (map[@"originalTransaction"] && !
-                                       [map[@"originalTransaction"] isKindOfClass:[NSNull class]]) {
+    if (map[@"originalTransaction"] &&
+        ![map[@"originalTransaction"] isKindOfClass:[NSNull class]]) {
       [self setValue:[[SKPaymentTransactionStub alloc] initWithMap:map[@"originalTransaction"]]
               forKey:@"originalTransaction"];
     }
@@ -222,7 +222,7 @@
   return self;
 }
 
--(SKPayment *)payment {
+- (SKPayment *)payment {
   return _payment;
 }
 

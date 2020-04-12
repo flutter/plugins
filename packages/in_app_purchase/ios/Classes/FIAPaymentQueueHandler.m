@@ -15,7 +15,8 @@
 @property(nullable, copy, nonatomic) ShouldAddStorePayment shouldAddStorePayment;
 @property(nullable, copy, nonatomic) UpdatedDownloads updatedDownloads;
 
-@property(strong, nonatomic) NSMutableDictionary<NSString *, SKPaymentTransaction *> *transactionsSetter;
+@property(strong, nonatomic)
+    NSMutableDictionary<NSString *, SKPaymentTransaction *> *transactionsSetter;
 
 @end
 
@@ -43,7 +44,7 @@
   return self;
 }
 
--(void)startObservingPaymentQueue {
+- (void)startObservingPaymentQueue {
   [_queue addTransactionObserver:self];
 }
 
