@@ -32,8 +32,7 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    setupChannel(
-        binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext(), null);
+    setupChannel(binding.getBinaryMessenger(), binding.getApplicationContext(), null);
   }
 
   @Override

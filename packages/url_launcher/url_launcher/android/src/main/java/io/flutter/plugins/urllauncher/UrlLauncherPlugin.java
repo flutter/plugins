@@ -35,7 +35,7 @@ public final class UrlLauncherPlugin implements FlutterPlugin, ActivityAware {
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     urlLauncher = new UrlLauncher(binding.getApplicationContext(), /*activity=*/ null);
     methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
-    methodCallHandler.startListening(binding.getFlutterEngine().getDartExecutor());
+    methodCallHandler.startListening(binding.getBinaryMessenger());
   }
 
   @Override

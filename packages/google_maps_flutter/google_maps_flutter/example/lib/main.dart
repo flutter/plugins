@@ -18,8 +18,9 @@ import 'place_marker.dart';
 import 'place_polygon.dart';
 import 'place_polyline.dart';
 import 'scrolling_map.dart';
+import 'snapshot.dart';
 
-final List<Page> _allPages = <Page>[
+final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
   MapUiPage(),
   MapCoordinatesPage(),
   MapClickPage(),
@@ -32,10 +33,11 @@ final List<Page> _allPages = <Page>[
   PlacePolygonPage(),
   PlaceCirclePage(),
   PaddingPage(),
+  SnapshotPage(),
 ];
 
 class MapsDemo extends StatelessWidget {
-  void _pushPage(BuildContext context, Page page) {
+  void _pushPage(BuildContext context, GoogleMapExampleAppPage page) {
     Navigator.of(context).push(MaterialPageRoute<void>(
         builder: (_) => Scaffold(
               appBar: AppBar(title: Text(page.title)),

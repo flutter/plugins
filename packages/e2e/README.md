@@ -41,15 +41,13 @@ Note that the tests don't use the `FlutterDriver` API, they use `testWidgets` in
 
 Put the a file named `<package_name>_e2e_test.dart` in the app' `test_driver` directory:
 
-```
-import 'package:flutter_driver/flutter_driver.dart';
+```dart
+import 'dart:async';
 
-Future<void> main() async {
-  final FlutterDriver driver = await FlutterDriver.connect();
-  await driver.requestData(null, timeout: const Duration(minutes: 1));
-  await driver.close();
-  exit(result == 'pass' ? 0 : 1);
-}
+import 'package:e2e/e2e_driver.dart' as e2e;
+
+Future<void> main() async => e2e.main();
+
 ```
 
 To run a example app test with Flutter driver:
@@ -66,6 +64,15 @@ cd example
 flutter drive --driver=test_driver/<package_name>_test.dart test/<package_name>_e2e.dart
 ```
 
+You can run tests on web in release or profile mode.
+
+First you need to make sure you have downloaded the driver for the browser.
+
+```
+cd example
+flutter drive -v --target=test_driver/<package_name>dart -d web-server --release --browser-name=chrome
+```
+
 ## Android device testing
 
 Create an instrumentation test file in your application's
@@ -73,7 +80,7 @@ Create an instrumentation test file in your application's
 com, example, and myapp with values from your app's package name). You can name
 this test file MainActivityTest.java or another name of your choice.
 
-```
+```java
 package com.example.myapp;
 
 import androidx.test.rule.ActivityTestRule;
@@ -81,10 +88,10 @@ import dev.flutter.plugins.e2e.FlutterRunner;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
-@RunWith(FlutterRunner.class)
+@RunWith(FlutterTestRunner.class)
 public class MainActivityTest {
   @Rule
-  public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);
+  public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class, true, false);
 }
 ```
 

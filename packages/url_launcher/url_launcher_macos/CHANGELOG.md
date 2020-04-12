@@ -1,3 +1,11 @@
+# 0.0.1+5
+
+* Fixed the launchUniversalLinkIos method.
+
+# 0.0.1+4
+
+* Make the pedantic dev_dependency explicit.
+
 # 0.0.1+3
 
 * Update Gradle version.
