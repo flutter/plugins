@@ -1,8 +1,12 @@
-## 0.3.2
+## 0.3.1+3
 
-* iOS: Fix only transactions with SKPaymentTransactionStatePurchased and SKPaymentTransactionStateFailed can be 
-          finished.
-* iOS: Only one pending transaction of a given product is allowed.          
+* iOS: Fix only transactions with SKPaymentTransactionStatePurchased and SKPaymentTransactionStateFailed can be finished.
+* iOS: Only one pending transaction of a given product is allowed.  
+
+## 0.3.1+2
+
+* Fix potential casting crash on Android v1 embedding when registering life cycle callbacks.
+* Remove hard-coded legacy xcode build setting.
 
 ## 0.3.1
 
