@@ -1,4 +1,4 @@
-## 0.9.0+1
+## 0.9.1
 
 * Ensure the web code returns `null` when the user is not signed in, instead of a `null-object` User. Fixes [issue 52338](https://github.com/flutter/flutter/issues/52338).
 
