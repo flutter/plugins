@@ -175,9 +175,6 @@ static void InterpretTileOverlayOptions(NSDictionary* data,
 }
 - (void)removeTileOverlayIds:(NSArray*)tileOverlayIdsToRemove {
   for (NSString* tileOverlayId in tileOverlayIdsToRemove) {
-    if (!tileOverlayId) {
-      continue;
-    }
     FLTGoogleMapTileOverlayController* controller = _tileOverlayIdToController[tileOverlayId];
     if (!controller) {
       continue;
