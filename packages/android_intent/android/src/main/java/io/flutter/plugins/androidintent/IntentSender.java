@@ -111,7 +111,7 @@ public final class IntentSender {
    * @param packageName forwarded to {@link Intent#setPackage(String)} if non-null. This is forced
    *     to null if it can't be resolved.
    * @param componentName forwarded to {@link Intent#setComponent(ComponentName)} if non-null.
-   * @param ignoredPackages list of package names that should not by displayed in the chooser and
+   * @param ignoredPackages list of package names that should not be displayed in the chooser and
    *     should not be used to resolve this intent.
    * @param showChooser forces to show the default selection dialog.
    * @param type forwarded to {@link Intent#setType(String)} if non-null and 'data' parameter is
@@ -134,8 +134,8 @@ public final class IntentSender {
       Log.wtf(TAG, "Trying to build an intent before the applicationContext was initialized.");
       return null;
     }
-    showChooser = showChooser != null && showChooser;
-
+    Boolean isChooserDesired = showChooser != null && showChooser;
+    Intent chooser = null;
     Intent intent = new Intent();
 
     if (action != null) {
@@ -169,8 +169,8 @@ public final class IntentSender {
         intent.setPackage(null);
       }
     }
-    Boolean needIgnore = ignoredPackages != null && ignoredPackages.size() > 0;
-    if (needIgnore || showChooser) {
+    Boolean isPackageFilterRequired = ignoredPackages != null && ignoredPackages.size() > 0;
+    if (isPackageFilterRequired || isChooserDesired) {
       PackageManager packageManager;
       if (activity != null) {
         packageManager = activity.getPackageManager();
@@ -179,36 +179,50 @@ public final class IntentSender {
       }
       List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
       ArrayList<Intent> targetIntents = new ArrayList<Intent>();
-
-      if (needIgnore) {
-        for (ResolveInfo currentInfo : activities) {
-          if (ignoredPackages.indexOf(currentInfo.activityInfo.packageName) == -1) {
-            Intent targetIntent = new Intent(intent);
-            targetIntent.setPackage(currentInfo.activityInfo.packageName);
-            targetIntents.add(targetIntent);
-          }
-        }
+      if (isPackageFilterRequired) {
+        targetIntents = calculateTargetIntents(intent, activities, ignoredPackages);
       }
 
-      if (!showChooser) {
-        String packageToLaunch;
-        try {
-          if (ignoredPackages != null) {
-            packageToLaunch = targetIntents.get(0).getPackage();
-          } else {
-            packageToLaunch = activities.get(0).activityInfo.packageName;
-          }
-          intent.setPackage(packageToLaunch);
-          Log.v(TAG, "Resolve this intent with package: " + packageToLaunch);
-        } catch (IndexOutOfBoundsException exception) {
-          Log.v(TAG, "Not found packages to resolve this intent: " + exception);
+      if (isChooserDesired) {
+        if (targetIntents != null && targetIntents.size() > 0) {
+          chooser = Intent.createChooser(targetIntents.remove(0), "");
+          chooser.putExtra(
+              Intent.EXTRA_INITIAL_INTENTS, targetIntents.toArray(new Parcelable[] {}));
         }
       } else {
-        intent = Intent.createChooser(targetIntents.remove(0), "");
-        intent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetIntents.toArray(new Parcelable[] {}));
+        String packageToLaunch = choosePackageToLaunch(targetIntents, activities);
+        intent.setPackage(packageToLaunch);
       }
     }
 
-    return intent;
+    if (chooser != null) {
+      return chooser;
+    } else {
+      return intent;
+    }
+  }
+
+  ArrayList<Intent> calculateTargetIntents(
+      Intent intent, List<ResolveInfo> intentActivities, List<String> ignoredPackages) {
+    ArrayList<Intent> targetIntents = new ArrayList<Intent>();
+
+    for (ResolveInfo currentInfo : intentActivities) {
+      if (ignoredPackages.indexOf(currentInfo.activityInfo.packageName) == -1) {
+        Intent targetIntent = new Intent(intent);
+        targetIntent.setPackage(currentInfo.activityInfo.packageName);
+        targetIntents.add(targetIntent);
+      }
+    }
+    return targetIntents;
+  }
+
+  String choosePackageToLaunch(List<Intent> intents, List<ResolveInfo> intentActivities) {
+    if (intents != null && intents.size() > 0) {
+      return intents.get(0).getPackage();
+    } else if (intentActivities.size() > 0) {
+      return intentActivities.get(0).activityInfo.packageName;
+    } else {
+      return null;
+    }
   }
 }

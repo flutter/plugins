@@ -46,7 +46,7 @@ class AndroidIntent {
     this.type,
   })  : assert(action != null || componentName != null,
             'action or component (or both) must be specified'),
-        assert(package == null || !(showChooser != null && showChooser),
+        assert(package == null || showChooser != true,
             'either package can be specified or showChooser can be true'),
         _channel = const MethodChannel(_kChannelName),
         _platform = platform ?? const LocalPlatform();
@@ -69,7 +69,7 @@ class AndroidIntent {
     this.type,
   })  : assert(action != null || componentName != null,
             'action or component (or both) must be specified'),
-        assert(package == null || !(showChooser != null && showChooser),
+        assert(package == null || showChooser != true,
             'either package can be specified or showChooser can be true'),
         _channel = channel,
         _platform = platform;
