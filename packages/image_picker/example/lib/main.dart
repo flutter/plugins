@@ -64,7 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
       await _controller.setVolume(0.0);
     }
     if (isVideo) {
-      final File file = await ImagePicker.pickVideo(source: source);
+      final File file = await ImagePicker.pickVideo(
+          source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else {
       await _displayPickImageDialog(context,
@@ -305,13 +306,13 @@ class _MyHomePageState extends State<MyHomePage> {
               FlatButton(
                   child: const Text('PICK'),
                   onPressed: () {
-                    double width = maxWidthController.text.length > 0
+                    double width = maxWidthController.text.isNotEmpty
                         ? double.parse(maxWidthController.text)
                         : null;
-                    double height = maxHeightController.text.length > 0
+                    double height = maxHeightController.text.isNotEmpty
                         ? double.parse(maxHeightController.text)
                         : null;
-                    int quality = qualityController.text.length > 0
+                    int quality = qualityController.text.isNotEmpty
                         ? int.parse(qualityController.text)
                         : null;
                     onPick(width, height, quality);

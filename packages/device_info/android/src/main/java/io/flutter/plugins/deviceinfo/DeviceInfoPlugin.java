@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.deviceinfo;
 
-import android.content.ContentResolver;
+import android.content.Context;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
@@ -18,14 +18,12 @@ public class DeviceInfoPlugin implements FlutterPlugin {
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     DeviceInfoPlugin plugin = new DeviceInfoPlugin();
-    plugin.setupMethodChannel(registrar.messenger(), registrar.context().getContentResolver());
+    plugin.setupMethodChannel(registrar.messenger(), registrar.context());
   }
 
   @Override
   public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
-    setupMethodChannel(
-        binding.getFlutterEngine().getDartExecutor(),
-        binding.getApplicationContext().getContentResolver());
+    setupMethodChannel(binding.getBinaryMessenger(), binding.getApplicationContext());
   }
 
   @Override
@@ -33,9 +31,10 @@ public class DeviceInfoPlugin implements FlutterPlugin {
     tearDownChannel();
   }
 
-  private void setupMethodChannel(BinaryMessenger messenger, ContentResolver contentResolver) {
+  private void setupMethodChannel(BinaryMessenger messenger, Context context) {
     channel = new MethodChannel(messenger, "plugins.flutter.io/device_info");
-    final MethodCallHandlerImpl handler = new MethodCallHandlerImpl(contentResolver);
+    final MethodCallHandlerImpl handler =
+        new MethodCallHandlerImpl(context.getContentResolver(), context.getPackageManager());
     channel.setMethodCallHandler(handler);
   }
 

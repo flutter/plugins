@@ -34,8 +34,30 @@
 
 @end
 
+@implementation FLTWKWebView
+
+- (void)setFrame:(CGRect)frame {
+  [super setFrame:frame];
+  self.scrollView.contentInset = UIEdgeInsetsZero;
+  // We don't want the contentInsets to be adjusted by iOS, flutter should always take control of
+  // webview's contentInsets.
+  // self.scrollView.contentInset = UIEdgeInsetsZero;
+  if (@available(iOS 11, *)) {
+    // Above iOS 11, adjust contentInset to compensate the adjustedContentInset so the sum will
+    // always be 0.
+    if (UIEdgeInsetsEqualToEdgeInsets(self.scrollView.adjustedContentInset, UIEdgeInsetsZero)) {
+      return;
+    }
+    UIEdgeInsets insetToAdjust = self.scrollView.adjustedContentInset;
+    self.scrollView.contentInset = UIEdgeInsetsMake(-insetToAdjust.top, -insetToAdjust.left,
+                                                    -insetToAdjust.bottom, -insetToAdjust.right);
+  }
+}
+
+@end
+
 @implementation FLTWebViewController {
-  WKWebView* _webView;
+  FLTWKWebView* _webView;
   int64_t _viewId;
   FlutterMethodChannel* _channel;
   NSString* _currentUrl;
@@ -69,13 +91,21 @@
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
 
-    _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
+    _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
     }];
+
+    if (@available(iOS 11.0, *)) {
+      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+      if (@available(iOS 13.0, *)) {
+        _webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
+      }
+    }
 
     [self applySettings:settings];
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
@@ -367,6 +397,19 @@
   } else {
     NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
   }
+}
+
+#pragma mark WKUIDelegate
+
+- (WKWebView*)webView:(WKWebView*)webView
+    createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
+               forNavigationAction:(WKNavigationAction*)navigationAction
+                    windowFeatures:(WKWindowFeatures*)windowFeatures {
+  if (!navigationAction.targetFrame.isMainFrame) {
+    [webView loadRequest:navigationAction.request];
+  }
+
+  return nil;
 }
 
 @end
