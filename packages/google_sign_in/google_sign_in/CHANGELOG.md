@@ -1,3 +1,7 @@
+## 4.4.1+1.
+
+* Upgrade google_sign_in_web to version ^0.9.0
+
 ## 4.4.1
 
 * Android: Move `GoogleSignInWrapper` to a separate class.
