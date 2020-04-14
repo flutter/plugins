@@ -1,6 +1,6 @@
 name: experimental_connectivity_web
-description: An (experimental) implementation for the web platform of the Flutter `connectivity` plugin. This uses the browser's NetworkInformation Web API through Dart's JS interop, where available. Due to privacy concerns, not all features available to Mobile apps are available to Web apps.
-version: 0.1.0
+description: An (experimental) implementation for the web platform of the Flutter `connectivity` plugin. This uses the NetworkInformation Web API, with a fallback to Navigator.onLine.
+version: 0.2.0
 homepage: https://github.com/ditman/plugins/tree/connectivity-web/packages/connectivity/experimental_connectivity_web
 
 flutter:
