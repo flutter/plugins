@@ -45,7 +45,9 @@ public class GoogleSignInPluginTests {
     when(mockRegistrar.messenger()).thenReturn(mockMessenger);
     when(mockRegistrar.context()).thenReturn(mockContext);
     when(mockRegistrar.activity()).thenReturn(mockActivity);
-    plugin = new GoogleSignInPlugin(mockRegistrar, mockGoogleSignIn);
+    plugin = new GoogleSignInPlugin();
+    plugin.initInstance(mockRegistrar.messenger(), mockRegistrar.context(), mockGoogleSignIn);
+    plugin.setUpRegistrar(mockRegistrar);
   }
 
   @Test

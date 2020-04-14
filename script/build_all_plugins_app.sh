@@ -25,6 +25,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "shared_preferences_macos"
   "shared_preferences_platform_interface"
   "shared_preferences_web"
+  "shared_preferences_windows"
   "url_launcher_macos"
   "url_launcher_platform_interface"
   "url_launcher_web"

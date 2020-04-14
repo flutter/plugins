@@ -43,9 +43,28 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       case 'onPageStarted':
         _platformCallbacksHandler.onPageStarted(call.arguments['url']);
         return null;
+      case 'onWebResourceError':
+        _platformCallbacksHandler.onWebResourceError(
+          WebResourceError(
+            errorCode: call.arguments['errorCode'],
+            description: call.arguments['description'],
+            domain: call.arguments['domain'],
+            errorType: call.arguments['errorType'] == null
+                ? null
+                : WebResourceErrorType.values.firstWhere(
+                    (WebResourceErrorType type) {
+                      return type.toString() ==
+                          '$WebResourceErrorType.${call.arguments['errorType']}';
+                    },
+                  ),
+          ),
+        );
+        return null;
     }
+
     throw MissingPluginException(
-        '${call.method} was invoked but has no handler');
+      '${call.method} was invoked but has no handler',
+    );
   }
 
   @override

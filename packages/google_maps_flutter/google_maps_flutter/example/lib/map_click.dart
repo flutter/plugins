@@ -12,7 +12,7 @@ import 'page.dart';
 const CameraPosition _kInitialPosition =
     CameraPosition(target: LatLng(-33.852, 151.211), zoom: 11.0);
 
-class MapClickPage extends Page {
+class MapClickPage extends GoogleMapExampleAppPage {
   MapClickPage() : super(const Icon(Icons.mouse), 'Map click');
 
   @override
