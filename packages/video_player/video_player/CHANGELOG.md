@@ -1,4 +1,4 @@
-## 0.10.9
+## 0.10.8+3
 
 * Remove Android dependencies fallback.
 * Require Flutter SDK 1.12.13+hotfix.5 or greater.
