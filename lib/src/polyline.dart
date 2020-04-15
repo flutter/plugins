@@ -39,15 +39,21 @@ GoogleMap.PolylineOptions _polylineOptionsFromPolyline(GoogleMap.GMap googleMap,
   polyline.points.forEach((point) {
     paths.add(GoogleMap.LatLng(point.latitude, point.longitude));
   });
+
   return GoogleMap.PolylineOptions()
     ..path = paths
     ..strokeOpacity = 1.0
     ..strokeWeight = polyline.width
-    ..strokeColor = '#'+polyline.color.value.toRadixString(16)
+    ..strokeColor =  '#'+polyline.color.value.toRadixString(16).substring(0,6)
     ..visible = polyline.visible
     ..zIndex = polyline.zIndex
     ..geodesic = polyline.geodesic
   ;
+//  this.endCap = Cap.buttCap,
+//  this.jointType = JointType.mitered,
+//  this.patterns = const <PatternItem>[],
+//  this.startCap = Cap.buttCap,
+//  this.width = 10,
 }
 
 class PolylineController {

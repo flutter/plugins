@@ -20,13 +20,20 @@ class MarkersController extends AbstractController {
 
   void _addMarker(Marker marker){
     if(marker == null) return;
+    final infoWindoOptions = _infoWindowOPtionsFromMarker(marker);
+    GoogleMap.InfoWindow gmInfoWindow = GoogleMap.InfoWindow(infoWindoOptions);
     final populationOptions =  _markerOptionsFromMarker(googleMap, marker);
     GoogleMap.Marker  gmMarker = GoogleMap.Marker(populationOptions);
     gmMarker.map = googleMap;
     MarkerController controller = MarkerController(
         marker: gmMarker,
+        infoWindow : gmInfoWindow,
         consumeTapEvents:marker.consumeTapEvents,
-        ontab:(){ onMarkerTap(marker.markerId);});
+        ontab:(){onMarkerTap(marker.markerId);},
+        onDragEnd :(GoogleMap.LatLng latLng){
+          onMarkerDragEnd(marker.markerId, latLng);},
+        onInfoWindowTap : (){onInfoWindowTap(marker.markerId);}
+          );
     _markerIdToController[marker.markerId.value] = controller;
   }
 
@@ -72,69 +79,35 @@ class MarkersController extends AbstractController {
   }
 
   void showMarkerInfoWindow(String markerId, dynamic result) {
-    throw UnimplementedError('unimplemented.');
-
-    /**
-     *  MarkerController markerController = markerIdToController.get(markerId);
-        if (markerController != null) {
-        markerController.showInfoWindow();
-        result.success(null);
-        } else {
-        result.error("Invalid markerId", "showInfoWindow called with invalid markerId", null);
-        }
-     */
+    MarkerController markerController = _markerIdToController[markerId];
+    if (markerController != null) {
+      markerController.showMarkerInfoWindow();
+    }
   }
 
-  void isInfoWindowShown(String markerId, dynamic result) {
-    throw UnimplementedError('unimplemented.');
-    /**
-     * MarkerController markerController = markerIdToController.get(markerId);
-        if (markerController != null) {
-        result.success(markerController.isInfoWindowShown());
-        } else {
-        result.error("Invalid markerId", "isInfoWindowShown called with invalid markerId", null);
-        }
-     */
+  bool isInfoWindowShown(String markerId) {
+    MarkerController markerController = _markerIdToController[markerId];
+    if (markerController != null) {
+      return markerController.isInfoWindowShown();
+    }
+    return false;
   }
 
   void hideMarkerInfoWindow(String markerId, dynamic result) {
-    throw UnimplementedError('unimplemented.');
-    /**
-     * MarkerController markerController = markerIdToController.get(markerId);
-        if (markerController != null) {
-        markerController.hideInfoWindow();
-        result.success(null);
-        } else {
-        result.error("Invalid markerId", "hideInfoWindow called with invalid markerId", null);
-        }
-     */
+    MarkerController markerController = _markerIdToController[markerId];
+    if (markerController != null) {
+      markerController.hideInfoWindow();
+    }
   }
 
-  void onInfoWindowTap(String googleMarkerId) {
-    throw UnimplementedError('unimplemented.');
-    /**
-     *  String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
-        if (markerId == null) {
-        return;
-        }
-        methodChannel.invokeMethod("infoWindow#onTap", Convert.markerIdToJson(markerId));
-     */
+  void onInfoWindowTap(MarkerId markerId) {
+    googleMapController.onInfoWindowTap(markerId);
   }
 
-  void onMarkerDragEnd(String googleMarkerId, LatLng latLng) {
-    throw UnimplementedError('unimplemented.');
-    /**
-     * String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
-        if (markerId == null) {
-        return;
-        }
-        final Map<String, Object> data = new HashMap<>();
-        data.put("markerId", markerId);
-        data.put("position", Convert.latLngToJson(latLng));
-        methodChannel.invokeMethod("marker#onDragEnd", data);
-     */
+  void onMarkerDragEnd(MarkerId markerId, GoogleMap.LatLng latLng) {
+    googleMapController.onMarkerDragEnd(markerId, latLng);
   }
-
 
 }
 
+typedef LatLngCallback = void Function(GoogleMap.LatLng latLng);

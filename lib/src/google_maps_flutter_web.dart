@@ -279,6 +279,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
                 .polygonsToAdd : null,
             initialPolylines: initialPolylines != null ? initialPolylines
                 .polylinesToAdd : null,
+            initialMarkers: initialMarkers != null ? initialMarkers
+                .markersToAdd : null,
           )
       ;
     onPlatformViewCreated.call(_id);

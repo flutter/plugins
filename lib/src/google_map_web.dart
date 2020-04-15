@@ -133,6 +133,16 @@ class GoogleMapController {
   void onMarkerTap(MarkerId markerId) {
     streamController.add(MarkerTapEvent(mapId, markerId));
   }
+
+  void  onMarkerDragEnd(MarkerId markerId, GoogleMap.LatLng latLng) {
+    streamController.add(MarkerDragEndEvent(mapId,
+        LatLng(latLng.lat, latLng.lng), markerId));
+  }
+
+  void  onInfoWindowTap(MarkerId markerId) {
+    streamController.add(InfoWindowTapEvent(mapId, markerId));
+  }
+
 }
 
 abstract class AbstractController {
