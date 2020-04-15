@@ -8,9 +8,9 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 /**
- * Demonstrates how a E2E test on Android can be run with permissions already
- * granted. This is helpful if developers want to test native App behavior that
- * depends on certain system service results which are guarded with permissions.
+ * Demonstrates how a E2E test on Android can be run with permissions already granted. This is
+ * helpful if developers want to test native App behavior that depends on certain system service
+ * results which are guarded with permissions.
  */
 @RunWith(FlutterTestRunner.class)
 public class MainActivityWithPermissionTest {
