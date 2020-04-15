@@ -159,7 +159,7 @@
                   @"You have requested a payment for an invalid product. Either the "
                   @"`productIdentifier` of the payment is not valid or the product has not been "
                   @"fetched before adding the payment to the payment queue."
-            details:call.arguments]);
+              details:call.arguments]);
     return;
   }
   SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
@@ -173,12 +173,12 @@
 
   if (![self.paymentQueueHandler addPayment:payment]) {
     result([FlutterError
-    errorWithCode:@"storekit_duplicate_product_object"
-          message:@"There is a pending transaction for the same product identifier. Please "
-                  @"either wait for it to be finished or finish it manuelly using "
-                  @"`completePurchase` to avoid edge cases."
+        errorWithCode:@"storekit_duplicate_product_object"
+              message:@"There is a pending transaction for the same product identifier. Please "
+                      @"either wait for it to be finished or finish it manuelly using "
+                      @"`completePurchase` to avoid edge cases."
 
-          details:call.arguments]);
+              details:call.arguments]);
     return;
   }
   result(nil);

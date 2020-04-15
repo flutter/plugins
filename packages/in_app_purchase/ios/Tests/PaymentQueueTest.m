@@ -72,7 +72,8 @@
   SKPaymentQueueStub *queue = [[SKPaymentQueueStub alloc] init];
   queue.testState = SKPaymentTransactionStatePurchased;
   FIAPaymentQueueHandler *handler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
-      transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {}
+      transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+      }
       transactionRemoved:nil
       restoreTransactionFailed:nil
       restoreCompletedTransactionsFinished:nil

@@ -132,23 +132,24 @@
       updatedDownloads:nil];
   [queue addTransactionObserver:self.plugin.paymentQueueHandler];
 
-  FlutterResult addDuplicatePaymentBlock = ^(id r){
+  FlutterResult addDuplicatePaymentBlock = ^(id r) {
     XCTAssertNil(r);
-    [self.plugin handleMethodCall:call
-                           result:^(id result){
-      XCTAssertNotNil(result);
-      XCTAssertTrue([result isKindOfClass:[FlutterError class]]);
-      FlutterError *error = (FlutterError *)result;
-      XCTAssertEqualObjects(error.code, @"storekit_duplicate_product_object");
-      XCTAssertEqualObjects(error.message,
-      @"There is a pending transaction for the same product identifier. Please "
-      @"either wait for it to be finished or finish it manuelly using "
-      @"`completePurchase` to avoid edge cases.");
-      [expectation fulfill];
-    }];
+    [self.plugin
+        handleMethodCall:call
+                  result:^(id result) {
+                    XCTAssertNotNil(result);
+                    XCTAssertTrue([result isKindOfClass:[FlutterError class]]);
+                    FlutterError* error = (FlutterError*)result;
+                    XCTAssertEqualObjects(error.code, @"storekit_duplicate_product_object");
+                    XCTAssertEqualObjects(
+                        error.message,
+                        @"There is a pending transaction for the same product identifier. Please "
+                        @"either wait for it to be finished or finish it manuelly using "
+                        @"`completePurchase` to avoid edge cases.");
+                    [expectation fulfill];
+                  }];
   };
-  [self.plugin handleMethodCall:call
-                         result:addDuplicatePaymentBlock];
+  [self.plugin handleMethodCall:call result:addDuplicatePaymentBlock];
   [self waitForExpectations:@[ expectation ] timeout:5];
 }
 
