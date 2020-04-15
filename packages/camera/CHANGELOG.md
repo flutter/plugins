@@ -1,3 +1,7 @@
+## 0.5.7+6
+
+* Fixed an issue, where after restarting a subscription of the image stream, first few received images would be stale (typically images from the end of the first stream).
+
 ## 0.5.7+5
 
 * Replace deprecated `getFlutterEngine` call on Android.
