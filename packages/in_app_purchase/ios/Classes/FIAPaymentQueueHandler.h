@@ -38,8 +38,8 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 
 // Appends a payment to the SKPaymentQueue.
 //
-// @param payment Payment object that needs to be added to the payment queue.
-// @return A flag that indicates whether or not this payment can be added.
+// @param payment Payment object to be added to the payment queue.
+// @return whether "addPayment" was successful.
 - (BOOL)addPayment:(SKPayment *)payment;
 
 @end

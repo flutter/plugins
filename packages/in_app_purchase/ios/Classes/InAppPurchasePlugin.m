@@ -152,15 +152,15 @@
   // When a product is already fetched, we create a payment object with
   // the product to process the payment.
   SKProduct *product = [self getProduct:productID];
-  FlutterError *error;
   if (!product) {
-    error = [FlutterError
+    result([FlutterError
         errorWithCode:@"storekit_invalid_payment_object"
               message:
                   @"You have requested a payment for an invalid product. Either the "
                   @"`productIdentifier` of the payment is not valid or the product has not been "
                   @"fetched before adding the payment to the payment queue."
-              details:call.arguments];
+            details:call.arguments]);
+    return;
   }
   SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
   payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
@@ -172,14 +172,16 @@
   }
 
   if (![self.paymentQueueHandler addPayment:payment]) {
-    error = [FlutterError
-        errorWithCode:@"storekit_duplicate_product_object"
-              message:@"There is a pending transaction for the same product identifier. Please "
-                      @"either wait"
-                      @"for it to be finished or finish it manuelly to avoid possible edge cases."
-              details:call.arguments];
+    result([FlutterError
+    errorWithCode:@"storekit_duplicate_product_object"
+          message:@"There is a pending transaction for the same product identifier. Please "
+                  @"either wait for it to be finished or finish it manuelly using "
+                  @"`completePurchase` to avoid edge cases."
+
+          details:call.arguments]);
+    return;
   }
-  result(error);
+  result(nil);
 }
 
 - (void)finishTransaction:(FlutterMethodCall *)call result:(FlutterResult)result {
