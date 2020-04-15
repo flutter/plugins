@@ -1,3 +1,7 @@
+## 0.1.0+3
+
+* Fix crash when parameter extension is null.
+
 ## 0.1.0+2
 
 * Make the pedantic dev_dependency explicit.
