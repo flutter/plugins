@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Adds support for Android E2E tests that utilize other @Rule's, like GrantPermissionRule.
+
 ## 0.4.0
 
 * **Breaking change** Driver request_data call's response has changed to
