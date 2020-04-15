@@ -6,6 +6,7 @@ package io.flutter.plugins.googlemaps;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -123,5 +124,57 @@ public class MarkersControllerTest {
     data.put("markerId", googleMarkerId);
     data.put("position", points);
     Mockito.verify(methodChannel).invokeMethod("marker#onDrag", data);
+  }
+
+  @Test
+  public void controller_OnMarkerTap_Enabled() {
+    final MethodChannel methodChannel =
+        spy(new MethodChannel(mock(BinaryMessenger.class), "no-name", mock(MethodCodec.class)));
+    final MarkersController controller = new MarkersController(methodChannel);
+    final GoogleMap googleMap = mock(GoogleMap.class);
+    controller.setGoogleMap(googleMap);
+
+    final Marker marker = mock(Marker.class);
+    final String googleMarkerId = "abc123";
+    when(marker.getId()).thenReturn(googleMarkerId);
+    when(googleMap.addMarker(any(MarkerOptions.class))).thenReturn(marker);
+
+    final Map<String, Object> markerOptions = new HashMap();
+    markerOptions.put("markerId", googleMarkerId);
+    markerOptions.put("consumeTapEvents", true);
+
+    final List<Object> markers = Arrays.<Object>asList(markerOptions);
+    controller.addMarkers(markers);
+    controller.onMarkerTap(googleMarkerId);
+
+    final Map<String, Object> data = new HashMap<>();
+    data.put("markerId", googleMarkerId);
+    Mockito.verify(methodChannel).invokeMethod("marker#onTap", data);
+  }
+
+  @Test
+  public void controller_OnMarkerTap_Disabled() {
+    final MethodChannel methodChannel =
+        spy(new MethodChannel(mock(BinaryMessenger.class), "no-name", mock(MethodCodec.class)));
+    final MarkersController controller = new MarkersController(methodChannel);
+    final GoogleMap googleMap = mock(GoogleMap.class);
+    controller.setGoogleMap(googleMap);
+
+    final Marker marker = mock(Marker.class);
+    final String googleMarkerId = "abc123";
+    when(marker.getId()).thenReturn(googleMarkerId);
+    when(googleMap.addMarker(any(MarkerOptions.class))).thenReturn(marker);
+
+    final Map<String, Object> markerOptions = new HashMap();
+    markerOptions.put("markerId", googleMarkerId);
+    markerOptions.put("consumeTapEvents", false);
+
+    final List<Object> markers = Arrays.<Object>asList(markerOptions);
+    controller.addMarkers(markers);
+    controller.onMarkerTap(googleMarkerId);
+
+    final Map<String, Object> data = new HashMap<>();
+    data.put("markerId", googleMarkerId);
+    Mockito.verify(methodChannel, never()).invokeMethod("marker#onTap", data);
   }
 }

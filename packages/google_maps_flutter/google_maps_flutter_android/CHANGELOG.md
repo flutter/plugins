@@ -1,3 +1,7 @@
+## 2.3.4
+
+* Respond to marker tap events based on `consumeTapEvents`
+
 ## 2.3.3
 
 * Update android gradle plugin to 7.3.1.

@@ -97,11 +97,13 @@ class MarkersController {
     if (markerId == null) {
       return false;
     }
-    methodChannel.invokeMethod("marker#onTap", Convert.markerIdToJson(markerId));
-    MarkerController markerController = markerIdToController.get(markerId);
-    if (markerController != null) {
-      return markerController.consumeTapEvents();
+
+    final MarkerController markerController = markerIdToController.get(markerId);
+    if (markerController != null && markerController.consumeTapEvents()) {
+      methodChannel.invokeMethod("marker#onTap", Convert.markerIdToJson(markerId));
+      return true;
     }
+
     return false;
   }
 
