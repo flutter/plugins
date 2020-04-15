@@ -14,7 +14,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    IosPlatformImages.resolveURL("textfile", null).then((value) => print(value));
+    IosPlatformImages.resolveURL("textfile", null)
+        .then((value) => print(value));
   }
 
   @override
