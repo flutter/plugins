@@ -36,6 +36,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
         break;
       case DataSourceType.network:
         message.uri = dataSource.uri;
+        message.httpHeaders = dataSource.httpHeaders;
         message.formatHint = _videoFormatStringMap[dataSource.formatHint];
         message.httpHeaders = dataSource.httpHeaders;
         break;
@@ -93,6 +94,13 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     PositionMessage response =
         await _api.position(TextureMessage()..textureId = textureId);
     return Duration(milliseconds: response.position!);
+  }
+
+  @override
+  Future<int> getAbsolutePosition(int textureId) async {
+    PositionMessage response =
+    await _api.absolutePosition(TextureMessage()..textureId = textureId);
+    return response.absolutePosition;
   }
 
   @override

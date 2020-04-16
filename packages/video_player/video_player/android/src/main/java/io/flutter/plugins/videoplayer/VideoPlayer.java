@@ -7,6 +7,10 @@ package io.flutter.plugins.videoplayer;
 import static com.google.android.exoplayer2.Player.REPEAT_MODE_ALL;
 import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 
+
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.Format;
+
 import android.content.Context;
 import android.net.Uri;
 import android.view.Surface;
@@ -261,6 +265,16 @@ final class VideoPlayer {
 
   long getPosition() {
     return exoPlayer.getCurrentPosition();
+  }
+
+  long getAbsolutePosition() {
+      Timeline timeline = exoPlayer.getCurrentTimeline();
+      if (!timeline.isEmpty()) {
+          long windowStartTimeMs = timeline.getWindow(0, new Timeline.Window()).windowStartTimeMs;
+          long pos = exoPlayer.getCurrentPosition();
+          return (windowStartTimeMs + pos);
+      }
+      return exoPlayer.getCurrentPosition();
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
