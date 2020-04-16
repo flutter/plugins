@@ -23,7 +23,6 @@ NSString *customDomain;
       NSString *key = arguments[@"key"];
       NSNumber *value = arguments[@"value"];
       [domainUserDefaults() setBool:value.boolValue forKey:key];
-      [domainUserDefaults() synchronize];
       result(@YES);
     } else if ([method isEqualToString:@"setInt"]) {
       NSString *key = arguments[@"key"];
@@ -32,25 +31,21 @@ NSString *customDomain;
       // It is best to store it as is and send it back when needed.
       // Platform channel will handle the conversion.
       [domainUserDefaults() setValue:value forKey:key];
-      [domainUserDefaults() synchronize];
       result(@YES);
     } else if ([method isEqualToString:@"setDouble"]) {
       NSString *key = arguments[@"key"];
       NSNumber *value = arguments[@"value"];
       [domainUserDefaults() setDouble:value.doubleValue forKey:key];
-      [domainUserDefaults() synchronize];
       result(@YES);
     } else if ([method isEqualToString:@"setString"]) {
       NSString *key = arguments[@"key"];
       NSString *value = arguments[@"value"];
       [domainUserDefaults() setValue:value forKey:key];
-      [domainUserDefaults() synchronize];
       result(@YES);
     } else if ([method isEqualToString:@"setStringList"]) {
       NSString *key = arguments[@"key"];
       NSArray *value = arguments[@"value"];
       [domainUserDefaults() setValue:value forKey:key];
-      [domainUserDefaults() synchronize];
       result(@YES);
     } else if ([method isEqualToString:@"commit"]) {
       // synchronize is deprecated.
@@ -58,18 +53,15 @@ NSString *customDomain;
       result(@YES);
     } else if ([method isEqualToString:@"remove"]) {
       [domainUserDefaults() removeObjectForKey:arguments[@"key"]];
-      [domainUserDefaults() synchronize];
       result(@YES);
     } else if ([method isEqualToString:@"clear"]) {
       NSUserDefaults *defaults = domainUserDefaults();
       for (NSString *key in getAllPrefs()) {
         [defaults removeObjectForKey:key];
       }
-      [domainUserDefaults() synchronize];
       result(@YES);
     } else if ([method isEqualToString:@"setDomain"]) {
       customDomain = arguments[@"domain"];
-      NSLog(@"Domain set to: %@", customDomain);
       result(@YES);
     } else {
       result(FlutterMethodNotImplemented);
