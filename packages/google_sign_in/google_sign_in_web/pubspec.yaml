@@ -25,6 +25,7 @@ dev_dependencies:
     sdk: flutter
   google_sign_in: ^4.0.14
   pedantic: ^1.8.0
+  mockito: ^4.1.1
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
