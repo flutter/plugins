@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+
 ## 1.0.3
 
 * Make the pedantic dev_dependency explicit.

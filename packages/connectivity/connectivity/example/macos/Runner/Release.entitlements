@@ -2,7 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<<<<<<< HEAD:packages/connectivity/connectivity/example/macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+	<key>IDEDidComputeMac32BitWarning</key>
+=======
 	<key>com.apple.security.app-sandbox</key>
+>>>>>>> master:packages/connectivity/connectivity/example/macos/Runner/Release.entitlements
 	<true/>
 </dict>
 </plist>

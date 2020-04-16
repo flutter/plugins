@@ -1,5 +1,10 @@
+<<<<<<< HEAD:packages/e2e/e2e_macos/android/build.gradle
+group 'com.example.e2e'
+version '1.0'
+=======
 group 'io.flutter.plugins.connectivity'
 version '1.0-SNAPSHOT'
+>>>>>>> master:packages/connectivity/connectivity/android/build.gradle
 
 buildscript {
     repositories {
@@ -8,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.5.0'
     }
 }
 
@@ -31,30 +36,10 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
-}
-
-// TODO(amirh): Remove this hack once androidx.lifecycle is included on stable. https://github.com/flutter/flutter/issues/42348
-afterEvaluate {
-    def containsEmbeddingDependencies = false
-    for (def configuration : configurations.all) {
-        for (def dependency : configuration.dependencies) {
-            if (dependency.group == 'io.flutter' &&
-                dependency.name.startsWith('flutter_embedding') &&
-                dependency.isTransitive())
-            {
-                containsEmbeddingDependencies = true
-                break
-            }
-        }
+<<<<<<< HEAD:packages/e2e/e2e_macos/android/build.gradle
+    dependencies {
+        implementation 'androidx.annotation:annotation:1.0.0'
     }
-    if (!containsEmbeddingDependencies) {
-        android {
-            dependencies {
-                def lifecycle_version = "1.1.1"
-                compileOnly "android.arch.lifecycle:runtime:$lifecycle_version"
-                compileOnly "android.arch.lifecycle:common:$lifecycle_version"
-                compileOnly "android.arch.lifecycle:common-java8:$lifecycle_version"
-            }
-        }
-    }
+=======
+>>>>>>> master:packages/connectivity/connectivity/android/build.gradle
 }

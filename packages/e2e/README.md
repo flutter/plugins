@@ -43,16 +43,11 @@ Put the a file named `<package_name>_e2e_test.dart` in the app' `test_driver` di
 
 ```dart
 import 'dart:async';
-import 'dart:io';
-import 'package:flutter_driver/flutter_driver.dart';
 
-Future<void> main() async {
-  final FlutterDriver driver = await FlutterDriver.connect();
-  final String result =
-      await driver.requestData(null, timeout: const Duration(minutes: 1));
-  await driver.close();
-  exit(result == 'pass' ? 0 : 1);
-}
+import 'package:e2e/e2e_driver.dart' as e2e;
+
+Future<void> main() async => e2e.main();
+
 ```
 
 To run a example app test with Flutter driver:
@@ -69,7 +64,7 @@ cd example
 flutter drive --driver=test_driver/<package_name>_test.dart test/<package_name>_e2e.dart
 ```
 
-You can run tests on web on release mode.
+You can run tests on web in release or profile mode.
 
 First you need to make sure you have downloaded the driver for the browser.
 

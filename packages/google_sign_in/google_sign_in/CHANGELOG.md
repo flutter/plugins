@@ -1,3 +1,19 @@
+## 4.4.1
+
+* Android: Move `GoogleSignInWrapper` to a separate class.
+
+## 4.4.0
+
+* Migrate to Android v2 embedder.
+
+## 4.3.0
+
+* Add support for method introduced in `google_sign_in_platform_interface` 1.1.0.
+
+## 4.2.0
+
+* Migrate to AndroidX.
+
 ## 4.1.5
 
 * Remove unused variable.
