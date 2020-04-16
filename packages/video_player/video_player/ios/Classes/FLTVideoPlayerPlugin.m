@@ -11,6 +11,11 @@
 #error Code Requires ARC.
 #endif
 
+int64_t FLTNSTimeIntervalToMillis(NSTimeInterval interval) {
+  return (int64_t)(interval * 1000.0);
+}
+
+
 @interface FLTFrameUpdater : NSObject
 @property(nonatomic) int64_t textureId;
 @property(nonatomic, weak, readonly) NSObject<FlutterTextureRegistry>* registry;
@@ -288,6 +293,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
+      if (!_isInitialized) {
+        _isInitialized = true;
+        [self sendInitialized];
+      }
       [self updatePlayingState];
       if (_eventSink != nil) {
         _eventSink(@{@"event" : @"bufferingEnd"});
@@ -302,6 +311,39 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       _eventSink(@{@"event" : @"bufferingEnd"});
     }
   }
+}
+
+- (double)getDisplayAspectRatioForItem:(AVPlayerItem*)item {
+  CGSize presentationSize = [item presentationSize];
+  double aspectRatio = presentationSize.width / presentationSize.height;
+
+  for (AVPlayerItemTrack* itemTrack in [item tracks]) {
+    AVAssetTrack* assetTrack = [itemTrack assetTrack];
+    if ([[assetTrack mediaType] isEqualToString:AVMediaTypeVideo]) {
+      NSArray* formatDescriptions = [assetTrack formatDescriptions];
+      if ([formatDescriptions count] > 0) {
+        CMFormatDescriptionRef formatDescription =
+            (__bridge CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0];
+        CFDictionaryRef pixelAspectRatioRef = CMFormatDescriptionGetExtension(
+            formatDescription, kCMFormatDescriptionExtension_PixelAspectRatio);
+        if (pixelAspectRatioRef) {
+          NSDictionary* pixelAspectRatioDict = (__bridge NSDictionary*)pixelAspectRatioRef;
+          double w = [[pixelAspectRatioDict objectForKey:@"HorizontalSpacing"] doubleValue];
+          double h = [[pixelAspectRatioDict objectForKey:@"VerticalSpacing"] doubleValue];
+          double nw = [assetTrack naturalSize].width;
+          double nh = [assetTrack naturalSize].height;
+          if (w != 0 && h != 0 && nw != 0 && nh != 0) {
+            double par = w / h;
+            double dar = par * nw / nh;
+            aspectRatio = dar;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  return aspectRatio;
 }
 
 - (void)updatePlayingState {
@@ -321,6 +363,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     CGSize size = [self.player currentItem].presentationSize;
     CGFloat width = size.width;
     CGFloat height = size.height;
+    double dar = [self getDisplayAspectRatioForItem:[self.player currentItem]];
 
     // The player has not yet initialized.
     if (height == CGSizeZero.height && width == CGSizeZero.width) {
@@ -336,7 +379,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       @"event" : @"initialized",
       @"duration" : @([self duration]),
       @"width" : @(width),
-      @"height" : @(height)
+      @"height" : @(height),
+      @"aspectRatio" : @(dar)
     });
   }
 }
@@ -353,6 +397,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (int64_t)position {
   return FLTCMTimeToMillis([_player currentTime]);
+}
+
+- (int64_t)absolutePosition {
+  return FLTNSTimeIntervalToMillis([[[_player currentItem] currentDate] timeIntervalSince1970]);
 }
 
 - (int64_t)duration {
