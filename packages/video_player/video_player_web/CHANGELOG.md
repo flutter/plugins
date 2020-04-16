@@ -1,3 +1,7 @@
+## 0.1.2+2
+
+* Add `analysis_options.yaml` to the package, so we can ignore `undefined_prefixed_name` errors (temporarily).
+
 ## 0.1.2+1
 
 * Make the pedantic dev_dependency explicit.
