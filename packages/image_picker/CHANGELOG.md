@@ -1,3 +1,8 @@
+## 0.6.5
+
+* Set maximum duration for video recording.
+* Fix some existing XCTests.
+
 ## 0.6.4
 
 * Add a new parameter to select preferred camera device.

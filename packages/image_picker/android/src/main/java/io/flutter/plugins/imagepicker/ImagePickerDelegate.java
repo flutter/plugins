@@ -291,6 +291,10 @@ public class ImagePickerDelegate
 
   private void launchTakeVideoWithCameraIntent() {
     Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+    if (this.methodCall != null && this.methodCall.argument("maxDuration") != null) {
+      int maxSeconds = this.methodCall.argument("maxDuration");
+      intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, maxSeconds);
+    }
     if (cameraDevice == CameraDevice.FRONT) {
       useFrontCamera(intent);
     }
