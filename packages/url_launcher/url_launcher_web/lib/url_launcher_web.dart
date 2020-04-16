@@ -12,6 +12,8 @@ import 'navigator.dart';
 class UrlLauncherPlugin extends UrlLauncherPlatform {
   final Navigator _navigator;
 
+  /// [UrlLauncherPlugin] constructor.
+  @visibleForTesting
   UrlLauncherPlugin({Navigator navigator})
       : _navigator = navigator ?? Navigator();
 
