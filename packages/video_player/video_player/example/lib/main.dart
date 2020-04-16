@@ -11,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+@override
 void main() {
   runApp(
     MaterialApp(
@@ -19,7 +20,24 @@ void main() {
   );
 }
 
-class _App extends StatelessWidget {
+bool bl, val = false;
+Color bar, screen;
+
+void thm(bool bl) {
+  if (bl == true) {
+    bar = Colors.black87;
+    screen = Colors.black26;
+  } else {
+    bar = Colors.blue;
+    screen = Colors.white;
+  }
+}
+
+class _App extends StatefulWidget {
+  _MyApp createState() => _MyApp();
+}
+
+class _MyApp extends State<_App> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -27,6 +45,7 @@ class _App extends StatelessWidget {
       child: Scaffold(
         key: const ValueKey<String>('home_page'),
         appBar: AppBar(
+          backgroundColor: bar,
           title: const Text('Video player example'),
           actions: <Widget>[
             IconButton(
@@ -40,6 +59,17 @@ class _App extends StatelessWidget {
                   ),
                 );
               },
+            ),
+            Switch(
+              value: val,
+              onChanged: (bool new_val) {
+                setState(() {
+                  val = new_val;
+                  thm(new_val);
+                });
+              },
+              activeColor: Colors.white,
+              inactiveThumbColor: Colors.black,
             )
           ],
           bottom: const TabBar(
@@ -61,6 +91,7 @@ class _App extends StatelessWidget {
             _ButterFlyAssetVideoInList(),
           ],
         ),
+        backgroundColor: screen,
       ),
     );
   }
@@ -109,9 +140,7 @@ class _ButterFlyAssetVideoInList extends StatelessWidget {
 /// A filler card to show the video in a list of scrolling contents.
 class _ExampleCard extends StatelessWidget {
   const _ExampleCard({Key key, this.title}) : super(key: key);
-
   final String title;
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -151,12 +180,10 @@ class _ButterFlyAssetVideo extends StatefulWidget {
 
 class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
   VideoPlayerController _controller;
-
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.asset('assets/Butterfly-209.mp4');
-
     _controller.addListener(() {
       setState(() {});
     });
