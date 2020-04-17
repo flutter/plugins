@@ -8,13 +8,8 @@ import 'dart:html' as html;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
-import 'package:url_launcher_web/navigator.dart';
+import 'package:url_launcher_web/navigator.dart' as navigator;
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
-
-class NavigatorStandalone implements Navigator {
-  @override
-  bool get standalone => true;
-}
 
 void main() {
   group('URL Launcher for Web', () {
@@ -53,18 +48,19 @@ void main() {
     test('the url is opened in a new window', () {
       final UrlLauncherPlugin urlLauncherPlugin = UrlLauncherPlugin();
       final html.WindowBase newWindow =
-          urlLauncherPlugin.openUrl('https://www.google.com');
+          urlLauncherPlugin.openNewWindow('https://www.google.com');
       expect(newWindow, isNotNull);
       expect(newWindow, isNot(equals(html.window)));
       expect(newWindow.opener, equals(html.window));
     });
 
     test('the url is opened in the same window', () {
-      final navigator = NavigatorStandalone();
-      final UrlLauncherPlugin urlLauncherPlugin =
-          UrlLauncherPlugin(navigator: navigator);
+      // Simulate the navigator is in standalone mode on iOS devices.
+      // https://developer.mozilla.org/en-US/docs/Web/API/Navigator
+      navigator.standalone = true;
+      final UrlLauncherPlugin urlLauncherPlugin = UrlLauncherPlugin();
       final html.WindowBase window =
-          urlLauncherPlugin.openUrl('https://www.google.com');
+          urlLauncherPlugin.openNewWindow('https://www.google.com');
       expect(window, isNotNull);
       expect(window.opener, isNot(equals(html.window)));
     });

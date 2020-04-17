@@ -4,32 +4,25 @@ import 'dart:html' as html;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
-import 'navigator.dart';
+import 'navigator.dart' as navigator;
 
 /// The web implementation of [UrlLauncherPlatform].
 ///
 /// This class implements the `package:url_launcher` functionality for the web.
 class UrlLauncherPlugin extends UrlLauncherPlatform {
-  final Navigator _navigator;
-
-  /// [UrlLauncherPlugin] constructor.
-  @visibleForTesting
-  UrlLauncherPlugin({Navigator navigator})
-      : _navigator = navigator ?? Navigator();
-
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith(Registrar registrar) {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
   }
 
-  /// Opens the given [url].
-  /// The url will be opened in a new window unless the browser is in standalone.
+  /// Opens the given [url] in a new window.
+  ///
   /// Returns the newly created window.
   @visibleForTesting
-  html.WindowBase openUrl(String url) {
+  html.WindowBase openNewWindow(String url) {
     // We need to open on _top in ios browsers in standalone mode.
     // See https://github.com/flutter/flutter/issues/51461 for reference.
-    final target = _navigator.standalone ? '_top' : '';
+    final target = navigator.standalone ? '_top' : '';
     return html.window.open(url, target);
   }
 
@@ -53,6 +46,6 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     @required bool universalLinksOnly,
     @required Map<String, String> headers,
   }) {
-    return Future<bool>.value(openUrl(url) != null);
+    return Future<bool>.value(openNewWindow(url) != null);
   }
 }
