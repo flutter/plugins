@@ -84,6 +84,7 @@ final class GoogleMapController
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
+  private boolean zoomControlsEnabled = true;
   private boolean indoorEnabled = true;
   private boolean trafficEnabled = false;
   private boolean buildingsEnabled = true;
@@ -398,6 +399,11 @@ final class GoogleMapController
       case "map#isZoomGesturesEnabled":
         {
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
+          break;
+        }
+      case "map#isZoomControlsEnabled":
+        {
+          result.success(googleMap.getUiSettings().isZoomControlsEnabled());
           break;
         }
       case "map#isScrollGesturesEnabled":
@@ -767,6 +773,17 @@ final class GoogleMapController
     this.myLocationButtonEnabled = myLocationButtonEnabled;
     if (googleMap != null) {
       updateMyLocationSettings();
+    }
+  }
+
+  @Override
+  public void setZoomControlsEnabled(boolean zoomControlsEnabled) {
+    if (this.zoomControlsEnabled == zoomControlsEnabled) {
+      return;
+    }
+    this.zoomControlsEnabled = zoomControlsEnabled;
+    if (googleMap != null) {
+      googleMap.getUiSettings().setZoomControlsEnabled(zoomControlsEnabled);
     }
   }
 

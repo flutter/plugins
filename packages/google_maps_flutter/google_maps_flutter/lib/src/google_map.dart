@@ -35,6 +35,7 @@ class GoogleMap extends StatefulWidget {
     this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
     this.rotateGesturesEnabled = true,
     this.scrollGesturesEnabled = true,
+    this.zoomControlsEnabled = true,
     this.zoomGesturesEnabled = true,
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
@@ -87,6 +88,12 @@ class GoogleMap extends StatefulWidget {
 
   /// True if the map view should respond to scroll gestures.
   final bool scrollGesturesEnabled;
+
+  /// True if the map view should show zoom controls. This includes two buttons
+  /// to zoom in and zoom out. The default value is to show zoom controls.
+  ///
+  /// This is only supported on Android. And this field is silently ignored on iOS.
+  final bool zoomControlsEnabled;
 
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
@@ -392,6 +399,7 @@ class _GoogleMapOptions {
     this.scrollGesturesEnabled,
     this.tiltGesturesEnabled,
     this.trackCameraPosition,
+    this.zoomControlsEnabled,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
     this.myLocationButtonEnabled,
@@ -412,6 +420,7 @@ class _GoogleMapOptions {
       scrollGesturesEnabled: map.scrollGesturesEnabled,
       tiltGesturesEnabled: map.tiltGesturesEnabled,
       trackCameraPosition: map.onCameraMove != null,
+      zoomControlsEnabled: map.zoomControlsEnabled,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
@@ -439,6 +448,8 @@ class _GoogleMapOptions {
   final bool tiltGesturesEnabled;
 
   final bool trackCameraPosition;
+
+  final bool zoomControlsEnabled;
 
   final bool zoomGesturesEnabled;
 
@@ -471,6 +482,7 @@ class _GoogleMapOptions {
     addIfNonNull('rotateGesturesEnabled', rotateGesturesEnabled);
     addIfNonNull('scrollGesturesEnabled', scrollGesturesEnabled);
     addIfNonNull('tiltGesturesEnabled', tiltGesturesEnabled);
+    addIfNonNull('zoomControlsEnabled', zoomControlsEnabled);
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);

@@ -32,6 +32,8 @@ interface GoogleMapOptionsSink {
 
   void setMyLocationEnabled(boolean myLocationEnabled);
 
+  void setZoomControlsEnabled(boolean zoomControlsEnabled);
+
   void setMyLocationButtonEnabled(boolean myLocationButtonEnabled);
 
   void setIndoorEnabled(boolean indoorEnabled);
