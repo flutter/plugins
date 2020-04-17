@@ -1,3 +1,7 @@
+## 4.4.2
+
+* Android: make the Delegate non-final to allow overriding.
+
 ## 4.4.1
 
 * Android: Move `GoogleSignInWrapper` to a separate class.
