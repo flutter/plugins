@@ -109,6 +109,50 @@
   XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStateFailed);
 }
 
+- (void)testAddPaymentWithSameProductIDWillFail {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"result should return expected error"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin addPayment:result:]"
+                                        arguments:@{
+                                          @"productIdentifier" : @"123",
+                                          @"quantity" : @(1),
+                                          @"simulatesAskToBuyInSandBox" : @YES,
+                                        }];
+  SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
+  self.plugin.paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+      transactionsUpdated:^(NSArray<SKPaymentTransaction*>* _Nonnull transactions) {
+      }
+      transactionRemoved:nil
+      restoreTransactionFailed:nil
+      restoreCompletedTransactionsFinished:nil
+      shouldAddStorePayment:^BOOL(SKPayment* _Nonnull payment, SKProduct* _Nonnull product) {
+        return YES;
+      }
+      updatedDownloads:nil];
+  [queue addTransactionObserver:self.plugin.paymentQueueHandler];
+
+  FlutterResult addDuplicatePaymentBlock = ^(id r) {
+    XCTAssertNil(r);
+    [self.plugin
+        handleMethodCall:call
+                  result:^(id result) {
+                    XCTAssertNotNil(result);
+                    XCTAssertTrue([result isKindOfClass:[FlutterError class]]);
+                    FlutterError* error = (FlutterError*)result;
+                    XCTAssertEqualObjects(error.code, @"storekit_duplicate_product_object");
+                    XCTAssertEqualObjects(
+                        error.message,
+                        @"There is a pending transaction for the same product identifier. Please "
+                        @"either wait for it to be finished or finish it manuelly using "
+                        @"`completePurchase` to avoid edge cases.");
+                    [expectation fulfill];
+                  }];
+  };
+  [self.plugin handleMethodCall:call result:addDuplicatePaymentBlock];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+}
+
 - (void)testAddPaymentSuccessWithMockQueue {
   XCTestExpectation* expectation =
       [self expectationWithDescription:@"result should return success state"];

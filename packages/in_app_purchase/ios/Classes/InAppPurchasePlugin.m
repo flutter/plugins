@@ -73,6 +73,7 @@
       updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
         [weakSelf updatedDownloads:downloads];
       }];
+  [_paymentQueueHandler startObservingPaymentQueue];
   _callbackChannel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_callback"
                                   binaryMessenger:[registrar messenger]];
@@ -151,25 +152,36 @@
   // When a product is already fetched, we create a payment object with
   // the product to process the payment.
   SKProduct *product = [self getProduct:productID];
-  if (product) {
-    SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
-    payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
-    NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
-    payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
-    if (@available(iOS 8.3, *)) {
-      payment.simulatesAskToBuyInSandbox =
-          [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
-    }
-    [self.paymentQueueHandler addPayment:payment];
-    result(nil);
+  if (!product) {
+    result([FlutterError
+        errorWithCode:@"storekit_invalid_payment_object"
+              message:
+                  @"You have requested a payment for an invalid product. Either the "
+                  @"`productIdentifier` of the payment is not valid or the product has not been "
+                  @"fetched before adding the payment to the payment queue."
+              details:call.arguments]);
     return;
   }
-  result([FlutterError
-      errorWithCode:@"storekit_invalid_payment_object"
-            message:@"You have requested a payment for an invalid product. Either the "
-                    @"`productIdentifier` of the payment is not valid or the product has not been "
-                    @"fetched before adding the payment to the payment queue."
-            details:call.arguments]);
+  SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
+  payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
+  NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
+  payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
+  if (@available(iOS 8.3, *)) {
+    payment.simulatesAskToBuyInSandbox =
+        [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
+  }
+
+  if (![self.paymentQueueHandler addPayment:payment]) {
+    result([FlutterError
+        errorWithCode:@"storekit_duplicate_product_object"
+              message:@"There is a pending transaction for the same product identifier. Please "
+                      @"either wait for it to be finished or finish it manuelly using "
+                      @"`completePurchase` to avoid edge cases."
+
+              details:call.arguments]);
+    return;
+  }
+  result(nil);
 }
 
 - (void)finishTransaction:(FlutterMethodCall *)call result:(FlutterResult)result {
