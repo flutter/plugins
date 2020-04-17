@@ -23,23 +23,19 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       _controller.stream.where((event) => event.mapId == mapId);
 
   @override
-  Future<void> init(int mapId) {
-    print('init mapId:$mapId');
-  }
+  Future<void> init(int mapId) {  }
 
   @override
   Future<void> updateMapOptions(
       Map<String, dynamic> optionsUpdate, {
         @required int mapId,
       }) {
-    print('updateMapOptions mapId:$mapId' +'\n '+ optionsUpdate.toString());
-//    try {throw Error();  } catch (error, stacktrace) { print(stacktrace.toString());  }
-    /*
-     Convert.interpretGoogleMapOptions(call.argument("options"), this);
-          result.success(Convert.cameraPositionToJson(getCameraPosition()));
-     */
-//    _mapById[mapId].googleMap.options(options);
-//    throw UnimplementedError('updateMapOptions() has not been implemented.');
+    GoogleMapController googleMapController = _mapById[mapId];
+    if(googleMapController != null) {
+      _optionsFromParams(googleMapController.options, optionsUpdate);
+    } else {
+      throw StateError("updateMapOptions called prior to map initialization");
+    }
   }
 
   @override
@@ -389,6 +385,14 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
               .markersToAdd : null,
         )
     ;
+
+
+    /** trafficEnabled
+     * var trafficLayer = new google.maps.TrafficLayer();
+        trafficLayer.setMap(map);
+     */
+
+
 //    try {throw Error();  } catch (error, stacktrace) { print(stacktrace.toString());  }
     onPlatformViewCreated.call(_id);
     ///TODO not create redundent view.

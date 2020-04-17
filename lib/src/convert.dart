@@ -2,29 +2,68 @@ part of google_maps_flutter_web;
 
 void _optionsFromParams(GoogleMap.MapOptions options,
     Map<String, dynamic> optionsUpdate) {
-  print('>'+ optionsUpdate.toString());
-//      compassEnabled: true
-//      mapToolbarEnabled: true
-//      cameraTargetBounds: [null]
-//      mapType: 1
-//  ..mapTypeId(optionsUpdate['mapType'])
-//      minMaxZoomPreference: [null
-//        null]
-//      rotateGesturesEnabled: true
-//      scrollGesturesEnabled: true
-//      tiltGesturesEnabled: true
-//      zoomGesturesEnabled: true
-//      trackCameraPosition: true
-//      myLocationEnabled: true
-//      myLocationButtonEnabled: true
-//      padding: [0
-//        0
-//        0
-//        0]
-//      indoorEnabled: true
-//      trafficEnabled: false
-//      buildingsEnabled: true
-      ;
+  if(optionsUpdate['mapType'] != null) {
+    options
+      ..mapTypeId = GoogleMap.MapTypeId.values[optionsUpdate['mapType']]
+    ;}
+  options
+    ..minZoom   = optionsUpdate['minMaxZoomPreference'][0]
+    ..maxZoom   = optionsUpdate['minMaxZoomPreference'][1]
+  ;
+//  compassEnabled,
+//  mapToolbarEnabled,
+//  cameraTargetBounds,
+//  mapType,
+//  minMaxZoomPreference,
+//  rotateGesturesEnabled,
+//  scrollGesturesEnabled,
+//  tiltGesturesEnabled,
+//  trackCameraPosition,
+//  zoomGesturesEnabled,
+//  myLocationEnabled,
+//  myLocationButtonEnabled,
+//  padding,
+//  indoorViewEnabled,
+//  trafficEnabled,
+//  buildingsEnabled,
+
+// backgroundColor(String _backgroundColor)
+//center(LatLng _center)
+//clickableIcons(bool _clickableIcons)
+//disableDefaultUI(bool _disableDefaultUI)
+//disableDoubleClickZoom(bool _disableDoubleClickZoom)
+//draggable(bool _draggable)
+//draggableCursor(String _draggableCursor)
+//draggingCursor(String _draggingCursor)
+//fullscreenControl(bool _fullscreenControl)
+//fullscreenControlOptions(
+//gestureHandling(String _gestureHandling)
+//heading(num _heading)
+//keyboardShortcuts(bool _keyboardShortcuts)
+//mapTypeControl(bool _mapTypeControl)
+//mapTypeControlOptions(MapTypeControlOptions _mapTypeControlOptions)
+//_mapTypeId(dynamic __mapTypeId)
+//mapTypeId(dynamic /*MapTypeId|String*/ mapTypeId)
+//maxZoom(num _maxZoom)
+//minZoom(num _minZoom)
+//noClear(bool _noClear)
+//overviewMapControl(bool _overviewMapControl)
+//overviewMapControlOptions(
+//panControl(bool _panControl)
+//panControlOptions(PanControlOptions _panControlOptions)
+//rotateControl(bool _rotateControl)
+//rotateControlOptions(RotateControlOptions _rotateControlOptions)
+//scaleControl(bool _scaleControl)
+//scaleControlOptions(ScaleControlOptions _scaleControlOptions)
+//scrollwheel(bool _scrollwheel)
+//streetView(StreetViewPanorama _streetView)
+//streetViewControl(bool _streetViewControl)
+//streetViewControlOptions(
+//styles(List<MapTypeStyle> _styles)
+//tilt(num _tilt)
+//zoom(num _zoom)
+//zoomControl(bool _zoomControl)
+//zoomControlOptions(ZoomControlOptions _zoomControlOptions)
 }
 
 
