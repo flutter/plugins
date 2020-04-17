@@ -132,25 +132,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       }) {
     GoogleMapController googleMapController = _mapById[mapId];
     if(googleMapController != null) {
-      print(mapStyle);
-      //https://github.com/cylyl/dart-google-maps/blob/master/example/04-styles/maptype-styled-simple/page.dart
-//      googleMapController.googleMap.mapTypes.set('custom_style', value);
-
-     /* String mapStyle = (String) call.arguments;
-      boolean mapStyleSet;
-      if (mapStyle == null) {
-        mapStyleSet = googleMap.setMapStyle(null);
-      } else {
-        mapStyleSet = googleMap.setMapStyle(new MapStyleOptions(mapStyle));
-      }
-      ArrayList<Object> mapStyleResult = new ArrayList<>(2);
-      mapStyleResult.add(mapStyleSet);
-      if (!mapStyleSet) {
-        mapStyleResult.add(
-            "Unable to set the map style. Please check console logs for errors.");
-      }*/
+      googleMapController.options.styles = _mapStyles(mapStyle);
     }
-    throw UnimplementedError('setMapStyle() has not been implemented.');
   }
 
   @override

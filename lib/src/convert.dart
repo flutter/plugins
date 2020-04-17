@@ -66,6 +66,162 @@ void _optionsFromParams(GoogleMap.MapOptions options,
 //zoomControlOptions(ZoomControlOptions _zoomControlOptions)
 }
 
+List<GoogleMap.MapTypeStyle> _mapStyles(String mapStyle) {
+  List<GoogleMap.MapTypeStyle> styles = [];
+  if(mapStyle != null) {
+    List list = json.decode(mapStyle);
+    list.forEach((style) {
+      List list2 = style['stylers'];
+      List<GoogleMap.MapTypeStyler> stylers = [];
+      list2.forEach((style) {
+        stylers.add(
+            GoogleMap.MapTypeStyler()
+              ..color = style['color']
+              ..gamma = style['gamma']
+              ..hue = style['hue']
+              ..invertLightness = style['invertLightness']
+              ..lightness = style['lightness']
+              ..saturation = style['saturation']
+              ..visibility = style['visibility']
+              ..weight = style['weight']
+        );
+      });
+
+      GoogleMap.MapTypeStyleElementType elementType;
+      if (style['elementType'] == 'geometry') {
+        elementType = GoogleMap.MapTypeStyleElementType.GEOMETRY;
+      } else if (style['elementType'] == 'geometry.fill') {
+        elementType = GoogleMap.MapTypeStyleElementType.GEOMETRY_FILL;
+      } else if (style['elementType'] == 'geometry.stroke') {
+        elementType = GoogleMap.MapTypeStyleElementType.GEOMETRY_STROKE;
+      } else if (style['elementType'] == 'labels') {
+        elementType = GoogleMap.MapTypeStyleElementType.LABELS;
+      } else if (style['elementType'] == 'labels.icon') {
+        elementType = GoogleMap.MapTypeStyleElementType.LABELS_ICON;
+      } else if (style['elementType'] == 'labels.text') {
+        elementType = GoogleMap.MapTypeStyleElementType.LABELS_TEXT;
+      } else if (style['elementType'] == 'labels.text.fill') {
+        elementType = GoogleMap.MapTypeStyleElementType.LABELS_TEXT_FILL;
+      } else if (style['elementType'] == 'labels.text.stroke') {
+        elementType = GoogleMap.MapTypeStyleElementType.LABELS_TEXT_STROKE;
+      }
+
+      GoogleMap.MapTypeStyleFeatureType featureType;
+      if (style[featureType] == 'administrative') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE;
+      }
+      else if (style[featureType] == 'administrative.country') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE_COUNTRY;
+      }
+      else if (style[featureType] == 'administrative.land_parcel') {
+        featureType =
+            GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE_LAND_PARCEL;
+      }
+      else if (style[featureType] == 'administrative.locality') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE_LOCALITY;
+      }
+      else if (style[featureType] == 'administrative.neighborhood') {
+        featureType =
+            GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE_NEIGHBORHOOD;
+      }
+      else if (style[featureType] == 'administrative.province') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE_PROVINCE;
+      }
+      else if (style[featureType] == 'all') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.ALL;
+      }
+      else if (style[featureType] == 'landscape') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.LANDSCAPE;
+      }
+      else if (style[featureType] == 'landscape.man_made') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.LANDSCAPE_MAN_MADE;
+      }
+      else if (style[featureType] == 'landscape.natural') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.LANDSCAPE_NATURAL;
+      }
+      else if (style[featureType] == 'landscape.natural.landcover') {
+        featureType =
+            GoogleMap.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_LANDCOVER;
+      }
+      else if (style[featureType] == 'landscape.natural.terrain') {
+        featureType =
+            GoogleMap.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_TERRAIN;
+      }
+      else if (style[featureType] == 'poi') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.POI;
+      }
+      else if (style[featureType] == 'poi.attraction') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.POI_ATTRACTION;
+      }
+      else if (style[featureType] == 'poi.business') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.POI_BUSINESS;
+      }
+      else if (style[featureType] == 'poi.government') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.POI_GOVERNMENT;
+      }
+      else if (style[featureType] == 'poi.medical') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.POI_MEDICAL;
+      }
+      else if (style[featureType] == 'poi.park') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.POI_PARK;
+      }
+      else if (style[featureType] == 'poi.place_of_worship') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.POI_PLACE_OF_WORSHIP;
+      }
+      else if (style[featureType] == 'poi.school') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.POI_SCHOOL;
+      }
+      else if (style[featureType] == 'poi.sports_complex') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.POI_SPORTS_COMPLEX;
+      }
+      else if (style[featureType] == 'road') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.ROAD;
+      }
+      else if (style[featureType] == 'road.arterial') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.ROAD_ARTERIAL;
+      }
+      else if (style[featureType] == 'road.highway') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.ROAD_HIGHWAY;
+      }
+      else if (style[featureType] == 'road.highway.controlled_access') {
+        featureType =
+            GoogleMap.MapTypeStyleFeatureType.ROAD_HIGHWAY_CONTROLLED_ACCESS;
+      }
+      else if (style[featureType] == 'road.local') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.ROAD_LOCAL;
+      }
+      else if (style[featureType] == 'transit') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT;
+      }
+      else if (style[featureType] == 'transit.line') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT_LINE;
+      }
+      else if (style[featureType] == 'transit.station') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT_STATION;
+      }
+      else if (style[featureType] == 'transit.station.airport') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT_STATION_AIRPORT;
+      }
+      else if (style[featureType] == 'transit.station.bus') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT_STATION_BUS;
+      }
+      else if (style[featureType] == 'transit.station.rail') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT_STATION_RAIL;
+      }
+      else if (style[featureType] == 'water') {
+        featureType = GoogleMap.MapTypeStyleFeatureType.WATER;
+      }
+
+      styles.add(
+          GoogleMap.MapTypeStyle()
+            ..elementType = elementType
+            ..featureType = featureType
+            ..stylers = stylers
+      );
+    });
+  }
+  return styles;
+}
 
 PolylineUpdates _polylineFromParams(value) {
   if (value != null) {
