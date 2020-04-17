@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Fix crash when parameter extension is null.
+
 ## 0.1.1
 
 * Remove Android dependencies fallback.
