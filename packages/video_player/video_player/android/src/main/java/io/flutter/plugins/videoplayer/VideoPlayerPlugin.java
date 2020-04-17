@@ -4,9 +4,6 @@
 
 package io.flutter.plugins.videoplayer;
 
-import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.Format;
-
 import android.content.Context;
 import android.os.Build;
 import android.util.LongSparseArray;

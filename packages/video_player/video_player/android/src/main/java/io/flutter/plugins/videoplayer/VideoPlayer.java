@@ -7,10 +7,6 @@ package io.flutter.plugins.videoplayer;
 import static com.google.android.exoplayer2.Player.REPEAT_MODE_ALL;
 import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 
-
-import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.Format;
-
 import android.content.Context;
 import android.net.Uri;
 import android.view.Surface;
@@ -22,6 +18,7 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.Listener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -268,13 +265,13 @@ final class VideoPlayer {
   }
 
   long getAbsolutePosition() {
-      Timeline timeline = exoPlayer.getCurrentTimeline();
-      if (!timeline.isEmpty()) {
-          long windowStartTimeMs = timeline.getWindow(0, new Timeline.Window()).windowStartTimeMs;
-          long pos = exoPlayer.getCurrentPosition();
-          return (windowStartTimeMs + pos);
-      }
-      return exoPlayer.getCurrentPosition();
+    Timeline timeline = exoPlayer.getCurrentTimeline();
+    if (!timeline.isEmpty()) {
+      long windowStartTimeMs = timeline.getWindow(0, new Timeline.Window()).windowStartTimeMs;
+      long pos = exoPlayer.getCurrentPosition();
+      return (windowStartTimeMs + pos);
+    }
+    return exoPlayer.getCurrentPosition();
   }
 
   @SuppressWarnings("SuspiciousNameCombination")
