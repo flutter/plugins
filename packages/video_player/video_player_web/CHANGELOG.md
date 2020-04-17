@@ -1,6 +1,6 @@
 ## 0.1.2+2
 
-* Add `analysis_options.yaml` to the package, so we can ignore `undefined_prefixed_name` errors (temporarily).
+* Add `analysis_options.yaml` to the package, so we can ignore `undefined_prefixed_name` errors. Works around https://github.com/flutter/flutter/issues/41563.
 
 ## 0.1.2+1
 
