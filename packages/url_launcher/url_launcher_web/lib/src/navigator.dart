@@ -1,5 +1,5 @@
 @JS()
-library navigator.dart;
+library navigator;
 
 import 'package:js/js.dart';
 import 'package:meta/meta.dart';

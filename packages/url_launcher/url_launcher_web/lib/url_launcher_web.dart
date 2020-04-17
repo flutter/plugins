@@ -4,7 +4,7 @@ import 'dart:html' as html;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
-import 'navigator.dart' as navigator;
+import 'src/navigator.dart' as navigator;
 
 /// The web implementation of [UrlLauncherPlatform].
 ///
