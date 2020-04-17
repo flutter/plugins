@@ -55,6 +55,7 @@ void main() {
     });
 
     test('the window that is launched is in the same window', () {
+      final originalStandalone = navigator.standalone;
       // Simulate the navigator is in standalone mode on iOS devices.
       // https://developer.mozilla.org/en-US/docs/Web/API/Navigator
       navigator.standalone = true;
@@ -63,6 +64,7 @@ void main() {
           urlLauncherPlugin.openNewWindow('https://www.google.com');
       expect(window, isNotNull);
       expect(window.opener, isNot(equals(html.window)));
+      navigator.standalone = originalStandalone;
     });
 
     test('does not implement closeWebView()', () {
