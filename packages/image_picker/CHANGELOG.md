@@ -1,3 +1,7 @@
+## 0.6.5+1
+
+* Expose errors thrown in `pickImage` and `pickVideo` docs.
+
 ## 0.6.5
 
 * Set maximum duration for video recording.
