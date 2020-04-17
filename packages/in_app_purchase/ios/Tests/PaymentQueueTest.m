@@ -196,4 +196,34 @@
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStateDeferred);
 }
 
+- (void)testFinishTransaction {
+  XCTestExpectation *expectation =
+      [self expectationWithDescription:@"handler.transactions should be empty."];
+  SKPaymentQueueStub *queue = [[SKPaymentQueueStub alloc] init];
+  queue.testState = SKPaymentTransactionStateDeferred;
+  __block FIAPaymentQueueHandler *handler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+      transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        XCTAssertEqual(handler.transactions.count, 1);
+        XCTAssertEqual(transactions.count, 1);
+        SKPaymentTransaction *transaction = transactions[0];
+        [handler finishTransaction:transaction];
+      }
+      transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        XCTAssertEqual(handler.transactions.count, 0);
+        XCTAssertEqual(transactions.count, 1);
+        [expectation fulfill];
+      }
+      restoreTransactionFailed:nil
+      restoreCompletedTransactionsFinished:nil
+      shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
+        return YES;
+      }
+      updatedDownloads:nil];
+  [queue addTransactionObserver:handler];
+  SKPayment *payment =
+      [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
+  [handler addPayment:payment];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+}
+
 @end

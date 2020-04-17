@@ -168,7 +168,16 @@
 }
 
 - (void)restoreCompletedTransactions {
-  [self.observer paymentQueueRestoreCompletedTransactionsFinished:self];
+  if ([self.observer
+          respondsToSelector:@selector(paymentQueueRestoreCompletedTransactionsFinished:)]) {
+    [self.observer paymentQueueRestoreCompletedTransactionsFinished:self];
+  }
+}
+
+- (void)finishTransaction:(SKPaymentTransaction *)transaction {
+  if ([self.observer respondsToSelector:@selector(paymentQueue:removedTransactions:)]) {
+    [self.observer paymentQueue:self removedTransactions:@[ transaction ]];
+  }
 }
 
 @end

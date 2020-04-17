@@ -91,6 +91,11 @@
 // Sent when transactions are removed from the queue (via finishTransaction:).
 - (void)paymentQueue:(SKPaymentQueue *)queue
     removedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
+  for (SKPaymentTransaction *transaction in transactions) {
+    if (transaction.transactionIdentifier) {
+      [self.transactionsSetter removeObjectForKey:transaction.payment.productIdentifier];
+    }
+  }
   self.transactionsRemoved(transactions);
 }
 
