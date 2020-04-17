@@ -123,6 +123,9 @@ task:
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh ios --no-codesign
     - name: lint_darwin_plugins
+      matrix:
+        PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
+        PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
       script:
         # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
         - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
