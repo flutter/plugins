@@ -1,3 +1,7 @@
+## 0.5.25+4
+
+* Respond to marker tap events based on consumeTapEvents parameter
+
 ## 0.5.25+3
 
 * Rename 'Page' in the example app to avoid type conflict with the Flutter Framework.

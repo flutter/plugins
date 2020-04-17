@@ -292,8 +292,11 @@ static UIImage* ExtractIcon(NSObject<FlutterPluginRegistrar>* registrar, NSArray
   if (!controller) {
     return NO;
   }
-  [_methodChannel invokeMethod:@"marker#onTap" arguments:@{@"markerId" : markerId}];
-  return controller.consumeTapEvents;
+  if (controller.consumeTapEvents) {
+    [_methodChannel invokeMethod:@"marker#onTap" arguments:@{@"markerId" : markerId}];
+    return YES;
+  }
+  return NO;
 }
 - (void)onMarkerDragEnd:(NSString*)markerId coordinate:(CLLocationCoordinate2D)coordinate {
   if (!markerId) {
