@@ -1,3 +1,7 @@
+## 4.4.2
+
+* Android: make the Delegate non-final to allow overriding.
+
 ## 4.4.1
 
 * Android: Move `GoogleSignInWrapper` to a separate class.
@@ -7,6 +11,7 @@
 * Migrate to Android v2 embedder.
 
 ## 4.3.0
+
 * Add support for method introduced in `google_sign_in_platform_interface` 1.1.0.
 
 ## 4.2.0
