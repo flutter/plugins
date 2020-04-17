@@ -27,3 +27,7 @@ RUN yes | sdkmanager --licenses
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends google-chrome-stable
+
+# Install IntelliJ Idea
+RUN curl -L 'https://download.jetbrains.com/idea/ideaIC-2020.1.tar.gz' | tar xvz
+ENV PATH="/idea-IC-201.6668.121/bin:${PATH}"
