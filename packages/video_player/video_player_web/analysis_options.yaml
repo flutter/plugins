@@ -1,0 +1,10 @@
+# This is a temporary file to allow us to unblock the flutter/plugins repo CI.
+# It disables some of lints that were disabled inline. Disabling lints inline
+# is no longer possible, so this file is required.
+# TODO(ditman) https://github.com/flutter/flutter/issues/55000 (clean this up)
+
+include: ../../../analysis_options.yaml
+
+analyzer:
+  errors:
+    undefined_prefixed_name: ignore
