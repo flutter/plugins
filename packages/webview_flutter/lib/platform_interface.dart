@@ -279,36 +279,26 @@ abstract class WebViewPlatformController {
         "WebView getTitle is not implemented on the current platform");
   }
 
-  /// Set the scrolled position of this view.
-  ///
-  /// The parameters `x` and `y` specify the position to scroll to in WebView pixels.
-  Future<void> scrollTo(int x, int y) {
-    throw UnimplementedError(
-        "WebView scrollTo is not implemented on the current platform");
+  /// Set the absolute scrolled position of this view.
+  /// `offset` absolute position to scroll to in logical pixels.
+  Future<void> scrollTo(Offset offset) {
+    throw UnimplementedError("WebView scrollTo is not implemented on the current platform");
   }
 
   /// Move the scrolled position of this view.
-  ///
-  /// The parameters `x` and `y` specify the amount of WebView pixels to scroll by.
-  Future<void> scrollBy(int x, int y) {
-    throw UnimplementedError(
-        "WebView scrollBy is not implemented on the current platform");
+  /// `offset` relative position to scroll by in logical pixels.
+  Future<void> scrollBy(Offset offset) {
+    throw UnimplementedError("WebView scrollBy is not implemented on the current platform");
   }
 
-  /// Return the horizontal scroll position of this view.
-  ///
-  /// Scroll position is measured from left.
-  Future<int> getScrollX() {
-    throw UnimplementedError(
-        "WebView getScrollX is not implemented on the current platform");
+  /// Return the absolute scroll position of this view in logical pixels.
+  Future<Offset> getScrollPosition() {
+    throw UnimplementedError("WebView getScrollPosition is not implemented on the current platform");
   }
 
-  /// Return the vertical scroll position of this view.
-  ///
-  /// Scroll position is measured from top.
-  Future<int> getScrollY() {
-    throw UnimplementedError(
-        "WebView getScrollY is not implemented on the current platform");
+  /// Return the scroll extent of this view in logical pixels.
+  Future<Size> getScrollExtent() {
+    throw UnimplementedError("WebView getScrollExtent is not implemented on the current platform");
   }
 }
 

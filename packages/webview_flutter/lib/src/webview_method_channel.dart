@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui' show Offset, Size;
 
 import 'package:flutter/services.dart';
 
@@ -131,26 +132,26 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   Future<String> getTitle() => _channel.invokeMethod<String>("getTitle");
 
   @override
-  Future<void> scrollTo(int x, int y) {
-    return _channel.invokeMethod<void>('scrollTo', <String, int>{
-      'x': x,
-      'y': y,
-    });
+  Future<void> scrollTo(Offset offset) {
+    return _channel.invokeMethod<void>('scrollTo', <String, double>{'x': offset.dx, 'y': offset.dy});
   }
 
   @override
-  Future<void> scrollBy(int x, int y) {
-    return _channel.invokeMethod<void>('scrollBy', <String, int>{
-      'x': x,
-      'y': y,
-    });
+  Future<void> scrollBy(Offset offset) {
+    return _channel.invokeMethod<void>('scrollBy', <String, double>{'x': offset.dx, 'y': offset.dy});
   }
 
   @override
-  Future<int> getScrollX() => _channel.invokeMethod<int>("getScrollX");
+  Future<Offset> getScrollPosition() async {
+    final result = await _channel.invokeMapMethod<String, double>('getScrollPosition');
+    return Offset(result['x'], result['y']);
+  }
 
   @override
-  Future<int> getScrollY() => _channel.invokeMethod<int>("getScrollY");
+  Future<Size> getScrollExtent() async {
+    final result = await _channel.invokeMapMethod<String, double>('getScrollExtent');
+    return Size(result['width'], result['height']);
+  }
 
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {

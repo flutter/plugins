@@ -19,6 +19,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -164,11 +165,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "scrollBy":
         scrollBy(methodCall, result);
         break;
-      case "getScrollX":
-        getScrollX(result);
+      case "getScrollPosition":
+        getScrollPosition(result);
         break;
-      case "getScrollY":
-        getScrollY(result);
+      case "getScrollExtent":
+        getScrollExtent(result);
         break;
       default:
         result.notImplemented();
@@ -266,33 +267,44 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(webView.getTitle());
   }
 
-  private void scrollTo(MethodCall methodCall, Result result) {
-    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
-    int x = (int) request.get("x");
-    int y = (int) request.get("y");
+  private float getDpi() {
+    return webView.getContext().getResources().getDisplayMetrics().density;
+  }
 
-    webView.scrollTo(x, y);
-
+  private void scrollTo(MethodCall methodCall, final Result result) {
+    final float dpi = getDpi();
+    Map<String, Object> request = methodCall.arguments();
+    final double x = ((double) request.get("x")) * dpi;
+    final double y = ((double) request.get("y")) * dpi;
+    webView.scrollTo((int) x, (int) y);
     result.success(null);
   }
 
-  private void scrollBy(MethodCall methodCall, Result result) {
-    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
-    int x = (int) request.get("x");
-    int y = (int) request.get("y");
-
-    webView.scrollBy(x, y);
+  private void scrollBy(MethodCall methodCall, final Result result) {
+    final float dpi = getDpi();
+    Map<String, Object> request = methodCall.arguments();
+    double x = ((double) request.get("x")) * dpi;
+    double y = ((double) request.get("y")) * dpi;
+    webView.scrollBy((int) x, (int) y);
     result.success(null);
   }
 
-  private void getScrollX(Result result) {
-    result.success(webView.getScrollX());
+  private void getScrollPosition(final Result result) {
+    final float dpi = getDpi();
+    result.success(new HashMap<String, Double>() {{
+      put("x", (double) webView.getScrollX() / dpi);
+      put("y", (double) webView.getScrollY() / dpi);
+    }});
   }
 
-  private void getScrollY(Result result) {
-    result.success(webView.getScrollY());
+  private void getScrollExtent(final Result result) {
+    final float dpi = getDpi();
+    result.success(new HashMap<String, Double>() {{
+      put("width", (double) webView.getMeasuredWidth() / dpi);
+      // The WebView's ContentHeight is already in logical pixel units on Android.
+      put("height", (double) webView.getContentHeight());
+    }});
   }
-
   private void applySettings(Map<String, Object> settings) {
     for (String key : settings.keySet()) {
       switch (key) {
