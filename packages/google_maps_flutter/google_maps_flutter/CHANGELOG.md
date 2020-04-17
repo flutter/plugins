@@ -1,3 +1,7 @@
+## 0.5.26
+
+* Adds support for toggling zoom controls (Android only)
+
 ## 0.5.25+3
 
 * Rename 'Page' in the example app to avoid type conflict with the Flutter Framework.

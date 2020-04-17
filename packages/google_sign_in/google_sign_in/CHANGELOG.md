@@ -1,6 +1,10 @@
-## 4.4.1+1
+## 4.4.2+1
 
 * Upgrade google_sign_in_web to version ^0.9.1
+
+## 4.4.2
+
+* Android: make the Delegate non-final to allow overriding.
 
 ## 4.4.1
 
