@@ -1,11 +1,11 @@
 name: ios_platform_images
 description: A plugin to share images between Flutter and iOS in add-to-app setups.
-version: 0.1.0+2
+version: 0.1.1
 homepage: https://github.com/flutter/plugins/tree/master/packages/ios_platform_images/ios_platform_images
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.10.0 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"
 
 dependencies:
   flutter:
