@@ -24,9 +24,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
   @override
   Future<void> init(int mapId) {
-    mapId = _id;
-    print('init $mapId');
-//    throw Exception('>>');
+    print('init mapId:$mapId');
   }
 
   @override
@@ -34,7 +32,12 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       Map<String, dynamic> optionsUpdate, {
         @required int mapId,
       }) {
-    print('mapId:$mapId');
+    print('updateMapOptions mapId:$mapId' +'\n '+ optionsUpdate.toString());
+//    try {throw Error();  } catch (error, stacktrace) { print(stacktrace.toString());  }
+    /*
+     Convert.interpretGoogleMapOptions(call.argument("options"), this);
+          result.success(Convert.cameraPositionToJson(getCameraPosition()));
+     */
 //    _mapById[mapId].googleMap.options(options);
 //    throw UnimplementedError('updateMapOptions() has not been implemented.');
   }
@@ -96,15 +99,34 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       CameraUpdate cameraUpdate, {
         @required int mapId,
       }) {
-    throw UnimplementedError('animateCamera() has not been implemented.');
+    moveCamera(cameraUpdate, mapId: mapId);
   }
+
 
   @override
   Future<void> moveCamera(
       CameraUpdate cameraUpdate, {
         @required int mapId,
       }) {
-    throw UnimplementedError('moveCamera() has not been implemented.');
+    GoogleMapController googleMapController = _mapById[mapId];
+    if(googleMapController != null) {
+      GoogleMap.GMap map = googleMapController.googleMap;
+      dynamic json = cameraUpdate.toJson();
+      print(json);
+      if('newLatLng' == json[0]
+      || 'newLatLngZoom' == json[0]) {
+        map.panTo(GoogleMap.LatLng(json[1][0],json[1][1]));
+      } else if('newLatLngBounds' == json[0]) {
+        map.panToBounds(GoogleMap.LatLngBounds(
+            GoogleMap.LatLng(json[1][0][0],json[1][0][1]),
+            GoogleMap.LatLng(json[1][1][0],json[1][1][1])
+        ));
+      } else {
+        throw UnimplementedError(json[0]+' has not been implemented.');
+      }
+    }
+//    try { throw Error();  } catch (error, stacktrace) { print(stacktrace.toString());  }
+//    throw UnimplementedError('moveCamera() has not been implemented.');
   }
 
   @override
@@ -112,6 +134,26 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       String mapStyle, {
         @required int mapId,
       }) {
+    GoogleMapController googleMapController = _mapById[mapId];
+    if(googleMapController != null) {
+      print(mapStyle);
+      //https://github.com/cylyl/dart-google-maps/blob/master/example/04-styles/maptype-styled-simple/page.dart
+//      googleMapController.googleMap.mapTypes.set('custom_style', value);
+
+     /* String mapStyle = (String) call.arguments;
+      boolean mapStyleSet;
+      if (mapStyle == null) {
+        mapStyleSet = googleMap.setMapStyle(null);
+      } else {
+        mapStyleSet = googleMap.setMapStyle(new MapStyleOptions(mapStyle));
+      }
+      ArrayList<Object> mapStyleResult = new ArrayList<>(2);
+      mapStyleResult.add(mapStyleSet);
+      if (!mapStyleSet) {
+        mapStyleResult.add(
+            "Unable to set the map style. Please check console logs for errors.");
+      }*/
+    }
     throw UnimplementedError('setMapStyle() has not been implemented.');
   }
 
@@ -119,7 +161,19 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<LatLngBounds> getVisibleRegion({
     @required int mapId,
   }) {
-    throw UnimplementedError('getVisibleRegion() has not been implemented.');
+    GoogleMapController googleMapController = _mapById[mapId];
+    if(googleMapController != null) {
+      GoogleMap.LatLngBounds latLngBounds = googleMapController.googleMap
+          .bounds;
+      if(latLngBounds != null) {
+        return Future.value(_gmLatLngBoundsTolatLngBounds(latLngBounds));
+      }
+    }
+//    try { throw Error();  } catch (error, stacktrace) { print(stacktrace.toString());  }
+//    return Future.error(
+//        StateError("getVisibleRegion called prior to map initialization")
+//    );
+    return Future.value(LatLngBounds(southwest: LatLng(0,0),northeast:LatLng(0,0) ));
   }
 
   @override
@@ -127,7 +181,15 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       LatLng latLng, {
         @required int mapId,
       }) {
-    throw UnimplementedError('getScreenCoordinate() has not been implemented.');
+    GoogleMapController googleMapController = _mapById[mapId];
+    if (googleMapController != null) {
+      GoogleMap.Point point = googleMapController.googleMap.projection
+          .fromLatLngToPoint(_latlngToGmLatlng(latLng));
+      return Future.value(ScreenCoordinate(x: point.x, y: point.y));
+    }
+    return Future.error(
+        StateError("getScreenCoordinate called prior to map initialization")
+    );
   }
 
   @override
@@ -135,7 +197,16 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       ScreenCoordinate screenCoordinate, {
         @required int mapId,
       }) {
-    throw UnimplementedError('getLatLng() has not been implemented.');
+    GoogleMapController googleMapController = _mapById[mapId];
+    if(googleMapController != null) {
+      GoogleMap.LatLng latLng = googleMapController.googleMap.projection.fromPointToLatLng(
+        GoogleMap.Point(screenCoordinate.x, screenCoordinate.y)
+      );
+      return Future.value(_gmLatlngToLatlng(latLng));
+    }
+    return Future.error(
+        StateError("getLatLng called prior to map initialization")
+    );
   }
 
   @override
@@ -143,7 +214,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       MarkerId markerId, {
         @required int mapId,
       }) {
-    throw UnimplementedError(   'showMarkerInfoWindow() has not been implemented.');
+    GoogleMapController googleMapController = _mapById[mapId];
+    googleMapController.markersController.showMarkerInfoWindow(
+        markerId.value.toString()
+    );
   }
 
   @override
@@ -151,7 +225,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       MarkerId markerId, {
         @required int mapId,
       }) {
-    throw UnimplementedError(    'hideMarkerInfoWindow() has not been implemented.');
+    GoogleMapController googleMapController = _mapById[mapId];
+    googleMapController.markersController.hideMarkerInfoWindow(
+        markerId.value.toString()
+    );
   }
 
   @override
@@ -159,14 +236,45 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       MarkerId markerId, {
         @required int mapId,
       }) {
-    throw UnimplementedError('updateMapOptions() has not been implemented.');
+    GoogleMapController googleMapController = _mapById[mapId];
+    return Future.value(
+        googleMapController.markersController.isInfoWindowShown(
+            markerId.value.toString()
+        )
+    );
   }
 
   @override
   Future<double> getZoomLevel({
     @required int mapId,
   }) {
-    throw UnimplementedError('getZoomLevel() has not been implemented.');
+    GoogleMapController googleMapController = _mapById[mapId];
+    return Future.value(googleMapController.googleMap.zoom.toDouble());
+  }
+
+  @override
+  Future<Uint8List> takeSnapshot({
+    @required int mapId,
+  }) {
+    throw UnimplementedError('takeSnapshot() has not been implemented.');
+    /**takeSnapshot
+     *  if (googleMap != null) {
+        final MethodChannel.Result _result = result;
+        googleMap.snapshot(
+        new SnapshotReadyCallback() {
+        @Override
+        public void onSnapshotReady(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        bitmap.recycle();
+        _result.success(byteArray);
+        }
+        });
+        } else {
+        result.error("GoogleMap uninitialized", "takeSnapshot", null);
+        }
+     */
   }
 
   // The following are the 11 possible streams of data from the native side
@@ -263,29 +371,27 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       }
     });
 
-
-
-      _mapById[_id] =
-          GoogleMapController.build(
-            mapId: _id,
-            streamController: _controller,
-            onPlatformViewCreated: onPlatformViewCreated,
-            options: options,
-            position: position,
-            initialCircles: initialCircles != null
-                ? initialCircles.circlesToAdd
-                : null,
-            initialPolygons: initialPolygons != null ? initialPolygons
-                .polygonsToAdd : null,
-            initialPolylines: initialPolylines != null ? initialPolylines
-                .polylinesToAdd : null,
-            initialMarkers: initialMarkers != null ? initialMarkers
-                .markersToAdd : null,
-          )
-      ;
+    _mapById[_id] =
+        GoogleMapController.build(
+          mapId: _id,
+          streamController: _controller,
+          onPlatformViewCreated: onPlatformViewCreated,
+          options: options,
+          position: position,
+          initialCircles: initialCircles != null
+              ? initialCircles.circlesToAdd
+              : null,
+          initialPolygons: initialPolygons != null ? initialPolygons
+              .polygonsToAdd : null,
+          initialPolylines: initialPolylines != null ? initialPolylines
+              .polylinesToAdd : null,
+          initialMarkers: initialMarkers != null ? initialMarkers
+              .markersToAdd : null,
+        )
+    ;
+//    try {throw Error();  } catch (error, stacktrace) { print(stacktrace.toString());  }
     onPlatformViewCreated.call(_id);
-      ///TODO not create redundent view.
+    ///TODO not create redundent view.
     return _mapById[_id++].html;
   }
 }
-

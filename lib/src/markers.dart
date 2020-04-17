@@ -78,7 +78,7 @@ class MarkersController extends AbstractController {
     return false;
   }
 
-  void showMarkerInfoWindow(String markerId, dynamic result) {
+  void showMarkerInfoWindow(String markerId) {
     MarkerController markerController = _markerIdToController[markerId];
     if (markerController != null) {
       markerController.showMarkerInfoWindow();
@@ -93,7 +93,7 @@ class MarkersController extends AbstractController {
     return false;
   }
 
-  void hideMarkerInfoWindow(String markerId, dynamic result) {
+  void hideMarkerInfoWindow(String markerId) {
     MarkerController markerController = _markerIdToController[markerId];
     if (markerController != null) {
       markerController.hideInfoWindow();

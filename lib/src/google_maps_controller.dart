@@ -55,6 +55,19 @@ class GoogleMapController {
     googleMap = GoogleMap.GMap(div, options);
     onMapReady(googleMap);
 
+    googleMap.onClick.listen((event) {
+      streamController.add(
+          MapTapEvent(mapId, _gmLatlngToLatlng(event.latLng)));
+    });
+
+    googleMap.onDblclick.listen(_rightClick);
+    googleMap.onRightclick.listen(_rightClick);
+
+  }
+
+  void _rightClick(event) {
+    streamController.add(
+        MapLongPressEvent(mapId, _gmLatlngToLatlng(event.latLng)));
   }
 
   void onMapReady(GoogleMap.GMap googleMap) {
