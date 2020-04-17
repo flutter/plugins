@@ -45,7 +45,7 @@ void main() {
       expect(launch('mailto:name@mydomain.com'), completion(isTrue));
     });
 
-    test('the url is opened in a new window', () {
+    test('the window that is launched is a new window', () {
       final UrlLauncherPlugin urlLauncherPlugin = UrlLauncherPlugin();
       final html.WindowBase newWindow =
           urlLauncherPlugin.openNewWindow('https://www.google.com');
@@ -54,7 +54,7 @@ void main() {
       expect(newWindow.opener, equals(html.window));
     });
 
-    test('the url is opened in the same window', () {
+    test('the window that is launched is in the same window', () {
       // Simulate the navigator is in standalone mode on iOS devices.
       // https://developer.mozilla.org/en-US/docs/Web/API/Navigator
       navigator.standalone = true;
