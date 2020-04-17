@@ -1,3 +1,8 @@
+## 0.3.2
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+
 ## 0.3.1+2
 
 * Fix potential casting crash on Android v1 embedding when registering life cycle callbacks.

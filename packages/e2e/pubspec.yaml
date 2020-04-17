@@ -1,11 +1,11 @@
 name: e2e
 description: Runs tests that use the flutter_test API as integration tests.
-version: 0.4.0
+version: 0.4.1
 homepage: https://github.com/flutter/plugins/tree/master/packages/e2e
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.10.0 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"
 
 dependencies:
   flutter:

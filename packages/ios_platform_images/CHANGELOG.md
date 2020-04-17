@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+
 ## 0.1.0+2
 
 * Make the pedantic dev_dependency explicit.
