@@ -241,7 +241,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
    * completed (either successfully or in error). This class provides no synchronization constructs
    * to guarantee such behavior; callers are responsible for providing such guarantees.
    */
-  public static final class Delegate implements IDelegate, PluginRegistry.ActivityResultListener {
+  public static class Delegate implements IDelegate, PluginRegistry.ActivityResultListener {
     private static final int REQUEST_CODE_SIGNIN = 53293;
     private static final int REQUEST_CODE_RECOVER_AUTH = 53294;
     @VisibleForTesting static final int REQUEST_CODE_REQUEST_SCOPE = 53295;
