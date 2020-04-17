@@ -1,6 +1,6 @@
-## 4.4.1+1.
+## 4.4.1+1
 
-* Upgrade google_sign_in_web to version ^0.9.0
+* Upgrade google_sign_in_web to version ^0.9.1
 
 ## 4.4.1
 
