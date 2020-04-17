@@ -1,6 +1,6 @@
 # 0.1.1+2
 
-- Open urls with target "_top" (instead of default "_blank") on iOS PWAs.
+- Open urls with target "_top" on iOS PWAs.
 
 # 0.1.1+1
 
