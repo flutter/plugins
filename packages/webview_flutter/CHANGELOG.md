@@ -1,3 +1,7 @@
+## 0.3.20+1
+
+* OCMock module import -> #import, unit tests compile generated as library.
+
 ## 0.3.20
 
 * Added support for receiving web resource loading errors. See `WebView.onWebResourceError`.
