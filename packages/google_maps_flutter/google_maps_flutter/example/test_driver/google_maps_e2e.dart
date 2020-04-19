@@ -4,12 +4,13 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:e2e/e2e.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:e2e/e2e.dart';
 
 import 'google_map_inspector.dart';
 
@@ -218,6 +219,48 @@ void main() {
 
     zoomGesturesEnabled = await inspector.isZoomGesturesEnabled();
     expect(zoomGesturesEnabled, true);
+  });
+
+  testWidgets('testZoomControlsEnabled', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    bool zoomControlsEnabled = await inspector.isZoomControlsEnabled();
+    expect(zoomControlsEnabled, Platform.isIOS ? false : true);
+
+    /// Zoom Controls functionality is not available on iOS at the moment.
+    if (Platform.isAndroid) {
+      await tester.pumpWidget(Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          key: key,
+          initialCameraPosition: _kInitialCameraPosition,
+          zoomControlsEnabled: false,
+          onMapCreated: (GoogleMapController controller) {
+            fail("OnMapCreated should get called only once.");
+          },
+        ),
+      ));
+
+      zoomControlsEnabled = await inspector.isZoomControlsEnabled();
+      expect(zoomControlsEnabled, false);
+    }
   });
 
   testWidgets('testRotateGesturesEnabled', (WidgetTester tester) async {
@@ -837,5 +880,31 @@ void main() {
     expect(mip.toJson()[2], 1);
     // ignore: invalid_use_of_visible_for_testing_member
     expect(scaled.toJson()[2], 2);
+  });
+
+  testWidgets('testTakeSnapshot', (WidgetTester tester) async {
+    Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: _kInitialCameraPosition,
+          onMapCreated: (GoogleMapController controller) {
+            final GoogleMapInspector inspector =
+                // ignore: invalid_use_of_visible_for_testing_member
+                GoogleMapInspector(controller.channel);
+            inspectorCompleter.complete(inspector);
+          },
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    final Uint8List bytes = await inspector.takeSnapshot();
+    expect(bytes?.isNotEmpty, true);
   });
 }

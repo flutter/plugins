@@ -106,7 +106,7 @@ void main() {
       queue.setTransactionObserver(observer);
       await queue.finishTransaction(dummyTransaction);
       expect(fakeIOSPlatform.transactionsFinished.first,
-          equals(dummyTransaction.transactionIdentifier));
+          equals(dummyTransaction.payment.productIdentifier));
     });
 
     test('should restore transaction', () async {

@@ -123,7 +123,16 @@ task:
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh ios --no-codesign
     - name: lint_darwin_plugins
-      script: ./script/lint_darwin_plugins.sh
+      env:
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+      script:
+        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
+        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
+        # Skip the dummy podspecs used to placate the tool.
+        - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
+        - ./script/incremental_build.sh podspecs --no-analyze camera --skip google_sign_in --skip webview_flutter
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
@@ -162,8 +171,6 @@ task:
       script:
         - flutter channel master
         - ./script/build_all_plugins_app.sh macos
-    - name: lint_darwin_plugins
-      script: ./script/lint_darwin_plugins.sh
     - name: build-apps+drive-examples
       env:
         PATH: $PATH:/usr/local/bin

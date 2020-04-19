@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +28,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,6 +46,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -81,6 +84,7 @@ final class GoogleMapController
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
+  private boolean zoomControlsEnabled = true;
   private boolean indoorEnabled = true;
   private boolean trafficEnabled = false;
   private boolean buildingsEnabled = true;
@@ -276,6 +280,26 @@ final class GoogleMapController
           }
           break;
         }
+      case "map#takeSnapshot":
+        {
+          if (googleMap != null) {
+            final MethodChannel.Result _result = result;
+            googleMap.snapshot(
+                new SnapshotReadyCallback() {
+                  @Override
+                  public void onSnapshotReady(Bitmap bitmap) {
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] byteArray = stream.toByteArray();
+                    bitmap.recycle();
+                    _result.success(byteArray);
+                  }
+                });
+          } else {
+            result.error("GoogleMap uninitialized", "takeSnapshot", null);
+          }
+          break;
+        }
       case "camera#move":
         {
           final CameraUpdate cameraUpdate =
@@ -375,6 +399,11 @@ final class GoogleMapController
       case "map#isZoomGesturesEnabled":
         {
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
+          break;
+        }
+      case "map#isZoomControlsEnabled":
+        {
+          result.success(googleMap.getUiSettings().isZoomControlsEnabled());
           break;
         }
       case "map#isScrollGesturesEnabled":
@@ -744,6 +773,17 @@ final class GoogleMapController
     this.myLocationButtonEnabled = myLocationButtonEnabled;
     if (googleMap != null) {
       updateMyLocationSettings();
+    }
+  }
+
+  @Override
+  public void setZoomControlsEnabled(boolean zoomControlsEnabled) {
+    if (this.zoomControlsEnabled == zoomControlsEnabled) {
+      return;
+    }
+    this.zoomControlsEnabled = zoomControlsEnabled;
+    if (googleMap != null) {
+      googleMap.getUiSettings().setZoomControlsEnabled(zoomControlsEnabled);
     }
   }
 

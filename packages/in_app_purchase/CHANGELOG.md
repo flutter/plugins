@@ -1,3 +1,13 @@
+## 0.3.2+1
+
+* iOS: Fix only transactions with SKPaymentTransactionStatePurchased and SKPaymentTransactionStateFailed can be finished.
+* iOS: Only one pending transaction of a given product is allowed.  
+
+## 0.3.2
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+
 ## 0.3.1+2
 
 * Fix potential casting crash on Android v1 embedding when registering life cycle callbacks.
