@@ -40,6 +40,10 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.android.gms.maps.model.TileProvider;
+
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -102,10 +106,12 @@ final class GoogleMapController
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
+  private final TileOverlayController tileOverlayController;
   private List<Object> initialMarkers;
   private List<Object> initialPolygons;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
+  private Object initialTileOverlays;
 
   GoogleMapController(
       int id,
@@ -132,6 +138,7 @@ final class GoogleMapController
     this.polygonsController = new PolygonsController(methodChannel, density);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel, density);
+    this.tileOverlayController = new TileOverlayController();
   }
 
   @Override
@@ -219,10 +226,12 @@ final class GoogleMapController
     polygonsController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
+    tileOverlayController.setGoogleMap(googleMap);
     updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialCircles();
+    updateInitialTileOverlays();
   }
 
   @Override
@@ -378,6 +387,15 @@ final class GoogleMapController
           result.success(null);
           break;
         }
+      case "tileOverlays#update":
+        {
+          Object tileOverlaysToAdd = call.argument("tilesToAdd");
+          tileOverlayController.addTileOverlays(tileOverlaysToAdd);
+          Object tileOverlaysToChange = call.argument("tilesToChange");
+          tileOverlayController.changeTileOverlays(tileOverlaysToChange);
+          Object tileOverlaysToRemove = call.argument("tilesToRemove");
+          tileOverlayController.removeTileOverlays(tileOverlaysToRemove);
+        }
       case "map#isCompassEnabled":
         {
           result.success(googleMap.getUiSettings().isCompassEnabled());
@@ -459,6 +477,9 @@ final class GoogleMapController
           result.success(mapStyleResult);
           break;
         }
+      case "tileOverlays#clear": {
+        tileOverlayController.clear();
+      }
       default:
         result.notImplemented();
     }
@@ -834,6 +855,19 @@ final class GoogleMapController
   private void updateInitialCircles() {
     circlesController.addCircles(initialCircles);
   }
+
+  @Override
+  public void setInitialTileOverlays(Object initialTileOverlays) {
+    this.initialTileOverlays = initialTileOverlays;
+    if (googleMap != null) {
+      updateInitialTileOverlays();
+    }
+  }
+
+  private void updateInitialTileOverlays() {
+    tileOverlayController.addTileOverlays(initialTileOverlays);
+  }
+
 
   @SuppressLint("MissingPermission")
   private void updateMyLocationSettings() {

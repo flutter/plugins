@@ -552,6 +552,41 @@ class Convert {
     }
   }
 
+  static List<TileOverlaySpec> interpretTileSpecs(Object o) {
+      final List<TileOverlaySpec> specs = new ArrayList<>();
+      final List<?> raw = toList(o);
+
+      System.out.println("Interpret tile overlays " + raw.size());
+
+      for (Object obj : raw) {
+        final TileOverlaySpec spec = interpretTileSpec(obj);
+        if (spec != null) {
+          specs.add(spec);
+        }
+      }
+
+      return specs;
+  }
+
+  static TileOverlaySpec interpretTileSpec(Object o) {
+    final Map<?, ?> data = toMap(o);
+
+    final Object width = data.get("width");
+    final Object height = data.get("height");
+    final Object rawUrl = data.get("url");
+    final Object isVisible = data.get("isVisible");
+    final Object transparency = data.get("transparency");
+    final Object zIndex = data.get("zIndex");
+    final Object fadeIn = data.get("fadeIn");
+    if (width == null || height == null || rawUrl == null || fadeIn == null || zIndex == null
+            || transparency == null || isVisible == null) {
+      return null;
+    }
+
+    return new TileOverlaySpec(toString(rawUrl), toInt(width), toInt(height), toFloat(transparency),
+            toBoolean(fadeIn), toBoolean(isVisible), toFloat(zIndex));
+  }
+
   private static List<LatLng> toPoints(Object o) {
     final List<?> data = toList(o);
     final List<LatLng> points = new ArrayList<>(data.size());

@@ -164,6 +164,20 @@ class GoogleMapController {
     );
   }
 
+  /// Updates tile overlay configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updateTileOverlays(_TileOverlayUpdates tileUpdates) async {
+    assert(tileUpdates != null);
+    await channel.invokeMethod<void>(
+      'tileOverlays#update',
+      tileUpdates._toMap(),
+    );
+  }
+
   /// Starts an animated change of the map camera position.
   ///
   /// The returned [Future] completes after the change has been started on the
@@ -182,6 +196,11 @@ class GoogleMapController {
     await channel.invokeMethod<void>('camera#move', <String, dynamic>{
       'cameraUpdate': cameraUpdate._toJson(),
     });
+  }
+
+  /// Clears the tile cache of the currently active tile overlay.
+  Future<void> clearTiles() async {
+    await channel.invokeMethod<void>('tileOverlays#clear');
   }
 
   /// Sets the styling of the base map.

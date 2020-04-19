@@ -11,14 +11,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class FakePlatformGoogleMap {
   FakePlatformGoogleMap(int id, Map<dynamic, dynamic> params) {
     cameraPosition = CameraPosition.fromMap(params['initialCameraPosition']);
-    channel = MethodChannel(
-        'plugins.flutter.io/google_maps_$id', const StandardMethodCodec());
+    channel = MethodChannel('plugins.flutter.io/google_maps_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
     updateOptions(params['options']);
     updateMarkers(params);
     updatePolygons(params);
     updatePolylines(params);
     updateCircles(params);
+    updateTileOverlays(params);
   }
 
   MethodChannel channel;
@@ -81,6 +81,12 @@ class FakePlatformGoogleMap {
 
   Set<Circle> circlesToChange;
 
+  List<TileOverlay> tilesToAdd;
+
+  List<TileOverlay> tilesToChange;
+
+  List<TileOverlay> tilesToRemove;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -98,6 +104,9 @@ class FakePlatformGoogleMap {
       case 'circles#update':
         updateCircles(call.arguments);
         return Future<void>.sync(() {});
+      case 'tileOverlays#update':
+        updateTileOverlays(call.arguments);
+        return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
     }
@@ -108,8 +117,7 @@ class FakePlatformGoogleMap {
       return;
     }
     markersToAdd = _deserializeMarkers(markerUpdates['markersToAdd']);
-    markerIdsToRemove =
-        _deserializeMarkerIds(markerUpdates['markerIdsToRemove']);
+    markerIdsToRemove = _deserializeMarkerIds(markerUpdates['markerIdsToRemove']);
     markersToChange = _deserializeMarkers(markerUpdates['markersToChange']);
   }
 
@@ -168,8 +176,7 @@ class FakePlatformGoogleMap {
       return;
     }
     polygonsToAdd = _deserializePolygons(polygonUpdates['polygonsToAdd']);
-    polygonIdsToRemove =
-        _deserializePolygonIds(polygonUpdates['polygonIdsToRemove']);
+    polygonIdsToRemove = _deserializePolygonIds(polygonUpdates['polygonIdsToRemove']);
     polygonsToChange = _deserializePolygons(polygonUpdates['polygonsToChange']);
   }
 
@@ -223,10 +230,8 @@ class FakePlatformGoogleMap {
       return;
     }
     polylinesToAdd = _deserializePolylines(polylineUpdates['polylinesToAdd']);
-    polylineIdsToRemove =
-        _deserializePolylineIds(polylineUpdates['polylineIdsToRemove']);
-    polylinesToChange =
-        _deserializePolylines(polylineUpdates['polylinesToChange']);
+    polylineIdsToRemove = _deserializePolylineIds(polylineUpdates['polylineIdsToRemove']);
+    polylinesToChange = _deserializePolylines(polylineUpdates['polylinesToChange']);
   }
 
   Set<PolylineId> _deserializePolylineIds(List<dynamic> polylineIds) {
@@ -236,9 +241,7 @@ class FakePlatformGoogleMap {
       // ignore: prefer_collection_literals
       return Set<PolylineId>();
     }
-    return polylineIds
-        .map((dynamic polylineId) => PolylineId(polylineId))
-        .toSet();
+    return polylineIds.map((dynamic polylineId) => PolylineId(polylineId)).toSet();
   }
 
   Set<Polyline> _deserializePolylines(dynamic polylines) {
@@ -275,8 +278,7 @@ class FakePlatformGoogleMap {
       return;
     }
     circlesToAdd = _deserializeCircles(circleUpdates['circlesToAdd']);
-    circleIdsToRemove =
-        _deserializeCircleIds(circleUpdates['circleIdsToRemove']);
+    circleIdsToRemove = _deserializeCircleIds(circleUpdates['circleIdsToRemove']);
     circlesToChange = _deserializeCircles(circleUpdates['circlesToChange']);
   }
 
@@ -317,6 +319,41 @@ class FakePlatformGoogleMap {
     return result;
   }
 
+  void updateTileOverlays(dynamic tileOverlays) {
+    if (tileOverlays == null) {
+      return;
+    }
+
+    tilesToAdd = _deserializeTileOverlays(tileOverlays['tilesToAdd']);
+    tilesToChange = _deserializeTileOverlays(tileOverlays['tilesToChange']);
+    tilesToRemove = _deserializeTileOverlays(tileOverlays['tilesToRemove']);
+  }
+
+  List<TileOverlay> _deserializeTileOverlays(dynamic overlays) {
+    if (overlays == null) {
+      return const [];
+    }
+    
+    final List<TileOverlay> result = [];
+
+    final List<dynamic> list = overlays;
+    for (final overlay in list) {
+      final tileOverlay = TileOverlay(
+        overlay['width'],
+        overlay['height'],
+        overlay['url'],
+        fadeIn: overlay['fadeIn'],
+        isVisible: overlay['isVisible'],
+        transparency: overlay['transparency'],
+        zIndex: overlay['zIndex'],
+      );
+
+      result.add(tileOverlay);
+    }
+
+    return result;
+  }
+
   void updateOptions(Map<dynamic, dynamic> options) {
     if (options.containsKey('compassEnabled')) {
       compassEnabled = options['compassEnabled'];
@@ -335,8 +372,7 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('minMaxZoomPreference')) {
       final List<dynamic> minMaxZoomList = options['minMaxZoomPreference'];
-      minMaxZoomPreference =
-          MinMaxZoomPreference(minMaxZoomList[0], minMaxZoomList[1]);
+      minMaxZoomPreference = MinMaxZoomPreference(minMaxZoomList[0], minMaxZoomList[1]);
     }
     if (options.containsKey('rotateGesturesEnabled')) {
       rotateGesturesEnabled = options['rotateGesturesEnabled'];

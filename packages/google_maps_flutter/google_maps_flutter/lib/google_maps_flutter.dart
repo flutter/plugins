@@ -32,3 +32,5 @@ part 'src/polyline.dart';
 part 'src/polyline_updates.dart';
 part 'src/screen_coordinate.dart';
 part 'src/ui.dart';
+part 'src/tile_overlay_updates.dart';
+part 'src/tile_overlay.dart';
