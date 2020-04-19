@@ -556,8 +556,6 @@ class Convert {
       final List<TileOverlaySpec> specs = new ArrayList<>();
       final List<?> raw = toList(o);
 
-      System.out.println("Interpret tile overlays " + raw.size());
-
       for (Object obj : raw) {
         final TileOverlaySpec spec = interpretTileSpec(obj);
         if (spec != null) {
