@@ -22,8 +22,7 @@ public class TileOverlayController {
         final List<TileOverlaySpec> specs = Convert.interpretTileSpecs(o);
 
         for (TileOverlaySpec spec : specs) {
-            final TileController controller = new TileController();
-            controller.setSpec(spec);
+            final TileController controller = new TileController(spec);
 
             final TileOverlay overlay = googleMap.addTileOverlay(new TileOverlayOptions().tileProvider(controller));
             applySpecOnOverlay(spec, overlay);
@@ -38,9 +37,7 @@ public class TileOverlayController {
 
         for (TileOverlaySpec spec : specs) {
             for (TileController controller : providers.keySet()) {
-                if (controller.getSpec().rawUrl.equals(spec.rawUrl)) {
-                    controller.setSpec(spec);
-
+                if (controller.spec.rawUrl.equals(spec.rawUrl)) {
                     TileOverlay overlay = providers.get(controller);
                     applySpecOnOverlay(spec, overlay);
                 }
@@ -55,7 +52,7 @@ public class TileOverlayController {
         final List<TileController> toRemove = new ArrayList<>();
         for (TileOverlaySpec spec : specs) {
             for (TileController controller : providers.keySet()) {
-                if (controller.getSpec().rawUrl.equals(spec.rawUrl)) {
+                if (controller.spec.rawUrl.equals(spec.rawUrl)) {
                     toRemove.add(controller);
                 }
             }
