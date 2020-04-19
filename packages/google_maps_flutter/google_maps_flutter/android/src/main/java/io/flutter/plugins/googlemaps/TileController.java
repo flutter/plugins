@@ -18,7 +18,7 @@ import java.util.Map;
 
 import io.flutter.plugin.common.MethodChannel;
 
-public class TileController implements TileProvider  {
+public class TileController extends UrlTileProvider  {
     private TileOverlaySpec spec;
 
     @Override
