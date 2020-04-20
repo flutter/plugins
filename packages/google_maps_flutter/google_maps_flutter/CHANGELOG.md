@@ -1,3 +1,7 @@
+## 0.6.0
+
+* Migrate the core plugin to use `google_maps_flutter_platform_interface` APIs.
+
 ## 0.5.26+2
 
 * Fix UIKit availability warnings and CocoaPods podspec lint warnings.
