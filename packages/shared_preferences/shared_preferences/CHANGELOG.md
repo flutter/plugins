@@ -1,6 +1,6 @@
 ## 0.5.8
 
-# Add a setter & getter for key prefix.
+Add a setter & getter for key prefix.
 
 ## 0.5.7
 
