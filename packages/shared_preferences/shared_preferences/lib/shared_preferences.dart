@@ -15,7 +15,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 class SharedPreferences {
   SharedPreferences._(this._preferenceCache);
 
-  static const String _prefix = 'flutter.';
+  static String _prefix = 'flutter.';
   static Completer<SharedPreferences> _completer;
 
   static SharedPreferencesStorePlatform get _store =>
@@ -42,6 +42,18 @@ class SharedPreferences {
       }
     }
     return _completer.future;
+  }
+
+  /// Prefix getter, defaults to `flutter.`
+  /// Use prefix setter to change the value.
+  String get prefix {
+    return _prefix;
+  }
+
+  /// By default the keys are stored on the device with a prefix `flutter.`.
+  /// Use this setter method to change the default prefix key.
+  set prefix(String prefix) {
+    _prefix = prefix;
   }
 
   /// The cache that holds all preferences.
