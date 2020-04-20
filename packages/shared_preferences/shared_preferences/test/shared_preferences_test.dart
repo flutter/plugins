@@ -27,7 +27,7 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    const String mkTestValues3Prefix = 'myPrefix';
+    const String mkTestValues3Prefix = 'myPrefix.';
     const Map<String, dynamic> kTestValues3 = <String, dynamic>{
       'myPrefix.String': 'hello custom prefix',
       'myPrefix.bool': false,
