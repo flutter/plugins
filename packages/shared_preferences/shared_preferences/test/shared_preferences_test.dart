@@ -27,6 +27,15 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
+    const String mkTestValues3Prefix = 'myPrefix';
+    const Map<String, dynamic> kTestValues3 = <String, dynamic>{
+      'myPrefix.String': 'hello custom prefix',
+      'myPrefix.bool': false,
+      'myPrefix.int': 1337,
+      'myPrefix.double': 2.71828,
+      'myPrefix.List': <String>['baz', 'quox'],
+    };
+
     FakeSharedPreferencesStore store;
     SharedPreferences preferences;
 
@@ -191,6 +200,23 @@ void main() {
       cachedList.add("foobar2");
 
       expect(preferences.getStringList('myList'), <String>[]);
+    });
+
+    test('custom prefix', () async {
+      preferences.prefix = mkTestValues3Prefix;
+      expect(preferences.prefix, mkTestValues3Prefix);
+      await Future.wait(<Future<bool>>[
+        preferences.setString('String', kTestValues3['myPrefix.String']),
+        preferences.setBool('bool', kTestValues3['myPrefix.bool']),
+        preferences.setInt('int', kTestValues3['myPrefix.int']),
+        preferences.setDouble('double', kTestValues3['myPrefix.double']),
+        preferences.setStringList('List', kTestValues3['myPrefix.List'])
+      ]);
+      expect(preferences.getString('String'), kTestValues3['myPrefix.String']);
+      expect(preferences.getBool('bool'), kTestValues3['myPrefix.bool']);
+      expect(preferences.getInt('int'), kTestValues3['myPrefix.int']);
+      expect(preferences.getDouble('double'), kTestValues3['myPrefix.double']);
+      expect(preferences.getStringList('List'), kTestValues3['myPrefix.List']);
     });
   });
 
