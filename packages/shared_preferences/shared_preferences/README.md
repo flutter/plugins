@@ -37,6 +37,18 @@ _incrementCounter() async {
 }
 ```
 
+### Key prefix
+By default this plugin stores all keys with a prefix `flutter.`.
+
+There is a getter and a setter for the prefix.
+``` dart
+SharedPreferences prefs = await SharedPreferences.getInstance();
+print(prefs.prefix); // flutter.
+prefs.prefix = 'myPrefix.';
+print(prefs.prefix); // myPrefix.
+
+```
+
 ### Testing
 
 You can populate `SharedPreferences` with initial values in your tests by running this code:
