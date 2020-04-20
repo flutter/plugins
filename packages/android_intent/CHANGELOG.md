@@ -1,3 +1,7 @@
+## 0.3.7+1
+
+* Fix CocoaPods podspec lint warnings.
+
 ## 0.3.7
 
 * Add a `Future<bool> canResolveActivity` method to the AndroidIntent class. It 
