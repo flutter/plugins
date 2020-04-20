@@ -102,8 +102,6 @@ task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
     image: mojave-xcode-11.3-flutter
-  setup_script:
-    - pod repo update
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -159,7 +157,6 @@ task:
   osx_instance:
     image: mojave-xcode-11.3-flutter
   setup_script:
-    - pod repo update
     - flutter config --enable-macos-desktop
   upgrade_script:
     - flutter channel master
