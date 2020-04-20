@@ -197,7 +197,7 @@ final class InputAwareWebView extends WebView {
     // Prior to Chromium 67.0.3367 the following sequence happens when a select drop down is shown
     // on tablets:
     //
-    //  - WebView is callingListPopupWindow#show
+    //  - WebView is calling ListPopupWindow#show
     //  - buildDropDown is invoked, which sets mDropDownList to a DropDownListView.
     //  - showAsDropDown is invoked - resulting in mDropDownList being added to the window and is
     //    also synchronously performing the following sequence:
