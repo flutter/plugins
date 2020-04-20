@@ -4,7 +4,7 @@ version: 0.3.20+1
 homepage: https://github.com/flutter/plugins/tree/master/packages/webview_flutter
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5"
 
 dependencies:
