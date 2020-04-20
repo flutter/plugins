@@ -1,3 +1,7 @@
+## 0.5.8
+
+# Add a setter & getter for key prefix.
+
 ## 0.5.7
 
 * Remove Android dependencies fallback.
