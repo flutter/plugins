@@ -1,3 +1,7 @@
+## 0.3.21
+
+* Add zoom in android devices.
+
 ## 0.3.20+2
 
 * Fix CocoaPods podspec lint warnings.

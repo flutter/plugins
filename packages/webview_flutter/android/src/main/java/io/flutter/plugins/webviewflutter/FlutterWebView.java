@@ -50,6 +50,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.getSettings().setDomStorageEnabled(true);
     webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
+    // Allow zoom and hide the zoom in and zoom out buttons.
+    webView.getSettings().setSupportZoom(true);
+    webView.getSettings().setBuiltInZoomControls(true);
+    webView.getSettings().setDisplayZoomControls(false);
+
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
 
