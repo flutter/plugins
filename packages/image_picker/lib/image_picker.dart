@@ -48,8 +48,8 @@ class ImagePicker {
   ///
   /// The method could throw [PlatformException] if the app does not have permission to access
   /// the camera or photos gallery, no camera is available, plugin is already in use,
-  /// temporary file could not be created (iOS only) or plugin activity could not
-  /// be allocated (Android only).
+  /// temporary file could not be created (iOS only), plugin activity could not
+  /// be allocated (Android only) or due to an unknown error.
   ///
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -105,8 +105,8 @@ class ImagePicker {
   ///
   /// The method could throw [PlatformException] if the app does not have permission to access
   /// the camera or photos gallery, no camera is available, plugin is already in use,
-  /// temporary file could not be created and video could not be cached (iOS only)
-  /// or plugin activity could not be allocated (Android only).
+  /// temporary file could not be created and video could not be cached (iOS only),
+  /// plugin activity could not be allocated (Android only) or due to an unknown error.
   ///
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
