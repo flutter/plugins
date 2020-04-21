@@ -1,0 +1,47 @@
+group 'io.flutter.plugins.videoplayer'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.3.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 16
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    android {
+        compileOptions {
+            sourceCompatibility 1.8
+            targetCompatibility 1.8
+        }
+    }
+
+    dependencies {
+        implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'
+        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.6'
+        implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.6'
+        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.6'
+    }
+}

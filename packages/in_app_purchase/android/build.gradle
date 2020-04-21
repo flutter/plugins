@@ -1,16 +1,3 @@
-def PLUGIN = "in_app_purchase";
-def ANDROIDX_WARNING = "flutterPluginsAndroidXWarning";
-gradle.buildFinished { buildResult ->
-    if (buildResult.failure && !rootProject.ext.has(ANDROIDX_WARNING)) {
-        println '         *********************************************************'
-        println 'WARNING: This version of ' + PLUGIN + ' will break your Android build if it or its dependencies aren\'t compatible with AndroidX.'
-        println '         See https://goo.gl/CP92wY for more information on the problem and how to fix it.'
-        println '         This warning prints for all Android build failures. The real root cause of the error may be unrelated.'
-        println '         *********************************************************'
-        rootProject.ext.set(ANDROIDX_WARNING, true);
-    }
-}
-
 group 'io.flutter.plugins.inapppurchase'
 version '1.0-SNAPSHOT'
 
@@ -47,7 +34,8 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.billingclient:billing:1.2'
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'com.android.billingclient:billing:2.0.3'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.17.0'
     androidTestImplementation 'androidx.test:runner:1.1.1'

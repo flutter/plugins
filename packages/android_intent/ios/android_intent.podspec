@@ -4,18 +4,21 @@
 Pod::Spec.new do |s|
   s.name             = 'android_intent'
   s.version          = '0.0.1'
-  s.summary          = 'A new flutter plugin project.'
+  s.summary          = 'Android Intent Plugin for Flutter'
   s.description      = <<-DESC
-A new flutter plugin project.
+This plugin allows Flutter apps to launch arbitrary intents when the platform is Android.
+If the plugin is invoked on iOS, it will crash your app.
+Downloaded by pub (not CocoaPods).
                        DESC
-  s.homepage         = 'http://example.com'
-  s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
-  s.source           = { :path => '.' }
+  s.homepage         = 'https://github.com/flutter/plugins'
+  s.license          = { :type => 'BSD', :file => '../LICENSE' }
+  s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/android_intent' }
+  s.documentation_url = 'https://pub.dev/packages/android_intent'
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  
-  s.ios.deployment_target = '8.0'
+  s.platform = :ios, '8.0'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
 end
 

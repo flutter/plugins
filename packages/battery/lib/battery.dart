@@ -8,9 +8,21 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
 
 /// Indicates the current battery state.
-enum BatteryState { full, charging, discharging }
+enum BatteryState {
+  /// The battery is completely full of energy.
+  full,
 
+  /// The battery is currently storing energy.
+  charging,
+
+  /// The battery is currently losing energy.
+  discharging
+}
+
+/// API for accessing information about the battery of the device the Flutter
+/// app is currently running on.
 class Battery {
+  /// Initializes the plugin and starts listening for potential platform events.
   factory Battery() {
     if (_instance == null) {
       final MethodChannel methodChannel =
@@ -22,6 +34,8 @@ class Battery {
     return _instance;
   }
 
+  /// This constructor is only used for testing and shouldn't be accessed by
+  /// users of the plugin. It may break or change at any time.
   @visibleForTesting
   Battery.private(this._methodChannel, this._eventChannel);
 
@@ -33,10 +47,7 @@ class Battery {
 
   /// Returns the current battery level in percent.
   Future<int> get batteryLevel => _methodChannel
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      .invokeMethod('getBatteryLevel')
+      .invokeMethod<int>('getBatteryLevel')
       .then<int>((dynamic result) => result);
 
   /// Fires whenever the battery state changes.

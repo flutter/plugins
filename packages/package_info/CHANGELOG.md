@@ -1,3 +1,81 @@
+## 0.4.0+17
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Clean up various Android workarounds no longer needed after framework v1.12.
+* Complete v2 embedding support.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.4.0+16
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.4.0+15
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.4.0+14
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.4.0+13
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.0+12
+
+* Fix pedantic lints. This involved internally refactoring how the
+  `PackageInfo.fromPlatform` code handled futures, but shouldn't change existing
+  functionality.
+
+## 0.4.0+11
+
+* Remove AndroidX warnings.
+
+## 0.4.0+10
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.4.0+9
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.4.0+8
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Add a unit test.
+* Migrate to using the new e2e test binding.
+
+## 0.4.0+7
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
+## 0.4.0+6
+
+* Fix Android compiler warnings.
+
+## 0.4.0+5
+
+* Add iOS-specific warning to README.md.
+
+## 0.4.0+4
+
+* Add missing template type parameter to `invokeMethod` calls.
+* Bump minimum Flutter version to 1.5.0.
+* Replace invokeMethod with invokeMapMethod wherever necessary.
+
+## 0.4.0+3
+
+* Add integration test.
+
+## 0.4.0+2
+
+* Android: Using new method for BuildNumber in new android versions
+
 ## 0.4.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
