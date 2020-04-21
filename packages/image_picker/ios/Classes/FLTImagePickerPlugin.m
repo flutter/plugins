@@ -279,7 +279,7 @@ static const int SOURCE_GALLERY = 1;
     }
     self.result(videoURL.path);
     self.result = nil;
-    _arguments = nil;
+
   } else {
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     if (image == nil) {
@@ -322,6 +322,7 @@ static const int SOURCE_GALLERY = 1;
                      }];
     }
   }
+  _arguments = nil;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -356,9 +357,6 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)handleSavedPath:(NSString *)path {
-  if (!self.result) {
-    return;
-  }
   if (path) {
     self.result(path);
   } else {
@@ -367,7 +365,6 @@ static const int SOURCE_GALLERY = 1;
                                     details:nil]);
   }
   self.result = nil;
-  _arguments = nil;
 }
 
 @end
