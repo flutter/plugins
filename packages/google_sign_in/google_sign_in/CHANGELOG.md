@@ -1,3 +1,8 @@
+## 4.4.4
+
+* OCMock module import -> #import, unit tests compile generated as library.
+* Fix CocoaPods podspec lint warnings.
+
 ## 4.4.3
 
 * Upgrade google_sign_in_web to version ^0.9.1
