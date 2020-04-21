@@ -1,6 +1,6 @@
-## 0.6.6
+## 0.6.5+2
 
-* Fixes crash when an image in the gallery is tapped more than once.
+* iOS: Fixes crash when an image in the gallery is tapped more than once.
 
 ## 0.6.5+1
 
