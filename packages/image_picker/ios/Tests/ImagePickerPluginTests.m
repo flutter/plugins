@@ -105,7 +105,7 @@
                     result:^(id _Nullable r){
                     }];
   plugin.result = ^(id result) {
-    
+
   };
   [plugin handleSavedPath:@"test"];
   [plugin handleSavedPath:@"test"];
