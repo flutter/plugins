@@ -1,6 +1,7 @@
 ## 0.4.2
 
 * Adds support for Android E2E tests that utilize other @Rule's, like GrantPermissionRule.
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.4.1
 

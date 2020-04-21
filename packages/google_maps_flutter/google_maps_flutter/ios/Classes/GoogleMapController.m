@@ -172,20 +172,25 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
   } else if ([call.method isEqualToString:@"map#takeSnapshot"]) {
-    if (_mapView != nil) {
-      UIGraphicsImageRendererFormat* format = [UIGraphicsImageRendererFormat defaultFormat];
-      format.scale = [[UIScreen mainScreen] scale];
-      UIGraphicsImageRenderer* renderer =
-          [[UIGraphicsImageRenderer alloc] initWithSize:_mapView.frame.size format:format];
+    if (@available(iOS 10.0, *)) {
+      if (_mapView != nil) {
+        UIGraphicsImageRendererFormat* format = [UIGraphicsImageRendererFormat defaultFormat];
+        format.scale = [[UIScreen mainScreen] scale];
+        UIGraphicsImageRenderer* renderer =
+            [[UIGraphicsImageRenderer alloc] initWithSize:_mapView.frame.size format:format];
 
-      UIImage* image = [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-        [_mapView.layer renderInContext:context.CGContext];
-      }];
-      result([FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)]);
+        UIImage* image = [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+          [_mapView.layer renderInContext:context.CGContext];
+        }];
+        result([FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)]);
+      } else {
+        result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                   message:@"takeSnapshot called prior to map initialization"
+                                   details:nil]);
+      }
     } else {
-      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
-                                 message:@"takeSnapshot called prior to map initialization"
-                                 details:nil]);
+      NSLog(@"Taking snapshots is not supported for Flutter Google Maps prior to iOS 10.");
+      result(nil);
     }
   } else if ([call.method isEqualToString:@"markers#update"]) {
     id markersToAdd = call.arguments[@"markersToAdd"];
