@@ -1,7 +1,7 @@
 ## 0.3.8
 
 * Add an `ignoredPackages` parameter to specify package names that should not be used to resolve the intent.
-* Add a `showChooser` parameter to force the default selection dialog to be displayed and allow a user to select an application from the list of available ones.
+* Add a `showChooser` method to force the default selection dialog to be displayed and allow a user to select an application from the list of available ones.
 
 ## 0.3.7+1
 

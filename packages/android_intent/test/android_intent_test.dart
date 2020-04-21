@@ -28,25 +28,6 @@ void main() {
       }
     });
 
-    test('raises error if package name is specified and showChooser is true',
-        () async {
-      try {
-        androidIntent = AndroidIntent.private(
-          package: 'packageName',
-          componentName: 'componentName',
-          showChooser: true,
-          channel: mockChannel,
-          platform: FakePlatform(operatingSystem: 'android'),
-        );
-        fail('should raise an AssertionError');
-      } on AssertionError catch (e) {
-        expect(e.message,
-            'either package can be specified or showChooser can be true');
-      } catch (e) {
-        fail('should raise an AssertionError');
-      }
-    });
-
     group('launch', () {
       test('pass right params', () async {
         androidIntent = AndroidIntent.private(
@@ -55,7 +36,6 @@ void main() {
             flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
             channel: mockChannel,
             platform: FakePlatform(operatingSystem: 'android'),
-            showChooser: true,
             type: 'video/*');
         await androidIntent.launch();
         verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
@@ -63,7 +43,6 @@ void main() {
           'data': Uri.encodeFull('https://flutter.io'),
           'flags':
               androidIntent.convertFlags(<int>[Flag.FLAG_ACTIVITY_NEW_TASK]),
-          'showChooser': true,
           'type': 'video/*',
         }));
       });
@@ -161,12 +140,57 @@ void main() {
         verifyZeroInteractions(mockChannel);
       });
     });
+
+    group('showChooser', () {
+      test('raises error if the intent has no action', () async {
+        try {
+          androidIntent = AndroidIntent.private(
+            package: 'packageName',
+            componentName: 'componentName',
+            channel: mockChannel,
+            platform: FakePlatform(operatingSystem: 'android'),
+          );
+          await androidIntent.showChooser();
+          fail('should raise a StateError');
+        } on StateError catch (e) {
+          expect(e.message, 'action must not be null or empty string');
+        } catch (e) {
+          fail('should raise a StateError');
+        }
+      });
+
+      test('pass right params', () async {
+        androidIntent = AndroidIntent.private(
+            action: 'action_view',
+            data: Uri.encodeFull('https://flutter.io'),
+            flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+            channel: mockChannel,
+            platform: FakePlatform(operatingSystem: 'android'),
+            type: 'video/*');
+        await androidIntent.showChooser();
+        verify(mockChannel.invokeMethod<void>('showChooser', <String, Object>{
+          'action': 'action_view',
+          'data': Uri.encodeFull('https://flutter.io'),
+          'flags':
+              androidIntent.convertFlags(<int>[Flag.FLAG_ACTIVITY_NEW_TASK]),
+          'type': 'video/*',
+        }));
+      });
+
+      test('call in ios platform', () async {
+        androidIntent = AndroidIntent.private(
+            action: 'action_view',
+            channel: mockChannel,
+            platform: FakePlatform(operatingSystem: 'ios'));
+        await androidIntent.showChooser();
+        verifyZeroInteractions(mockChannel);
+      });
+    });
   });
 
   group('convertFlags ', () {
     androidIntent = const AndroidIntent(
       action: 'action_view',
-      showChooser: false,
     );
     test('add filled flag list', () async {
       final List<int> flags = <int>[];

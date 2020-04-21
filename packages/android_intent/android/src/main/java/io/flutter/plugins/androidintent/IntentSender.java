@@ -63,6 +63,26 @@ public final class IntentSender {
     }
   }
 
+  void showChooser(Intent intent, @Nullable List<String> ignoredPackages) {
+    Intent chooser = null;
+    intent.setPackage(null);
+    intent.setComponent(null);
+    Boolean isPackageFilterRequired = ignoredPackages != null && ignoredPackages.size() > 0;
+    if (isPackageFilterRequired) {
+      ArrayList<Intent> targetIntents = calculateTargetIntents(intent, ignoredPackages);
+      if (targetIntents != null && targetIntents.size() > 0) {
+        chooser = Intent.createChooser(targetIntents.remove(0), "");
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetIntents.toArray(new Parcelable[] {}));
+      }
+    }
+
+    if (chooser != null) {
+      send(chooser);
+    } else {
+      send(intent);
+    }
+  }
+
   /**
    * Verifies the given intent and returns whether the application context class can resolve it.
    *
@@ -113,7 +133,6 @@ public final class IntentSender {
    * @param componentName forwarded to {@link Intent#setComponent(ComponentName)} if non-null.
    * @param ignoredPackages list of package names that should not be displayed in the chooser and
    *     should not be used to resolve this intent.
-   * @param showChooser forces to show the default selection dialog.
    * @param type forwarded to {@link Intent#setType(String)} if non-null and 'data' parameter is
    *     null. If both 'data' and 'type' is non-null they're forwarded to {@link
    *     Intent#setDataAndType(Uri, String)}
@@ -128,14 +147,11 @@ public final class IntentSender {
       @Nullable String packageName,
       @Nullable ComponentName componentName,
       @Nullable List<String> ignoredPackages,
-      @Nullable Boolean showChooser,
       @Nullable String type) {
     if (applicationContext == null) {
       Log.wtf(TAG, "Trying to build an intent before the applicationContext was initialized.");
       return null;
     }
-    Boolean isChooserDesired = showChooser != null && showChooser;
-    Intent chooser = null;
     Intent intent = new Intent();
 
     if (action != null) {
@@ -170,41 +186,37 @@ public final class IntentSender {
       }
     }
     Boolean isPackageFilterRequired = ignoredPackages != null && ignoredPackages.size() > 0;
-    if (isPackageFilterRequired || isChooserDesired) {
-      PackageManager packageManager;
-      if (activity != null) {
-        packageManager = activity.getPackageManager();
-      } else {
-        packageManager = applicationContext.getPackageManager();
-      }
-      List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-      ArrayList<Intent> targetIntents = new ArrayList<Intent>();
-      if (isPackageFilterRequired) {
-        targetIntents = calculateTargetIntents(intent, activities, ignoredPackages);
-      }
-
-      if (isChooserDesired) {
-        if (targetIntents != null && targetIntents.size() > 0) {
-          chooser = Intent.createChooser(targetIntents.remove(0), "");
-          chooser.putExtra(
-              Intent.EXTRA_INITIAL_INTENTS, targetIntents.toArray(new Parcelable[] {}));
-        }
-      } else {
-        String packageToLaunch = choosePackageToLaunch(targetIntents, activities);
-        intent.setPackage(packageToLaunch);
-      }
+    if (isPackageFilterRequired) {
+      String packageToLaunch = choosePackageToLaunch(intent, ignoredPackages);
+      intent.setPackage(packageToLaunch);
     }
 
-    if (chooser != null) {
-      return chooser;
+    return intent;
+  }
+
+  String choosePackageToLaunch(Intent intent, List<String> ignoredPackages) {
+    ArrayList<Intent> targetIntents = calculateTargetIntents(intent, ignoredPackages);
+
+    if (targetIntents != null && targetIntents.size() > 0) {
+      return targetIntents.get(0).getPackage();
     } else {
-      return intent;
+      return null;
     }
   }
 
-  ArrayList<Intent> calculateTargetIntents(
-      Intent intent, List<ResolveInfo> intentActivities, List<String> ignoredPackages) {
+  List<ResolveInfo> getIntentActivities(Intent intent) {
+    PackageManager packageManager;
+    if (activity != null) {
+      packageManager = activity.getPackageManager();
+    } else {
+      packageManager = applicationContext.getPackageManager();
+    }
+    return packageManager.queryIntentActivities(intent, 0);
+  }
+
+  ArrayList<Intent> calculateTargetIntents(Intent intent, List<String> ignoredPackages) {
     ArrayList<Intent> targetIntents = new ArrayList<Intent>();
+    List<ResolveInfo> intentActivities = getIntentActivities(intent);
 
     for (ResolveInfo currentInfo : intentActivities) {
       if (ignoredPackages.indexOf(currentInfo.activityInfo.packageName) == -1) {
@@ -214,15 +226,5 @@ public final class IntentSender {
       }
     }
     return targetIntents;
-  }
-
-  String choosePackageToLaunch(List<Intent> intents, List<ResolveInfo> intentActivities) {
-    if (intents != null && intents.size() > 0) {
-      return intents.get(0).getPackage();
-    } else if (intentActivities.size() > 0) {
-      return intentActivities.get(0).activityInfo.packageName;
-    } else {
-      return null;
-    }
   }
 }

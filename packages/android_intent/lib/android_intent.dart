@@ -29,8 +29,6 @@ class AndroidIntent {
   /// If not null, then [package] but also be provided.
   /// [ignoredPackages] is the list of package names that should not by displayed in the selection dialog and
   /// should not be used to resolve this intent.
-  /// [showChooser] forces to show the default selection dialog to allow the user to select an application from the list of available ones. If false, this intent will be resolved using the most appropriate
-  /// option from the existing ones (a default app, if set).
   /// [type] refers to the type of the intent, can be null.
   const AndroidIntent({
     this.action,
@@ -41,13 +39,10 @@ class AndroidIntent {
     this.package,
     this.componentName,
     this.ignoredPackages,
-    this.showChooser,
     Platform platform,
     this.type,
   })  : assert(action != null || componentName != null,
             'action or component (or both) must be specified'),
-        assert(package == null || showChooser != true,
-            'either package can be specified or showChooser can be true'),
         _channel = const MethodChannel(_kChannelName),
         _platform = platform ?? const LocalPlatform();
 
@@ -65,12 +60,9 @@ class AndroidIntent {
     this.package,
     this.componentName,
     this.ignoredPackages,
-    this.showChooser,
     this.type,
   })  : assert(action != null || componentName != null,
             'action or component (or both) must be specified'),
-        assert(package == null || showChooser != true,
-            'either package can be specified or showChooser can be true'),
         _channel = channel,
         _platform = platform;
 
@@ -116,8 +108,6 @@ class AndroidIntent {
   /// List of package names that will be excluded from the list of applications to resolve the intent.
   final List<String> ignoredPackages;
 
-  /// Shows the default selection dialog with applications that can resolve the intent (except of applications specified in [ignoredPackages]).
-  final bool showChooser;
   final MethodChannel _channel;
   final Platform _platform;
 
@@ -170,6 +160,26 @@ class AndroidIntent {
     );
   }
 
+  /// Show the default selection dialog to allow the user to select
+  /// an application to resolve this intent from the list of available applications.
+  ///
+  /// [action] must be specified.
+  ///
+  /// [package] and [componentName] will be ignored.
+  ///
+  /// This works only on Android platforms.
+  Future<void> showChooser() async {
+    if (!_platform.isAndroid) {
+      return;
+    }
+
+    if (action?.isEmpty ?? true) {
+      throw StateError('action must not be null or empty string');
+    }
+
+    await _channel.invokeMethod<void>('showChooser', _buildArguments());
+  }
+
   /// Constructs the map of arguments which is passed to the plugin.
   Map<String, dynamic> _buildArguments() {
     return {
@@ -184,7 +194,6 @@ class AndroidIntent {
       },
       if (ignoredPackages?.isNotEmpty == true)
         'ignoredPackages': ignoredPackages,
-      if (showChooser != null) 'showChooser': showChooser,
       if (type != null) 'type': type,
     };
   }

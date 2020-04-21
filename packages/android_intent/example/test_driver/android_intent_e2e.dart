@@ -43,7 +43,7 @@ void main() {
     // We can't test that any of this is really working, this is mostly just
     // checking that the plugin API is registered. Only works on Android.
     const AndroidIntent intent =
-        AndroidIntent(action: 'LAUNCH', package: 'foobar', showChooser: false);
+        AndroidIntent(action: 'LAUNCH', package: 'foobar');
     await expectLater(() async => await intent.launch(), throwsA((Exception e) {
       return e is PlatformException &&
           e.message.contains('No Activity found to handle Intent');
@@ -63,7 +63,20 @@ void main() {
   testWidgets('#canResolveActivity returns false when no Activity is found',
       (WidgetTester tester) async {
     const AndroidIntent intent =
-        AndroidIntent(action: 'LAUNCH', package: 'foobar', showChooser: false);
+        AndroidIntent(action: 'LAUNCH', package: 'foobar');
     await expectLater(await intent.canResolveActivity(), isFalse);
+  }, skip: !Platform.isAndroid);
+
+  testWidgets('#showChooser throws when no action is specified',
+      (WidgetTester tester) async {
+    AndroidIntent intent = AndroidIntent(
+      package: 'io.flutter.plugins.androidintentexample',
+      componentName: 'io.flutter.embedding.android.FlutterActivity',
+    );
+    await expectLater(() async => await intent.showChooser(),
+        throwsA((Error e) {
+      return e is StateError &&
+          e.message.contains('action must not be null or empty string');
+    }));
   }, skip: !Platform.isAndroid);
 }

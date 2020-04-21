@@ -1,6 +1,7 @@
 package io.flutter.plugins.androidintent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -22,6 +23,7 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.BinaryMessenger.BinaryMessageHandler;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel.Result;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
@@ -282,5 +284,39 @@ public class MethodCallHandlerImplTest {
     assertNotNull(intent);
     assertEquals(type, intent.getType());
     assertEquals(data, intent.getData());
+  }
+
+  @Test
+  public void onMethodCall_setsIgnoredPackages() {
+    sender.setApplicationContext(context);
+    Map<String, Object> args = new HashMap<>();
+    args.put("action", "foo");
+    ArrayList<String> ignoredPackages = new ArrayList<String>();
+    ignoredPackages.add("io.flutter.plugins.androidintent");
+    args.put("ignoredPackages", ignoredPackages);
+    Result result = mock(Result.class);
+
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
+
+    verify(result, times(1)).success(null);
+    Intent intent = shadowOf((Application) context).getNextStartedActivity();
+    assertNotNull(intent);
+    assertEquals("foo", intent.getAction());
+    assertNotEquals("io.flutter.plugins.androidintent", intent.getPackage());
+  }
+
+  @Test
+  public void onMethodCall_showChooser() {
+    sender.setApplicationContext(context);
+    Map<String, Object> args = new HashMap<>();
+    args.put("action", "foo");
+    Result result = mock(Result.class);
+
+    methodCallHandler.onMethodCall(new MethodCall("showChooser", args), result);
+
+    verify(result, times(1)).success(null);
+    Intent intent = shadowOf((Application) context).getNextStartedActivity();
+    assertNotNull(intent);
+    assertEquals("foo", intent.getAction());
   }
 }
