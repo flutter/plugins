@@ -41,6 +41,12 @@ class SKPaymentQueueWrapper {
     callbackChannel.setMethodCallHandler(_handleObserverCallbacks);
   }
 
+  /// Get pending transactions.
+  Future<List<SKPaymentTransactionWrapper>> get pendingTransactions async {
+    return _getTransactionList(
+        await channel.invokeListMethod<Map>('-[SKPaymentQueue transactions]'));
+  }
+
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
   static Future<bool> canMakePayments() async =>
       await channel.invokeMethod<bool>('-[SKPaymentQueue canMakePayments:]');

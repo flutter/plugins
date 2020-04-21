@@ -83,6 +83,8 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"-[SKPaymentQueue canMakePayments:]" isEqualToString:call.method]) {
     [self canMakePayments:result];
+  } else if ([@"-[SKPaymentQueue transactions]" isEqualToString:call.method]) {
+    [self getPendingTransactions:result];
   } else if ([@"-[InAppPurchasePlugin startProductRequest:result:]" isEqualToString:call.method]) {
     [self handleProductRequestMethodCall:call result:result];
   } else if ([@"-[InAppPurchasePlugin addPayment:result:]" isEqualToString:call.method]) {
@@ -102,6 +104,15 @@
 
 - (void)canMakePayments:(FlutterResult)result {
   result([NSNumber numberWithBool:[SKPaymentQueue canMakePayments]]);
+}
+
+- (void)getPendingTransactions:(FlutterResult)result {
+  NSArray<SKPaymentTransaction *> *transactions = [self.paymentQueueHandler getPendingTransactions];
+  NSMutableArray *transactionMaps = [NSMutableArray new];
+  for (SKPaymentTransaction *transaction in transactions) {
+    [transactionMaps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]];
+  }
+  result(transactionMaps);
 }
 
 - (void)handleProductRequestMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

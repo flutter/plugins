@@ -22,5 +22,6 @@ Downloaded by pub (not CocoaPods).
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/**/*'
+    test_spec.dependency 'OCMock','3.5'
   end
 end
