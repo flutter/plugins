@@ -190,6 +190,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       }
     } else {
       NSLog(@"Taking snapshots is not supported for Flutter Google Maps prior to iOS 10.");
+      result(nil);
     }
   } else if ([call.method isEqualToString:@"markers#update"]) {
     id markersToAdd = call.arguments[@"markersToAdd"];
