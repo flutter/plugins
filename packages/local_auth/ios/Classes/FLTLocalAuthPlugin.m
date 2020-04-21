@@ -6,8 +6,8 @@
 #import "FLTLocalAuthPlugin.h"
 
 @interface FLTLocalAuthPlugin ()
-@property (copy, nullable) NSDictionary<NSString *, NSNumber *> *lastCallArgs;
-@property (nullable) FlutterResult lastResult;
+@property(copy, nullable) NSDictionary<NSString *, NSNumber *> *lastCallArgs;
+@property(nullable) FlutterResult lastResult;
 @end
 
 @implementation FLTLocalAuthPlugin
