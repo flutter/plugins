@@ -1,3 +1,7 @@
+## 0.5.26+2
+
+* Fix UIKit availability warnings and CocoaPods podspec lint warnings.
+
 ## 0.5.26+1
 
 * Removes a errorneously added method from the GoogleMapController.h header file.
