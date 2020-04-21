@@ -22,45 +22,52 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([call.method isEqualToString:@"setShortcutItems"]) {
-    setShortcutItems(call.arguments);
-    result(nil);
-  } else if ([call.method isEqualToString:@"clearShortcutItems"]) {
-    [UIApplication sharedApplication].shortcutItems = @[];
-    result(nil);
-  } else if ([call.method isEqualToString:@"getLaunchAction"]) {
-    result(nil);
+  if (@available(iOS 9.0, *)) {
+    if ([call.method isEqualToString:@"setShortcutItems"]) {
+      _setShortcutItems(call.arguments);
+      result(nil);
+    } else if ([call.method isEqualToString:@"clearShortcutItems"]) {
+      [UIApplication sharedApplication].shortcutItems = @[];
+      result(nil);
+    } else if ([call.method isEqualToString:@"getLaunchAction"]) {
+      result(nil);
+    } else {
+      result(FlutterMethodNotImplemented);
+    }
   } else {
-    result(FlutterMethodNotImplemented);
+    NSLog(@"Shortcuts are not supported prior to iOS 9.");
+    result(nil);
   }
 }
 
 - (void)dealloc {
-  [self.channel setMethodCallHandler:nil];
-  self.channel = nil;
+  [_channel setMethodCallHandler:nil];
+  _channel = nil;
 }
 
 - (BOOL)application:(UIApplication *)application
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
-               completionHandler:(void (^)(BOOL succeeded))completionHandler {
+               completionHandler:(void (^)(BOOL succeeded))completionHandler
+    API_AVAILABLE(ios(9.0)) {
   [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
   return YES;
 }
 
 #pragma mark Private functions
 
-static void setShortcutItems(NSArray *items) {
-  NSMutableArray *newShortcuts = [[NSMutableArray alloc] init];
+NS_INLINE void _setShortcutItems(NSArray *items) API_AVAILABLE(ios(9.0)) {
+  NSMutableArray<UIApplicationShortcutItem *> *newShortcuts = [[NSMutableArray alloc] init];
 
   for (id item in items) {
-    UIApplicationShortcutItem *shortcut = deserializeShortcutItem(item);
+    UIApplicationShortcutItem *shortcut = _deserializeShortcutItem(item);
     [newShortcuts addObject:shortcut];
   }
 
   [UIApplication sharedApplication].shortcutItems = newShortcuts;
 }
 
-static UIApplicationShortcutItem *deserializeShortcutItem(NSDictionary *serialized) {
+NS_INLINE UIApplicationShortcutItem *_deserializeShortcutItem(NSDictionary *serialized)
+    API_AVAILABLE(ios(9.0)) {
   UIApplicationShortcutIcon *icon =
       [serialized[@"icon"] isKindOfClass:[NSNull class]]
           ? nil
