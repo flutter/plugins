@@ -47,13 +47,13 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 
 - (BOOL)application:(UIApplication *)application
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
-               completionHandler:(void (^)(BOOL succeeded))completionHandler API_AVAILABLE(ios(9.0)) {
+               completionHandler:(void (^)(BOOL succeeded))completionHandler
+    API_AVAILABLE(ios(9.0)) {
   [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
   return YES;
 }
 
 #pragma mark Private functions
-
 
 NS_INLINE void _setShortcutItems(NSArray *items) API_AVAILABLE(ios(9.0)) {
   NSMutableArray<UIApplicationShortcutItem *> *newShortcuts = [[NSMutableArray alloc] init];
@@ -66,7 +66,8 @@ NS_INLINE void _setShortcutItems(NSArray *items) API_AVAILABLE(ios(9.0)) {
   [UIApplication sharedApplication].shortcutItems = newShortcuts;
 }
 
-NS_INLINE UIApplicationShortcutItem *_deserializeShortcutItem(NSDictionary *serialized) API_AVAILABLE(ios(9.0)) {
+NS_INLINE UIApplicationShortcutItem *_deserializeShortcutItem(NSDictionary *serialized)
+    API_AVAILABLE(ios(9.0)) {
   UIApplicationShortcutIcon *icon =
       [serialized[@"icon"] isKindOfClass:[NSNull class]]
           ? nil
