@@ -1,3 +1,7 @@
+## 0.6.5+1
+
+* Fix CocoaPods podspec lint warnings.
+
 ## 0.6.5
 
 * Set maximum duration for video recording.
