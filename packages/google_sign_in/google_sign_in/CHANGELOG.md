@@ -1,3 +1,11 @@
+## 4.4.3
+
+* Upgrade google_sign_in_web to version ^0.9.1
+
+## 4.4.2
+
+* Android: make the Delegate non-final to allow overriding.
+
 ## 4.4.1
 
 * Android: Move `GoogleSignInWrapper` to a separate class.

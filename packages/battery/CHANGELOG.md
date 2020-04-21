@@ -1,6 +1,7 @@
 ## 0.3.1+10
 
 * Update minimum Flutter version to 1.12.13+hotfix.5
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.3.1+9
 

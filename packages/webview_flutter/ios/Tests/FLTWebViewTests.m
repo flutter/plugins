@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 @import Flutter;
-@import OCMock;
 @import XCTest;
 @import webview_flutter;
+
+// OCMock library doesn't generate a valid modulemap.
+#import <OCMock/OCMock.h>
 
 static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 

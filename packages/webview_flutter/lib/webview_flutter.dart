@@ -300,7 +300,6 @@ class WebView extends StatefulWidget {
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
 
-  /// The value used for the HTTP User-Agent: request header.
   /// A Boolean value indicating whether horizontal swipe gestures will trigger back-forward list navigations.
   ///
   /// This only works on iOS.
@@ -308,6 +307,7 @@ class WebView extends StatefulWidget {
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
 
+  /// The value used for the HTTP User-Agent: request header.
   ///
   /// When null the platform's webview default is used for the User-Agent header.
   ///
