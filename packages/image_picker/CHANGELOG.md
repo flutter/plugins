@@ -1,3 +1,7 @@
+## 0.6.6
+
+* Fixes crash when an image in the gallery is tapped more than once.
+
 ## 0.6.5+1
 
 * Fix CocoaPods podspec lint warnings.
