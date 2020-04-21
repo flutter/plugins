@@ -1,3 +1,7 @@
+## 0.3.20+2
+
+* Fix CocoaPods podspec lint warnings.
+
 ## 0.3.20+1
 
 * OCMock module import -> #import, unit tests compile generated as library.
