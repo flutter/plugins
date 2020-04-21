@@ -44,8 +44,9 @@ class ImagePicker {
   static const MethodChannel _channel =
       MethodChannel('plugins.flutter.io/image_picker');
 
-  /// Returns a [File] object pointing to the image that was picked or throws
-  /// a [PlatformException] if the app does not have permission to access
+  /// Returns a [File] object pointing to the image that was picked.
+  ///
+  /// The method could throw [PlatformException] if the app does not have permission to access
   /// the camera or photos gallery, no camera is available, plugin is already in use,
   /// temporary file could not be created (iOS only) or plugin activity could not
   /// be allocated (Android only).
@@ -100,8 +101,9 @@ class ImagePicker {
     return path == null ? null : File(path);
   }
 
-  /// Returns a [File] object pointing to the video that was picked or throws
-  /// a [PlatformException] if the app does not have permission to access
+  /// Returns a [File] object pointing to the video that was picked.
+  ///
+  /// The method could throw [PlatformException] if the app does not have permission to access
   /// the camera or photos gallery, no camera is available, plugin is already in use,
   /// temporary file could not be created and video could not be cached (iOS only)
   /// or plugin activity could not be allocated (Android only).
