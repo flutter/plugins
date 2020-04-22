@@ -1,6 +1,6 @@
 ## 0.3.3
 
-* Introduce `SKPaymentQueueWrapper.pendingTransactions`.
+* Introduce `SKPaymentQueueWrapper.transactions`.
 
 ## 0.3.2+2
 
