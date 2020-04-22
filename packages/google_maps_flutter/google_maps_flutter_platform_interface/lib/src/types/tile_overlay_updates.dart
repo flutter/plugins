@@ -1,7 +1,14 @@
-part of google_maps_flutter;
+import 'package:flutter/foundation.dart';
 
-class _TileOverlayUpdates {
-  _TileOverlayUpdates.from(List<TileOverlay> previous, List<TileOverlay> current) {
+import 'types.dart';
+
+/// [TileOverlay] update events to be applied to the [GoogleMap].
+///
+/// Used in [GoogleMapController] when the map is updated.
+// (Do not re-export)
+class TileOverlayUpdates {
+  /// Computes [TileOverlayUpdates] given previous and current [TileOverlay]s.
+  TileOverlayUpdates.from(List<TileOverlay> previous, List<TileOverlay> current) {
     previous ??= <TileOverlay>[];
     current ??= <TileOverlay>[];
 
@@ -45,26 +52,32 @@ class _TileOverlayUpdates {
     this.toRemove = toRemove;
   }
 
+  /// List of TileOverlays to be added in this update.
   List<TileOverlay> toAdd;
+
+  /// List of TileOverlays to be changed in this update.
   List<TileOverlay> toChange;
+
+  /// List of TileOverlays to be removed in this update.
   List<TileOverlay> toRemove;
 
-  Map<String, dynamic> _toMap() {
+  /// Converts this object to something serializable in JSON.
+  Map<String, dynamic> toMap() {
     return {
-      'tilesToAdd': List<dynamic>.from(toAdd.map((x) => x._toMap())),
-      'tilesToChange': List<dynamic>.from(toChange.map((x) => x._toMap())),
-      'tilesToRemove': List<dynamic>.from(toRemove.map((x) => x._toMap())),
+      'tilesToAdd': List<dynamic>.from(toAdd.map((x) => x.toMap())),
+      'tilesToChange': List<dynamic>.from(toChange.map((x) => x.toMap())),
+      'tilesToRemove': List<dynamic>.from(toRemove.map((x) => x.toMap())),
     };
   }
 
   @override
   bool operator ==(Object o) {
     if (identical(this, o)) return true;
-  
-    return o is _TileOverlayUpdates &&
-      listEquals(o.toAdd, toAdd) &&
-      listEquals(o.toChange, toChange) &&
-      listEquals(o.toRemove, toRemove);
+
+    return o is TileOverlayUpdates &&
+        listEquals(o.toAdd, toAdd) &&
+        listEquals(o.toChange, toChange) &&
+        listEquals(o.toRemove, toRemove);
   }
 
   @override

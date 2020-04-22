@@ -1,5 +1,3 @@
-part of google_maps_flutter;
-
 /// A Tile Overlay is a set of images which are displayed on top 
 /// of the base map tiles. These tiles may be transparent, allowing 
 /// you to add features to existing maps.
@@ -10,10 +8,12 @@ class TileOverlay {
   /// The height of the tile in pixels.
   final int height;
 
-  /// The url from where to fetch the tiles.
+  /// The url from where to fetch the tiles from.
   ///
-  /// The x, y, and z fields must surrounded by curly braces.
-  /// For example: tiles.provider.com/{x}/{y}/{z}.png
+  /// The x, y, and z values must surrounded by curly braces
+  /// and will be replaced with the tile coordinates.
+  /// 
+  /// For example: `tiles.provider.com/{x}/{y}/{z}.png`
   final String url;
 
   /// Whether the overlay tiles should fade in.
@@ -41,6 +41,8 @@ class TileOverlay {
 
   /// Creates a [TileOverlay].
   /// 
+  /// This corresponds to a UrlTileProvider on the native side.
+  /// 
   /// All values must not be null.
   const TileOverlay(
     this.width,
@@ -58,7 +60,7 @@ class TileOverlay {
         assert(transparency != null && transparency >= 0.0),
         assert(zIndex != null && zIndex >= 0.0);
 
-  Map<String, dynamic> _toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'width': width,
       'height': height,
@@ -99,12 +101,4 @@ class TileOverlay {
   String toString() {
     return 'TileOverlay(width: $width, height: $height, url: $url, fadeIn: $fadeIn, isVisible: $isVisible, transparency: $transparency, zIndex: $zIndex)';
   }
-}
-
-List<Map<String, dynamic>> _serializeTileOverlays(List<TileOverlay> overlays) {
-  if (overlays == null) {
-    return null;
-  }
-
-  return overlays.map<Map<String, dynamic>>((e) => e._toMap()).toList();
 }

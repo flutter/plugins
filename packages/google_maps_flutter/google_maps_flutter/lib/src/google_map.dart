@@ -194,6 +194,13 @@ class GoogleMap extends StatefulWidget {
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
+  /// **Android only!**
+  /// 
+  /// A list of [TileOverlay]s to be displayed on top of the map.
+  /// 
+  /// A [TileOverlay] is a set of images which are displayed on top of 
+  /// the base map tiles. These tiles may be transparent, allowing you 
+  /// to add features to existing maps
   final List<TileOverlay> tileOverlays;
 
   /// Creates a [State] for this [GoogleMap].
@@ -221,6 +228,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'polygonsToAdd': serializePolygonSet(widget.polygons),
       'polylinesToAdd': serializePolylineSet(widget.polylines),
       'circlesToAdd': serializeCircleSet(widget.circles),
+      'tilesToAdd': serializeTileOverlays(widget.tileOverlays),
     };
     return _googleMapsFlutterPlatform.buildView(
       creationParams,
@@ -237,6 +245,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _polygons = keyByPolygonId(widget.polygons);
     _polylines = keyByPolylineId(widget.polylines);
     _circles = keyByCircleId(widget.circles);
+    _tileOverlays = widget.tileOverlays;
   }
 
   @override
@@ -298,7 +307,7 @@ class _GoogleMapState extends State<GoogleMap> {
   void _updateTileOverlays() async {
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
-    controller._updateTileOverlays(_TileOverlayUpdates.from(_tileOverlays, widget.tileOverlays));
+    controller._updateTileOverlays(TileOverlayUpdates.from(_tileOverlays, widget.tileOverlays));
 
     _tileOverlays = widget.tileOverlays;
   }
