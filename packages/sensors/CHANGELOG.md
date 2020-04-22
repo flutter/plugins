@@ -2,6 +2,7 @@
 
 * Remove Android dependencies fallback.
 * Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.4.1+10
 

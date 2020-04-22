@@ -1,6 +1,14 @@
-## 0.6.5+1
+## 0.6.5+3
 
 * Expose errors thrown in `pickImage` and `pickVideo` docs.
+
+## 0.6.5+2
+
+* iOS: Fixes crash when an image in the gallery is tapped more than once.
+
+## 0.6.5+1
+
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.6.5
 

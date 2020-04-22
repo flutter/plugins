@@ -1,3 +1,12 @@
+## 0.3.2+2
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.3.2+1
+
+* iOS: Fix only transactions with SKPaymentTransactionStatePurchased and SKPaymentTransactionStateFailed can be finished.
+* iOS: Only one pending transaction of a given product is allowed.  
+
 ## 0.3.2
 
 * Remove Android dependencies fallback.

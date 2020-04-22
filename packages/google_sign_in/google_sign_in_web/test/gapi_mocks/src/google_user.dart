@@ -23,5 +23,8 @@ String googleUser(GoogleSignInUserData data) => '''
   },
   getGrantedScopes: () => 'some scope',
   grant: () => true,
+  isSignedIn: () => {
+    return ${data != null ? 'true' : 'false'};
+  },
 }
 ''';

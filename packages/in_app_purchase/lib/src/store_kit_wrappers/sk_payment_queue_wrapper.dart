@@ -100,7 +100,7 @@ class SKPaymentQueueWrapper {
       SKPaymentTransactionWrapper transaction) async {
     await channel.invokeMethod<void>(
         '-[InAppPurchasePlugin finishTransaction:result:]',
-        transaction.transactionIdentifier);
+        transaction.payment.productIdentifier);
   }
 
   /// Restore previously purchased transactions.

@@ -15,6 +15,8 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "connectivity_platform_interface"
   "connectivity_web"
   "flutter_plugin_android_lifecycle"
+  "google_maps_flutter_platform_interface"
+  "google_maps_flutter_web"
   "google_sign_in_platform_interface"
   "google_sign_in_web"
   "instrumentation_adapter"
