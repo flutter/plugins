@@ -12,6 +12,7 @@
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
+#import "FLTImagePickerController.h"
 
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
@@ -24,7 +25,7 @@ static const int SOURCE_GALLERY = 1;
 
 @implementation FLTImagePickerPlugin {
   NSDictionary *_arguments;
-  UIImagePickerController *_imagePickerController;
+  FLTImagePickerController *_imagePickerController;
   UIViewController *_viewController;
   UIImagePickerControllerCameraDevice _device;
 }
@@ -61,7 +62,7 @@ static const int SOURCE_GALLERY = 1;
   }
 
   if ([@"pickImage" isEqualToString:call.method]) {
-    _imagePickerController = [[UIImagePickerController alloc] init];
+    _imagePickerController = [[FLTImagePickerController alloc] init];
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
@@ -89,7 +90,7 @@ static const int SOURCE_GALLERY = 1;
         break;
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
-    _imagePickerController = [[UIImagePickerController alloc] init];
+    _imagePickerController = [[FLTImagePickerController alloc] init];
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[
