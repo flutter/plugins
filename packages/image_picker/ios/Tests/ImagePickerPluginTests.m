@@ -7,6 +7,11 @@
 @import image_picker;
 @import XCTest;
 
+@interface FLTImagePickerPlugin (Test)
+@property(copy, nonatomic) FlutterResult result;
+- (void)handleSavedPath:(NSString *)path;
+@end
+
 @interface ImagePickerPluginTests : XCTestCase
 @end
 
@@ -88,6 +93,22 @@
                     result:^(id _Nullable r){
                     }];
   XCTAssertEqual([plugin getImagePickerController].videoMaximumDuration, 95);
+}
+
+- (void)testPluginPickImageSelectMultipleTimes {
+  FLTImagePickerPlugin *plugin =
+      [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
+  FlutterMethodCall *call =
+      [FlutterMethodCall methodCallWithMethodName:@"pickImage"
+                                        arguments:@{@"source" : @(0), @"cameraDevice" : @(0)}];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+  plugin.result = ^(id result) {
+
+  };
+  [plugin handleSavedPath:@"test"];
+  [plugin handleSavedPath:@"test"];
 }
 
 @end
