@@ -138,7 +138,7 @@ public class GoogleSignInPluginTests {
   }
 
   @Test
-  public void requestScopes_mayBeCalledRepeatedly() {
+  public void requestScopes_mayBeCalledRepeatedly_ifAlreadyGranted() {
     HashMap<String, List<String>> arguments = new HashMap<>();
     arguments.put("scopes", Collections.singletonList("requestedScope"));
     MethodCall methodCall = new MethodCall("requestScopes", arguments);
@@ -161,5 +161,29 @@ public class GoogleSignInPluginTests {
         Delegate.REQUEST_CODE_REQUEST_SCOPE, Activity.RESULT_OK, new Intent());
 
     verify(result, times(2)).success(true);
+  }
+
+  @Test
+  public void requestScopes_mayBeCalledRepeatedly_ifNotSignedIn() {
+    HashMap<String, List<String>> arguments = new HashMap<>();
+    arguments.put("scopes", Collections.singletonList("requestedScope"));
+    MethodCall methodCall = new MethodCall("requestScopes", arguments);
+    Scope requestedScope = new Scope("requestedScope");
+
+    ArgumentCaptor<ActivityResultListener> captor =
+        ArgumentCaptor.forClass(ActivityResultListener.class);
+    verify(mockRegistrar).addActivityResultListener(captor.capture());
+    ActivityResultListener listener = captor.getValue();
+
+    when(mockGoogleSignIn.getLastSignedInAccount(mockContext)).thenReturn(null);
+
+    plugin.onMethodCall(methodCall, result);
+    listener.onActivityResult(
+        Delegate.REQUEST_CODE_REQUEST_SCOPE, Activity.RESULT_OK, new Intent());
+    plugin.onMethodCall(methodCall, result);
+    listener.onActivityResult(
+        Delegate.REQUEST_CODE_REQUEST_SCOPE, Activity.RESULT_OK, new Intent());
+
+    verify(result, times(2)).error("sign_in_required", "No account to grant scopes.", null);
   }
 }
