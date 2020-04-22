@@ -41,8 +41,8 @@ class SKPaymentQueueWrapper {
     callbackChannel.setMethodCallHandler(_handleObserverCallbacks);
   }
 
-  /// Get pending transactions.
-  Future<List<SKPaymentTransactionWrapper>> get pendingTransactions async {
+  /// Calls [`-[SKPaymentQueue transactions]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506026-transactions?language=objc)
+  Future<List<SKPaymentTransactionWrapper>> transactions() async {
     return _getTransactionList(
         await channel.invokeListMethod<Map>('-[SKPaymentQueue transactions]'));
   }

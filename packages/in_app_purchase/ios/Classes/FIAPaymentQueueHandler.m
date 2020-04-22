@@ -124,7 +124,7 @@
   return (self.shouldAddStorePayment(payment, product));
 }
 
-- (NSArray<SKPaymentTransaction *> *)getPendingTransactions {
+- (NSArray<SKPaymentTransaction *> *)getUnfinishedTransactions {
   return self.queue.transactions;
 }
 

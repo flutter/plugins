@@ -255,7 +255,7 @@
       [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue transactions]" arguments:nil];
   SKPaymentQueue* mockQueue = OCMClassMock(SKPaymentQueue.class);
   NSDictionary* transactionMap = @{
-    @"transactionIdentifier" : @"567",
+    @"transactionIdentifier" : [NSNull null],
     @"transactionState" : @(SKPaymentTransactionStatePurchasing),
     @"payment" : [NSNull null],
     @"error" : [FIAObjectTranslator getMapFromNSError:[NSError errorWithDomain:@"test_stub"

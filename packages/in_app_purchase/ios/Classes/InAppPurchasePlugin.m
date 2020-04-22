@@ -107,8 +107,9 @@
 }
 
 - (void)getPendingTransactions:(FlutterResult)result {
-  NSArray<SKPaymentTransaction *> *transactions = [self.paymentQueueHandler getPendingTransactions];
-  NSMutableArray *transactionMaps = [NSMutableArray new];
+  NSArray<SKPaymentTransaction *> *transactions =
+      [self.paymentQueueHandler getUnfinishedTransactions];
+  NSMutableArray *transactionMaps = [[NSMutableArray alloc] init];
   for (SKPaymentTransaction *transaction in transactions) {
     [transactionMaps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]];
   }
