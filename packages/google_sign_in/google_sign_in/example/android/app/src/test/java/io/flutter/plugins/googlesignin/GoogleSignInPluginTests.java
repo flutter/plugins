@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.googlesignin;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -134,5 +135,31 @@ public class GoogleSignInPluginTests {
         Delegate.REQUEST_CODE_REQUEST_SCOPE, Activity.RESULT_OK, new Intent());
 
     verify(result).success(true);
+  }
+
+  @Test
+  public void requestScopes_mayBeCalledRepeatedly() {
+    HashMap<String, List<String>> arguments = new HashMap<>();
+    arguments.put("scopes", Collections.singletonList("requestedScope"));
+    MethodCall methodCall = new MethodCall("requestScopes", arguments);
+    Scope requestedScope = new Scope("requestedScope");
+
+    ArgumentCaptor<ActivityResultListener> captor =
+        ArgumentCaptor.forClass(ActivityResultListener.class);
+    verify(mockRegistrar).addActivityResultListener(captor.capture());
+    ActivityResultListener listener = captor.getValue();
+
+    when(mockGoogleSignIn.getLastSignedInAccount(mockContext)).thenReturn(account);
+    when(account.getGrantedScopes()).thenReturn(Collections.singleton(requestedScope));
+    when(mockGoogleSignIn.hasPermissions(account, requestedScope)).thenReturn(false);
+
+    plugin.onMethodCall(methodCall, result);
+    listener.onActivityResult(
+        Delegate.REQUEST_CODE_REQUEST_SCOPE, Activity.RESULT_OK, new Intent());
+    plugin.onMethodCall(methodCall, result);
+    listener.onActivityResult(
+        Delegate.REQUEST_CODE_REQUEST_SCOPE, Activity.RESULT_OK, new Intent());
+
+    verify(result, times(2)).success(true);
   }
 }
