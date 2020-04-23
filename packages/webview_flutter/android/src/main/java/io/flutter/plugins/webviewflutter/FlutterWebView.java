@@ -171,6 +171,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getScrollExtent":
         getScrollExtent(result);
         break;
+      case "setScrollBarsEnabled":
+        setScrollBarsEnabled(methodCall, result);
       default:
         result.notImplemented();
     }
@@ -305,6 +307,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       put("height", (double) webView.getContentHeight());
     }});
   }
+
+  private void setScrollBarsEnabled(MethodCall methodCall, final Result result) {
+    Map<String, Object> request = methodCall.arguments();
+    webView.setVerticalScrollBarEnabled((boolean) request.get("vertical"));
+    webView.setHorizontalScrollBarEnabled((boolean) request.get("horizontal"));
+    result.success(null);
+  }
+
   private void applySettings(Map<String, Object> settings) {
     for (String key : settings.keySet()) {
       switch (key) {

@@ -698,6 +698,15 @@ class WebViewController {
   Future<Size> getScrollExtent() {
     return _webViewPlatformController.getScrollExtent();
   }
+
+  /// Set which scrollbars should be displayed.
+  /// `vertical` determines if the vertical scrollbar is enabled.
+  /// `horizontal` determines if the horizontal scrollbar is enabled.
+  Future<void> setScrollBarsEnabled({@required bool vertical, bool horizontal = false}) {
+    assert(vertical != null && horizontal != null);
+    return _webViewPlatformController.setScrollBarsEnabled(
+        vertical, horizontal);
+  }
 }
 
 /// Manages cookies pertaining to all [WebView]s.

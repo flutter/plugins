@@ -300,6 +300,13 @@ abstract class WebViewPlatformController {
   Future<Size> getScrollExtent() {
     throw UnimplementedError("WebView getScrollExtent is not implemented on the current platform");
   }
+
+  /// Set which scrollbars should be displayed.
+  /// `vertical` determines if the vertical scrollbar is enabled.
+  /// `horizontal` determines if the horizontal scrollbar is enabled.
+  Future<void> setScrollBarsEnabled(bool vertical, bool horizontal) {
+    throw UnimplementedError("WebView setScrollBarsEnabled is not implemented on the current platform");
+  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.

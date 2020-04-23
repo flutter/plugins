@@ -153,6 +153,14 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     return Size(result['width'], result['height']);
   }
 
+  @override
+  Future<void> setScrollBarsEnabled(bool vertical, bool horizontal) {
+    return _channel.invokeMethod<void>('setScrollBarsEnabled', <String, bool>{
+      'vertical': vertical,
+      'horizontal': horizontal,
+    });
+  }
+
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {
     return _cookieManagerChannel

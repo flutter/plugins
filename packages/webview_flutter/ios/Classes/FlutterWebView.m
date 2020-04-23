@@ -162,6 +162,8 @@
     [self onGetScrollPosition:result];
   } else if ([[call method] isEqualToString:@"getScrollExtent"]) {
     [self onGetScrollExtent:result];
+  } else if ([[call method] isEqualToString:@"setScrollBarsEnabled"]) {
+    [self setScrollBarsEnabled:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -319,6 +321,13 @@
 - (void)onGetScrollExtent:(FlutterResult)result {
     CGSize contentSize = _webView.scrollView.contentSize;
     result(@{@"width": @(contentSize.width),@"height": @(contentSize.height)});
+}
+
+- (void)setScrollBarsEnabled:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSDictionary* arguments = [call arguments];
+    _webView.scrollView.showsVerticalScrollIndicator = [arguments[@"vertical"] boolValue];
+    _webView.scrollView.showsHorizontalScrollIndicator = [arguments[@"horizontal"] boolValue];
+    result(nil);
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.
