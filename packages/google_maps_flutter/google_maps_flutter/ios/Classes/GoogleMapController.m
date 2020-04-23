@@ -133,7 +133,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     if (CGRectEqualToRect(bounds, CGRectZero)) {
       // The workaround is to fix an issue that the camera location is not current when
       // the size of the map is zero at initialization.
-      // So We only care about the size of the `_mapView`, ignore the frame changes when the size is zero.
+      // So We only care about the size of the `_mapView`, ignore the frame changes when the size is
+      // zero.
       return;
     }
     _cameraDidInitialSetup = YES;
