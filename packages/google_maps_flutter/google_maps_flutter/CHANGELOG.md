@@ -1,6 +1,7 @@
 ## 0.5.26+3
 
 * Android: Fix map view crash when "exit app" while using `FragmentActivity`.
+* Android: Remove listeners from `GoogleMap` when disposing.
 
 ## 0.5.26+2
 
