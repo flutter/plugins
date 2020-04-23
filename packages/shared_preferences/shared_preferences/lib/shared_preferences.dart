@@ -19,7 +19,8 @@ import 'package:shared_preferences_platform_interface/method_channel_shared_pref
 class SharedPreferences {
   SharedPreferences._(this._preferenceCache);
 
-  static String _prefix = 'flutter.';
+  static const _DEFAULT_PREFIX = 'flutter.';
+  static String _prefix = _DEFAULT_PREFIX;
   static Completer<SharedPreferences> _completer;
   static bool _manualDartRegistrationNeeded = true;
 
@@ -46,8 +47,10 @@ class SharedPreferences {
   ///
   /// Because this is reading from disk, it shouldn't be awaited in
   /// performance-sensitive blocks.
-  static Future<SharedPreferences> getInstance() async {
-    if (_completer == null) {
+  static Future<SharedPreferences> getInstance(
+      {String prefix = _DEFAULT_PREFIX}) async {
+    if (_completer == null || prefix != _prefix) {
+      _prefix = prefix;
       _completer = Completer<SharedPreferences>();
       try {
         final Map<String, Object> preferencesMap =
@@ -66,15 +69,8 @@ class SharedPreferences {
   }
 
   /// Prefix getter, defaults to `flutter.`
-  /// Use prefix setter to change the value.
   String get prefix {
     return _prefix;
-  }
-
-  /// By default the keys are stored on the device with a prefix `flutter.`.
-  /// Use this setter method to change the default prefix key.
-  set prefix(String prefix) {
-    _prefix = prefix;
   }
 
   /// The cache that holds all preferences.
@@ -201,8 +197,9 @@ class SharedPreferences {
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object> preferencesMap = <String, Object>{};
     for (String key in fromSystem.keys) {
-      assert(key.startsWith(_prefix));
-      preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
+      if (key.startsWith(_prefix)) {
+        preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
+      }
     }
     return preferencesMap;
   }
