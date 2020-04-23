@@ -1,3 +1,7 @@
+## 0.10.9+1
+
+* Update Readme to include web support and details on using plugin for web
+
 ## 0.10.9
 
 * Remove Android dependencies fallback.
