@@ -131,9 +131,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   if (object == _mapView && [keyPath isEqualToString:@"frame"]) {
     CGRect bounds = _mapView.bounds;
     if (CGRectEqualToRect(bounds, CGRectZero)) {
-      // Rerely, frame can change without actually changing the size of the view;
-      // eg, consider a frame change such as: (0, 0, 0, 0) -> (10, 10, 0, 0)
-      // We ignore this type of changes.
+      // The workaround is to fix an issue that the camera location is not current when
+      // the size of the map is zero at initialization.
+      // So We only care about the size of the `_mapView`, ignore the frame changes when the size is zero.
       return;
     }
     _cameraDidInitialSetup = YES;
