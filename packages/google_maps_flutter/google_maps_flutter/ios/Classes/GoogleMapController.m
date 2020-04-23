@@ -137,14 +137,11 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       return;
     }
     _cameraDidInitialSetup = YES;
+    [_mapView removeObserver:self forKeyPath:@"frame"];
     [_mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
   } else {
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
   }
-}
-
-- (void)dealloc {
-  [_mapView removeObserver:self forKeyPath:@"frame"];
 }
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -526,8 +523,8 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
 
 static NSDictionary* PointToJson(CGPoint point) {
   return @{
-    @"x" : @((int)(point.x + 0.5)),
-    @"y" : @((int)(point.y + 0.5)),
+    @"x" : @(lroundf(point.x)),
+    @"y" : @(lroundf(point.y)),
   };
 }
 
