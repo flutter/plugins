@@ -164,7 +164,7 @@ void main() {
         },
       ),
     ));
-
+    print('update min max zoom test');
     if (Platform.isIOS) {
       MinMaxZoomPreference zoomLevel = await inspector.getMinMaxZoomLevels();
       expect(zoomLevel, equals(finalZoomLevel));
