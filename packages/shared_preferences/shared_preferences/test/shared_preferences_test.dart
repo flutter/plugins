@@ -27,15 +27,6 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    const String mkTestValues3Prefix = 'myPrefix.';
-    const Map<String, dynamic> kTestValues3 = <String, dynamic>{
-      'myPrefix.String': 'hello custom prefix',
-      'myPrefix.bool': false,
-      'myPrefix.int': 1337,
-      'myPrefix.double': 2.71828,
-      'myPrefix.List': <String>['baz', 'quox'],
-    };
-
     FakeSharedPreferencesStore store;
     SharedPreferences preferences;
 
@@ -201,23 +192,6 @@ void main() {
 
       expect(preferences.getStringList('myList'), <String>[]);
     });
-
-    test('custom prefix', () async {
-      preferences.prefix = mkTestValues3Prefix;
-      expect(preferences.prefix, mkTestValues3Prefix);
-      await Future.wait(<Future<bool>>[
-        preferences.setString('String', kTestValues3['myPrefix.String']),
-        preferences.setBool('bool', kTestValues3['myPrefix.bool']),
-        preferences.setInt('int', kTestValues3['myPrefix.int']),
-        preferences.setDouble('double', kTestValues3['myPrefix.double']),
-        preferences.setStringList('List', kTestValues3['myPrefix.List'])
-      ]);
-      expect(preferences.getString('String'), kTestValues3['myPrefix.String']);
-      expect(preferences.getBool('bool'), kTestValues3['myPrefix.bool']);
-      expect(preferences.getInt('int'), kTestValues3['myPrefix.int']);
-      expect(preferences.getDouble('double'), kTestValues3['myPrefix.double']);
-      expect(preferences.getStringList('List'), kTestValues3['myPrefix.List']);
-    });
   });
 
   test('calling mock initial values with non-prefixed keys succeeds', () async {
@@ -227,6 +201,132 @@ void main() {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String value = prefs.getString('test');
     expect(value, 'foo');
+  });
+
+  group('Custom prefix', () {
+    const Map<String, dynamic> kTestValues = <String, dynamic>{
+      'flutter.String': 'hello world',
+      'flutter.bool': true,
+      'flutter.int': 42,
+      'flutter.double': 3.14159,
+      'flutter.List': <String>['foo', 'bar'],
+      'custom.customString': 'hello custom prefix',
+      'custom.customBool': false,
+      'custom.customInt': 24,
+      'custom.customDouble': 2.71828,
+      'custom.customList': <String>['boo', 'doo'],
+    };
+
+    test('read keys with default prefix only', () async {
+      FakeSharedPreferencesStore store =
+          FakeSharedPreferencesStore(kTestValues);
+      SharedPreferencesStorePlatform.instance = store;
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+
+      expect(preferences.prefix, 'flutter.');
+
+      expect(preferences.getKeys(),
+          Set<String>.from(['String', 'bool', 'int', 'double', 'List']));
+
+      expect(preferences.get('String'), kTestValues['flutter.String']);
+      expect(preferences.get('bool'), kTestValues['flutter.bool']);
+      expect(preferences.get('int'), kTestValues['flutter.int']);
+      expect(preferences.get('double'), kTestValues['flutter.double']);
+      expect(preferences.get('List'), kTestValues['flutter.List']);
+
+      expect(preferences.get('customString'), null);
+      expect(preferences.get('customBool'), null);
+      expect(preferences.get('customInt'), null);
+      expect(preferences.get('customDouble'), null);
+      expect(preferences.get('customList'), null);
+    });
+
+    test('read keys with custom prefix only', () async {
+      FakeSharedPreferencesStore store =
+          FakeSharedPreferencesStore(kTestValues);
+      SharedPreferencesStorePlatform.instance = store;
+      SharedPreferences preferences =
+          await SharedPreferences.getInstance(prefix: 'custom.');
+
+      expect(preferences.prefix, 'custom.');
+
+      expect(
+          preferences.getKeys(),
+          Set<String>.from([
+            'customString',
+            'customBool',
+            'customInt',
+            'customDouble',
+            'customList'
+          ]));
+
+      expect(preferences.get('String'), null);
+      expect(preferences.get('bool'), null);
+      expect(preferences.get('int'), null);
+      expect(preferences.get('double'), null);
+      expect(preferences.get('List'), null);
+
+      expect(
+          preferences.get('customString'), kTestValues['custom.customString']);
+      expect(preferences.get('customBool'), kTestValues['custom.customBool']);
+      expect(preferences.get('customInt'), kTestValues['custom.customInt']);
+      expect(
+          preferences.get('customDouble'), kTestValues['custom.customDouble']);
+      expect(preferences.get('customList'), kTestValues['custom.customList']);
+    });
+
+    test('switch prefix', () async {
+      FakeSharedPreferencesStore store = FakeSharedPreferencesStore({});
+      SharedPreferencesStorePlatform.instance = store;
+      SharedPreferences preferences;
+
+      // Use default prefix
+      preferences = await SharedPreferences.getInstance();
+      expect(preferences.prefix, 'flutter.');
+      // Set string1 with default prefix
+      await preferences.setString('string1', 'string1');
+      expect(preferences.getString('string1'), 'string1');
+
+      // Switch prefix
+      preferences = await SharedPreferences.getInstance(prefix: 'pre.');
+      expect(preferences.prefix, 'pre.');
+      // The key string1 is not visible now
+      expect(preferences.getString('string1'), null);
+      // Set string2 with custom prefix
+      await preferences.setString('string2', 'string2');
+      expect(preferences.getString('string2'), 'string2');
+
+      // Back to default prefix
+      preferences = await SharedPreferences.getInstance();
+      expect(preferences.prefix, 'flutter.');
+      // string1 is visible
+      expect(preferences.getString('string1'), 'string1');
+      // string2 is not visible
+      expect(preferences.getString('string2'), null);
+    });
+
+    test('no prefix should load all keys from device as is', () async {
+      FakeSharedPreferencesStore store =
+          FakeSharedPreferencesStore(kTestValues);
+      SharedPreferencesStorePlatform.instance = store;
+      SharedPreferences preferences =
+          await SharedPreferences.getInstance(prefix: '');
+
+      expect(
+          preferences.getKeys(),
+          Set<String>.from([
+            'flutter.String',
+            'flutter.bool',
+            'flutter.int',
+            'flutter.double',
+            'flutter.List',
+            'custom.customString',
+            'custom.customBool',
+            'custom.customInt',
+            'custom.customDouble',
+            'custom.customList'
+          ]));
+    });
   });
 }
 
