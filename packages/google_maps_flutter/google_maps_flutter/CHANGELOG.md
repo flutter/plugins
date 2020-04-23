@@ -1,3 +1,7 @@
+## 0.5.26+3
+
+* Android: Fix map view crash when "exit app" while using `FragmentActivity`.
+
 ## 0.5.26+2
 
 * Fix UIKit availability warnings and CocoaPods podspec lint warnings.
