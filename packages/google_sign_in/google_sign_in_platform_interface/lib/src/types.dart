@@ -82,7 +82,11 @@ class GoogleSignInUserData {
 /// Holds authentication data after sign in.
 class GoogleSignInTokenData {
   /// Either or both parameters may be null.
-  GoogleSignInTokenData({this.idToken, this.accessToken});
+  GoogleSignInTokenData({
+    this.idToken,
+    this.accessToken,
+    this.serverAuthCode,
+  });
 
   /// An OpenID Connect ID token for the authenticated user.
   String idToken;
@@ -90,8 +94,11 @@ class GoogleSignInTokenData {
   /// The OAuth2 access token used to access Google services.
   String accessToken;
 
+  /// Server auth code used to access Google Login
+  String serverAuthCode;
+
   @override
-  int get hashCode => hash2(idToken, accessToken);
+  int get hashCode => hash3(idToken, accessToken, serverAuthCode);
 
   @override
   bool operator ==(dynamic other) {
@@ -99,6 +106,7 @@ class GoogleSignInTokenData {
     if (other is! GoogleSignInTokenData) return false;
     final GoogleSignInTokenData otherTokenData = other;
     return otherTokenData.idToken == idToken &&
-        otherTokenData.accessToken == accessToken;
+        otherTokenData.accessToken == accessToken &&
+        otherTokenData.serverAuthCode == serverAuthCode;
   }
 }
