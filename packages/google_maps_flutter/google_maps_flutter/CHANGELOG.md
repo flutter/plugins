@@ -1,3 +1,8 @@
+## 0.5.26+3
+
+* iOS: observe the bounds update for the `GMSMapView` to reset the camera setting.
+* Update UI related e2e tests to wait for camera update on the platform thread.
+
 ## 0.5.26+2
 
 * Fix UIKit availability warnings and CocoaPods podspec lint warnings.
