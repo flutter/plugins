@@ -36,6 +36,7 @@ void main() {
       'getTokens': <dynamic, dynamic>{
         'idToken': '123',
         'accessToken': '456',
+        'serverAuthCode': '789',
       },
     };
 

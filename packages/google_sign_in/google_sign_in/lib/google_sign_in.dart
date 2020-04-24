@@ -69,7 +69,6 @@ class GoogleSignInAccount implements GoogleIdentity {
   final String photoUrl;
 
   final String _idToken;
-
   final GoogleSignIn _googleSignIn;
 
   /// Retrieve [GoogleSignInAuthentication] for this account.
@@ -131,13 +130,11 @@ class GoogleSignInAccount implements GoogleIdentity {
         email == otherAccount.email &&
         id == otherAccount.id &&
         photoUrl == otherAccount.photoUrl &&
-        _idToken == otherAccount._idToken &&
-        _serverAuthCode == otherAccount._serverAuthCode;
+        _idToken == otherAccount._idToken;
   }
 
   @override
-  int get hashCode =>
-      hashValues(displayName, email, id, photoUrl, _idToken, _serverAuthCode);
+  int get hashCode => hashValues(displayName, email, id, photoUrl, _idToken);
 
   @override
   String toString() {
