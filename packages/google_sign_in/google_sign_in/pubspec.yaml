@@ -16,7 +16,7 @@ flutter:
         default_package: google_sign_in_web
 
 dependencies:
-  google_sign_in_platform_interface: ^1.1.0
+  google_sign_in_platform_interface: ^1.1.1
   flutter:
     sdk: flutter
   meta: ^1.0.4
