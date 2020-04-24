@@ -124,6 +124,10 @@
   return (self.shouldAddStorePayment(payment, product));
 }
 
+- (NSArray<SKPaymentTransaction *> *)getUnfinishedTransactions {
+  return self.queue.transactions;
+}
+
 #pragma mark - getter
 
 - (NSDictionary<NSString *, SKPaymentTransaction *> *)transactions {
