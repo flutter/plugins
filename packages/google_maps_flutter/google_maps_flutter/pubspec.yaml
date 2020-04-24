@@ -7,8 +7,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^1.0.0
-  google_maps_flutter_platform_interface: 
-    path: ../google_maps_flutter_platform_interface
+  google_maps_flutter_platform_interface: ^1.0.1
 
   # TODO(iskakaushik): The following dependencies can be removed once
   # https://github.com/dart-lang/pub/issues/2101 is resolved.
