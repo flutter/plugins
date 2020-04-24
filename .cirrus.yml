@@ -130,7 +130,7 @@ task:
         - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
         # Skip the dummy podspecs used to placate the tool.
         - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
-        - ./script/incremental_build.sh podspecs --no-analyze camera --ignore-warnings camera --skip google_sign_in
+        - ./script/incremental_build.sh podspecs --no-analyze camera --ignore-warnings camera
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin

@@ -1,3 +1,7 @@
+## 0.10.9+1
+
+* Readme updated to include web support and details on how to use for web
+
 ## 0.10.9
 
 * Remove Android dependencies fallback.
