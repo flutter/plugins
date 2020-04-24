@@ -103,7 +103,6 @@
     context.localizedFallbackTitle = @"";
   }
 
-
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
     [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
