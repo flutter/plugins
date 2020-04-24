@@ -1,6 +1,7 @@
 ## 1.0.7
 
 * Update Gradle version. Fixes https://github.com/flutter/flutter/issues/48724.
+* Fix CocoaPods podspec lint warnings.
 
 ## 1.0.6
 

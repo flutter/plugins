@@ -1,3 +1,8 @@
+## 0.5.8
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+
 ## 0.5.7+5
 
 * Replace deprecated `getFlutterEngine` call on Android.

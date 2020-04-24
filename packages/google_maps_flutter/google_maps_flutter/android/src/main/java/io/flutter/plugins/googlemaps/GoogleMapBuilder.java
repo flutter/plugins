@@ -149,6 +149,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
+  public void setZoomControlsEnabled(boolean zoomControlsEnabled) {
+    options.zoomControlsEnabled(zoomControlsEnabled);
+  }
+
+  @Override
   public void setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
     this.myLocationButtonEnabled = myLocationButtonEnabled;
   }

@@ -93,7 +93,11 @@ class GoogleSignInUserData {
 /// Holds authentication data after sign in.
 class GoogleSignInTokenData {
   /// Either or both parameters may be null.
-  GoogleSignInTokenData({this.idToken, this.accessToken, this.serverAuthCode});
+  GoogleSignInTokenData({
+    this.idToken,
+    this.accessToken,
+    this.serverAuthCode,
+  });
 
   /// An OpenID Connect ID token for the authenticated user.
   String idToken;

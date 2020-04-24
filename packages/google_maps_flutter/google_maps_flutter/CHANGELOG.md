@@ -1,3 +1,20 @@
+## 0.5.26+3
+
+* iOS: observe the bounds update for the `GMSMapView` to reset the camera setting.
+* Update UI related e2e tests to wait for camera update on the platform thread.
+
+## 0.5.26+2
+
+* Fix UIKit availability warnings and CocoaPods podspec lint warnings.
+
+## 0.5.26+1
+
+* Removes a errorneously added method from the GoogleMapController.h header file.
+
+## 0.5.26
+
+* Adds support for toggling zoom controls (Android only)
+
 ## 0.5.25+3
 
 * Rename 'Page' in the example app to avoid type conflict with the Flutter Framework.

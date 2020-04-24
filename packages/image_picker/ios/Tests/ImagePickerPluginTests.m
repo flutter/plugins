@@ -7,6 +7,11 @@
 @import image_picker;
 @import XCTest;
 
+@interface FLTImagePickerPlugin (Test)
+@property(copy, nonatomic) FlutterResult result;
+- (void)handleSavedPath:(NSString *)path;
+@end
+
 @interface ImagePickerPluginTests : XCTestCase
 @end
 
@@ -14,7 +19,7 @@
 
 #pragma mark - Test camera devices, no op on simulators
 - (void)testPluginPickImageDeviceBack {
-  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     return;
   }
   FLTImagePickerPlugin *plugin =
@@ -30,7 +35,7 @@
 }
 
 - (void)testPluginPickImageDeviceFront {
-  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     return;
   }
   FLTImagePickerPlugin *plugin =
@@ -46,7 +51,7 @@
 }
 
 - (void)testPluginPickVideoDeviceBack {
-  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     return;
   }
   FLTImagePickerPlugin *plugin =
@@ -62,7 +67,7 @@
 }
 
 - (void)testPluginPickVideoDeviceFront {
-  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     return;
   }
   FLTImagePickerPlugin *plugin =
@@ -75,6 +80,35 @@
                     }];
   XCTAssertEqual([plugin getImagePickerController].cameraDevice,
                  UIImagePickerControllerCameraDeviceFront);
+}
+
+#pragma mark - Test video duration
+- (void)testPickingVideoWithDuration {
+  FLTImagePickerPlugin *plugin =
+      [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
+  FlutterMethodCall *call = [FlutterMethodCall
+      methodCallWithMethodName:@"pickVideo"
+                     arguments:@{@"source" : @(0), @"cameraDevice" : @(0), @"maxDuration" : @95}];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+  XCTAssertEqual([plugin getImagePickerController].videoMaximumDuration, 95);
+}
+
+- (void)testPluginPickImageSelectMultipleTimes {
+  FLTImagePickerPlugin *plugin =
+      [[FLTImagePickerPlugin alloc] initWithViewController:[UIViewController new]];
+  FlutterMethodCall *call =
+      [FlutterMethodCall methodCallWithMethodName:@"pickImage"
+                                        arguments:@{@"source" : @(0), @"cameraDevice" : @(0)}];
+  [plugin handleMethodCall:call
+                    result:^(id _Nullable r){
+                    }];
+  plugin.result = ^(id result) {
+
+  };
+  [plugin handleSavedPath:@"test"];
+  [plugin handleSavedPath:@"test"];
 }
 
 @end
