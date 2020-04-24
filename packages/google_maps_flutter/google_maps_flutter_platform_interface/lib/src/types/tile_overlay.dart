@@ -60,7 +60,7 @@ class TileOverlay {
         assert(transparency != null && transparency >= 0.0),
         assert(zIndex != null && zIndex >= 0.0);
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'width': width,
       'height': height,

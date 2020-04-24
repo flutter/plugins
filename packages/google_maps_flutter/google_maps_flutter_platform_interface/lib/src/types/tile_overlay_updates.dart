@@ -62,11 +62,11 @@ class TileOverlayUpdates {
   List<TileOverlay> toRemove;
 
   /// Converts this object to something serializable in JSON.
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
-      'tilesToAdd': List<dynamic>.from(toAdd.map((x) => x.toMap())),
-      'tilesToChange': List<dynamic>.from(toChange.map((x) => x.toMap())),
-      'tilesToRemove': List<dynamic>.from(toRemove.map((x) => x.toMap())),
+      'tilesToAdd': List<dynamic>.from(toAdd.map((x) => x.toJson())),
+      'tilesToChange': List<dynamic>.from(toChange.map((x) => x.toJson())),
+      'tilesToRemove': List<dynamic>.from(toRemove.map((x) => x.toJson())),
     };
   }
 

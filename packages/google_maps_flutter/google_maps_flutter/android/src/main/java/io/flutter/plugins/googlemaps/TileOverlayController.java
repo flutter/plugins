@@ -77,10 +77,4 @@ public class TileOverlayController {
             overlay.setZIndex(spec.zIndex);
         }
     }
-
-    void clear() {
-        for (TileOverlay overlay : providers.values()) {
-            overlay.clearTileCache();
-        }
-    }
 }

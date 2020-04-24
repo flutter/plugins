@@ -275,6 +275,24 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     );
   }
 
+  /// Updates tile overlay configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  @override
+  Future<void> updateTileOverlays(
+    TileOverlayUpdates tileOverlayUpdates, {
+    @required int mapId,
+  }) {
+    assert(tileOverlayUpdates != null);
+    return channel(mapId).invokeMethod<void>(
+      'tiles#update',
+      tileOverlayUpdates.toJson(),
+    );
+  }
+
   /// Starts an animated change of the map camera position.
   ///
   /// The returned [Future] completes after the change has been started on the

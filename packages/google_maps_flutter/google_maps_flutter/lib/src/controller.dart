@@ -41,7 +41,7 @@ class GoogleMapController {
   /// Used to communicate with the native platform.
   ///
   /// Accessible only for testing.
-  // TODO: Remove this once tests are migrated to not need this.
+  // TODO(dit) https://github.com/flutter/flutter/issues/55504 Remove this getter.
   @visibleForTesting
   MethodChannel get channel {
     if (_googleMapsFlutterPlatform is MethodChannelGoogleMapsFlutter) {
@@ -158,11 +158,11 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateTileOverlays(TileOverlayUpdates tileUpdates) async {
-    assert(tileUpdates != null);
-    await channel.invokeMethod<void>(
-      'tileOverlays#update',
-      tileUpdates.toMap(),
+  Future<void> _updateTileOverlays(TileOverlayUpdates tileOverlayUpdates) async {
+    assert(tileOverlayUpdates != null);
+    return _googleMapsFlutterPlatform.updateTileOverlays(
+      tileOverlayUpdates, 
+      mapId: mapId,
     );
   }
 
@@ -180,11 +180,6 @@ class GoogleMapController {
   /// platform side.
   Future<void> moveCamera(CameraUpdate cameraUpdate) {
     return _googleMapsFlutterPlatform.moveCamera(cameraUpdate, mapId: mapId);
-  }
-
-  /// Clears the tile cache of the currently active tile overlay.
-  Future<void> clearTiles() async {
-    await channel.invokeMethod<void>('tileOverlays#clear');
   }
 
   /// Sets the styling of the base map.
