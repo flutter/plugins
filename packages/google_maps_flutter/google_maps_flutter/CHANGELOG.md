@@ -1,3 +1,7 @@
+## 0.5.27
+
+* Migrate the core plugin to use `google_maps_flutter_platform_interface` APIs.
+
 ## 0.5.26+4
 
 * Android: Fix map view crash when "exit app" while using `FragmentActivity`.
