@@ -26,14 +26,8 @@ enum SignInOption {
 class GoogleSignInUserData {
   /// Uses the given data to construct an instance. Any of these parameters
   /// could be null.
-  GoogleSignInUserData({
-    this.displayName,
-    this.email,
-    this.id,
-    this.photoUrl,
-    this.idToken,
-    this.serverAuthCode,
-  });
+  GoogleSignInUserData(
+      {this.displayName, this.email, this.id, this.photoUrl, this.idToken});
 
   /// The display name of the signed in user.
   ///
@@ -68,13 +62,9 @@ class GoogleSignInUserData {
   /// data.
   String idToken;
 
-  /// A serverAuthCode that can be sent to your own server to verify
-  /// the authentication data.
-  String serverAuthCode;
-
   @override
-  int get hashCode => hashObjects(
-      <String>[displayName, email, id, photoUrl, idToken, serverAuthCode]);
+  int get hashCode =>
+      hashObjects(<String>[displayName, email, id, photoUrl, idToken]);
 
   @override
   bool operator ==(dynamic other) {
@@ -85,8 +75,7 @@ class GoogleSignInUserData {
         otherUserData.email == email &&
         otherUserData.id == id &&
         otherUserData.photoUrl == photoUrl &&
-        otherUserData.idToken == idToken &&
-        otherUserData.serverAuthCode == serverAuthCode;
+        otherUserData.idToken == idToken;
   }
 }
 

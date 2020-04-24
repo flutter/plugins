@@ -15,7 +15,6 @@ GoogleSignInUserData getUserDataFromMap(Map<String, dynamic> data) {
     id: data['id'],
     photoUrl: data['photoUrl'],
     idToken: data['idToken'],
-    serverAuthCode: data['serverAuthCode'],
   );
 }
 
