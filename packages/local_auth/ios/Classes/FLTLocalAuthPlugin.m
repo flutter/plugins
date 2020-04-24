@@ -5,10 +5,13 @@
 
 #import "FLTLocalAuthPlugin.h"
 
-@implementation FLTLocalAuthPlugin {
-  NSDictionary *lastCallArgs;
-  FlutterResult lastResult;
-}
+@interface FLTLocalAuthPlugin ()
+@property(copy, nullable) NSDictionary<NSString *, NSNumber *> *lastCallArgs;
+@property(nullable) FlutterResult lastResult;
+@end
+
+@implementation FLTLocalAuthPlugin
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/local_auth"
@@ -91,13 +94,15 @@
                  withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
-  lastCallArgs = nil;
-  lastResult = nil;
+  self.lastCallArgs = nil;
+  self.lastResult = nil;
+  context.localizedFallbackTitle = @"";
   if (arguments[@"localizedFallbackTitle"] != (NSString *)[NSNull null]) {
     context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"];
   } else {
     context.localizedFallbackTitle = @"";
   }
+
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
@@ -118,8 +123,8 @@
                               return;
                             case LAErrorSystemCancel:
                               if ([arguments[@"stickyAuth"] boolValue]) {
-                                lastCallArgs = arguments;
-                                lastResult = result;
+                                self.lastCallArgs = arguments;
+                                self.lastResult = result;
                                 return;
                               }
                           }
@@ -162,8 +167,8 @@
 #pragma mark - AppDelegate
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-  if (lastCallArgs != nil && lastResult != nil) {
-    [self authenticateWithBiometrics:lastCallArgs withFlutterResult:lastResult];
+  if (self.lastCallArgs != nil && self.lastResult != nil) {
+    [self authenticateWithBiometrics:_lastCallArgs withFlutterResult:self.lastResult];
   }
 }
 
