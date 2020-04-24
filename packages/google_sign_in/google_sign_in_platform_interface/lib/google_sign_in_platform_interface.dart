@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
 import 'package:meta/meta.dart' show required, visibleForTesting;
-
 import 'src/method_channel_google_sign_in.dart';
 import 'src/types.dart';
 
