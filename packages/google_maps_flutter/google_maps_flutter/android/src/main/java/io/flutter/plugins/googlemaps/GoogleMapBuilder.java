@@ -16,6 +16,7 @@ import io.flutter.plugin.common.PluginRegistry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class GoogleMapBuilder implements GoogleMapOptionsSink {
+
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
@@ -24,6 +25,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean trafficEnabled = false;
   private boolean buildingsEnabled = true;
   private Object initialMarkers;
+  private Object initialClusterItems;
   private Object initialPolygons;
   private Object initialPolylines;
   private Object initialCircles;
@@ -57,6 +59,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.setBuildingsEnabled(buildingsEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
     controller.setInitialMarkers(initialMarkers);
+    controller.setInitialClusterItems(initialClusterItems);
     controller.setInitialPolygons(initialPolygons);
     controller.setInitialPolylines(initialPolylines);
     controller.setInitialCircles(initialCircles);
@@ -161,6 +164,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setInitialMarkers(Object initialMarkers) {
     this.initialMarkers = initialMarkers;
+  }
+
+  @Override
+  public void setInitialClusterItems(Object initialClusterItems) {
+    this.initialClusterItems = initialClusterItems;
   }
 
   @Override

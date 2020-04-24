@@ -55,6 +55,9 @@ public class GoogleMapFactory extends PlatformViewFactory {
     if (params.containsKey("markersToAdd")) {
       builder.setInitialMarkers(params.get("markersToAdd"));
     }
+    if (params.containsKey("clusterItemsToAdd")) {
+      builder.setInitialClusterItems(params.get("clusterItemsToAdd"));
+    }
     if (params.containsKey("polygonsToAdd")) {
       builder.setInitialPolygons(params.get("polygonsToAdd"));
     }

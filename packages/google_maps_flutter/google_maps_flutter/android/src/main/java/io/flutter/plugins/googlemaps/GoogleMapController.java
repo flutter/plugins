@@ -41,6 +41,8 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.maps.android.MarkerManager;
+import com.google.maps.android.clustering.ClusterManager;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -90,11 +92,15 @@ final class GoogleMapController
       mApplication; // Do not use direclty, use getApplication() instead to get correct application object for both v1 and v2 embedding.
   private final PluginRegistry.Registrar registrar; // For v1 embedding only.
   private final MarkersController markersController;
+  private MarkerManager markerManager;
+  private ClusterManager<ClusterItemController> clusterManager;
+  private final ClusterController clusterController;
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
   private List<Object> initialMarkers;
   private List<Object> initialPolygons;
+  private List<Object> initialClusterItems;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
 
@@ -120,6 +126,7 @@ final class GoogleMapController
     this.registrar = registrar;
     this.activityHashCode = registrarActivityHashCode;
     this.markersController = new MarkersController(methodChannel);
+    this.clusterController = new ClusterController(methodChannel);
     this.polygonsController = new PolygonsController(methodChannel, density);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel, density);
@@ -187,6 +194,10 @@ final class GoogleMapController
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
+    markerManager = new MarkerManager(googleMap);
+    clusterManager = new ClusterManager<ClusterItemController>(context, googleMap, markerManager);
+    markersController.setMarkerManager(markerManager);
+    markersController.setOnMarkerClickListener(this);
     this.googleMap.setIndoorEnabled(this.indoorEnabled);
     this.googleMap.setTrafficEnabled(this.trafficEnabled);
     this.googleMap.setBuildingsEnabled(this.buildingsEnabled);
@@ -197,14 +208,23 @@ final class GoogleMapController
     }
     setGoogleMapListener(this);
     updateMyLocationSettings();
-    markersController.setGoogleMap(googleMap);
     polygonsController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
+    clusterController.setGoogleMap(googleMap);
+    clusterController.setClusterManager(clusterManager);
+    googleMap.setOnCameraIdleListener(clusterManager);
+    googleMap.setOnMarkerClickListener(markerManager);
+    googleMap.setOnInfoWindowClickListener(clusterManager);
+    clusterManager.setOnClusterItemClickListener(clusterController);
+    clusterManager.setOnClusterClickListener(clusterController);
+    clusterManager.setOnClusterInfoWindowClickListener(clusterController);
+    clusterManager.setOnClusterItemInfoWindowClickListener(clusterController);
     updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialCircles();
+    updateInitialClusterItems();
   }
 
   @Override
@@ -306,6 +326,17 @@ final class GoogleMapController
           markersController.changeMarkers((List<Object>) markersToChange);
           Object markerIdsToRemove = call.argument("markerIdsToRemove");
           markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "cluster#update":
+        {
+          Object clusterItemsToAdd = call.argument("clusterItemsToAdd");
+          clusterController.addClusterItems((List<Object>) clusterItemsToAdd);
+          Object clusterItemsToChange = call.argument("clusterItemsToChange");
+          clusterController.changeClusterItems((List<Object>) clusterItemsToChange);
+          Object clusterItemsIdsToRemove = call.argument("clusterItemsIdsToRemove");
+          clusterController.removeClusterItems((List<Object>) clusterItemsIdsToRemove);
           result.success(null);
           break;
         }
@@ -790,8 +821,20 @@ final class GoogleMapController
     }
   }
 
+  @Override
+  public void setInitialClusterItems(Object initialClusterItems) {
+    this.initialClusterItems = (List<Object>) initialClusterItems;
+    if (googleMap != null) {
+      updateInitialClusterItems();
+    }
+  }
+
   private void updateInitialMarkers() {
     markersController.addMarkers(initialMarkers);
+  }
+
+  private void updateInitialClusterItems() {
+    clusterController.addClusterItems(initialClusterItems);
   }
 
   @Override

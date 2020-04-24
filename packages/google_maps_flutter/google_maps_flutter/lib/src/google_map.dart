@@ -47,6 +47,7 @@ class GoogleMap extends StatefulWidget {
     this.trafficEnabled = false,
     this.buildingsEnabled = true,
     this.markers,
+    this.clusterItems,
     this.polygons,
     this.polylines,
     this.circles,
@@ -106,6 +107,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Markers to be placed on the map.
   final Set<Marker> markers;
+
+  /// Cluster Items to be placed on the map.
+  final Set<ClusterItem> clusterItems;
 
   /// Polygons to be placed on the map.
   final Set<Polygon> polygons;
@@ -211,6 +215,7 @@ class _GoogleMapState extends State<GoogleMap> {
       Completer<GoogleMapController>();
 
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
+  Map<MarkerId, ClusterItem> _clusterItems = <MarkerId, ClusterItem>{};
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
@@ -222,6 +227,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'initialCameraPosition': widget.initialCameraPosition?.toMap(),
       'options': _googleMapOptions.toMap(),
       'markersToAdd': _serializeMarkerSet(widget.markers),
+      'clusterItemsToAdd': _serializeClusterSet(widget.clusterItems),
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'circlesToAdd': _serializeCircleSet(widget.circles),
@@ -253,6 +259,7 @@ class _GoogleMapState extends State<GoogleMap> {
     super.initState();
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
     _markers = _keyByMarkerId(widget.markers);
+    _clusterItems = _keyByClusterItemId(widget.clusterItems);
     _polygons = _keyByPolygonId(widget.polygons);
     _polylines = _keyByPolylineId(widget.polylines);
     _circles = _keyByCircleId(widget.circles);
@@ -263,6 +270,7 @@ class _GoogleMapState extends State<GoogleMap> {
     super.didUpdateWidget(oldWidget);
     _updateOptions();
     _updateMarkers();
+    _updateCluster();
     _updatePolygons();
     _updatePolylines();
     _updateCircles();
@@ -287,6 +295,14 @@ class _GoogleMapState extends State<GoogleMap> {
     controller._updateMarkers(
         _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
     _markers = _keyByMarkerId(widget.markers);
+  }
+
+  void _updateCluster() async {
+    final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
+    controller._updateCluster(_ClusterUpdates.from(
+        _clusterItems.values.toSet(), widget.clusterItems));
+    _clusterItems = _keyByClusterItemId(widget.clusterItems);
   }
 
   void _updatePolygons() async {
@@ -381,6 +397,18 @@ class _GoogleMapState extends State<GoogleMap> {
     if (widget.onLongPress != null) {
       widget.onLongPress(position);
     }
+  }
+
+  void onCusterItemTap(String clusterItemIdParam) {
+    assert(clusterItemIdParam != null);
+    final MarkerId markerId = MarkerId(clusterItemIdParam);
+    _clusterItems[markerId].onTap();
+  }
+
+  void onCusterItemInfoWindowTap(String clusterItemIdParam) {
+    assert(clusterItemIdParam != null);
+    final MarkerId markerId = MarkerId(clusterItemIdParam);
+    _clusterItems[markerId].infoWindow.onTap();
   }
 }
 

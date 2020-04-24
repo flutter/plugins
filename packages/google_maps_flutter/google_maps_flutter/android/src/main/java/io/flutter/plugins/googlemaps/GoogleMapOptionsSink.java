@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 /** Receiver of GoogleMap configuration options. */
 interface GoogleMapOptionsSink {
+
   void setCameraTargetBounds(LatLngBounds bounds);
 
   void setCompassEnabled(boolean compassEnabled);
@@ -43,6 +44,8 @@ interface GoogleMapOptionsSink {
   void setBuildingsEnabled(boolean buildingsEnabled);
 
   void setInitialMarkers(Object initialMarkers);
+
+  void setInitialClusterItems(Object initialClusterItems);
 
   void setInitialPolygons(Object initialPolygons);
 

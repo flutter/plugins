@@ -83,6 +83,12 @@ class GoogleMapController {
       case 'map#onTap':
         _googleMapState.onTap(LatLng._fromJson(call.arguments['position']));
         break;
+      case 'clusterItem#onTap':
+        _googleMapState.onCusterItemTap(call.arguments['markerId']);
+        break;
+      case 'custerItemInfoWindow#onTap':
+        _googleMapState.onCusterItemInfoWindowTap(call.arguments['markerId']);
+        break;
       case 'map#onLongPress':
         _googleMapState
             .onLongPress(LatLng._fromJson(call.arguments['position']));
@@ -119,6 +125,23 @@ class GoogleMapController {
     await channel.invokeMethod<void>(
       'markers#update',
       markerUpdates._toMap(),
+    );
+  }
+
+  /// Updates cluster configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updateCluster(_ClusterUpdates clusterUpdates) async {
+    assert(clusterUpdates != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await channel.invokeMethod(
+      'cluster#update',
+      clusterUpdates._toMap(),
     );
   }
 
