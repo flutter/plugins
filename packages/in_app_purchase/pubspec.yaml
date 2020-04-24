@@ -33,6 +33,8 @@ flutter:
         pluginClass: InAppPurchasePlugin
       ios:
         pluginClass: InAppPurchasePlugin
+      macos:
+        pluginClass: InAppPurchasePlugin
 
 environment:
   sdk: ">=2.3.0 <3.0.0"

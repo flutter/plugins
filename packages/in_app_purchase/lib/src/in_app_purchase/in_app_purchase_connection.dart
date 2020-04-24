@@ -50,7 +50,7 @@ abstract class InAppPurchaseConnection {
     if (Platform.isAndroid) {
       _purchaseUpdatedStream =
           GooglePlayConnection.instance.purchaseUpdatedStream;
-    } else if (Platform.isIOS) {
+    } else if (Platform.isIOS | Platform.isMacOS) {
       _purchaseUpdatedStream =
           AppStoreConnection.instance.purchaseUpdatedStream;
     } else {
@@ -258,7 +258,7 @@ abstract class InAppPurchaseConnection {
 
     if (Platform.isAndroid) {
       _instance = GooglePlayConnection.instance;
-    } else if (Platform.isIOS) {
+    } else if (Platform.isIOS | Platform.isMacOS) {
       _instance = AppStoreConnection.instance;
     } else {
       throw UnsupportedError(
