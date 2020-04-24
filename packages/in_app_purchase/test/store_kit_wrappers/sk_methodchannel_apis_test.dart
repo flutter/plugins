@@ -83,9 +83,9 @@ void main() {
       expect(await SKPaymentQueueWrapper.canMakePayments(), true);
     });
 
-    test('pendingTransactions should return a valid list of transactions',
+    test('transactions should return a valid list of transactions',
         () async {
-      expect(await SKPaymentQueueWrapper().transactions, isNotEmpty);
+      expect(await SKPaymentQueueWrapper().transactions(), isNotEmpty);
     });
 
     test(
