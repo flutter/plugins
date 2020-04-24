@@ -12,7 +12,6 @@ import 'src/common.dart';
 
 export 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart'
     show SignInOption;
-
 export 'src/common.dart';
 export 'widgets.dart';
 
@@ -45,8 +44,7 @@ class GoogleSignInAccount implements GoogleIdentity {
         email = data.email,
         id = data.id,
         photoUrl = data.photoUrl,
-        _idToken = data.idToken,
-        _serverAuthCode = data.serverAuthCode {
+        _idToken = data.idToken {
     assert(id != null);
   }
 
@@ -71,8 +69,6 @@ class GoogleSignInAccount implements GoogleIdentity {
   final String photoUrl;
 
   final String _idToken;
-
-  final String _serverAuthCode;
 
   final GoogleSignIn _googleSignIn;
 
@@ -102,8 +98,6 @@ class GoogleSignInAccount implements GoogleIdentity {
     if (response.idToken == null) {
       response.idToken = _idToken;
     }
-
-    response.serverAuthCode ??= _serverAuthCode;
     return GoogleSignInAuthentication._(response);
   }
 
