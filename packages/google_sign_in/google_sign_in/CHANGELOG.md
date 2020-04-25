@@ -1,6 +1,6 @@
 ## 4.5.0
 
-* Add support for getting `serverAuthCode`
+* Add support for getting `serverAuthCode`.
 
 ## 4.4.4
 
