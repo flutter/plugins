@@ -1,3 +1,17 @@
+## 0.5.27
+
+* Migrate the core plugin to use `google_maps_flutter_platform_interface` APIs.
+
+## 0.5.26+4
+
+* Android: Fix map view crash when "exit app" while using `FragmentActivity`.
+* Android: Remove listeners from `GoogleMap` when disposing.
+
+## 0.5.26+3
+
+* iOS: observe the bounds update for the `GMSMapView` to reset the camera setting.
+* Update UI related e2e tests to wait for camera update on the platform thread.
+
 ## 0.5.26+2
 
 * Fix UIKit availability warnings and CocoaPods podspec lint warnings.

@@ -50,10 +50,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   FlutterMethodChannel* _channel;
   BOOL _trackCameraPosition;
   NSObject<FlutterPluginRegistrar>* _registrar;
-  // Used for the temporary workaround for a bug that the camera is not properly positioned at
-  // initialization. https://github.com/flutter/flutter/issues/24806
-  // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-  // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
   FLTMarkersController* _markersController;
   FLTPolygonsController* _polygonsController;
@@ -119,7 +115,34 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 }
 
 - (UIView*)view {
+  [_mapView addObserver:self forKeyPath:@"frame" options:0 context:nil];
   return _mapView;
+}
+
+- (void)observeValueForKeyPath:(NSString*)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context {
+  if (_cameraDidInitialSetup) {
+    // We only observe the frame for initial setup.
+    [_mapView removeObserver:self forKeyPath:@"frame"];
+    return;
+  }
+  if (object == _mapView && [keyPath isEqualToString:@"frame"]) {
+    CGRect bounds = _mapView.bounds;
+    if (CGRectEqualToRect(bounds, CGRectZero)) {
+      // The workaround is to fix an issue that the camera location is not current when
+      // the size of the map is zero at initialization.
+      // So We only care about the size of the `_mapView`, ignore the frame changes when the size is
+      // zero.
+      return;
+    }
+    _cameraDidInitialSetup = YES;
+    [_mapView removeObserver:self forKeyPath:@"frame"];
+    [_mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
+  } else {
+    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+  }
 }
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -437,16 +460,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 }
 
 - (void)mapView:(GMSMapView*)mapView didChangeCameraPosition:(GMSCameraPosition*)position {
-  if (!_cameraDidInitialSetup) {
-    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
-    // initialization. https://github.com/flutter/flutter/issues/24806
-    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
-    // still being investigated.
-    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-    // https://github.com/flutter/flutter/issues/27550
-    _cameraDidInitialSetup = YES;
-    [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
-  }
   if (_trackCameraPosition) {
     [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : PositionToJson(position)}];
   }
@@ -511,8 +524,8 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
 
 static NSDictionary* PointToJson(CGPoint point) {
   return @{
-    @"x" : @((int)point.x),
-    @"y" : @((int)point.y),
+    @"x" : @(lroundf(point.x)),
+    @"y" : @(lroundf(point.y)),
   };
 }
 
