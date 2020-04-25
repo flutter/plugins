@@ -1,3 +1,7 @@
+## 0.4.2+1
+
+* Add override to `toString` method.
+
 ## 0.4.2
 
 * Update package:e2e reference to use the local version in the flutter/plugins
