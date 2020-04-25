@@ -9,9 +9,9 @@ Pod::Spec.new do |s|
 Enables Google Sign-In in Flutter apps.
                        DESC
   s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/google_sign_in'
-  s.license          = { :file => '../LICENSE' }
+  s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :path => '.' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/google_sign_in' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
@@ -20,4 +20,9 @@ Enables Google Sign-In in Flutter apps.
 
   s.platform = :ios, '8.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'Tests/**/*'
+    test_spec.dependency 'OCMock','3.5'
+  end
 end

@@ -1,3 +1,20 @@
+## 0.6.5+2
+
+* iOS: Fixes crash when an image in the gallery is tapped more than once.
+
+## 0.6.5+1
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.6.5
+
+* Set maximum duration for video recording.
+* Fix some existing XCTests.
+
+## 0.6.4
+
+* Add a new parameter to select preferred camera device.
+
 ## 0.6.3+4
 
 * Make the pedantic dev_dependency explicit.

@@ -35,9 +35,7 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    channel =
-        new MethodChannel(
-            binding.getFlutterEngine().getDartExecutor(), "plugins.flutter.io/path_provider");
+    channel = new MethodChannel(binding.getBinaryMessenger(), "plugins.flutter.io/path_provider");
     context = binding.getApplicationContext();
     channel.setMethodCallHandler(this);
   }

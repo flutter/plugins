@@ -1,3 +1,22 @@
+## 0.3.7+1
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.3.7
+
+* Add a `Future<bool> canResolveActivity` method to the AndroidIntent class. It 
+  can be used to determine whether a device supports a particular intent or has 
+  an app installed that can resolve it. It is based on PackageManager
+  [resolveActivity](https://developer.android.com/reference/android/content/pm/PackageManager#resolveActivity(android.content.Intent,%20int)).
+
+## 0.3.6+1
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Bump the minimum Dart version to 2.3.0.
+* Uses Darts spread operator to build plugin arguments internally.
+* Remove deprecated API usage warning in AndroidIntentPlugin.java.
+* Migrates the Android example to V2 embedding.
+
 ## 0.3.6
 
 * Marks the `action` parameter as optional

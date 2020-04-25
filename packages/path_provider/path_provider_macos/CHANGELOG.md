@@ -1,3 +1,7 @@
+## 0.0.4+1
+
+* Fix CocoaPods podspec lint warnings.
+
 ## 0.0.4
 
 * Adds an example app to run integration tests.

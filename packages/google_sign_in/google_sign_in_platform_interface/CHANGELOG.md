@@ -1,3 +1,12 @@
+## 1.1.1
+
+* Add attribute serverAuthCode.
+
+## 1.1.0
+
+* Add hasRequestedScope method to determine if an Oauth scope has been granted.
+* Add requestScope Method to request new Oauth scopes be granted by the user.
+
 ## 1.0.4
 
 * Make the pedantic dev_dependency explicit.
