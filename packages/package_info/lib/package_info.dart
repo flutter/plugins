@@ -61,4 +61,13 @@ class PackageInfo {
 
   /// The build number. `CFBundleVersion` on iOS, `versionCode` on Android.
   final String buildNumber;
+
+  @override
+  String toString() {
+    return '$runtimeType('
+        'appName: $appName, '
+        'buildNumber: $buildNumber, '
+        'packageName: $packageName, '
+        'version: $version)';
+  }
 }

@@ -46,4 +46,12 @@ void main() {
       ],
     );
   });
+
+  test('toString', () async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    expect(
+      info.toString(),
+      'PackageInfo(appName: package_info_example, buildNumber: 1, packageName: io.flutter.plugins.packageinfoexample, version: 1.0)',
+    );
+  });
 }
