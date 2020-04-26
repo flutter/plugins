@@ -6,8 +6,6 @@ import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() {
-  PathProviderLinux.register();
-
   runApp(MyApp());
 }
 

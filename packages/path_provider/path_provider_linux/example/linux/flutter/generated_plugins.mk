@@ -1,6 +1,5 @@
 # Plugins to include in the build.
 GENERATED_PLUGINS=\
-	path_provider_linux \
 
 GENERATED_PLUGINS_DIR=flutter/ephemeral/.plugin_symlinks
 # A plugin library name plugin name with _plugin appended.
@@ -18,7 +17,6 @@ PLUGIN_CPPFLAGS=$(foreach plugin,$(GENERATED_PLUGINS),\
 # Targets
 
 # Implicit rules don't match phony targets, so list plugin builds explicitly.
-$(OUT_DIR)/libpath_provider_linux_plugin.so: | path_provider_linux
 
 .PHONY: $(GENERATED_PLUGINS)
 $(GENERATED_PLUGINS):
