@@ -94,7 +94,8 @@ public class ImagePickerPlugin
   static final String METHOD_CALL_IMAGE = "pickImage";
   static final String METHOD_CALL_VIDEO = "pickVideo";
   private static final String METHOD_CALL_RETRIEVE = "retrieve";
-
+  private static final int CAMERA_DEVICE_FRONT = 1;
+  private static final int CAMERA_DEVICE_REAR = 0;
   private static final String CHANNEL = "plugins.flutter.io/image_picker";
 
   private static final int SOURCE_CAMERA = 0;
@@ -277,6 +278,16 @@ public class ImagePickerPlugin
     }
     MethodChannel.Result result = new MethodResultWrapper(rawResult);
     int imageSource;
+    if (call.argument("cameraDevice") != null) {
+      CameraDevice device;
+      int deviceIntValue = call.argument("cameraDevice");
+      if (deviceIntValue == CAMERA_DEVICE_FRONT) {
+        device = CameraDevice.FRONT;
+      } else {
+        device = CameraDevice.REAR;
+      }
+      delegate.setCameraDevice(device);
+    }
     switch (call.method) {
       case METHOD_CALL_IMAGE:
         imageSource = call.argument("source");

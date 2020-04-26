@@ -4,12 +4,14 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:e2e/e2e.dart';
 
@@ -558,7 +560,7 @@ void main() {
       
             <script type="text/javascript">
               function config() {
-                //make sure scrolling is enabled on both x & y.
+                // Create a page with dimensions big enough to allow scrolling on both x & y.
                 document.body.style.padding =  getScreenHeight() + 'px'
               }
       
@@ -604,7 +606,7 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      //Check scrollTo()
+      // Check scrollTo()
       const int X_SCROLL = 123;
       const int Y_SCROLL = 321;
 
@@ -614,7 +616,7 @@ void main() {
       expect(X_SCROLL, scrollPosX);
       expect(Y_SCROLL, scrollPosY);
 
-      //Check scrollBy() (on top of scrollTo())
+      // Check scrollBy() (on top of scrollTo())
       await controller.scrollBy(X_SCROLL, Y_SCROLL);
       scrollPosX = await controller.getScrollX();
       scrollPosY = await controller.getScrollY();
@@ -661,6 +663,52 @@ void main() {
       await pageLoads.stream.first; // Wait for the next page load.
       final String currentUrl = await controller.currentUrl();
       expect(currentUrl, 'https://www.google.com/');
+    });
+
+    testWidgets('onWebResourceError', (WidgetTester tester) async {
+      final Completer<WebResourceError> errorCompleter =
+          Completer<WebResourceError>();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: 'https://www.notawebsite..com',
+            onWebResourceError: (WebResourceError error) {
+              errorCompleter.complete(error);
+            },
+          ),
+        ),
+      );
+
+      final WebResourceError error = await errorCompleter.future;
+      expect(error, isNotNull);
+
+      if (Platform.isIOS) expect(error.domain, isNotNull);
+      if (Platform.isAndroid) expect(error.errorType, isNotNull);
+    });
+
+    testWidgets('onWebResourceError is not called with valid url',
+        (WidgetTester tester) async {
+      final Completer<WebResourceError> errorCompleter =
+          Completer<WebResourceError>();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl:
+                'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
+            onWebResourceError: (WebResourceError error) {
+              errorCompleter.complete(error);
+            },
+          ),
+        ),
+      );
+
+      expect(errorCompleter.future, doesNotComplete);
     });
 
     testWidgets('can block requests', (WidgetTester tester) async {

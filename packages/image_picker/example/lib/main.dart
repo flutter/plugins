@@ -64,7 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
       await _controller.setVolume(0.0);
     }
     if (isVideo) {
-      final File file = await ImagePicker.pickVideo(source: source);
+      final File file = await ImagePicker.pickVideo(
+          source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else {
       await _displayPickImageDialog(context,
