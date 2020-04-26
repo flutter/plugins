@@ -16,8 +16,7 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   meta: ^1.1.7
-  google_maps_flutter_platform_interface:
-    path: ../google_maps_flutter_platform_interface
+  google_maps_flutter_platform_interface: ^1.0.1
   google_maps: ">=3.0.0 <4.0.0"
   stream_transform: ^1.2.0
 
