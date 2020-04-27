@@ -1,4 +1,4 @@
-## 0.3.20+3
+## 0.3.21
 
 * Enable programmatic scrolling using Android's WebView.scrollTo & iOS WKWebView.scrollView.contentOffset.
 
