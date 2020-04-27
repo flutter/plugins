@@ -101,7 +101,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.3-flutter
+    image: catalina-xcode-11.4.1-flutter
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -111,7 +111,7 @@ task:
   activate_script: pub global activate flutter_plugin_tools
   create_simulator_script:
     - xcrun simctl list
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
+    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
       script:
