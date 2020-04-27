@@ -1,3 +1,7 @@
+## 0.3.20+3
+
+* Enable programmatic scrolling using Android's WebView.scrollTo & iOS WKWebView.scrollView.contentOffset.
+
 ## 0.3.20+2
 
 * Fix CocoaPods podspec lint warnings.

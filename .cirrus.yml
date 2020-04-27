@@ -101,7 +101,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.3-flutter
+    image: catalina-xcode-11.3.1-flutter
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -155,7 +155,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.3-flutter
+    image: catalina-xcode-11.3.1-flutter
   setup_script:
     - flutter config --enable-macos-desktop
   upgrade_script:
