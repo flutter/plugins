@@ -1,3 +1,7 @@
+## 0.6.5+3
+
+* Move core plugin to a subdirectory to allow for federation.
+
 ## 0.6.5+2
 
 * iOS: Fixes crash when an image in the gallery is tapped more than once.
