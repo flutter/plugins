@@ -280,22 +280,23 @@ abstract class WebViewPlatformController {
   }
 
   /// Set the scrolled position of this view.
-  /// 'x' - the x position to scroll to.
-  /// 'y' - the y position to scroll to.
+  ///
+  /// The parameters `x` and `y` specify the position to scroll to in WebView pixels.
   Future<void> scrollTo(int x, int y) {
     throw UnimplementedError(
         "WebView scrollTo is not implemented on the current platform");
   }
 
   /// Move the scrolled position of this view.
-  /// 'x' - the amount of pixels to scroll by horizontally.
-  /// 'y' - the amount of pixels to scroll by vertically.
+  ///
+  /// The parameters `x` and `y` specify the amount of WebView pixels to scroll by.
   Future<void> scrollBy(int x, int y) {
     throw UnimplementedError(
         "WebView scrollBy is not implemented on the current platform");
   }
 
   /// Return the horizontal scroll position of this view.
+  ///
   /// Scroll position is measured from left.
   Future<int> getScrollX() {
     throw UnimplementedError(
@@ -303,6 +304,7 @@ abstract class WebViewPlatformController {
   }
 
   /// Return the vertical scroll position of this view.
+  ///
   /// Scroll position is measured from top.
   Future<int> getScrollY() {
     throw UnimplementedError(

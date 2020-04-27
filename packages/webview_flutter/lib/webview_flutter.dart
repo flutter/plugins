@@ -677,30 +677,28 @@ class WebViewController {
     return _webViewPlatformController.getTitle();
   }
 
-  /// Set the scrolled position of this view.
+  /// Sets the WebView's content scroll position.
   ///
-  /// 'x' - the x position, in pixels, to scroll to.
-  /// 'y' - the y position, in pixels, to scroll to.
+  /// The parameters `x` and `y` specify the scroll position in WebView pixels.
   Future<void> scrollTo(int x, int y) {
     return _webViewPlatformController.scrollTo(x, y);
   }
 
   /// Move the scrolled position of this view.
   ///
-  /// 'x' - the amount of pixels to scroll by horizontally.
-  /// 'y' - the amount of pixels to scroll by vertically.
+  /// The parameters `x` and `y` specify the amount of WebView pixels to scroll by horizontally and vertically respectively.
   Future<void> scrollBy(int x, int y) {
     return _webViewPlatformController.scrollBy(x, y);
   }
 
-  /// Return the horizontal scroll position of this view.
+  /// Return the horizontal scroll position, in WebView pixels, of this view.
   ///
   /// Scroll position is measured from left.
   Future<int> getScrollX() {
     return _webViewPlatformController.getScrollX();
   }
 
-  /// Return the vertical scroll position of this view.
+  /// Return the vertical scroll position, in WebView pixels, of this view.
   ///
   /// Scroll position is measured from top.
   Future<int> getScrollY() {
