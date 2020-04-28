@@ -1,3 +1,8 @@
+## 1.0.5
+
+* Remove dart:io Platform checks from the MethodChannel implementation. This is 
+tripping the analysis of other versions of the plugin.
+
 ## 1.0.4
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.
