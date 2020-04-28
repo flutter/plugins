@@ -15,7 +15,6 @@ final MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
 
 /// An implementation of [ImagePickerPlatform] that uses method channels.
 class MethodChannelImagePicker extends ImagePickerPlatform {
-
   /// The MethodChannel that is being used by this implementation of the plugin.
   @visibleForTesting
   MethodChannel get channel => _channel;
@@ -30,7 +29,8 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }) {
     assert(source != null);
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
-      throw ArgumentError.value(imageQuality, 'imageQuality', 'must be between 0 and 100');
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
     }
 
     if (maxWidth != null && maxWidth < 0) {

@@ -106,6 +106,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// * [LostDataResponse], for what's included in the response.
   /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
   Future<LostDataResponse> retrieveLostDataAsDartIoFile() {
-    throw UnimplementedError('retrieveLostDataAsDartIoFile() has not been implemented.');
+    throw UnimplementedError(
+        'retrieveLostDataAsDartIoFile() has not been implemented.');
   }
 }

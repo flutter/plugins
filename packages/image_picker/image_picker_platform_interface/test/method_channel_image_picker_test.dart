@@ -134,21 +134,23 @@ void main() {
 
       test('does not accept a negative width or height argument', () {
         expect(
-          () => picker.pickImagePath(source: ImageSource.camera, maxWidth: -1.0),
+          () =>
+              picker.pickImagePath(source: ImageSource.camera, maxWidth: -1.0),
           throwsArgumentError,
         );
 
         expect(
-          () => picker.pickImagePath(source: ImageSource.camera, maxHeight: -1.0),
+          () =>
+              picker.pickImagePath(source: ImageSource.camera, maxHeight: -1.0),
           throwsArgumentError,
         );
       });
 
       test('handles a null image path response gracefully', () async {
-        picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+        picker.channel
+            .setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        expect(
-            await picker.pickImagePath(source: ImageSource.gallery), isNull);
+        expect(await picker.pickImagePath(source: ImageSource.gallery), isNull);
         expect(await picker.pickImagePath(source: ImageSource.camera), isNull);
       });
 
@@ -249,10 +251,10 @@ void main() {
       });
 
       test('handles a null video path response gracefully', () async {
-        picker.channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+        picker.channel
+            .setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        expect(
-            await picker.pickVideoPath(source: ImageSource.gallery), isNull);
+        expect(await picker.pickVideoPath(source: ImageSource.gallery), isNull);
         expect(await picker.pickVideoPath(source: ImageSource.camera), isNull);
       });
 
@@ -297,7 +299,8 @@ void main() {
             'path': '/example/path',
           };
         });
-        final LostDataResponse response = await picker.retrieveLostDataAsDartIoFile();
+        final LostDataResponse response =
+            await picker.retrieveLostDataAsDartIoFile();
         expect(response.type, RetrieveType.image);
         expect(response.file.path, '/example/path');
       });
@@ -310,7 +313,8 @@ void main() {
             'errorMessage': 'test_error_message',
           };
         });
-        final LostDataResponse response = await picker.retrieveLostDataAsDartIoFile();
+        final LostDataResponse response =
+            await picker.retrieveLostDataAsDartIoFile();
         expect(response.type, RetrieveType.video);
         expect(response.exception.code, 'test_error_code');
         expect(response.exception.message, 'test_error_message');
