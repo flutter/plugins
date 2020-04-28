@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:e2e/e2e.dart';
@@ -217,8 +218,14 @@ void main() {
       ),
     ));
 
-    final double distance = await inspector.getDistance(1, _kInitialMapCenter);
-    expect(distance, 0.00020464534463826567);
+    final double distance =
+        await inspector.getDistance(1, _kInitialCameraPosition.target);
+    // Formula is from Chris Broadfoot's comment : https://groups.google.com/d/msg/google-maps-js-api-v3/hDRO4oHVSeM/osOYQYXg2oUJ
+    final double meters_per_pixel = 156543.03392 *
+        cos(_kInitialCameraPosition.target.latitude * pi / 180) /
+        pow(2, _kInitialZoomLevel);
+    final double points_per_meter = 1 / meters_per_pixel;
+    expect(distance, moreOrLessEquals(points_per_meter, epsilon: 1e-5));
   });
 
   testWidgets('testZoomGesturesEnabled', (WidgetTester tester) async {
@@ -897,8 +904,14 @@ void main() {
     // https://github.com/flutter/flutter/issues/27550
     await tester.pumpAndSettle(const Duration(seconds: 3));
 
-    final double distance = await controller.getDistance(1, _kInitialMapCenter);
-    expect(distance, 0.00020464534463826567);
+    final double distance =
+        await controller.getDistance(1, _kInitialCameraPosition.target);
+    // Formula is from Chris Broadfoot's comment : https://groups.google.com/d/msg/google-maps-js-api-v3/hDRO4oHVSeM/osOYQYXg2oUJ
+    final double meters_per_pixel = 156543.03392 *
+        cos(_kInitialCameraPosition.target.latitude * pi / 180) /
+        pow(2, _kInitialZoomLevel);
+    final double points_per_meter = 1 / meters_per_pixel;
+    expect(distance, moreOrLessEquals(points_per_meter, epsilon: 1e-5));
   });
 
   testWidgets('testResizeWidget', (WidgetTester tester) async {
