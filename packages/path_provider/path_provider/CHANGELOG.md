@@ -1,3 +1,7 @@
+## 1.6.8
+
+* Add support for linux 
+
 ## 1.6.7
 
 * Remove Android dependencies fallback.
