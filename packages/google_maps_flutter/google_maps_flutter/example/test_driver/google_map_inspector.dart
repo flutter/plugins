@@ -38,8 +38,8 @@ class GoogleMapInspector {
   }
 
   Future<double> getDistance(double meters, LatLng latLng) async {
-    final double distance =
-    await _channel.invokeMethod<double>('map#getDistance',
+    final double distance = await _channel.invokeMethod<double>(
+        'map#getDistance',
         <String, dynamic>{"meter": meters, "location": latLng.toJson()});
     return distance;
   }

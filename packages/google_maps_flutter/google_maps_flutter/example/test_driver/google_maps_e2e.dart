@@ -184,7 +184,7 @@ void main() {
   testWidgets('testGetDistance', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
-    Completer<GoogleMapInspector>();
+        Completer<GoogleMapInspector>();
 
     await tester.pumpWidget(Directionality(
       textDirection: TextDirection.ltr,
@@ -194,8 +194,8 @@ void main() {
         zoomGesturesEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           final GoogleMapInspector inspector =
-          // ignore: invalid_use_of_visible_for_testing_member
-          GoogleMapInspector(controller.channel);
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
           inspectorCompleter.complete(inspector);
         },
       ),
