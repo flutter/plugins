@@ -182,52 +182,6 @@ void main() {
     }
   });
 
-  testWidgets('testGetDistance', (WidgetTester tester) async {
-    final Key key = GlobalKey();
-    final Completer<GoogleMapInspector> inspectorCompleter =
-        Completer<GoogleMapInspector>();
-
-    await tester.pumpWidget(Directionality(
-      textDirection: TextDirection.ltr,
-      child: GoogleMap(
-        key: key,
-        initialCameraPosition: _kInitialCameraPosition,
-        zoomGesturesEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
-          final GoogleMapInspector inspector =
-              // ignore: invalid_use_of_visible_for_testing_member
-              GoogleMapInspector(controller.channel);
-          inspectorCompleter.complete(inspector);
-        },
-      ),
-    ));
-
-    final GoogleMapInspector inspector = await inspectorCompleter.future;
-    bool zoomGesturesEnabled = await inspector.isZoomGesturesEnabled();
-    expect(zoomGesturesEnabled, false);
-
-    await tester.pumpWidget(Directionality(
-      textDirection: TextDirection.ltr,
-      child: GoogleMap(
-        key: key,
-        initialCameraPosition: _kInitialCameraPosition,
-        zoomGesturesEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
-          fail("OnMapCreated should get called only once.");
-        },
-      ),
-    ));
-
-    final double distance =
-        await inspector.getDistance(1, _kInitialCameraPosition.target);
-    // Formula is from Chris Broadfoot's comment : https://groups.google.com/d/msg/google-maps-js-api-v3/hDRO4oHVSeM/osOYQYXg2oUJ
-    final double meters_per_pixel = 156543.03392 *
-        cos(_kInitialCameraPosition.target.latitude * pi / 180) /
-        pow(2, _kInitialZoomLevel);
-    final double points_per_meter = 1 / meters_per_pixel;
-    expect(distance, moreOrLessEquals(points_per_meter, epsilon: 1e-5));
-  });
-
   testWidgets('testZoomGesturesEnabled', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
@@ -879,7 +833,7 @@ void main() {
     expect(topLeft, const ScreenCoordinate(x: 0, y: 0));
   });
 
-  testWidgets('testGetDistance', (WidgetTester tester) async {
+  testWidgets('testGetPoint', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapController> controllerCompleter =
         Completer<GoogleMapController>();
@@ -904,14 +858,14 @@ void main() {
     // https://github.com/flutter/flutter/issues/27550
     await tester.pumpAndSettle(const Duration(seconds: 3));
 
-    final double distance =
-        await controller.getDistance(1, _kInitialCameraPosition.target);
+    final double points =
+        await controller.getPoint(1, _kInitialCameraPosition.target);
     // Formula is from Chris Broadfoot's comment : https://groups.google.com/d/msg/google-maps-js-api-v3/hDRO4oHVSeM/osOYQYXg2oUJ
     final double meters_per_pixel = 156543.03392 *
         cos(_kInitialCameraPosition.target.latitude * pi / 180) /
         pow(2, _kInitialZoomLevel);
     final double points_per_meter = 1 / meters_per_pixel;
-    expect(distance, moreOrLessEquals(points_per_meter, epsilon: 1e-5));
+    expect(points, moreOrLessEquals(points_per_meter, epsilon: 1e-5));
   });
 
   testWidgets('testResizeWidget', (WidgetTester tester) async {

@@ -1,6 +1,6 @@
 ## 1.0.2
 
-* Added getDistance api
+* Added getPoint projections api for iOS
 
 ## 1.0.1
 

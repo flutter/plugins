@@ -438,10 +438,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }
 
   /// Converts a distance in meters to content size.
-  Future<double> getDistance(double meters, LatLng latLng,
-      {@required int mapId}) {
+  Future<double> getPoint(double meters, LatLng latLng, {@required int mapId}) {
     assert(meters != null && latLng != null);
-    return channel(mapId).invokeMethod<double>('map#getDistance',
+    return channel(mapId).invokeMethod<double>('map#getPoint',
         <String, dynamic>{"meter": meters, "location": latLng.toJson()});
   }
 
