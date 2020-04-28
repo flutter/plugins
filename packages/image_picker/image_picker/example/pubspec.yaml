@@ -1,0 +1,24 @@
+name: image_picker_example
+description: Demonstrates how to use the image_picker plugin.
+author: Flutter Team <flutter-dev@googlegroups.com>
+
+dependencies:
+  video_player: ^0.10.3
+  flutter:
+    sdk: flutter
+  image_picker:
+    path: ../
+  flutter_plugin_android_lifecycle: ^1.0.2
+
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  e2e:  ^0.2.1
+  pedantic: ^1.8.0
+
+flutter:
+  uses-material-design: true
+
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=1.10.0 <2.0.0"

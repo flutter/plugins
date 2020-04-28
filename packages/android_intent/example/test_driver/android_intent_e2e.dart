@@ -49,4 +49,21 @@ void main() {
           e.message.contains('No Activity found to handle Intent');
     }));
   }, skip: !Platform.isAndroid);
+
+  testWidgets('#canResolveActivity returns true when example Activity is found',
+      (WidgetTester tester) async {
+    AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      package: 'io.flutter.plugins.androidintentexample',
+      componentName: 'io.flutter.embedding.android.FlutterActivity',
+    );
+    await expectLater(() async => await intent.canResolveActivity(), isFalse);
+  }, skip: !Platform.isAndroid);
+
+  testWidgets('#canResolveActivity returns false when no Activity is found',
+      (WidgetTester tester) async {
+    const AndroidIntent intent =
+        AndroidIntent(action: 'LAUNCH', package: 'foobar');
+    await expectLater(() async => await intent.canResolveActivity(), isFalse);
+  }, skip: !Platform.isAndroid);
 }

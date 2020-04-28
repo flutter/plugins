@@ -1,3 +1,15 @@
+## 0.0.1+7
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.0.1+6
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.0.1+5
+
+* Fix readme
+
 ## 0.0.1+4
 
 * Bump gradle version to avoid bugs with android projects
