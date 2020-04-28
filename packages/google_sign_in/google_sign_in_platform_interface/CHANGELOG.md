@@ -1,3 +1,7 @@
+## 1.1.1
+
+* Add attribute serverAuthCode.
+
 ## 1.1.0
 
 * Add hasRequestedScope method to determine if an Oauth scope has been granted.

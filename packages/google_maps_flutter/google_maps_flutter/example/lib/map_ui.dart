@@ -50,6 +50,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _rotateGesturesEnabled = true;
   bool _scrollGesturesEnabled = true;
   bool _tiltGesturesEnabled = true;
+  bool _zoomControlsEnabled = false;
   bool _zoomGesturesEnabled = true;
   bool _indoorViewEnabled = true;
   bool _myLocationEnabled = true;
@@ -179,6 +180,18 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _zoomControlsToggler() {
+    return FlatButton(
+      child:
+          Text('${_zoomControlsEnabled ? 'disable' : 'enable'} zoom controls'),
+      onPressed: () {
+        setState(() {
+          _zoomControlsEnabled = !_zoomControlsEnabled;
+        });
+      },
+    );
+  }
+
   Widget _indoorViewToggler() {
     return FlatButton(
       child: Text('${_indoorViewEnabled ? 'disable' : 'enable'} indoor'),
@@ -269,6 +282,7 @@ class MapUiBodyState extends State<MapUiBody> {
       scrollGesturesEnabled: _scrollGesturesEnabled,
       tiltGesturesEnabled: _tiltGesturesEnabled,
       zoomGesturesEnabled: _zoomGesturesEnabled,
+      zoomControlsEnabled: _zoomControlsEnabled,
       indoorViewEnabled: _indoorViewEnabled,
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
@@ -310,6 +324,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _scrollToggler(),
               _tiltToggler(),
               _zoomToggler(),
+              _zoomControlsToggler(),
               _indoorViewToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),

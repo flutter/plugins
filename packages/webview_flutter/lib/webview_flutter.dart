@@ -307,7 +307,6 @@ class WebView extends StatefulWidget {
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
 
-  /// The value used for the HTTP User-Agent: request header.
   /// A Boolean value indicating whether horizontal swipe gestures will trigger back-forward list navigations.
   ///
   /// This only works on iOS.
@@ -315,6 +314,7 @@ class WebView extends StatefulWidget {
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
 
+  /// The value used for the HTTP User-Agent: request header.
   ///
   /// When null the platform's webview default is used for the User-Agent header.
   ///
@@ -695,6 +695,34 @@ class WebViewController {
   /// Returns the title of the currently loaded page.
   Future<String> getTitle() {
     return _webViewPlatformController.getTitle();
+  }
+
+  /// Sets the WebView's content scroll position.
+  ///
+  /// The parameters `x` and `y` specify the scroll position in WebView pixels.
+  Future<void> scrollTo(int x, int y) {
+    return _webViewPlatformController.scrollTo(x, y);
+  }
+
+  /// Move the scrolled position of this view.
+  ///
+  /// The parameters `x` and `y` specify the amount of WebView pixels to scroll by horizontally and vertically respectively.
+  Future<void> scrollBy(int x, int y) {
+    return _webViewPlatformController.scrollBy(x, y);
+  }
+
+  /// Return the horizontal scroll position, in WebView pixels, of this view.
+  ///
+  /// Scroll position is measured from left.
+  Future<int> getScrollX() {
+    return _webViewPlatformController.getScrollX();
+  }
+
+  /// Return the vertical scroll position, in WebView pixels, of this view.
+  ///
+  /// Scroll position is measured from top.
+  Future<int> getScrollY() {
+    return _webViewPlatformController.getScrollY();
   }
 }
 
