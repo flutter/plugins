@@ -29,4 +29,4 @@ RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' |
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends google-chrome-stable
 
 # Install Linux desktop requirements.
-RUN sudo apt-get install -y clang make pkg-config
+RUN sudo apt-get install -y clang make rsync pkg-config
