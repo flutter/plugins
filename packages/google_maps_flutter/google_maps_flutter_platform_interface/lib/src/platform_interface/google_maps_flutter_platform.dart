@@ -239,6 +239,17 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('getZoomLevel() has not been implemented.');
   }
 
+  /// Returns [double] corresponding to the distance in meters of the [LatLng] in the current map view.
+  ///
+  /// Return NaN (Not-a-Number) if unable to get distance in meters.
+  /// This is only accurate for small Earth distances.
+  Future<double> getDistance(double meters, LatLng latLng) async {
+    final double distance = await channel.invokeMethod<double>(
+        'map#getDistance',
+        <String, dynamic>{"meter": meters, "location": latLng._toJson()});
+    return distance;
+  }
+
   /// Returns the image bytes of the map
   Future<Uint8List> takeSnapshot({
     @required int mapId,
