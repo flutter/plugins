@@ -27,3 +27,6 @@ RUN yes | sdkmanager --licenses
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends google-chrome-stable
+
+# Install Linux desktop requirements.
+RUN sudo apt-get install -y clang make pkg-config
