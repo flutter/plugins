@@ -45,6 +45,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
+@property(nonatomic) double requiredSpeed;
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
 - (void)pause;
@@ -295,6 +296,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
   if (_isPlaying) {
     [_player play];
+    _player.rate = _requiredSpeed;
   } else {
     [_player pause];
   }
@@ -356,6 +358,30 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)setVolume:(double)volume {
   _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
+}
+
+- (void)setSpeed:(double)speed {
+    float newSpeed = (float)speed;
+
+    if (speed < 0) {
+        newSpeed = 0.0;
+    } else if (speed > 2) {
+        newSpeed = 2.0;
+    }
+
+    if ((speed < 1.0 && !_player.currentItem.canPlaySlowForward)
+        || (speed > 1.0 && !_player.currentItem.canPlayFastForward)) {
+        newSpeed = 1.0;
+    }
+
+    _requiredSpeed = newSpeed;
+
+    // AVAudioPlayer starts playback when rate is set.
+    if (!_isPlaying) {
+        return;
+    }
+
+    _player.rate = newSpeed;
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
@@ -533,6 +559,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       result(nil);
     } else if ([@"setVolume" isEqualToString:call.method]) {
       [player setVolume:[argsMap[@"volume"] doubleValue]];
+      result(nil);
+    } else if ([@"setSpeed" isEqualToString:call.method]) {
+      [player setSpeed:[argsMap[@"speed"] doubleValue]];
       result(nil);
     } else if ([@"play" isEqualToString:call.method]) {
       [player play];

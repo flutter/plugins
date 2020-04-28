@@ -38,6 +38,8 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   @override
   Future<void> setVolume(double volume) async {}
   @override
+  Future<void> setSpeed(double speed) async {}
+  @override
   Future<void> initialize() async {}
   @override
   Future<void> pause() async {}
@@ -340,6 +342,32 @@ void main() {
       });
     });
 
+    group('setSpeed', () {
+      test('works', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        expect(controller.value.speed, 1.0);
+
+        const double speed = 0.5;
+        await controller.setSpeed(speed);
+
+        expect(controller.value.speed, speed);
+      });
+
+      test('ignores negative values', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        expect(controller.value.speed, 1.0);
+
+        await controller.setVolume(-1);
+        expect(controller.value.speed, 1.0);
+      });
+    });
+
     group('caption', () {
       test('works when seeking', () async {
         final VideoPlayerController controller = VideoPlayerController.network(
@@ -463,6 +491,7 @@ void main() {
       expect(uninitialized.isLooping, isFalse);
       expect(uninitialized.isBuffering, isFalse);
       expect(uninitialized.volume, 1.0);
+      expect(uninitialized.speed, 1.0);
       expect(uninitialized.errorDescription, isNull);
       expect(uninitialized.size, isNull);
       expect(uninitialized.size, isNull);
@@ -483,6 +512,7 @@ void main() {
       expect(error.isLooping, isFalse);
       expect(error.isBuffering, isFalse);
       expect(error.volume, 1.0);
+      expect(error.speed, 1.0);
       expect(error.errorDescription, errorMessage);
       expect(error.size, isNull);
       expect(error.size, isNull);
@@ -503,20 +533,23 @@ void main() {
       const bool isLooping = true;
       const bool isBuffering = true;
       const double volume = 0.5;
+      const double speed = 0.5;
 
       final VideoPlayerValue value = VideoPlayerValue(
-          duration: duration,
-          size: size,
-          position: position,
-          caption: caption,
-          buffered: buffered,
-          isPlaying: isPlaying,
-          isLooping: isLooping,
-          isBuffering: isBuffering,
-          volume: volume);
+        duration: duration,
+        size: size,
+        position: position,
+        caption: caption,
+        buffered: buffered,
+        isPlaying: isPlaying,
+        isLooping: isLooping,
+        isBuffering: isBuffering,
+        volume: volume,
+        speed: speed,
+      );
 
       expect(value.toString(),
-          'VideoPlayerValue(duration: 0:00:05.000000, size: Size(400.0, 300.0), position: 0:00:01.000000, caption: Instance of \'Caption\', buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], isPlaying: true, isLooping: true, isBuffering: truevolume: 0.5, errorDescription: null)');
+          'VideoPlayerValue(duration: 0:00:05.000000, size: Size(400.0, 300.0), position: 0:00:01.000000, caption: Instance of \'Caption\', buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], isPlaying: true, isLooping: true, isBuffering: truevolume: 0.5, speed: 0.5, errorDescription: null)');
     });
 
     test('copyWith()', () {

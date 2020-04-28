@@ -162,6 +162,10 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
         player.setVolume(call.argument("volume"));
         result.success(null);
         break;
+      case "setSpeed":
+        player.setSpeed(call.argument("speed"));
+        result.success(null);
+        break;
       case "play":
         player.play();
         result.success(null);

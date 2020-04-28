@@ -13,6 +13,7 @@ import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -233,6 +234,12 @@ final class VideoPlayer {
   void setVolume(double value) {
     float bracketedValue = (float) Math.max(0.0, Math.min(1.0, value));
     exoPlayer.setVolume(bracketedValue);
+  }
+
+  void setSpeed(double value) {
+    PlaybackParameters oldParams = exoPlayer.getPlaybackParameters();
+    PlaybackParameters newParams = new PlaybackParameters((float)value, oldParams.pitch, oldParams.skipSilence);
+    exoPlayer.setPlaybackParameters(newParams);
   }
 
   void seekTo(int location) {

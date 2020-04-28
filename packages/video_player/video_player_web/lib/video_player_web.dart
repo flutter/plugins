@@ -118,6 +118,11 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setSpeed(int textureId, double speed) async {
+    return _videoPlayers[textureId].setSpeed(speed);
+  }
+
+  @override
   Future<void> seekTo(int textureId, Duration position) async {
     return _videoPlayers[textureId].seekTo(position);
   }
