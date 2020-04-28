@@ -850,13 +850,11 @@ void main() {
     ));
     final GoogleMapController controller = await controllerCompleter.future;
 
-    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
-    // initialization. https://github.com/flutter/flutter/issues/24806
-    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
-    // still being investigated.
-    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-    // https://github.com/flutter/flutter/issues/27550
-    await tester.pumpAndSettle(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future.delayed(Duration(seconds: 1));
 
     final double points =
         await controller.getPoint(1, _kInitialCameraPosition.target);
