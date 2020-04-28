@@ -14,11 +14,13 @@ import 'package:path_provider_linux/path_provider_linux.dart';
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
 
+// A the linux path provider if running on Linux
+final _pathProviderLinux =
+    (!kIsWeb && LocalPlatform().isLinux) ? PathProviderLinux() : null;
 // This is a workaround until https://github.com/flutter/flutter/issues/52267
 // is fixed. There is no way currently to have a Dart-only plugin automatically registered.
-PathProviderPlatform get _platform => (!kIsWeb && LocalPlatform().isLinux)
-    ? PathProviderLinux()
-    : PathProviderPlatform.instance;
+PathProviderPlatform get _platform =>
+    _pathProviderLinux ?? PathProviderPlatform.instance;
 
 /// Path to the temporary directory on the device that is not backed up and is
 /// suitable for storing caches of downloaded files.
