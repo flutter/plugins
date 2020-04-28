@@ -437,6 +437,14 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return channel(mapId).invokeMethod<double>('map#getZoomLevel');
   }
 
+  /// Converts a distance in meters to content size.
+  Future<double> getDistance(double meters, LatLng latLng,
+      {@required int mapId}) {
+    assert(meters != null && latLng != null);
+    return channel(mapId).invokeMethod<double>('map#getDistance',
+        <String, dynamic>{"meter": meters, "location": latLng.toJson()});
+  }
+
   /// Returns the image bytes of the map
   @override
   Future<Uint8List> takeSnapshot({
