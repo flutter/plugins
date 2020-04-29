@@ -444,7 +444,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
 
       GoogleSignInAccount account = googleSignInWrapper.getLastSignedInAccount(context);
       if (account == null) {
-        result.error(ERROR_REASON_SIGN_IN_REQUIRED, "No account to grant scopes.", null);
+        finishWithError(ERROR_REASON_SIGN_IN_REQUIRED, "No account to grant scopes.");
         return;
       }
 
@@ -458,7 +458,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
       }
 
       if (wrappedScopes.isEmpty()) {
-        result.success(true);
+        finishWithSuccess(true);
         return;
       }
 
