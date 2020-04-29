@@ -1,3 +1,7 @@
+## 0.4.2+3
+
+* Add toString() for data classes.
+
 ## 0.4.2+2
 
 * Fix CocoaPods podspec lint warnings.
