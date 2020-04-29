@@ -6,6 +6,8 @@ task:
     dockerfile: .ci/Dockerfile
     cpu: 8
     memory: 16G
+  env:
+    E2E_PATH: "./packages/e2e"
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -45,6 +47,19 @@ task:
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh apk
+    - name: e2e_web_smoke_test
+      # Tests e2e example test in web.
+      only_if: "changesInclude('.cirrus.yml', 'packages/e2e/**') || $CIRRUS_PR == ''"
+      install_script:
+        - flutter config --enable-web
+        - git clone https://github.com/flutter/web_installers.git
+        - cd web_installers/packages/web_drivers/
+        - pub get
+        - dart lib/web_driver_installer.dart chromedriver --install-only
+        - ./chromedriver/chromedriver --port=4444 &
+      test_script:
+        - cd $E2E_PATH/example/
+        - flutter drive -v --target=test_driver/example_e2e.dart -d web-server --release --browser-name=chrome
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
@@ -86,9 +101,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.2.1-flutter
-  setup_script:
-    - pod repo update
+    image: catalina-xcode-11.3.1-flutter
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -98,7 +111,7 @@ task:
   activate_script: pub global activate flutter_plugin_tools
   create_simulator_script:
     - xcrun simctl list
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-2 | xargs xcrun simctl boot
+    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
       script:
@@ -108,7 +121,16 @@ task:
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh ios --no-codesign
     - name: lint_darwin_plugins
-      script: ./script/lint_darwin_plugins.sh
+      env:
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+      script:
+        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
+        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
+        # Skip the dummy podspecs used to placate the tool.
+        - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
+        - ./script/incremental_build.sh podspecs --no-analyze camera --ignore-warnings camera
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
@@ -133,9 +155,8 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.2.1-flutter
+    image: catalina-xcode-11.3.1-flutter
   setup_script:
-    - pod repo update
     - flutter config --enable-macos-desktop
   upgrade_script:
     - flutter channel master
@@ -147,8 +168,6 @@ task:
       script:
         - flutter channel master
         - ./script/build_all_plugins_app.sh macos
-    - name: lint_darwin_plugins
-      script: ./script/lint_darwin_plugins.sh
     - name: build-apps+drive-examples
       env:
         PATH: $PATH:/usr/local/bin

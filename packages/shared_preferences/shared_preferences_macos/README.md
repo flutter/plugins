@@ -31,4 +31,4 @@ dependencies:
   ...
 ```
 
-[1]: ../shared_preferences/shared_preferences
+[1]: ../

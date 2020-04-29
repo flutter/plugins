@@ -27,9 +27,8 @@ void main() {
 
   GoogleSignInPlugin plugin;
 
-  setUp(() async {
+  setUp(() {
     plugin = GoogleSignInPlugin();
-    await plugin.initialized;
   });
 
   test('Init requires clientId', () async {
@@ -47,12 +46,13 @@ void main() {
   });
 
   group('Successful .init, then', () {
-    setUp(() {
-      plugin.init(
+    setUp(() async {
+      await plugin.init(
         hostedDomain: 'foo',
         scopes: <String>['some', 'scope'],
         clientId: '1234',
       );
+      await plugin.initialized;
     });
 
     test('signInSilently', () async {
@@ -72,6 +72,12 @@ void main() {
           await plugin.getTokens(email: expectedUserData.email);
 
       expect(actualToken, expectedTokenData);
+    });
+
+    test('requestScopes', () async {
+      bool scopeGranted = await plugin.requestScopes(['newScope']);
+
+      expect(scopeGranted, isTrue);
     });
   });
 }

@@ -42,7 +42,7 @@ public final class AndroidIntentPlugin implements FlutterPlugin, ActivityAware {
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     sender.setApplicationContext(binding.getApplicationContext());
     sender.setActivity(null);
-    impl.startListening(binding.getFlutterEngine().getDartExecutor());
+    impl.startListening(binding.getBinaryMessenger());
   }
 
   @Override

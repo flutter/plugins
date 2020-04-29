@@ -151,17 +151,22 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
       return;
     }
 
-    FlutterCallbackInformation flutterCallback =
-        FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
-    if (flutterCallback == null) {
-      Log.e(TAG, "Fatal: failed to find callback");
-      return;
-    }
     Log.i(TAG, "Starting AlarmService...");
     String appBundlePath = FlutterMain.findAppBundlePath(context);
     AssetManager assets = context.getAssets();
     if (appBundlePath != null && !isRunning()) {
       backgroundFlutterEngine = new FlutterEngine(context);
+
+      // We need to create an instance of `FlutterEngine` before looking up the
+      // callback. If we don't, the callback cache won't be initialized and the
+      // lookup will fail.
+      FlutterCallbackInformation flutterCallback =
+          FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
+      if (flutterCallback == null) {
+        Log.e(TAG, "Fatal: failed to find callback");
+        return;
+      }
+
       DartExecutor executor = backgroundFlutterEngine.getDartExecutor();
       initializeMethodChannel(executor);
       DartCallback dartCallback = new DartCallback(assets, appBundlePath, flutterCallback);

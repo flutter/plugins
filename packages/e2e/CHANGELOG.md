@@ -1,3 +1,54 @@
+## 0.4.2
+
+* Adds support for Android E2E tests that utilize other @Rule's, like GrantPermissionRule.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.4.1
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+
+## 0.4.0
+
+* **Breaking change** Driver request_data call's response has changed to
+  encapsulate the failure details.
+* Details for failure cases are added: failed method name, stack trace.
+
+## 0.3.0+1
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.3.0
+
+* Updates documentation to instruct developers not to launch the activity since
+  we are doing it for them.
+* Renames `FlutterRunner` to `FlutterTestRunner` to avoid conflict with Fuchsia.
+
+## 0.2.4+4
+
+* Fixed a hang that occurred on platforms that don't have a `MethodChannel` listener registered..
+
+## 0.2.4+3
+
+* Fixed code snippet in the readme under the "Using Flutter driver to run tests" section.
+
+## 0.2.4+2
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.2.4+1
+
+* Registering web service extension for using e2e with web.
+
+## 0.2.4
+
+* Fixed problem with XCTest in XCode 11.3 where the testing bundles were getting
+  opened multiple times which interfered with the singleton logic for E2EPlugin.
+
+## 0.2.3+1
+
+* Added a driver test for failure behavior.
+
 ## 0.2.3
 
 * Updates `E2EPlugin` and add skeleton iOS test case `E2EIosTest`.

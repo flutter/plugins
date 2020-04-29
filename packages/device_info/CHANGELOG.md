@@ -1,3 +1,22 @@
+## 0.4.2+2
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.4.2+1
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Remove deprecated API usage warning in AndroidIntentPlugin.java.
+* Migrates the Android example to V2 embedding.
+* Bumps AGP to 3.6.1.
+
+## 0.4.2
+
+* Add systemFeatures to AndroidDeviceInfo.
+
+## 0.4.1+5
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.4.1+4
 
 * Remove the deprecated `author:` field from pubspec.yaml
