@@ -144,6 +144,19 @@ class AndroidDeviceInfo {
   /// https://developer.android.com/reference/android/content/pm/PackageManager
   final List<String> systemFeatures;
 
+  @override
+  String toString() {
+    return 'AndroidDeviceInfo{version: $version, board: $board, '
+        'bootloader: $bootloader, brand: $brand, device: $device, '
+        'display: $display, fingerprint: $fingerprint, hardware: $hardware, '
+        'host: $host, id: $id, manufacturer: $manufacturer, model: $model, '
+        'product: $product, supported32BitAbis: $supported32BitAbis, '
+        'supported64BitAbis: $supported64BitAbis, '
+        'supportedAbis: $supportedAbis, tags: $tags, type: $type, '
+        'isPhysicalDevice: $isPhysicalDevice, androidId: $androidId, '
+        'systemFeatures: $systemFeatures}';
+  }
+
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo _fromMap(Map<String, dynamic> map) {
     return AndroidDeviceInfo._(
@@ -217,6 +230,13 @@ class AndroidBuildVersion {
   /// The user-visible security patch level.
   final String securityPatch;
 
+  @override
+  String toString() {
+    return 'AndroidBuildVersion{baseOS: $baseOS, codename: $codename, '
+        'incremental: $incremental, previewSdkInt: $previewSdkInt, '
+        'release: $release, sdkInt: $sdkInt, securityPatch: $securityPatch}';
+  }
+
   /// Deserializes from the map message received from [_kChannel].
   static AndroidBuildVersion _fromMap(Map<String, dynamic> map) {
     return AndroidBuildVersion._(
@@ -270,6 +290,15 @@ class IosDeviceInfo {
   /// Operating system information derived from `sys/utsname.h`.
   final IosUtsname utsname;
 
+  @override
+  String toString() {
+    return 'IosDeviceInfo{name: $name, systemName: $systemName, '
+        'systemVersion: $systemVersion, model: $model, '
+        'localizedModel: $localizedModel, '
+        'identifierForVendor: $identifierForVendor, '
+        'isPhysicalDevice: $isPhysicalDevice, utsname: $utsname}';
+  }
+
   /// Deserializes from the map message received from [_kChannel].
   static IosDeviceInfo _fromMap(Map<String, dynamic> map) {
     return IosDeviceInfo._(
@@ -310,6 +339,12 @@ class IosUtsname {
 
   /// Hardware type (e.g. 'iPhone7,1' for iPhone 6 Plus).
   final String machine;
+
+  @override
+  String toString() {
+    return 'IosUtsname{sysname: $sysname, nodename: $nodename, '
+        'release: $release, version: $version, machine: $machine}';
+  }
 
   /// Deserializes from the map message received from [_kChannel].
   static IosUtsname _fromMap(Map<String, dynamic> map) {
