@@ -190,15 +190,6 @@ class Convert {
     return data;
   }
 
-  static Object circleIdToJson(String circleId) {
-    if (circleId == null) {
-      return null;
-    }
-    final Map<String, Object> data = new HashMap<>(1);
-    data.put("circleId", circleId);
-    return data;
-  }
-
   static Object heatmapIdToJson(String heatmapId) {
     if (heatmapId == null) {
       return null;
@@ -563,8 +554,15 @@ class Convert {
     }
   }
 
-  static String interpretHeatmapOptions(Object o, HeatmapOptionsSink sink) {
-    final Map<?, ?> data = toMap(o);
+  /**
+   * Converts the heatmap from JSON to a java object.
+   *
+   * @param Object heatmapObject
+   * @param HeatmapOptionsSink sink
+   * @return String The id of the heatmap
+   */
+  static String interpretHeatmapOptions(Object heatmapObject, HeatmapOptionsSink sink) {
+    final Map<?, ?> data = toMap(heatmapObject);
     final Object points = data.get("points");
     if (points != null) {
       sink.setPoints(toWeightedPoints(points));
@@ -616,8 +614,8 @@ class Convert {
     return points;
   }
 
-  private static List<WeightedLatLng> toWeightedPoints(Object o) {
-    final List<?> data = toList(o);
+  private static List<WeightedLatLng> toWeightedPoints(Object weightedPointsObject) {
+    final List<?> data = toList(weightedPointsObject);
     final List<WeightedLatLng> points = new ArrayList<>(data.size());
 
     for (Object ob : data) {
