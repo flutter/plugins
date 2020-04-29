@@ -28,6 +28,7 @@ class ExifDataCopier {
               "GPSProcessingMethod",
               "GPSTimeStamp",
               "DateTime",
+              "DateTimeOriginal",
               "Flash",
               "GPSLatitude",
               "GPSLatitudeRef",
