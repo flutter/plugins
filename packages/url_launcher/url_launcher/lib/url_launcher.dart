@@ -101,6 +101,11 @@ Future<bool> launch(
 
 /// Checks whether the specified URL can be handled by some app installed on the
 /// device.
+///
+/// On iOS 9.0 and later this only works for non-standard URL schemes if those are
+/// declared in your app's `Info.plist` file under the `LSApplicationQueriesSchemes` key
+/// For more details see:
+/// https://developer.apple.com/documentation/uikiAndt/uiapplication/1622952-canopenurl
 Future<bool> canLaunch(String urlString) async {
   if (urlString == null) {
     return false;
