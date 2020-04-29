@@ -100,7 +100,7 @@ task:
         - flutter config --enable-linux-desktop
       build_script:
         - flutter channel master
-        - ./script/incremental_build.sh build-examples --linux --no-ipa
+        - ./script/incremental_build.sh build-examples --linux
         - ./script/incremental_build.sh drive-examples --linux
 
 task:
