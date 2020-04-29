@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Android: Add support for subscription cross-grades
+
 ## 0.3.3
 
 * Introduce `SKPaymentQueueWrapper.transactions`.
@@ -9,7 +13,7 @@
 ## 0.3.2+1
 
 * iOS: Fix only transactions with SKPaymentTransactionStatePurchased and SKPaymentTransactionStateFailed can be finished.
-* iOS: Only one pending transaction of a given product is allowed.  
+* iOS: Only one pending transaction of a given product is allowed.
 
 ## 0.3.2
 

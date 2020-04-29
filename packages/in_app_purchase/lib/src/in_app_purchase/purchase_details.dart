@@ -79,7 +79,8 @@ class PurchaseParam {
   PurchaseParam(
       {@required this.productDetails,
       this.applicationUserName,
-      this.sandboxTesting});
+      this.sandboxTesting,
+      this.oldProduct});
 
   /// The product to create payment for.
   ///
@@ -96,6 +97,10 @@ class PurchaseParam {
 
   /// The 'sandboxTesting' is only available on iOS, set it to `true` for testing in AppStore's sandbox environment. The default value is `false`.
   final bool sandboxTesting;
+
+  /// The 'oldProduct' is only available on Android for non-consumable resources and is meant to allow subscription cross-grades.
+  /// By setting this you will replace the subscription represented by `oldProduct`. On iOS this is ignored.
+  final ProductDetails oldProduct;
 }
 
 /// Represents the transaction details of a purchase.

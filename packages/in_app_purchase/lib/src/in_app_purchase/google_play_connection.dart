@@ -56,7 +56,8 @@ class GooglePlayConnection
     BillingResultWrapper billingResultWrapper =
         await billingClient.launchBillingFlow(
             sku: purchaseParam.productDetails.id,
-            accountId: purchaseParam.applicationUserName);
+            accountId: purchaseParam.applicationUserName,
+            oldSku: purchaseParam.oldProduct?.id);
     return billingResultWrapper.responseCode == BillingResponse.ok;
   }
 

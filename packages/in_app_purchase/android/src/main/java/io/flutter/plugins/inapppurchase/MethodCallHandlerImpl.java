@@ -120,7 +120,10 @@ class MethodCallHandlerImpl
         break;
       case InAppPurchasePlugin.MethodNames.LAUNCH_BILLING_FLOW:
         launchBillingFlow(
-            (String) call.argument("sku"), (String) call.argument("accountId"), result);
+            (String) call.argument("sku"),
+            (String) call.argument("accountId"),
+            (String) call.argument("oldSku"),
+            result);
         break;
       case InAppPurchasePlugin.MethodNames.QUERY_PURCHASES:
         queryPurchases((String) call.argument("skuType"), result);
@@ -189,7 +192,10 @@ class MethodCallHandlerImpl
   }
 
   private void launchBillingFlow(
-      String sku, @Nullable String accountId, MethodChannel.Result result) {
+      String sku,
+      @Nullable String accountId,
+      @Nullable String oldSku,
+      MethodChannel.Result result) {
     if (billingClientError(result)) {
       return;
     }
@@ -203,6 +209,19 @@ class MethodCallHandlerImpl
       return;
     }
 
+    SkuDetails oldSkuDetails = null;
+
+    if (oldSku != null) {
+      oldSkuDetails = cachedSkus.get(oldSku);
+      if (oldSkuDetails == null) {
+        result.error(
+            "NOT_FOUND",
+            "Details for sku " + oldSku + " are not available. Has this ID already been fetched?",
+            null);
+        return;
+      }
+    }
+
     if (activity == null) {
       result.error(
           "ACTIVITY_UNAVAILABLE",
@@ -213,8 +232,17 @@ class MethodCallHandlerImpl
       return;
     }
 
-    BillingFlowParams.Builder paramsBuilder =
-        BillingFlowParams.newBuilder().setSkuDetails(skuDetails);
+    BillingFlowParams.Builder paramsBuilder;
+
+    // Requested a subscription cross-grade.
+    if (oldSkuDetails != null) {
+      // NOTE: currently only the default proration mode is supported.
+      // https://developer.android.com/google/play/billing/billing_subscriptions#set-proration-mode
+      paramsBuilder = BillingFlowParams.newBuilder().setSkuDetails(skuDetails).setOldSku(oldSku);
+    } else {
+      paramsBuilder = BillingFlowParams.newBuilder().setSkuDetails(skuDetails);
+    }
+
     if (accountId != null && !accountId.isEmpty()) {
       paramsBuilder.setAccountId(accountId);
     }
