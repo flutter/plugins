@@ -19,6 +19,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "google_maps_flutter_web"
   "google_sign_in_platform_interface"
   "google_sign_in_web"
+  "image_picker_platform_interface"
   "instrumentation_adapter"
   "path_provider_macos"
   "path_provider_platform_interface"
