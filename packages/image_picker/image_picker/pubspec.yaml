@@ -17,8 +17,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^1.0.2
-  image_picker_platform_interface:
-    path: ../image_picker_platform_interface
+  image_picker_platform_interface: ^1.0.0
 
 dev_dependencies:
   video_player: ^0.10.3
