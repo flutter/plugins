@@ -239,6 +239,11 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('getZoomLevel() has not been implemented.');
   }
 
+  /// Converts a distance in meters to content size.
+  Future<double> getPoint(double meters, LatLng latLng, {@required int mapId}) {
+    throw UnimplementedError('getPoint() has not been implemented.');
+  }
+
   /// Returns the image bytes of the map
   Future<Uint8List> takeSnapshot({
     @required int mapId,
