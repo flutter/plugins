@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Bump the package version to 1.0.0 following ecosystem pre-migration (https://github.com/amirh/bump_to_1.0/projects/1).
+
 ## 0.3.1+10
 
 * Update minimum Flutter version to 1.12.13+hotfix.5
