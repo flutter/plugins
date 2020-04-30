@@ -5,12 +5,14 @@
 package io.flutter.plugins.share;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
 /** Handles share intent. */
 class Share {
 
   private Activity activity;
+  private Context applicationContext;
 
   /**
    * Constructs a Share object. The {@code activity} is used to start the share intent. It might be
@@ -19,6 +21,7 @@ class Share {
    */
   Share(Activity activity) {
     this.activity = activity;
+    this.applicationContext = activity.getApplicationContext();
   }
 
   /**
@@ -44,7 +47,7 @@ class Share {
       activity.startActivity(chooserIntent);
     } else {
       chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      activity.startActivity(chooserIntent);
+      applicationContext.startActivity(chooserIntent);
     }
   }
 }

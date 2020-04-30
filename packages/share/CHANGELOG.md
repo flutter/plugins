@@ -1,3 +1,7 @@
+## 0.6.4+1
+
+* Fix potential NPE when activity is not set
+
 ## 0.6.4
 
 * Remove Android dependencies fallback.
