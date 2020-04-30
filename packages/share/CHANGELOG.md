@@ -1,3 +1,9 @@
+## 0.6.4
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
 ## 0.6.3+8
 
 * Replace deprecated `getFlutterEngine` call on Android.
