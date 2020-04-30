@@ -33,6 +33,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return _channels[mapId];
   }
 
+  /// Chanel for pass some util events
+  MethodChannel _utilsChannel;
+
   /// Initializes the platform interface with [id].
   ///
   /// This method is called when the plugin is first initialized.
@@ -473,5 +476,15 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     }
     return Text(
         '$defaultTargetPlatform is not yet supported by the maps plugin');
+  }
+
+  /// This method creates dummy map. This call will initialize all services needed by GoogleMaps
+  /// This will speed up next GoogleMap view initialization. Android only.
+  @override
+  Future<void> warmUp() {
+    if (_utilsChannel == null) {
+      _utilsChannel = MethodChannel('plugins.flutter.io/google_maps_utils');
+    }
+    return _utilsChannel.invokeMethod<void>('warmUp');
   }
 }

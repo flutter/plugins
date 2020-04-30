@@ -4,19 +4,6 @@
 
 part of google_maps_flutter;
 
-const MethodChannel _channel =
-    MethodChannel('flutter.io/googleMapsPluginUtils');
-
-/// Utils for GoogleMaps plugin
-class GoogleMapsPluginUtils {
-  ///This method creates dummy map. This call will initialize all services needed by GoogleMaps This
-  ///will speed up next GoogleMap view initialization. Android only.
-  static Future<void> warmUp() {
-    if (!Platform.isAndroid) throw Exception("warmUp is Android only");
-    return _channel.invokeMethod<void>('warmUp');
-  }
-}
-
 /// Callback method for when the map is ready to be used.
 ///
 /// Pass to [GoogleMap.onMapCreated] to receive a [GoogleMapController] when the

@@ -51,7 +51,7 @@ public class GoogleMapsPlugin
   private MethodChannel utilsMethodChannel;
 
   private static final String VIEW_TYPE = "plugins.flutter.io/google_maps";
-  private static final String UTILS_CHANNEL = "flutter.io/googleMapsPluginUtils";
+  private static final String UTILS_CHANNEL = "plugins.flutter.io/google_maps_utils";
 
   public static void registerWith(Registrar registrar) {
     if (registrar.activity() == null) {

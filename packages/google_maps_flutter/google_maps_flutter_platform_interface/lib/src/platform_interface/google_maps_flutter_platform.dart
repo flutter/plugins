@@ -311,4 +311,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
       PlatformViewCreatedCallback onPlatformViewCreated) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
+
+  /// This method creates dummy map. This call will initialize all services needed by GoogleMaps
+  /// This will speed up next GoogleMap view initialization. Android only.
+  Future<void> warmUp() {
+    throw UnimplementedError('warmUp() has not been implemented.');
+  }
 }
