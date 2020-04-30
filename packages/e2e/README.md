@@ -39,7 +39,7 @@ so that they're alongside the runner app (see below).
 `E2EWidgetsTestBinding` supports launching the on-device tests with `flutter drive`.
 Note that the tests don't use the `FlutterDriver` API, they use `testWidgets` instead.
 
-Put the a file named `<package_name>_e2e_test.dart` in the app' `test_driver` directory:
+Put a file named `<package_name>_e2e_test.dart` in the app' `test_driver` directory:
 
 ```dart
 import 'dart:async';
