@@ -192,6 +192,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       CreationParams creationParams) {
     return <String, dynamic>{
       'initialUrl': creationParams.initialUrl,
+      'html': creationParams.html,
+      'baseUrl': creationParams.baseUrl,
       'settings': _webSettingsToMap(creationParams.webSettings),
       'javascriptChannelNames': creationParams.javascriptChannelNames.toList(),
       'userAgent': creationParams.userAgent,
