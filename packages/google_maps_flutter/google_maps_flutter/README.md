@@ -88,7 +88,12 @@ import GoogleMaps
 }
 ```
 Opt-in to the embedded views preview by adding a boolean property to the app's `Info.plist` file
-with the key `io.flutter.embedded_views_preview` and the value `YES`.
+by adding these two lines.
+
+```xml
+<key>io.flutter.embedded_views_preview</key>
+<true/>
+```
 
 ### Both
 
