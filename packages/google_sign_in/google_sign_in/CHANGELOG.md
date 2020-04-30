@@ -2,6 +2,10 @@
 
 * Add support for getting `serverAuthCode`.
 
+## 4.4.5
+
+* Fix requestScopes to allow subsequent calls on Android.
+
 ## 4.4.4
 
 * OCMock module import -> #import, unit tests compile generated as library.

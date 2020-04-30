@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Introduce `SKPaymentQueueWrapper.transactions`.
+
 ## 0.3.2+2
 
 * Fix CocoaPods podspec lint warnings.
