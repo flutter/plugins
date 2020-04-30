@@ -110,10 +110,19 @@
     [self applySettings:settings];
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
     // https://github.com/flutter/flutter/issues/36228
-
-    NSString* initialUrl = args[@"initialUrl"];
-    if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self loadUrl:initialUrl];
+    
+    NSString* html = args[@"html"];
+    if ([html isKindOfClass:[NSString class]]) {
+      NSURL* baseURL = args[@"baseUrl"];
+      if (!baseURL) {
+        baseURL = [NSURL URLWithString:@"about:blank"];
+      }
+      [_webView loadHTMLString:html baseURL:baseURL];
+    } else {
+      NSString* initialUrl = args[@"initialUrl"];
+      if ([initialUrl isKindOfClass:[NSString class]]) {
+        [self loadUrl:initialUrl];
+      }
     }
   }
   return self;
