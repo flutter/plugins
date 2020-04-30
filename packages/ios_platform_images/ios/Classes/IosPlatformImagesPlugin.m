@@ -31,7 +31,8 @@
     } else if ([@"resolveURL" isEqualToString:call.method]) {
       NSArray* args = call.arguments;
       NSString* name = args[0];
-      NSString* extension = args[1];
+      NSString* extension = (args[1] == (id)NSNull.null) ? nil : args[1];
+
       NSURL* url = [[NSBundle mainBundle] URLForResource:name withExtension:extension];
       result(url.absoluteString);
       return;
