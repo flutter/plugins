@@ -1,3 +1,7 @@
+## 0.6.6+1
+
+* Android: always use URI to get image/video data.
+
 ## 0.6.6
 
 * Use the new platform_interface package.
