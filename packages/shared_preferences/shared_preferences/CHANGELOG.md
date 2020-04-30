@@ -1,3 +1,13 @@
+## 0.5.7
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.5.6+3
+
+* Fix deprecated API usage warning.
+
 ## 0.5.6+2
 
 * Make the pedantic dev_dependency explicit.

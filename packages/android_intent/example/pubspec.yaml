@@ -16,6 +16,3 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
   uses-material-design: true
-
-environment:
-  flutter: ">=1.9.1+hotfix.2 <2.0.0"

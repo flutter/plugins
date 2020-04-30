@@ -18,14 +18,13 @@ public class StorageDirectoryMapperTest {
   public void testAndroidType_valid() {
     assertEquals(Environment.DIRECTORY_MUSIC, StorageDirectoryMapper.androidType(0));
     assertEquals(Environment.DIRECTORY_PODCASTS, StorageDirectoryMapper.androidType(1));
-    assertEquals(Environment.DIRECTORY_MUSIC, StorageDirectoryMapper.androidType(2));
-    assertEquals(Environment.DIRECTORY_RINGTONES, StorageDirectoryMapper.androidType(3));
-    assertEquals(Environment.DIRECTORY_ALARMS, StorageDirectoryMapper.androidType(4));
-    assertEquals(Environment.DIRECTORY_NOTIFICATIONS, StorageDirectoryMapper.androidType(5));
-    assertEquals(Environment.DIRECTORY_PICTURES, StorageDirectoryMapper.androidType(6));
-    assertEquals(Environment.DIRECTORY_MOVIES, StorageDirectoryMapper.androidType(7));
-    assertEquals(Environment.DIRECTORY_DOWNLOADS, StorageDirectoryMapper.androidType(8));
-    assertEquals(Environment.DIRECTORY_DCIM, StorageDirectoryMapper.androidType(9));
+    assertEquals(Environment.DIRECTORY_RINGTONES, StorageDirectoryMapper.androidType(2));
+    assertEquals(Environment.DIRECTORY_ALARMS, StorageDirectoryMapper.androidType(3));
+    assertEquals(Environment.DIRECTORY_NOTIFICATIONS, StorageDirectoryMapper.androidType(4));
+    assertEquals(Environment.DIRECTORY_PICTURES, StorageDirectoryMapper.androidType(5));
+    assertEquals(Environment.DIRECTORY_MOVIES, StorageDirectoryMapper.androidType(6));
+    assertEquals(Environment.DIRECTORY_DOWNLOADS, StorageDirectoryMapper.androidType(7));
+    assertEquals(Environment.DIRECTORY_DCIM, StorageDirectoryMapper.androidType(8));
   }
 
   @Test

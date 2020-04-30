@@ -1,6 +1,7 @@
 # 0.0.1+5
 
 * Fixed the launchUniversalLinkIos method.
+* Fix CocoaPods podspec lint warnings.
 
 # 0.0.1+4
 
