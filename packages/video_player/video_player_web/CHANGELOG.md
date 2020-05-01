@@ -1,6 +1,10 @@
-## 0.1.2+2
+## 0.1.2+3
 
 - bump video_player_platform_interface to 1.0.1
+
+## 0.1.2+2
+
+* Add `analysis_options.yaml` to the package, so we can ignore `undefined_prefixed_name` errors. Works around https://github.com/flutter/flutter/issues/41563.
 
 ## 0.1.2+1
 
