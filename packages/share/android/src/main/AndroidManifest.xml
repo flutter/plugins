@@ -5,7 +5,8 @@
         android:name="androidx.core.content.FileProvider"
         android:authorities="${applicationId}.flutter.share_provider"
         android:exported="false"
-        android:grantUriPermissions="true">
+        android:grantUriPermissions="true"
+        tools:replace="android:authorities">
         <meta-data
           android:name="android.support.FILE_PROVIDER_PATHS"
           android:resource="@xml/flutter_share_file_paths" />
