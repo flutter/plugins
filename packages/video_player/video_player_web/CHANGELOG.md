@@ -1,6 +1,6 @@
 ## 0.1.2+3
 
-- bump video_player_platform_interface to 1.0.1
+- bump video_player_platform_interface to 1.0.6
 
 ## 0.1.2+2
 
