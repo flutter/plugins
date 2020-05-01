@@ -39,8 +39,10 @@ void main() {
     group('launch', () {
       setUp(() {
         // Simulate that window.open does something.
-        when(mockWindow.open('https://www.google.com', '')).thenReturn(MockWindow());
-        when(mockWindow.open('mailto:name@mydomain.com', '')).thenReturn(MockWindow());
+        when(mockWindow.open('https://www.google.com', ''))
+            .thenReturn(MockWindow());
+        when(mockWindow.open('mailto:name@mydomain.com', ''))
+            .thenReturn(MockWindow());
       });
 
       test('launching a URL returns true', () {
