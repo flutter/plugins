@@ -6,43 +6,24 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 
-/// Denotes that an image is being picked.
-const String kTypeImage = 'image';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
-/// Denotes that a video is being picked.
-const String kTypeVideo = 'video';
-
-/// Specifies the source where the picked image should come from.
-enum ImageSource {
-  /// Opens up the device camera, letting the user to take a new picture.
-  camera,
-
-  /// Opens the user's photo gallery.
-  gallery,
-}
-
-/// Which camera to use when picking images/videos while source is `ImageSource.camera`.
-///
-/// Not every device supports both of the positions.
-enum CameraDevice {
-  /// Use the rear camera.
-  ///
-  /// In most of the cases, it is the default configuration.
-  rear,
-
-  /// Use the front camera.
-  ///
-  /// Supported on all iPhones/iPads and some Android devices.
-  front,
-}
+export 'package:image_picker_platform_interface/image_picker_platform_interface.dart'
+    show
+        kTypeImage,
+        kTypeVideo,
+        ImageSource,
+        CameraDevice,
+        LostDataResponse,
+        RetrieveType;
 
 /// Provides an easy way to pick an image/video from the image library,
 /// or to take a picture/video with the camera.
 class ImagePicker {
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/image_picker');
+  /// The platform interface that drives this plugin
+  @visibleForTesting
+  static ImagePickerPlatform platform = ImagePickerPlatform.instance;
 
   /// Returns a [File] object pointing to the image that was picked.
   ///
@@ -71,26 +52,12 @@ class ImagePicker {
       double maxHeight,
       int imageQuality,
       CameraDevice preferredCameraDevice = CameraDevice.rear}) async {
-    assert(source != null);
-    assert(imageQuality == null || (imageQuality >= 0 && imageQuality <= 100));
-
-    if (maxWidth != null && maxWidth < 0) {
-      throw ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
-    }
-
-    if (maxHeight != null && maxHeight < 0) {
-      throw ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
-    }
-
-    final String path = await _channel.invokeMethod<String>(
-      'pickImage',
-      <String, dynamic>{
-        'source': source.index,
-        'maxWidth': maxWidth,
-        'maxHeight': maxHeight,
-        'imageQuality': imageQuality,
-        'cameraDevice': preferredCameraDevice.index
-      },
+    String path = await platform.pickImagePath(
+      source: source,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      imageQuality: imageQuality,
+      preferredCameraDevice: preferredCameraDevice,
     );
 
     return path == null ? null : File(path);
@@ -114,15 +81,12 @@ class ImagePicker {
       {@required ImageSource source,
       CameraDevice preferredCameraDevice = CameraDevice.rear,
       Duration maxDuration}) async {
-    assert(source != null);
-    final String path = await _channel.invokeMethod<String>(
-      'pickVideo',
-      <String, dynamic>{
-        'source': source.index,
-        'maxDuration': maxDuration?.inSeconds,
-        'cameraDevice': preferredCameraDevice.index
-      },
+    String path = await platform.pickVideoPath(
+      source: source,
+      preferredCameraDevice: preferredCameraDevice,
+      maxDuration: maxDuration,
     );
+
     return path == null ? null : File(path);
   }
 
@@ -139,87 +103,7 @@ class ImagePicker {
   /// See also:
   /// * [LostDataResponse], for what's included in the response.
   /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
-  static Future<LostDataResponse> retrieveLostData() async {
-    final Map<String, dynamic> result =
-        await _channel.invokeMapMethod<String, dynamic>('retrieve');
-    if (result == null) {
-      return LostDataResponse.empty();
-    }
-    assert(result.containsKey('path') ^ result.containsKey('errorCode'));
-
-    final String type = result['type'];
-    assert(type == kTypeImage || type == kTypeVideo);
-
-    RetrieveType retrieveType;
-    if (type == kTypeImage) {
-      retrieveType = RetrieveType.image;
-    } else if (type == kTypeVideo) {
-      retrieveType = RetrieveType.video;
-    }
-
-    PlatformException exception;
-    if (result.containsKey('errorCode')) {
-      exception = PlatformException(
-          code: result['errorCode'], message: result['errorMessage']);
-    }
-
-    final String path = result['path'];
-
-    return LostDataResponse(
-        file: path == null ? null : File(path),
-        exception: exception,
-        type: retrieveType);
+  static Future<LostDataResponse> retrieveLostData() {
+    return platform.retrieveLostDataAsDartIoFile();
   }
-}
-
-/// The response object of [ImagePicker.retrieveLostData].
-///
-/// Only applies to Android.
-/// See also:
-/// * [ImagePicker.retrieveLostData] for more details on retrieving lost data.
-class LostDataResponse {
-  /// Creates an instance with the given [file], [exception], and [type]. Any of
-  /// the params may be null, but this is never considered to be empty.
-  LostDataResponse({this.file, this.exception, this.type});
-
-  /// Initializes an instance with all member params set to null and considered
-  /// to be empty.
-  LostDataResponse.empty()
-      : file = null,
-        exception = null,
-        type = null,
-        _empty = true;
-
-  /// Whether it is an empty response.
-  ///
-  /// An empty response should have [file], [exception] and [type] to be null.
-  bool get isEmpty => _empty;
-
-  /// The file that was lost in a previous [pickImage] or [pickVideo] call due to MainActivity being destroyed.
-  ///
-  /// Can be null if [exception] exists.
-  final File file;
-
-  /// The exception of the last [pickImage] or [pickVideo].
-  ///
-  /// If the last [pickImage] or [pickVideo] threw some exception before the MainActivity destruction, this variable keeps that
-  /// exception.
-  /// You should handle this exception as if the [pickImage] or [pickVideo] got an exception when the MainActivity was not destroyed.
-  ///
-  /// Note that it is not the exception that caused the destruction of the MainActivity.
-  final PlatformException exception;
-
-  /// Can either be [RetrieveType.image] or [RetrieveType.video];
-  final RetrieveType type;
-
-  bool _empty = false;
-}
-
-/// The type of the retrieved data in a [LostDataResponse].
-enum RetrieveType {
-  /// A static picture. See [ImagePicker.pickImage].
-  image,
-
-  /// A video. See [ImagePicker.pickVideo].
-  video
 }

@@ -1,3 +1,7 @@
+## 0.6.6
+
+* Use the new platform_interface package.
+
 ## 0.6.5+3
 
 * Move core plugin to a subdirectory to allow for federation.
