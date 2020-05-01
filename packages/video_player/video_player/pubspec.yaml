@@ -28,7 +28,7 @@ dependencies:
   # validation, so we set a ^ constraint.
   # TODO(amirh): Revisit this (either update this part in the  design or the pub tool).
   # https://github.com/flutter/flutter/issues/46264
-  video_player_web: #^0.1.2+2
+  video_player_web: #^0.1.2+3
     # workaround for success build checks in PR
     git:
       url: git://github.com/sanekyy/plugins.git
