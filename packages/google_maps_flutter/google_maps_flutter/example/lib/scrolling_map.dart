@@ -12,7 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
-class ScrollingMapPage extends Page {
+class ScrollingMapPage extends GoogleMapExampleAppPage {
   ScrollingMapPage() : super(const Icon(Icons.map), 'Scrolling map');
 
   @override

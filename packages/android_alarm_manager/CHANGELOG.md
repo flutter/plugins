@@ -1,3 +1,7 @@
+## 0.4.5+9
+
+* Fix CocoaPods podspec lint warnings.
+
 ## 0.4.5+8
 
 * Remove `MainActivity` references in android example app and tests.

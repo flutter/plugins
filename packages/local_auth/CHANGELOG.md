@@ -1,3 +1,13 @@
+## 0.6.2+1
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.6.2
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix block implicitly retains 'self' warning.
+
 ## 0.6.1+4
 
 * Replace deprecated `getFlutterEngine` call on Android.

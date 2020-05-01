@@ -7,6 +7,16 @@
 `VideoPlayerController.setFileDataSource`. All this three methods set this data source to video player
  on both Dart and platform side and return Future which completes after the data source is ready to play.
 
+## 0.10.9+1
+
+* Readme updated to include web support and details on how to use for web
+
+## 0.10.9
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
 ## 0.10.8+2
 
 * Replace deprecated `getFlutterEngine` call on Android.
