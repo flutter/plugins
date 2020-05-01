@@ -429,12 +429,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   if (_prevBuffer) {
     CVPixelBufferLockBaseAddress(_prevBuffer, 0);
 
-    int bufferWidth = CVPixelBufferGetWidth(_prevBuffer);
-    int bufferHeight = CVPixelBufferGetHeight(_prevBuffer);
+    long bufferWidth = CVPixelBufferGetWidth(_prevBuffer);
+    long bufferHeight = CVPixelBufferGetHeight(_prevBuffer);
     unsigned char* pixel = (unsigned char*)CVPixelBufferGetBaseAddress(_prevBuffer);
 
-    for (int row = 0; row < bufferHeight; row++) {
-      for (int column = 0; column < bufferWidth; column++) {
+    for (long row = 0; row < bufferHeight; row++) {
+      for (long column = 0; column < bufferWidth; column++) {
         pixel[0] = 0;
         pixel[1] = 0;
         pixel[2] = 0;
