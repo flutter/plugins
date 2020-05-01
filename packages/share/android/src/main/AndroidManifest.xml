@@ -10,7 +10,8 @@
         tools:replace="android:authorities">
         <meta-data
           android:name="android.support.FILE_PROVIDER_PATHS"
-          android:resource="@xml/flutter_share_file_paths" />
+          android:resource="@xml/flutter_share_file_paths"
+          tools:replace="android:resource"/>
       </provider>
     </application>
 </manifest>
