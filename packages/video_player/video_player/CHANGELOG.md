@@ -1,6 +1,16 @@
-## 0.10.9
+## 0.10.10
 
 * Add `muted` attribute
+
+## 0.10.9+1
+
+* Readme updated to include web support and details on how to use for web
+
+## 0.10.9
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.10.8+2
 

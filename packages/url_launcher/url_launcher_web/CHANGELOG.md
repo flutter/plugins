@@ -1,3 +1,7 @@
+# 0.1.1+2
+
+- Open urls with target "_top" on iOS PWAs.
+
 # 0.1.1+1
 
 - Make the pedantic dev_dependency explicit.
