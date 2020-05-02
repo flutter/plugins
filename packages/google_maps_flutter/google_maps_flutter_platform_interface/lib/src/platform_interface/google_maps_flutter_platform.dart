@@ -240,8 +240,8 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   }
 
   /// Converts a distance in meters to content size.
-  Future<double> getPoint(double meters, LatLng latLng, {@required int mapId}) {
-    throw UnimplementedError('getPoint() has not been implemented.');
+  Future<double> getPointsForMeters(double meters, LatLng latLng, {@required int mapId}) {
+    throw UnimplementedError('getPointsForMeters() has not been implemented.');
   }
 
   /// Returns the image bytes of the map
