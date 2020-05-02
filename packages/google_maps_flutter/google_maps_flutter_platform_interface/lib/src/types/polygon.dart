@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' show listEquals, VoidCallback;
 import 'package:flutter/material.dart' show Color, Colors;
 import 'package:meta/meta.dart' show immutable, required;
@@ -205,7 +206,7 @@ class Polygon {
     for (final List<LatLng> hole in holes) {
       final List<dynamic> jsonHole = <dynamic>[];
       for (final LatLng point in hole) {
-        jsonHole.add(point._toJson());
+        jsonHole.add(point.toJson());
       }
       result.add(jsonHole);
     }
