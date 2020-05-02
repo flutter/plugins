@@ -190,14 +190,20 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   /// [AndroidWebViewBuilder] and [CupertinoWebViewBuilder].
   static Map<String, dynamic> creationParamsToMap(
       CreationParams creationParams) {
-    return <String, dynamic>{
+    var creationParamMap = <String, dynamic>{
       'initialUrl': creationParams.initialUrl,
-      'html': creationParams.html,
-      'baseUrl': creationParams.baseUrl,
       'settings': _webSettingsToMap(creationParams.webSettings),
       'javascriptChannelNames': creationParams.javascriptChannelNames.toList(),
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
     };
+
+    if (creationParams.html != null) {
+      creationParamMap['html'] = creationParams.html;
+    }
+    if (creationParams.baseUrl != null) {
+      creationParamMap['baseUrl'] = creationParams.baseUrl;
+    }
+    return creationParamMap;
   }
 }
