@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
@@ -59,20 +60,10 @@ final class GoogleMapController
     implements Application.ActivityLifecycleCallbacks,
         DefaultLifecycleObserver,
         ActivityPluginBinding.OnSaveInstanceStateListener,
-        GoogleMap.OnCameraIdleListener,
-        GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnCameraMoveStartedListener,
-        GoogleMap.OnInfoWindowClickListener,
-        GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnPolygonClickListener,
-        GoogleMap.OnPolylineClickListener,
-        GoogleMap.OnCircleClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
-        GoogleMap.OnMapClickListener,
-        GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMarkerDragListener,
+        GoogleMapListener,
         PlatformView {
 
   private static final String TAG = "GoogleMapController";
@@ -84,6 +75,7 @@ final class GoogleMapController
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
+  private boolean zoomControlsEnabled = true;
   private boolean indoorEnabled = true;
   private boolean trafficEnabled = false;
   private boolean buildingsEnabled = true;
@@ -203,16 +195,7 @@ final class GoogleMapController
       mapReadyResult.success(null);
       mapReadyResult = null;
     }
-    googleMap.setOnCameraMoveStartedListener(this);
-    googleMap.setOnCameraMoveListener(this);
-    googleMap.setOnCameraIdleListener(this);
-    googleMap.setOnMarkerClickListener(this);
-    googleMap.setOnMarkerDragListener(this);
-    googleMap.setOnPolygonClickListener(this);
-    googleMap.setOnPolylineClickListener(this);
-    googleMap.setOnCircleClickListener(this);
-    googleMap.setOnMapClickListener(this);
-    googleMap.setOnMapLongClickListener(this);
+    setGoogleMapListener(this);
     updateMyLocationSettings();
     markersController.setGoogleMap(googleMap);
     polygonsController.setGoogleMap(googleMap);
@@ -400,6 +383,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
           break;
         }
+      case "map#isZoomControlsEnabled":
+        {
+          result.success(googleMap.getUiSettings().isZoomControlsEnabled());
+          break;
+        }
       case "map#isScrollGesturesEnabled":
         {
           result.success(googleMap.getUiSettings().isScrollGesturesEnabled());
@@ -538,8 +526,21 @@ final class GoogleMapController
     }
     disposed = true;
     methodChannel.setMethodCallHandler(null);
-    mapView.onDestroy();
+    setGoogleMapListener(null);
     getApplication().unregisterActivityLifecycleCallbacks(this);
+  }
+
+  private void setGoogleMapListener(@Nullable GoogleMapListener listener) {
+    googleMap.setOnCameraMoveStartedListener(listener);
+    googleMap.setOnCameraMoveListener(listener);
+    googleMap.setOnCameraIdleListener(listener);
+    googleMap.setOnMarkerClickListener(listener);
+    googleMap.setOnMarkerDragListener(listener);
+    googleMap.setOnPolygonClickListener(listener);
+    googleMap.setOnPolylineClickListener(listener);
+    googleMap.setOnCircleClickListener(listener);
+    googleMap.setOnMapClickListener(listener);
+    googleMap.setOnMapLongClickListener(listener);
   }
 
   // @Override
@@ -771,6 +772,17 @@ final class GoogleMapController
   }
 
   @Override
+  public void setZoomControlsEnabled(boolean zoomControlsEnabled) {
+    if (this.zoomControlsEnabled == zoomControlsEnabled) {
+      return;
+    }
+    this.zoomControlsEnabled = zoomControlsEnabled;
+    if (googleMap != null) {
+      googleMap.getUiSettings().setZoomControlsEnabled(zoomControlsEnabled);
+    }
+  }
+
+  @Override
   public void setInitialMarkers(Object initialMarkers) {
     this.initialMarkers = (List<Object>) initialMarkers;
     if (googleMap != null) {
@@ -882,3 +894,16 @@ final class GoogleMapController
     this.buildingsEnabled = buildingsEnabled;
   }
 }
+
+interface GoogleMapListener
+    extends GoogleMap.OnCameraIdleListener,
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnPolygonClickListener,
+        GoogleMap.OnPolylineClickListener,
+        GoogleMap.OnCircleClickListener,
+        GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnMarkerDragListener {}
