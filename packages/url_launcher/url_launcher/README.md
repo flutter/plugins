@@ -24,7 +24,7 @@ void main() {
   ));
 }
 
-_launchURL() async {
+Future<void> _launchURL() async {
   const url = 'https://flutter.dev';
   if (await canLaunch(url)) {
     await launch(url);
