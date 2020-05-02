@@ -177,7 +177,7 @@ abstract class WebViewPlatformController {
   
   Future<void> loadHtml(String html) {
     throw UnimplementedError(
-        "WebView loadUrl is not implemented on the current platform");
+        "WebView loadHtml is not implemented on the current platform");
   }
 
   /// Updates the webview settings.
