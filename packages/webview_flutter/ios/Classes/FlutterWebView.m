@@ -113,11 +113,13 @@
     
     NSString* html = args[@"html"];
     if ([html isKindOfClass:[NSString class]]) {
-      NSURL* baseURL = args[@"baseUrl"];
-      if (!baseURL) {
-        baseURL = [NSURL URLWithString:@"about:blank"];
+      NSString* baseURLString = args[@"baseUrl"];
+      if ([baseURLString isKindOfClass:[NSString class]]) {
+        NSURL *baseURL = [NSURL URLWithString:baseURLString];
+        [_webView loadHTMLString:html baseURL: baseURL];
+      } else {
+        [_webView loadHTMLString:html baseURL: nil];
       }
-      [_webView loadHTMLString:html baseURL:baseURL];
     } else {
       NSString* initialUrl = args[@"initialUrl"];
       if ([initialUrl isKindOfClass:[NSString class]]) {
