@@ -115,7 +115,7 @@
     if ([html isKindOfClass:[NSString class]]) {
       NSString* baseURLString = args[@"baseUrl"];
       if ([baseURLString isKindOfClass:[NSString class]]) {
-        NSURL *baseURL = [NSURL URLWithString:baseURLString];
+        baseURL = [NSURL URLWithString:baseURLString];
         [_webView loadHTMLString:html baseURL: baseURL];
       } else {
         [_webView loadHTMLString:html baseURL: nil];
@@ -130,6 +130,8 @@
   return self;
 }
 
+NSURL *baseURL = nil;
+
 - (UIView*)view {
   return _webView;
 }
@@ -139,6 +141,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"loadHtml"]) {
+    [self onLoadHtml:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -192,6 +196,18 @@
   } else {
     result(nil);
   }
+}
+
+- (void)onLoadHtml:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSString* html = [call arguments][@"html"];
+    if ([html isKindOfClass:[NSString class]]) {
+      if (baseURL != nil) {
+        [_webView loadHTMLString:html baseURL: baseURL];
+      } else {
+        [_webView loadHTMLString:html baseURL: nil];
+      }
+    }
+    result(nil);
 }
 
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
