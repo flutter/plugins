@@ -201,8 +201,8 @@ class Polygon {
     return result;
   }
 
-  List<dynamic> _holesToJson() {
-    final List<dynamic> result = <dynamic>[];
+  List<List<dynamic>> _holesToJson() {
+    final List<List<dynamic>> result = <List<dynamic>>[];
     for (final List<LatLng> hole in holes) {
       final List<dynamic> jsonHole = <dynamic>[];
       for (final LatLng point in hole) {
