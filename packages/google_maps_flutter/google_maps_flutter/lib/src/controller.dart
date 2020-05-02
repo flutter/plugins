@@ -255,8 +255,8 @@ class GoogleMapController {
   }
 
   /// Converts a distance in meters to content size.
-  Future<double> getPoint(double meters, LatLng latLng) {
-    return _googleMapsFlutterPlatform.getPoint(meters, latLng, mapId: mapId);
+  Future<double> getPointsForMeters(double meters, LatLng latLng) {
+    return _googleMapsFlutterPlatform.getPointsForMeters(meters, latLng, mapId: mapId);
   }
 
   /// Returns the image bytes of the map

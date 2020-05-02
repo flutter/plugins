@@ -833,7 +833,7 @@ void main() {
     expect(topLeft, const ScreenCoordinate(x: 0, y: 0));
   });
 
-  testWidgets('testGetPoint', (WidgetTester tester) async {
+  testWidgets('testGetPointsForMeters', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapController> controllerCompleter =
         Completer<GoogleMapController>();
@@ -857,7 +857,7 @@ void main() {
     await Future.delayed(Duration(seconds: 1));
 
     final double points =
-        await controller.getPoint(1, _kInitialCameraPosition.target);
+        await controller.getPointsForMeters(1, _kInitialCameraPosition.target);
     // Formula is from Chris Broadfoot's comment : https://groups.google.com/d/msg/google-maps-js-api-v3/hDRO4oHVSeM/osOYQYXg2oUJ
     final double meters_per_pixel = 156543.03392 *
         cos(_kInitialCameraPosition.target.latitude * pi / 180) /

@@ -192,7 +192,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
                                  message:@"getLatLng called prior to map initialization"
                                  details:nil]);
     }
-  } else if ([call.method isEqualToString:@"map#getPoint"]) {
+  } else if ([call.method isEqualToString:@"projection#getPointsForMeters"]) {
     if (_mapView != nil) {
       CLLocationDistance meter = ToDouble(call.arguments[@"meter"]);
       CLLocationCoordinate2D location =
@@ -201,7 +201,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       result(@(points));
     } else {
       result([FlutterError errorWithCode:@"GoogleMap uninitialized"
-                                 message:@"getPoints called prior to map initialization"
+                                 message:@"getPointsForMeters called prior to map initialization"
                                  details:nil]);
     }
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
