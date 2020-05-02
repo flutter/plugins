@@ -553,6 +553,10 @@ class WebViewController {
     _validateUrlString(url);
     return _webViewPlatformController.loadUrl(url, headers);
   }
+  
+  Future<void> loadHtml(String html) async {
+    return _webViewPlatformController.loadHtml(html);
+  }
 
   /// Accessor to the current URL that the WebView is displaying.
   ///
