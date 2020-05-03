@@ -32,7 +32,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   GoogleMapController controller;
   Map<PolylineId, Polyline> polylines = <PolylineId, Polyline>{};
-  int _polylineIdCounter = 1;
+  int _polylineIdCounter = 0;
   PolylineId selectedPolyline;
 
   // Values when toggling polyline color
