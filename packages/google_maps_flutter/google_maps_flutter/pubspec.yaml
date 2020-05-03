@@ -7,7 +7,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^1.0.0
-  google_maps_flutter_platform_interface: #^1.0.1
+  google_maps_flutter_platform_interface: #^1.0.2
     # workaround for success build checks in PR
     git:
       url: git://github.com/sanekyy/plugins.git
