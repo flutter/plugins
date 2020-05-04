@@ -214,7 +214,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
             height: 300.0,
             child: GoogleMap(
               initialCameraPosition: const CameraPosition(
-                target: LatLng(52.4478, -3.5402),
+                target: LatLng(53.1721, -3.5402),
                 zoom: 7.0,
               ),
               polylines: Set<Polyline>.of(polylines.values),
@@ -297,6 +297,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   List<LatLng> _createPoints() {
     final List<LatLng> points = <LatLng>[];
     final double offset = _polylineIdCounter.ceilToDouble();
+    print('offset is $offset');
     points.add(_createLatLng(51.4816 + offset, -3.1791));
     points.add(_createLatLng(53.0430 + offset, -2.9925));
     points.add(_createLatLng(53.1396 + offset, -4.2739));
