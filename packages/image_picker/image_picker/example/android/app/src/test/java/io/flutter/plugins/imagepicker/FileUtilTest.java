@@ -13,7 +13,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowContentResolver;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -41,10 +44,18 @@ public class FileUtilTest {
         Uri uri = Uri.parse("content://dummy/dummy.png");
         shadowContentResolver.registerInputStream(uri, new ByteArrayInputStream("imageStream".getBytes(UTF_8)));
         String path = fileUtils.getPathFromUri(context, uri);
-        assertNotNull(path);
-        // The correct path should contain below components.
-        assertTrue(path.contains("image_picker"));
-        assertTrue(path.contains("png"));
-        assertTrue(path.contains("/cache/"));
+        File file = new File(path);
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue(bytes.length > 0);
+        String imageStream = new String(bytes, UTF_8);
+        assertTrue(imageStream.equals("imageStream"));
     }
 }
