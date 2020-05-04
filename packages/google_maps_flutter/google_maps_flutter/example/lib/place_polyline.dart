@@ -297,7 +297,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   List<LatLng> _createPoints() {
     final List<LatLng> points = <LatLng>[];
     final double offset = _polylineIdCounter.ceilToDouble();
-    print('offset is $offset');
     points.add(_createLatLng(51.4816 + offset, -3.1791));
     points.add(_createLatLng(53.0430 + offset, -2.9925));
     points.add(_createLatLng(53.1396 + offset, -4.2739));
