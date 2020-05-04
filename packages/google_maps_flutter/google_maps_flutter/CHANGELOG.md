@@ -1,3 +1,7 @@
+## 0.5.27+1
+
+* Fix in example app to properly place polyline at initial camera position.
+
 ## 0.5.27
 
 * Migrate the core plugin to use `google_maps_flutter_platform_interface` APIs.
