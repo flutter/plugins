@@ -95,20 +95,4 @@ class FileUtils {
     }
     out.flush();
   }
-
-  private static boolean isExternalStorageDocument(Uri uri) {
-    return "com.android.externalstorage.documents".equals(uri.getAuthority());
-  }
-
-  private static boolean isDownloadsDocument(Uri uri) {
-    return "com.android.providers.downloads.documents".equals(uri.getAuthority());
-  }
-
-  private static boolean isMediaDocument(Uri uri) {
-    return "com.android.providers.media.documents".equals(uri.getAuthority());
-  }
-
-  private static boolean isGooglePhotosUri(Uri uri) {
-    return "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
-  }
 }
