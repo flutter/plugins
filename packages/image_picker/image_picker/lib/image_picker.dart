@@ -27,7 +27,7 @@ class ImagePicker {
 
   /// Returns a [File] object pointing to the image that was picked.
   ///
-  /// The returned [File] is intended to be used within a single APP session. Do not save the file and use it across sessions.
+  /// The returned [File] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
   ///
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -66,7 +66,7 @@ class ImagePicker {
 
   /// Returns a [File] object pointing to the video that was picked.
   ///
-  /// The returned [File] is intended to be used within a single APP session. Do not save the file and use it across sessions.
+  /// The returned [File] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
   ///
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
