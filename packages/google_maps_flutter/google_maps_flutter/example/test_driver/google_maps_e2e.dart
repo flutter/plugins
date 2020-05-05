@@ -864,7 +864,7 @@ void main() {
         pow(2, _kInitialZoomLevel);
     final double points_per_meter = 1 / meters_per_pixel;
     expect(points, moreOrLessEquals(points_per_meter, epsilon: 1e-5));
-  });
+  }, skip: !Platform.isIOS);
 
   testWidgets('testResizeWidget', (WidgetTester tester) async {
     final Completer<GoogleMapController> controllerCompleter =
