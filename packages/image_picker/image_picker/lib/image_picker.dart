@@ -27,6 +27,8 @@ class ImagePicker {
 
   /// Returns a [File] object pointing to the image that was picked.
   ///
+  /// The returned [File] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
+  ///
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
@@ -38,7 +40,6 @@ class ImagePicker {
   /// the original quality will be returned. Compression is only supportted for certain
   /// image types such as JPEG. If compression is not supported for the image that is picked,
   /// an warning message will be logged.
-  ///
   ///
   /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
   /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
@@ -64,6 +65,8 @@ class ImagePicker {
   }
 
   /// Returns a [File] object pointing to the video that was picked.
+  ///
+  /// The returned [File] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
   ///
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
