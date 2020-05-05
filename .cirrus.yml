@@ -99,6 +99,7 @@ task:
       install_script:
         - flutter config --enable-linux-desktop
       build_script:
+        # TODO(stuartmorgan): Include stable once Linux is supported on stable.
         - flutter channel master
         - ./script/incremental_build.sh build-examples --linux
         - ./script/incremental_build.sh drive-examples --linux
