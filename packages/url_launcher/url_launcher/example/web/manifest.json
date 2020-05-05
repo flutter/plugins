@@ -1,11 +1,11 @@
 {
-    "name": "example",
-    "short_name": "example",
+    "name": "url_launcher example",
+    "short_name": "url_launcher",
     "start_url": ".",
     "display": "minimal-ui",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "An example of the url_launcher on the web.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
