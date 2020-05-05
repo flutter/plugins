@@ -609,11 +609,11 @@ void main() {
       // Check scrollTo()
       const int X_SCROLL = 123;
       const int Y_SCROLL = 321;
-
       await controller.scrollTo(X_SCROLL, Y_SCROLL);
       int scrollPosX = await controller.getScrollX();
       int scrollPosY = await controller.getScrollY();
       expect(X_SCROLL, scrollPosX);
+      print('scroll to failure');
       expect(Y_SCROLL, scrollPosY);
 
       // Check scrollBy() (on top of scrollTo())
