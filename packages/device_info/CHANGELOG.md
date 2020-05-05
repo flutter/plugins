@@ -1,3 +1,7 @@
+## 0.4.2+3
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
 ## 0.4.2+2
 
 * Fix CocoaPods podspec lint warnings.

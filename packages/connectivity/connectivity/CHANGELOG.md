@@ -1,3 +1,7 @@
+## 0.4.8+5
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
 ## 0.4.8+4
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.
