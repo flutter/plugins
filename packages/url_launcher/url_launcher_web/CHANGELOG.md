@@ -1,3 +1,7 @@
+# 0.1.1+3
+
+- Refactor tests to not rely on the underlying browser behavior.
+
 # 0.1.1+2
 
 - Open urls with target "_top" on iOS PWAs.
