@@ -1,3 +1,7 @@
+## 0.5.27+1
+
+* Remove endorsement of `web` platform, it's not ready yet.
+
 ## 0.5.27
 
 * Migrate the core plugin to use `google_maps_flutter_platform_interface` APIs.
