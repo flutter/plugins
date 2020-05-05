@@ -1,4 +1,4 @@
-## 5.4.5+1
+## 5.4.6
 
 * Add `web` to the example app.
 
