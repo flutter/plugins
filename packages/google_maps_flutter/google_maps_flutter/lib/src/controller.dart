@@ -152,6 +152,18 @@ class GoogleMapController {
         mapId: mapId);
   }
 
+  /// Updates heatmap configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updateHeatmaps(HeatmapUpdates heatmapUpdates) {
+    assert(heatmapUpdates != null);
+    return _googleMapsFlutterPlatform.updateHeatmaps(heatmapUpdates,
+        mapId: mapId);
+  }
+
   /// Starts an animated change of the map camera position.
   ///
   /// The returned [Future] completes after the change has been started on the

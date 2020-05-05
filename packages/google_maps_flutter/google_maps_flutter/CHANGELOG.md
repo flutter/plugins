@@ -1,3 +1,7 @@
+## 0.5.27+1
+
+* Adds support for heatmaps in google_maps_flutter.
+
 ## 0.5.27
 
 * Migrate the core plugin to use `google_maps_flutter_platform_interface` APIs.

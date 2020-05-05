@@ -28,6 +28,9 @@ export 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
         Cap,
         Circle,
         CircleId,
+        Heatmap,
+        HeatmapGradient,
+        HeatmapId,
         InfoWindow,
         JointType,
         LatLng,
@@ -42,7 +45,8 @@ export 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
         PolygonId,
         Polyline,
         PolylineId,
-        ScreenCoordinate;
+        ScreenCoordinate,
+        WeightedLatLng;
 
 part 'src/controller.dart';
 part 'src/google_map.dart';

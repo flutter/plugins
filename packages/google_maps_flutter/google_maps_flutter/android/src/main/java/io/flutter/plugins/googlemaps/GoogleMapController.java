@@ -93,10 +93,12 @@ final class GoogleMapController
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
+  private final HeatmapsController heatmapsController;
   private List<Object> initialMarkers;
   private List<Object> initialPolygons;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
+  private List<Object> initialHeatmaps;
 
   GoogleMapController(
       int id,
@@ -123,6 +125,7 @@ final class GoogleMapController
     this.polygonsController = new PolygonsController(methodChannel, density);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel, density);
+    this.heatmapsController = new HeatmapsController(methodChannel);
   }
 
   @Override
@@ -201,10 +204,12 @@ final class GoogleMapController
     polygonsController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
+    heatmapsController.setGoogleMap(googleMap);
     updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialCircles();
+    updateInitialHeatmaps();
   }
 
   @Override
@@ -357,6 +362,17 @@ final class GoogleMapController
           circlesController.changeCircles((List<Object>) circlesToChange);
           Object circleIdsToRemove = call.argument("circleIdsToRemove");
           circlesController.removeCircles((List<Object>) circleIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "heatmaps#update":
+        {
+          Object heatmapsToAdd = call.argument("heatmapsToAdd");
+          heatmapsController.addHeatmaps((List<Object>) heatmapsToAdd);
+          Object heatmapsToChange = call.argument("heatmapsToChange");
+          heatmapsController.changeHeatmaps((List<Object>) heatmapsToChange);
+          Object heatmapIdsToRemove = call.argument("heatmapIdsToRemove");
+          heatmapsController.removeHeatmaps((List<Object>) heatmapIdsToRemove);
           result.success(null);
           break;
         }
@@ -828,6 +844,18 @@ final class GoogleMapController
 
   private void updateInitialCircles() {
     circlesController.addCircles(initialCircles);
+  }
+
+  @Override
+  public void setInitialHeatmaps(Object initialHeatmaps) {
+    this.initialHeatmaps = (List<Object>) initialHeatmaps;
+    if (googleMap != null) {
+      updateInitialHeatmaps();
+    }
+  }
+
+  private void updateInitialHeatmaps() {
+    heatmapsController.addHeatmaps(initialHeatmaps);
   }
 
   @SuppressLint("MissingPermission")
