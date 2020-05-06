@@ -7,8 +7,8 @@ flutter:
   plugin:
     platforms:
       linux:
-        pluginClass: PathProviderLinux
-        fileName: path_provider_linux.dart
+        dartPluginClass: PathProviderLinux
+      
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
