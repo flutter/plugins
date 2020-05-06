@@ -1,3 +1,7 @@
+## 0.10.9+2
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
 ## 0.10.9+1
 
 * Readme updated to include web support and details on how to use for web
