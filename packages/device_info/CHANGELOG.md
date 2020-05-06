@@ -1,3 +1,7 @@
+## 0.4.3
+
+* Add toString futures
+
 ## 0.4.2+4
 
 Update lower bound of dart dependency to 2.1.0.

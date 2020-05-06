@@ -26,6 +26,41 @@ class DeviceInfoPlugin {
       _cachedAndroidDeviceInfo ??= AndroidDeviceInfo._fromMap(await channel
           .invokeMapMethod<String, dynamic>('getAndroidDeviceInfo'));
 
+  /// A future giving information on the system, string formatted.
+  Future<String> androidInfoString() async {
+    AndroidDeviceInfo _androidInfos =
+        _cachedAndroidDeviceInfo ?? await androidInfo;
+    return '''
+version.securityPatch: ${_androidInfos.version.securityPatch}
+version.sdkInt: ${_androidInfos.version.sdkInt}
+version.release: ${_androidInfos.version.release}
+version.previewSdkInt: ${_androidInfos.version.previewSdkInt}
+version.incremental: ${_androidInfos.version.incremental}
+version.codename: ${_androidInfos.version.codename}
+version.baseOS: ${_androidInfos.version.baseOS}
+board: ${_androidInfos.board}
+bootloader: ${_androidInfos.bootloader}
+brand: ${_androidInfos.brand}
+device: ${_androidInfos.device}
+display: ${_androidInfos.display}
+fingerprint: ${_androidInfos.fingerprint}
+hardware: ${_androidInfos.hardware}
+host: ${_androidInfos.host}
+id: ${_androidInfos.id}
+manufacturer: ${_androidInfos.manufacturer}
+model: ${_androidInfos.model}
+product: ${_androidInfos.product}
+supported32BitAbis: ${_androidInfos.supported32BitAbis}
+supported64BitAbis: ${_androidInfos.supported64BitAbis}
+supportedAbis: ${_androidInfos.supportedAbis}
+tags: ${_androidInfos.tags}
+type: ${_androidInfos.type}
+isPhysicalDevice: ${_androidInfos.isPhysicalDevice}
+androidId: ${_androidInfos.androidId}
+systemFeatures: ${_androidInfos.systemFeatures}
+    ''';
+  }
+
   /// This information does not change from call to call. Cache it.
   IosDeviceInfo _cachedIosDeviceInfo;
 
@@ -35,6 +70,25 @@ class DeviceInfoPlugin {
   Future<IosDeviceInfo> get iosInfo async =>
       _cachedIosDeviceInfo ??= IosDeviceInfo._fromMap(
           await channel.invokeMapMethod<String, dynamic>('getIosDeviceInfo'));
+
+  /// A future giving information on the system, string formatted.
+  Future iosInfoString() async {
+    IosDeviceInfo _iosInfos = _cachedIosDeviceInfo ?? await iosInfo;
+    return '''
+name: ${_iosInfos.name}
+systemName: ${_iosInfos.systemName}
+systemVersion: ${_iosInfos.systemVersion}
+model: ${_iosInfos.model}
+localizedModel: ${_iosInfos.localizedModel}
+identifierForVendor: ${_iosInfos.identifierForVendor}
+isPhysicalDevice: ${_iosInfos.isPhysicalDevice}
+utsname.sysname: ${_iosInfos.utsname.sysname}
+utsname.nodename: ${_iosInfos.utsname.nodename}
+utsname.release: ${_iosInfos.utsname.release}
+utsname.version: ${_iosInfos.utsname.version}
+utsname.machine: ${_iosInfos.utsname.machine}
+    ''';
+  }
 }
 
 /// Information derived from `android.os.Build`.
