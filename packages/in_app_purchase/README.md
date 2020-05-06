@@ -163,7 +163,7 @@ you initiate the purchase flow using `InAppPurchaseConnection.buyConsumable` or 
 After delivering the content to the user, you need to call `InAppPurchaseConnection.completePurchase` to tell the `GooglePlay`
 and `AppStore` that the purchase has been finished.
 
-WARNING! Fail to call `InAppPurchaseConnection.completePurchase` and get a successful response within 3 days of the purchase will result a refund.
+WARNING! Failure to call `InAppPurchaseConnection.completePurchase` and get a successful response within 3 days of the purchase will result a refund.
 
 ## Development
 
