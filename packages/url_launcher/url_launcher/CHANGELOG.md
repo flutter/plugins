@@ -1,3 +1,7 @@
+## 5.4.5+1
+
+* Remove deprecation warnings on Android.
+
 ## 5.4.5
 
 * Remove Android dependencies fallback.
