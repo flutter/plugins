@@ -14,8 +14,8 @@ flutter:
         fileName: url_launcher_macos.dart
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.8 <2.0.0"
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"
 
 dependencies:
   flutter:
