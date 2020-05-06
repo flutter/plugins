@@ -24,7 +24,8 @@ class PathProviderLinux extends PathProviderPlatform {
 
   @override
   Future<String> getApplicationSupportPath() async {
-    final processName = await File('/proc/self/exe').readAsString();
+    final processName = path.basenameWithoutExtension(
+        await File('/proc/self/exe').resolveSymbolicLinks());
     final directory = Directory(path.join(xdg.dataHome.path, processName));
     // Creating the directory if it doesn't exist, because mobile implementations assume the directory exists
     if (!await directory.exists()) {
