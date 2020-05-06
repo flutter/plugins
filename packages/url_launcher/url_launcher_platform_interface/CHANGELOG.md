@@ -1,3 +1,7 @@
+## 1.0.7
+
+* Bump minimum versions from Flutter to `1.12.13+hotfix.5` and Dart to `2.7.0`.
+
 ## 1.0.6
 
 * Make the pedantic dev_dependency explicit.
