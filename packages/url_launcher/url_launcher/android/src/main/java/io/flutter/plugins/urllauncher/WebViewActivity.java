@@ -12,6 +12,9 @@ import android.view.KeyEvent;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.annotation.RequiresApi;;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,8 +42,9 @@ public class WebViewActivity extends Activity {
       new WebViewClient() {
 
         @Override
+        @SuppressWarnings("deprecation")
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             view.loadUrl(url);
             return false;
           }
@@ -48,10 +52,9 @@ public class WebViewActivity extends Activity {
         }
 
         @Override
+        @RequiresApi(Build.VERSION_CODES.N)
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.loadUrl(request.getUrl().toString());
-          }
+          view.loadUrl(request.getUrl().toString());
           return false;
         }
       };
@@ -89,7 +92,9 @@ public class WebViewActivity extends Activity {
     final Map<String, String> headersMap = new HashMap<>();
     for (String key : headersBundle.keySet()) {
       final String value = headersBundle.getString(key);
-      headersMap.put(key, value);
+      if (value != null) {
+        headersMap.put(key, value);
+      }
     }
     return headersMap;
   }
