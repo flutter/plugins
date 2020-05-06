@@ -6,69 +6,98 @@
 
 import 'dart:html' as html;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
 import 'package:url_launcher_web/src/navigator.dart' as navigator;
-import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+import 'package:mockito/mockito.dart';
+
+class MockWindow extends Mock implements html.Window {}
 
 void main() {
-  group('URL Launcher for Web', () {
-    setUp(() {
-      UrlLauncherPlatform.instance = UrlLauncherPlugin();
+  group('$UrlLauncherPlugin', () {
+    MockWindow mockWindow = MockWindow();
+    UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockWindow);
+
+    group('canLaunch', () {
+      test('"http" URLs -> true', () {
+        expect(plugin.canLaunch('http://google.com'), completion(isTrue));
+      });
+
+      test('"https" URLs -> true', () {
+        expect(plugin.canLaunch('https://google.com'), completion(isTrue));
+      });
+
+      test('"mailto" URLs -> true', () {
+        expect(
+            plugin.canLaunch('mailto:name@mydomain.com'), completion(isTrue));
+      });
+
+      test('"tel" URLs -> false', () {
+        expect(plugin.canLaunch('tel:5551234567'), completion(isFalse));
+      });
     });
 
-    test('$UrlLauncherPlugin is the live instance', () {
-      expect(UrlLauncherPlatform.instance, isA<UrlLauncherPlugin>());
+    group('launch', () {
+      setUp(() {
+        // Simulate that window.open does something.
+        when(mockWindow.open('https://www.google.com', ''))
+            .thenReturn(MockWindow());
+        when(mockWindow.open('mailto:name@mydomain.com', ''))
+            .thenReturn(MockWindow());
+      });
+
+      test('launching a URL returns true', () {
+        expect(
+            plugin.launch(
+              'https://www.google.com',
+              useSafariVC: null,
+              useWebView: null,
+              universalLinksOnly: null,
+              enableDomStorage: null,
+              enableJavaScript: null,
+              headers: null,
+            ),
+            completion(isTrue));
+      });
+
+      test('launching a "mailto" returns true', () {
+        expect(
+            plugin.launch(
+              'mailto:name@mydomain.com',
+              useSafariVC: null,
+              useWebView: null,
+              universalLinksOnly: null,
+              enableDomStorage: null,
+              enableJavaScript: null,
+              headers: null,
+            ),
+            completion(isTrue));
+      });
     });
 
-    test('can launch "http" URLs', () {
-      expect(canLaunch('http://google.com'), completion(isTrue));
-    });
+    group('openNewWindow', () {
+      bool _standalone;
 
-    test('can launch "https" URLs', () {
-      expect(canLaunch('https://google.com'), completion(isTrue));
-    });
+      setUp(() {
+        _standalone = navigator.standalone;
+      });
 
-    test('can launch "mailto" URLs', () {
-      expect(canLaunch('mailto:name@mydomain.com'), completion(isTrue));
-    });
+      tearDown(() {
+        navigator.standalone = _standalone;
+      });
 
-    test('cannot launch "tel" URLs', () {
-      expect(canLaunch('tel:5551234567'), completion(isFalse));
-    });
+      test('the window that is launched is a new window', () {
+        plugin.openNewWindow('https://www.google.com');
 
-    test('launching a URL returns true', () {
-      expect(launch('https://www.google.com'), completion(isTrue));
-    });
+        verify(mockWindow.open('https://www.google.com', ''));
+      });
 
-    test('launching a "mailto" returns true', () {
-      expect(launch('mailto:name@mydomain.com'), completion(isTrue));
-    });
+      test('the window that is launched is in the same window', () {
+        navigator.standalone = true;
 
-    test('the window that is launched is a new window', () {
-      final UrlLauncherPlugin urlLauncherPlugin = UrlLauncherPlugin();
-      final html.WindowBase newWindow =
-          urlLauncherPlugin.openNewWindow('https://www.google.com');
-      expect(newWindow, isNotNull);
-      expect(newWindow, isNot(equals(html.window)));
-      expect(newWindow.opener, equals(html.window));
-    });
+        plugin.openNewWindow('https://www.google.com');
 
-    test('the window that is launched is in the same window', () {
-      final originalStandalone = navigator.standalone;
-      // Simulate the navigator is in standalone mode on iOS devices.
-      // https://developer.mozilla.org/en-US/docs/Web/API/Navigator
-      navigator.standalone = true;
-      final UrlLauncherPlugin urlLauncherPlugin = UrlLauncherPlugin();
-      final html.WindowBase window =
-          urlLauncherPlugin.openNewWindow('https://www.google.com');
-      expect(window, isNotNull);
-      expect(window.opener, isNot(equals(html.window)));
-      navigator.standalone = originalStandalone;
-    });
-
-    test('does not implement closeWebView()', () {
-      expect(closeWebView(), throwsUnimplementedError);
+        verify(mockWindow.open('https://www.google.com', '_top'));
+      });
     });
   });
 }

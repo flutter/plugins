@@ -2,6 +2,14 @@
 
 The web implementation of [`video_player`][1].
 
+
+**Please set your constraint to `video_player_web: '>=0.1.y+x <2.0.0'`**
+
+## Backward compatible 1.0.0 version is coming
+The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.1.y+z`.
+Please use `video_player_web: '>=0.1.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
+For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+
 ## Usage
 
 This package is the endorsed implementation of `video_player` for the web platform since version `0.10.5`, so it gets automatically added to your application by depending on `video_player: ^0.10.5`.
