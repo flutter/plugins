@@ -85,6 +85,11 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('play() has not been implemented.');
   }
 
+  /// Starts the video playback.
+  Future<void> nextVideo(int textureId, String videoPath) {
+    throw UnimplementedError('nextVideo() has not been implemented 40.');
+  }
+
   /// Stops the video playback.
   Future<void> pause(int textureId) {
     throw UnimplementedError('pause() has not been implemented.');
@@ -210,6 +215,7 @@ class VideoEvent {
     this.duration,
     this.size,
     this.buffered,
+    this.changedDataSource
   });
 
   /// The type of the event.
@@ -224,6 +230,9 @@ class VideoEvent {
   ///
   /// Only used if [eventType] is [VideoEventType.initialized].
   final Size size;
+
+  /// Set if video changed datasource
+  final bool changedDataSource;
 
   /// Buffered parts of the video.
   ///

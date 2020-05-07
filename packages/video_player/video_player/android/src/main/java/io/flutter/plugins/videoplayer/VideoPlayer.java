@@ -57,6 +57,11 @@ final class VideoPlayer {
 
   private boolean isInitialized = false;
 
+  private DataSource.Factory _dataSourceFactory;
+  private Context _context;
+  private String _formatHint;
+  private boolean _changedDataSource = false;
+
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
@@ -84,6 +89,10 @@ final class VideoPlayer {
     } else {
       dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
     }
+
+    this._dataSourceFactory = dataSourceFactory;
+    this._context = context;
+    this._formatHint = formatHint;
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
     exoPlayer.prepare(mediaSource);
@@ -230,6 +239,15 @@ final class VideoPlayer {
     exoPlayer.setRepeatMode(value ? REPEAT_MODE_ALL : REPEAT_MODE_OFF);
   }
 
+  void nextVideo(String dataSource) {
+    Uri uri = Uri.parse(dataSource);
+    exoPlayer.stop();
+    MediaSource mediaSource = buildMediaSource(uri, this._dataSourceFactory,this._formatHint, this._context);
+    exoPlayer.prepare(mediaSource);
+    _changedDataSource = true; // resend duration and video config
+    isInitialized = false;
+  }
+
   void setVolume(double value) {
     float bracketedValue = (float) Math.max(0.0, Math.min(1.0, value));
     exoPlayer.setVolume(bracketedValue);
@@ -249,6 +267,11 @@ final class VideoPlayer {
       Map<String, Object> event = new HashMap<>();
       event.put("event", "initialized");
       event.put("duration", exoPlayer.getDuration());
+      event.put("changedDataSource", this._changedDataSource);
+
+      if(this._changedDataSource) {
+        this._changedDataSource = false;
+      }
 
       if (exoPlayer.getVideoFormat() != null) {
         Format videoFormat = exoPlayer.getVideoFormat();

@@ -166,6 +166,10 @@ public class VideoPlayerPlugin implements MethodCallHandler, FlutterPlugin {
         player.play();
         result.success(null);
         break;
+      case "nextVideo":
+        player.nextVideo(call.argument("dataSource"));
+        result.success(null);
+        break;
       case "pause":
         player.pause();
         result.success(null);
