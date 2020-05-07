@@ -4,12 +4,12 @@ import 'dart:html' as html;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
-import 'src/navigator.dart' as navigator;
 
 /// The web implementation of [UrlLauncherPlatform].
 ///
 /// This class implements the `package:url_launcher` functionality for the web.
 class UrlLauncherPlugin extends UrlLauncherPlatform {
+  static final _iosPlatforms = ['iPhone', 'iPad', 'iPod'];
   html.Window _window;
 
   /// A constructor that allows tests to override the window object used by the plugin.
@@ -21,14 +21,18 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
   }
 
+  bool get _isIos => _iosPlatforms.contains(_window.navigator.platform);
+
+  bool _isMailTo(String url) {
+    return Uri.tryParse(url)?.isScheme('mailto') ?? false;
+  }
+
   /// Opens the given [url] in a new window.
   ///
   /// Returns the newly created window.
   @visibleForTesting
   html.WindowBase openNewWindow(String url) {
-    // We need to open on _top in ios browsers in standalone mode.
-    // See https://github.com/flutter/flutter/issues/51461 for reference.
-    final target = navigator.standalone ? '_top' : '';
+    final target = _isIos && _isMailTo(url) ? '_top' : '';
     return _window.open(url, target);
   }
 

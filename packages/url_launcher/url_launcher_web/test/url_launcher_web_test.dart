@@ -7,10 +7,19 @@
 import 'dart:html' as html;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
-import 'package:url_launcher_web/src/navigator.dart' as navigator;
 import 'package:mockito/mockito.dart';
 
-class MockWindow extends Mock implements html.Window {}
+class MockNavigator extends Mock implements html.Navigator {
+  final String platform;
+
+  MockNavigator(this.platform);
+}
+
+class MockWindow extends Mock implements html.Window {
+  final MockNavigator navigator;
+
+  MockWindow({String platform = ''}) : navigator = MockNavigator(platform);
+}
 
 void main() {
   group('$UrlLauncherPlugin', () {
@@ -75,28 +84,39 @@ void main() {
     });
 
     group('openNewWindow', () {
-      bool _standalone;
-
-      setUp(() {
-        _standalone = navigator.standalone;
-      });
-
-      tearDown(() {
-        navigator.standalone = _standalone;
-      });
-
       test('the window that is launched is a new window', () {
         plugin.openNewWindow('https://www.google.com');
 
         verify(mockWindow.open('https://www.google.com', ''));
       });
 
-      test('the window that is launched is in the same window', () {
-        navigator.standalone = true;
+      group('iosDevices', () {
+        test('mailto urls should be launched on the same window on Iphone', () {
+          final mockIosWindow = MockWindow(platform: 'iPhone');
+          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
 
-        plugin.openNewWindow('https://www.google.com');
+          plugin.openNewWindow('mailto:name@mydomain.com');
 
-        verify(mockWindow.open('https://www.google.com', '_top'));
+          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
+        });
+
+        test('mailto urls should be launched on the same window on Ipad', () {
+          final mockIosWindow = MockWindow(platform: 'iPad');
+          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
+
+          plugin.openNewWindow('mailto:name@mydomain.com');
+
+          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
+        });
+
+        test('mailto urls should be launched on the same window on Iphone', () {
+          final mockIosWindow = MockWindow(platform: 'iPod');
+          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
+
+          plugin.openNewWindow('mailto:name@mydomain.com');
+
+          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
+        });
       });
     });
   });
