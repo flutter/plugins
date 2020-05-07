@@ -41,19 +41,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol FLTVideoPlayerApi
 - (void)initialize:(FlutterError *_Nullable *_Nonnull)error;
-- (FLTTextureMessage *)create:(FLTCreateMessage *)input
-                        error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable FLTTextureMessage *)create:(FLTCreateMessage *)input
+                                 error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)dispose:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setLooping:(FLTLoopingMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setVolume:(FLTVolumeMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)play:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
-- (FLTPositionMessage *)position:(FLTTextureMessage *)input
-                           error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable FLTPositionMessage *)position:(FLTTextureMessage *)input
+                                    error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)seekTo:(FLTPositionMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)pause:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
-                                   id<FLTVideoPlayerApi> api);
+                                   id<FLTVideoPlayerApi> _Nullable api);
 
 NS_ASSUME_NONNULL_END
