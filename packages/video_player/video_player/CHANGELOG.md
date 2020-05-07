@@ -1,6 +1,10 @@
-## 0.10.9+2
+## 0.10.9+3
 
 * Test ci
+
+## 0.10.9+2
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
 
 ## 0.10.9+1
 

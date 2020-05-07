@@ -99,6 +99,33 @@ task:
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  container:
+    dockerfile: .ci/Dockerfile-LinuxDesktop
+    cpu: 8
+    memory: 16G
+  env:
+    E2E_PATH: "./packages/e2e"
+  upgrade_script:
+    - flutter channel stable
+    - flutter upgrade
+    - flutter channel master
+    - flutter upgrade
+    - git fetch origin master
+  activate_script: pub global activate flutter_plugin_tools
+  matrix:
+    - name: build-linux+drive-examples
+      install_script:
+        - flutter config --enable-linux-desktop
+      build_script:
+        # TODO(stuartmorgan): Include stable once Linux is supported on stable.
+        - flutter channel master
+        - ./script/incremental_build.sh build-examples --linux
+        - ./script/incremental_build.sh drive-examples --linux
+
+task:
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
     image: catalina-xcode-11.3.1-flutter
