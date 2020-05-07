@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Updated video_player_platform_interface, should have no effect on this plugin.
+
 ## 0.1.2+3
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
