@@ -1,4 +1,4 @@
-## 1.100.100
+## 1.1.0
 
 * Migrated to [pigeon](https://pub.dev/packages/pigeon).
 
