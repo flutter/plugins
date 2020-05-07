@@ -110,15 +110,15 @@
     [self applySettings:settings];
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
     // https://github.com/flutter/flutter/issues/36228
-    
+
     NSString* html = args[@"html"];
     if ([html isKindOfClass:[NSString class]]) {
       NSString* baseURLString = args[@"baseUrl"];
       if ([baseURLString isKindOfClass:[NSString class]]) {
         baseURL = [NSURL URLWithString:baseURLString];
-        [_webView loadHTMLString:html baseURL: baseURL];
+        [_webView loadHTMLString:html baseURL:baseURL];
       } else {
-        [_webView loadHTMLString:html baseURL: nil];
+        [_webView loadHTMLString:html baseURL:nil];
       }
     } else {
       NSString* initialUrl = args[@"initialUrl"];
@@ -130,7 +130,7 @@
   return self;
 }
 
-NSURL *baseURL = nil;
+NSURL* baseURL = nil;
 
 - (UIView*)view {
   return _webView;
@@ -199,15 +199,15 @@ NSURL *baseURL = nil;
 }
 
 - (void)onLoadHtml:(FlutterMethodCall*)call result:(FlutterResult)result {
-    NSString* html = [call arguments][@"html"];
-    if ([html isKindOfClass:[NSString class]]) {
-      if (baseURL != nil) {
-        [_webView loadHTMLString:html baseURL: baseURL];
-      } else {
-        [_webView loadHTMLString:html baseURL: nil];
-      }
+  NSString* html = [call arguments][@"html"];
+  if ([html isKindOfClass:[NSString class]]) {
+    if (baseURL != nil) {
+      [_webView loadHTMLString:html baseURL:baseURL];
+    } else {
+      [_webView loadHTMLString:html baseURL:nil];
     }
-    result(nil);
+  }
+  result(nil);
 }
 
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
