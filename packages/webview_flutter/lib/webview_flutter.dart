@@ -211,10 +211,10 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String initialUrl;
-  
+
   /// The initial baseURL to load.
   final String baseUrl;
-  
+
   /// The initial static html to load.
   final String html;
 
@@ -557,7 +557,7 @@ class WebViewController {
     _validateUrlString(url);
     return _webViewPlatformController.loadUrl(url, headers);
   }
-  
+
   /// Loads the specified html.
   ///
   /// `html` must not be null.

@@ -78,7 +78,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'headers': headers,
     });
   }
-  
+
   @override
   Future<void> loadHtml(String html) async {
     return _channel.invokeMethod<void>('loadHtml', <String, dynamic>{
