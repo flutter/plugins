@@ -1,4 +1,4 @@
-## 1.1.0
+## 2.0.0
 
 * Migrated to [pigeon](https://pub.dev/packages/pigeon).
 
