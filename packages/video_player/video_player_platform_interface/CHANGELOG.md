@@ -1,3 +1,8 @@
+## 2.0.1
+
+* Updated minimum Dart version.
+* Added class to help testing Pigeon communication.
+
 ## 2.0.0
 
 * Migrated to [pigeon](https://pub.dev/packages/pigeon).
