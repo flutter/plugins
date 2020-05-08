@@ -1,6 +1,6 @@
 ## 0.1.3
 
-* Updated video_player_platform_interface, should have no effect on this plugin.
+* Updated video_player_platform_interface, bumped minimum Dart version to 2.1.0.
 
 ## 0.1.2+3
 
