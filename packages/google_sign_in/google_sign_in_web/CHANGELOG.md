@@ -1,3 +1,15 @@
+## 0.9.1
+
+* Ensure the web code returns `null` when the user is not signed in, instead of a `null-object` User. Fixes [issue 52338](https://github.com/flutter/flutter/issues/52338).
+
+## 0.9.0
+
+* Add support for methods introduced in `google_sign_in_platform_interface` 1.1.0.
+
+## 0.8.4
+
+* Remove all `fakeConstructor$` from the generated facade. JS interop classes do not support non-external constructors.
+
 ## 0.8.3+2
 
 * Make the pedantic dev_dependency explicit.

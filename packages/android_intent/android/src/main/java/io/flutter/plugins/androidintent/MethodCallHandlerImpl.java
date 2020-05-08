@@ -85,9 +85,19 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
             : null;
     String type = call.argument("type");
 
-    sender.send(action, flags, category, data, arguments, packageName, componentName, type);
+    Intent intent =
+        sender.buildIntent(
+            action, flags, category, data, arguments, packageName, componentName, type);
 
-    result.success(null);
+    if ("launch".equalsIgnoreCase(call.method)) {
+      sender.send(intent);
+
+      result.success(null);
+    } else if ("canResolveActivity".equalsIgnoreCase(call.method)) {
+      result.success(sender.canResolveActivity(intent));
+    } else {
+      result.notImplemented();
+    }
   }
 
   private static String convertAction(String action) {
