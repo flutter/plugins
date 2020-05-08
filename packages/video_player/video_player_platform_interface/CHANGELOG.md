@@ -1,3 +1,7 @@
+## 2.0.1+1
+
+* Migrated tests to use pigeon correctly.
+
 ## 2.0.1
 
 * Updated minimum Dart version.
