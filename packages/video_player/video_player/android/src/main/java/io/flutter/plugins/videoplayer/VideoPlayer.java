@@ -31,7 +31,6 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.view.TextureRegistry;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,7 +61,6 @@ final class VideoPlayer {
       EventChannel eventChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
       String dataSource,
-      Result result,
       String formatHint) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
@@ -88,7 +86,7 @@ final class VideoPlayer {
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
     exoPlayer.prepare(mediaSource);
 
-    setupVideoPlayer(eventChannel, textureEntry, result);
+    setupVideoPlayer(eventChannel, textureEntry);
   }
 
   private static boolean isHTTP(Uri uri) {
@@ -148,7 +146,7 @@ final class VideoPlayer {
   }
 
   private void setupVideoPlayer(
-      EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry, Result result) {
+      EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry) {
 
     eventChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
@@ -193,10 +191,6 @@ final class VideoPlayer {
             }
           }
         });
-
-    Map<String, Object> reply = new HashMap<>();
-    reply.put("textureId", textureEntry.id());
-    result.success(reply);
   }
 
   void sendBufferingUpdate() {

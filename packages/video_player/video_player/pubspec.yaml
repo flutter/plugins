@@ -4,7 +4,7 @@ description: Flutter plugin for displaying inline video with other Flutter
 # 0.10.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.10.9+2
+version: 0.10.10
 homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player
 
 flutter:
@@ -20,7 +20,7 @@ flutter:
 
 dependencies:
   meta: "^1.0.5"
-  video_player_platform_interface: ^1.0.1
+  video_player_platform_interface: ^2.0.0
   # The design on https://flutter.dev/go/federated-plugins was to leave
   # this constraint as "any". We cannot do it right now as it fails pub publish
   # validation, so we set a ^ constraint.
@@ -35,7 +35,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   pedantic: ^1.8.0
+  pigeon: 0.1.0-experimental.10
 
 environment:
-  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  sdk: ">=2.1.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5 <2.0.0"
