@@ -1,3 +1,7 @@
+## 5.4.6
+
+* Add `web` to the example app.
+
 ## 5.4.5
 
 * Remove Android dependencies fallback.
