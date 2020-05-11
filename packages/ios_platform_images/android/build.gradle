@@ -43,29 +43,3 @@ dependencies {
     testImplementation 'androidx.test:core:1.0.0'
     testImplementation 'org.robolectric:robolectric:4.3'
 }
-
-// TODO(mklim): Remove this hack once androidx.lifecycle is included on stable. https://github.com/flutter/flutter/issues/42348
-afterEvaluate {
-    def containsEmbeddingDependencies = false
-    for (def configuration : configurations.all) {
-        for (def dependency : configuration.dependencies) {
-            if (dependency.group == 'io.flutter' &&
-                dependency.name.startsWith('flutter_embedding') &&
-                dependency.isTransitive())
-            {
-                containsEmbeddingDependencies = true
-                break
-            }
-        }
-    }
-    if (!containsEmbeddingDependencies) {
-        android {
-            dependencies {
-                def lifecycle_version = "1.1.1"
-                compileOnly "android.arch.lifecycle:runtime:$lifecycle_version"
-                compileOnly "android.arch.lifecycle:common:$lifecycle_version"
-                compileOnly "android.arch.lifecycle:common-java8:$lifecycle_version"
-            }
-        }
-    }
-}

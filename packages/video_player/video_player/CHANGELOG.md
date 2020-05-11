@@ -1,3 +1,25 @@
+## 0.10.10
+
+* Migrated to [pigeon](https://pub.dev/packages/pigeon).
+
+## 0.10.9+2
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.10.9+1
+
+* Readme updated to include web support and details on how to use for web
+
+## 0.10.9
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.10.8+2
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
 ## 0.10.8+1
 
 * Make the pedantic dev_dependency explicit.

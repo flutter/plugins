@@ -1,3 +1,12 @@
+# 0.0.1+6
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+# 0.0.1+5
+
+* Fixed the launchUniversalLinkIos method.
+* Fix CocoaPods podspec lint warnings.
+
 # 0.0.1+4
 
 * Make the pedantic dev_dependency explicit.
