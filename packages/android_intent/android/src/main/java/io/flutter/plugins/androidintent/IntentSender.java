@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,14 +64,18 @@ public final class IntentSender {
     }
   }
 
-  void showChooser(Intent intent, @Nullable List<String> ignoredPackages) {
+  void showChooser(Intent intent, @NonNull List<String> ignoredPackages) {
     Intent chooser = null;
     intent.setPackage(null);
     intent.setComponent(null);
-    Boolean isPackageFilterRequired = ignoredPackages != null && ignoredPackages.size() > 0;
-    if (isPackageFilterRequired) {
+
+    // Exclude ignored packages from the displayed list.
+    if (ignoredPackages.size() > 0) {
       ArrayList<Intent> targetIntents = calculateTargetIntents(intent, ignoredPackages);
       if (targetIntents != null && targetIntents.size() > 0) {
+        // Create a chooser with the first element of the list,
+        // removing it from the list to avoid double displaying it in the chooser,
+        // since we add the whole list further using putExtra.
         chooser = Intent.createChooser(targetIntents.remove(0), "");
         chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetIntents.toArray(new Parcelable[] {}));
       }
@@ -92,8 +97,7 @@ public final class IntentSender {
    * <p>This currently only supports resolving activities.
    *
    * @param intent Fully built intent.
-   * @see #buildIntent(String, Integer, String, Uri, Bundle, String, ComponentName, List, Boolean,
-   *     String)
+   * @see #buildIntent(String, Integer, String, Uri, Bundle, String, ComponentName, List, String)
    * @return Whether the package manager found {@link android.content.pm.ResolveInfo} using its
    *     {@link PackageManager#resolveActivity(Intent, int)} method.
    */
@@ -146,7 +150,7 @@ public final class IntentSender {
       @Nullable Bundle arguments,
       @Nullable String packageName,
       @Nullable ComponentName componentName,
-      @Nullable List<String> ignoredPackages,
+      @NonNull List<String> ignoredPackages,
       @Nullable String type) {
     if (applicationContext == null) {
       Log.wtf(TAG, "Trying to build an intent before the applicationContext was initialized.");
@@ -185,8 +189,8 @@ public final class IntentSender {
         intent.setPackage(null);
       }
     }
-    Boolean isPackageFilterRequired = ignoredPackages != null && ignoredPackages.size() > 0;
-    if (isPackageFilterRequired) {
+    // If the package is not set, and ignored packages are specified, find a package to resolve this intent.
+    if (intent.getPackage() == null && ignoredPackages.size() > 0) {
       String packageToLaunch = choosePackageToLaunch(intent, ignoredPackages);
       intent.setPackage(packageToLaunch);
     }
@@ -194,7 +198,7 @@ public final class IntentSender {
     return intent;
   }
 
-  String choosePackageToLaunch(Intent intent, List<String> ignoredPackages) {
+  private String choosePackageToLaunch(Intent intent, List<String> ignoredPackages) {
     ArrayList<Intent> targetIntents = calculateTargetIntents(intent, ignoredPackages);
 
     if (targetIntents != null && targetIntents.size() > 0) {
@@ -204,7 +208,7 @@ public final class IntentSender {
     }
   }
 
-  List<ResolveInfo> getIntentActivities(Intent intent) {
+  private List<ResolveInfo> getIntentActivities(Intent intent) {
     PackageManager packageManager;
     if (activity != null) {
       packageManager = activity.getPackageManager();
@@ -214,7 +218,7 @@ public final class IntentSender {
     return packageManager.queryIntentActivities(intent, 0);
   }
 
-  ArrayList<Intent> calculateTargetIntents(Intent intent, List<String> ignoredPackages) {
+  private ArrayList<Intent> calculateTargetIntents(Intent intent, List<String> ignoredPackages) {
     ArrayList<Intent> targetIntents = new ArrayList<Intent>();
     List<ResolveInfo> intentActivities = getIntentActivities(intent);
 

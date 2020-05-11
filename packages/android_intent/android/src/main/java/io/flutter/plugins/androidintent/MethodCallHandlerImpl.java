@@ -85,6 +85,9 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
             ? new ComponentName(packageName, (String) call.argument("componentName"))
             : null;
     List<String> ignoredPackages = call.argument("ignoredPackages");
+    if (ignoredPackages == null) {
+      ignoredPackages = new ArrayList();
+    }
     String type = call.argument("type");
 
     Intent intent =
