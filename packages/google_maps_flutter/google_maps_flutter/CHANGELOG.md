@@ -1,3 +1,7 @@
+## 0.5.27+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.5.27+1
 
 * Remove endorsement of `web` platform, it's not ready yet.
