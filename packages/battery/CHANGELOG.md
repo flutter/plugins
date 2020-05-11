@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 1.0.0
 
 * Bump the package version to 1.0.0 following ecosystem pre-migration (https://github.com/amirh/bump_to_1.0/projects/1).
