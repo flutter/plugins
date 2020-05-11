@@ -32,6 +32,8 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   /// Returns the newly created window.
   @visibleForTesting
   html.WindowBase openNewWindow(String url) {
+    // We need to open mailto urls on the _top window context on iOS devices.
+    // See https://github.com/flutter/flutter/issues/51461 for reference.
     final target = _isIos && _isMailTo(url) ? '_top' : '';
     return _window.open(url, target);
   }
