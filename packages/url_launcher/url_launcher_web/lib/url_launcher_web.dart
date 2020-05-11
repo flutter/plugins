@@ -23,9 +23,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
 
   bool get _isIos => _iosPlatforms.hasMatch(_window.navigator.platform);
 
-  bool _isMailTo(String url) {
-    return Uri.tryParse(url)?.isScheme('mailto') ?? false;
-  }
+  bool _isMailTo(String url) => Uri.tryParse(url)?.isScheme('mailto') ?? false;
 
   /// Opens the given [url] in a new window.
   ///

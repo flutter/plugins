@@ -91,6 +91,24 @@ void main() {
       });
 
       group('iosDevices', () {
+        test('http urls should be launched in a new window', () {
+          final mockIosWindow = MockWindow(platform: 'iPhone');
+          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
+
+          plugin.openNewWindow('http://www.google.com');
+
+          verify(mockIosWindow.open('http://www.google.com', ''));
+        });
+
+        test('https urls should be launched in a new window', () {
+          final mockIosWindow = MockWindow(platform: 'iPhone');
+          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
+
+          plugin.openNewWindow('https://www.google.com');
+
+          verify(mockIosWindow.open('https://www.google.com', ''));
+        });
+
         test('mailto urls should be launched on the same window on Iphone', () {
           final mockIosWindow = MockWindow(platform: 'iPhone');
           UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
