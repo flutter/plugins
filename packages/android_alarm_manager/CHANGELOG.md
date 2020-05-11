@@ -1,3 +1,7 @@
+## 0.4.5+11
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.4.5+10
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
