@@ -9,7 +9,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 ///
 /// This class implements the `package:url_launcher` functionality for the web.
 class UrlLauncherPlugin extends UrlLauncherPlatform {
-  static final _iosPlatforms = ['iPhone', 'iPad', 'iPod'];
+  static final _iosPlatforms = RegExp(r'iPad|iPhone|iPod');
   html.Window _window;
 
   /// A constructor that allows tests to override the window object used by the plugin.
@@ -21,7 +21,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
   }
 
-  bool get _isIos => _iosPlatforms.contains(_window.navigator.platform);
+  bool get _isIos => _iosPlatforms.hasMatch(_window.navigator.platform);
 
   bool _isMailTo(String url) {
     return Uri.tryParse(url)?.isScheme('mailto') ?? false;

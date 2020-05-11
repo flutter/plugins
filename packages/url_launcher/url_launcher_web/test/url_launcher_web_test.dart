@@ -117,6 +117,39 @@ void main() {
 
           verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
         });
+
+        test(
+            'mailto urls should be launched on the same window on an simulated Iphone',
+            () {
+          final mockIosWindow = MockWindow(platform: 'iPhone Simulator');
+          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
+
+          plugin.openNewWindow('mailto:name@mydomain.com');
+
+          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
+        });
+
+        test(
+            'mailto urls should be launched on the same window on an simulated Ipad',
+            () {
+          final mockIosWindow = MockWindow(platform: 'iPad Simulator');
+          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
+
+          plugin.openNewWindow('mailto:name@mydomain.com');
+
+          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
+        });
+
+        test(
+            'mailto urls should be launched on the same window on an simulated Iphone',
+            () {
+          final mockIosWindow = MockWindow(platform: 'iPod Simulator');
+          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
+
+          plugin.openNewWindow('mailto:name@mydomain.com');
+
+          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
+        });
       });
     });
   });
