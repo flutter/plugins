@@ -1,3 +1,11 @@
+## 5.4.7
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 5.4.6
+
+* Add `web` to the example app.
+
 ## 5.4.5
 
 * Remove Android dependencies fallback.
