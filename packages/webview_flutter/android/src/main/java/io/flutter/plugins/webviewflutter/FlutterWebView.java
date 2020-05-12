@@ -125,6 +125,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
+      case "loadDataWithBaseURL":
+        loadDataWithBaseURL(methodCall, result);
+        break;
       case "canGoBack":
         canGoBack(result);
         break;
@@ -184,6 +187,22 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       headers = Collections.emptyMap();
     }
     webView.loadUrl(url, headers);
+    result.success(null);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void loadDataWithBaseURL(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+
+    String baseUrl = (String) request.get("baseUrl");
+    String html = (String) request.get("html");
+    String mimeType = (String) request.get("mimeType");
+    String encoding = (String) request.get("encoding");
+    String historyUrl = (String) request.get("historyUrl");
+
+
+    webView.loadDataWithBaseURL(baseUrl,html,mimeType,encoding,historyUrl);
+
     result.success(null);
   }
 
