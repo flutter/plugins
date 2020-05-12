@@ -1,8 +1,13 @@
+## 0.1.0+4
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
 ## 0.1.0+3
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.
 * Clean up various Android workarounds no longer needed after framework v1.12.
 * Complete v2 embedding support.
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.1.0+2
 

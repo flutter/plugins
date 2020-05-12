@@ -1,3 +1,15 @@
+## 0.3.3+1
+
+* Update documentations for `InAppPurchase.completePurchase` and update README.
+
+## 0.3.3
+
+* Introduce `SKPaymentQueueWrapper.transactions`.
+
+## 0.3.2+2
+
+* Fix CocoaPods podspec lint warnings.
+
 ## 0.3.2+1
 
 * iOS: Fix only transactions with SKPaymentTransactionStatePurchased and SKPaymentTransactionStateFailed can be finished.
