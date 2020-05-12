@@ -28,7 +28,7 @@ class SharedPreferences {
   /// performance-sensitive blocks.
   static Future<SharedPreferences> getInstance(
       {String prefix = _DEFAULT_PREFIX}) async {
-    if (_completer == null || prefix != _prefix) {
+    if (_completer == null) {
       _prefix = prefix;
       _completer = Completer<SharedPreferences>();
       try {
@@ -43,6 +43,12 @@ class SharedPreferences {
         _completer = null;
         return sharedPrefsFuture;
       }
+    }
+    // The user is trying to change the prefix
+    // after the instance has been initialized.
+    else if (prefix != _prefix) {
+      throw SharedPreferencesException(
+          "prefix cannon be changed once the inctance has been initialized.");
     }
     return _completer.future;
   }
@@ -200,4 +206,19 @@ class SharedPreferences {
         InMemorySharedPreferencesStore.withData(newValues);
     _completer = null;
   }
+
+  /// Destroy the instance.
+  @visibleForTesting
+  static void destroy() {
+    _completer = null;
+  }
+}
+
+/// SharedPreferencesException class.
+class SharedPreferencesException implements Exception {
+  /// Exception message.
+  final String message;
+
+  /// SharedPreferencesException constructor.
+  SharedPreferencesException(this.message);
 }

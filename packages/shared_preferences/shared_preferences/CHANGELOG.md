@@ -1,6 +1,6 @@
 ## 0.5.8
 
-Add a setter & getter for key prefix.
+* Add `prefix` named argument to `getInstance` method.
 
 ## 0.5.7
 
