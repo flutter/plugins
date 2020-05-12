@@ -940,5 +940,5 @@ void main() {
     final GoogleMapInspector inspector = await inspectorCompleter.future;
     final Uint8List bytes = await inspector.takeSnapshot();
     expect(bytes?.isNotEmpty, true);
-  });
+  }, skip: Platform.isAndroid);
 }
