@@ -941,7 +941,7 @@ void main() {
     final Uint8List bytes = await inspector.takeSnapshot();
     expect(bytes?.isNotEmpty, true);
   },
-      //TODO(cyanglaz): un-skip the test when we can test this on CI with API key enabled.
-      //https://github.com/flutter/flutter/issues/57057
+      // TODO(cyanglaz): un-skip the test when we can test this on CI with API key enabled.
+      // https://github.com/flutter/flutter/issues/57057
       skip: Platform.isAndroid);
 }
