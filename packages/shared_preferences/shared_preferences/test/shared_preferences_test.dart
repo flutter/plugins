@@ -38,7 +38,7 @@ void main() {
     });
 
     tearDown(() async {
-      await preferences.clear();
+      SharedPreferences.destroy();
     });
 
     test('reading', () async {
@@ -182,25 +182,37 @@ void main() {
 
     test('writing copy of strings list', () async {
       final List<String> myList = <String>[];
-      await preferences.setStringList("myList", myList);
-      myList.add("foobar");
+      await preferences.setStringList('myList', myList);
+      myList.add('foobar');
 
       final List<String> cachedList = preferences.getStringList('myList');
       expect(cachedList, <String>[]);
 
-      cachedList.add("foobar2");
+      cachedList.add('foobar2');
 
       expect(preferences.getStringList('myList'), <String>[]);
     });
   });
 
-  test('calling mock initial values with non-prefixed keys succeeds', () async {
-    SharedPreferences.setMockInitialValues(<String, String>{
-      'test': 'foo',
+  group('Mock with non-prefixed', () {
+    SharedPreferences prefs;
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues(<String, String>{
+        'test': 'foo',
+      });
+      prefs = await SharedPreferences.getInstance();
     });
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String value = prefs.getString('test');
-    expect(value, 'foo');
+
+    tearDown(() {
+      SharedPreferences.destroy();
+    });
+
+    test('calling mock initial values with non-prefixed keys succeeds',
+        () async {
+      final String value = prefs.getString('test');
+      expect(value, 'foo');
+    });
   });
 
   group('Custom prefix', () {
@@ -216,6 +228,10 @@ void main() {
       'custom.customDouble': 2.71828,
       'custom.customList': <String>['boo', 'doo'],
     };
+
+    tearDown(() {
+      SharedPreferences.destroy();
+    });
 
     test('read keys with default prefix only', () async {
       FakeSharedPreferencesStore store =
@@ -275,34 +291,15 @@ void main() {
       expect(preferences.get('customList'), kTestValues['custom.customList']);
     });
 
-    test('switch prefix', () async {
+    test('switch prefix should throw exception', () async {
       FakeSharedPreferencesStore store = FakeSharedPreferencesStore({});
       SharedPreferencesStorePlatform.instance = store;
-      SharedPreferences preferences;
+      await SharedPreferences.getInstance();
 
-      // Use default prefix
-      preferences = await SharedPreferences.getInstance();
-      expect(preferences.prefix, 'flutter.');
-      // Set string1 with default prefix
-      await preferences.setString('string1', 'string1');
-      expect(preferences.getString('string1'), 'string1');
-
-      // Switch prefix
-      preferences = await SharedPreferences.getInstance(prefix: 'pre.');
-      expect(preferences.prefix, 'pre.');
-      // The key string1 is not visible now
-      expect(preferences.getString('string1'), null);
-      // Set string2 with custom prefix
-      await preferences.setString('string2', 'string2');
-      expect(preferences.getString('string2'), 'string2');
-
-      // Back to default prefix
-      preferences = await SharedPreferences.getInstance();
-      expect(preferences.prefix, 'flutter.');
-      // string1 is visible
-      expect(preferences.getString('string1'), 'string1');
-      // string2 is not visible
-      expect(preferences.getString('string2'), null);
+      expect(
+        () async => await SharedPreferences.getInstance(prefix: 'pre'),
+        throwsA(isInstanceOf<SharedPreferencesException>()),
+      );
     });
 
     test('no prefix should load all keys from device as is', () async {
