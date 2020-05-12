@@ -940,5 +940,8 @@ void main() {
     final GoogleMapInspector inspector = await inspectorCompleter.future;
     final Uint8List bytes = await inspector.takeSnapshot();
     expect(bytes?.isNotEmpty, true);
-  }, skip: Platform.isAndroid);
+  },
+      // TODO(cyanglaz): un-skip the test when we can test this on CI with API key enabled.
+      // https://github.com/flutter/flutter/issues/57057
+      skip: Platform.isAndroid);
 }
