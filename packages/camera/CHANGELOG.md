@@ -1,3 +1,7 @@
+## 0.5.8+2
+
+* Update the iOS platform target to 10.0 for the camera package. 
+
 ## 0.5.8+1
 
 * Update lower bound of dart dependency to 2.1.0.
