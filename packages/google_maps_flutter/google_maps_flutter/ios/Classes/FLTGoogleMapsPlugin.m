@@ -14,7 +14,10 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FLTGoogleMapFactory* googleMapFactory = [[FLTGoogleMapFactory alloc] initWithRegistrar:registrar];
-  [registrar registerViewFactory:googleMapFactory withId:@"plugins.flutter.io/google_maps"];
+  [registrar registerViewFactory:googleMapFactory
+                                withId:@"plugins.flutter.io/google_maps"
+      gestureRecognizersBlockingPolicy:
+          FlutterPlatformViewGestureRecognizersBlockingPolicyWaitUntilTouchesEnded];
 }
 
 - (FLTGoogleMapController*)mapFromCall:(FlutterMethodCall*)call error:(FlutterError**)error {
