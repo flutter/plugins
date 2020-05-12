@@ -553,6 +553,11 @@ class WebViewController {
     return _webViewPlatformController.loadDataWithBaseURL(baseUrl ,html ,mimeType ,encoding ,historyUrl);
   }
 
+  //loadFileURL is only for ios
+  Future<void> loadFileURL(String url) async {
+    return _webViewPlatformController.loadFileURL(url);
+  }
+
   /// Accessor to the current URL that the WebView is displaying.
   ///
   /// If [WebView.initialUrl] was never specified, returns `null`.

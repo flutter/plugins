@@ -128,7 +128,9 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
-  } else if ([[call method] isEqualToString:@"canGoBack"]) {
+  } else if ([[call method] isEqualToString:@"loadFileURL"]) {
+    [self onLoadUrl:call result:result];
+   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
     [self onCanGoForward:call result:result];
@@ -182,6 +184,23 @@
     result(nil);
   }
 }
+
+- (void)onLoadFileURL:(FlutterMethodCall*)call result:(FlutterResult)result {
+
+
+   NSURL* url = [NSURL URLWithString:[call arguments][@"url"]];
+
+
+    if (@available(iOS 9.0, *)) {
+        [_webView loadFileURL:url allowingReadAccessToURL:[NSURL URLWithString:@"file:///"]];
+    } else {
+
+    }
+
+    result(nil);
+
+}
+
 
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
   BOOL canGoBack = [_webView canGoBack];

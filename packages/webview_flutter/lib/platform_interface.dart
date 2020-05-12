@@ -180,6 +180,13 @@ abstract class WebViewPlatformController {
         "WebView loadUrl is not implemented on the current platform");
   }
 
+  Future<void> loadFileURL(String url) async {
+    throw UnimplementedError(
+        "WebView loadUrl is not implemented on the current platform");
+  }
+
+
+
 
   /// Updates the webview settings.
   ///
