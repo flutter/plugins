@@ -15,5 +15,7 @@ RUN sudo apt-get update && sudo apt-get install -y google-cloud-sdk && \
     gcloud config set core/disable_usage_reporting true && \
     gcloud config set component_manager/disable_update_check true
 
+# Install xvfb to allow running headless
+RUN sudo apt-get install -y xvfb libegl1-mesa
 # Install Linux desktop requirements.
 RUN sudo apt-get install -y clang make cmake ninja-build rsync pkg-config
