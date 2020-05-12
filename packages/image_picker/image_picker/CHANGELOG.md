@@ -1,3 +1,7 @@
+## 0.6.6+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.6.6+1
 
 * Android: always use URI to get image/video data.
