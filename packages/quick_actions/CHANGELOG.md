@@ -1,8 +1,14 @@
+## 0.4.0+5
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.4.0+4
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.
 * Clean up various Android workarounds no longer needed after framework v1.12.
 * Complete v2 embedding support.
+* Fix UIApplicationShortcutItem availability warnings.
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.4.0+3
 

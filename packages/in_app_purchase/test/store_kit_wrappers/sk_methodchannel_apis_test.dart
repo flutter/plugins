@@ -83,6 +83,10 @@ void main() {
       expect(await SKPaymentQueueWrapper.canMakePayments(), true);
     });
 
+    test('transactions should return a valid list of transactions', () async {
+      expect(await SKPaymentQueueWrapper().transactions(), isNotEmpty);
+    });
+
     test(
         'throws if observer is not set for payment queue before adding payment',
         () async {
@@ -161,6 +165,8 @@ class FakeIOSPlatform {
       // payment queue
       case '-[SKPaymentQueue canMakePayments:]':
         return Future<bool>.value(true);
+      case '-[SKPaymentQueue transactions]':
+        return Future<List<Map>>.value([buildTransactionMap(dummyTransaction)]);
       case '-[InAppPurchasePlugin addPayment:result:]':
         payments.add(SKPaymentWrapper.fromJson(call.arguments));
         return Future<void>.sync(() {});

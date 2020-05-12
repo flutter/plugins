@@ -1,7 +1,16 @@
+## 5.4.7
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 5.4.6
+
+* Add `web` to the example app.
+
 ## 5.4.5
 
 * Remove Android dependencies fallback.
 * Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
 
 ## 5.4.4
 
