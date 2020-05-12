@@ -9,22 +9,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
 import 'package:mockito/mockito.dart';
 
-class MockNavigator extends Mock implements html.Navigator {
-  final String platform;
+import 'package:platform_detect/test_utils.dart' as platform;
 
-  MockNavigator(this.platform);
-}
-
-class MockWindow extends Mock implements html.Window {
-  final MockNavigator navigator;
-
-  MockWindow({String platform = ''}) : navigator = MockNavigator(platform);
-}
+class MockWindow extends Mock implements html.Window {}
 
 void main() {
   group('$UrlLauncherPlugin', () {
     MockWindow mockWindow = MockWindow();
     UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockWindow);
+
+    setUp(() {
+      platform.configurePlatformForTesting(browser: platform.chrome);
+    });
 
     group('canLaunch', () {
       test('"http" URLs -> true', () {
@@ -40,8 +36,12 @@ void main() {
             plugin.canLaunch('mailto:name@mydomain.com'), completion(isTrue));
       });
 
-      test('"tel" URLs -> false', () {
-        expect(plugin.canLaunch('tel:5551234567'), completion(isFalse));
+      test('"tel" URLs -> true', () {
+        expect(plugin.canLaunch('tel:5551234567'), completion(isTrue));
+      });
+
+      test('"ftp" URLs -> false', () {
+        expect(plugin.canLaunch('ftp://some.example.com'), completion(isFalse));
       });
     });
 
@@ -90,83 +90,25 @@ void main() {
         verify(mockWindow.open('https://www.google.com', ''));
       });
 
-      group('iosDevices', () {
-        test('http urls should be launched in a new window', () {
-          final mockIosWindow = MockWindow(platform: 'iPhone');
-          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
-
-          plugin.openNewWindow('http://www.google.com');
-
-          verify(mockIosWindow.open('http://www.google.com', ''));
+      group('Safari', () {
+        setUp(() {
+          platform.configurePlatformForTesting(browser: platform.safari);
         });
 
-        test('https urls should be launched in a new window', () {
-          final mockIosWindow = MockWindow(platform: 'iPhone');
-          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
-
+        test('http(s) urls should be launched in a new window', () {
+          plugin.openNewWindow('http://www.google.com');
           plugin.openNewWindow('https://www.google.com');
 
-          verify(mockIosWindow.open('https://www.google.com', ''));
+          verify(mockWindow.open('http://www.google.com', ''));
+          verify(mockWindow.open('https://www.google.com', ''));
         });
 
-        test('mailto urls should be launched on the same window on Iphone', () {
-          final mockIosWindow = MockWindow(platform: 'iPhone');
-          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
-
+        test('mailto and tel urls should be launched on the same window', () {
           plugin.openNewWindow('mailto:name@mydomain.com');
+          plugin.openNewWindow('tel:+1-555-555-5555');
 
-          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
-        });
-
-        test('mailto urls should be launched on the same window on Ipad', () {
-          final mockIosWindow = MockWindow(platform: 'iPad');
-          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
-
-          plugin.openNewWindow('mailto:name@mydomain.com');
-
-          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
-        });
-
-        test('mailto urls should be launched on the same window on Iphone', () {
-          final mockIosWindow = MockWindow(platform: 'iPod');
-          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
-
-          plugin.openNewWindow('mailto:name@mydomain.com');
-
-          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
-        });
-
-        test(
-            'mailto urls should be launched on the same window on an simulated Iphone',
-            () {
-          final mockIosWindow = MockWindow(platform: 'iPhone Simulator');
-          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
-
-          plugin.openNewWindow('mailto:name@mydomain.com');
-
-          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
-        });
-
-        test(
-            'mailto urls should be launched on the same window on an simulated Ipad',
-            () {
-          final mockIosWindow = MockWindow(platform: 'iPad Simulator');
-          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
-
-          plugin.openNewWindow('mailto:name@mydomain.com');
-
-          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
-        });
-
-        test(
-            'mailto urls should be launched on the same window on an simulated Iphone',
-            () {
-          final mockIosWindow = MockWindow(platform: 'iPod Simulator');
-          UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockIosWindow);
-
-          plugin.openNewWindow('mailto:name@mydomain.com');
-
-          verify(mockIosWindow.open('mailto:name@mydomain.com', '_top'));
+          verify(mockWindow.open('mailto:name@mydomain.com', '_top'));
+          verify(mockWindow.open('tel:+1-555-555-5555', '_top'));
         });
       });
     });
