@@ -36,12 +36,8 @@ void main() {
             plugin.canLaunch('mailto:name@mydomain.com'), completion(isTrue));
       });
 
-      test('"tel" URLs -> true', () {
-        expect(plugin.canLaunch('tel:5551234567'), completion(isTrue));
-      });
-
-      test('"ftp" URLs -> false', () {
-        expect(plugin.canLaunch('ftp://some.example.com'), completion(isFalse));
+      test('"tel" URLs -> false', () {
+        expect(plugin.canLaunch('tel:5551234567'), completion(isFalse));
       });
     });
 
@@ -84,10 +80,18 @@ void main() {
     });
 
     group('openNewWindow', () {
-      test('the window that is launched is a new window', () {
+      test('http(s) urls should be launched in a new window', () {
+        plugin.openNewWindow('http://www.google.com');
         plugin.openNewWindow('https://www.google.com');
 
+        verify(mockWindow.open('http://www.google.com', ''));
         verify(mockWindow.open('https://www.google.com', ''));
+      });
+
+      test('mailto urls should be launched on a new window', () {
+        plugin.openNewWindow('mailto:name@mydomain.com');
+
+        verify(mockWindow.open('mailto:name@mydomain.com', ''));
       });
 
       group('Safari', () {
@@ -103,12 +107,10 @@ void main() {
           verify(mockWindow.open('https://www.google.com', ''));
         });
 
-        test('mailto and tel urls should be launched on the same window', () {
+        test('mailto urls should be launched on the same window', () {
           plugin.openNewWindow('mailto:name@mydomain.com');
-          plugin.openNewWindow('tel:+1-555-555-5555');
 
           verify(mockWindow.open('mailto:name@mydomain.com', '_top'));
-          verify(mockWindow.open('tel:+1-555-555-5555', '_top'));
         });
       });
     });

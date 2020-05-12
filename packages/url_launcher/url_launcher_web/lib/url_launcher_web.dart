@@ -8,12 +8,13 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 import 'package:platform_detect/platform_detect.dart' show browser;
 
 final _httpSchemes = {
-  'http', 'https',
+  'http',
+  'https',
 };
 
 // See https://github.com/flutter/flutter/issues/51461
 final _safariTargetTopSchemes = {
-  'mailto', 'tel',
+  'mailto',
 };
 
 /// The set of schemes that can be handled by the plugin
@@ -44,7 +45,10 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     // We need to open mailto urls on the _top window context on iOS devices.
     // See https://github.com/flutter/flutter/issues/51461 for reference.
 
-    final target = browser.isSafari && _safariTargetTopSchemes.contains(_getUrlScheme(url)) ? '_top' : '';
+    final target =
+        browser.isSafari && _safariTargetTopSchemes.contains(_getUrlScheme(url))
+            ? '_top'
+            : '';
 
     return _window.open(url, target);
   }
