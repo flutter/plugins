@@ -73,8 +73,7 @@ Future<bool> launch(
         message: 'To use webview or safariVC, you need to pass'
             'in a web URL. This $urlString is not a web URL.');
   }
-  bool previousAutomaticSystemUiAdjustment =
-      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
+  bool previousAutomaticSystemUiAdjustment = true;
   if (statusBarBrightness != null &&
       defaultTargetPlatform == TargetPlatform.iOS) {
     previousAutomaticSystemUiAdjustment =
@@ -93,11 +92,11 @@ Future<bool> launch(
     universalLinksOnly: universalLinksOnly ?? false,
     headers: headers ?? <String, String>{},
   );
+  assert(previousAutomaticSystemUiAdjustment != null);
   if (statusBarBrightness != null) {
     WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
         previousAutomaticSystemUiAdjustment;
   }
-  assert(WidgetsBinding.instance.renderView.automaticSystemUiAdjustment != null);
   return result;
 }
 
