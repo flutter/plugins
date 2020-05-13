@@ -121,7 +121,7 @@ task:
         # TODO(stuartmorgan): Include stable once Linux is supported on stable.
         - flutter channel master
         - ./script/incremental_build.sh build-examples --linux
-        - ./script/incremental_build.sh drive-examples --linux
+        - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins

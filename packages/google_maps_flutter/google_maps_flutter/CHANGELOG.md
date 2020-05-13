@@ -1,3 +1,13 @@
+## 0.5.27+3
+
+* iOS: Update the gesture recognizer blocking policy to "WaitUntilTouchesEnded", which fixes the camera idle callback not triggered issue.
+* Update the min flutter version to 1.16.3.
+* Skip `testTakeSnapshot` test on Android.
+
+## 0.5.27+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.5.27+1
 
 * Remove endorsement of `web` platform, it's not ready yet.
