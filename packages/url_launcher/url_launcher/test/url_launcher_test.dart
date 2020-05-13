@@ -210,15 +210,15 @@ void main() {
       final TestWidgetsFlutterBinding binding =
           TestWidgetsFlutterBinding.ensureInitialized();
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      expect(binding.renderView.automaticSystemUiAdjustment, isNotNull);
+      expect(binding.renderView.automaticSystemUiAdjustment, true);
       final Future<bool> launchResult =
           launch('http://flutter.dev/', statusBarBrightness: Brightness.dark);
 
       // The automaticSystemUiAdjustment should be set before the launch
-      // and not null after the launch result is complete.
-      expect(binding.renderView.automaticSystemUiAdjustment, isNotNull);
+      // and equal to true after the launch result is complete.
+      expect(binding.renderView.automaticSystemUiAdjustment, true);
       await launchResult;
-      expect(binding.renderView.automaticSystemUiAdjustment, isNotNull);
+      expect(binding.renderView.automaticSystemUiAdjustment, true);
     });
   });
 }
