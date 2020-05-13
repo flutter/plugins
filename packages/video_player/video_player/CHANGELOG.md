@@ -1,3 +1,7 @@
+## 0.10.10+1
+
+* iOS: Update texture on `seekTo`.
+
 ## 0.10.10
 
 * Migrated to [pigeon](https://pub.dev/packages/pigeon).
