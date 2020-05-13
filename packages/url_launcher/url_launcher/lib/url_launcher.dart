@@ -73,8 +73,8 @@ Future<bool> launch(
         message: 'To use webview or safariVC, you need to pass'
             'in a web URL. This $urlString is not a web URL.');
   }
-  
-  /// true so that ui is automatically computed if statusBarBrightness is set
+
+  /// [true] so that ui is automatically computed if [statusBarBrightness] is set.
   bool previousAutomaticSystemUiAdjustment = true;
   if (statusBarBrightness != null &&
       defaultTargetPlatform == TargetPlatform.iOS) {
