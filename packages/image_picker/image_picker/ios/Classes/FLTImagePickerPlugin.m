@@ -132,7 +132,9 @@ static const int SOURCE_GALLERY = 1;
       [UIImagePickerController isCameraDeviceAvailable:_device]) {
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
     _imagePickerController.cameraDevice = _device;
-    [[self viewController] presentViewController:_imagePickerController animated:YES completion:nil];
+    [[self viewController] presentViewController:_imagePickerController
+                                        animated:YES
+                                      completion:nil];
   } else {
     [[[UIAlertView alloc] initWithTitle:@"Error"
                                 message:@"Camera not available."
@@ -237,7 +239,9 @@ static const int SOURCE_GALLERY = 1;
 - (void)showPhotoLibrary {
   // No need to check if SourceType is available. It always is.
   _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  [[self viewController] presentViewController:_imagePickerController animated:YES completion:nil];
+  [[self viewController] presentViewController:_imagePickerController
+                                      animated:YES
+                                    completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
