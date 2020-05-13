@@ -239,9 +239,7 @@ static const int SOURCE_GALLERY = 1;
 - (void)showPhotoLibrary {
   // No need to check if SourceType is available. It always is.
   _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  [[self viewController] presentViewController:_imagePickerController
-                                      animated:YES
-                                    completion:nil];
+  [[self viewController] presentViewController:_imagePickerController animated:YES completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
