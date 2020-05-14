@@ -1,6 +1,11 @@
-## 0.10.10+1
+## 0.10.12
 
 * iOS: Update texture on `seekTo`.
+
+## 0.10.11
+
+* iOS: Fixed crash when detaching from a dying engine.
+* Android: Fixed exception when detaching from any engine.
 
 ## 0.10.10
 
