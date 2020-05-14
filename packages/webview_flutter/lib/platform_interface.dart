@@ -107,6 +107,7 @@ class WebResourceError {
     @required this.description,
     this.domain,
     this.errorType,
+    this.failingUrl,
   })  : assert(errorCode != null),
         assert(description != null);
 
@@ -139,6 +140,11 @@ class WebResourceError {
   ///
   /// This will never be `null` on Android, but can be `null` on iOS.
   final WebResourceErrorType errorType;
+
+  /// Gets the URL for which the resource request was made.
+  ///
+  /// This value is not available on iOS.
+  final String failingUrl;
 }
 
 /// Interface for talking to the webview's platform implementation.
