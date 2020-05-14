@@ -24,7 +24,7 @@ No configuration required - the plugin should work out of the box.
 
 #### API < 29
 
-Add `android:requestLegacyExternalStorage="true"` as an attribute to the `<application>` tag in AndroidManifest.xml. The [attribute](https://developer.android.com/training/data-storage/compatibility) is false by default on apps targeting Android Q. 
+Add `android:requestLegacyExternalStorage="true"` as an attribute to the `<application>` tag in AndroidManifest.xml. The [attribute](https://developer.android.com/training/data-storage/compatibility) is `false` by default on apps targeting Android Q. 
 
 ### Example
 
