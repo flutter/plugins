@@ -1,3 +1,16 @@
+## 2.0.2
+
+* Migrated tests to use pigeon correctly.
+
+## 2.0.1
+
+* Updated minimum Dart version.
+* Added class to help testing Pigeon communication.
+
+## 2.0.0
+
+* Migrated to [pigeon](https://pub.dev/packages/pigeon).
+
 ## 1.0.5
 
 * Make the pedantic dev_dependency explicit.
