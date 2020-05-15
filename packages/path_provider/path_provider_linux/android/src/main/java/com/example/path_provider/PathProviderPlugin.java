@@ -1,4 +1,4 @@
-package com.example.path_provider;
+package com.example.path_provider_linux;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
