@@ -1,6 +1,6 @@
 # 0.1.1+5
 
-- Open only "mailto" urls with target "\_top" on iOS.
+- Open "mailto" urls with target set as "\_top" on Safari browsers.
 
 # 0.1.1+4
 
