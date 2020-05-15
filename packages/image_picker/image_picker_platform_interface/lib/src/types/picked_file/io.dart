@@ -19,13 +19,13 @@ class PickedFile extends PickedFileBase {
   }
 
   @override
-  String readAsStringSync({Encoding encoding = utf8}) {
-    return _file.readAsStringSync(encoding: encoding);
+  Future<String> readAsString({Encoding encoding = utf8}) {
+    return _file.readAsString(encoding: encoding);
   }
 
   @override
-  Uint8List readAsBytesSync() {
-    return _file.readAsBytesSync();
+  Future<Uint8List> readAsBytes() {
+    return _file.readAsBytes();
   }
 
   @override

@@ -32,15 +32,15 @@ abstract class PickedFileBase {
   /// Synchronously read the entire file contents as a string using the given [Encoding].
   ///
   /// Throws Exception if the operation fails.
-  String readAsStringSync({Encoding encoding = utf8}) {
-    throw UnimplementedError('readAsStringSync() has not been implemented.');
+  Future<String> readAsString({Encoding encoding = utf8}) {
+    throw UnimplementedError('readAsString() has not been implemented.');
   }
 
   /// Synchronously read the entire file contents as a list of bytes.
   ///
   /// Throws Exception if the operation fails.
-  Uint8List readAsBytesSync() {
-    throw UnimplementedError('readAsBytesSync() has not been implemented.');
+  Future<Uint8List> readAsBytes() {
+    throw UnimplementedError('readAsBytes() has not been implemented.');
   }
 
   /// Create a new independent [Stream] for the contents of this file.
