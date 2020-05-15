@@ -1,3 +1,11 @@
+## 5.4.9
+
+* Update README.
+
+## 5.4.8
+
+* Initialize `previousAutomaticSystemAdjustment` in launch method.
+
 ## 5.4.7
 
 * Update lower bound of dart dependency to 2.1.0.
