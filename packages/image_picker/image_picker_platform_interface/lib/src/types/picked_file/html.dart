@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:http/http.dart' as http show readBytes;
+
 import './base.dart';
 
 /// A PickedFile that works on web.
@@ -8,26 +10,36 @@ import './base.dart';
 /// It wraps the bytes of a selected file.
 class PickedFile extends PickedFileBase {
   final String path;
-  final Uint8List _bytes;
+  final Uint8List _initBytes;
 
-  /// Construct a PickedFile object, from its `bytes`.
+  /// Construct a PickedFile object from its ObjectUrl.
+  ///
+  /// Optionally, this can be initialized with `bytes`
+  /// so no http requests are performed to retrieve files later.
   PickedFile(this.path, {Uint8List bytes})
-      : _bytes = bytes,
+      : _initBytes = bytes,
         super(path);
 
-  @override
-  String readAsStringSync({Encoding encoding = utf8}) {
-    return encoding.decode(_bytes);
+  Future<Uint8List> get _bytes async {
+    if (_initBytes != null) {
+      return Future.value(UnmodifiableUint8ListView(_initBytes));
+    }
+    return http.readBytes(path);
   }
 
   @override
-  Uint8List readAsBytesSync() {
-    return UnmodifiableUint8ListView(_bytes);
+  Future<String> readAsString({Encoding encoding = utf8}) async {
+    return encoding.decode(await _bytes);
   }
 
   @override
-  Stream<Uint8List> openRead([int start, int end]) {
-    return Stream.fromIterable(
-        [_bytes.sublist(start ?? 0, end ?? _bytes.length)]);
+  Future<Uint8List> readAsBytes() async {
+    return Future.value(await _bytes);
+  }
+
+  @override
+  Stream<Uint8List> openRead([int start, int end]) async* {
+    final bytes = await _bytes;
+    yield bytes.sublist(start ?? 0, end ?? bytes.length);
   }
 }
