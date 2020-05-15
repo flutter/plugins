@@ -80,11 +80,15 @@ void main() {
     });
 
     group('openNewWindow', () {
-      test('http(s) urls should be launched in a new window', () {
+      test('http urls should be launched in a new window', () {
         plugin.openNewWindow('http://www.google.com');
-        plugin.openNewWindow('https://www.google.com');
 
         verify(mockWindow.open('http://www.google.com', ''));
+      });
+
+      test('https urls should be launched in a new window', () {
+        plugin.openNewWindow('https://www.google.com');
+
         verify(mockWindow.open('https://www.google.com', ''));
       });
 
@@ -99,11 +103,15 @@ void main() {
           platform.configurePlatformForTesting(browser: platform.safari);
         });
 
-        test('http(s) urls should be launched in a new window', () {
+        test('http urls should be launched in a new window', () {
           plugin.openNewWindow('http://www.google.com');
-          plugin.openNewWindow('https://www.google.com');
 
           verify(mockWindow.open('http://www.google.com', ''));
+        });
+
+        test('https urls should be launched in a new window', () {
+          plugin.openNewWindow('https://www.google.com');
+
           verify(mockWindow.open('https://www.google.com', ''));
         });
 
