@@ -1,6 +1,7 @@
 ## 0.0.1+5
 
 * Replace deprecated `getFlutterEngine` call on Android.
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.0.1+4
 

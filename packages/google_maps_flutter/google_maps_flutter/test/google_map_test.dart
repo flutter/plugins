@@ -386,6 +386,35 @@ void main() {
     expect(platformGoogleMap.zoomGesturesEnabled, true);
   });
 
+  testWidgets('Can update zoomControlsEnabled', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          zoomControlsEnabled: false,
+        ),
+      ),
+    );
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.zoomControlsEnabled, false);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          zoomControlsEnabled: true,
+        ),
+      ),
+    );
+
+    expect(platformGoogleMap.zoomControlsEnabled, true);
+  });
+
   testWidgets('Can update myLocationEnabled', (WidgetTester tester) async {
     await tester.pumpWidget(
       const Directionality(
