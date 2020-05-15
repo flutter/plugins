@@ -1,6 +1,11 @@
-# 0.1.1+5
+# 0.1.1+6
 
 - Open "mailto" urls with target set as "\_top" on Safari browsers.
+- Update lower bound of dart dependency to 2.2.0.
+
+# 0.1.1+5
+
+- Update lower bound of dart dependency to 2.1.0.
 
 # 0.1.1+4
 
