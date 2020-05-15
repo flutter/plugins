@@ -1,3 +1,7 @@
+## 0.3.3+1
+
+* Update documentations for `InAppPurchase.completePurchase` and update README.
+
 ## 0.3.3
 
 * Introduce `SKPaymentQueueWrapper.transactions`.
