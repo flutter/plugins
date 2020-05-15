@@ -205,6 +205,21 @@ void main() {
       await launchResult;
       expect(binding.renderView.automaticSystemUiAdjustment, isTrue);
     });
+
+    test('sets automaticSystemUiAdjustment to not be null', () async {
+      final TestWidgetsFlutterBinding binding =
+          TestWidgetsFlutterBinding.ensureInitialized();
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      expect(binding.renderView.automaticSystemUiAdjustment, true);
+      final Future<bool> launchResult =
+          launch('http://flutter.dev/', statusBarBrightness: Brightness.dark);
+
+      // The automaticSystemUiAdjustment should be set before the launch
+      // and equal to true after the launch result is complete.
+      expect(binding.renderView.automaticSystemUiAdjustment, true);
+      await launchResult;
+      expect(binding.renderView.automaticSystemUiAdjustment, true);
+    });
   });
 }
 
