@@ -9,7 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
-class MoveCameraPage extends Page {
+class MoveCameraPage extends GoogleMapExampleAppPage {
   MoveCameraPage() : super(const Icon(Icons.map), 'Camera control');
 
   @override
