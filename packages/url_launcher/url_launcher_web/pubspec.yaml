@@ -15,6 +15,7 @@ flutter:
 
 dependencies:
   url_launcher_platform_interface: ^1.0.1
+  platform_detect: ^1.4.0
   flutter:
     sdk: flutter
   flutter_web_plugins:
@@ -29,5 +30,5 @@ dev_dependencies:
   mockito: ^4.1.1
 
 environment:
-  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
   flutter: ">=1.10.0 <2.0.0"

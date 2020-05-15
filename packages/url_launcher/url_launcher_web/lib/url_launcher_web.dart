@@ -5,11 +5,25 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
+import 'package:platform_detect/platform_detect.dart' show browser;
+
+final _httpSchemes = {
+  'http',
+  'https',
+};
+
+// See https://github.com/flutter/flutter/issues/51461
+final _safariTargetTopSchemes = {
+  'mailto',
+};
+
+/// The set of schemes that can be handled by the plugin
+final _validSchemes = _httpSchemes.union(_safariTargetTopSchemes);
+
 /// The web implementation of [UrlLauncherPlatform].
 ///
 /// This class implements the `package:url_launcher` functionality for the web.
 class UrlLauncherPlugin extends UrlLauncherPlatform {
-  static final _iosPlatforms = RegExp(r'iPad|iPhone|iPod');
   html.Window _window;
 
   /// A constructor that allows tests to override the window object used by the plugin.
@@ -21,9 +35,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
   }
 
-  bool get _isIos => _iosPlatforms.hasMatch(_window.navigator.platform);
-
-  bool _isMailTo(String url) => Uri.tryParse(url)?.isScheme('mailto') ?? false;
+  String _getUrlScheme(String url) => Uri.tryParse(url)?.scheme;
 
   /// Opens the given [url] in a new window.
   ///
@@ -32,18 +44,18 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   html.WindowBase openNewWindow(String url) {
     // We need to open mailto urls on the _top window context on iOS devices.
     // See https://github.com/flutter/flutter/issues/51461 for reference.
-    final target = _isIos && _isMailTo(url) ? '_top' : '';
+
+    final target =
+        browser.isSafari && _safariTargetTopSchemes.contains(_getUrlScheme(url))
+            ? '_top'
+            : '';
+
     return _window.open(url, target);
   }
 
   @override
   Future<bool> canLaunch(String url) {
-    final Uri parsedUrl = Uri.tryParse(url);
-    if (parsedUrl == null) return Future<bool>.value(false);
-
-    return Future<bool>.value(parsedUrl.isScheme('http') ||
-        parsedUrl.isScheme('https') ||
-        parsedUrl.isScheme('mailto'));
+    return Future<bool>.value(_validSchemes.contains(_getUrlScheme(url)));
   }
 
   @override
