@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_linux/path_provider_linux.dart';
 
-import 'package:path_provider_linux_example/main.dart';
+import 'package:pathproviderexample/main.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-name: path_provider_linux_example
+name: pathproviderexample
 description: Demonstrates how to use the path_provider_linux plugin.
 publish_to: "none"
 
