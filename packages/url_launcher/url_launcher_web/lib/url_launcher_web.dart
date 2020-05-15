@@ -10,6 +10,12 @@ import 'src/navigator.dart' as navigator;
 ///
 /// This class implements the `package:url_launcher` functionality for the web.
 class UrlLauncherPlugin extends UrlLauncherPlatform {
+  html.Window _window;
+
+  /// A constructor that allows tests to override the window object used by the plugin.
+  UrlLauncherPlugin({@visibleForTesting html.Window window})
+      : _window = window ?? html.window;
+
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith(Registrar registrar) {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
@@ -23,7 +29,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     // We need to open on _top in ios browsers in standalone mode.
     // See https://github.com/flutter/flutter/issues/51461 for reference.
     final target = navigator.standalone ? '_top' : '';
-    return html.window.open(url, target);
+    return _window.open(url, target);
   }
 
   @override
