@@ -53,9 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (file != null && mounted) {
       await _disposeVideoController();
       if (kIsWeb) {
-        // Need VideoPlayerController.memory!
-        // _controller = VideoPlayerController.memory(file.readAsBytesSync());
-        return; // noop
+        _controller = VideoPlayerController.network(file.path);
       } else {
         _controller = VideoPlayerController.file(File(file.path));
       }
@@ -79,14 +77,19 @@ class _MyHomePageState extends State<MyHomePage> {
       await _displayPickImageDialog(context,
           (double maxWidth, double maxHeight, int quality) async {
         try {
-          _imageFile = await _picker.getImage(
-              source: source,
-              maxWidth: maxWidth,
-              maxHeight: maxHeight,
-              imageQuality: quality);
-          setState(() {});
+          final pickedFile = await _picker.getImage(
+            source: source,
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+            imageQuality: quality,
+          );
+          setState(() {
+            _imageFile = pickedFile;
+          });
         } catch (e) {
-          _pickImageError = e;
+          setState(() {
+            _pickImageError = e;
+          });
         }
       });
     }
@@ -141,7 +144,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if (_imageFile != null) {
       if (kIsWeb) {
-        return Image.memory(_imageFile.readAsBytesSync());
+        return Image.network(_imageFile.path);
+        // Or from memory...
       } else {
         // This would also work from memory as well...
         return Image.file(File(_imageFile.path));
@@ -186,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Platform.isAndroid
+        child: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
             ? FutureBuilder<void>(
                 future: retrieveLostData(),
                 builder: (BuildContext context, AsyncSnapshot<void> snapshot) {

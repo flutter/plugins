@@ -12,6 +12,8 @@ flutter:
         pluginClass: ImagePickerPlugin
       ios:
         pluginClass: FLTImagePickerPlugin
+      web:
+        default_package: image_picker_for_web
 
 dependencies:
   flutter:
@@ -19,6 +21,8 @@ dependencies:
   flutter_plugin_android_lifecycle: ^1.0.2
   image_picker_platform_interface:
     path: ../image_picker_platform_interface
+  image_picker_for_web:
+    path: ../image_picker_for_web
 
 dev_dependencies:
   video_player: ^0.10.3
