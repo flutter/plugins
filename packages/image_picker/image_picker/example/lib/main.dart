@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -37,20 +38,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  File _imageFile;
+  PickedFile _imageFile;
   dynamic _pickImageError;
   bool isVideo = false;
   VideoPlayerController _controller;
   String _retrieveDataError;
 
+  final ImagePicker _picker = ImagePicker();
   final TextEditingController maxWidthController = TextEditingController();
   final TextEditingController maxHeightController = TextEditingController();
   final TextEditingController qualityController = TextEditingController();
 
-  Future<void> _playVideo(File file) async {
+  Future<void> _playVideo(PickedFile file) async {
     if (file != null && mounted) {
       await _disposeVideoController();
-      _controller = VideoPlayerController.file(file);
+      if (kIsWeb) {
+        // Need VideoPlayerController.memory!
+        // _controller = VideoPlayerController.memory(file.readAsBytesSync());
+        return; // noop
+      } else {
+        _controller = VideoPlayerController.file(File(file.path));
+      }
       await _controller.setVolume(1.0);
       await _controller.initialize();
       await _controller.setLooping(true);
@@ -64,14 +72,14 @@ class _MyHomePageState extends State<MyHomePage> {
       await _controller.setVolume(0.0);
     }
     if (isVideo) {
-      final File file = await ImagePicker.pickVideo(
+      final PickedFile file = await _picker.getVideo(
           source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else {
       await _displayPickImageDialog(context,
           (double maxWidth, double maxHeight, int quality) async {
         try {
-          _imageFile = await ImagePicker.pickImage(
+          _imageFile = await _picker.getImage(
               source: source,
               maxWidth: maxWidth,
               maxHeight: maxHeight,
@@ -132,7 +140,12 @@ class _MyHomePageState extends State<MyHomePage> {
       return retrieveError;
     }
     if (_imageFile != null) {
-      return Image.file(_imageFile);
+      if (kIsWeb) {
+        return Image.memory(_imageFile.readAsBytesSync());
+      } else {
+        // This would also work from memory as well...
+        return Image.file(File(_imageFile.path));
+      }
     } else if (_pickImageError != null) {
       return Text(
         'Pick image error: $_pickImageError',
@@ -147,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> retrieveLostData() async {
-    final LostDataResponse response = await ImagePicker.retrieveLostData();
+    final LostData response = await _picker.getLostData();
     if (response.isEmpty) {
       return;
     }
