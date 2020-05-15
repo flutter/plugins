@@ -4,7 +4,7 @@
 
 ## 5.4.8
 
-* Initialize `previousAutomaticSystemAdjustment` in launch method.
+* Initialize `previousAutomaticSystemUiAdjustment` in launch method.
 
 ## 5.4.7
 
