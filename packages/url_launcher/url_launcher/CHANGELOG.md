@@ -1,3 +1,7 @@
+## 5.4.9
+
+* Update README.
+
 ## 5.4.8
 
 * Initialize `previousAutomaticSystemUiAdjustment` in launch method.
