@@ -7,8 +7,9 @@
 import 'dart:html' as html;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
-import 'package:url_launcher_web/src/navigator.dart' as navigator;
 import 'package:mockito/mockito.dart';
+
+import 'package:platform_detect/test_utils.dart' as platform;
 
 class MockWindow extends Mock implements html.Window {}
 
@@ -16,6 +17,10 @@ void main() {
   group('$UrlLauncherPlugin', () {
     MockWindow mockWindow = MockWindow();
     UrlLauncherPlugin plugin = UrlLauncherPlugin(window: mockWindow);
+
+    setUp(() {
+      platform.configurePlatformForTesting(browser: platform.chrome);
+    });
 
     group('canLaunch', () {
       test('"http" URLs -> true', () {
@@ -75,28 +80,46 @@ void main() {
     });
 
     group('openNewWindow', () {
-      bool _standalone;
+      test('http urls should be launched in a new window', () {
+        plugin.openNewWindow('http://www.google.com');
 
-      setUp(() {
-        _standalone = navigator.standalone;
+        verify(mockWindow.open('http://www.google.com', ''));
       });
 
-      tearDown(() {
-        navigator.standalone = _standalone;
-      });
-
-      test('the window that is launched is a new window', () {
+      test('https urls should be launched in a new window', () {
         plugin.openNewWindow('https://www.google.com');
 
         verify(mockWindow.open('https://www.google.com', ''));
       });
 
-      test('the window that is launched is in the same window', () {
-        navigator.standalone = true;
+      test('mailto urls should be launched on a new window', () {
+        plugin.openNewWindow('mailto:name@mydomain.com');
 
-        plugin.openNewWindow('https://www.google.com');
+        verify(mockWindow.open('mailto:name@mydomain.com', ''));
+      });
 
-        verify(mockWindow.open('https://www.google.com', '_top'));
+      group('Safari', () {
+        setUp(() {
+          platform.configurePlatformForTesting(browser: platform.safari);
+        });
+
+        test('http urls should be launched in a new window', () {
+          plugin.openNewWindow('http://www.google.com');
+
+          verify(mockWindow.open('http://www.google.com', ''));
+        });
+
+        test('https urls should be launched in a new window', () {
+          plugin.openNewWindow('https://www.google.com');
+
+          verify(mockWindow.open('https://www.google.com', ''));
+        });
+
+        test('mailto urls should be launched on the same window', () {
+          plugin.openNewWindow('mailto:name@mydomain.com');
+
+          verify(mockWindow.open('mailto:name@mydomain.com', '_top'));
+        });
       });
     });
   });
