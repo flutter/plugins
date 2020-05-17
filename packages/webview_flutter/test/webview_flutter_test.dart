@@ -759,6 +759,7 @@ void main() {
       expect(navigationRequests.length, 1);
       expect(navigationRequests[0].url, 'https://www.google.com');
       expect(navigationRequests[0].isForMainFrame, true);
+      expect(navigationRequests[0].type, NavigationType.other);
 
       platformWebView.fakeNavigate('https://flutter.dev');
       await tester.pump();
