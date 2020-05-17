@@ -2,6 +2,10 @@
 
 * iOS: Fixes unpresentable album/image picker if window's root view controller is already presenting other view controller.
 
+## 0.6.6+3
+
+* Update README
+
 ## 0.6.6+2
 
 * Update lower bound of dart dependency to 2.1.0.

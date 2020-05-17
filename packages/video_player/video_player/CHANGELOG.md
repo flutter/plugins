@@ -1,3 +1,8 @@
+## 0.10.11
+
+* iOS: Fixed crash when detaching from a dying engine.
+* Android: Fixed exception when detaching from any engine.
+
 ## 0.10.10
 
 * Migrated to [pigeon](https://pub.dev/packages/pigeon).
