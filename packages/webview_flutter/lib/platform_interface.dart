@@ -143,7 +143,8 @@ class WebResourceError {
 
   /// Gets the URL for which the resource request was made.
   ///
-  /// This value is not available on iOS.
+  /// This value is not provided on iOS. Alternatively, you can keep track of
+  /// the last values provided to [WebViewPlatformController.loadUrl].
   final String failingUrl;
 }
 
