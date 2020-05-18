@@ -20,6 +20,9 @@ void main() {
   });
 
   testWidgets('getDownloadDirectory', (WidgetTester tester) async {
+    if (!Platform.isLinux) {
+      return;
+    }
     final Directory result = await getDownloadsDirectory();
     _verifySampleFile(result, 'downloadDirectory');
   });
