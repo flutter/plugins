@@ -139,10 +139,12 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
+  // ignore: deprecated_member_use_from_same_package
   Future<LostDataResponse> retrieveLostDataAsDartIoFile() async {
     final Map<String, dynamic> result =
         await _channel.invokeMapMethod<String, dynamic>('retrieve');
     if (result == null) {
+      // ignore: deprecated_member_use_from_same_package
       return LostDataResponse.empty();
     }
     assert(result.containsKey('path') ^ result.containsKey('errorCode'));
@@ -165,6 +167,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
 
     final String path = result['path'];
 
+    // ignore: deprecated_member_use_from_same_package
     return LostDataResponse(
         file: path == null ? null : File(path),
         exception: exception,
