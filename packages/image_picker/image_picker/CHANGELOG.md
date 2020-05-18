@@ -1,3 +1,19 @@
+## 0.6.6+3
+
+* Update README
+
+## 0.6.6+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.6.6+1
+
+* Android: always use URI to get image/video data.
+
+## 0.6.6
+
+* Use the new platform_interface package.
+
 ## 0.6.5+3
 
 * Move core plugin to a subdirectory to allow for federation.

@@ -2,6 +2,10 @@
 
 * Add support for getting `serverAuthCode`.
 
+## 4.4.6
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 4.4.5
 
 * Fix requestScopes to allow subsequent calls on Android.

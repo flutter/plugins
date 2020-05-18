@@ -37,5 +37,5 @@ dev_dependencies:
   e2e: ^0.2.1
 
 environment:
-  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  sdk: ">=2.1.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.4 <2.0.0"
