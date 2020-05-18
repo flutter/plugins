@@ -1,3 +1,7 @@
+## 0.6.7
+
+* Utilize the new platform_interface package.
+
 ## 0.6.6+5
 
 * Pin the version of the platform interface to 1.0.0 until the plugin refactor
