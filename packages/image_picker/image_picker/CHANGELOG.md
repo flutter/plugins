@@ -1,3 +1,7 @@
+## 0.6.7
+
+* Utilize the new platform_interface package.
+
 ## 0.6.6+4
 
 * Fix bug, sometimes double click cancel button will crash.
