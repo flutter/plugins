@@ -11,7 +11,9 @@ import 'package:e2e/e2e.dart';
 
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
-  PathProviderPlatform.instance = PathProviderLinux();
+  if (Platform.isLinux) {
+    PathProviderPlatform.instance = PathProviderLinux();
+  }
   testWidgets('getTemporaryDirectory', (WidgetTester tester) async {
     final Directory result = await getTemporaryDirectory();
     _verifySampleFile(result, 'temporaryDirectory');
