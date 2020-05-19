@@ -70,6 +70,7 @@ final class GoogleMapController
   private final int id;
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
+  private final GoogleMapOptions options;
   private final MapView mapView;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
@@ -111,6 +112,7 @@ final class GoogleMapController
     this.id = id;
     this.context = context;
     this.activityState = activityState;
+    this.options = options;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel = new MethodChannel(binaryMessenger, "plugins.flutter.io/google_maps_" + id);
@@ -381,6 +383,11 @@ final class GoogleMapController
       case "map#isZoomGesturesEnabled":
         {
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
+          break;
+        }
+      case "map#isLiteModeEnabled":
+        {
+          result.success(options.getLiteMode());
           break;
         }
       case "map#isZoomControlsEnabled":
@@ -747,6 +754,12 @@ final class GoogleMapController
   @Override
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     googleMap.getUiSettings().setZoomGesturesEnabled(zoomGesturesEnabled);
+  }
+
+  /** This call will have no effect on already created map */
+  @Override
+  public void setLiteModeEnabled(boolean liteModeEnabled) {
+    options.liteMode(liteModeEnabled);
   }
 
   @Override
