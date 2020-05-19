@@ -122,6 +122,9 @@ class _MyHomePageState extends State<MyHomePage> {
         } on PlatformException catch (e) {
           print(e.toString());
           wifiName = "Failed to get Wifi Name";
+        } on MissingPluginException catch (e) {
+          print(e.toString());
+          wifiName = "Location permissions not enabled";
         }
 
         try {
@@ -144,6 +147,9 @@ class _MyHomePageState extends State<MyHomePage> {
         } on PlatformException catch (e) {
           print(e.toString());
           wifiBSSID = "Failed to get Wifi BSSID";
+        } on MissingPluginException catch (e) {
+          print(e.toString());
+          wifiBSSID = "Location permissions not enabled";
         }
 
         try {
@@ -151,6 +157,9 @@ class _MyHomePageState extends State<MyHomePage> {
         } on PlatformException catch (e) {
           print(e.toString());
           wifiIP = "Failed to get Wifi IP";
+        } on MissingPluginException catch (e) {
+          print(e.toString());
+          wifiIP = "Location permissions not enabled";
         }
 
         setState(() {
