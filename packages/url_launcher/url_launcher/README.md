@@ -70,6 +70,8 @@ web page using a URL following the `http` scheme.
 
 ## Browser vs In-app Handling
 By default, Android opens up a browser when handling URLs. You can pass
-forceWebView: true parameter to tell the plugin to open a WebView instead. On
+`forceWebView: true` parameter to tell the plugin to open a WebView instead. 
+If you do this for a URL of a page containing JavaScript, make sure to pass in 
+`enableJavaScript: true`, or else the launch method will not work properly. On
 iOS, the default behavior is to open all web URLs within the app. Everything
 else is redirected to the app handler.
