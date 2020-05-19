@@ -1,3 +1,7 @@
+## 0.6.6+4
+
+* Fix bug, sometimes double click cancel button will crash.
+
 ## 0.6.6+3
 
 * Update README
