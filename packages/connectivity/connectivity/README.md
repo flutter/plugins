@@ -103,7 +103,7 @@ To request location authorization, make sure to add the following keys to your _
 * `NSLocationAlwaysAndWhenInUseUsageDescription` - describe why the app needs access to the user’s location information all the time (foreground and background). This is called _Privacy - Location Always and When In Use Usage Description_ in the visual editor.
 * `NSLocationWhenInUseUsageDescription` - describe why the app needs access to the user’s location information when the app is running in the foreground. This is called _Privacy - Location When In Use Usage Description_ in the visual editor.
 
-### iOS - Disabling code that access sensitive data
+### iOS - Disabling code that accesses sensitive data
 
 If you don't wish to set `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationWhenInUseUsageDescription` on iOS, you also have the option to disable the code that uses these permissions.  This may be useful if you don't wish to specify permissions that you have no intention of using and only want to use the plugin for checking the connection status of the device.
 
@@ -125,10 +125,9 @@ end
 
 Note that by disabling these blocks of code the following plugin methods will no longer be accessible on iOS, and will throw a `MissingPluginException`:
 - `getLocationServiceAuthorization`
-- `getWifiBSSID`
-- `getWifiIP`
-- `getWifiName`
 - `requestLocationServiceAuthorization`
+- `getWifiBSSID`
+- `getWifiName`
 
 ## Getting Started
 

@@ -74,14 +74,14 @@
     // and the code
     // gets more involved. So for now, this will do.
     result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
-  }
+  } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
+    result([self getWifiIP]);
+  } 
 #if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
   else if ([call.method isEqualToString:@"wifiName"]) {
     result([self getWifiName]);
   } else if ([call.method isEqualToString:@"wifiBSSID"]) {
     result([self getBSSID]);
-  } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
-    result([self getWifiIP]);
   } else if ([call.method isEqualToString:@"getLocationServiceAuthorization"]) {
     result([self convertCLAuthorizationStatusToString:[FLTConnectivityLocationHandler
                                                           locationAuthorizationStatus]]);
@@ -104,15 +104,6 @@
 - (void)onReachabilityDidChange:(NSNotification*)notification {
   Reachability* curReach = [notification object];
   _eventSink([self statusFromReachability:curReach]);
-}
-
-#if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
-- (NSString*)getWifiName {
-  return [self findNetworkInfo:@"SSID"];
-}
-
-- (NSString*)getBSSID {
-  return [self findNetworkInfo:@"BSSID"];
 }
 
 - (NSString*)getWifiIP {
@@ -144,6 +135,15 @@
   freeifaddrs(interfaces);
 
   return address;
+}
+
+#if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
+- (NSString*)getWifiName {
+  return [self findNetworkInfo:@"SSID"];
+}
+
+- (NSString*)getBSSID {
+  return [self findNetworkInfo:@"BSSID"];
 }
 
 - (NSString*)convertCLAuthorizationStatusToString:(CLAuthorizationStatus)status {
