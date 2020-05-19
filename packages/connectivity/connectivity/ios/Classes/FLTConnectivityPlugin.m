@@ -16,7 +16,9 @@
 
 @interface FLTConnectivityPlugin () <FlutterStreamHandler, CLLocationManagerDelegate>
 
+#if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
 @property(strong, nonatomic) FLTConnectivityLocationHandler* locationHandler;
+#endif
 
 @end
 
@@ -52,6 +54,59 @@
   return info;
 }
 
+- (NSString*)statusFromReachability:(Reachability*)reachability {
+  NetworkStatus status = [reachability currentReachabilityStatus];
+  switch (status) {
+    case NotReachable:
+      return @"none";
+    case ReachableViaWiFi:
+      return @"wifi";
+    case ReachableViaWWAN:
+      return @"mobile";
+  }
+}
+
+- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+  if ([call.method isEqualToString:@"check"]) {
+    // This is supposed to be quick. Another way of doing this would be to
+    // signup for network
+    // connectivity changes. However that depends on the app being in background
+    // and the code
+    // gets more involved. So for now, this will do.
+    result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
+  }
+#if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
+  else if ([call.method isEqualToString:@"wifiName"]) {
+    result([self getWifiName]);
+  } else if ([call.method isEqualToString:@"wifiBSSID"]) {
+    result([self getBSSID]);
+  } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
+    result([self getWifiIP]);
+  } else if ([call.method isEqualToString:@"getLocationServiceAuthorization"]) {
+    result([self convertCLAuthorizationStatusToString:[FLTConnectivityLocationHandler
+                                                          locationAuthorizationStatus]]);
+  } else if ([call.method isEqualToString:@"requestLocationServiceAuthorization"]) {
+    NSArray* arguments = call.arguments;
+    BOOL always = [arguments.firstObject boolValue];
+    __weak typeof(self) weakSelf = self;
+    [self.locationHandler
+        requestLocationAuthorization:always
+                          completion:^(CLAuthorizationStatus status) {
+                            result([weakSelf convertCLAuthorizationStatusToString:status]);
+                          }];
+  }
+#endif
+  else {
+    result(FlutterMethodNotImplemented);
+  }
+}
+
+- (void)onReachabilityDidChange:(NSNotification*)notification {
+  Reachability* curReach = [notification object];
+  _eventSink([self statusFromReachability:curReach]);
+}
+
+#if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
 - (NSString*)getWifiName {
   return [self findNetworkInfo:@"SSID"];
 }
@@ -91,54 +146,6 @@
   return address;
 }
 
-- (NSString*)statusFromReachability:(Reachability*)reachability {
-  NetworkStatus status = [reachability currentReachabilityStatus];
-  switch (status) {
-    case NotReachable:
-      return @"none";
-    case ReachableViaWiFi:
-      return @"wifi";
-    case ReachableViaWWAN:
-      return @"mobile";
-  }
-}
-
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([call.method isEqualToString:@"check"]) {
-    // This is supposed to be quick. Another way of doing this would be to
-    // signup for network
-    // connectivity changes. However that depends on the app being in background
-    // and the code
-    // gets more involved. So for now, this will do.
-    result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
-  } else if ([call.method isEqualToString:@"wifiName"]) {
-    result([self getWifiName]);
-  } else if ([call.method isEqualToString:@"wifiBSSID"]) {
-    result([self getBSSID]);
-  } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
-    result([self getWifiIP]);
-  } else if ([call.method isEqualToString:@"getLocationServiceAuthorization"]) {
-    result([self convertCLAuthorizationStatusToString:[FLTConnectivityLocationHandler
-                                                          locationAuthorizationStatus]]);
-  } else if ([call.method isEqualToString:@"requestLocationServiceAuthorization"]) {
-    NSArray* arguments = call.arguments;
-    BOOL always = [arguments.firstObject boolValue];
-    __weak typeof(self) weakSelf = self;
-    [self.locationHandler
-        requestLocationAuthorization:always
-                          completion:^(CLAuthorizationStatus status) {
-                            result([weakSelf convertCLAuthorizationStatusToString:status]);
-                          }];
-  } else {
-    result(FlutterMethodNotImplemented);
-  }
-}
-
-- (void)onReachabilityDidChange:(NSNotification*)notification {
-  Reachability* curReach = [notification object];
-  _eventSink([self statusFromReachability:curReach]);
-}
-
 - (NSString*)convertCLAuthorizationStatusToString:(CLAuthorizationStatus)status {
   switch (status) {
     case kCLAuthorizationStatusNotDetermined: {
@@ -166,6 +173,7 @@
   }
   return _locationHandler;
 }
+#endif
 
 #pragma mark FlutterStreamHandler impl
 
