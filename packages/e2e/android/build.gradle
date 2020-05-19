@@ -33,6 +33,7 @@ android {
     }
     dependencies {
         api 'junit:junit:4.12'
+        compile 'net.sourceforge.streamsupport:android-retrofuture:1.7.2'
 
         // https://developer.android.com/jetpack/androidx/releases/test/#1.2.0
         api 'androidx.test:runner:1.2.0'
