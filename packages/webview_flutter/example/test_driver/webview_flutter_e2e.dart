@@ -685,8 +685,13 @@ void main() {
       final WebResourceError error = await errorCompleter.future;
       expect(error, isNotNull);
 
-      if (Platform.isIOS) expect(error.domain, isNotNull);
-      if (Platform.isAndroid) expect(error.errorType, isNotNull);
+      if (Platform.isIOS) {
+        expect(error.domain, isNotNull);
+        expect(error.failingUrl, isNull);
+      } else if (Platform.isAndroid) {
+        expect(error.errorType, isNotNull);
+        expect(error.failingUrl, 'https://www.notawebsite..com');
+      }
     });
 
     testWidgets('onWebResourceError is not called with valid url',
