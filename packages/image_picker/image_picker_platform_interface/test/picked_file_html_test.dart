@@ -17,7 +17,6 @@ final html.File textFile = html.File([bytes], 'hello.txt');
 final String textFileUrl = html.Url.createObjectUrl(textFile);
 
 void main() {
-  
   group('Create with an objectUrl', () {
     final pickedFile = PickedFile(textFileUrl);
 
@@ -33,7 +32,8 @@ void main() {
     });
 
     test('Stream can be sliced', () async {
-      expect(await pickedFile.openRead(2, 5).first, equals(bytes.sublist(2, 5)));
+      expect(
+          await pickedFile.openRead(2, 5).first, equals(bytes.sublist(2, 5)));
     });
   });
 }
