@@ -1,3 +1,7 @@
+## 4.5.0
+
+* Add support for getting `serverAuthCode`.
+
 ## 4.4.6
 
 * Update lower bound of dart dependency to 2.1.0.
