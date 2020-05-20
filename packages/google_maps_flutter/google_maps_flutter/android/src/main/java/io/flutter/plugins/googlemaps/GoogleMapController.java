@@ -689,7 +689,6 @@ final class GoogleMapController
     mapView.onSaveInstanceState(bundle);
   }
 
-
   // GoogleMapOptionsSink methods
 
   @Override
