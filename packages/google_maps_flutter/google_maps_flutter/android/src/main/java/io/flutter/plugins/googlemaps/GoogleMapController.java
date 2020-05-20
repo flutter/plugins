@@ -71,7 +71,7 @@ final class GoogleMapController
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
   private final GoogleMapOptions options;
-  private final MapView mapView;
+  private MapView mapView;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
@@ -81,7 +81,6 @@ final class GoogleMapController
   private boolean trafficEnabled = false;
   private boolean buildingsEnabled = true;
   private boolean disposed = false;
-  private boolean mapViewDestroyed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
   private final int
@@ -894,11 +893,11 @@ final class GoogleMapController
   }
 
   private void destroyMapViewIfNecessary() {
-    if (mapViewDestroyed || mapView == null) {
+    if (mapView == null) {
       return;
     }
     mapView.onDestroy();
-    mapViewDestroyed = true;
+    mapView = null;
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {
