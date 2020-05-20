@@ -1,3 +1,7 @@
+## 5.4.10
+
+* Post-v2 Android embedding cleanups.
+
 ## 5.4.9
 
 * Update README.
