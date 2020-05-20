@@ -534,8 +534,7 @@ final class GoogleMapController
     disposed = true;
     methodChannel.setMethodCallHandler(null);
     setGoogleMapListener(null);
-    // destroyMapViewIfNecessary();
-    mapView.onDestroy();
+    destroyMapViewIfNecessary();
     getApplication().unregisterActivityLifecycleCallbacks(this);
   }
 
@@ -670,8 +669,7 @@ final class GoogleMapController
     if (disposed) {
       return;
     }
-    mapView.onDestroy();
-    //    destroyMapViewIfNecessary();
+    destroyMapViewIfNecessary();
   }
 
   @Override
