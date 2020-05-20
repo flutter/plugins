@@ -542,40 +542,21 @@ void main() {
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
       final String scrollTestPage = '''
         <!DOCTYPE html>
-        <html>    
+        <html> 
           <head>
             <style>
               html {
-                height: 100%;
-                width: 100%;
+                height: 5000px;
+                width: 5000px;
                 overflow-x: auto;
                 overflow-y: auto;
               }
-      
               body {
-                height: 100%;
-                width: 100%;
+                height: 5000px;
+                width: 5000px;
               }
             </style>
-      
-            <script type="text/javascript">
-              function config() {
-                // Create a page with dimensions big enough to allow scrolling on both x & y.
-                document.body.style.padding =  getScreenHeight() + 'px'
-              }
-      
-              function getScreenHeight() {
-                var body = document.body,
-                  html = document.documentElement;
-      
-                var height = Math.max(body.clientHeight, body.scrollHeight, body.offsetHeight,
-                  html.clientHeight, html.scrollHeight, html.offsetHeight);
-      
-                return height;
-              }
-            </script>
           </head>
-      
           <body onload="config();"/>
         </html>
       ''';

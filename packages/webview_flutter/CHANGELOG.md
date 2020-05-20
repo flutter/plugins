@@ -1,3 +1,7 @@
+## 0.3.22+1
+
+* Update the `setAndGetScrollPosition` to use hard coded values.
+
 ## 0.3.22
 
 * Add support for passing a failing url.
