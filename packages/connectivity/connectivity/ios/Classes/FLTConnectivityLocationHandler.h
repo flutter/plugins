@@ -4,7 +4,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
-#if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
+#ifndef DISABLE_CONNECTIVITY_LOCATION_CODE
 
 NS_ASSUME_NONNULL_BEGIN
 

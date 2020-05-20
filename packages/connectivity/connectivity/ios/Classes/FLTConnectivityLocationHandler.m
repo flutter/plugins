@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
+#ifndef DISABLE_CONNECTIVITY_LOCATION_CODE
 #import "FLTConnectivityLocationHandler.h"
 
 @interface FLTConnectivityLocationHandler () <CLLocationManagerDelegate>

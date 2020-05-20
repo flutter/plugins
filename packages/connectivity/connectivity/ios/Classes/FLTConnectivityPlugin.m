@@ -16,7 +16,7 @@
 
 @interface FLTConnectivityPlugin () <FlutterStreamHandler, CLLocationManagerDelegate>
 
-#if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
+#ifndef DISABLE_CONNECTIVITY_LOCATION_CODE
 @property(strong, nonatomic) FLTConnectivityLocationHandler* locationHandler;
 #endif
 
@@ -77,7 +77,7 @@
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
   } 
-#if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
+#ifndef DISABLE_CONNECTIVITY_LOCATION_CODE
   else if ([call.method isEqualToString:@"wifiName"]) {
     result([self getWifiName]);
   } else if ([call.method isEqualToString:@"wifiBSSID"]) {
@@ -137,7 +137,7 @@
   return address;
 }
 
-#if CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS
+#ifndef DISABLE_CONNECTIVITY_LOCATION_CODE
 - (NSString*)getWifiName {
   return [self findNetworkInfo:@"SSID"];
 }

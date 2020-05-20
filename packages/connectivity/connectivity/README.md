@@ -116,14 +116,15 @@ post_install do |installer|
       
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
         '$(inherited)',
-        'CONNECTIVITY_NEEDS_LOCATION_PERMISSIONS=0'
+        'DISABLE_CONNECTIVITY_LOCATION_CODE=0'
       ]
     end
   end
 end
 ```
+To re-enable that code, you should remove the `'DISABLE_CONNECTIVITY_LOCATION_CODE=0'` and insure `pod install` is run again.
 
-Note that by disabling these blocks of code the following plugin methods will no longer be accessible on iOS, and will throw a `MissingPluginException`:
+*Note that by disabling these blocks of code the following plugin methods will no longer be accessible on iOS, and will throw a `MissingPluginException`:*
 - `getLocationServiceAuthorization`
 - `requestLocationServiceAuthorization`
 - `getWifiBSSID`
