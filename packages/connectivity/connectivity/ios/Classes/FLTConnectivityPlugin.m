@@ -76,7 +76,7 @@
     result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
   } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
     result([self getWifiIP]);
-  } 
+  }
 #ifndef DISABLE_CONNECTIVITY_LOCATION_CODE
   else if ([call.method isEqualToString:@"wifiName"]) {
     result([self getWifiName]);
@@ -163,7 +163,9 @@
     case kCLAuthorizationStatusAuthorizedWhenInUse: {
       return @"authorizedWhenInUse";
     }
-    default: { return @"unknown"; }
+    default: {
+      return @"unknown";
+    }
   }
 }
 
