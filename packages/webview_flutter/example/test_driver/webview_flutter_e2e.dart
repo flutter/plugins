@@ -19,6 +19,7 @@ void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('initalUrl', (WidgetTester tester) async {
+    expect(true, isFalse);
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
     await tester.pumpWidget(
