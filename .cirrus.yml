@@ -18,5 +18,6 @@ task:
         - flutter config --enable-linux-desktop
       build_script:
         - cd packages/path_provider/path_provider_linux/example
+        - flutter create .
         - flutter build linux --debug -v
         - flutter build linux -v
