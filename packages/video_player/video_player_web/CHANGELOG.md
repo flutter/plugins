@@ -1,3 +1,7 @@
+## 0.1.3+1
+
+* Remove Android folder from `video_player_web`.
+
 ## 0.1.3
 
 * Updated video_player_platform_interface, bumped minimum Dart version to 2.1.0.
