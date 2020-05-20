@@ -67,14 +67,21 @@ void main() {
           maxHeight: 20.0,
         );
         await picker.pickImage(
-            source: ImageSource.camera, maxWidth: 10.0, imageQuality: 70,);
+          source: ImageSource.camera,
+          maxWidth: 10.0,
+          imageQuality: 70,
+        );
         await picker.pickImage(
-            source: ImageSource.camera, maxHeight: 10.0, imageQuality: 70,);
+          source: ImageSource.camera,
+          maxHeight: 10.0,
+          imageQuality: 70,
+        );
         await picker.pickImage(
-            source: ImageSource.camera,
-            maxWidth: 10.0,
-            maxHeight: 20.0,
-            imageQuality: 70,);
+          source: ImageSource.camera,
+          maxWidth: 10.0,
+          maxHeight: 20.0,
+          imageQuality: 70,
+        );
 
         expect(
           log,
@@ -134,14 +141,12 @@ void main() {
 
       test('does not accept a negative width or height argument', () {
         expect(
-          () =>
-              picker.pickImage(source: ImageSource.camera, maxWidth: -1.0),
+          () => picker.pickImage(source: ImageSource.camera, maxWidth: -1.0),
           throwsArgumentError,
         );
 
         expect(
-          () =>
-              picker.pickImage(source: ImageSource.camera, maxHeight: -1.0),
+          () => picker.pickImage(source: ImageSource.camera, maxHeight: -1.0),
           throwsArgumentError,
         );
       });
@@ -216,13 +221,17 @@ void main() {
       test('passes the duration argument correctly', () async {
         await picker.pickVideo(source: ImageSource.camera);
         await picker.pickVideo(
-            source: ImageSource.camera,
-            maxDuration: const Duration(seconds: 10),);
+          source: ImageSource.camera,
+          maxDuration: const Duration(seconds: 10),
+        );
         await picker.pickVideo(
-            source: ImageSource.camera,
-            maxDuration: const Duration(minutes: 1),);
+          source: ImageSource.camera,
+          maxDuration: const Duration(minutes: 1),
+        );
         await picker.pickVideo(
-            source: ImageSource.camera, maxDuration: const Duration(hours: 1),);
+          source: ImageSource.camera,
+          maxDuration: const Duration(hours: 1),
+        );
         expect(
           log,
           <Matcher>[
@@ -275,8 +284,9 @@ void main() {
 
       test('camera position can set to front', () async {
         await picker.pickVideo(
-            source: ImageSource.camera,
-            preferredCameraDevice: CameraDevice.front,);
+          source: ImageSource.camera,
+          preferredCameraDevice: CameraDevice.front,
+        );
 
         expect(
           log,
@@ -300,8 +310,7 @@ void main() {
           };
         });
         // ignore: deprecated_member_use_from_same_package
-        final LostData response =
-            await picker.retrieveLostData();
+        final LostData response = await picker.retrieveLostData();
         expect(response.type, RetrieveType.image);
         expect(response.file.path, '/example/path');
       });
@@ -315,8 +324,7 @@ void main() {
           };
         });
         // ignore: deprecated_member_use_from_same_package
-        final LostData response =
-            await picker.retrieveLostData();
+        final LostData response = await picker.retrieveLostData();
         expect(response.type, RetrieveType.video);
         expect(response.exception.code, 'test_error_code');
         expect(response.exception.message, 'test_error_message');
