@@ -1,4 +1,4 @@
-## 4.5.0+1
+## 4.5.1
 
 * Add note on Apple sign in requirement in README.
 
