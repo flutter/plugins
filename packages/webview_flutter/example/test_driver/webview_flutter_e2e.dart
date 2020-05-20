@@ -546,18 +546,24 @@ void main() {
           <head>
             <style>
               html {
-                height: 5000px;
-                width: 5000px;
+                height: 100%;
+                width: 100%;
                 overflow-x: auto;
                 overflow-y: auto;
               }
               body {
-                height: 5000px;
-                width: 5000px;
+                height: 100%;
+                width: 100%;
               }
+              #container{
+                width:5000px;
+                height:5000px;
+            }
             </style>
           </head>
-          <body onload="config();"/>
+          <body>
+            <div id="container"/>
+          </body>
         </html>
       ''';
 
