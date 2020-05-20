@@ -71,7 +71,7 @@ final class GoogleMapController
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
   private final GoogleMapOptions options;
-  private MapView mapView;
+  @Nullable private MapView mapView;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
