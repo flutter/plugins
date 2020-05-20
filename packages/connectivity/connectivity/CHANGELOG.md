@@ -1,3 +1,7 @@
+## 0.4.9
+
+* Added an optional way to disable code that accesses sensitive location information on iOS.  
+
 ## 0.4.8+6
 
 * Update lower bound of dart dependency to 2.1.0.
