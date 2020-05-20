@@ -81,6 +81,7 @@ final class GoogleMapController
   private boolean trafficEnabled = false;
   private boolean buildingsEnabled = true;
   private boolean disposed = false;
+  private boolean mapViewDestroyed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
   private final int
@@ -534,6 +535,7 @@ final class GoogleMapController
     disposed = true;
     methodChannel.setMethodCallHandler(null);
     setGoogleMapListener(null);
+    destroyMapViewIfNecessary();
     getApplication().unregisterActivityLifecycleCallbacks(this);
   }
 
@@ -618,7 +620,7 @@ final class GoogleMapController
     if (disposed || activity.hashCode() != getActivityHashCode()) {
       return;
     }
-    mapView.onDestroy();
+    destroyMapViewIfNecessary();
   }
 
   // DefaultLifecycleObserver and OnSaveInstanceStateListener
@@ -668,7 +670,7 @@ final class GoogleMapController
     if (disposed) {
       return;
     }
-    mapView.onDestroy();
+    destroyMapViewIfNecessary();
   }
 
   @Override
@@ -686,6 +688,7 @@ final class GoogleMapController
     }
     mapView.onSaveInstanceState(bundle);
   }
+
 
   // GoogleMapOptionsSink methods
 
@@ -889,6 +892,14 @@ final class GoogleMapController
     } else {
       return mApplication;
     }
+  }
+
+  private void destroyMapViewIfNecessary() {
+    if (mapViewDestroyed || mapView == null) {
+      return;
+    }
+    mapView.onDestroy();
+    mapViewDestroyed = true;
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {
