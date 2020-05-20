@@ -173,6 +173,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
     );
     return productDetailsResponse;
   }
+
+  Future<List<SKPaymentTransactionWrapper>> getTransactions() => _skPaymentQueueWrapper.transactions();
 }
 
 class _TransactionObserver implements SKTransactionObserverWrapper {

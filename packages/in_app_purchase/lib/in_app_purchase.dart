@@ -5,3 +5,5 @@
 export 'src/in_app_purchase/in_app_purchase_connection.dart';
 export 'src/in_app_purchase/product_details.dart';
 export 'src/in_app_purchase/purchase_details.dart';
+export 'src/in_app_purchase/app_store_connection.dart';
+export 'src/in_app_purchase/google_play_connection.dart';
