@@ -587,6 +587,8 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
+      await tester.pumpAndSettle(Duration(seconds: 3));
+
       // Check scrollTo()
       const int X_SCROLL = 123;
       const int Y_SCROLL = 321;
