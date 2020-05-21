@@ -11,6 +11,7 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
 
+// This is to manually endorse the linux path provider until automatic registration of dart plugins is implemented
 final PathProviderPlatform _linuxPathProvider =
     Platform.isLinux ? PathProviderLinux() : null;
 PathProviderPlatform get _platform =>
