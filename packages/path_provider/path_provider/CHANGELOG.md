@@ -1,5 +1,9 @@
 ## 1.6.8
 
+* Endorsed linux implementation.
+
+## 1.6.8
+
 * Update lower bound of dart dependency to 2.1.0.
 
 ## 1.6.7
