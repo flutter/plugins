@@ -2,6 +2,42 @@
 
 The web implementation of [`image_picker`][1].
 
+## Browser Support
+
+Since Web Browsers don't offer direct access to their users' file system, the web version of the
+plugin attempts to approximate those APIs as much as possible.
+
+### URL.createObjectURL()
+
+The `PickedFile` object in web is backed by [`URL.createObjectUrl` Web API](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL),
+which is reasonably well supported across all browsers:
+
+![Data on support for the bloburls feature across the major browsers from caniuse.com](https://caniuse.bitsofco.de/image/bloburls.png)
+
+However, the returned `path` attribute of the `PickedFile` points to a `network` resource, and not a
+local path in your users' drive. See **Use the plugin** below for some examples on how to use this
+return value in a cross-platform way.
+
+### input file "accept"
+
+In order to filter only video/image content, some browsers offer an [`accept` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/accept) in their `input type="file"` form elements:
+
+![Data on support for the input-file-accept feature across the major browsers from caniuse.com](https://caniuse.bitsofco.de/image/input-file-accept.png)
+
+This feature is just a convenience for users, **not validation**.
+
+Users can override this setting on their browsers. You must validate in your app (or server)
+that the user has picked the file type that you can handle.
+
+### input file "capture"
+
+In order to "take a photo", some mobile browsers offer a [`capture` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/capture):
+
+![Data on support for the html-media-capture feature across the major browsers from caniuse.com](https://caniuse.bitsofco.de/image/html-media-capture.png)
+
+Each browser may implement `capture` any way they please, so it may (or may not) make a
+difference in your users' experience.
+
 ## Usage
 
 ### Import the package
@@ -20,6 +56,32 @@ dependencies:
 ```
 
 ### Use the plugin
-You should be able to use `package:image_picker` as normal.
+
+You should be able to use `package:image_picker` _almost_ as normal.
+
+Once the user has picked a file, the returned `PickedFile` instance will contain a
+`network`-accessible URL (pointing to a location within the browser).
+
+The instace will also let you retrieve the bytes of the selected file across all platforms.
+
+If you want to use the path directly, your code would need look like this:
+
+```dart
+...
+if (kIsWeb) {
+  Image.network(pickedFile.path);
+} else {
+  Image.file(File(pickedFile.path));
+}
+...
+```
+
+Or, using bytes:
+
+```dart
+...
+Image.memory(await pickedFile.readAsBytes())
+...
+```
 
 [1]: ../image_picker/image_picker
