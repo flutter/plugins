@@ -1,7 +1,3 @@
-## 0.4.2+1
-
-* Remove Android folder from `e2e_macos`.
-
 ## 0.4.2
 
 * Adds support for Android E2E tests that utilize other @Rule's, like GrantPermissionRule.
