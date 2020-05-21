@@ -7,6 +7,7 @@ import 'package:image_picker_platform_interface/image_picker_platform_interface.
 
 final String _kImagePickerInputsDomId = '__image_picker_web-file-input';
 final String _kAcceptImageMimeType = 'image/*';
+// This may not be enough for Safari.
 final String _kAcceptVideoMimeType = 'video/*';
 
 /// The web implementation of [ImagePickerPlatform].
@@ -37,8 +38,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
-    String capture = _computeCaptureAttribute(source, preferredCameraDevice);
-    return _pickFile(accept: _kAcceptImageMimeType, capture: capture);
+    String capture = computeCaptureAttribute(source, preferredCameraDevice);
+    return pickFile(accept: _kAcceptImageMimeType, capture: capture);
   }
 
   @override
@@ -47,8 +48,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration maxDuration,
   }) {
-    String capture = _computeCaptureAttribute(source, preferredCameraDevice);
-    return _pickFile(accept: _kAcceptVideoMimeType, capture: capture);
+    String capture = computeCaptureAttribute(source, preferredCameraDevice);
+    return pickFile(accept: _kAcceptVideoMimeType, capture: capture);
   }
 
   /// Injects a file input with the specified accept+capture attributes, and
@@ -56,11 +57,12 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   ///
   /// `capture` is only supported in mobile browsers.
   /// See https://caniuse.com/#feat=html-media-capture
-  Future<PickedFile> _pickFile({
+  @visibleForTesting
+  Future<PickedFile> pickFile({
     String accept,
     String capture,
   }) {
-    html.FileUploadInputElement input = _createInputElement(accept, capture);
+    html.FileUploadInputElement input = createInputElement(accept, capture);
     _injectAndActivate(input);
     return _getSelectedFile(input);
   }
@@ -68,7 +70,10 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   // DOM methods
 
   /// Converts plugin configuration into a proper value for the `capture` attribute.
-  String _computeCaptureAttribute(ImageSource source, CameraDevice device) {
+  ///
+  /// See: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#capture
+  @visibleForTesting
+  String computeCaptureAttribute(ImageSource source, CameraDevice device) {
     String capture;
     if (source == ImageSource.camera) {
       capture = device == CameraDevice.front ? 'user' : 'environment';
@@ -120,7 +125,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
 
   /// Creates an input element that accepts certain file types, and
   /// allows to `capture` from the device's cameras (where supported)
-  html.Element _createInputElement(String accept, String capture) {
+  @visibleForTesting
+  html.Element createInputElement(String accept, String capture) {
     html.Element element;
 
     if (_shouldOverrideInput) {

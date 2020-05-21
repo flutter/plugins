@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@TestOn('chrome') // Uses web-only Flutter SDK
+@TestOn('chrome') // Uses dart:html
 
 import 'dart:async';
 import 'dart:convert';
@@ -37,41 +37,79 @@ class MockElementStream<T extends html.Event> extends Mock
 }
 
 void main() {
-  MockFileInput mockInput = MockFileInput();
-  MockElementStream mockStream = MockElementStream<html.Event>();
-  MockElementStream mockErrorStream = MockElementStream<html.Event>();
-  MockOnChangeEvent mockEvent = MockOnChangeEvent()..target = mockInput;
+  // Mock the "pick file" browser behavior.
+  MockFileInput mockInput;
+  MockElementStream mockStream;
+  MockElementStream mockErrorStream;
+  MockOnChangeEvent mockEvent;
 
   // Under test...
-  ImagePickerPlugin plugin =
-      ImagePickerPlugin(overrideCreateInput: (_, __) => mockInput);
+  ImagePickerPlugin plugin;
 
   setUp(() {
+    mockInput = MockFileInput();
+    mockStream = MockElementStream<html.Event>();
+    mockErrorStream = MockElementStream<html.Event>();
+    mockEvent = MockOnChangeEvent()..target = mockInput;
+
     // Make the mockInput behave like a proper input...
     when(mockInput.onChange).thenAnswer((_) => mockStream);
     when(mockInput.onError).thenAnswer((_) => mockErrorStream);
+
+    plugin = ImagePickerPlugin(overrideCreateInput: (_, __) => mockInput);
   });
 
-  tearDown(() {
-    reset(mockInput);
-  });
-
-  // Pick a file...
-  test('Can select a file, happy case', () async {
+  test('Can select a file', () async {
     // Init the pick file dialog...
-    final file = plugin.pickImage(
-      source: ImageSource.gallery,
-    );
+    final file = plugin.pickFile();
 
     // Mock the browser behavior of selecting a file...
     when(mockInput.files).thenReturn([textFile]);
     mockStream.controller.add(mockEvent);
 
-    // Now the file should be selected
+    // Now the file should be available
     expect(file, completes);
     // And readable
-    expect((await file).readAsString(), completion(expectedStringContents));
+    expect((await file).readAsBytes(), completion(isNotEmpty));
   });
 
-  // Creates the correct DOM for the input...
+  // There's no good way of detecting when the user has "aborted" the selection.
+
+  test('computeCaptureAttribute', () {
+    expect(
+      plugin.computeCaptureAttribute(ImageSource.gallery, CameraDevice.front),
+      isNull,
+    );
+    expect(
+      plugin.computeCaptureAttribute(ImageSource.gallery, CameraDevice.rear),
+      isNull,
+    );
+    expect(
+      plugin.computeCaptureAttribute(ImageSource.camera, CameraDevice.front),
+      'user',
+    );
+    expect(
+      plugin.computeCaptureAttribute(ImageSource.camera, CameraDevice.rear),
+      'environment',
+    );
+  });
+
+  group('createInputElement', () {
+    setUp(() {
+      plugin = ImagePickerPlugin();
+    });
+    test('accept: any, capture: null', () {
+      html.Element input = plugin.createInputElement('any', null);
+
+      expect(input.attributes, containsPair('accept', 'any'));
+      expect(input.attributes, isNot(contains('capture')));
+    });
+
+    test('accept: any, capture: something', () {
+      html.Element input = plugin.createInputElement('any', 'something');
+
+      expect(input.attributes, containsPair('accept', 'any'));
+      expect(input.attributes, containsPair('capture', 'something'));
+    });
+  });
 }
