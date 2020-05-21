@@ -10,7 +10,6 @@ import androidx.test.core.app.ApplicationProvider;
 import com.google.android.gms.maps.GoogleMap;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.view.FlutterMain;
-
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -32,7 +31,7 @@ public class GoogleMapControllerTest {
   @Mock LifecycleOwner lifecycleOwner;
 
   @BeforeClass()
-  static public void BeforeClass() {
+  public static void BeforeClass() {
     FlutterMain.setIsRunningInRobolectricTest(true);
   }
 
