@@ -1,3 +1,7 @@
+## 0.4.3+1
+
+* Post-v2 Android embedding cleanup.
+
 ## 0.4.3
 
 * Uses CompletableFuture from android-retrofuture allow compatibility with API < 24.
