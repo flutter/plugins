@@ -1,3 +1,7 @@
+## 5.4.10
+
+* iOS plugin now returns true instead of null on success when forceSafariVC is true.
+
 ## 5.4.9
 
 * Update README.
