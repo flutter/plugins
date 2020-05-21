@@ -25,6 +25,9 @@ void main() {
 
     setUp(() async {
       PathProviderPlatform.instance = MockPathProviderPlatform();
+      // This is required because we manually register the Linux path provider when on the Linux platform.
+      // Will be removed when automatic registration of dart plugins is implemented.
+      linuxPathProvider = null;
     });
 
     test('getTemporaryDirectory', () async {
