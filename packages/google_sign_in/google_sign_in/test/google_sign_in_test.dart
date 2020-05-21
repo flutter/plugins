@@ -36,6 +36,7 @@ void main() {
       'getTokens': <dynamic, dynamic>{
         'idToken': '123',
         'accessToken': '456',
+        'serverAuthCode': '789',
       },
     };
 
@@ -370,6 +371,7 @@ void main() {
 
       expect(auth.accessToken, '456');
       expect(auth.idToken, '123');
+      expect(auth.serverAuthCode, '789');
       expect(
         log,
         <Matcher>[

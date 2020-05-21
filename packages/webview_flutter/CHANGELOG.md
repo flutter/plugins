@@ -1,3 +1,7 @@
+## 0.3.22
+
+* Add support for passing a failing url.
+
 ## 0.3.21
 
 * Enable programmatic scrolling using Android's WebView.scrollTo & iOS WKWebView.scrollView.contentOffset.

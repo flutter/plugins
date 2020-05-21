@@ -1,3 +1,7 @@
+## 0.5.28
+
+* Android: Add liteModeEnabled option.
+
 ## 0.5.27+3
 
 * iOS: Update the gesture recognizer blocking policy to "WaitUntilTouchesEnded", which fixes the camera idle callback not triggered issue.

@@ -17,5 +17,5 @@ RUN sudo apt-get update && sudo apt-get install -y google-cloud-sdk && \
 
 # Install xvfb to allow running headless
 RUN sudo apt-get install -y xvfb libegl1-mesa
-# Install Linux desktop requirements.
-RUN sudo apt-get install -y clang make cmake ninja-build rsync pkg-config
+# Install Linux desktop build tool requirements.
+RUN sudo apt-get install -y clang cmake ninja-build file pkg-config
