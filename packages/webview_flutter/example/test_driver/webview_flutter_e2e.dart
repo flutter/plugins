@@ -542,15 +542,9 @@ void main() {
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
       final String scrollTestPage = '''
         <!DOCTYPE html>
-        <html> 
+        <html>
           <head>
             <style>
-              html {
-                height: 100%;
-                width: 100%;
-                overflow-x: auto;
-                overflow-y: auto;
-              }
               body {
                 height: 100%;
                 width: 100%;
