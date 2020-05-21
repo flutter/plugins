@@ -1,3 +1,7 @@
+## 0.3.22+1
+
+* Update the `setAndGetScrollPosition` to use hard coded values and add a `pumpAndSettle` call.
+
 ## 0.3.22
 
 * Add support for passing a failing url.

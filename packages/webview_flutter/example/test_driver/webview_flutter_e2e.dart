@@ -542,41 +542,22 @@ void main() {
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
       final String scrollTestPage = '''
         <!DOCTYPE html>
-        <html>    
+        <html>
           <head>
             <style>
-              html {
-                height: 100%;
-                width: 100%;
-                overflow-x: auto;
-                overflow-y: auto;
-              }
-      
               body {
                 height: 100%;
                 width: 100%;
               }
+              #container{
+                width:5000px;
+                height:5000px;
+            }
             </style>
-      
-            <script type="text/javascript">
-              function config() {
-                // Create a page with dimensions big enough to allow scrolling on both x & y.
-                document.body.style.padding =  getScreenHeight() + 'px'
-              }
-      
-              function getScreenHeight() {
-                var body = document.body,
-                  html = document.documentElement;
-      
-                var height = Math.max(body.clientHeight, body.scrollHeight, body.offsetHeight,
-                  html.clientHeight, html.scrollHeight, html.offsetHeight);
-      
-                return height;
-              }
-            </script>
           </head>
-      
-          <body onload="config();"/>
+          <body>
+            <div id="container"/>
+          </body>
         </html>
       ''';
 
@@ -605,6 +586,8 @@ void main() {
 
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
+
+      await tester.pumpAndSettle(Duration(seconds: 3));
 
       // Check scrollTo()
       const int X_SCROLL = 123;

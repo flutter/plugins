@@ -71,7 +71,7 @@ final class GoogleMapController
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
   private final GoogleMapOptions options;
-  private final MapView mapView;
+  @Nullable private MapView mapView;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
@@ -534,6 +534,7 @@ final class GoogleMapController
     disposed = true;
     methodChannel.setMethodCallHandler(null);
     setGoogleMapListener(null);
+    destroyMapViewIfNecessary();
     getApplication().unregisterActivityLifecycleCallbacks(this);
   }
 
@@ -618,7 +619,7 @@ final class GoogleMapController
     if (disposed || activity.hashCode() != getActivityHashCode()) {
       return;
     }
-    mapView.onDestroy();
+    destroyMapViewIfNecessary();
   }
 
   // DefaultLifecycleObserver and OnSaveInstanceStateListener
@@ -668,7 +669,7 @@ final class GoogleMapController
     if (disposed) {
       return;
     }
-    mapView.onDestroy();
+    destroyMapViewIfNecessary();
   }
 
   @Override
@@ -889,6 +890,14 @@ final class GoogleMapController
     } else {
       return mApplication;
     }
+  }
+
+  private void destroyMapViewIfNecessary() {
+    if (mapView == null) {
+      return;
+    }
+    mapView.onDestroy();
+    mapView = null;
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {
