@@ -1,3 +1,7 @@
+## 0.1.2+7
+
+* Removed Android folder from `shared_preferences_web`.
+
 ## 0.1.2+6
 
 * Update lower bound of dart dependency to 2.1.0.
