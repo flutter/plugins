@@ -193,4 +193,24 @@ void main() {
     expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
     expect(platformGoogleMap.markersToAdd.isEmpty, true);
   });
+
+  testWidgets("Update non platform related attr", (WidgetTester tester) async {
+    Marker m1 = Marker(markerId: MarkerId("marker_1"));
+    final Set<Marker> prev = _toSet(m1: m1);
+    m1 = Marker(
+        markerId: MarkerId("marker_1"),
+        onTap: () => print("hello"),
+        onDragEnd: (LatLng latLng) => print(latLng));
+    final Set<Marker> cur = _toSet(m1: m1);
+
+    await tester.pumpWidget(_mapWithMarkers(prev));
+    await tester.pumpWidget(_mapWithMarkers(cur));
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.markersToChange.isEmpty, true);
+    expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.markersToAdd.isEmpty, true);
+  });
 }

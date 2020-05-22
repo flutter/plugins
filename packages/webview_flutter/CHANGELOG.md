@@ -1,3 +1,28 @@
+## 0.3.22+1
+
+* Update the `setAndGetScrollPosition` to use hard coded values and add a `pumpAndSettle` call.
+
+## 0.3.22
+
+* Add support for passing a failing url.
+
+## 0.3.21
+
+* Enable programmatic scrolling using Android's WebView.scrollTo & iOS WKWebView.scrollView.contentOffset.
+
+## 0.3.20+2
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.3.20+1
+
+* OCMock module import -> #import, unit tests compile generated as library.
+* Fix select drop down crash on old Android tablets (https://github.com/flutter/flutter/issues/54164).
+
+## 0.3.20
+
+* Added support for receiving web resource loading errors. See `WebView.onWebResourceError`.
+
 ## 0.3.19+10
 
 * Replace deprecated `getFlutterEngine` call on Android.

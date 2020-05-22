@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Platform;
 
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 import 'package:flutter/services.dart';
@@ -68,9 +67,6 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
     bool requestAlwaysLocationUsage = false,
   }) {
-    // `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
-    // TODO: These should noop for non-Android, instead of throwing, so people don't need to rely on dart:io for this.
-    assert(!Platform.isAndroid);
     return methodChannel.invokeMethod<String>(
         'requestLocationServiceAuthorization', <bool>[
       requestAlwaysLocationUsage
@@ -79,8 +75,6 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
 
   @override
   Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
-    // `assert(Platform.isIOS)` will prevent us from doing dart side unit testing.
-    assert(!Platform.isAndroid);
     return methodChannel
         .invokeMethod<String>('getLocationServiceAuthorization')
         .then(parseLocationAuthorizationStatus);

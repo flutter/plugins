@@ -1,3 +1,18 @@
+## 0.3.7+2
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.3.7+1
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.3.7
+
+* Add a `Future<bool> canResolveActivity` method to the AndroidIntent class. It 
+  can be used to determine whether a device supports a particular intent or has 
+  an app installed that can resolve it. It is based on PackageManager
+  [resolveActivity](https://developer.android.com/reference/android/content/pm/PackageManager#resolveActivity(android.content.Intent,%20int)).
+
 ## 0.3.6+1
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.

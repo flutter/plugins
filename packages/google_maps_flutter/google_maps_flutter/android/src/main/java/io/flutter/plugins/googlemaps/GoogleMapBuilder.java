@@ -129,6 +129,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
+  public void setLiteModeEnabled(boolean liteModeEnabled) {
+    options.liteMode(liteModeEnabled);
+  }
+
+  @Override
   public void setIndoorEnabled(boolean indoorEnabled) {
     this.indoorEnabled = indoorEnabled;
   }
@@ -146,6 +151,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setMyLocationEnabled(boolean myLocationEnabled) {
     this.myLocationEnabled = myLocationEnabled;
+  }
+
+  @Override
+  public void setZoomControlsEnabled(boolean zoomControlsEnabled) {
+    options.zoomControlsEnabled(zoomControlsEnabled);
   }
 
   @Override
