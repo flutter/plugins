@@ -5,6 +5,7 @@ The web implementation of [`url_launcher`][1].
 **Please set your constraint to `url_launcher_web: '>=0.1.y+x <2.0.0'`**
 
 ## Backward compatible 1.0.0 version is coming
+
 The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.1.y+z`.
 Please use `url_launcher_web: '>=0.1.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
 For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
@@ -12,6 +13,7 @@ For more details see: https://github.com/flutter/flutter/wiki/Package-migration-
 ## Usage
 
 ### Import the package
+
 To use this plugin in your Flutter Web app, simply add it as a dependency in
 your pubspec alongside the base `url_launcher` plugin.
 
@@ -31,7 +33,8 @@ dependencies:
 ```
 
 ### Use the plugin
+
 Once you have the `url_launcher_web` dependency in your pubspec, you should
 be able to use `package:url_launcher` as normal.
 
-[1]: ../url_launcher/url_launcher
+[1]: ../url_launcher
