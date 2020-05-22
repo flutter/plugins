@@ -28,8 +28,10 @@ PathProviderPlatform get _platform {
   }
   if (Platform.isLinux && !_useMethodChannel) {
     __platform = PathProviderLinux();
+  } else {
+    __platform = PathProviderPlatform.instance;
   }
-  return __platform = PathProviderPlatform.instance;
+  return __platform;
 }
 
 /// Path to the temporary directory on the device that is not backed up and is
