@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.quickactionsexample;
+package io.flutter.plugins.inapppurchaseexample;
 
 import androidx.test.rule.ActivityTestRule;
 import dev.flutter.plugins.e2e.FlutterRunner;
@@ -11,7 +11,7 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 @RunWith(FlutterRunner.class)
-public class MainActivityTest {
+public class FlutterActivityTest {
   @Rule
   public ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(FlutterActivity.class);
 }

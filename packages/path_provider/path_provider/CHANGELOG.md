@@ -1,6 +1,9 @@
+## 1.6.10
+* Linux implementation endorsement
+
 ## 1.6.9
 
-* Endorsed linux implementation.
+* Post-v2 Android embedding cleanups.
 
 ## 1.6.8
 
