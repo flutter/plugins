@@ -1,3 +1,7 @@
+## 1.1.3
+
+* Added serverAuthCode in GoogleSignInUserData.
+
 ## 1.1.2
 
 * Update lower bound of dart dependency to 2.1.0.

@@ -1,3 +1,7 @@
+## 4.5.2
+
+* Fix serverAuthCode on Android.
+
 ## 4.5.1
 
 * Add note on Apple sign in requirement in README.
