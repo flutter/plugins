@@ -12,15 +12,25 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
 
-/// This is the Linux path provider instance when the target platform is Linux.
-///
-/// This is to manually endorse the linux path provider until automatic registration of dart plugins is implemented.
-/// Should not be used in users' code, just made visible for testing
+// Should not be used in users' code, just made visible for testing to test the method channel implementation
 @visibleForTesting
-PathProviderPlatform linuxPathProvider =
-    Platform.isLinux ? PathProviderLinux() : null;
-PathProviderPlatform get _platform =>
-    linuxPathProvider ?? PathProviderPlatform.instance;
+set testOverrideUseMethodChannel(bool override) {
+  _useMethodChannel = override;
+}
+
+bool _useMethodChannel = false;
+PathProviderPlatform __platform;
+
+// This is to manually endorse the linux path provider until automatic registration of dart plugins is implemented.
+PathProviderPlatform get _platform {
+  if (__platform != null) {
+    return __platform;
+  }
+  if (Platform.isLinux && !_useMethodChannel) {
+    __platform = PathProviderLinux();
+  }
+  return __platform = PathProviderPlatform.instance;
+}
 
 /// Path to the temporary directory on the device that is not backed up and is
 /// suitable for storing caches of downloaded files.
