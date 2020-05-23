@@ -1,3 +1,24 @@
+# 0.1.1+6
+
+- Open "mailto" urls with target set as "\_top" on Safari browsers.
+- Update lower bound of dart dependency to 2.2.0.
+
+# 0.1.1+5
+
+- Update lower bound of dart dependency to 2.1.0.
+
+# 0.1.1+4
+
+- Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+# 0.1.1+3
+
+- Refactor tests to not rely on the underlying browser behavior.
+
+# 0.1.1+2
+
+- Open urls with target "\_top" on iOS PWAs.
+
 # 0.1.1+1
 
 - Make the pedantic dev_dependency explicit.

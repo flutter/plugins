@@ -1,8 +1,17 @@
+## 0.4.1
+
+* Add support for macOS.
+
+## 0.4.0+18
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.4.0+17
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.
 * Clean up various Android workarounds no longer needed after framework v1.12.
 * Complete v2 embedding support.
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.4.0+16
 

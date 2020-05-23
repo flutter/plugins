@@ -263,6 +263,46 @@ void main() {
     }
   });
 
+  testWidgets('testLiteModeEnabled', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        liteModeEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    bool liteModeEnabled = await inspector.isLiteModeEnabled();
+    expect(liteModeEnabled, false);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        liteModeEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    liteModeEnabled = await inspector.isLiteModeEnabled();
+    expect(liteModeEnabled, true);
+  }, skip: !Platform.isAndroid);
+
   testWidgets('testRotateGesturesEnabled', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
@@ -383,6 +423,53 @@ void main() {
     expect(scrollGesturesEnabled, true);
   });
 
+  testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
+    final Completer<GoogleMapController> mapControllerCompleter =
+        Completer<GoogleMapController>();
+    final Key key = GlobalKey();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: GoogleMap(
+          key: key,
+          initialCameraPosition: _kInitialCameraPosition,
+          onMapCreated: (GoogleMapController controller) {
+            mapControllerCompleter.complete(controller);
+          },
+        ),
+      ),
+    );
+    final GoogleMapController mapController =
+        await mapControllerCompleter.future;
+
+    await tester.pumpAndSettle();
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future.delayed(Duration(seconds: 1));
+
+    ScreenCoordinate coordinate =
+        await mapController.getScreenCoordinate(_kInitialCameraPosition.target);
+    Rect rect = tester.getRect(find.byKey(key));
+    if (Platform.isIOS) {
+      // On iOS, the coordinate value from the GoogleMapSdk doesn't include the devicePixelRatio`.
+      // So we don't need to do the conversion like we did below for other platforms.
+      expect(coordinate.x, (rect.center.dx - rect.topLeft.dx).round());
+      expect(coordinate.y, (rect.center.dy - rect.topLeft.dy).round());
+    } else {
+      expect(
+          coordinate.x,
+          ((rect.center.dx - rect.topLeft.dx) *
+                  tester.binding.window.devicePixelRatio)
+              .round());
+      expect(
+          coordinate.y,
+          ((rect.center.dy - rect.topLeft.dy) *
+                  tester.binding.window.devicePixelRatio)
+              .round());
+    }
+  });
+
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final LatLngBounds zeroLatLngBounds = LatLngBounds(
@@ -401,13 +488,8 @@ void main() {
         },
       ),
     ));
-    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
-    // initialization. https://github.com/flutter/flutter/issues/24806
-    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
-    // still being investigated.
-    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-    // https://github.com/flutter/flutter/issues/27550
-    await tester.pumpAndSettle(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+
     final GoogleMapController mapController =
         await mapControllerCompleter.future;
 
@@ -707,13 +789,11 @@ void main() {
 
     final GoogleMapController controller = await controllerCompleter.future;
 
-    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
-    // initialization. https://github.com/flutter/flutter/issues/24806
-    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
-    // still being investigated.
-    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-    // https://github.com/flutter/flutter/issues/27550
-    await tester.pumpAndSettle(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future.delayed(Duration(seconds: 1));
 
     final LatLngBounds visibleRegion = await controller.getVisibleRegion();
     final LatLng topLeft =
@@ -744,13 +824,11 @@ void main() {
 
     final GoogleMapController controller = await controllerCompleter.future;
 
-    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
-    // initialization. https://github.com/flutter/flutter/issues/24806
-    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
-    // still being investigated.
-    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-    // https://github.com/flutter/flutter/issues/27550
-    await tester.pumpAndSettle(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future.delayed(Duration(seconds: 1));
 
     double zoom = await controller.getZoomLevel();
     expect(zoom, _kInitialZoomLevel);
@@ -778,13 +856,11 @@ void main() {
     ));
     final GoogleMapController controller = await controllerCompleter.future;
 
-    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
-    // initialization. https://github.com/flutter/flutter/issues/24806
-    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
-    // still being investigated.
-    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-    // https://github.com/flutter/flutter/issues/27550
-    await tester.pumpAndSettle(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future.delayed(Duration(seconds: 1));
 
     final LatLngBounds visibleRegion = await controller.getVisibleRegion();
     final LatLng northWest = LatLng(
@@ -818,13 +894,11 @@ void main() {
             home: Scaffold(
                 body: SizedBox(height: 400, width: 400, child: map)))));
 
-    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
-    // initialization. https://github.com/flutter/flutter/issues/24806
-    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
-    // still being investigated.
-    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-    // https://github.com/flutter/flutter/issues/27550
-    await tester.pumpAndSettle(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future.delayed(Duration(seconds: 1));
 
     // Simple call to make sure that the app hasn't crashed.
     final LatLngBounds bounds1 = await controller.getVisibleRegion();
@@ -906,5 +980,8 @@ void main() {
     final GoogleMapInspector inspector = await inspectorCompleter.future;
     final Uint8List bytes = await inspector.takeSnapshot();
     expect(bytes?.isNotEmpty, true);
-  });
+  },
+      // TODO(cyanglaz): un-skip the test when we can test this on CI with API key enabled.
+      // https://github.com/flutter/flutter/issues/57057
+      skip: Platform.isAndroid);
 }

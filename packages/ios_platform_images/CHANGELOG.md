@@ -1,6 +1,15 @@
+## 0.1.2+2
+
+* Post-v2 Android embedding cleanups.
+
+## 0.1.2+1
+
+* Remove Android folder from `ios_platform_images`.
+
 ## 0.1.2
 
 * Fix crash when parameter extension is null.
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.1.1
 

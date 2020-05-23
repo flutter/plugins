@@ -1,3 +1,7 @@
+## 0.9.1+1
+
+* Remove Android folder from `google_sign_in_web`.
+
 ## 0.9.1
 
 * Ensure the web code returns `null` when the user is not signed in, instead of a `null-object` User. Fixes [issue 52338](https://github.com/flutter/flutter/issues/52338).

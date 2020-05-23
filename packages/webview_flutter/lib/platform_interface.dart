@@ -107,6 +107,7 @@ class WebResourceError {
     @required this.description,
     this.domain,
     this.errorType,
+    this.failingUrl,
   })  : assert(errorCode != null),
         assert(description != null);
 
@@ -139,6 +140,12 @@ class WebResourceError {
   ///
   /// This will never be `null` on Android, but can be `null` on iOS.
   final WebResourceErrorType errorType;
+
+  /// Gets the URL for which the resource request was made.
+  ///
+  /// This value is not provided on iOS. Alternatively, you can keep track of
+  /// the last values provided to [WebViewPlatformController.loadUrl].
+  final String failingUrl;
 }
 
 /// Interface for talking to the webview's platform implementation.
@@ -277,6 +284,38 @@ abstract class WebViewPlatformController {
   Future<String> getTitle() {
     throw UnimplementedError(
         "WebView getTitle is not implemented on the current platform");
+  }
+
+  /// Set the scrolled position of this view.
+  ///
+  /// The parameters `x` and `y` specify the position to scroll to in WebView pixels.
+  Future<void> scrollTo(int x, int y) {
+    throw UnimplementedError(
+        "WebView scrollTo is not implemented on the current platform");
+  }
+
+  /// Move the scrolled position of this view.
+  ///
+  /// The parameters `x` and `y` specify the amount of WebView pixels to scroll by.
+  Future<void> scrollBy(int x, int y) {
+    throw UnimplementedError(
+        "WebView scrollBy is not implemented on the current platform");
+  }
+
+  /// Return the horizontal scroll position of this view.
+  ///
+  /// Scroll position is measured from left.
+  Future<int> getScrollX() {
+    throw UnimplementedError(
+        "WebView getScrollX is not implemented on the current platform");
+  }
+
+  /// Return the vertical scroll position of this view.
+  ///
+  /// Scroll position is measured from top.
+  Future<int> getScrollY() {
+    throw UnimplementedError(
+        "WebView getScrollY is not implemented on the current platform");
   }
 }
 
