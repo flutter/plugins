@@ -196,7 +196,7 @@ class PurchaseDetails {
         _platform = _kPlatformIOS {
     status = SKTransactionStatusConverter()
         .toPurchaseStatus(transaction.transactionState);
-            if (status == PurchaseStatus.error) {
+    if (status == PurchaseStatus.error) {
       error = IAPError(
         source: IAPSource.AppStore,
         code: kPurchaseErrorCode,
