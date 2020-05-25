@@ -221,7 +221,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
             ..error = transaction.error != null
                 ? IAPError(
                     source: IAPSource.AppStore,
-                    code: kPurchaseErrorCode,
+                    code: '${transaction.error.code}',
                     message: transaction.error.domain,
                     details: transaction.error.userInfo,
                   )
