@@ -1,3 +1,7 @@
+## 0.5.28+2
+
+* Move test introduced in #2449 to its right location.
+
 ## 0.5.28+1
 
 * Android: Make sure map view only calls onDestroy once.
