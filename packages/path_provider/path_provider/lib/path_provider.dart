@@ -5,7 +5,7 @@
 import 'dart:async';
 import 'dart:io' show Directory, Platform;
 
-import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
@@ -22,11 +22,12 @@ bool _useMethodChannel = false;
 PathProviderPlatform __platform;
 
 // This is to manually endorse the linux path provider until automatic registration of dart plugins is implemented.
+// See this issue https://github.com/flutter/flutter/issues/52267 for details
 PathProviderPlatform get _platform {
   if (__platform != null) {
     return __platform;
   }
-  if (Platform.isLinux && !_useMethodChannel) {
+  if (!kIsWeb && Platform.isLinux && !_useMethodChannel) {
     __platform = PathProviderLinux();
   } else {
     __platform = PathProviderPlatform.instance;

@@ -11,20 +11,5 @@ For more details see: https://github.com/flutter/flutter/wiki/Package-migration-
 
 ## Usage
 
-### Import the package
-
-This package is already included as part of the `path_provider` package dependency. So just include it.
-
-This is what the above means to your `pubspec.yaml`:
-
-```yaml
-...
-dependencies:
-  ...
-  path_provider: ^1.6.9
-  ...
-```
-
-### Use the plugin
-
-You should be able to use `package:path_provider` as normal.
+This package is already included as part of the `path_provider` package dependency, and will
+be included when using `path_provider` as normal. You will need to use version 1.6.10 or newer.
