@@ -52,11 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _playVideo(PickedFile file) async {
     if (file != null && mounted) {
       await _disposeVideoController();
-      if (kIsWeb) {
-        _controller = VideoPlayerController.network(file.path);
-      } else {
-        _controller = VideoPlayerController.file(File(file.path));
-      }
+      _controller = VideoPlayerController.file(File(file.path));
       await _controller.setVolume(1.0);
       await _controller.initialize();
       await _controller.setLooping(true);
@@ -143,13 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return retrieveError;
     }
     if (_imageFile != null) {
-      if (kIsWeb) {
-        return Image.network(_imageFile.path);
-        // Or from memory...
-      } else {
-        // This would also work from memory as well...
-        return Image.file(File(_imageFile.path));
-      }
+      return Image.file(File(_imageFile.path));
     } else if (_pickImageError != null) {
       return Text(
         'Pick image error: $_pickImageError',
@@ -190,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+        child: defaultTargetPlatform == TargetPlatform.android
             ? FutureBuilder<void>(
                 future: retrieveLostData(),
                 builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
