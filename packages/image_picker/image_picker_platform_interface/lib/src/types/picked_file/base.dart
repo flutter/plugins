@@ -31,6 +31,8 @@ abstract class PickedFileBase {
 
   /// Synchronously read the entire file contents as a string using the given [Encoding].
   ///
+  /// By default, `encoding` is [utf8].
+  ///
   /// Throws Exception if the operation fails.
   Future<String> readAsString({Encoding encoding = utf8}) {
     throw UnimplementedError('readAsString() has not been implemented.');
