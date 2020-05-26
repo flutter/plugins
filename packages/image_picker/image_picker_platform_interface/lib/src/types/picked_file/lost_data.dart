@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:flutter/services.dart';
 import 'package:image_picker_platform_interface/src/types/types.dart';
 
@@ -12,15 +10,14 @@ import 'package:image_picker_platform_interface/src/types/types.dart';
 /// Only applies to Android.
 /// See also:
 /// * [ImagePicker.retrieveLostData] for more details on retrieving lost data.
-@Deprecated('Use methods that return a LostData object instead.')
-class LostDataResponse {
+class LostData {
   /// Creates an instance with the given [file], [exception], and [type]. Any of
   /// the params may be null, but this is never considered to be empty.
-  LostDataResponse({this.file, this.exception, this.type});
+  LostData({this.file, this.exception, this.type});
 
   /// Initializes an instance with all member params set to null and considered
   /// to be empty.
-  LostDataResponse.empty()
+  LostData.empty()
       : file = null,
         exception = null,
         type = null,
@@ -34,7 +31,7 @@ class LostDataResponse {
   /// The file that was lost in a previous [pickImage] or [pickVideo] call due to MainActivity being destroyed.
   ///
   /// Can be null if [exception] exists.
-  final File file;
+  final PickedFile file;
 
   /// The exception of the last [pickImage] or [pickVideo].
   ///
