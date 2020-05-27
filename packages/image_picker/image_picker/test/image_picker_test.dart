@@ -148,8 +148,7 @@ void main() {
       test('handles a null image path response gracefully', () async {
         channel.setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        expect(
-            await picker.getImage(source: ImageSource.gallery), isNull);
+        expect(await picker.getImage(source: ImageSource.gallery), isNull);
         expect(await picker.getImage(source: ImageSource.camera), isNull);
       });
 
@@ -252,8 +251,7 @@ void main() {
       test('handles a null video path response gracefully', () async {
         channel.setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        expect(
-            await picker.getVideo(source: ImageSource.gallery), isNull);
+        expect(await picker.getVideo(source: ImageSource.gallery), isNull);
         expect(await picker.getVideo(source: ImageSource.camera), isNull);
       });
 
