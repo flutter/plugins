@@ -1,3 +1,8 @@
+## 0.6.6+5
+
+* Pin the version of the platform interface to 1.0.0 until the plugin refactor
+is ready to go.
+
 ## 0.6.6+4
 
 * Fix bug, sometimes double click cancel button will crash.
