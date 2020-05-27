@@ -5,20 +5,29 @@
 import 'dart:async';
 import 'dart:io' show Directory, Platform;
 
-import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
 
-// Should not be used in users' code, just made visible for testing to test the method channel implementation
-@visibleForTesting
-set testOverrideUseMethodChannel(bool override) {
-  _useMethodChannel = override;
+/// Allows the user to disable platform override in order to use a manually registered [PathProviderPlatform]
+///
+/// Make sure to disable the override before using any of the `path_provider` methods
+/// To use your own [PathProviderPlatform], make sure to include the following lines
+/// ```
+/// PathProviderPlatform.instance = YourPathProviderPlatform();
+/// disablePathProviderPlatformOverride = true;
+/// // Use the `path_provider` methods:
+/// final dir = await getTemporaryDirectory();
+/// ```
+/// See this issue https://github.com/flutter/flutter/issues/52267 for why this is required
+set disablePathProviderPlatformOverride(bool override) {
+  _disablePlatformOverride = override;
 }
 
-bool _useMethodChannel = false;
+bool _disablePlatformOverride = false;
 PathProviderPlatform __platform;
 
 // This is to manually endorse the linux path provider until automatic registration of dart plugins is implemented.
@@ -27,7 +36,7 @@ PathProviderPlatform get _platform {
   if (__platform != null) {
     return __platform;
   }
-  if (!kIsWeb && Platform.isLinux && !_useMethodChannel) {
+  if (!kIsWeb && Platform.isLinux && !_disablePlatformOverride) {
     __platform = PathProviderLinux();
   } else {
     __platform = PathProviderPlatform.instance;
