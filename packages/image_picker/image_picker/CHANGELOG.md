@@ -1,6 +1,7 @@
 ## 0.6.7
 
 * Utilize the new platform_interface package.
+* **This change marks old methods as `deprecated`. Please check the README for migration instructions to the new API.**
 
 ## 0.6.6+5
 

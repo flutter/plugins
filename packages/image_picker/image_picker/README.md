@@ -100,7 +100,7 @@ There's no way to detect when this happens, so calling this method at the right 
 
 Starting with version **0.6.7** of the image_picker plugin, the API of the plugin changed slightly to allow for web implementations to exist.
 
-The **old methods that returned `dart:io` File objects were marked as deprecated**, and a new set of methods that return [`PickedFile`-based object](https://pub.dev/documentation/image_picker_platform_interface/latest/image_picker_platform_interface/PickedFile-class.html) were introduced.
+The **old methods that returned `dart:io` File objects were marked as deprecated**, and a new set of methods that return [`PickedFile` objects](https://pub.dev/documentation/image_picker_platform_interface/latest/image_picker_platform_interface/PickedFile-class.html) were introduced.
 
 ### How to migrate from to ^0.6.7
 
