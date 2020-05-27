@@ -299,6 +299,7 @@ void main() {
             'path': '/example/path',
           };
         });
+        // ignore: deprecated_member_use_from_same_package
         final LostDataResponse response =
             await picker.retrieveLostDataAsDartIoFile();
         expect(response.type, RetrieveType.image);
@@ -313,6 +314,7 @@ void main() {
             'errorMessage': 'test_error_message',
           };
         });
+        // ignore: deprecated_member_use_from_same_package
         final LostDataResponse response =
             await picker.retrieveLostDataAsDartIoFile();
         expect(response.type, RetrieveType.video);
@@ -338,6 +340,6 @@ void main() {
         });
         expect(picker.retrieveLostDataAsDartIoFile(), throwsAssertionError);
       });
-    });
+    }, skip: isBrowser);
   });
 }
