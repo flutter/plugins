@@ -4,6 +4,7 @@ import android.Manifest.permission;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import dev.flutter.plugins.e2e.FlutterTestRunner;
+import io.flutter.embedding.android.FlutterActivity;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
@@ -13,13 +14,13 @@ import org.junit.runner.RunWith;
  * results which are guarded with permissions.
  */
 @RunWith(FlutterTestRunner.class)
-public class MainActivityWithPermissionTest {
+public class FlutterActivityWithPermissionTest {
 
   @Rule
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(permission.ACCESS_COARSE_LOCATION);
 
   @Rule
-  public ActivityTestRule<MainActivity> rule =
-      new ActivityTestRule<>(MainActivity.class, true, false);
+  public ActivityTestRule<FlutterActivity> rule =
+      new ActivityTestRule<>(FlutterActivity.class, true, false);
 }
