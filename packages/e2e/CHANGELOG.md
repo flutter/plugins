@@ -1,3 +1,8 @@
+## 0.4.3+2
+
+* Bumps AGP to 3.6.3
+* Changes android-retrofuture dependency type to "implementation"
+
 ## 0.4.3+1
 
 * Post-v2 Android embedding cleanup.
