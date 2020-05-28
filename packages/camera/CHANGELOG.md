@@ -1,3 +1,7 @@
+## 0.5.8+3
+
+* Fix bug in usage example in README.md 
+
 ## 0.5.8+2
 
 * Post-v2 embedding cleanups.
