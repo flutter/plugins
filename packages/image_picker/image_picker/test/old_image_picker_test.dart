@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: deprecated_member_use, deprecated_member_use_from_same_package
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,8 +17,6 @@ void main() {
 
     final List<MethodCall> log = <MethodCall>[];
 
-    final picker = ImagePicker();
-
     setUp(() {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
@@ -28,8 +28,8 @@ void main() {
 
     group('#pickImage', () {
       test('passes the image source argument correctly', () async {
-        await picker.getImage(source: ImageSource.camera);
-        await picker.getImage(source: ImageSource.gallery);
+        await ImagePicker.pickImage(source: ImageSource.camera);
+        await ImagePicker.pickImage(source: ImageSource.gallery);
 
         expect(
           log,
@@ -53,25 +53,25 @@ void main() {
       });
 
       test('passes the width and height arguments correctly', () async {
-        await picker.getImage(source: ImageSource.camera);
-        await picker.getImage(
+        await ImagePicker.pickImage(source: ImageSource.camera);
+        await ImagePicker.pickImage(
           source: ImageSource.camera,
           maxWidth: 10.0,
         );
-        await picker.getImage(
+        await ImagePicker.pickImage(
           source: ImageSource.camera,
           maxHeight: 10.0,
         );
-        await picker.getImage(
+        await ImagePicker.pickImage(
           source: ImageSource.camera,
           maxWidth: 10.0,
           maxHeight: 20.0,
         );
-        await picker.getImage(
+        await ImagePicker.pickImage(
             source: ImageSource.camera, maxWidth: 10.0, imageQuality: 70);
-        await picker.getImage(
+        await ImagePicker.pickImage(
             source: ImageSource.camera, maxHeight: 10.0, imageQuality: 70);
-        await picker.getImage(
+        await ImagePicker.pickImage(
             source: ImageSource.camera,
             maxWidth: 10.0,
             maxHeight: 20.0,
@@ -135,12 +135,12 @@ void main() {
 
       test('does not accept a negative width or height argument', () {
         expect(
-          picker.getImage(source: ImageSource.camera, maxWidth: -1.0),
+          ImagePicker.pickImage(source: ImageSource.camera, maxWidth: -1.0),
           throwsArgumentError,
         );
 
         expect(
-          picker.getImage(source: ImageSource.camera, maxHeight: -1.0),
+          ImagePicker.pickImage(source: ImageSource.camera, maxHeight: -1.0),
           throwsArgumentError,
         );
       });
@@ -148,12 +148,13 @@ void main() {
       test('handles a null image path response gracefully', () async {
         channel.setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        expect(await picker.getImage(source: ImageSource.gallery), isNull);
-        expect(await picker.getImage(source: ImageSource.camera), isNull);
+        expect(
+            await ImagePicker.pickImage(source: ImageSource.gallery), isNull);
+        expect(await ImagePicker.pickImage(source: ImageSource.camera), isNull);
       });
 
       test('camera position defaults to back', () async {
-        await picker.getImage(source: ImageSource.camera);
+        await ImagePicker.pickImage(source: ImageSource.camera);
 
         expect(
           log,
@@ -170,7 +171,7 @@ void main() {
       });
 
       test('camera position can set to front', () async {
-        await picker.getImage(
+        await ImagePicker.pickImage(
             source: ImageSource.camera,
             preferredCameraDevice: CameraDevice.front);
 
@@ -191,8 +192,8 @@ void main() {
 
     group('#pickVideo', () {
       test('passes the image source argument correctly', () async {
-        await picker.getVideo(source: ImageSource.camera);
-        await picker.getVideo(source: ImageSource.gallery);
+        await ImagePicker.pickVideo(source: ImageSource.camera);
+        await ImagePicker.pickVideo(source: ImageSource.gallery);
 
         expect(
           log,
@@ -212,14 +213,14 @@ void main() {
       });
 
       test('passes the duration argument correctly', () async {
-        await picker.getVideo(source: ImageSource.camera);
-        await picker.getVideo(
+        await ImagePicker.pickVideo(source: ImageSource.camera);
+        await ImagePicker.pickVideo(
             source: ImageSource.camera,
             maxDuration: const Duration(seconds: 10));
-        await picker.getVideo(
+        await ImagePicker.pickVideo(
             source: ImageSource.camera,
             maxDuration: const Duration(minutes: 1));
-        await picker.getVideo(
+        await ImagePicker.pickVideo(
             source: ImageSource.camera, maxDuration: const Duration(hours: 1));
         expect(
           log,
@@ -251,12 +252,13 @@ void main() {
       test('handles a null video path response gracefully', () async {
         channel.setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        expect(await picker.getVideo(source: ImageSource.gallery), isNull);
-        expect(await picker.getVideo(source: ImageSource.camera), isNull);
+        expect(
+            await ImagePicker.pickVideo(source: ImageSource.gallery), isNull);
+        expect(await ImagePicker.pickVideo(source: ImageSource.camera), isNull);
       });
 
       test('camera position defaults to back', () async {
-        await picker.getVideo(source: ImageSource.camera);
+        await ImagePicker.pickVideo(source: ImageSource.camera);
 
         expect(
           log,
@@ -271,7 +273,7 @@ void main() {
       });
 
       test('camera position can set to front', () async {
-        await picker.getVideo(
+        await ImagePicker.pickVideo(
             source: ImageSource.camera,
             preferredCameraDevice: CameraDevice.front);
 
@@ -296,7 +298,7 @@ void main() {
             'path': '/example/path',
           };
         });
-        final LostData response = await picker.getLostData();
+        final LostDataResponse response = await ImagePicker.retrieveLostData();
         expect(response.type, RetrieveType.image);
         expect(response.file.path, '/example/path');
       });
@@ -309,7 +311,7 @@ void main() {
             'errorMessage': 'test_error_message',
           };
         });
-        final LostData response = await picker.getLostData();
+        final LostDataResponse response = await ImagePicker.retrieveLostData();
         expect(response.type, RetrieveType.video);
         expect(response.exception.code, 'test_error_code');
         expect(response.exception.message, 'test_error_message');
@@ -319,7 +321,7 @@ void main() {
         channel.setMockMethodCallHandler((MethodCall methodCall) async {
           return null;
         });
-        expect((await picker.getLostData()).isEmpty, true);
+        expect((await ImagePicker.retrieveLostData()).isEmpty, true);
       });
 
       test('retrieveLostData get both path and error should throw', () async {
@@ -331,7 +333,7 @@ void main() {
             'path': '/example/path',
           };
         });
-        expect(picker.getLostData(), throwsAssertionError);
+        expect(ImagePicker.retrieveLostData(), throwsAssertionError);
       });
     });
   });
