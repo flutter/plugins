@@ -1,3 +1,20 @@
+## 0.4.3+3
+
+* Fixed code snippet in readme that referenced a non-existent `result` variable.
+
+## 0.4.3+2
+
+* Bumps AGP to 3.6.3
+* Changes android-retrofuture dependency type to "implementation"
+
+## 0.4.3+1
+
+* Post-v2 Android embedding cleanup.
+
+## 0.4.3
+
+* Uses CompletableFuture from android-retrofuture allow compatibility with API < 24.
+
 ## 0.4.2
 
 * Adds support for Android E2E tests that utilize other @Rule's, like GrantPermissionRule.
