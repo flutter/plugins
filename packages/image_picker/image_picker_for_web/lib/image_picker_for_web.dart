@@ -14,14 +14,15 @@ final String _kAcceptVideoMimeType = 'video/*';
 ///
 /// This class implements the `package:image_picker` functionality for the web.
 class ImagePickerPlugin extends ImagePickerPlatform {
-  final Function _overrideCreateInput;
-  bool get _shouldOverrideInput => _overrideCreateInput != null;
+  final ImagePickerPluginTestOverrides _overrides;
+  bool get _hasOverrides => _overrides != null;
 
   html.Element _target;
 
   /// A constructor that allows tests to override the function that creates file inputs.
-  ImagePickerPlugin({@visibleForTesting Function overrideCreateInput})
-      : _overrideCreateInput = overrideCreateInput {
+  ImagePickerPlugin({
+    @visibleForTesting ImagePickerPluginTestOverrides overrides,
+  }) : _overrides = overrides {
     _target = _initTarget(_kImagePickerInputsDomId);
   }
 
@@ -81,12 +82,19 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return capture;
   }
 
+  html.File _getFileFromInput(html.FileUploadInputElement input) {
+    if (_hasOverrides) {
+      return _overrides.getFileFromInput(input);
+    }
+    return input.files[0];
+  }
+
   /// Handles the OnChange event from a FileUploadInputElement object
   /// Returns the objectURL of the selected file.
   String _handleOnChangeEvent(html.Event event) {
     // load the file...
     final html.FileUploadInputElement input = event.target;
-    final html.File file = input.files[0];
+    final html.File file = _getFileFromInput(input);
 
     if (file != null) {
       return html.Url.createObjectUrl(file);
@@ -127,11 +135,11 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// allows to `capture` from the device's cameras (where supported)
   @visibleForTesting
   html.Element createInputElement(String accept, String capture) {
-    html.Element element;
-
-    if (_shouldOverrideInput) {
-      return _overrideCreateInput(accept, capture);
+    if (_hasOverrides) {
+      return _overrides.createInputElement(accept, capture);
     }
+
+    html.Element element;
 
     if (capture != null) {
       // Capture is not supported by dart:html :/
@@ -148,10 +156,27 @@ class ImagePickerPlugin extends ImagePickerPlatform {
 
   /// Injects the file input element, and clicks on it
   void _injectAndActivate(html.Element element) {
-    if (!_shouldOverrideInput) {
-      _target.children.clear();
-      _target.children.add(element);
-    }
+    _target.children.clear();
+    _target.children.add(element);
     element.click();
   }
+}
+
+// Some tools to override behavior for unit-testing
+typedef _OverrideCreateInputFunction = html.Element Function(
+  String accept,
+  String capture,
+);
+typedef _OverrideExtractFilesFromInputFunction = html.File Function(
+  html.Element,
+);
+
+/// Overrides for some of the functionality above.
+@visibleForTesting
+class ImagePickerPluginTestOverrides {
+  /// Override the creation of the input element.
+  _OverrideCreateInputFunction createInputElement;
+
+  /// Override the extraction of the selected file from an input element.
+  _OverrideExtractFilesFromInputFunction getFileFromInput;
 }

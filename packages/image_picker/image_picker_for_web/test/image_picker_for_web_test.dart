@@ -4,7 +4,6 @@
 
 @TestOn('chrome') // Uses dart:html
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:html' as html;
 import 'dart:typed_data';
@@ -12,60 +11,33 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
-import 'package:mockito/mockito.dart';
 
 final String expectedStringContents = "Hello, world!";
 final Uint8List bytes = utf8.encode(expectedStringContents);
 final html.File textFile = html.File([bytes], "hello.txt");
 
-class MockFileInput extends Mock implements html.FileUploadInputElement {}
-
-class MockOnChangeEvent extends Mock implements html.Event {
-  @override
-  MockFileInput target;
-}
-
-class MockElementStream<T extends html.Event> extends Mock
-    implements html.ElementStream<T> {
-  final StreamController<T> controller = StreamController<T>();
-  @override
-  StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    return controller.stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-  }
-}
-
 void main() {
-  // Mock the "pick file" browser behavior.
-  MockFileInput mockInput;
-  MockElementStream mockStream;
-  MockElementStream mockErrorStream;
-  MockOnChangeEvent mockEvent;
-
   // Under test...
   ImagePickerPlugin plugin;
 
   setUp(() {
-    mockInput = MockFileInput();
-    mockStream = MockElementStream<html.Event>();
-    mockErrorStream = MockElementStream<html.Event>();
-    mockEvent = MockOnChangeEvent()..target = mockInput;
-
-    // Make the mockInput behave like a proper input...
-    when(mockInput.onChange).thenAnswer((_) => mockStream);
-    when(mockInput.onError).thenAnswer((_) => mockErrorStream);
-
-    plugin = ImagePickerPlugin(overrideCreateInput: (_, __) => mockInput);
+    plugin = ImagePickerPlugin();
   });
 
   test('Can select a file', () async {
+    final mockInput = html.FileUploadInputElement();
+
+    final overrides = ImagePickerPluginTestOverrides()
+      ..createInputElement = ((_, __) => mockInput)
+      ..getFileFromInput = ((_) => textFile);
+
+    final plugin = ImagePickerPlugin(overrides: overrides);
+
     // Init the pick file dialog...
     final file = plugin.pickFile();
 
     // Mock the browser behavior of selecting a file...
-    when(mockInput.files).thenReturn([textFile]);
-    mockStream.controller.add(mockEvent);
+    mockInput.dispatchEvent(html.Event('change'));
 
     // Now the file should be available
     expect(file, completes);
@@ -95,9 +67,6 @@ void main() {
   });
 
   group('createInputElement', () {
-    setUp(() {
-      plugin = ImagePickerPlugin();
-    });
     test('accept: any, capture: null', () {
       html.Element input = plugin.createInputElement('any', null);
 
