@@ -1,3 +1,7 @@
+## 0.4.3+3
+
+* Fixed code snippet in readme that referenced a non-existent `result` variable.
+
 ## 0.4.3+2
 
 * Bumps AGP to 3.6.3
