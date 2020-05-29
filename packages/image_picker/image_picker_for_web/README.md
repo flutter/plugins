@@ -1,6 +1,6 @@
 # image_picker_for_web
 
-The web implementation of [`image_picker`][1].
+A web implementation of [`image_picker`][1].
 
 ## Browser Support
 
@@ -42,15 +42,16 @@ difference in your users' experience.
 
 ### Import the package
 
-This package is the endorsed implementation of `image_picker` for the web platform since version `0.6.7`, so it gets automatically added to your dependencies by depending on `image_picker: ^0.6.7`.
+This package is an unendorsed web platform implementation of `image_picker`.
 
-No modifications to your pubspec.yaml should be required in a recent enough version of Flutter (`>=1.12.13+hotfix.4`):
+In order to use this, you'll need to depend in `image_picker: ^0.6.7` (which was the first version of the plugin that allowed federation), and `image_picker_for_web: ^0.1.0`.
 
 ```yaml
 ...
 dependencies:
   ...
   image_picker: ^0.6.7
+  image_picker_for_web: ^0.1.0
   ...
 ...
 ```
@@ -84,4 +85,4 @@ Image.memory(await pickedFile.readAsBytes())
 ...
 ```
 
-[1]: ../image_picker/image_picker
+[1]: https://pub.dev/packages/image_picker
