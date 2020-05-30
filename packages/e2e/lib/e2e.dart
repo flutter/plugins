@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -35,6 +36,20 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
   }
+
+  // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
+  // ignore: override_on_non_overriding_member
+  @override
+  bool get overrideHttpClient => false;
+
+  // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
+  // ignore: override_on_non_overriding_member
+  @override
+  bool get registerTestTextInput => false;
+
+  @override
+  ViewConfiguration createViewConfiguration() =>
+      TestViewConfiguration(size: window.physicalSize);
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
