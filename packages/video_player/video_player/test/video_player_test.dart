@@ -11,6 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+import 'package:video_player_platform_interface/messages.dart';
 
 class FakeController extends ValueNotifier<VideoPlayerValue>
     implements VideoPlayerController {
@@ -169,11 +170,9 @@ void main() {
         await controller.initialize();
 
         expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0],
-            <String, dynamic>{
-              'asset': 'a.avi',
-              'package': null,
-            });
+            fakeVideoPlayerPlatform.dataSourceDescriptions[0].asset, 'a.avi');
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].packageName,
+            null);
       });
 
       test('network', () async {
@@ -182,12 +181,10 @@ void main() {
         );
         await controller.initialize();
 
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+            'https://127.0.0.1');
         expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0],
-            <String, dynamic>{
-              'uri': 'https://127.0.0.1',
-              'formatHint': null,
-            });
+            fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint, null);
       });
 
       test('network with hint', () async {
@@ -196,12 +193,10 @@ void main() {
             formatHint: VideoFormat.dash);
         await controller.initialize();
 
-        expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0],
-            <String, dynamic>{
-              'uri': 'https://127.0.0.1',
-              'formatHint': 'dash',
-            });
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+            'https://127.0.0.1');
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+            'dash');
       });
 
       test('init errors', () async {
@@ -224,11 +219,8 @@ void main() {
             VideoPlayerController.file(File('a.avi'));
         await controller.initialize();
 
-        expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0],
-            <String, dynamic>{
-              'uri': 'file://a.avi',
-            });
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+            'file://a.avi');
       });
     });
 
@@ -255,7 +247,7 @@ void main() {
       await controller.play();
 
       expect(controller.value.isPlaying, isTrue);
-      expect(fakeVideoPlayerPlatform.calls.last.method, 'play');
+      expect(fakeVideoPlayerPlatform.calls.last, 'play');
     });
 
     test('setLooping', () async {
@@ -280,7 +272,7 @@ void main() {
       await controller.pause();
 
       expect(controller.value.isPlaying, isFalse);
-      expect(fakeVideoPlayerPlatform.calls.last.method, 'pause');
+      expect(fakeVideoPlayerPlatform.calls.last, 'pause');
     });
 
     group('seekTo', () {
@@ -543,58 +535,73 @@ void main() {
   });
 }
 
-class FakeVideoPlayerPlatform {
+class FakeVideoPlayerPlatform extends VideoPlayerApiTest {
   FakeVideoPlayerPlatform() {
-    _channel.setMockMethodCallHandler(onMethodCall);
+    VideoPlayerApiTestSetup(this);
   }
 
-  final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer');
-
   Completer<bool> initialized = Completer<bool>();
-  List<MethodCall> calls = <MethodCall>[];
-  List<Map<String, dynamic>> dataSourceDescriptions = <Map<String, dynamic>>[];
+  List<String> calls = <String>[];
+  List<CreateMessage> dataSourceDescriptions = <CreateMessage>[];
   final Map<int, FakeVideoEventStream> streams = <int, FakeVideoEventStream>{};
   bool forceInitError = false;
   int nextTextureId = 0;
   final Map<int, Duration> _positions = <int, Duration>{};
 
-  Future<dynamic> onMethodCall(MethodCall call) {
-    calls.add(call);
-    switch (call.method) {
-      case 'init':
-        initialized.complete(true);
-        break;
-      case 'create':
-        streams[nextTextureId] = FakeVideoEventStream(nextTextureId, 100, 100,
-            const Duration(seconds: 1), forceInitError);
-        final Map<dynamic, dynamic> dataSource = call.arguments;
-        dataSourceDescriptions.add(dataSource.cast<String, dynamic>());
-        return Future<Map<String, int>>.sync(() {
-          return <String, int>{
-            'textureId': nextTextureId++,
-          };
-        });
-        break;
-      case 'position':
-        final Duration position = _positions[call.arguments['textureId']] ??
-            const Duration(seconds: 0);
-        return Future<int>.value(position.inMilliseconds);
-        break;
-      case 'seekTo':
-        _positions[call.arguments['textureId']] =
-            Duration(milliseconds: call.arguments['location']);
-        break;
-      case 'dispose':
-      case 'pause':
-      case 'play':
-      case 'setLooping':
-      case 'setVolume':
-        break;
-      default:
-        throw UnimplementedError(
-            '${call.method} is not implemented by the FakeVideoPlayerPlatform');
-    }
-    return Future<void>.sync(() {});
+  @override
+  TextureMessage create(CreateMessage arg) {
+    calls.add('create');
+    streams[nextTextureId] = FakeVideoEventStream(
+        nextTextureId, 100, 100, const Duration(seconds: 1), forceInitError);
+    TextureMessage result = TextureMessage();
+    result.textureId = nextTextureId++;
+    dataSourceDescriptions.add(arg);
+    return result;
+  }
+
+  @override
+  void dispose(TextureMessage arg) {
+    calls.add('dispose');
+  }
+
+  @override
+  void initialize() {
+    calls.add('init');
+    initialized.complete(true);
+  }
+
+  @override
+  void pause(TextureMessage arg) {
+    calls.add('pause');
+  }
+
+  @override
+  void play(TextureMessage arg) {
+    calls.add('play');
+  }
+
+  @override
+  PositionMessage position(TextureMessage arg) {
+    calls.add('position');
+    final Duration position =
+        _positions[arg.textureId] ?? const Duration(seconds: 0);
+    return PositionMessage()..position = position.inMilliseconds;
+  }
+
+  @override
+  void seekTo(PositionMessage arg) {
+    calls.add('seekTo');
+    _positions[arg.textureId] = Duration(milliseconds: arg.position);
+  }
+
+  @override
+  void setLooping(LoopingMessage arg) {
+    calls.add('setLooping');
+  }
+
+  @override
+  void setVolume(VolumeMessage arg) {
+    calls.add('setVolume');
   }
 }
 

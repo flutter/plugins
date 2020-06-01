@@ -215,17 +215,7 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     purchaseUpdatedController
         .add(transactions.map((SKPaymentTransactionWrapper transaction) {
       PurchaseDetails purchaseDetails =
-          PurchaseDetails.fromSKTransaction(transaction, receiptData)
-            ..status = SKTransactionStatusConverter()
-                .toPurchaseStatus(transaction.transactionState)
-            ..error = transaction.error != null
-                ? IAPError(
-                    source: IAPSource.AppStore,
-                    code: kPurchaseErrorCode,
-                    message: transaction.error.domain,
-                    details: transaction.error.userInfo,
-                  )
-                : null;
+          PurchaseDetails.fromSKTransaction(transaction, receiptData);
       return purchaseDetails;
     }).toList());
   }

@@ -50,7 +50,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   public static void registerWith(Registrar registrar) {
     InAppPurchasePlugin plugin = new InAppPurchasePlugin();
     plugin.setupMethodChannel(registrar.activity(), registrar.messenger(), registrar.context());
-    ((Application) registrar.context())
+    ((Application) registrar.context().getApplicationContext())
         .registerActivityLifecycleCallbacks(plugin.methodCallHandler);
   }
 

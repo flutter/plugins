@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'common.dart';
 import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
@@ -34,7 +37,26 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     });
   }
 
+  // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
+  // ignore: override_on_non_overriding_member
+  @override
+  bool get overrideHttpClient => false;
+
+  // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
+  // ignore: override_on_non_overriding_member
+  @override
+  bool get registerTestTextInput => false;
+
+  @override
+  ViewConfiguration createViewConfiguration() =>
+      TestViewConfiguration(size: window.physicalSize);
+
   final Completer<bool> _allTestsPassed = Completer<bool>();
+
+  /// Stores failure details.
+  ///
+  /// Failed test method's names used as key.
+  final List<Failure> _failureMethodsDetails = List<Failure>();
 
   /// Similar to [WidgetsFlutterBinding.ensureInitialized].
   ///
@@ -63,7 +85,9 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         case 'request_data':
           final bool allTestsPassed = await _allTestsPassed.future;
           response = <String, String>{
-            'message': allTestsPassed ? 'pass' : 'fail',
+            'message': allTestsPassed
+                ? Response.allTestsPassed().toJson()
+                : Response.someTestsFailed(_failureMethodsDetails).toJson(),
           };
           break;
         case 'get_health':
@@ -94,6 +118,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';
+      _failureMethodsDetails.add(Failure(testDescription, details.toString()));
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(false);
       valueBeforeTest(details, testDescription);
     };

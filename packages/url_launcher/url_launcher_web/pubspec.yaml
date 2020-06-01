@@ -1,7 +1,10 @@
 name: url_launcher_web
 description: Web platform implementation of url_launcher
 homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_web
-version: 0.1.1+1
+# 0.1.y+z is compatible with 1.0.0, if you land a breaking change bump
+# the version to 2.0.0.
+# See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+version: 0.1.1+6
 
 flutter:
   plugin:
@@ -12,6 +15,7 @@ flutter:
 
 dependencies:
   url_launcher_platform_interface: ^1.0.1
+  platform_detect: ^1.4.0
   flutter:
     sdk: flutter
   flutter_web_plugins:
@@ -23,7 +27,8 @@ dev_dependencies:
     sdk: flutter
   url_launcher: ^5.2.5
   pedantic: ^1.8.0
+  mockito: ^4.1.1
 
 environment:
-  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
   flutter: ">=1.10.0 <2.0.0"
