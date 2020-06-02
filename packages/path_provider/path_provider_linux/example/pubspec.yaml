@@ -9,11 +9,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  path_provider: any
-
-  # TODO: Remove this once path provider endorses the linux implementation
-  path_provider_linux:
-    path: ../
+  path_provider:
+    path: ../../path_provider
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
