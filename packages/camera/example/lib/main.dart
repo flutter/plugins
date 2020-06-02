@@ -43,6 +43,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
+  bool enableAutoRotate = true;
 
   @override
   void initState() {
@@ -151,6 +152,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               if (controller != null) {
                 onNewCameraSelected(controller.description);
               }
+            },
+          ),
+          const Text('Enable Auto Rotate:'),
+          Switch(
+            value: enableAutoRotate,
+            onChanged: (bool value) {
+              enableAutoRotate = value;
+              onNewCameraSelected(controller.description);
             },
           ),
         ],
@@ -451,7 +460,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     try {
-      await controller.takePicture(filePath);
+      await controller.takePicture(filePath, shouldAutoRotate: enableAutoRotate);
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;

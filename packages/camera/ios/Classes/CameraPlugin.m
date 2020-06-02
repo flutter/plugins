@@ -19,11 +19,13 @@ static FlutterError *getFlutterError(NSError *error) {
 @property(readonly, nonatomic) FlutterResult result;
 @property(readonly, nonatomic) CMMotionManager *motionManager;
 @property(readonly, nonatomic) AVCaptureDevicePosition cameraPosition;
+@property(assign, nonatomic) BOOL shouldAutoRotate;
 
 - initWithPath:(NSString *)filename
             result:(FlutterResult)result
      motionManager:(CMMotionManager *)motionManager
-    cameraPosition:(AVCaptureDevicePosition)cameraPosition;
+    cameraPosition:(AVCaptureDevicePosition)cameraPosition
+  shouldAutoRotate:(BOOL)shouldAutoRotate;
 @end
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
@@ -52,13 +54,15 @@ static FlutterError *getFlutterError(NSError *error) {
 - initWithPath:(NSString *)path
             result:(FlutterResult)result
      motionManager:(CMMotionManager *)motionManager
-    cameraPosition:(AVCaptureDevicePosition)cameraPosition {
+    cameraPosition:(AVCaptureDevicePosition)cameraPosition
+  shouldAutoRotate:(BOOL)shouldAutoRotate {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _path = path;
   _result = result;
   _motionManager = motionManager;
   _cameraPosition = cameraPosition;
+  _shouldAutoRotate = shouldAutoRotate;
   selfReference = self;
   return self;
 }
@@ -90,6 +94,9 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 - (UIImageOrientation)getImageRotation {
+  if (!self.shouldAutoRotate) {
+    return UIImageOrientationRight;
+  }
   float const threshold = 45.0;
   BOOL (^isNearValue)(float value1, float value2) = ^BOOL(float value1, float value2) {
     return fabsf(value1 - value2) < threshold;
@@ -204,7 +211,13 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopImageStream;
-- (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
+/// Captures a photo and save to the specified file path.
+/// @param filename  The path where the photo should be saved to.
+/// @param shouldAutoRotate Whether to automatically rotate the captured photo.
+///   If enabled, Saves the EXIF data according to device accelerometer.
+- (void)captureToFile:(NSString *)path
+     shouldAutoRotate:(BOOL)shouldAutoRotate
+               result:(FlutterResult)result;
 @end
 
 @implementation FLTCam {
@@ -272,7 +285,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_captureSession stopRunning];
 }
 
-- (void)captureToFile:(NSString *)path result:(FlutterResult)result {
+- (void)captureToFile:(NSString *)path
+     shouldAutoRotate:(BOOL)shouldAutoRotate
+               result:(FlutterResult)result {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   if (_resolutionPreset == max) {
     [settings setHighResolutionPhotoEnabled:YES];
@@ -282,7 +297,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
                                                                    result:result
                                                             motionManager:_motionManager
-                                                           cameraPosition:_captureDevice.position]];
+                                                           cameraPosition:_captureDevice.position
+                                                         shouldAutoRotate:shouldAutoRotate]];
 }
 
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
@@ -882,7 +898,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
 
     if ([@"takePicture" isEqualToString:call.method]) {
-      [_camera captureToFile:call.arguments[@"path"] result:result];
+      BOOL shouldAutoRotate = [call.arguments[@"shouldAutoRotate"] boolValue];
+      [_camera captureToFile:call.arguments[@"path"]
+            shouldAutoRotate:shouldAutoRotate
+                      result:result];
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_camera close];

@@ -223,7 +223,7 @@ public class Camera {
     return flutterTexture;
   }
 
-  public void takePicture(String filePath, @NonNull final Result result) {
+  public void takePicture(String filePath, boolean shouldAutoRotate, @NonNull final Result result) {
     final File file = new File(filePath);
 
     if (file.exists()) {
@@ -248,7 +248,8 @@ public class Camera {
       final CaptureRequest.Builder captureBuilder =
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
-      captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+      int mediaOrientation = shouldAutoRotate ? getMediaOrientation() : 0;
+      captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, mediaOrientation);
 
       cameraCaptureSession.capture(
           captureBuilder.build(),
