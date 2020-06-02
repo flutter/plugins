@@ -1,6 +1,6 @@
 name: path_provider_linux
 description: linux implementation of the path_provider plugin
-version: 0.0.1+1
+version: 0.0.1+2
 homepage: https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider_linux
 
 flutter:
