@@ -38,12 +38,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   File _image;
+  final picker = ImagePicker();
 
   Future getImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
 
     setState(() {
-      _image = image;
+      _image = File(pickedFile.path);
     });
   }
 
@@ -74,8 +75,8 @@ Android system -- although very rarely -- sometimes kills the MainActivity after
 
 ```dart
 Future<void> retrieveLostData() async {
-  final LostDataResponse response =
-      await ImagePicker.retrieveLostData();
+  final LostData response =
+      await picker.getLostData();
   if (response == null) {
     return;
   }
@@ -94,3 +95,64 @@ Future<void> retrieveLostData() async {
 ```
 
 There's no way to detect when this happens, so calling this method at the right place is essential. We recommend to wire this into some kind of start up check. Please refer to the example app to see how we used it.
+
+## Deprecation warnings in `pickImage`, `pickVideo` and `LostDataResponse`
+
+Starting with version **0.6.7** of the image_picker plugin, the API of the plugin changed slightly to allow for web implementations to exist.
+
+The **old methods that returned `dart:io` File objects were marked as deprecated**, and a new set of methods that return [`PickedFile` objects](https://pub.dev/documentation/image_picker_platform_interface/latest/image_picker_platform_interface/PickedFile-class.html) were introduced.
+
+### How to migrate from to ^0.6.7
+
+#### Instantiate the `ImagePicker`
+
+The new ImagePicker API does not rely in static methods anymore, so the first thing you'll need to do is to create a new instance of the plugin where you need it:
+
+```dart
+final _picker = ImagePicker();
+```
+
+#### Call the new methods
+
+The new methods **receive the same parameters as before**, but they **return a `PickedFile`, instead of a `File`**. The `LostDataResponse` class has been replaced by the [`LostData` class](https://pub.dev/documentation/image_picker_platform_interface/latest/image_picker_platform_interface/LostData-class.html).
+
+| Old API | New API |
+|---------|---------|
+| `File image = await ImagePicker.pickImage(...)` | `PickedFile image = await _picker.getImage(...)` |
+| `File video = await ImagePicker.pickVideo(...)` | `PickedFile video = await _picker.getVideo(...)` |
+| `LostDataResponse response = await ImagePicker.retrieveLostData()` | `LostData response = await _picker.getLostData()` |
+
+#### `PickedFile` to `File`
+
+If your app needs dart:io `File` objects to operate, you may transform `PickedFile` to `File` like so:
+
+```dart
+final pickedFile = await _picker.getImage(...);
+final File file = File(pickedFile.path);
+```
+
+You may also retrieve the bytes from the pickedFile directly if needed:
+
+```dart
+final bytes = await pickedFile.readAsBytes();
+```
+
+#### Getting ready for the web platform
+
+Note that on the web platform (`kIsWeb == true`), `File` is not available, so the `path` of the `PickedFile` will point to a network resource instead:
+
+```dart
+if (kIsWeb) {
+  image = Image.network(pickedFile.path);
+} else {
+  image = Image.file(File(pickedFile.path));
+}
+```
+
+Alternatively, the code may be unified at the expense of memory utilization:
+
+```dart
+image = Image.memory(await pickedFile.readAsBytes())
+```
+
+Take a look at the changes to the `example` app introduced in version 0.6.7 to see the migration steps applied there.
