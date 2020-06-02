@@ -60,6 +60,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostDataAsDartIoFile] when your app relaunches to retrieve the lost data.
+  @Deprecated('Use pickImage instead.')
   Future<String> pickImagePath({
     @required ImageSource source,
     double maxWidth,
@@ -84,6 +85,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostDataAsDartIoFile] when your app relaunches to retrieve the lost data.
+  @Deprecated('Use pickVideo instead.')
   Future<String> pickVideoPath({
     @required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
@@ -92,7 +94,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('pickVideoPath() has not been implemented.');
   }
 
-  /// Retrieve the lost image file when [pickImage] or [pickVideo] failed because the  MainActivity is destroyed. (Android only)
+  /// Retrieve the lost image file when [pickImagePath] or [pickVideoPath] failed because the  MainActivity is destroyed. (Android only)
   ///
   /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.
   /// Call this method to retrieve the lost data and process the data according to your APP's business logic.
@@ -105,8 +107,81 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// See also:
   /// * [LostDataResponse], for what's included in the response.
   /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
+  @Deprecated('Use retrieveLostData instead.')
   Future<LostDataResponse> retrieveLostDataAsDartIoFile() {
     throw UnimplementedError(
         'retrieveLostDataAsDartIoFile() has not been implemented.');
+  }
+
+  // Next version of the API.
+
+  /// Returns a [PickedFile] with the image that was picked.
+  ///
+  /// The `source` argument controls where the image comes from. This can
+  /// be either [ImageSource.camera] or [ImageSource.gallery].
+  ///
+  /// If specified, the image will be at most `maxWidth` wide and
+  /// `maxHeight` tall. Otherwise the image will be returned at it's
+  /// original width and height.
+  ///
+  /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
+  /// where 100 is the original/max quality. If `imageQuality` is null, the image with
+  /// the original quality will be returned. Compression is only supportted for certain
+  /// image types such as JPEG. If compression is not supported for the image that is picked,
+  /// an warning message will be logged.
+  ///
+  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear].
+  ///
+  /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
+  /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
+  Future<PickedFile> pickImage({
+    @required ImageSource source,
+    double maxWidth,
+    double maxHeight,
+    int imageQuality,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+  }) {
+    throw UnimplementedError('pickImage() has not been implemented.');
+  }
+
+  /// Returns a [PickedFile] containing the video that was picked.
+  ///
+  /// The [source] argument controls where the video comes from. This can
+  /// be either [ImageSource.camera] or [ImageSource.gallery].
+  ///
+  /// The [maxDuration] argument specifies the maximum duration of the captured video. If no [maxDuration] is specified,
+  /// the maximum duration will be infinite.
+  ///
+  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear].
+  ///
+  /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
+  /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
+  Future<PickedFile> pickVideo({
+    @required ImageSource source,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+    Duration maxDuration,
+  }) {
+    throw UnimplementedError('pickVideo() has not been implemented.');
+  }
+
+  /// Retrieve the lost [PickedFile] file when [pickImage] or [pickVideo] failed because the MainActivity is destroyed. (Android only)
+  ///
+  /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.
+  /// Call this method to retrieve the lost data and process the data according to your APP's business logic.
+  ///
+  /// Returns a [LostData] object if successfully retrieved the lost data. The [LostData] object can represent either a
+  /// successful image/video selection, or a failure.
+  ///
+  /// Calling this on a non-Android platform will throw [UnimplementedError] exception.
+  ///
+  /// See also:
+  /// * [LostData], for what's included in the response.
+  /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
+  Future<LostData> retrieveLostData() {
+    throw UnimplementedError('retrieveLostData() has not been implemented.');
   }
 }

@@ -49,6 +49,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
             errorCode: call.arguments['errorCode'],
             description: call.arguments['description'],
             domain: call.arguments['domain'],
+            failingUrl: call.arguments['failingUrl'],
             errorType: call.arguments['errorType'] == null
                 ? null
                 : WebResourceErrorType.values.firstWhere(
