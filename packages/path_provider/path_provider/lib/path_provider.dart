@@ -5,14 +5,14 @@
 import 'dart:async';
 import 'dart:io' show Directory, Platform;
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
 
-/// Allows the user to disable platform override in order to use a manually registered [PathProviderPlatform]
+/// Disables platform override in order to use a manually registered [PathProviderPlatform], only for testing right now
 ///
 /// Make sure to disable the override before using any of the `path_provider` methods
 /// To use your own [PathProviderPlatform], make sure to include the following lines
@@ -23,6 +23,7 @@ export 'package:path_provider_platform_interface/path_provider_platform_interfac
 /// final dir = await getTemporaryDirectory();
 /// ```
 /// See this issue https://github.com/flutter/flutter/issues/52267 for why this is required
+@visibleForTesting
 set disablePathProviderPlatformOverride(bool override) {
   _disablePlatformOverride = override;
 }
