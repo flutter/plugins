@@ -4,8 +4,12 @@ A web implementation of [`image_picker`][1].
 
 ## Browser Support
 
-Since Web Browsers don't offer direct access to their users' file system, the web version of the
-plugin attempts to approximate those APIs as much as possible.
+Since Web Browsers don't offer direct access to their users' file system,
+this plugin provides a `PickedFile` abstraction to make access access uniform
+across platforms.
+
+The web version of the plugin puts network-accessible URIs as the `path`
+in the returned `PickedFile`.
 
 ### URL.createObjectURL()
 
