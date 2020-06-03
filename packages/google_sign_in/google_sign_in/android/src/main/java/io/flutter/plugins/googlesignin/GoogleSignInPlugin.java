@@ -56,6 +56,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   private static final String METHOD_CLEAR_AUTH_CACHE = "clearAuthCache";
   private static final String METHOD_REQUEST_SCOPES = "requestScopes";
 
+  private static String _serverAuthCodeTemp = null;
+
   private Delegate delegate;
   private MethodChannel channel;
   private ActivityPluginBinding activityPluginBinding;
@@ -395,6 +397,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
      */
     @Override
     public void signOut(Result result) {
+      _serverAuthCodeTemp = null;
       checkAndSetPendingOperation(METHOD_SIGN_OUT, result);
 
       signInClient
@@ -481,11 +484,12 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     }
 
     private void onSignInAccount(GoogleSignInAccount account) {
+      _serverAuthCodeTemp = account.getServerAuthCode();
       Map<String, Object> response = new HashMap<>();
       response.put("email", account.getEmail());
       response.put("id", account.getId());
       response.put("idToken", account.getIdToken());
-      response.put("serverAuthCode", account.getServerAuthCode());
+      response.put("serverAuthCode", _serverAuthCodeTemp);
       response.put("displayName", account.getDisplayName());
       if (account.getPhotoUrl() != null) {
         response.put("photoUrl", account.getPhotoUrl().toString());
@@ -593,6 +597,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
                 String token = tokenFuture.get();
                 HashMap<String, String> tokenResult = new HashMap<>();
                 tokenResult.put("accessToken", token);
+                tokenResult.put("serverAuthCode", _serverAuthCodeTemp);
                 result.success(tokenResult);
               } catch (ExecutionException e) {
                 if (e.getCause() instanceof UserRecoverableAuthException) {
