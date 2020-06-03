@@ -248,7 +248,7 @@ public class Camera {
       final CaptureRequest.Builder captureBuilder =
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
-      int mediaOrientation = shouldAutoRotate ? getMediaOrientation() : 0;
+      int mediaOrientation = shouldAutoRotate ? getMediaOrientation() : 90;
       captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, mediaOrientation);
 
       cameraCaptureSession.capture(
