@@ -66,10 +66,13 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
     final int textureId = _textureCounter;
     _textureCounter++;
 
-    Uri uri;
+    String uri;
     switch (dataSource.sourceType) {
       case DataSourceType.network:
-        uri = Uri.parse(dataSource.uri);
+        // Validate the incoming uri
+        Uri.parse(dataSource.uri);
+        // However, do NOT modify the incoming uri, in case it's a Blob!
+        uri = dataSource.uri;
         break;
       case DataSourceType.asset:
         String assetUrl = dataSource.asset;
@@ -79,7 +82,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
         // 'webOnlyAssetManager' is only in the web version of dart:ui
         // ignore: undefined_prefixed_name
         assetUrl = ui.webOnlyAssetManager.getAssetUrl(assetUrl);
-        uri = Uri.parse(assetUrl);
+        uri = assetUrl;
         break;
       case DataSourceType.file:
         return Future.error(UnimplementedError(
@@ -145,14 +148,14 @@ class _VideoPlayer {
   final StreamController<VideoEvent> eventController =
       StreamController<VideoEvent>();
 
-  final Uri uri;
+  final String uri;
   final int textureId;
   VideoElement videoElement;
   bool isInitialized = false;
 
   void initialize() {
     videoElement = VideoElement()
-      ..src = uri.toString()
+      ..src = uri
       ..autoplay = false
       ..controls = false
       ..style.border = 'none';
