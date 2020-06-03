@@ -6,7 +6,8 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Link;
+import 'package:flutter/rendering.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -21,20 +22,25 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'URL Launcher'),
+      initialRoute: '/links',
+      routes: {
+        '/links': (BuildContext context) => LinksPage(title: 'Links'),
+        '/url_launcher': (BuildContext context) =>
+            UrlLauncherPage(title: 'URL Launcher'),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class UrlLauncherPage extends StatefulWidget {
+  UrlLauncherPage({Key key, this.title}) : super(key: key);
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _UrlLauncherPageState createState() => _UrlLauncherPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _UrlLauncherPageState extends State<UrlLauncherPage> {
   Future<void> _launched;
   String _phone = '';
 
@@ -194,6 +200,135 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
                 }),
                 child: const Text('Launch in app + close after 5 seconds'),
+              ),
+              const Padding(padding: EdgeInsets.all(16.0)),
+              FutureBuilder<void>(future: _launched, builder: _launchStatus),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LinksPage extends StatefulWidget {
+  LinksPage({Key key, this.title}) : super(key: key);
+  final String title;
+
+  @override
+  _LinksPageState createState() => _LinksPageState();
+}
+
+class _LinksPageState extends State<LinksPage> {
+  Future<void> _launched;
+  String _phone = '';
+
+  Widget _launchStatus(BuildContext context, AsyncSnapshot<void> snapshot) {
+    if (snapshot.hasError) {
+      return Text('Error: ${snapshot.error}');
+    } else {
+      return const Text('');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Uri fullUri = Uri.parse('https://www.cylog.org/headers/');
+    final Uri routeName = Uri.parse('/url_launcher');
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: ListView(
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                    onChanged: (String text) => setState(() {
+                          _phone = text;
+                        }),
+                    decoration: const InputDecoration(
+                        hintText: 'Input the phone number to launch')),
+              ),
+              Link(
+                uri: Uri.parse('tel:$_phone'),
+                builder: (BuildContext context, FollowLink followLink) =>
+                    RaisedButton(
+                  onPressed: followLink,
+                  child: const Text('Make phone call'),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
+                child: Text('fullUri: $fullUri'),
+              ),
+              Link(
+                uri: fullUri,
+                target: LinkTarget.blank,
+                builder: (BuildContext context, FollowLink followLink) {
+                  return RaisedButton(
+                    onPressed: () => setState(() {
+                      _launched = followLink();
+                    }),
+                    child: const Text('Launch in blank'),
+                  );
+                },
+              ),
+              const Padding(padding: EdgeInsets.all(16.0)),
+              Link(
+                uri: fullUri,
+                target: LinkTarget.self,
+                builder: (BuildContext context, FollowLink followLink) {
+                  return RaisedButton(
+                    onPressed: () => setState(() {
+                      _launched = followLink();
+                    }),
+                    child: const Text('Launch in self'),
+                  );
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
+                child: Text('routeName: $routeName'),
+              ),
+              Link(
+                uri: routeName,
+                target: LinkTarget.blank,
+                builder: (BuildContext context, FollowLink followLink) {
+                  return RaisedButton(
+                    onPressed: () => setState(() {
+                      _launched = followLink();
+                    }),
+                    child: Text('Push in blank'),
+                  );
+                },
+              ),
+              const Padding(padding: EdgeInsets.all(16.0)),
+              Link(
+                uri: routeName,
+                target: LinkTarget.self,
+                builder: (BuildContext context, FollowLink followLink) {
+                  return RaisedButton(
+                    onPressed: () => setState(() {
+                      _launched = followLink();
+                    }),
+                    child: Text('Push in self'),
+                  );
+                },
+              ),
+              const Padding(padding: EdgeInsets.all(16.0)),
+              Link(
+                uri: null,
+                builder: (BuildContext context, FollowLink followLink) {
+                  return RaisedButton(
+                    onPressed: followLink,
+                    child: Text('Disabled'),
+                  );
+                },
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
               FutureBuilder<void>(future: _launched, builder: _launchStatus),
