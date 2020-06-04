@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ffi';
 
+import 'package:ffi/ffi.dart';
+import 'package:win32/win32.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 /// The Windows implementation of [PathProviderPlatform]
@@ -17,15 +20,35 @@ class PathProviderWindows extends PathProviderPlatform {
 
   /// Path to the temporary directory on the device that is not backed up and is
   /// suitable for storing caches of downloaded files.
+  ///
+  /// On Windows, this the path specified by the TMP environment variable, or
+  /// the TEMP environment variable, or the USERPROFILE environment variable,
+  /// or the Windows directory, in order of preference. Windows does not
+  /// guarantee that the path exists or is writeable to.
   @override
   Future<String> getTemporaryPath() {
-    throw UnimplementedError('getTemporaryPath() has not been implemented.');
+    final buffer = allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
+    final length = GetTempPath(MAX_PATH, buffer);
+
+    if (length == 0) {
+      final error = GetLastError();
+      free(buffer);
+      throw WindowsException('$error');
+    } else {
+      final path = buffer.unpackString(MAX_PATH);
+      free(buffer);
+      return Future.value(path);
+    }
   }
+
+  // FOLDERID_LocalAppData
+  // FOLDERID_ProgramData
 
   /// Path to a directory where the application may place application support
   /// files.
   @override
   Future<String> getApplicationSupportPath() {
+    // SHGetKnownFolderPath();
     throw UnimplementedError(
         'getApplicationSupportPath() has not been implemented.');
   }
@@ -77,10 +100,30 @@ class PathProviderWindows extends PathProviderPlatform {
         'getExternalStoragePaths() has not been implemented.');
   }
 
-  /// Path to the directory where downloaded files can be stored.
-  /// This is typically only relevant on desktop operating systems.
+  /// Path to the directory where downloaded files can be stored. This is
+  /// typically the same as %USERPROFILE%\Downloads.
   @override
   Future<String> getDownloadsPath() {
-    throw UnimplementedError('getDownloadsPath() has not been implemented.');
+    Pointer<IntPtr> pathPtr;
+
+    final hr = SHGetKnownFolderPath(
+        GUID.fromString(FOLDERID_Downloads).addressOf,
+        KF_FLAG_DEFAULT,
+        NULL,
+        pathPtr);
+
+    if (FAILED(hr)) {
+      if (hr == E_INVALIDARG || hr == E_FAIL) {
+        return WindowsException('Invalid folder.')
+      } else {
+        throw WindowsException('Unknown error.');
+      }
+    }
+
+    final path =
+        Pointer<Utf16>.fromAddress(pathPtr.value).unpackString(MAX_PATH);
+
+    CoTaskMemFree(pathPtr.cast());
+    return Future.value(path);
   }
 }
