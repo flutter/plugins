@@ -144,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if (_imageFile != null) {
       if (kIsWeb) {
-        // Why network? 
+        // Why network?
         // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
         return Image.network(_imageFile.path);
       } else {
