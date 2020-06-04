@@ -451,10 +451,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [player disposeSansEventChannel];
   }
   [_players removeAllObjects];
-  // TODO(57151): This should be commented out when 57151's fix lands on stable.
-  // This is the correct behavior we never did it in the past and the engine
-  // doesn't currently support it.
-  // FLTVideoPlayerApiSetup(registrar.messenger, nil);
+  FLTVideoPlayerApiSetup(registrar.messenger, nil);
 }
 
 - (FLTTextureMessage*)onPlayerSetup:(FLTVideoPlayer*)player
