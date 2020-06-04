@@ -160,6 +160,9 @@ class _VideoPlayer {
       ..controls = false
       ..style.border = 'none';
 
+    // Allows Safari iOS to play the video inline
+    videoElement.setAttribute('playsinline', 'true');
+
     // TODO(hterkelsen): Use initialization parameters once they are available
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
@@ -221,6 +224,11 @@ class _VideoPlayer {
   }
 
   void setVolume(double value) {
+    if (value > 0.0) {
+      videoElement.muted = false;
+    } else {
+      videoElement.muted = true;
+    }
     videoElement.volume = value;
   }
 
