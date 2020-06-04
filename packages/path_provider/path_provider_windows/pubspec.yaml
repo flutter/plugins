@@ -20,7 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   path_provider_platform_interface: ^1.0.1
-  win32: ^1.5.0
+  win32: ^1.5.1
 
 dev_dependencies:
   pedantic: ^1.8.0

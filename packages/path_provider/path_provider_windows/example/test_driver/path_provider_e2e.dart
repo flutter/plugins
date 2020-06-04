@@ -26,7 +26,7 @@ void main() {
   });
 
   testWidgets('getLibraryDirectory', (WidgetTester tester) async {
-    if (!Platform.isMacOS) {
+    if (!Platform.isWindows) {
       return;
     }
     final Directory result = await getLibraryDirectory();
@@ -37,7 +37,7 @@ void main() {
 /// Verify a file called [name] in [directory] by recreating it with test
 /// contents when necessary.
 void _verifySampleFile(Directory directory, String name) {
-  final File file = File('${directory.path}/$name');
+  final File file = File('${directory.path}${Platform.pathSeparator}$name');
 
   if (file.existsSync()) {
     file.deleteSync();

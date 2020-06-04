@@ -1,147 +1,89 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// ignore_for_file: public_member_api_docs
-
-import 'dart:async';
-import 'dart:io' show Directory;
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'dart:async';
 
-void main() {
+import 'package:path_provider/path_provider.dart';
+import 'package:win32/win32.dart';
+
+void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+/// Sample app
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  String _tempDirectory = 'Unknown';
+  String _downloadsDirectory = 'Unknown';
+  String _appSupportDirectory = 'Unknown';
+  String _documentsDirectory = 'Unknown';
+
+  @override
+  void initState() {
+    super.initState();
+    initDirectories();
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initDirectories() async {
+    String tempDirectory;
+    String downloadsDirectory;
+    String appSupportDirectory;
+    String documentsDirectory;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      tempDirectory = (await getTemporaryDirectory()).path;
+    } on WindowsException {
+      tempDirectory = 'Failed to get temp directory.';
+    }
+    try {
+      downloadsDirectory = (await getDownloadsDirectory()).path;
+    } on WindowsException {
+      downloadsDirectory = 'Failed to get downloads directory.';
+    }
+
+    try {
+      documentsDirectory = (await getApplicationDocumentsDirectory()).path;
+    } on WindowsException {
+      documentsDirectory = 'Failed to get documents directory.';
+    }
+
+    try {
+      appSupportDirectory = (await getApplicationSupportDirectory()).path;
+    } on WindowsException {
+      appSupportDirectory = 'Failed to get documents directory.';
+    }
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _tempDirectory = tempDirectory;
+      _downloadsDirectory = downloadsDirectory;
+      _appSupportDirectory = appSupportDirectory;
+      _documentsDirectory = documentsDirectory;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Path Provider',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Path Provider'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  Future<Directory> _tempDirectory;
-  Future<Directory> _appSupportDirectory;
-  Future<Directory> _appDocumentsDirectory;
-  Future<Directory> _appLibraryDirectory;
-  Future<Directory> _downloadsDirectory;
-
-  void _requestTempDirectory() {
-    setState(() {
-      _tempDirectory = getTemporaryDirectory();
-    });
-  }
-
-  Widget _buildDirectory(
-      BuildContext context, AsyncSnapshot<Directory> snapshot) {
-    Text text = const Text('');
-    if (snapshot.connectionState == ConnectionState.done) {
-      if (snapshot.hasError) {
-        text = Text('Error: ${snapshot.error}');
-      } else if (snapshot.hasData) {
-        text = Text('path: ${snapshot.data.path}');
-      } else {
-        text = const Text('path unavailable');
-      }
-    }
-    return Padding(padding: const EdgeInsets.all(16.0), child: text);
-  }
-
-  void _requestAppDocumentsDirectory() {
-    setState(() {
-      _appDocumentsDirectory = getApplicationDocumentsDirectory();
-    });
-  }
-
-  void _requestAppSupportDirectory() {
-    setState(() {
-      _appSupportDirectory = getApplicationSupportDirectory();
-    });
-  }
-
-  void _requestAppLibraryDirectory() {
-    setState(() {
-      _appLibraryDirectory = getLibraryDirectory();
-    });
-  }
-
-  void _requestDownloadsDirectory() {
-    setState(() {
-      _downloadsDirectory = getDownloadsDirectory();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: ListView(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: RaisedButton(
-                child: const Text('Get Temporary Directory'),
-                onPressed: _requestTempDirectory,
-              ),
-            ),
-            FutureBuilder<Directory>(
-                future: _tempDirectory, builder: _buildDirectory),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: RaisedButton(
-                child: const Text('Get Application Documents Directory'),
-                onPressed: _requestAppDocumentsDirectory,
-              ),
-            ),
-            FutureBuilder<Directory>(
-                future: _appDocumentsDirectory, builder: _buildDirectory),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: RaisedButton(
-                child: const Text('Get Application Support Directory'),
-                onPressed: _requestAppSupportDirectory,
-              ),
-            ),
-            FutureBuilder<Directory>(
-                future: _appSupportDirectory, builder: _buildDirectory),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: RaisedButton(
-                child: const Text('Get Application Library Directory'),
-                onPressed: _requestAppLibraryDirectory,
-              ),
-            ),
-            FutureBuilder<Directory>(
-                future: _appLibraryDirectory, builder: _buildDirectory),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: RaisedButton(
-                child: const Text('Get Downlads Directory'),
-                onPressed: _requestDownloadsDirectory,
-              ),
-            ),
-            FutureBuilder<Directory>(
-                future: _downloadsDirectory, builder: _buildDirectory),
-          ],
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Path Provider Windows example app'),
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              Text('Temp Directory: $_tempDirectory\n'),
+              Text('Documents Directory: $_documentsDirectory\n'),
+              Text('Downloads Directory: $_downloadsDirectory\n'),
+              Text('Application Support Directory: $_appSupportDirectory\n'),
+            ],
+          ),
         ),
       ),
     );

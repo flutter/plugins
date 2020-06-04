@@ -8,6 +8,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:path_provider_windows/folders.dart';
 
 /// The Windows implementation of [PathProviderPlatform]
 ///
@@ -35,95 +36,65 @@ class PathProviderWindows extends PathProviderPlatform {
       free(buffer);
       throw WindowsException('$error');
     } else {
-      final path = buffer.unpackString(MAX_PATH);
+      var path = buffer.unpackString(MAX_PATH);
+
+      // GetTempPath adds a trailing backslash, but SHGetKnownFolderPath does not.
+      // Strip off trailing backslash for consistency with other methods here.
+      if (path[path.length - 1] == '\\') {
+        path = path.substring(0, path.length - 1);
+      }
       free(buffer);
       return Future.value(path);
     }
   }
 
-  // FOLDERID_LocalAppData
-  // FOLDERID_ProgramData
-
   /// Path to a directory where the application may place application support
   /// files.
   @override
-  Future<String> getApplicationSupportPath() {
-    // SHGetKnownFolderPath();
-    throw UnimplementedError(
-        'getApplicationSupportPath() has not been implemented.');
-  }
+  Future<String> getApplicationSupportPath() =>
+      getPath(WindowsKnownFolder.ProgramData);
 
   /// Path to the directory where application can store files that are persistent,
   /// backed up, and not visible to the user, such as sqlite.db.
   @override
-  Future<String> getLibraryPath() {
-    throw UnimplementedError('getLibraryPath() has not been implemented.');
-  }
+  Future<String> getLibraryPath() => getPath(WindowsKnownFolder.LocalAppData);
 
   /// Path to a directory where the application may place data that is
   /// user-generated, or that cannot otherwise be recreated by your application.
   @override
-  Future<String> getApplicationDocumentsPath() {
-    throw UnimplementedError(
-        'getApplicationDocumentsPath() has not been implemented.');
-  }
-
-  /// Path to a directory where the application may access top level storage.
-  /// The current operating system should be determined before issuing this
-  /// function call, as this functionality is only available on Android.
-  @override
-  Future<String> getExternalStoragePath() {
-    throw UnimplementedError(
-        'getExternalStoragePath() has not been implemented.');
-  }
-
-  /// Paths to directories where application specific external cache data can be
-  /// stored. These paths typically reside on external storage like separate
-  /// partitions or SD cards. Phones may have multiple storage directories
-  /// available.
-  @override
-  Future<List<String>> getExternalCachePaths() {
-    throw UnimplementedError(
-        'getExternalCachePaths() has not been implemented.');
-  }
-
-  /// Paths to directories where application specific data can be stored.
-  /// These paths typically reside on external storage like separate partitions
-  /// or SD cards. Phones may have multiple storage directories available.
-  @override
-  Future<List<String>> getExternalStoragePaths({
-    /// Optional parameter. See [StorageDirectory] for more informations on
-    /// how this type translates to Android storage directories.
-    StorageDirectory type,
-  }) {
-    throw UnimplementedError(
-        'getExternalStoragePaths() has not been implemented.');
-  }
+  Future<String> getApplicationDocumentsPath() =>
+      getPath(WindowsKnownFolder.DocumentsLibrary);
 
   /// Path to the directory where downloaded files can be stored. This is
   /// typically the same as %USERPROFILE%\Downloads.
   @override
-  Future<String> getDownloadsPath() {
-    Pointer<IntPtr> pathPtr;
+  Future<String> getDownloadsPath() => getPath(WindowsKnownFolder.Downloads);
+
+  /// Retrieve any known folder from Windows.
+  ///
+  /// folderID is a GUID that represents a specific known folder ID, drawn from
+  /// [WindowsKnownFolder].
+  Future<String> getPath(String folderID) {
+    GUID knownFolderID = GUID.fromString(folderID);
+    Pointer<IntPtr> pathPtrPtr = allocate<IntPtr>();
 
     final hr = SHGetKnownFolderPath(
-        GUID.fromString(FOLDERID_Downloads).addressOf,
-        KF_FLAG_DEFAULT,
-        NULL,
-        pathPtr);
+        knownFolderID.addressOf, KF_FLAG_DEFAULT, NULL, pathPtrPtr);
 
     if (FAILED(hr)) {
       if (hr == E_INVALIDARG || hr == E_FAIL) {
-        return WindowsException('Invalid folder.')
+        throw WindowsException('Invalid folder.');
       } else {
         throw WindowsException('Unknown error.');
       }
     }
 
-    final path =
-        Pointer<Utf16>.fromAddress(pathPtr.value).unpackString(MAX_PATH);
+    final pathPtr = Pointer<Utf16>.fromAddress(pathPtrPtr.value);
+    final path = pathPtr.unpackString(MAX_PATH);
 
     CoTaskMemFree(pathPtr.cast());
+    free(pathPtrPtr);
+
     return Future.value(path);
   }
 }
