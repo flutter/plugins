@@ -145,9 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_imageFile != null) {
       if (kIsWeb) {
         return Image.network(_imageFile.path);
-        // Or from memory...
       } else {
-        // This would also work from memory as well...
         return Image.file(File(_imageFile.path));
       }
     } else if (_pickImageError != null) {
