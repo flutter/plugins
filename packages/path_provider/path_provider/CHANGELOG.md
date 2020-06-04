@@ -1,3 +1,6 @@
+## 1.6.11
+* Updated documentation to reflect the need for changes in testing for federated plugins
+
 ## 1.6.10
 * Linux implementation endorsement
 
