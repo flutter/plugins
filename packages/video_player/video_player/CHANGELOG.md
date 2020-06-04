@@ -1,3 +1,11 @@
+## 0.10.11+2
+
+* iOS: Set message handler to nil on detach fron engine.
+
+## 0.10.11+1
+
+* Post-v2 Android embedding cleanups.
+
 ## 0.10.11
 
 * iOS: Fixed crash when detaching from a dying engine.
