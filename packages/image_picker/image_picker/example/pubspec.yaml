@@ -6,9 +6,9 @@ dependencies:
   video_player: ^0.10.3
   flutter:
     sdk: flutter
+  flutter_plugin_android_lifecycle: ^1.0.2
   image_picker:
     path: ../
-  flutter_plugin_android_lifecycle: ^1.0.2
 
 dev_dependencies:
   flutter_driver:

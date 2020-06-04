@@ -1,3 +1,7 @@
+## 0.4.2+2
+
+* Post-v2 Android embedding cleanup.
+
 ## 0.4.2+1
 
 * Update lower bound of dart dependency to 2.1.0.

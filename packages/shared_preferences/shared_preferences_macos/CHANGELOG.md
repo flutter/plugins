@@ -1,3 +1,7 @@
+## 0.0.1+10
+
+* Remove iOS and Android folders from the example app.
+
 ## 0.0.1+9
 
 * Remove Android folder from `shared_preferences_macos`.
