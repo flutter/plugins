@@ -1,3 +1,5 @@
 ## 0.0.1
 
-* Initial open source release.
+* The initial implementation of path_provider for Windows
+  * Implements getTemporaryPath, getApplicationSupportPath, getLibraryPath,
+    getApplicationDocumentsPath and getDownloadsPath.
