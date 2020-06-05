@@ -216,9 +216,9 @@ class WindowsKnownFolder {
   /// The Windows System folder. A typical path is C:\Windows\System32.
   static String get System => FOLDERID_System;
 
-  // The 32-bit Windows System folder. On 32-bit systems, this is typically
-  // C:\Windows\system32. On 64-bit systems, this is typically
-  // C:\Windows\syswow64.
+  /// The 32-bit Windows System folder. On 32-bit systems, this is typically
+  /// C:\Windows\system32. On 64-bit systems, this is typically
+  /// C:\Windows\syswow64.
   static String get SystemX86 => FOLDERID_SystemX86;
 
   /// The file system directory that serves as a common repository for document
