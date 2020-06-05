@@ -1,145 +1,236 @@
 import 'package:win32/win32.dart';
 
+/// A class containing the GUID references for each of the documented Windows
+/// known folders. A property of this class may be passed to the `getPath`
+/// method in the [PathProvidersWindows] class to retrieve a known folder from
+/// Windows.
 class WindowsKnownFolder {
-  static String get AccountPictures => FOLDERID_AccountPictures;
-  static String get AddNewPrograms => FOLDERID_AddNewPrograms;
+  /// The file system directory that is used to store administrative tools for
+  /// an individual user. The MMC will save customized consoles to this
+  /// directory, and it will roam with the user.
   static String get AdminTools => FOLDERID_AdminTools;
-  static String get AllAppMods => FOLDERID_AllAppMods;
-  static String get AppCaptures => FOLDERID_AppCaptures;
-  static String get AppDataDesktop => FOLDERID_AppDataDesktop;
-  static String get AppDataDocuments => FOLDERID_AppDataDocuments;
-  static String get AppDataFavorites => FOLDERID_AppDataFavorites;
-  static String get AppDataProgramData => FOLDERID_AppDataProgramData;
-  static String get AppUpdates => FOLDERID_AppUpdates;
-  static String get ApplicationShortcuts => FOLDERID_ApplicationShortcuts;
-  static String get AppsFolder => FOLDERID_AppsFolder;
+
+  /// The file system directory that acts as a staging area for files waiting to
+  /// be written to a CD. A typical path is C:\Documents and
+  /// Settings\username\Local Settings\Application Data\Microsoft\CD Burning.
   static String get CDBurning => FOLDERID_CDBurning;
-  static String get CameraRoll => FOLDERID_CameraRoll;
-  static String get CameraRollLibrary => FOLDERID_CameraRollLibrary;
-  static String get ChangeRemovePrograms => FOLDERID_ChangeRemovePrograms;
+
+  /// The file system directory that contains administrative tools for all users
+  /// of the computer.
   static String get CommonAdminTools => FOLDERID_CommonAdminTools;
-  static String get CommonOEMLinks => FOLDERID_CommonOEMLinks;
+
+  /// The file system directory that contains the directories for the common
+  /// program groups that appear on the Start menu for all users. A typical path
+  /// is C:\Documents and Settings\All Users\Start Menu\Programs.
   static String get CommonPrograms => FOLDERID_CommonPrograms;
+
+  /// The file system directory that contains the programs and folders that
+  /// appear on the Start menu for all users. A typical path is C:\Documents and
+  /// Settings\All Users\Start Menu.
   static String get CommonStartMenu => FOLDERID_CommonStartMenu;
-  static String get CommonStartMenuPlaces => FOLDERID_CommonStartMenuPlaces;
+
+  /// The file system directory that contains the programs that appear in the
+  /// Startup folder for all users. A typical path is C:\Documents and
+  /// Settings\All Users\Start Menu\Programs\Startup.
   static String get CommonStartup => FOLDERID_CommonStartup;
+
+  /// The file system directory that contains the templates that are available
+  /// to all users. A typical path is C:\Documents and Settings\All
+  /// Users\Templates.
   static String get CommonTemplates => FOLDERID_CommonTemplates;
+
+  /// The virtual folder that represents My Computer, containing everything on
+  /// the local computer: storage devices, printers, and Control Panel. The
+  /// folder can also contain mapped network drives.
   static String get ComputerFolder => FOLDERID_ComputerFolder;
-  static String get ConflictFolder => FOLDERID_ConflictFolder;
+
+  /// The virtual folder that represents Network Connections, that contains
+  /// network and dial-up connections.
   static String get ConnectionsFolder => FOLDERID_ConnectionsFolder;
-  static String get Contacts => FOLDERID_Contacts;
+
+  /// The virtual folder that contains icons for the Control Panel applications.
   static String get ControlPanelFolder => FOLDERID_ControlPanelFolder;
+
+  /// The file system directory that serves as a common repository for Internet
+  /// cookies. A typical path is C:\Documents and Settings\username\Cookies.
   static String get Cookies => FOLDERID_Cookies;
-  static String get CurrentAppMods => FOLDERID_CurrentAppMods;
+
+  /// The virtual folder that represents the Windows desktop, the root of the
+  /// namespace.
   static String get Desktop => FOLDERID_Desktop;
-  static String get DevelopmentFiles => FOLDERID_DevelopmentFiles;
-  static String get Device => FOLDERID_Device;
-  static String get DeviceMetadataStore => FOLDERID_DeviceMetadataStore;
+
+  /// The virtual folder that represents the My Documents desktop item.
   static String get Documents => FOLDERID_Documents;
-  static String get DocumentsLibrary => FOLDERID_DocumentsLibrary;
+
+  /// The file system directory that serves as a repository for Internet
+  /// downloads.
   static String get Downloads => FOLDERID_Downloads;
+
+  /// The file system directory that serves as a common repository for the
+  /// user's favorite items. A typical path is C:\Documents and
+  /// Settings\username\Favorites.
   static String get Favorites => FOLDERID_Favorites;
+
+  /// A virtual folder that contains fonts. A typical path is C:\Windows\Fonts.
   static String get Fonts => FOLDERID_Fonts;
-  static String get GameTasks => FOLDERID_GameTasks;
-  static String get Games => FOLDERID_Games;
+
+  /// The file system directory that serves as a common repository for Internet
+  /// history items.
   static String get History => FOLDERID_History;
-  static String get HomeGroup => FOLDERID_HomeGroup;
-  static String get HomeGroupCurrentUser => FOLDERID_HomeGroupCurrentUser;
-  static String get ImplicitAppShortcuts => FOLDERID_ImplicitAppShortcuts;
+
+  /// The file system directory that serves as a common repository for temporary
+  /// Internet files. A typical path is C:\Documents and Settings\username\Local
+  /// Settings\Temporary Internet Files.
   static String get InternetCache => FOLDERID_InternetCache;
+
+  /// A virtual folder for Internet Explorer.
   static String get InternetFolder => FOLDERID_InternetFolder;
-  static String get Libraries => FOLDERID_Libraries;
-  static String get Links => FOLDERID_Links;
+
+  /// The file system directory that serves as a data repository for local
+  /// (nonroaming) applications. A typical path is C:\Documents and
+  /// Settings\username\Local Settings\Application Data.
   static String get LocalAppData => FOLDERID_LocalAppData;
-  static String get LocalAppDataLow => FOLDERID_LocalAppDataLow;
-  static String get LocalDocuments => FOLDERID_LocalDocuments;
-  static String get LocalDownloads => FOLDERID_LocalDownloads;
-  static String get LocalMusic => FOLDERID_LocalMusic;
-  static String get LocalPictures => FOLDERID_LocalPictures;
-  static String get LocalVideos => FOLDERID_LocalVideos;
-  static String get LocalizedResourcesDir => FOLDERID_LocalizedResourcesDir;
+
+  /// The file system directory that serves as a common repository for music
+  /// files. A typical path is C:\Documents and Settings\User\My Documents\My
+  /// Music.
   static String get Music => FOLDERID_Music;
-  static String get MusicLibrary => FOLDERID_MusicLibrary;
+
+  /// A file system directory that contains the link objects that may exist in
+  /// the My Network Places virtual folder. A typical path is C:\Documents and
+  /// Settings\username\NetHood.
   static String get NetHood => FOLDERID_NetHood;
+
+  /// The folder that represents other computers in your workgroup.
   static String get NetworkFolder => FOLDERID_NetworkFolder;
-  static String get Objects3D => FOLDERID_Objects3D;
-  static String get OneDrive => FOLDERID_OneDrive;
-  static String get OriginalImages => FOLDERID_OriginalImages;
-  static String get PhotoAlbums => FOLDERID_PhotoAlbums;
+
+  /// The file system directory that serves as a common repository for image
+  /// files. A typical path is C:\Documents and Settings\username\My
+  /// Documents\My Pictures.
   static String get Pictures => FOLDERID_Pictures;
-  static String get PicturesLibrary => FOLDERID_PicturesLibrary;
-  static String get Playlists => FOLDERID_Playlists;
+
+  /// The file system directory that contains the link objects that can exist in
+  /// the Printers virtual folder. A typical path is C:\Documents and
+  /// Settings\username\PrintHood.
   static String get PrintHood => FOLDERID_PrintHood;
+
+  /// The virtual folder that contains installed printers.
   static String get PrintersFolder => FOLDERID_PrintersFolder;
+
+  /// The user's profile folder. A typical path is C:\Users\username.
+  /// Applications should not create files or folders at this level.
   static String get Profile => FOLDERID_Profile;
+
+  /// The file system directory that contains application data for all users. A
+  /// typical path is C:\Documents and Settings\All Users\Application Data. This
+  /// folder is used for application data that is not user specific. For
+  /// example, an application can store a spell-check dictionary, a database of
+  /// clip art, or a log file in the CSIDL_COMMON_APPDATA folder. This
+  /// information will not roam and is available to anyone using the computer.
   static String get ProgramData => FOLDERID_ProgramData;
+
+  /// The Program Files folder. A typical path is C:\Program Files.
   static String get ProgramFiles => FOLDERID_ProgramFiles;
+
+  /// The common Program Files folder. A typical path is C:\Program
+  /// Files\Common.
   static String get ProgramFilesCommon => FOLDERID_ProgramFilesCommon;
+
+  /// On 64-bit systems, a link to the common Program Files folder. A typical path is
+  /// C:\Program Files\Common Files.
   static String get ProgramFilesCommonX64 => FOLDERID_ProgramFilesCommonX64;
+
+  /// On 64-bit systems, a link to the 32-bit common Program Files folder. A
+  /// typical path is C:\Program Files (x86)\Common Files. On 32-bit systems, a
+  /// link to the Common Program Files folder.
   static String get ProgramFilesCommonX86 => FOLDERID_ProgramFilesCommonX86;
+
+  /// On 64-bit systems, a link to the Program Files folder. A typical path is
+  /// C:\Program Files.
   static String get ProgramFilesX64 => FOLDERID_ProgramFilesX64;
+
+  /// On 64-bit systems, a link to the 32-bit Program Files folder. A typical
+  /// path is C:\Program Files (x86). On 32-bit systems, a link to the Common
+  /// Program Files folder.
   static String get ProgramFilesX86 => FOLDERID_ProgramFilesX86;
+
+  /// The file system directory that contains the user's program groups (which
+  /// are themselves file system directories).
   static String get Programs => FOLDERID_Programs;
-  static String get Public => FOLDERID_Public;
+
+  /// The file system directory that contains files and folders that appear on
+  /// the desktop for all users. A typical path is C:\Documents and Settings\All
+  /// Users\Desktop.
   static String get PublicDesktop => FOLDERID_PublicDesktop;
+
+  /// The file system directory that contains documents that are common to all
+  /// users. A typical path is C:\Documents and Settings\All Users\Documents.
   static String get PublicDocuments => FOLDERID_PublicDocuments;
-  static String get PublicDownloads => FOLDERID_PublicDownloads;
-  static String get PublicGameTasks => FOLDERID_PublicGameTasks;
-  static String get PublicLibraries => FOLDERID_PublicLibraries;
+
+  /// The file system directory that serves as a repository for music files
+  /// common to all users. A typical path is C:\Documents and Settings\All
+  /// Users\Documents\My Music.
   static String get PublicMusic => FOLDERID_PublicMusic;
+
+  /// The file system directory that serves as a repository for image files
+  /// common to all users. A typical path is C:\Documents and Settings\All
+  /// Users\Documents\My Pictures.
   static String get PublicPictures => FOLDERID_PublicPictures;
-  static String get PublicRingtones => FOLDERID_PublicRingtones;
-  static String get PublicUserTiles => FOLDERID_PublicUserTiles;
+
+  /// The file system directory that serves as a repository for video files
+  /// common to all users. A typical path is C:\Documents and Settings\All
+  /// Users\Documents\My Videos.
   static String get PublicVideos => FOLDERID_PublicVideos;
-  static String get QuickLaunch => FOLDERID_QuickLaunch;
+
+  /// The file system directory that contains shortcuts to the user's most
+  /// recently used documents. A typical path is C:\Documents and
+  /// Settings\username\My Recent Documents.
   static String get Recent => FOLDERID_Recent;
-  static String get RecordedCalls => FOLDERID_RecordedCalls;
-  static String get RecordedTVLibrary => FOLDERID_RecordedTVLibrary;
+
+  /// The virtual folder that contains the objects in the user's Recycle Bin.
   static String get RecycleBinFolder => FOLDERID_RecycleBinFolder;
+
+  /// The file system directory that contains resource data. A typical path is
+  /// C:\Windows\Resources.
   static String get ResourceDir => FOLDERID_ResourceDir;
-  static String get RetailDemo => FOLDERID_RetailDemo;
-  static String get Ringtones => FOLDERID_Ringtones;
-  static String get RoamedTileImages => FOLDERID_RoamedTileImages;
+
+  /// The file system directory that serves as a common repository for
+  /// application-specific data. A typical path is C:\Documents and
+  /// Settings\username\Application Data.
   static String get RoamingAppData => FOLDERID_RoamingAppData;
-  static String get RoamingTiles => FOLDERID_RoamingTiles;
-  static String get SEARCH_CSC => FOLDERID_SEARCH_CSC;
-  static String get SEARCH_MAPI => FOLDERID_SEARCH_MAPI;
-  static String get SampleMusic => FOLDERID_SampleMusic;
-  static String get SamplePictures => FOLDERID_SamplePictures;
-  static String get SamplePlaylists => FOLDERID_SamplePlaylists;
-  static String get SampleVideos => FOLDERID_SampleVideos;
-  static String get SavedGames => FOLDERID_SavedGames;
-  static String get SavedPictures => FOLDERID_SavedPictures;
-  static String get SavedPicturesLibrary => FOLDERID_SavedPicturesLibrary;
-  static String get SavedSearches => FOLDERID_SavedSearches;
-  static String get Screenshots => FOLDERID_Screenshots;
-  static String get SearchHistory => FOLDERID_SearchHistory;
-  static String get SearchHome => FOLDERID_SearchHome;
-  static String get SearchTemplates => FOLDERID_SearchTemplates;
+
+  /// The file system directory that contains Send To menu items. A typical path
+  /// is C:\Documents and Settings\username\SendTo.
   static String get SendTo => FOLDERID_SendTo;
-  static String get SidebarDefaultParts => FOLDERID_SidebarDefaultParts;
-  static String get SidebarParts => FOLDERID_SidebarParts;
-  static String get SkyDrive => FOLDERID_SkyDrive;
-  static String get SkyDriveCameraRoll => FOLDERID_SkyDriveCameraRoll;
-  static String get SkyDriveDocuments => FOLDERID_SkyDriveDocuments;
-  static String get SkyDriveMusic => FOLDERID_SkyDriveMusic;
-  static String get SkyDrivePictures => FOLDERID_SkyDrivePictures;
+
+  /// The file system directory that contains Start menu items. A typical path
+  /// is C:\Documents and Settings\username\Start Menu.
   static String get StartMenu => FOLDERID_StartMenu;
-  static String get StartMenuAllPrograms => FOLDERID_StartMenuAllPrograms;
+
+  /// The file system directory that corresponds to the user's Startup program
+  /// group. The system starts these programs whenever the associated user logs
+  /// on. A typical path is C:\Documents and Settings\username\Start
+  /// Menu\Programs\Startup.
   static String get Startup => FOLDERID_Startup;
-  static String get SyncManagerFolder => FOLDERID_SyncManagerFolder;
-  static String get SyncResultsFolder => FOLDERID_SyncResultsFolder;
-  static String get SyncSetupFolder => FOLDERID_SyncSetupFolder;
+
+  /// The Windows System folder. A typical path is C:\Windows\System32.
   static String get System => FOLDERID_System;
+
+  // The 32-bit Windows System folder. On 32-bit systems, this is typically
+  // C:\Windows\system32. On 64-bit systems, this is typically
+  // C:\Windows\syswow64.
   static String get SystemX86 => FOLDERID_SystemX86;
+
+  /// The file system directory that serves as a common repository for document
+  /// templates. A typical path is C:\Documents and Settings\username\Templates.
   static String get Templates => FOLDERID_Templates;
-  static String get UserPinned => FOLDERID_UserPinned;
-  static String get UserProfiles => FOLDERID_UserProfiles;
-  static String get UserProgramFiles => FOLDERID_UserProgramFiles;
-  static String get UserProgramFilesCommon => FOLDERID_UserProgramFilesCommon;
-  static String get UsersFiles => FOLDERID_UsersFiles;
-  static String get UsersLibraries => FOLDERID_UsersLibraries;
+
+  /// The file system directory that serves as a common repository for video
+  /// files. A typical path is C:\Documents and Settings\username\My
+  /// Documents\My Videos.
   static String get Videos => FOLDERID_Videos;
-  static String get VideosLibrary => FOLDERID_VideosLibrary;
+
+  /// The Windows directory or SYSROOT. This corresponds to the %windir% or
+  /// %SYSTEMROOT% environment variables. A typical path is C:\Windows.
   static String get Windows => FOLDERID_Windows;
 }
