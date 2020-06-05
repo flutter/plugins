@@ -63,7 +63,7 @@ class PathProviderWindows extends PathProviderPlatform {
   /// user-generated, or that cannot otherwise be recreated by your application.
   @override
   Future<String> getApplicationDocumentsPath() =>
-      getPath(WindowsKnownFolder.DocumentsLibrary);
+      getPath(WindowsKnownFolder.Documents);
 
   /// Path to the directory where downloaded files can be stored. This is
   /// typically the same as %USERPROFILE%\Downloads.
