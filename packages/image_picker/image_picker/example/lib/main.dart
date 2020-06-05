@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // This is not needed if the call to .play is the result of user
         // interaction (clicking on a "play" button, for example).
         await _controller.setVolume(0.0);
-    } else {
+      } else {
         _controller = VideoPlayerController.file(File(file.path));
         await _controller.setVolume(1.0);
       }
