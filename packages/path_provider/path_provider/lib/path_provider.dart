@@ -7,6 +7,7 @@ import 'dart:io' show Directory, Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:path_provider_linux/path_provider_linux.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
@@ -39,6 +40,8 @@ PathProviderPlatform get _platform {
   }
   if (!kIsWeb && Platform.isLinux && !_disablePlatformOverride) {
     __platform = PathProviderLinux();
+  } else if (!kIsWeb && Platform.isWindows && !_disablePlatformOverride) {
+    __platform = PathProviderWindows();
   } else {
     __platform = PathProviderPlatform.instance;
   }
