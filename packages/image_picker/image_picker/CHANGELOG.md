@@ -1,3 +1,7 @@
+## 0.6.7+1
+
+* Add web support to the example app.
+
 ## 0.6.7
 
 * Utilize the new platform_interface package.
