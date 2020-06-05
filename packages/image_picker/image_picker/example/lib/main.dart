@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   dynamic _pickImageError;
   bool isVideo = false;
   VideoPlayerController _controller;
+  VideoPlayerController _toBeDisposed;
   String _retrieveDataError;
 
   final ImagePicker _picker = ImagePicker();
@@ -120,10 +121,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _disposeVideoController() async {
-    if (_controller != null) {
-      await _controller.dispose();
-      _controller = null;
+    if (_toBeDisposed != null) {
+      await _toBeDisposed.dispose();
     }
+    _toBeDisposed = _controller;
+    _controller = null;
   }
 
   Widget _previewVideo() {
