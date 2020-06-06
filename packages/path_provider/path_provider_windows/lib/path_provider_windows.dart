@@ -14,11 +14,6 @@ import 'package:path_provider_windows/folders.dart';
 ///
 /// This class implements the `package:path_provider` functionality for Windows
 class PathProviderWindows extends PathProviderPlatform {
-  /// Registers this class as the default instance of [PathProviderPlatform]
-  static void register() {
-    PathProviderPlatform.instance = PathProviderWindows();
-  }
-
   /// Path to the temporary directory on the device that is not backed up and is
   /// suitable for storing caches of downloaded files.
   ///
@@ -36,7 +31,7 @@ class PathProviderWindows extends PathProviderPlatform {
       free(buffer);
       throw WindowsException('$error');
     } else {
-      var path = buffer.unpackString(MAX_PATH);
+      var path = buffer.unpackString(length);
 
       // GetTempPath adds a trailing backslash, but SHGetKnownFolderPath does not.
       // Strip off trailing backslash for consistency with other methods here.

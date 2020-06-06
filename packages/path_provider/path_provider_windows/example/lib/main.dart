@@ -1,8 +1,13 @@
-import 'package:flutter/material.dart';
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:win32/win32.dart';
 
 void main() async {
   runApp(MyApp());
@@ -32,33 +37,29 @@ class _MyAppState extends State<MyApp> {
     String downloadsDirectory;
     String appSupportDirectory;
     String documentsDirectory;
-    // Platform messages may fail, so we use a try/catch PlatformException.
+
     try {
       tempDirectory = (await getTemporaryDirectory()).path;
-    } on WindowsException {
-      tempDirectory = 'Failed to get temp directory.';
+    } catch (exception) {
+      tempDirectory = 'Failed to get temp directory: $exception';
     }
     try {
       downloadsDirectory = (await getDownloadsDirectory()).path;
-    } on WindowsException {
-      downloadsDirectory = 'Failed to get downloads directory.';
+    } catch (exception) {
+      downloadsDirectory = 'Failed to get downloads directory: $exception';
     }
 
     try {
       documentsDirectory = (await getApplicationDocumentsDirectory()).path;
-    } on WindowsException {
-      documentsDirectory = 'Failed to get documents directory.';
+    } catch (exception) {
+      documentsDirectory = 'Failed to get documents directory: $exception';
     }
 
     try {
       appSupportDirectory = (await getApplicationSupportDirectory()).path;
-    } on WindowsException {
-      appSupportDirectory = 'Failed to get documents directory.';
+    } catch (exception) {
+      appSupportDirectory = 'Failed to get app support directory: $exception';
     }
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
 
     setState(() {
       _tempDirectory = tempDirectory;
@@ -73,7 +74,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Path Provider Windows example app'),
+          title: const Text('Path Provider example app'),
         ),
         body: Center(
           child: Column(
