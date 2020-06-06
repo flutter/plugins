@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Add support for macOS.
+
 ## 0.4.0+18
 
 * Update lower bound of dart dependency to 2.1.0.

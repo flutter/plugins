@@ -326,8 +326,10 @@ static const int SOURCE_GALLERY = 1;
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
+  if (!self.result) {
+    return;
+  }
   self.result(nil);
-
   self.result = nil;
   _arguments = nil;
 }

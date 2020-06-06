@@ -38,5 +38,7 @@
 	<string>1:479882132969:ios:2643f950e0a0da08</string>
 	<key>DATABASE_URL</key>
 	<string>https://my-flutter-proj.firebaseio.com</string>
+	<key>SERVER_CLIENT_ID</key>
+	<string>YOUR_SERVER_CLIENT_ID</string>
 </dict>
 </plist>

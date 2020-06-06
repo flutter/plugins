@@ -18,7 +18,7 @@ task:
   matrix:
     - name: publishable
       script:
-        - flutter channel stable
+        - flutter channel master
         - ./script/check_publish.sh
     - name: format
       install_script:
