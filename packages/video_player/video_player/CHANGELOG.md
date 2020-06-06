@@ -1,3 +1,12 @@
+## 0.10.11+1
+
+* Post-v2 Android embedding cleanups.
+
+## 0.10.11
+
+* iOS: Fixed crash when detaching from a dying engine.
+* Android: Fixed exception when detaching from any engine.
+
 ## 0.10.10
 
 * Migrated to [pigeon](https://pub.dev/packages/pigeon).
@@ -32,7 +41,7 @@
 
 ## 0.10.7
 
-* `VideoPlayerController` support for reading closed caption files. 
+* `VideoPlayerController` support for reading closed caption files.
 * `VideoPlayerValue` has a `caption` field for reading the current closed caption at any given time.
 
 ## 0.10.6

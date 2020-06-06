@@ -1,3 +1,11 @@
+## 0.3.22+1
+
+* Update the `setAndGetScrollPosition` to use hard coded values and add a `pumpAndSettle` call.
+
+## 0.3.22
+
+* Add support for passing a failing url.
+
 ## 0.3.21
 
 * Enable programmatic scrolling using Android's WebView.scrollTo & iOS WKWebView.scrollView.contentOffset.

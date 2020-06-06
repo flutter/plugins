@@ -1,7 +1,21 @@
+## 0.5.28+2
+
+* Move test introduced in #2449 to its right location.
+
+## 0.5.28+1
+
+* Android: Make sure map view only calls onDestroy once.
+* Android: Fix a memory leak regression caused in `0.5.26+4`.
+
+## 0.5.28
+
+* Android: Add liteModeEnabled option.
+
 ## 0.5.27+3
 
 * iOS: Update the gesture recognizer blocking policy to "WaitUntilTouchesEnded", which fixes the camera idle callback not triggered issue.
 * Update the min flutter version to 1.16.3.
+* Skip `testTakeSnapshot` test on Android.
 
 ## 0.5.27+2
 
