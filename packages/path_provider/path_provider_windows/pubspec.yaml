@@ -7,18 +7,19 @@ flutter:
   plugin:
     platforms:
       windows:
-        dartPluginClass: PathProviderPlugin
+        dartPluginClass: PathProviderWindows
         pluginClass: none
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.10.0 <2.0.0"
+  flutter: ">=1.12.13+hotfix.4 <2.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   path_provider_platform_interface: ^1.0.1
   win32: ^1.5.1
+  ffi: ^0.1.3
 
 dev_dependencies:
   pedantic: ^1.8.0
