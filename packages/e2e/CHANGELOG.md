@@ -1,3 +1,22 @@
+## 0.5.0
+
+* **Breaking change** by default, tests will use the device window size.
+  Tests can still override the window size by using the `setSurfaceSize` method.
+* **Breaking change** If using Flutter 1.19.0-2.0.pre.196 or greater, the
+  `testTextInput` will no longer automatically register.
+* **Breaking change** If using Flutter 1.19.0-2.0.pre.196 or greater, the
+  `HttpOverrides` will no longer be set by default.
+* Minor formatting changes to Dart code.
+
+## 0.4.3+3
+
+* Fixed code snippet in readme that referenced a non-existent `result` variable.
+
+## 0.4.3+2
+
+* Bumps AGP to 3.6.3
+* Changes android-retrofuture dependency type to "implementation"
+
 ## 0.4.3+1
 
 * Post-v2 Android embedding cleanup.

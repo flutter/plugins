@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Expose SKError code to client apps.
+
 ## 0.3.3+2
 
 * Post-v2 Android embedding cleanups.

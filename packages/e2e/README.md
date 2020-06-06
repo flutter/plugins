@@ -23,7 +23,6 @@ void main() {
   testWidgets("failing test example", (WidgetTester tester) async {
     expect(2 + 2, equals(5));
   });
-  exit(result == 'pass' ? 0 : 1);
 }
 ```
 
