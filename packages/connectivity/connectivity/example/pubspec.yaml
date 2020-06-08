@@ -6,6 +6,8 @@ dependencies:
     sdk: flutter
   connectivity:
     path: ../
+  experimental_connectivity_web:
+    path: ../../experimental_connectivity_web
 
 dev_dependencies:
   flutter_driver:
