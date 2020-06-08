@@ -1,3 +1,8 @@
+## 0.6.8
+
+* Android: Determines the mime type using the ContentResolver & MimeTypeMap.
+* Android: Disable image resizing for GIF images.
+
 ## 0.6.7+1
 
 * Add web support to the example app.
