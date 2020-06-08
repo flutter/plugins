@@ -4,7 +4,7 @@ version: 0.1.0
 homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity_web
 
 dependencies:
-  experimental_connectivity_web:
+  connectivity_for_web:
     path: ../
   js: ^0.6.1+1
   flutter_web_plugins:

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
-import 'package:experimental_connectivity_web/experimental_connectivity_web.dart';
+import 'package:connectivity_for_web/connectivity_for_web.dart';
 import 'package:flutter/foundation.dart';
 import 'package:js/js.dart';
 

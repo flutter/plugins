@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:html' as html show window;
 
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
-import 'package:experimental_connectivity_web/experimental_connectivity_web.dart';
+import 'package:connectivity_for_web/connectivity_for_web.dart';
 
 /// The web implementation of the ConnectivityPlatform of the Connectivity plugin.
 class DartHtmlConnectivityPlugin extends ConnectivityPlugin {

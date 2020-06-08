@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'package:experimental_connectivity_web/src/generated/network_information_types.dart'
+import 'package:connectivity_for_web/src/generated/network_information_types.dart'
     as dom;
 
 /// A Mock implementation of the NetworkInformation API that allows
