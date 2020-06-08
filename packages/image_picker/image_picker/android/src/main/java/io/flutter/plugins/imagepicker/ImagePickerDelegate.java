@@ -74,6 +74,7 @@ enum CameraDevice {
 public class ImagePickerDelegate
     implements PluginRegistry.ActivityResultListener,
         PluginRegistry.RequestPermissionsResultListener {
+
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
   @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
@@ -96,6 +97,7 @@ public class ImagePickerDelegate
   private CameraDevice cameraDevice;
 
   interface PermissionManager {
+
     boolean isPermissionGranted(String permissionName);
 
     void askForPermission(String permissionName, int requestCode);
@@ -104,16 +106,19 @@ public class ImagePickerDelegate
   }
 
   interface IntentResolver {
+
     boolean resolveActivity(Intent intent);
   }
 
   interface FileUriResolver {
+
     Uri resolveFileProviderUriForFile(String fileProviderName, File imageFile);
 
     void getFullImagePath(Uri imageUri, OnPathReadyListener listener);
   }
 
   interface OnPathReadyListener {
+
     void onPathReady(String path);
   }
 
@@ -548,6 +553,11 @@ public class ImagePickerDelegate
 
   private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
     if (methodCall != null) {
+      if (path.toLowerCase().endsWith(".gif")) {
+        finishWithSuccess(path);
+        return;
+      }
+
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
       Integer imageQuality = methodCall.argument("imageQuality");
@@ -557,7 +567,7 @@ public class ImagePickerDelegate
 
       finishWithSuccess(finalImagePath);
 
-      //delete original file if scaled
+      // delete original file if scaled
       if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
