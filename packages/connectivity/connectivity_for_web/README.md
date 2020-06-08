@@ -1,6 +1,6 @@
-# experimental_connectivity_web
+# connectivity_for_web
 
-A web implementation of [connectivity](https://pub.dev/connectivity/connectivity). Currently this package uses an experimental API, with a fallback to dart:html, so not all features are available to all browsers.
+A web implementation of [connectivity](https://pub.dev/connectivity/connectivity). Currently this package uses an experimental API, with a fallback to dart:html, so not all features may be available to all browsers.
 
 ## Usage
 
@@ -13,7 +13,7 @@ This package is a non-endorsed implementation of `connectivity` for the web plat
 dependencies:
   ...
   connectivity: ^0.4.9
-  experimental_connectivity_web: ^0.2.0
+  connectivity_for_web: ^0.3.0
   ...
 ...
 ```
@@ -24,7 +24,7 @@ Find the example wiring in the [Google sign-in example application](https://gith
 
 ## Limitations on the web platform
 
-In order to retrieve information about the quality/speed of a browser's connection, the web implementation of the `connectivity` plugin uses the browser's [**NetworkInformation** Web API](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation), which as of this writing (February 2020) is still "experimental", and not available in all browsers:
+In order to retrieve information about the quality/speed of a browser's connection, the web implementation of the `connectivity` plugin uses the browser's [**NetworkInformation** Web API](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation), which as of this writing (June 2020) is still "experimental", and not available in all browsers:
 
 ![Data on support for the netinfo feature across the major browsers from caniuse.com](https://caniuse.bitsofco.de/image/netinfo.png)
 
