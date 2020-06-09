@@ -63,6 +63,11 @@ class AndroidDeviceInfo {
     this.isPhysicalDevice,
     this.androidId,
     List<String> systemFeatures,
+    this.screenWidthPixel,
+    this.screenHeightPixel,
+    this.densityDpi,
+    this.language,
+    this.country,
   })  : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
         supported64BitAbis = List<String>.unmodifiable(supported64BitAbis),
         supportedAbis = List<String>.unmodifiable(supportedAbis),
@@ -144,6 +149,21 @@ class AndroidDeviceInfo {
   /// https://developer.android.com/reference/android/content/pm/PackageManager
   final List<String> systemFeatures;
 
+  /// The absolute width of the available display size in pixels.
+  final int screenWidthPixel;
+
+  /// The absolute height of the available display size in pixels.
+  final int screenHeightPixel;
+
+  /// The screen density expressed as dots-per-inch.
+  final String densityDpi;
+
+  /// The language code of the device Locale
+  final String language;
+
+  /// The country code of the device Locale
+  final String country;
+
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo _fromMap(Map<String, dynamic> map) {
     return AndroidDeviceInfo._(
@@ -169,6 +189,11 @@ class AndroidDeviceInfo {
       isPhysicalDevice: map['isPhysicalDevice'],
       androidId: map['androidId'],
       systemFeatures: _fromList(map['systemFeatures']),
+      screenWidthPixel: map['screenWidthPixel'],
+      screenHeightPixel: map['screenHeightPixel'],
+      densityDpi: map['densityDpi'],
+      language: map['language'],
+      country: map['country']
     );
   }
 
@@ -244,6 +269,10 @@ class IosDeviceInfo {
     this.identifierForVendor,
     this.isPhysicalDevice,
     this.utsname,
+    this.screenWidthPixel,
+    this.screenHeightPixel,
+    this.language,
+    this.country
   });
 
   /// Device name.
@@ -270,6 +299,18 @@ class IosDeviceInfo {
   /// Operating system information derived from `sys/utsname.h`.
   final IosUtsname utsname;
 
+  /// The absolute width of the available display size in pixels.
+  final int screenWidthPixel;
+
+  /// The absolute height of the available display size in pixels.
+  final int screenHeightPixel;
+
+  /// The language code of the device Locale
+  final String language;
+
+  /// The country code of the device Locale
+  final String country;
+
   /// Deserializes from the map message received from [_kChannel].
   static IosDeviceInfo _fromMap(Map<String, dynamic> map) {
     return IosDeviceInfo._(
@@ -281,6 +322,10 @@ class IosDeviceInfo {
       identifierForVendor: map['identifierForVendor'],
       isPhysicalDevice: map['isPhysicalDevice'] == 'true',
       utsname: IosUtsname._fromMap(map['utsname']?.cast<String, dynamic>()),
+      screenWidthPixel: map['screenWidthPixel'],
+      screenHeightPixel: map['screenHeightPixel'],
+      language: map['language'],
+      country: map['country']
     );
   }
 }
