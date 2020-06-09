@@ -34,7 +34,11 @@
         @"release" : @(un.release),
         @"version" : @(un.version),
         @"machine" : @(un.machine),
-      }
+      },
+      @"screenWidthPixel" : [self getScreenWidth],
+      @"screenHeightPixel" : [self getScreenHeight],
+      @"language": [[NSLocale currentLocale] objectForKey: NSLocaleLanguageCode],
+      @"country": [self getCountryCode]
     });
   } else {
     result(FlutterMethodNotImplemented);
@@ -51,5 +55,32 @@
 
   return isPhysicalDevice;
 }
+
+// The country code of the device Locale
+- (NSString*)getCountryCode {
+  NSString *country = [[NSLocale currentLocale] objectForKey: NSLocaleCountryCode];
+  if(country != nil) {
+    return country;
+  } else {
+    return @"";
+  }
+}
+
+// The absolute width of the available display size in pixels.
+- (NSNumber*)getScreenWidth {
+  CGRect screenBounds = [[UIScreen mainScreen] bounds];
+  CGFloat screenScale = [[UIScreen mainScreen] scale];
+  CGFloat width = screenBounds.size.width * screenScale;
+  return [NSNumber numberWithInt: (NSInteger)width];
+}
+
+// The absolute height of the available display size in pixels.
+- (NSNumber*)getScreenHeight {
+  CGRect screenBounds = [[UIScreen mainScreen] bounds];
+  CGFloat screenScale = [[UIScreen mainScreen] scale];
+  CGFloat height = screenBounds.size.height * screenScale;
+  return [NSNumber numberWithInt: (NSInteger)height];
+}
+
 
 @end
