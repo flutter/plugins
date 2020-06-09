@@ -1,3 +1,11 @@
+## 0.4.2+5
+
+* Add screenWidth (Android and iOS)
+* Add screenHeight (Android and iOS)
+* Add density (Android)
+* Add language (Android and iOS)
+* Add country (Android and iOS)
+
 ## 0.4.2+4
 
 Update lower bound of dart dependency to 2.1.0.
