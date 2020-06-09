@@ -34,7 +34,7 @@ public class DeviceInfoPlugin implements FlutterPlugin {
   private void setupMethodChannel(BinaryMessenger messenger, Context context) {
     channel = new MethodChannel(messenger, "plugins.flutter.io/device_info");
     final MethodCallHandlerImpl handler =
-        new MethodCallHandlerImpl(context.getContentResolver(), context.getPackageManager());
+        new MethodCallHandlerImpl(context);
     channel.setMethodCallHandler(handler);
   }
 

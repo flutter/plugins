@@ -6,14 +6,19 @@ package io.flutter.plugins.deviceinfo;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -22,16 +27,18 @@ import java.util.Map;
  */
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
+  private final Context context;
   private final ContentResolver contentResolver;
   private final PackageManager packageManager;
 
   /** Substitute for missing values. */
   private static final String[] EMPTY_STRING_LIST = new String[] {};
 
-  /** Constructs DeviceInfo. {@code contentResolver} and {@code packageManager} must not be null. */
-  MethodCallHandlerImpl(ContentResolver contentResolver, PackageManager packageManager) {
-    this.contentResolver = contentResolver;
-    this.packageManager = packageManager;
+  /** Constructs DeviceInfo. {@code context} must not be null. */
+  MethodCallHandlerImpl(Context context) {
+    this.context = context;
+    this.contentResolver = context.getContentResolver();
+    this.packageManager = context.getPackageManager();
   }
 
   @Override
@@ -77,6 +84,12 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       version.put("release", Build.VERSION.RELEASE);
       version.put("sdkInt", Build.VERSION.SDK_INT);
       build.put("version", version);
+
+      build.put("screenWidthPixel", context.getResources().getDisplayMetrics().widthPixels);
+      build.put("screenHeightPixel", context.getResources().getDisplayMetrics().heightPixels);
+      build.put("densityDpi", getDensity());
+      build.put("language", Locale.getDefault().getLanguage());
+      build.put("country", Locale.getDefault().getCountry());
 
       result.success(build);
     } else {
@@ -129,5 +142,33 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         || Build.PRODUCT.contains("vbox86p")
         || Build.PRODUCT.contains("emulator")
         || Build.PRODUCT.contains("simulator");
+  }
+
+
+  /**
+   * Return the screen density expressed as dots-per-inch.
+   * @return Screen density
+   */
+  private String getDensity() {
+    DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+    String densityString = displayMetrics.densityDpi + " dpi";
+    switch (displayMetrics.densityDpi){
+      case DisplayMetrics.DENSITY_LOW:
+        return densityString + " (LDPI)";
+      case DisplayMetrics.DENSITY_MEDIUM:
+        return densityString + " (MDPI)";
+      case DisplayMetrics.DENSITY_HIGH:
+        return densityString + " (HDPI)";
+      case DisplayMetrics.DENSITY_XHIGH:
+        return densityString + " (XHDPI)";
+      case DisplayMetrics.DENSITY_XXHIGH:
+        return densityString + " (XXHDPI)";
+      case DisplayMetrics.DENSITY_XXXHIGH:
+        return densityString + " (XXXHDPI)";
+      case DisplayMetrics.DENSITY_TV:
+        return densityString + " (TV)";
+      default:
+        return densityString;
+    }
   }
 }
