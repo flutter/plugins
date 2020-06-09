@@ -178,6 +178,30 @@ and `AppStore` that the purchase has been finished.
 
 WARNING! Failure to call `InAppPurchaseConnection.completePurchase` and get a successful response within 3 days of the purchase will result a refund.
 
+### Upgrading or Downgrading an existing InApp Subscription
+
+In order to upgrade/downgrade an existing InApp subscription on `PlayStore`, 
+you need to provide an instance of `ChangeSubscriptionParam` with the old 
+`PurchaseDetails` that the user needs to migrate from, and an optional `ProrationMode`
+with the `PurchaseParam` object while calling `InAppPurchaseConnection.buyNonConsumable`.
+`AppStore` does not require this since they provides a subscription grouping mechanism. 
+Each subscription you offer must be assigned to a subscription group. 
+So the developers can group related subscriptions together to prevents users from 
+accidentally purchasing multiple subscriptions.
+Please refer to the 'Creating a Subscription Group' sections of [Apple's subscription guide](https://developer.apple.com/app-store/subscriptions/)
+
+
+```dart
+final PurchaseDetails oldPurchaseDetails = ...;
+PurchaseParam purchaseParam = PurchaseParam(
+    productDetails: productDetails,
+    changeSubscriptionParam: ChangeSubscriptionParam(
+        oldPurchaseDetails: oldPurchaseDetails,
+        prorationMode: ProrationMode.immediateWithTimeProration));
+InAppPurchaseConnection.instance
+    .buyNonConsumable(purchaseParam: purchaseParam);
+```
+
 ## Development
 
 This plugin uses

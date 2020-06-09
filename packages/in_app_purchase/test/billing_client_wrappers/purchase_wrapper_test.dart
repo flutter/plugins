@@ -46,6 +46,20 @@ final PurchaseHistoryRecordWrapper dummyPurchaseHistoryRecord =
   developerPayload: 'dummy payload',
 );
 
+final PurchaseWrapper dummyOldPurchase = PurchaseWrapper(
+  orderId: 'oldOrderId',
+  packageName: 'oldPackageName',
+  purchaseTime: 0,
+  signature: 'oldSignature',
+  sku: 'oldSku',
+  purchaseToken: 'oldPurchaseToken',
+  isAutoRenewing: false,
+  originalJson: '',
+  developerPayload: 'old dummy payload',
+  isAcknowledged: true,
+  purchaseState: PurchaseStateWrapper.purchased,
+);
+
 void main() {
   group('PurchaseWrapper', () {
     test('converts from map', () {
