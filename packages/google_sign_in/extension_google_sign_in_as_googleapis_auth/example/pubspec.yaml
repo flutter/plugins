@@ -1,4 +1,4 @@
-name: google_sign_in_example
+name: extension_google_sign_in_example
 description: Example of Google Sign-In plugin and googleapis.
 
 dependencies:
@@ -7,7 +7,7 @@ dependencies:
   google_sign_in: ^4.4.1
   extension_google_sign_in_as_googleapis_auth:
     path: ../
-  googleapis: any
+  googleapis: ^0.55.0
 
 dev_dependencies:
   pedantic: ^1.8.0
