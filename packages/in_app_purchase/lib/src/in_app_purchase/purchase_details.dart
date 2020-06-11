@@ -196,6 +196,14 @@ class PurchaseDetails {
         _platform = _kPlatformIOS {
     status = SKTransactionStatusConverter()
         .toPurchaseStatus(transaction.transactionState);
+    if (status == PurchaseStatus.error) {
+      error = IAPError(
+        source: IAPSource.AppStore,
+        code: kPurchaseErrorCode,
+        message: transaction.error.domain,
+        details: transaction.error.userInfo,
+      );
+    }
   }
 
   /// Generate a [PurchaseDetails] object based on an Android [Purchase] object.
@@ -211,6 +219,13 @@ class PurchaseDetails {
         this.billingClientPurchase = purchase,
         _platform = _kPlatformAndroid {
     status = PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState);
+    if (status == PurchaseStatus.error) {
+      error = IAPError(
+        source: IAPSource.GooglePlay,
+        code: kPurchaseErrorCode,
+        message: null,
+      );
+    }
   }
 }
 
