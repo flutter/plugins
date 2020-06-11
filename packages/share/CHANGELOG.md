@@ -1,3 +1,7 @@
+## 0.6.5
+
+* Show the share text in the iOS share preview panel.
+
 ## 0.6.4+3
 
 * Post-v2 Android embedding cleanup.
