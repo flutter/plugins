@@ -95,9 +95,12 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
            subject:(NSString *)subject
     withController:(UIViewController *)controller
           atSource:(CGRect)origin {
+            NSString *testToShare = shareText;
+                NSURL *urlToShare = [NSURL URLWithString:@"itms-apps://itunes.apple.com/app/id1510760825"];
+             NSArray *activityItems = @[testToShare,urlToShare];
   ShareData *data = [[ShareData alloc] initWithSubject:subject text:shareText];
   UIActivityViewController *activityViewController =
-      [[UIActivityViewController alloc] initWithActivityItems:@[ data ] applicationActivities:nil];
+      [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
   activityViewController.popoverPresentationController.sourceView = controller.view;
   if (!CGRectIsEmpty(origin)) {
     activityViewController.popoverPresentationController.sourceRect = origin;
