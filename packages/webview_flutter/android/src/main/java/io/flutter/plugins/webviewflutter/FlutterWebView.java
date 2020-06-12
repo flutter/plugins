@@ -158,6 +158,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getTitle":
         getTitle(result);
         break;
+      case "scrollTo":
+        scrollTo(methodCall, result);
+        break;
+      case "scrollBy":
+        scrollBy(methodCall, result);
+        break;
+      case "getScrollX":
+        getScrollX(result);
+        break;
+      case "getScrollY":
+        getScrollY(result);
+        break;
       default:
         result.notImplemented();
     }
@@ -252,6 +264,33 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void getTitle(Result result) {
     result.success(webView.getTitle());
+  }
+
+  private void scrollTo(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    int x = (int) request.get("x");
+    int y = (int) request.get("y");
+
+    webView.scrollTo(x, y);
+
+    result.success(null);
+  }
+
+  private void scrollBy(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    int x = (int) request.get("x");
+    int y = (int) request.get("y");
+
+    webView.scrollBy(x, y);
+    result.success(null);
+  }
+
+  private void getScrollX(Result result) {
+    result.success(webView.getScrollX());
+  }
+
+  private void getScrollY(Result result) {
+    result.success(webView.getScrollY());
   }
 
   private void applySettings(Map<String, Object> settings) {

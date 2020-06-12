@@ -73,7 +73,9 @@ Future<bool> launch(
         message: 'To use webview or safariVC, you need to pass'
             'in a web URL. This $urlString is not a web URL.');
   }
-  bool previousAutomaticSystemUiAdjustment;
+
+  /// [true] so that ui is automatically computed if [statusBarBrightness] is set.
+  bool previousAutomaticSystemUiAdjustment = true;
   if (statusBarBrightness != null &&
       defaultTargetPlatform == TargetPlatform.iOS) {
     previousAutomaticSystemUiAdjustment =
@@ -92,6 +94,7 @@ Future<bool> launch(
     universalLinksOnly: universalLinksOnly ?? false,
     headers: headers ?? <String, String>{},
   );
+  assert(previousAutomaticSystemUiAdjustment != null);
   if (statusBarBrightness != null) {
     WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
         previousAutomaticSystemUiAdjustment;

@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -24,6 +25,10 @@ import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.android.gms.tasks.Task;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -38,7 +43,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /** Google sign-in plugin for Flutter. */
-public class GoogleSignInPlugin implements MethodCallHandler {
+public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
   private static final String CHANNEL_NAME = "plugins.flutter.io/google_sign_in";
 
   private static final String METHOD_INIT = "init";
@@ -51,17 +56,76 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_CLEAR_AUTH_CACHE = "clearAuthCache";
   private static final String METHOD_REQUEST_SCOPES = "requestScopes";
 
-  private final IDelegate delegate;
+  private Delegate delegate;
+  private MethodChannel channel;
+  private ActivityPluginBinding activityPluginBinding;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-    final GoogleSignInPlugin instance =
-        new GoogleSignInPlugin(registrar, new GoogleSignInWrapper());
-    channel.setMethodCallHandler(instance);
+    GoogleSignInPlugin instance = new GoogleSignInPlugin();
+    instance.initInstance(registrar.messenger(), registrar.context(), new GoogleSignInWrapper());
+    instance.setUpRegistrar(registrar);
   }
 
-  GoogleSignInPlugin(PluginRegistry.Registrar registrar, GoogleSignInWrapper googleSignInWrapper) {
-    delegate = new Delegate(registrar, googleSignInWrapper);
+  @VisibleForTesting
+  public void initInstance(
+      BinaryMessenger messenger, Context context, GoogleSignInWrapper googleSignInWrapper) {
+    channel = new MethodChannel(messenger, CHANNEL_NAME);
+    delegate = new Delegate(context, googleSignInWrapper);
+    channel.setMethodCallHandler(this);
+  }
+
+  @VisibleForTesting
+  public void setUpRegistrar(PluginRegistry.Registrar registrar) {
+    delegate.setUpRegistrar(registrar);
+  }
+
+  private void dispose() {
+    delegate = null;
+    channel.setMethodCallHandler(null);
+    channel = null;
+  }
+
+  private void attachToActivity(ActivityPluginBinding activityPluginBinding) {
+    this.activityPluginBinding = activityPluginBinding;
+    activityPluginBinding.addActivityResultListener(delegate);
+    delegate.setActivity(activityPluginBinding.getActivity());
+  }
+
+  private void disposeActivity() {
+    activityPluginBinding.removeActivityResultListener(delegate);
+    delegate.setActivity(null);
+    activityPluginBinding = null;
+  }
+
+  @Override
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+    initInstance(
+        binding.getBinaryMessenger(), binding.getApplicationContext(), new GoogleSignInWrapper());
+  }
+
+  @Override
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+    dispose();
+  }
+
+  @Override
+  public void onAttachedToActivity(ActivityPluginBinding activityPluginBinding) {
+    attachToActivity(activityPluginBinding);
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    disposeActivity();
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding activityPluginBinding) {
+    attachToActivity(activityPluginBinding);
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+    disposeActivity();
   }
 
   @Override
@@ -177,7 +241,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
    * completed (either successfully or in error). This class provides no synchronization constructs
    * to guarantee such behavior; callers are responsible for providing such guarantees.
    */
-  public static final class Delegate implements IDelegate, PluginRegistry.ActivityResultListener {
+  public static class Delegate implements IDelegate, PluginRegistry.ActivityResultListener {
     private static final int REQUEST_CODE_SIGNIN = 53293;
     private static final int REQUEST_CODE_RECOVER_AUTH = 53294;
     @VisibleForTesting static final int REQUEST_CODE_REQUEST_SCOPE = 53295;
@@ -195,7 +259,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private static final String DEFAULT_SIGN_IN = "SignInOption.standard";
     private static final String DEFAULT_GAMES_SIGN_IN = "SignInOption.games";
 
-    private final PluginRegistry.Registrar registrar;
+    private final Context context;
+    // Only set registrar for v1 embedder.
+    private PluginRegistry.Registrar registrar;
+    // Only set activity for v2 embedder. Always access activity from getActivity() method.
+    private Activity activity;
     private final BackgroundTaskRunner backgroundTaskRunner = new BackgroundTaskRunner(1);
     private final GoogleSignInWrapper googleSignInWrapper;
 
@@ -203,10 +271,23 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
 
-    public Delegate(PluginRegistry.Registrar registrar, GoogleSignInWrapper googleSignInWrapper) {
-      this.registrar = registrar;
+    public Delegate(Context context, GoogleSignInWrapper googleSignInWrapper) {
+      this.context = context;
       this.googleSignInWrapper = googleSignInWrapper;
+    }
+
+    public void setUpRegistrar(PluginRegistry.Registrar registrar) {
+      this.registrar = registrar;
       registrar.addActivityResultListener(this);
+    }
+
+    public void setActivity(Activity activity) {
+      this.activity = activity;
+    }
+
+    // Only access activity with this method.
+    public Activity getActivity() {
+      return registrar != null ? registrar.activity() : activity;
     }
 
     private void checkAndSetPendingOperation(String method, Result result) {
@@ -249,13 +330,12 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         // TODO(jackson): Perhaps we should provide a mechanism to override this
         // behavior.
         int clientIdIdentifier =
-            registrar
-                .context()
+            context
                 .getResources()
-                .getIdentifier(
-                    "default_web_client_id", "string", registrar.context().getPackageName());
+                .getIdentifier("default_web_client_id", "string", context.getPackageName());
         if (clientIdIdentifier != 0) {
-          optionsBuilder.requestIdToken(registrar.context().getString(clientIdIdentifier));
+          optionsBuilder.requestIdToken(context.getString(clientIdIdentifier));
+          optionsBuilder.requestServerAuthCode(context.getString(clientIdIdentifier));
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
@@ -265,7 +345,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         }
 
         this.requestedScopes = requestedScopes;
-        signInClient = GoogleSignIn.getClient(registrar.context(), optionsBuilder.build());
+        signInClient = GoogleSignIn.getClient(context, optionsBuilder.build());
         result.success(null);
       } catch (Exception e) {
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
@@ -300,13 +380,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void signIn(Result result) {
-      if (registrar.activity() == null) {
+      if (getActivity() == null) {
         throw new IllegalStateException("signIn needs a foreground activity");
       }
       checkAndSetPendingOperation(METHOD_SIGN_IN, result);
 
       Intent signInIntent = signInClient.getSignInIntent();
-      registrar.activity().startActivityForResult(signInIntent, REQUEST_CODE_SIGNIN);
+      getActivity().startActivityForResult(signInIntent, REQUEST_CODE_SIGNIN);
     }
 
     /**
@@ -355,7 +435,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     /** Checks if there is a signed in user. */
     @Override
     public void isSignedIn(final Result result) {
-      boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
+      boolean value = GoogleSignIn.getLastSignedInAccount(context) != null;
       result.success(value);
     }
 
@@ -363,9 +443,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     public void requestScopes(Result result, List<String> scopes) {
       checkAndSetPendingOperation(METHOD_REQUEST_SCOPES, result);
 
-      GoogleSignInAccount account = googleSignInWrapper.getLastSignedInAccount(registrar.context());
+      GoogleSignInAccount account = googleSignInWrapper.getLastSignedInAccount(context);
       if (account == null) {
-        result.error(ERROR_REASON_SIGN_IN_REQUIRED, "No account to grant scopes.", null);
+        finishWithError(ERROR_REASON_SIGN_IN_REQUIRED, "No account to grant scopes.");
         return;
       }
 
@@ -379,15 +459,12 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       }
 
       if (wrappedScopes.isEmpty()) {
-        result.success(true);
+        finishWithSuccess(true);
         return;
       }
 
       googleSignInWrapper.requestPermissions(
-          registrar.activity(),
-          REQUEST_CODE_REQUEST_SCOPE,
-          account,
-          wrappedScopes.toArray(new Scope[0]));
+          getActivity(), REQUEST_CODE_REQUEST_SCOPE, account, wrappedScopes.toArray(new Scope[0]));
     }
 
     private void onSignInResult(Task<GoogleSignInAccount> completedTask) {
@@ -408,6 +485,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       response.put("email", account.getEmail());
       response.put("id", account.getId());
       response.put("idToken", account.getIdToken());
+      response.put("serverAuthCode", account.getServerAuthCode());
       response.put("displayName", account.getDisplayName());
       if (account.getPhotoUrl() != null) {
         response.put("photoUrl", account.getPhotoUrl().toString());
@@ -456,7 +534,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-              GoogleAuthUtil.clearToken(registrar.context(), token);
+              GoogleAuthUtil.clearToken(context, token);
               return null;
             }
           };
@@ -499,7 +577,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             public String call() throws Exception {
               Account account = new Account(email, "com.google");
               String scopesStr = "oauth2:" + Joiner.on(' ').join(requestedScopes);
-              return GoogleAuthUtil.getToken(registrar.context(), account, scopesStr);
+              return GoogleAuthUtil.getToken(context, account, scopesStr);
             }
           };
 
@@ -519,7 +597,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
               } catch (ExecutionException e) {
                 if (e.getCause() instanceof UserRecoverableAuthException) {
                   if (shouldRecoverAuth && pendingOperation == null) {
-                    Activity activity = registrar.activity();
+                    Activity activity = getActivity();
                     if (activity == null) {
                       result.error(
                           ERROR_USER_RECOVERABLE_AUTH,
@@ -581,30 +659,5 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           return false;
       }
     }
-  }
-}
-
-/**
- * A wrapper object that calls static method in GoogleSignIn.
- *
- * <p>Because GoogleSignIn uses static method mostly, which is hard for unit testing. We use this
- * wrapper class to use instance method which calls the corresponding GoogleSignIn static methods.
- *
- * <p>Warning! This class should stay true that each method calls a GoogleSignIn static method with
- * the same name and same parameters.
- */
-class GoogleSignInWrapper {
-
-  GoogleSignInAccount getLastSignedInAccount(Context context) {
-    return GoogleSignIn.getLastSignedInAccount(context);
-  }
-
-  boolean hasPermissions(GoogleSignInAccount account, Scope scope) {
-    return GoogleSignIn.hasPermissions(account, scope);
-  }
-
-  void requestPermissions(
-      Activity activity, int requestCode, GoogleSignInAccount account, Scope[] scopes) {
-    GoogleSignIn.requestPermissions(activity, requestCode, account, scopes);
   }
 }

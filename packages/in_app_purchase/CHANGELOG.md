@@ -1,3 +1,33 @@
+## 0.3.4
+
+* Expose SKError code to client apps.
+
+## 0.3.3+2
+
+* Post-v2 Android embedding cleanups.
+
+## 0.3.3+1
+
+* Update documentations for `InAppPurchase.completePurchase` and update README.
+
+## 0.3.3
+
+* Introduce `SKPaymentQueueWrapper.transactions`.
+
+## 0.3.2+2
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.3.2+1
+
+* iOS: Fix only transactions with SKPaymentTransactionStatePurchased and SKPaymentTransactionStateFailed can be finished.
+* iOS: Only one pending transaction of a given product is allowed.
+
+## 0.3.2
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+
 ## 0.3.1+2
 
 * Fix potential casting crash on Android v1 embedding when registering life cycle callbacks.

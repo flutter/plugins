@@ -10,7 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
-class MarkerIconsPage extends Page {
+class MarkerIconsPage extends GoogleMapExampleAppPage {
   MarkerIconsPage() : super(const Icon(Icons.image), 'Marker icons');
 
   @override

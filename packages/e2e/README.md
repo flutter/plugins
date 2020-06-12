@@ -23,7 +23,6 @@ void main() {
   testWidgets("failing test example", (WidgetTester tester) async {
     expect(2 + 2, equals(5));
   });
-  exit(result == 'pass' ? 0 : 1);
 }
 ```
 
@@ -84,7 +83,7 @@ this test file MainActivityTest.java or another name of your choice.
 package com.example.myapp;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.e2e.FlutterRunner;
+import dev.flutter.plugins.e2e.FlutterTestRunner;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
