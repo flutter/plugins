@@ -1,6 +1,6 @@
 ## 4.5.2
 
-* Fix crash on iOS caused by null hostedDomain.
+* Prevent exceptions from crashing app on iOS.
 
 ## 4.5.1
 

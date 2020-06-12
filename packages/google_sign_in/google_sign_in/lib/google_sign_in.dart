@@ -167,7 +167,7 @@ class GoogleSignIn {
   GoogleSignIn({
     this.signInOption = SignInOption.standard,
     this.scopes = const <String>[],
-    this.hostedDomain = '',
+    this.hostedDomain,
     this.clientId,
   });
 
