@@ -8,14 +8,14 @@
 @import XCTest;
 
 @interface MockViewController : UIViewController
-@property (nonatomic, retain) UIViewController *mockPresented;
+@property(nonatomic, retain) UIViewController *mockPresented;
 @end
 
 @implementation MockViewController
 @synthesize mockPresented;
 
 - (UIViewController *)presentedViewController {
-    return mockPresented;
+  return mockPresented;
 }
 
 @end
@@ -138,15 +138,15 @@
 }
 
 - (void)testViewController {
-    UIWindow *window = [UIWindow new];
-    MockViewController *vc1 = [MockViewController new];
-    window.rootViewController = vc1;
+  UIWindow *window = [UIWindow new];
+  MockViewController *vc1 = [MockViewController new];
+  window.rootViewController = vc1;
 
-    UIViewController *vc2 = [UIViewController new];
-    vc1.mockPresented = vc2;
+  UIViewController *vc2 = [UIViewController new];
+  vc1.mockPresented = vc2;
 
-    FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
-    XCTAssertEqual([plugin viewControllerWithWindow:window], vc2);
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  XCTAssertEqual([plugin viewControllerWithWindow:window], vc2);
 }
 
 @end
