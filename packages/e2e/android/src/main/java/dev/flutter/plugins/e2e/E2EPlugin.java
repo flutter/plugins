@@ -13,7 +13,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java9.util.concurrent.CompletableFuture;
 
 /** E2EPlugin */
 public class E2EPlugin implements MethodCallHandler, FlutterPlugin {
@@ -31,8 +31,7 @@ public class E2EPlugin implements MethodCallHandler, FlutterPlugin {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    onAttachedToEngine(
-        binding.getApplicationContext(), binding.getFlutterEngine().getDartExecutor());
+    onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
   }
 
   private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {

@@ -24,6 +24,11 @@ void main() {
       expect(info.buildNumber, '1');
       expect(info.packageName, 'io.flutter.plugins.packageInfoExample');
       expect(info.version, '1.0');
+    } else if (Platform.isMacOS) {
+      expect(info.appName, 'Package Info Example');
+      expect(info.buildNumber, '1');
+      expect(info.packageName, 'io.flutter.plugins.packageInfoExample');
+      expect(info.version, '1.0.0');
     } else {
       throw (UnsupportedError('platform not supported'));
     }
@@ -44,6 +49,12 @@ void main() {
       expect(
           find.text('io.flutter.plugins.packageInfoExample'), findsOneWidget);
       expect(find.text('1.0'), findsOneWidget);
+    } else if (Platform.isMacOS) {
+      expect(find.text('Package Info Example'), findsOneWidget);
+      expect(find.text('1'), findsOneWidget);
+      expect(
+          find.text('io.flutter.plugins.packageInfoExample'), findsOneWidget);
+      expect(find.text('1.0.0'), findsOneWidget);
     } else {
       throw (UnsupportedError('platform not supported'));
     }

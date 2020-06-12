@@ -1,3 +1,41 @@
+## 5.4.10
+
+* Post-v2 Android embedding cleanups.
+
+## 5.4.9
+
+* Update README.
+
+## 5.4.8
+
+* Initialize `previousAutomaticSystemUiAdjustment` in launch method.
+
+## 5.4.7
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 5.4.6
+
+* Add `web` to the example app.
+
+## 5.4.5
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
+## 5.4.4
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 5.4.3
+
+* Fixed the launchUniversalLinkIos method.
+
+## 5.4.2
+
+* Make the pedantic dev_dependency explicit.
+
 ## 5.4.1
 
 * Update unit tests to work with the PlatformInterface from package `plugin_platform_interface`.

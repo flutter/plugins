@@ -16,6 +16,7 @@ source "$SCRIPT_DIR/common.sh"
 CUSTOM_ANALYSIS_PLUGINS=(
   "in_app_purchase"
   "camera"
+  "video_player/video_player_web"
 )
 # Comma-separated string of the list above
 readonly CUSTOM_FLAG=$(IFS=, ; echo "${CUSTOM_ANALYSIS_PLUGINS[*]}")

@@ -27,6 +27,9 @@ class GoogleSignInAuthentication {
   /// The OAuth2 access token to access Google services.
   String get accessToken => _data.accessToken;
 
+  /// Server auth code used to access Google Login
+  String get serverAuthCode => _data.serverAuthCode;
+
   @override
   String toString() => 'GoogleSignInAuthentication:$_data';
 }
@@ -367,4 +370,10 @@ class GoogleSignIn {
   /// authentication.
   Future<GoogleSignInAccount> disconnect() =>
       _addMethodCall(GoogleSignInPlatform.instance.disconnect);
+
+  /// Requests the user grants additional Oauth [scopes].
+  Future<bool> requestScopes(List<String> scopes) async {
+    await _ensureInitialized();
+    return GoogleSignInPlatform.instance.requestScopes(scopes);
+  }
 }
