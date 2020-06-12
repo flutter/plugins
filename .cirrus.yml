@@ -126,6 +126,37 @@ task:
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  gce_instance:
+    image_project: flutter-cirrus
+    image_name: flutter-plugins-windows-server-2016-vs-2019
+    zone: us-west1-b
+    platform: windows
+    cpu: 8
+    memory: 16Gb
+    disk: 50
+  env:
+    PATH: "c:/MinGit/cmd;c:/src/flutter/bin/;$PATH"
+  upgrade_script:
+    - flutter channel stable
+    - flutter upgrade
+    - flutter channel master
+    - flutter upgrade
+    - git fetch origin master
+  activate_script: pub global activate flutter_plugin_tools
+  matrix:
+    - name: build-windows+drive-examples
+      install_script:
+        - flutter config --enable-windows-desktop
+      build_script:
+        # TODO(stuartmorgan): Include stable once Windows is supported on stable.
+        - flutter channel master
+        - ./script/incremental_build.sh build-examples --windows
+        - ./script/incremental_build.sh drive-examples --windows
+
+task:
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
     image: catalina-xcode-11.3.1-flutter
