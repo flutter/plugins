@@ -8,5 +8,6 @@
 
 // For testing only.
 - (UIImagePickerController *)getImagePickerController;
+- (UIViewController *)viewControllerWithWindow:(UIWindow *)window;
 
 @end

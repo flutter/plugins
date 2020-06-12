@@ -7,6 +7,19 @@
 @import image_picker;
 @import XCTest;
 
+@interface MockViewController : UIViewController
+@property (nonatomic, retain) UIViewController *mockPresented;
+@end
+
+@implementation MockViewController
+@synthesize mockPresented;
+
+- (UIViewController *)presentedViewController {
+    return mockPresented;
+}
+
+@end
+
 @interface FLTImagePickerPlugin (Test)
 @property(copy, nonatomic) FlutterResult result;
 - (void)handleSavedPath:(NSString *)path;
@@ -122,6 +135,18 @@
   };
   [plugin handleSavedPath:@"test"];
   [plugin handleSavedPath:@"test"];
+}
+
+- (void)testViewController {
+    UIWindow *window = [UIWindow new];
+    MockViewController *vc1 = [MockViewController new];
+    window.rootViewController = vc1;
+
+    UIViewController *vc2 = [UIViewController new];
+    vc1.mockPresented = vc2;
+
+    FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+    XCTAssertEqual([plugin viewControllerWithWindow:window], vc2);
 }
 
 @end
