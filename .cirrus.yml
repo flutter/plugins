@@ -1,5 +1,5 @@
 task:
-  gcp_credentials: ENCRYPTED[987a78af29b91ce8489594c9ab3fec21845bbe5ba68294b8f6def3cf0d380830f06687a89ea69c87344c5ade369700fe]
+  gcp_credentials: ENCRYPTED[da76d2b7b39894de70fae1fc9182c97cc41400adc93f0f1c49bc7442f15fb933da8d756ed88523810a9a77c34f51a693]
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
