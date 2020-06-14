@@ -89,13 +89,13 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   }
 
   /// Handles the OnChange event from a FileUploadInputElement object
-  /// Returns the objectURL of the selected file.
+  /// Returns the filename with file extension of the selected file.
   String _handleOnChangeEvent(html.Event event) {
     final html.FileUploadInputElement input = event?.target;
     final html.File file = _getFileFromInput(input);
 
     if (file != null) {
-      return html.Url.createObjectUrl(file);
+      return file.name;
     }
     return null;
   }
@@ -105,9 +105,9 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     final Completer<PickedFile> _completer = Completer<PickedFile>();
     // Observe the input until we can return something
     input.onChange.first.then((event) {
-      final objectUrl = _handleOnChangeEvent(event);
+      final objectName = _handleOnChangeEvent(event);
       if (!_completer.isCompleted) {
-        _completer.complete(PickedFile(objectUrl));
+        _completer.complete(PickedFile(objectName));
       }
     });
     input.onError.first.then((event) {
