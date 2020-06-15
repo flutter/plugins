@@ -1,3 +1,7 @@
+## 0.6.7+2
+
+* iOS: Fixes unpresentable album/image picker if window's root view controller is already presenting other view controller.
+
 ## 0.6.7+1
 
 * Add web support to the example app.
