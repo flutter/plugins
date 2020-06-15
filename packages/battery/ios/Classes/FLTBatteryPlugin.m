@@ -50,11 +50,15 @@
   switch (state) {
     case UIDeviceBatteryStateFull:
       _eventSink(@"full");
+      break;
     case UIDeviceBatteryStateCharging:
       _eventSink(@"charging");
       break;
     case UIDeviceBatteryStateUnplugged:
       _eventSink(@"discharging");
+      break;
+    case UIDeviceBatteryStateUnknown:
+      _eventSink(@"unknown");
       break;
     default:
       _eventSink([FlutterError errorWithCode:@"UNAVAILABLE"

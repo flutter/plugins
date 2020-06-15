@@ -16,7 +16,9 @@ enum BatteryState {
   charging,
 
   /// The battery is currently losing energy.
-  discharging
+  discharging,
+  
+  unknown
 }
 
 /// API for accessing information about the battery of the device the Flutter
@@ -69,6 +71,8 @@ BatteryState _parseBatteryState(String state) {
       return BatteryState.charging;
     case 'discharging':
       return BatteryState.discharging;
+    case 'unknown':
+      return BatteryState.unknown;
     default:
       throw ArgumentError('$state is not a valid BatteryState.');
   }
