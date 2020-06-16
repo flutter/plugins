@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Directory, Platform;
+import 'dart:io' show Directory;
 
 import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:platform/platform.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
@@ -37,7 +38,7 @@ PathProviderPlatform get _platform {
   if (__platform != null) {
     return __platform;
   }
-  if (!kIsWeb && Platform.isLinux && !_disablePlatformOverride) {
+  if (!kIsWeb && LocalPlatform().isLinux && !_disablePlatformOverride) {
     __platform = PathProviderLinux();
   } else {
     __platform = PathProviderPlatform.instance;

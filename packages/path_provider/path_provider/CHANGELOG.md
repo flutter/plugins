@@ -1,3 +1,6 @@
+## 1.6.12
+* Updated platform to use LocalPlatform to enable mocking platform in testing
+
 ## 1.6.11
 * Updated documentation to reflect the need for changes in testing for federated plugins
 
