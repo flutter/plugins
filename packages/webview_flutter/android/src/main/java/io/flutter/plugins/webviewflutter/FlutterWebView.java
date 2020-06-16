@@ -317,6 +317,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "userAgent":
           updateUserAgent((String) settings.get(key));
           break;
+        case "zoomEnabled":
+          updateZoomMode((boolean) settings.get(key));
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
@@ -352,6 +355,22 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void updateUserAgent(String userAgent) {
     webView.getSettings().setUserAgentString(userAgent);
+  }
+
+  private void updateZoomMode(boolean mode) {
+    if (!mode) return;
+    // loads the WebView completely zoomed out
+    webView.getSettings().setLoadWithOverviewMode(true);
+
+    // It loads the WebView with the attributes defined in the meta tag of the webpage.
+    // So it scales the webpage as defined in the html.
+    webView.getSettings().setUseWideViewPort(true);
+
+    // Pop-up zoom controls disabled. This is a temporary stop because dialog is not responding to touch events.
+    webView.getSettings().setDisplayZoomControls(false);
+
+    // enable zoom
+    webView.getSettings().setBuiltInZoomControls(true);
   }
 
   @Override

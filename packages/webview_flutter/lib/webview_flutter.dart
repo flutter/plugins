@@ -154,6 +154,7 @@ class WebView extends StatefulWidget {
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
+    this.zoomEnabled = true,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
   })  : assert(javascriptMode != null),
@@ -321,6 +322,24 @@ class WebView extends StatefulWidget {
   /// By default `userAgent` is null.
   final String userAgent;
 
+  /// Controls whether WebView zoom is enabled.
+  ///
+  /// Android:
+  ///  - Fully zoomed WebView is enabled by default
+  ///  - By default, WebView checks if there are attributes defined in the meta tag of the web page.
+  ///    This allows you to resize the web page as defined in the html tag
+  ///  - Pop-up zoom controls disabled. This is a temporary stop because dialog is not responding to touch events
+  ///
+  /// iOS:
+  /// Removing viewForZooming in the UIScrollViewDelegate method disables the pinch to zoom,
+  /// but not the double tap that keeps changing the zoom level.
+  /// The best solution was to inject JavaScript that adds this meta-tag:
+  /// <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  /// It works independently of the WKWebView configuration.
+  ///
+  /// By default `zoomEnabled` is true.
+  final bool zoomEnabled;
+
   /// Which restrictions apply on automatic media playback.
   ///
   /// This initial value is applied to the platform's webview upon creation. Any following
@@ -403,6 +422,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     userAgent: WebSetting<String>.of(widget.userAgent),
+    zoomEnabled: widget.zoomEnabled,
   );
 }
 
@@ -413,15 +433,18 @@ WebSettings _clearUnchangedWebSettings(
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.debuggingEnabled != null);
   assert(currentValue.userAgent.isPresent);
+  assert(currentValue.zoomEnabled != null);
   assert(newValue.javascriptMode != null);
   assert(newValue.hasNavigationDelegate != null);
   assert(newValue.debuggingEnabled != null);
   assert(newValue.userAgent.isPresent);
+  assert(newValue.zoomEnabled != null);
 
   JavascriptMode javascriptMode;
   bool hasNavigationDelegate;
   bool debuggingEnabled;
   WebSetting<String> userAgent = WebSetting<String>.absent();
+  bool zoomEnabled;
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -434,12 +457,16 @@ WebSettings _clearUnchangedWebSettings(
   if (currentValue.userAgent != newValue.userAgent) {
     userAgent = newValue.userAgent;
   }
+  if (currentValue.zoomEnabled != newValue.zoomEnabled) {
+    zoomEnabled = newValue.zoomEnabled;
+  }
 
   return WebSettings(
     javascriptMode: javascriptMode,
     hasNavigationDelegate: hasNavigationDelegate,
     debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,
+    zoomEnabled: zoomEnabled,
   );
 }
 
