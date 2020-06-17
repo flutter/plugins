@@ -29,7 +29,7 @@ class PathProviderWindows extends PathProviderPlatform {
     if (length == 0) {
       final error = GetLastError();
       free(buffer);
-      throw WindowsException('$error');
+      throw WindowsException(error);
     } else {
       var path = buffer.unpackString(length);
 
@@ -78,9 +78,7 @@ class PathProviderWindows extends PathProviderPlatform {
 
     if (FAILED(hr)) {
       if (hr == E_INVALIDARG || hr == E_FAIL) {
-        throw WindowsException('Invalid folder.');
-      } else {
-        throw WindowsException('Unknown error.');
+        throw WindowsException(hr);
       }
     }
 

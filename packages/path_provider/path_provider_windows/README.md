@@ -2,6 +2,8 @@
 
 The Windows implementation of [`path_provider`][1].
 
+*This is not an official package, and is not ready for use!*
+
 **Please set your constraint to `path_provider_windows: '>=0.0.y+x <2.0.0'`**
 
 ## Backward compatible 1.0.0 version is coming
