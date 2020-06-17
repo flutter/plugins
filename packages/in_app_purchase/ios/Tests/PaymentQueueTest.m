@@ -169,7 +169,8 @@
       [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
-  XCTAssertEqual(tran, nil);
+  XCTAssertEqual(tran.transactionState, SKPaymentTransactionStatePurchasing);
+  XCTAssertEqual(tran.transactionIdentifier, nil);
 }
 
 - (void)testTransactionDeferred {
