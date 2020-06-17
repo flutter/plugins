@@ -216,9 +216,8 @@
   self = [super init];
   if (self) {
     // Only purchased and restored transactions have transactionIdentifier:
-    //https://developer.apple.com/documentation/storekit/skpaymenttransaction/1411288-transactionidentifier?language=objc
-    if (state == SKPaymentTransactionStatePurchased ||
-        state == SKPaymentTransactionStateRestored) {
+    // https://developer.apple.com/documentation/storekit/skpaymenttransaction/1411288-transactionidentifier?language=objc
+    if (state == SKPaymentTransactionStatePurchased || state == SKPaymentTransactionStateRestored) {
       [self setValue:@"fakeID" forKey:@"transactionIdentifier"];
     }
     [self setValue:@(state) forKey:@"transactionState"];
@@ -230,9 +229,8 @@
   self = [super init];
   if (self) {
     // Only purchased and restored transactions have transactionIdentifier:
-    //https://developer.apple.com/documentation/storekit/skpaymenttransaction/1411288-transactionidentifier?language=objc
-    if (state == SKPaymentTransactionStatePurchased ||
-        state == SKPaymentTransactionStateRestored) {
+    // https://developer.apple.com/documentation/storekit/skpaymenttransaction/1411288-transactionidentifier?language=objc
+    if (state == SKPaymentTransactionStatePurchased || state == SKPaymentTransactionStateRestored) {
       [self setValue:@"fakeID" forKey:@"transactionIdentifier"];
     }
     [self setValue:@(state) forKey:@"transactionState"];

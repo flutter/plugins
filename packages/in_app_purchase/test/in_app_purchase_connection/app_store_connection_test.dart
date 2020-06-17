@@ -90,6 +90,27 @@ void main() {
       expect(response.error, isNull);
     });
 
+    test('queryPastPurchases should not block transaction updates', () async {
+      fakeIOSPlatform.transactions.add(fakeIOSPlatform.createPurchasedTransactionWithProductID('foo'));
+      Completer completer = Completer();
+      Stream<List<PurchaseDetails>> stream =
+          AppStoreConnection.instance.purchaseUpdatedStream;
+
+      StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        if (purchaseDetailsList.first.status == PurchaseStatus.purchased) {
+          completer.complete(purchaseDetailsList);
+          subscription.cancel();
+        }
+      });
+      QueryPurchaseDetailsResponse response =
+          await AppStoreConnection.instance.queryPastPurchases();
+      List<PurchaseDetails> result = await completer.future;
+      expect(result.length, 1);
+      expect(result.first.productID, 'foo');
+      expect(response.error, isNull);
+    });
+
     test('should get empty result if there is no restored transactions',
         () async {
       fakeIOSPlatform.testRestoredTransactionsNull = true;
@@ -331,7 +352,6 @@ class FakeIOSPlatform {
         payment: SKPaymentWrapper(productIdentifier: id),
         transactionState: SKPaymentTransactionStateWrapper.purchasing,
         transactionTimeStamp: 123123.121,
-        transactionIdentifier: id,
         error: null,
         originalTransaction: null);
   }
@@ -352,7 +372,6 @@ class FakeIOSPlatform {
         payment: SKPaymentWrapper(productIdentifier: id),
         transactionState: SKPaymentTransactionStateWrapper.failed,
         transactionTimeStamp: 123123.121,
-        transactionIdentifier: id,
         error: SKError(
             code: 0,
             domain: 'ios_domain',

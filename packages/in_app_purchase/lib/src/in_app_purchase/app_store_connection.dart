@@ -18,7 +18,7 @@ import '../../billing_client_wrappers.dart';
 /// This translates various `StoreKit` calls and responses into the
 /// generic plugin API.
 class AppStoreConnection implements InAppPurchaseConnection {
-  static AppStoreConnection get instance => _getOrCreateInstance();
+  static AppStoreConnection get instance => getOrCreateInstance();
   static AppStoreConnection _instance;
   static SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static _TransactionObserver _observer;
@@ -28,7 +28,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
   static SKTransactionObserverWrapper get observer => _observer;
 
-  static AppStoreConnection _getOrCreateInstance() {
+  static AppStoreConnection getOrCreateInstance() {
     if (_instance != null) {
       return _instance;
     }
@@ -208,12 +208,14 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
         return wrapper.transactionState ==
             SKPaymentTransactionStateWrapper.restored;
       }).map((SKPaymentTransactionWrapper wrapper) => wrapper));
-      return;
     }
 
     String receiptData = await getReceiptData();
     purchaseUpdatedController
-        .add(transactions.map((SKPaymentTransactionWrapper transaction) {
+        .add(transactions.where((SKPaymentTransactionWrapper wrapper) {
+        return wrapper.transactionState !=
+            SKPaymentTransactionStateWrapper.restored;
+      }).map((SKPaymentTransactionWrapper transaction) {
       PurchaseDetails purchaseDetails =
           PurchaseDetails.fromSKTransaction(transaction, receiptData);
       return purchaseDetails;
