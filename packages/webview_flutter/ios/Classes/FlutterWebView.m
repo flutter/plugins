@@ -442,7 +442,8 @@
 
 - (void)updateZoomEnabled:(NSNumber*)zoomEnabled {
   BOOL enabled = [zoomEnabled boolValue];
-  if (enabled) {
+  __typeof__(self) __strong wSelf = self;
+  if (!enabled) {
     _navigationDelegate.didFinishLoad = ^(WKNavigation* view) {
       NSString* source = @"var meta = document.createElement('meta'); \
               meta.name = "
@@ -453,7 +454,7 @@
                          @" var head = document.getElementsByTagName('head')[0];\
               "
                          @"head.appendChild(meta);";
-      [_webView evaluateJavaScript:source completionHandler:nil];
+      [wSelf->_webView evaluateJavaScript:source completionHandler:nil];
     };
   } else
     _navigationDelegate.didFinishLoad = ^(WKNavigation* view) {
