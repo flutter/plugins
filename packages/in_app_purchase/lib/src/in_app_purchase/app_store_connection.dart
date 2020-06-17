@@ -213,9 +213,9 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
     String receiptData = await getReceiptData();
     purchaseUpdatedController
         .add(transactions.where((SKPaymentTransactionWrapper wrapper) {
-        return wrapper.transactionState !=
-            SKPaymentTransactionStateWrapper.restored;
-      }).map((SKPaymentTransactionWrapper transaction) {
+      return wrapper.transactionState !=
+          SKPaymentTransactionStateWrapper.restored;
+    }).map((SKPaymentTransactionWrapper transaction) {
       PurchaseDetails purchaseDetails =
           PurchaseDetails.fromSKTransaction(transaction, receiptData);
       return purchaseDetails;

@@ -79,7 +79,7 @@ abstract class InAppPurchaseConnection {
   static void enablePendingPurchases() {
     _enablePendingPurchase = true;
     if (Platform.isIOS) {
-      // Setting setTransactionObserver to prevent throwing exceptions. 
+      // Setting setTransactionObserver to prevent throwing exceptions.
       AppStoreConnection.getOrCreateInstance();
     }
   }

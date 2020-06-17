@@ -91,7 +91,8 @@ void main() {
     });
 
     test('queryPastPurchases should not block transaction updates', () async {
-      fakeIOSPlatform.transactions.add(fakeIOSPlatform.createPurchasedTransactionWithProductID('foo'));
+      fakeIOSPlatform.transactions
+          .add(fakeIOSPlatform.createPurchasedTransactionWithProductID('foo'));
       Completer completer = Completer();
       Stream<List<PurchaseDetails>> stream =
           AppStoreConnection.instance.purchaseUpdatedStream;
