@@ -1,3 +1,7 @@
+## 5.4.11
+
+* Add documentation in README suggesting how to properly encode urls with special characters.
+
 ## 5.4.10
 
 * Post-v2 Android embedding cleanups.
