@@ -350,6 +350,7 @@ class FakeIOSPlatform {
 
   SKPaymentTransactionWrapper createPendingTransactionWithProductID(String id) {
     return SKPaymentTransactionWrapper(
+        transactionIdentifier: null,
         payment: SKPaymentWrapper(productIdentifier: id),
         transactionState: SKPaymentTransactionStateWrapper.purchasing,
         transactionTimeStamp: 123123.121,
@@ -370,6 +371,7 @@ class FakeIOSPlatform {
 
   SKPaymentTransactionWrapper createFailedTransactionWithProductID(String id) {
     return SKPaymentTransactionWrapper(
+        transactionIdentifier: null,
         payment: SKPaymentWrapper(productIdentifier: id),
         transactionState: SKPaymentTransactionStateWrapper.failed,
         transactionTimeStamp: 123123.121,
