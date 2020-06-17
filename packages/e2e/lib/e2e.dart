@@ -3,10 +3,15 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
+import 'common.dart';
+import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
@@ -17,8 +22,18 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
       try {
+        // For web integration tests we are not using the
+        // `plugins.flutter.io/e2e`. Mark the tests as complete before invoking
+        // the channel.
+        if (kIsWeb) {
+          if (!_allTestsPassed.isCompleted) {
+            _allTestsPassed.complete(true);
+          }
+        }
         await _channel.invokeMethod<void>(
-            'allTestsFinished', <String, dynamic>{'results': _results});
+          'allTestsFinished',
+          <String, dynamic>{'results': _results},
+        );
       } on MissingPluginException {
         print('Warning: E2E test plugin was not detected.');
       }
@@ -26,7 +41,26 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     });
   }
 
+  // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
+  // ignore: override_on_non_overriding_member
+  @override
+  bool get overrideHttpClient => false;
+
+  // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
+  // ignore: override_on_non_overriding_member
+  @override
+  bool get registerTestTextInput => false;
+
+  @override
+  ViewConfiguration createViewConfiguration() =>
+      TestViewConfiguration(size: window.physicalSize);
+
   final Completer<bool> _allTestsPassed = Completer<bool>();
+
+  /// Stores failure details.
+  ///
+  /// Failed test method's names used as key.
+  final List<Failure> _failureMethodsDetails = List<Failure>();
 
   /// Similar to [WidgetsFlutterBinding.ensureInitialized].
   ///
@@ -55,7 +89,9 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         case 'request_data':
           final bool allTestsPassed = await _allTestsPassed.future;
           response = <String, String>{
-            'message': allTestsPassed ? 'pass' : 'fail',
+            'message': allTestsPassed
+                ? Response.allTestsPassed().toJson()
+                : Response.someTestsFailed(_failureMethodsDetails).toJson(),
           };
           break;
         case 'get_health':
@@ -70,23 +106,38 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
       };
     }
 
+    if (kIsWeb) {
+      registerWebServiceExtension(callback);
+    }
+
     registerServiceExtension(name: 'driver', callback: callback);
   }
 
   @override
-  Future<void> runTest(Future<void> testBody(), VoidCallback invariantTester,
-      {String description = '', Duration timeout}) async {
+  Future<void> runTest(
+    Future<void> testBody(),
+    VoidCallback invariantTester, {
+    String description = '',
+    Duration timeout,
+  }) async {
     // TODO(jackson): Report the results individually instead of all at once
     // See https://github.com/flutter/flutter/issues/38985
-    final TestExceptionReporter valueBeforeTest = reportTestException;
+    final TestExceptionReporter oldTestExceptionReporter = reportTestException;
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';
-      _allTestsPassed.complete(false);
-      valueBeforeTest(details, testDescription);
+      _failureMethodsDetails.add(Failure(testDescription, details.toString()));
+      if (!_allTestsPassed.isCompleted) {
+        _allTestsPassed.complete(false);
+      }
+      oldTestExceptionReporter(details, testDescription);
     };
-    await super.runTest(testBody, invariantTester,
-        description: description, timeout: timeout);
+    await super.runTest(
+      testBody,
+      invariantTester,
+      description: description,
+      timeout: timeout,
+    );
     _results[description] ??= 'success';
   }
 }

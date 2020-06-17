@@ -1,3 +1,24 @@
+## 1.0.1
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 1.0.0
+
+* Bump the package version to 1.0.0 following ecosystem pre-migration (https://github.com/amirh/bump_to_1.0/projects/1).
+
+## 0.3.1+10
+
+* Update minimum Flutter version to 1.12.13+hotfix.5
+* Fix CocoaPods podspec lint warnings.
+
+## 0.3.1+9
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.3.1+8
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.3.1+7
 
 * Clean up various Android workarounds no longer needed after framework v1.12.

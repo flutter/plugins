@@ -193,9 +193,18 @@ class PurchaseDetails {
             : null,
         this.skPaymentTransaction = transaction,
         this.billingClientPurchase = null,
-        _status = SKTransactionStatusConverter()
-            .toPurchaseStatus(transaction.transactionState),
-        _platform = _kPlatformIOS;
+        _platform = _kPlatformIOS {
+    status = SKTransactionStatusConverter()
+        .toPurchaseStatus(transaction.transactionState);
+    if (status == PurchaseStatus.error) {
+      error = IAPError(
+        source: IAPSource.AppStore,
+        code: kPurchaseErrorCode,
+        message: transaction.error.domain,
+        details: transaction.error.userInfo,
+      );
+    }
+  }
 
   /// Generate a [PurchaseDetails] object based on an Android [Purchase] object.
   PurchaseDetails.fromPurchase(PurchaseWrapper purchase)
@@ -208,9 +217,16 @@ class PurchaseDetails {
         this.transactionDate = purchase.purchaseTime.toString(),
         this.skPaymentTransaction = null,
         this.billingClientPurchase = purchase,
-        _status =
-            PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState),
-        _platform = _kPlatformAndroid;
+        _platform = _kPlatformAndroid {
+    status = PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState);
+    if (status == PurchaseStatus.error) {
+      error = IAPError(
+        source: IAPSource.GooglePlay,
+        code: kPurchaseErrorCode,
+        message: null,
+      );
+    }
+  }
 }
 
 /// The response object for fetching the past purchases.

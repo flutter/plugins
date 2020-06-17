@@ -228,7 +228,7 @@ void main() {
           .buyNonConsumable(purchaseParam: purchaseParam);
 
       IAPError completerError = await completer.future;
-      expect(completerError.code, kPurchaseErrorCode);
+      expect(completerError.code, 'purchase_error');
       expect(completerError.source, IAPSource.AppStore);
       expect(completerError.message, 'ios_domain');
       expect(completerError.details, {'message': 'an error message'});
