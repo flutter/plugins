@@ -1,3 +1,8 @@
+## 0.3.5
+
+* Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
+* `enablePendingPurchases` now works on iOS too.
+
 ## 0.3.4
 
 * Expose SKError code to client apps.
