@@ -628,6 +628,27 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  /// Check if the camera supports torch mode
+  Future<bool> hasTorch() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'disableTorch was called on uninitialized CameraController',
+      );
+    }
+    if (value.isTakingPicture) {
+      throw CameraException(
+        'Previous capture has not returned yet.',
+        'takePicture was called before the previous capture returned.',
+      );
+    }
+    try {
+      return _channel.invokeMethod<bool>('hasTorch');
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
   /// Releases the resources of this camera.
   @override
   Future<void> dispose() async {

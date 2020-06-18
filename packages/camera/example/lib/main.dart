@@ -44,6 +44,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
   bool enableTorch = false;
+  bool torchSupported = false;
 
   @override
   void initState() {
@@ -167,7 +168,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   /// Toggle torch mode
   Widget _toggleTorchWidget() {
     return Opacity(
-      opacity: controller != null ? 1.0 : 0.2,
+      opacity: torchSupported ? 1.0 : 0.2,
       child: Padding(
         padding: const EdgeInsets.only(left: 25),
         child: Row(
@@ -176,7 +177,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             Switch(
               value: enableTorch,
               onChanged: (bool value) async {
-                if (controller == null) {
+                if (controller == null || !torchSupported) {
                   return;
                 }
 
@@ -332,6 +333,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.initialize();
+      final hasTorch = await controller.hasTorch();
+      setState(() => torchSupported = hasTorch);
     } on CameraException catch (e) {
       _showCameraException(e);
     }

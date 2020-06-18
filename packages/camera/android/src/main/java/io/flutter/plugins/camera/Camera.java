@@ -123,24 +123,27 @@ public class Camera {
   // Will turn the torch on/off as long as the device and camera supports it
   public void toggleTorch(boolean enable, @NonNull final Result result) {
     try {
-      if (!isFrontFacing) {
-        if (flashSupported) {
-          if (enable) {
-            captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
-            torchEnabled = true;
-          } else {
-            captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-            torchEnabled = false;
-          }
-          cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
-          result.success(null);
+      if (flashSupported) {
+        if (enable) {
+          captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+          torchEnabled = true;
         } else {
-          result.error("flashFailed", "Flash is not supported on this device", "");
+          captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+          torchEnabled = false;
         }
+        cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+        result.success(null);
+      } else {
+        result.error("flashFailed", "Flash is not supported on this device", "");
       }
     } catch (CameraAccessException e) {
       result.error("cameraAccess", e.getMessage(), null);
     }
+  }
+
+  // Returns true if camera supports the torch
+  public void hasTorch(@NonNull final Result result) {
+    result.success(flashSupported);
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {

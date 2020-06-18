@@ -867,6 +867,12 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       [_camera toggleTorch:true :result :_camera.captureDevice];
   } else if ([@"disableTorch" isEqualToString:call.method]) {
       [_camera toggleTorch:false :result :_camera.captureDevice];
+  } else if ([@"hasTorch" isEqualToString:call.method]) {
+      if ([_camera.captureDevice hasTorch]) {
+          result(@(YES));
+      } else {
+          result(@(NO));
+      }
   } else if ([@"initialize" isEqualToString:call.method]) {
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
