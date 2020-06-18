@@ -754,11 +754,12 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     [_audioOutput setSampleBufferDelegate:self queue:_dispatchQueue];
   }
     
-  // When starting video capture the torch will be turned off, so re-enable it here so it's started in time for recording to start.
+  // When starting video capture the torch will be turned off, so re-enable it here so it's started
+  // in time for recording to start.
   if (_isTorchEnabled) {
-      [self.captureDevice lockForConfiguration:nil];
-      [self.captureDevice setTorchModeOnWithLevel:AVCaptureMaxAvailableTorchLevel error:nil];
-      [self.captureDevice unlockForConfiguration];
+    [self.captureDevice lockForConfiguration:nil];
+    [self.captureDevice setTorchModeOnWithLevel:AVCaptureMaxAvailableTorchLevel error:nil];
+    [self.captureDevice unlockForConfiguration];
   }
 
   [_videoWriter addInput:_videoWriterInput];
@@ -864,15 +865,15 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
     result(reply);
   } else if ([@"enableTorch" isEqualToString:call.method]) {
-      [_camera toggleTorch:true :result :_camera.captureDevice];
+    [_camera toggleTorch:true :result :_camera.captureDevice];
   } else if ([@"disableTorch" isEqualToString:call.method]) {
-      [_camera toggleTorch:false :result :_camera.captureDevice];
+    [_camera toggleTorch:false :result :_camera.captureDevice];
   } else if ([@"hasTorch" isEqualToString:call.method]) {
-      if ([_camera.captureDevice hasTorch]) {
-          result(@(YES));
-      } else {
-          result(@(NO));
-      }
+    if ([_camera.captureDevice hasTorch]) {
+        result(@(YES));
+    } else {
+        result(@(NO));
+    }
   } else if ([@"initialize" isEqualToString:call.method]) {
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
