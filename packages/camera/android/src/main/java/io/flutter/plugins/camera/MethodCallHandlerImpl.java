@@ -123,6 +123,24 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           }
           break;
         }
+      case "enableTorch":
+      {
+        try {
+          camera.toggleTorch(true, result);
+        } catch (Exception e) {
+          handleException(e, result);
+        }
+        break;
+      }
+      case "disableTorch":
+      {
+        try {
+          camera.toggleTorch(false, result);
+        } catch (Exception e) {
+          handleException(e, result);
+        }
+        break;
+      }
       case "dispose":
         {
           if (camera != null) {
