@@ -1,3 +1,6 @@
+## 0.5.9
+* Added `enableTorch`, `disableTorch`, and `hasTorch` to `CameraController` to enable the use of the flash in torch mode (continuous on).
+
 ## 0.5.8+3
 
 * Fix bug in usage example in README.md 
