@@ -1,3 +1,7 @@
+## 2.1.2
+
+* Add additional marker drag events
+
 ## 2.1.1
 
 * Method `buildViewWithTextDirection` has been added to the platform interface.
