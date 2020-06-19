@@ -76,12 +76,10 @@ abstract class InAppPurchaseConnection {
   /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
   /// for more details.
   /// Failure to call this method before access [instance] will throw an exception.
+  ///
+  /// It is an no-op on iOS.
   static void enablePendingPurchases() {
     _enablePendingPurchase = true;
-    if (Platform.isIOS) {
-      // Setting setTransactionObserver to prevent throwing exceptions.
-      AppStoreConnection.getOrCreateInstance();
-    }
   }
 
   /// Query product details for the given set of IDs.
