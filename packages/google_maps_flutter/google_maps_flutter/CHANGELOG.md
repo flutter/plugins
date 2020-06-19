@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Add additional marker drag events.
+
 ## 2.0.3
 
 * Fix incorrect typecast in TileOverlay example.
