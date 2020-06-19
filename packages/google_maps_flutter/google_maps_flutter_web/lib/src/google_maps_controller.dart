@@ -48,6 +48,8 @@ class GoogleMapController {
     div = DivElement()
       ..id = 'plugins.flutter.io/google_maps_$mapId'
     ;
+    // TODO: Move the comment below to analysis-options.yaml
+    // ignore:undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
       'plugins.flutter.io/google_maps_$mapId',
           (int viewId) => div,

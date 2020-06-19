@@ -14,8 +14,9 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     return "1.0";
   }
 
-  int _id = 0 ;
+  // This is a cache of rendered maps <-> GoogleMapControllers
   HashMap _mapById = HashMap<int, GoogleMapController>();
+
   final StreamController<MapEvent> _controller =
   StreamController<MapEvent>.broadcast();
 
@@ -23,7 +24,9 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       _controller.stream.where((event) => event.mapId == mapId);
 
   @override
-  Future<void> init(int mapId) {  }
+  Future<void> init(int mapId) async {
+    /* Noop */
+  }
 
   @override
   Future<void> updateMapOptions(
@@ -314,11 +317,28 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     return _events(mapId).whereType<MapLongPressEvent>();
   }
 
+  // TODO: Add a new dispose(int mapId) method to clear the cache of Controllers
+  // that the `buildView` method is creating!
+
   @override
   Widget buildView(
       Map<String, dynamic> creationParams,
       Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
       PlatformViewCreatedCallback onPlatformViewCreated) {
+
+    int mapId = creationParams['creationMapId'];
+
+    if (mapId == null) {
+      throw PlatformException(code: 'maps_web_missing_creation_map_id', message: 'Pass a `creationMapId` in creationParams to prevent reloads in web.',);
+    }
+
+    if (_mapById[mapId]?.html != null) {
+      print('Map ID $mapId already exists, returning cached...');
+      return _mapById[mapId].html;
+    }
+
+    creationParams.remove('creationMapId');
+
     GoogleMap.MapOptions options = GoogleMap.MapOptions();
     CameraPosition position;
 
@@ -350,9 +370,9 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       }
     });
 
-    _mapById[_id] =
+    _mapById[mapId] =
         GoogleMapController.build(
-          mapId: _id,
+          mapId: mapId,
           streamController: _controller,
           onPlatformViewCreated: onPlatformViewCreated,
           options: options,
@@ -377,8 +397,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
 
 //    try {throw Error();  } catch (error, stacktrace) { print(stacktrace.toString());  }
-    onPlatformViewCreated.call(_id);
-    ///TODO not create redundent view.
-    return _mapById[_id++].html;
+    onPlatformViewCreated.call(mapId);
+
+    return _mapById[mapId].html;
   }
 }
