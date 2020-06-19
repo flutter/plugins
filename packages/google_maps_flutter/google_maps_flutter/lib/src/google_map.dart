@@ -10,6 +10,8 @@ part of google_maps_flutter;
 /// map is created.
 typedef void MapCreatedCallback(GoogleMapController controller);
 
+final _random = math.Random();
+
 /// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
   /// Creates a widget displaying data from Google Maps services.
@@ -205,6 +207,8 @@ class GoogleMap extends StatefulWidget {
 }
 
 class _GoogleMapState extends State<GoogleMap> {
+  final _creationMapId = _random.nextInt(4294967296); // 1<<32
+
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
@@ -223,7 +227,10 @@ class _GoogleMapState extends State<GoogleMap> {
       'polygonsToAdd': serializePolygonSet(widget.polygons),
       'polylinesToAdd': serializePolylineSet(widget.polylines),
       'circlesToAdd': serializeCircleSet(widget.circles),
+      'creationMapId': _creationMapId,
     };
+    // TODO: Can this call to buildView be moved to the initState method?
+    // That way we wouldn't need the _creationMapId
     return _googleMapsFlutterPlatform.buildView(
       creationParams,
       widget.gestureRecognizers,
