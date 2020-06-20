@@ -335,6 +335,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
                 .getIdentifier("default_web_client_id", "string", context.getPackageName());
         if (clientIdIdentifier != 0) {
           optionsBuilder.requestIdToken(context.getString(clientIdIdentifier));
+          optionsBuilder.requestServerAuthCode(context.getString(clientIdIdentifier));
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
@@ -484,6 +485,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
       response.put("email", account.getEmail());
       response.put("id", account.getId());
       response.put("idToken", account.getIdToken());
+      response.put("serverAuthCode", account.getServerAuthCode());
       response.put("displayName", account.getDisplayName());
       if (account.getPhotoUrl() != null) {
         response.put("photoUrl", account.getPhotoUrl().toString());

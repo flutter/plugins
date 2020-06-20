@@ -1,3 +1,17 @@
+## 1.6.11
+* Updated documentation to reflect the need for changes in testing for federated plugins
+
+## 1.6.10
+* Linux implementation endorsement
+
+## 1.6.9
+
+* Post-v2 Android embedding cleanups.
+
+## 1.6.8
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 1.6.7
 
 * Remove Android dependencies fallback.

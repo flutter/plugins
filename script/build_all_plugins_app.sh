@@ -21,6 +21,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "google_sign_in_web"
   "image_picker_platform_interface"
   "instrumentation_adapter"
+  "path_provider_linux"
   "path_provider_macos"
   "path_provider_platform_interface"
   "path_provider_web"
