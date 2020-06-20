@@ -73,7 +73,7 @@ void main() {
         }));
       });
 
-      test('call in ios platform', () async {
+      test('does nothing when called on iOS', () async {
         androidIntent = AndroidIntent.private(
             action: 'action_view',
             channel: mockChannel,
@@ -131,7 +131,7 @@ void main() {
         }));
       });
 
-      test('call in ios platform', () async {
+      test('does nothing when called on iOS', () async {
         androidIntent = AndroidIntent.private(
             action: 'action_view',
             channel: mockChannel,
@@ -159,7 +159,7 @@ void main() {
         }
       });
 
-      test('pass right params', () async {
+      test('method succeeds if the intent has an action', () async {
         androidIntent = AndroidIntent.private(
             action: 'action_view',
             data: Uri.encodeFull('https://flutter.io'),
@@ -177,7 +177,7 @@ void main() {
         }));
       });
 
-      test('call in ios platform', () async {
+      test('does nothing when called on iOS', () async {
         androidIntent = AndroidIntent.private(
             action: 'action_view',
             channel: mockChannel,

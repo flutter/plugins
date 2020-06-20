@@ -84,6 +84,7 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
                 && !TextUtils.isEmpty((String) call.argument("componentName")))
             ? new ComponentName(packageName, (String) call.argument("componentName"))
             : null;
+    String chooserTitle = call.argument("chooserTitle");
     List<String> ignoredPackages = call.argument("ignoredPackages");
     if (ignoredPackages == null) {
       ignoredPackages = new ArrayList();
@@ -109,7 +110,7 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     } else if ("canResolveActivity".equalsIgnoreCase(call.method)) {
       result.success(sender.canResolveActivity(intent));
     } else if ("showChooser".equalsIgnoreCase(call.method)) {
-      sender.showChooser(intent, ignoredPackages);
+      sender.showChooser(intent, chooserTitle, ignoredPackages);
 
       result.success(null);
     } else {

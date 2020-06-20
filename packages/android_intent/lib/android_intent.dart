@@ -27,7 +27,7 @@ class AndroidIntent {
   /// [package] refers to the package parameter of the intent, can be null.
   /// [componentName] refers to the component name of the intent, can be null.
   /// If not null, then [package] but also be provided.
-  /// [ignoredPackages] is the list of package names that should not by displayed in the selection dialog and
+  /// [ignoredPackages] is the list of package names that should not be displayed in the selection dialog and
   /// should not be used to resolve this intent.
   /// [type] refers to the type of the intent, can be null.
   const AndroidIntent({
@@ -162,13 +162,14 @@ class AndroidIntent {
 
   /// Show the default selection dialog to allow the user to select
   /// an application to resolve this intent from the list of available applications.
+  /// If there is no application to resolve this intent, the chooser will be displayed with a default message about it.
   ///
   /// [action] must be specified.
   ///
   /// [package] and [componentName] will be ignored.
   ///
   /// This works only on Android platforms.
-  Future<void> showChooser() async {
+  Future<void> showChooser({String chooserTitle}) async {
     if (!_platform.isAndroid) {
       return;
     }
@@ -176,8 +177,11 @@ class AndroidIntent {
     if (action?.isEmpty ?? true) {
       throw StateError('action must not be null or empty string');
     }
-
-    await _channel.invokeMethod<void>('showChooser', _buildArguments());
+    var arguments = _buildArguments();
+    if (chooserTitle != null) {
+      arguments['chooserTitle'] = chooserTitle;
+    }
+    await _channel.invokeMethod<void>('showChooser', arguments);
   }
 
   /// Constructs the map of arguments which is passed to the plugin.

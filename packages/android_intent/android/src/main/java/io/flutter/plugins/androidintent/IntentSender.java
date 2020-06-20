@@ -64,28 +64,36 @@ public final class IntentSender {
     }
   }
 
-  void showChooser(Intent intent, @NonNull List<String> ignoredPackages) {
+  /**
+   * Displays the default chooser to allow a user to select an application to resolve the intent
+   * from the list of available applications. If there is no application to resolve this intent, the
+   * chooser will be displayed with a default message about it.
+   *
+   * @param intent built intent for which available applications should be displayed in the chooser.
+   * @param chooserTitle title that will be displayed in the chooser.
+   * @param ignoredPackages list of package names that should not be displayed in the chooser.
+   */
+  void showChooser(
+      @NonNull Intent intent,
+      @Nullable String chooserTitle,
+      @NonNull List<String> ignoredPackages) {
     Intent chooser = null;
     intent.setPackage(null);
     intent.setComponent(null);
 
-    // Exclude ignored packages from the displayed list.
-    if (ignoredPackages.size() > 0) {
-      ArrayList<Intent> targetIntents = calculateTargetIntents(intent, ignoredPackages);
-      if (targetIntents != null && targetIntents.size() > 0) {
-        // Create a chooser with the first element of the list,
-        // removing it from the list to avoid double displaying it in the chooser,
-        // since we add the whole list further using putExtra.
-        chooser = Intent.createChooser(targetIntents.remove(0), "");
-        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetIntents.toArray(new Parcelable[] {}));
-      }
+    ArrayList<Intent> targetIntents = calculateTargetIntents(intent, ignoredPackages);
+    if (targetIntents.size() > 0) {
+      // Create a chooser with the first element of the list,
+      // removing it from the list to avoid double displaying it in the chooser,
+      // since we add the whole list further using putExtra.
+      chooser = Intent.createChooser(targetIntents.remove(0), chooserTitle);
+      chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetIntents.toArray(new Parcelable[] {}));
+    } else {
+      // To display the chooser with a default message about the lack of available applications.
+      chooser = Intent.createChooser(new Intent(), chooserTitle);
     }
 
-    if (chooser != null) {
-      send(chooser);
-    } else {
-      send(intent);
-    }
+    send(chooser);
   }
 
   /**
@@ -189,26 +197,35 @@ public final class IntentSender {
         intent.setPackage(null);
       }
     }
-    // If the package is not set, and ignored packages are specified, find a package to resolve this intent.
+    // If the package is not set, and ignored packages are specified, find a package
+    // to resolve this intent.
     if (intent.getPackage() == null && ignoredPackages.size() > 0) {
       String packageToLaunch = choosePackageToLaunch(intent, ignoredPackages);
-      intent.setPackage(packageToLaunch);
+      if (packageToLaunch != null) {
+        intent.setPackage(packageToLaunch);
+      } else {
+        // To throw exception "No Activity found to handle Intent".
+        intent.setAction("foo");
+      }
     }
 
     return intent;
   }
 
-  private String choosePackageToLaunch(Intent intent, List<String> ignoredPackages) {
+  @Nullable
+  private String choosePackageToLaunch(
+      @NonNull Intent intent, @NonNull List<String> ignoredPackages) {
     ArrayList<Intent> targetIntents = calculateTargetIntents(intent, ignoredPackages);
 
-    if (targetIntents != null && targetIntents.size() > 0) {
+    if (targetIntents.size() > 0) {
       return targetIntents.get(0).getPackage();
     } else {
       return null;
     }
   }
 
-  private List<ResolveInfo> getIntentActivities(Intent intent) {
+  @NonNull
+  private List<ResolveInfo> getIntentActivities(@NonNull Intent intent) {
     PackageManager packageManager;
     if (activity != null) {
       packageManager = activity.getPackageManager();
@@ -218,7 +235,9 @@ public final class IntentSender {
     return packageManager.queryIntentActivities(intent, 0);
   }
 
-  private ArrayList<Intent> calculateTargetIntents(Intent intent, List<String> ignoredPackages) {
+  @NonNull
+  private ArrayList<Intent> calculateTargetIntents(
+      @NonNull Intent intent, @NonNull List<String> ignoredPackages) {
     ArrayList<Intent> targetIntents = new ArrayList<Intent>();
     List<ResolveInfo> intentActivities = getIntentActivities(intent);
 
