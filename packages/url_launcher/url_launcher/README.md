@@ -2,7 +2,8 @@
 
 [![pub package](https://img.shields.io/pub/v/url_launcher.svg)](https://pub.dartlang.org/packages/url_launcher)
 
-A Flutter plugin for launching a URL in the mobile platform. Supports iOS and Android.
+A Flutter plugin for launching actions via URL schemes.
+Supports Android, iOS, macOS, and the web.
 
 ## Usage
 To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
@@ -76,7 +77,7 @@ launch(_emailLaunchUri.toString());
 
 ## Handling missing URL receivers
 
-A particular mobile device may not be able to receive all supported URL schemes.
+A particular device may not be able to receive all supported URL schemes.
 For example, a tablet may not have a cellular radio and thus no support for
 launching a URL using the `sms` scheme, or a device may not have an email app
 and thus no support for launching a URL using the `email` scheme.
