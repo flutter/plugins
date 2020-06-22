@@ -1,3 +1,7 @@
+## 0.5.0+1
+
+* Updated `minSdkVersion` in build.gradle to 19.
+
 ## 0.5.0
 
 * **Breaking change** by default, tests will use the device window size.

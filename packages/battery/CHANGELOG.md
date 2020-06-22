@@ -1,3 +1,7 @@
+## 1.0.1+1
+
+* Updated `minSdkVersion` in build.gradle to 19.
+
 ## 1.0.1
 
 * Update lower bound of dart dependency to 2.1.0.

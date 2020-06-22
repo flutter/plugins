@@ -1,3 +1,7 @@
+## 0.6.7+3
+
+* Updated `minSdkVersion` in build.gradle to 19.
+
 ## 0.6.7+2
 
 * iOS: Fixes unpresentable album/image picker if window's root view controller is already presenting other view controller.

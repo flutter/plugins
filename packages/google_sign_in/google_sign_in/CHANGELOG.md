@@ -1,3 +1,7 @@
+## 4.5.1+1
+
+* Updated `minSdkVersion` in build.gradle to 19.
+
 ## 4.5.1
 
 * Add note on Apple sign in requirement in README.

@@ -1,3 +1,7 @@
+## 0.0.1+6
+
+* Updated `minSdkVersion` in build.gradle to 19.
+
 ## 0.0.1+5
 
 * Replace deprecated `getFlutterEngine` call on Android.

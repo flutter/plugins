@@ -1,3 +1,7 @@
+## 0.4.1+1
+
+* Updated `minSdkVersion` in build.gradle to 19.
+
 ## 0.4.1
 
 * Add support for macOS.
