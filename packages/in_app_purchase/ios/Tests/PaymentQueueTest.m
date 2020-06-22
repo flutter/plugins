@@ -66,6 +66,7 @@
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStatePurchased);
+  XCTAssertEqual(tran.transactionIdentifier, @"fakeID");
 }
 
 - (void)testDuplicateTransactionsWillTriggerAnError {
@@ -113,6 +114,7 @@
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStateFailed);
+  XCTAssertEqual(tran.transactionIdentifier, nil);
 }
 
 - (void)testTransactionRestored {
@@ -140,6 +142,7 @@
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStateRestored);
+  XCTAssertEqual(tran.transactionIdentifier, @"fakeID");
 }
 
 - (void)testTransactionPurchasing {
@@ -167,6 +170,7 @@
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStatePurchasing);
+  XCTAssertEqual(tran.transactionIdentifier, nil);
 }
 
 - (void)testTransactionDeferred {
@@ -194,6 +198,7 @@
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStateDeferred);
+  XCTAssertEqual(tran.transactionIdentifier, nil);
 }
 
 - (void)testFinishTransaction {
