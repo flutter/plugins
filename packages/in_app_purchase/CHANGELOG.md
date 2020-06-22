@@ -1,7 +1,7 @@
 ## 0.3.4+1
 
-* Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
-* Fix the app crashes  if `queryPastPurchases` is called in the `main()`.
+* iOS: Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
+* iOS: Fix the app crashes  if `queryPastPurchases` is called in the `main()`.
 
 ## 0.3.4
 
