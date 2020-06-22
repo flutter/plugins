@@ -1,3 +1,7 @@
+## 0.4.2+3
+
+* Update `minSdkVersion` in build.gradle to 19.
+
 ## 0.4.2+2
 
 * Post-v2 Android embedding cleanup.

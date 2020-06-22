@@ -1,3 +1,7 @@
+## 5.4.12
+
+* Update `minSdkVersion` in build.gradle to 19.
+
 ## 5.4.11
 
 * Add documentation in README suggesting how to properly encode urls with special characters.

@@ -1,3 +1,7 @@
+## 0.3.22+2
+
+* Update `minSdkVersion` in build.gradle to 19.
+
 ## 0.3.22+1
 
 * Update the `setAndGetScrollPosition` to use hard coded values and add a `pumpAndSettle` call.
