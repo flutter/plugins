@@ -1,3 +1,7 @@
+## 0.5.28+3
+
+* Update `minSdkVersion` in build.gradle to 20.
+
 ## 0.5.28+2
 
 * Move test introduced in #2449 to its right location.
