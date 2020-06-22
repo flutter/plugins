@@ -1,3 +1,7 @@
+## 0.1.0+5
+
+* Update `minSdkVersion` in build.gradle to 20.
+
 ## 0.1.0+4
 
 * Remove Android folder from `connectivity_macos`.
