@@ -53,7 +53,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   @override
   ViewConfiguration createViewConfiguration() =>
-      TestViewConfiguration(size: window.physicalSize);
+      TestViewConfiguration(size: window.physicalSize/window.devicePixelRatio);
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
