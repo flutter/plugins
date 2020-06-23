@@ -52,8 +52,8 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
   bool get registerTestTextInput => false;
 
   @override
-  ViewConfiguration createViewConfiguration() =>
-      TestViewConfiguration(size: window.physicalSize);
+  ViewConfiguration createViewConfiguration() => TestViewConfiguration(
+      size: window.physicalSize / window.devicePixelRatio);
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
