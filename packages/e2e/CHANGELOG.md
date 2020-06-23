@@ -1,3 +1,7 @@
+## 0.5.0+1
+
+* Fixed the device pixel ratio problem.
+
 ## 0.5.0
 
 * **Breaking change** by default, tests will use the device window size.
