@@ -4,11 +4,8 @@
 
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
-import 'package:platform/platform.dart';
 
-import 'package:shared_preferences_linux/shared_preferences_linux.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
@@ -21,14 +18,8 @@ class SharedPreferences {
   static const String _prefix = 'flutter.';
   static Completer<SharedPreferences> _completer;
 
-  static SharedPreferencesStorePlatform get _store {
-    // This is a workaround until https://github.com/flutter/flutter/issues/52267
-    // is fixed. There is no way currently to register a Dart-only plugin.
-    if (!kIsWeb && LocalPlatform().isLinux) {
-      return SharedPreferencesLinux();
-    }
-    return SharedPreferencesStorePlatform.instance;
-  }
+  static SharedPreferencesStorePlatform get _store =>
+      SharedPreferencesStorePlatform.instance;
 
   /// Loads and parses the [SharedPreferences] for this app from disk.
   ///

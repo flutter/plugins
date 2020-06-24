@@ -1,7 +1,3 @@
-## 0.6.0
-
-* Adds support for Linux.
-
 ## 0.5.7+3
 
 * Post-v2 Android embedding cleanup.
