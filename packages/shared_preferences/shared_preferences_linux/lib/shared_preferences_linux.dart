@@ -22,7 +22,7 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
   @visibleForTesting
   FileSystem fs = LocalFileSystem();
 
-  /// Gets the file were the preferences are stored.
+  /// Gets the file where the preferences are stored.
   Future<File> _getLocalDataFile() async {
     var directory = await getApplicationSupportDirectory();
     var filePath = path.join(directory.path, 'shared_preferences.json');
