@@ -1,4 +1,4 @@
-## 0.5.8
+## 0.6.0
 
 * Adds support for Linux.
 
