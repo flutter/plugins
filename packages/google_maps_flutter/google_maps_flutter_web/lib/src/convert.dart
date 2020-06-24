@@ -344,6 +344,14 @@ LatLngBounds _gmLatLngBoundsTolatLngBounds(GoogleMap.LatLngBounds latLngBounds){
   );
 }
 
+CameraPosition _gmViewportToCameraPosition(GoogleMap.GMap map) {
+  return CameraPosition(
+    target: _gmLatlngToLatlng(map.center),
+    bearing: map.heading ?? 0,
+    tilt: map.tilt,
+    zoom: map.zoom.toDouble(),
+  );
+}
 
 MarkerUpdates _markerFromParams(value) {
   if (value != null) {

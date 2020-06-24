@@ -56,20 +56,25 @@ class GoogleMapController {
     );
     googleMap = GoogleMap.GMap(div, options);
     onMapReady(googleMap);
+    _attachMapEvents(googleMap);
+  }
 
-    googleMap.onClick.listen((event) {
+  void _onRightClick(event) {
+    streamController.add(
+        MapLongPressEvent(mapId, _gmLatlngToLatlng(event.latLng)));
+  }
+
+  void _attachMapEvents(GoogleMap.GMap map) {
+    map.onClick.listen((event) {
       streamController.add(
           MapTapEvent(mapId, _gmLatlngToLatlng(event.latLng)));
     });
 
-    googleMap.onDblclick.listen(_rightClick);
-    googleMap.onRightclick.listen(_rightClick);
-
-  }
-
-  void _rightClick(event) {
-    streamController.add(
-        MapLongPressEvent(mapId, _gmLatlngToLatlng(event.latLng)));
+    map.onDblclick.listen(_onRightClick);
+    map.onRightclick.listen(_onRightClick);
+    map.onBoundsChanged.listen((event) {
+      streamController.add(CameraMoveEvent(mapId, _gmViewportToCameraPosition(map)));
+    });
   }
 
   void onMapReady(GoogleMap.GMap googleMap) {

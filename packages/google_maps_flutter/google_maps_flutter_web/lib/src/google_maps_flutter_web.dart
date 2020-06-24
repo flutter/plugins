@@ -333,7 +333,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     }
 
     if (_mapById[mapId]?.html != null) {
-      print('Map ID $mapId already exists, returning cached...');
+      // print('Map ID $mapId already exists, returning cached...');
       return _mapById[mapId].html;
     }
 
