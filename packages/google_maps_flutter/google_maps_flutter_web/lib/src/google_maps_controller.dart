@@ -25,6 +25,8 @@ class GoogleMapController {
   Set<Polyline>   initialPolylines;
   Set<Marker>     initialMarkers;
 
+  bool _mapIsMoving = false;
+
   ///TODO
   GoogleMapController.build({
     @required this.mapId,
@@ -59,21 +61,25 @@ class GoogleMapController {
     _attachMapEvents(googleMap);
   }
 
-  void _onRightClick(event) {
-    streamController.add(
-        MapLongPressEvent(mapId, _gmLatlngToLatlng(event.latLng)));
-  }
-
   void _attachMapEvents(GoogleMap.GMap map) {
     map.onClick.listen((event) {
       streamController.add(
-          MapTapEvent(mapId, _gmLatlngToLatlng(event.latLng)));
+          MapTapEvent(mapId, _gmLatlngToLatlng(event.latLng)),);
     });
-
-    map.onDblclick.listen(_onRightClick);
-    map.onRightclick.listen(_onRightClick);
+    map.onRightclick.listen((event) {
+      streamController.add(
+          MapLongPressEvent(mapId, _gmLatlngToLatlng(event.latLng)),);
+    });
     map.onBoundsChanged.listen((event) {
-      streamController.add(CameraMoveEvent(mapId, _gmViewportToCameraPosition(map)));
+      if (!_mapIsMoving) {
+        _mapIsMoving = true;
+        streamController.add(CameraMoveStartedEvent(mapId));
+      }
+      streamController.add(CameraMoveEvent(mapId, _gmViewportToCameraPosition(map)),);
+    });
+    map.onIdle.listen((event) {
+      _mapIsMoving = false;
+      streamController.add(CameraIdleEvent(mapId));
     });
   }
 
