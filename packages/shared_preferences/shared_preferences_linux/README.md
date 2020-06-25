@@ -6,17 +6,16 @@ The Linux implementation of [`shared_preferences`][1].
 
 ### Import the package
 
-This package has been endorsed, meaning that you only need to add `shared_preferences`
-as a dependency in your `pubspec.yaml`. It will be automatically included in your app
-when you depend on `package:shared_preferences`.
+This package is an unendorsed Linux implementation of `shared_preferences`.
 
-This is what the above means to your `pubspec.yaml`:
+In order to use this now, you'll need to depend on `shared_preferences_linux`.
+When this package is endorsed it will be automatically used by the `shared_preferences` package and you can switch to that API.
 
 ```yaml
 ...
 dependencies:
   ...
-  shared_preferences: ^0.6.0
+  shared_preferences_linux: ^0.0.1
   ...
 ```
 
