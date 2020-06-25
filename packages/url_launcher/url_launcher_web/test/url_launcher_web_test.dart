@@ -36,8 +36,8 @@ void main() {
             plugin.canLaunch('mailto:name@mydomain.com'), completion(isTrue));
       });
 
-      test('"tel" URLs -> false', () {
-        expect(plugin.canLaunch('tel:5551234567'), completion(isFalse));
+      test('"tel" URLs -> true', () {
+        expect(plugin.canLaunch('tel:5551234567'), completion(isTrue));
       });
     });
 
