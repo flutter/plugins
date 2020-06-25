@@ -197,9 +197,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
         @required int mapId,
       }) {
     GoogleMapController googleMapController = _mapById[mapId];
-    googleMapController.markersController.showMarkerInfoWindow(
-        markerId.value.toString()
-    );
+    googleMapController.markersController.showMarkerInfoWindow(markerId);
   }
 
   @override
@@ -208,9 +206,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
         @required int mapId,
       }) {
     GoogleMapController googleMapController = _mapById[mapId];
-    googleMapController.markersController.hideMarkerInfoWindow(
-        markerId.value.toString()
-    );
+    googleMapController.markersController.hideMarkerInfoWindow(markerId);
   }
 
   @override
@@ -220,9 +216,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       }) {
     GoogleMapController googleMapController = _mapById[mapId];
     return Future.value(
-        googleMapController.markersController.isInfoWindowShown(
-            markerId.value.toString()
-        )
+        googleMapController.markersController.isInfoWindowShown(markerId)
     );
   }
 

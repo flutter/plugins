@@ -39,10 +39,10 @@ class GoogleMapController {
     @required this.initialPolylines,
     @required this.initialMarkers,
   }) {
-    circlesController = CirclesController(googleMapController: this);
-    polygonsController = PolygonsController(googleMapController: this);
-    polylinesController = PolylinesController(googleMapController: this);
-    markersController = MarkersController(googleMapController: this);
+    circlesController = CirclesController(stream: this.streamController);
+    polygonsController = PolygonsController(stream: this.streamController);
+    polylinesController = PolylinesController(stream: this.streamController);
+    markersController = MarkersController(stream: this.streamController);
     html = HtmlElementView(
         viewType: 'plugins.flutter.io/google_maps_$mapId'
     );
@@ -85,11 +85,11 @@ class GoogleMapController {
 
   void onMapReady(GoogleMap.GMap googleMap) {
     this.googleMap = googleMap;
-    //set googlemap listener
-    circlesController.setGoogleMap(googleMap);
-    polygonsController.setGoogleMap(googleMap);
-    polylinesController.setGoogleMap(googleMap);
-    markersController.setGoogleMap(googleMap);
+    // Bind map instance to the other geometry controllers.
+    circlesController.bindToMap(mapId, googleMap);
+    polygonsController.bindToMap(mapId, googleMap);
+    polylinesController.bindToMap(mapId, googleMap);
+    markersController.bindToMap(mapId, googleMap);
     updateInitialCircles();
     updateInitialPolygons();
     updateInitialPolylines();
@@ -143,37 +143,13 @@ class GoogleMapController {
     if(initialMarkers == null) return;
     markersController.addMarkers(initialMarkers);
   }
-
-  void onCircleTap(CircleId circleId) {
-    streamController.add(CircleTapEvent(mapId, circleId));
-  }
-
-  void onPolygonTap(PolygonId polygonId) {
-    streamController.add(PolygonTapEvent(mapId, polygonId));
-  }
-
-  void onPolylineTap(PolylineId polylineId) {
-    streamController.add(PolylineTapEvent(mapId, polylineId));
-  }
-
-  void onMarkerTap(MarkerId markerId) {
-    streamController.add(MarkerTapEvent(mapId, markerId));
-  }
-
-  void  onMarkerDragEnd(MarkerId markerId, GoogleMap.LatLng latLng) {
-    streamController.add(MarkerDragEndEvent(mapId,
-        LatLng(latLng.lat, latLng.lng), markerId));
-  }
-
-  void  onInfoWindowTap(MarkerId markerId) {
-    streamController.add(InfoWindowTapEvent(mapId, markerId));
-  }
-
 }
 
 abstract class AbstractController {
   GoogleMap.GMap googleMap;
-  void setGoogleMap(GoogleMap.GMap googleMap) {
+  int mapId;
+  void bindToMap(int mapId, GoogleMap.GMap googleMap) {
+    this.mapId = mapId;
     this.googleMap = googleMap;
   }
 }

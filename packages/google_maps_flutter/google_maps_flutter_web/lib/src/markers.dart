@@ -2,13 +2,13 @@ part of google_maps_flutter_web;
 
 class MarkersController extends AbstractController {
 
-  final Map<String, MarkerController> _markerIdToController;
+  final Map<MarkerId, MarkerController> _markerIdToController;
 
-  GoogleMapController googleMapController;
+  StreamController<MapEvent> _streamController;
 
   MarkersController({
-    @required this.googleMapController
-  }): _markerIdToController = Map<String, MarkerController>();
+    @required  StreamController<MapEvent> stream,
+  }): _streamController = stream, _markerIdToController = Map<MarkerId, MarkerController>();
 
   void addMarkers(Set<Marker> markersToAdd) {
     if(markersToAdd != null) {
@@ -29,12 +29,12 @@ class MarkersController extends AbstractController {
         marker: gmMarker,
         infoWindow : gmInfoWindow,
         consumeTapEvents:marker.consumeTapEvents,
-        ontab:(){onMarkerTap(marker.markerId);},
-        onDragEnd :(GoogleMap.LatLng latLng){
-          onMarkerDragEnd(marker.markerId, latLng);},
-        onInfoWindowTap : (){onInfoWindowTap(marker.markerId);}
+        ontab:(){ _onMarkerTap(marker.markerId);},
+        onDragEnd : (GoogleMap.LatLng latLng){
+          _onMarkerDragEnd(marker.markerId, latLng);},
+        onInfoWindowTap : (){ _onInfoWindowTap(marker.markerId);}
           );
-    _markerIdToController[marker.markerId.value] = controller;
+    _markerIdToController[marker.markerId] = controller;
   }
 
   void changeMarkers(Set<Marker> markersToChange) {
@@ -47,7 +47,7 @@ class MarkersController extends AbstractController {
 
   void changeMarker(Marker marker) {
     if (marker == null) { return;}
-    MarkerController markerController = _markerIdToController[marker.markerId.value];
+    MarkerController markerController = _markerIdToController[marker.markerId];
     if (markerController != null) {
       markerController.update(
           _markerOptionsFromMarker(googleMap, marker));
@@ -58,8 +58,7 @@ class MarkersController extends AbstractController {
     if (markerIdsToRemove == null) {return;}
     markerIdsToRemove.forEach((markerId) {
       if(markerId != null) {
-        final MarkerController markerController = _markerIdToController[markerId
-            .value];
+        final MarkerController markerController = _markerIdToController[markerId];
         if(markerController != null) {
           markerController.remove();
           _markerIdToController.remove(markerId.value);
@@ -68,24 +67,14 @@ class MarkersController extends AbstractController {
     });
   }
 
-  bool onMarkerTap(MarkerId markerId) {
-    googleMapController.onMarkerTap(markerId);
-    final MarkerController markerController = _markerIdToController[markerId
-        .value];
-    if(markerController != null) {
-      return markerController.consumeTapEvents;
-    }
-    return false;
-  }
-
-  void showMarkerInfoWindow(String markerId) {
+  void showMarkerInfoWindow(MarkerId markerId) {
     MarkerController markerController = _markerIdToController[markerId];
     if (markerController != null) {
       markerController.showMarkerInfoWindow();
     }
   }
 
-  bool isInfoWindowShown(String markerId) {
+  bool isInfoWindowShown(MarkerId markerId) {
     MarkerController markerController = _markerIdToController[markerId];
     if (markerController != null) {
       return markerController.isInfoWindowShown();
@@ -93,19 +82,28 @@ class MarkersController extends AbstractController {
     return false;
   }
 
-  void hideMarkerInfoWindow(String markerId) {
+  void hideMarkerInfoWindow(MarkerId markerId) {
     MarkerController markerController = _markerIdToController[markerId];
     if (markerController != null) {
       markerController.hideInfoWindow();
     }
   }
 
-  void onInfoWindowTap(MarkerId markerId) {
-    googleMapController.onInfoWindowTap(markerId);
+  // Handle internal events
+
+  bool _onMarkerTap(MarkerId markerId) {
+    _streamController.add(MarkerTapEvent(mapId, markerId));
+    // Stop propagation?
+    return _markerIdToController[markerId]?.consumeTapEvents ?? false;
   }
 
-  void onMarkerDragEnd(MarkerId markerId, GoogleMap.LatLng latLng) {
-    googleMapController.onMarkerDragEnd(markerId, latLng);
+  void _onInfoWindowTap(MarkerId markerId) {
+    _streamController.add(InfoWindowTapEvent(mapId, markerId));
+  }
+
+  void _onMarkerDragEnd(MarkerId markerId, GoogleMap.LatLng latLng) {
+    _streamController.add(MarkerDragEndEvent(mapId,
+        _gmLatlngToLatlng(latLng), markerId,));
   }
 
 }

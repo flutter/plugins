@@ -2,14 +2,13 @@ part of google_maps_flutter_web;
 
 class CirclesController extends AbstractController {
 
-  final Map<String, CircleController> _circleIdToController;
+  final Map<CircleId, CircleController> _circleIdToController;
 
-  GoogleMapController googleMapController;
+  StreamController<MapEvent> _streamController;
 
   CirclesController({
-    @required this.googleMapController
-  })
-  : _circleIdToController = Map<String, CircleController>();
+    @required StreamController<MapEvent> stream,
+  }): _streamController = stream, _circleIdToController = Map<CircleId, CircleController>();
 
   void addCircles(Set<Circle>  circlesToAdd) {
     if(circlesToAdd != null) {
@@ -28,8 +27,8 @@ class CirclesController extends AbstractController {
     CircleController controller = CircleController(
         circle: gmCircle,
         consumeTapEvents:circle.consumeTapEvents,
-        ontab:(){ onCircleTap(circle.circleId);});
-    _circleIdToController[circle.circleId.value] = controller;
+        ontab:(){ _onCircleTap(circle.circleId);});
+    _circleIdToController[circle.circleId] = controller;
   }
 
 
@@ -43,7 +42,7 @@ class CirclesController extends AbstractController {
 
   void changeCircle(Circle circle) {
     if (circle == null) { return;}
-    CircleController circleController = _circleIdToController[circle.circleId.value];
+    CircleController circleController = _circleIdToController[circle.circleId];
         if (circleController != null) {
         circleController.update(
             _circleOptionsFromCircle(circle));
@@ -54,25 +53,20 @@ class CirclesController extends AbstractController {
     if (circleIdsToRemove == null) {return;}
     circleIdsToRemove.forEach((circleId) {
       if(circleId != null) {
-        final CircleController circleController = _circleIdToController[circleId
-            .value];
+        final CircleController circleController = _circleIdToController[circleId];
         if(circleController != null) {
           circleController.remove();
-          _circleIdToController.remove(circleId.value);
+          _circleIdToController.remove(circleId);
         }
       }
     });
   }
 
-  bool onCircleTap(CircleId circleId) {
-    googleMapController.onCircleTap(circleId);
-    final CircleController circleController = _circleIdToController[circleId
-        .value];
-    if(circleController != null) {
-      return circleController.consumeTapEvents;
-    }
-    return false;
+  
+
+  bool _onCircleTap(CircleId circleId) {
+    _streamController.add(CircleTapEvent(mapId, circleId));
+    // Stop propagation?
+    return _circleIdToController[circleId]?.consumeTapEvents ?? false;
   }
-
 }
-

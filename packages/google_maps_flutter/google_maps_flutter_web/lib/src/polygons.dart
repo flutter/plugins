@@ -2,13 +2,13 @@ part of google_maps_flutter_web;
 
 class PolygonsController extends AbstractController {
 
-  final Map<String, PolygonController> _polygonIdToController;
+  final Map<PolygonId, PolygonController> _polygonIdToController;
 
-  GoogleMapController googleMapController;
+  StreamController<MapEvent> _streamController;
 
   PolygonsController({
-    @required this.googleMapController
-  }): _polygonIdToController = Map<String, PolygonController>();
+    @required StreamController<MapEvent> stream,
+  }): _streamController = stream, _polygonIdToController = Map<PolygonId, PolygonController>();
 
   void addPolygons(Set<Polygon> polygonsToAdd) {
     if(polygonsToAdd != null) {
@@ -26,8 +26,8 @@ class PolygonsController extends AbstractController {
     PolygonController controller = PolygonController(
         polygon: gmPolygon,
         consumeTapEvents:polygon.consumeTapEvents,
-        ontab:(){ onPolygonTap(polygon.polygonId);});
-    _polygonIdToController[polygon.polygonId.value] = controller;
+        ontab:(){ _onPolygonTap(polygon.polygonId);});
+    _polygonIdToController[polygon.polygonId] = controller;
   }
 
   void changePolygons(Set<Polygon> polygonsToChange) {
@@ -41,7 +41,7 @@ class PolygonsController extends AbstractController {
   void changePolygon(Polygon polygon) {
     if (polygon == null) { return;}
 
-    PolygonController polygonController = _polygonIdToController[polygon.polygonId.value];
+    PolygonController polygonController = _polygonIdToController[polygon.polygonId];
     if (polygonController != null) {
       polygonController.update(
           _polygonOptionsFromPolygon(googleMap, polygon));
@@ -52,8 +52,7 @@ class PolygonsController extends AbstractController {
     if (polygonIdsToRemove == null) {return;}
     polygonIdsToRemove.forEach((polygonId) {
       if(polygonId != null) {
-        final PolygonController polygonController = _polygonIdToController[polygonId
-            .value];
+        final PolygonController polygonController = _polygonIdToController[polygonId];
         if(polygonController != null) {
           polygonController.remove();
           _polygonIdToController.remove(polygonId.value);
@@ -62,16 +61,11 @@ class PolygonsController extends AbstractController {
     });
   }
 
-  bool onPolygonTap(PolygonId polygonId) {
-    googleMapController.onPolygonTap(polygonId);
-    final PolygonController polygonController = _polygonIdToController[polygonId
-        .value];
-    if(polygonController != null) {
-      return polygonController.consumeTapEvents;
-    }
-    return false;
+  // Handle internal events
+
+  bool _onPolygonTap(PolygonId polygonId) {
+    _streamController.add(PolygonTapEvent(mapId, polygonId));
+    // Stop propagation?
+    return _polygonIdToController[polygonId]?.consumeTapEvents ?? false;
   }
-
-
 }
-

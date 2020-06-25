@@ -2,13 +2,13 @@ part of google_maps_flutter_web;
 
 class PolylinesController extends AbstractController {
 
-  final Map<String, PolylineController> _polylineIdToController;
+  final Map<PolylineId, PolylineController> _polylineIdToController;
 
-  GoogleMapController googleMapController;
+  StreamController<MapEvent> _streamController;
 
   PolylinesController({
-    @required this.googleMapController
-  }): _polylineIdToController = Map<String, PolylineController>();
+    @required StreamController<MapEvent> stream,
+  }): _streamController = stream, _polylineIdToController = Map<PolylineId, PolylineController>();
 
   void addPolylines(Set<Polyline> polylinesToAdd) {
     if(polylinesToAdd != null) {
@@ -26,8 +26,8 @@ class PolylinesController extends AbstractController {
     PolylineController controller = PolylineController(
         polyline: gmPolyline,
         consumeTapEvents:polyline.consumeTapEvents,
-        ontab:(){ onPolylineTap(polyline.polylineId);});
-    _polylineIdToController[polyline.polylineId.value] = controller;
+        ontab:(){ _onPolylineTap(polyline.polylineId);});
+    _polylineIdToController[polyline.polylineId] = controller;
   }
 
   void changePolylines(Set<Polyline> polylinesToChange) {
@@ -40,7 +40,7 @@ class PolylinesController extends AbstractController {
 
   void changePolyline(Polyline polyline) {
     if (polyline == null) { return;}
-    PolylineController polylineController = _polylineIdToController[polyline.polylineId.value];
+    PolylineController polylineController = _polylineIdToController[polyline.polylineId];
     if (polylineController != null) {
       polylineController.update(
           _polylineOptionsFromPolyline(googleMap, polyline));
@@ -51,26 +51,20 @@ class PolylinesController extends AbstractController {
     if (polylineIdsToRemove == null) {return;}
     polylineIdsToRemove.forEach((polylineId) {
       if(polylineId != null) {
-        final PolylineController polylineController = _polylineIdToController[polylineId
-            .value];
+        final PolylineController polylineController = _polylineIdToController[polylineId];
         if(polylineController != null) {
           polylineController.remove();
-          _polylineIdToController.remove(polylineId.value);
+          _polylineIdToController.remove(polylineId);
         }
       }
     });
   }
 
-  bool onPolylineTap(PolylineId polylineId) {
-    googleMapController.onPolylineTap(polylineId);
-    final PolylineController polylineController = _polylineIdToController[polylineId
-        .value];
-    if(polylineController != null) {
-      return polylineController.consumeTapEvents;
-    }
-    return false;
+  // Handle internal events
+
+  bool _onPolylineTap(PolylineId polylineId) {
+    _streamController.add(PolylineTapEvent(mapId, polylineId));
+    // Stop propagation?
+    return _polylineIdToController[polylineId]?.consumeTapEvents ?? false;
   }
-
-
 }
-
