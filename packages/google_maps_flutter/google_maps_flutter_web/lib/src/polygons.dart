@@ -26,7 +26,7 @@ class PolygonsController extends AbstractController {
     PolygonController controller = PolygonController(
         polygon: gmPolygon,
         consumeTapEvents:polygon.consumeTapEvents,
-        ontab:(){ _onPolygonTap(polygon.polygonId);});
+        onTap:(){ _onPolygonTap(polygon.polygonId);});
     _polygonIdToController[polygon.polygonId] = controller;
   }
 

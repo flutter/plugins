@@ -7,14 +7,14 @@ class CircleController {
 
   bool consumeTapEvents = false;
 
-  ui.VoidCallback ontab;
+  ui.VoidCallback onTap;
 
   ///
-  CircleController({@required GoogleMap.Circle circle, this.consumeTapEvents, this.ontab}){
+  CircleController({@required GoogleMap.Circle circle, this.consumeTapEvents, this.onTap}){
     _circle = circle;
    if(consumeTapEvents) {
      circle.onClick.listen((event) {
-       if(ontab !=null) ontab.call();
+       if(onTap !=null) onTap.call();
      });
    }
   }

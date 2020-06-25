@@ -26,7 +26,7 @@ class PolylinesController extends AbstractController {
     PolylineController controller = PolylineController(
         polyline: gmPolyline,
         consumeTapEvents:polyline.consumeTapEvents,
-        ontab:(){ _onPolylineTap(polyline.polylineId);});
+        onTap:(){ _onPolylineTap(polyline.polylineId);});
     _polylineIdToController[polyline.polylineId] = controller;
   }
 

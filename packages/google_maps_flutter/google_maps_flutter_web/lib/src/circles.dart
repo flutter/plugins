@@ -27,7 +27,7 @@ class CirclesController extends AbstractController {
     CircleController controller = CircleController(
         circle: gmCircle,
         consumeTapEvents:circle.consumeTapEvents,
-        ontab:(){ _onCircleTap(circle.circleId);});
+        onTap:(){ _onCircleTap(circle.circleId);});
     _circleIdToController[circle.circleId] = controller;
   }
 

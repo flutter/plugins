@@ -5,7 +5,7 @@ class MarkerController {
   GoogleMap.Marker _marker;
   GoogleMap.InfoWindow infoWindow;
   bool consumeTapEvents = false;
-  ui.VoidCallback ontab;
+  ui.VoidCallback onTap;
   ui.VoidCallback onInfoWindowTap;
   LatLngCallback onDragEnd;
   bool infoWindowShown = false;
@@ -14,15 +14,15 @@ class MarkerController {
     @required GoogleMap.Marker marker,
     this.infoWindow,
     this.consumeTapEvents,
-    this.ontab,
+    this.onTap,
     this.onDragEnd,
     this.onInfoWindowTap,
   }){
     _marker = marker;
     if(consumeTapEvents) {
     }
-    if(ontab !=null){
-      marker.onClick.listen((event) {ontab.call(); });
+    if(onTap !=null){
+      marker.onClick.listen((event) {onTap.call(); });
     }
     if(_marker.draggable) {
       marker.onDragend.listen((event) {

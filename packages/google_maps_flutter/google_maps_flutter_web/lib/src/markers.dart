@@ -29,7 +29,7 @@ class MarkersController extends AbstractController {
         marker: gmMarker,
         infoWindow : gmInfoWindow,
         consumeTapEvents:marker.consumeTapEvents,
-        ontab:(){ _onMarkerTap(marker.markerId);},
+        onTap:(){ _onMarkerTap(marker.markerId);},
         onDragEnd : (GoogleMap.LatLng latLng){
           _onMarkerDragEnd(marker.markerId, latLng);},
         onInfoWindowTap : (){ _onInfoWindowTap(marker.markerId);}

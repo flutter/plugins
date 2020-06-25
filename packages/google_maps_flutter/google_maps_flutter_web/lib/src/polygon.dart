@@ -6,18 +6,18 @@ class PolygonController {
 
   GoogleMap.Polygon _polygon;
   bool consumeTapEvents = false;
-  ui.VoidCallback ontab;
+  ui.VoidCallback onTap;
 
   ///
   PolygonController({
     @required GoogleMap.Polygon polygon,
     bool consumeTapEvents,
-    this.ontab
+    this.onTap
   }){
     _polygon = polygon;
     if(consumeTapEvents) {
       polygon.onClick.listen((event) {
-        if(ontab !=null) ontab.call();
+        if(onTap !=null) onTap.call();
       });
     }
   }

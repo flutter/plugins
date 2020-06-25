@@ -5,18 +5,18 @@ class PolylineController {
 
   GoogleMap.Polyline _polyline;
   bool consumeTapEvents = false;
-  ui.VoidCallback ontab;
+  ui.VoidCallback onTap;
 
   ///
   PolylineController({
     @required GoogleMap.Polyline polyline,
     bool consumeTapEvents,
-    this.ontab
+    this.onTap
   }){
     _polyline = polyline;
     if(consumeTapEvents) {
       polyline.onClick.listen((event) {
-        if(ontab !=null) ontab.call();
+        if(onTap !=null) onTap.call();
       });
     }
   }
