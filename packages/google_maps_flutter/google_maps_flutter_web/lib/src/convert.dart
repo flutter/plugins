@@ -401,29 +401,24 @@ GoogleMap.InfoWindowOptions _infoWindowOPtionsFromMarker(Marker marker) {
 GoogleMap.MarkerOptions _markerOptionsFromMarker(GoogleMap.GMap googleMap,
     Marker marker) {
 
-  dynamic iconConfig = marker.icon.toJson();
-  dynamic icon;
+  final iconConfig = marker.icon.toJson();
+  GoogleMap.Icon icon;
 
-  if(iconConfig[0] == 'defaultMarker') icon = '';
-  else if(iconConfig[0] == 'fromAssetImage') {
-    print('TODO:' + iconConfig);
-    Image mImage = Image.asset(iconConfig[1] );
-//    ui.Image image = mImage.;
+  if(iconConfig[0] == 'fromAssetImage') {
+    icon = GoogleMap.Icon()
+      ..url = iconConfig[1];
   }
   return GoogleMap.MarkerOptions()
     ..position  = GoogleMap.LatLng(marker.position.latitude,
-        marker.position.longitude)
+        marker.position.longitude,)
     ..title     = marker.infoWindow.title
     ..zIndex    = marker.zIndex
     ..visible   = marker.visible
     ..opacity   = marker.alpha
     ..draggable = marker.draggable
-    ..icon      = icon//  this.icon = BitmapDescriptor.defaultMarker,
-    ..anchorPoint = GoogleMap.Point(marker.anchor.dx, marker.anchor.dy)
-  //marker.rotation
-  //https://stackoverflow.com/questions/6800613/rotating-image-marker-image-on-google-map-v3/28819037
-//  this.flat = false,
-      ;
+    ..icon      = icon
+    ..anchorPoint = GoogleMap.Point(marker.anchor.dx, marker.anchor.dy,);
+    // Flat and Rotation are not supported directly on the web.
 }
 
 
