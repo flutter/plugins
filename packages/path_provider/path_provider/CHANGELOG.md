@@ -1,3 +1,7 @@
+## 1.6.15
+* Support for retrieving the downloads directory for Windows was added.
+  The call for this is `getDownloadsDirectory`.
+
 ## 1.6.14
 
 * Update package:e2e -> package:integration_test
