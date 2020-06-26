@@ -101,31 +101,68 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     moveCamera(cameraUpdate, mapId: mapId);
   }
 
-
   @override
   Future<void> moveCamera(
       CameraUpdate cameraUpdate, {
         @required int mapId,
       }) {
+
     GoogleMapController googleMapController = _mapById[mapId];
-    if(googleMapController != null) {
-      GoogleMap.GMap map = googleMapController.googleMap;
-      dynamic json = cameraUpdate.toJson();
-      print(json);
-      if('newLatLng' == json[0]
-      || 'newLatLngZoom' == json[0]) {
-        map.panTo(GoogleMap.LatLng(json[1][0],json[1][1]));
-      } else if('newLatLngBounds' == json[0]) {
-        map.panToBounds(GoogleMap.LatLngBounds(
-            GoogleMap.LatLng(json[1][0][0],json[1][0][1]),
-            GoogleMap.LatLng(json[1][1][0],json[1][1][1])
-        ));
-      } else {
-        throw UnimplementedError(json[0]+' has not been implemented.');
-      }
+    if (googleMapController == null) {
+      return null;
     }
-//    try { throw Error();  } catch (error, stacktrace) { print(stacktrace.toString());  }
-//    throw UnimplementedError('moveCamera() has not been implemented.');
+
+    GoogleMap.GMap map = googleMapController.googleMap;
+    // TODO: Subclass CameraUpdate so the below code is not stringly-typed.
+    dynamic json = cameraUpdate.toJson();
+
+    switch (json[0]) {
+      case 'newCameraPosition':
+        map.heading = json[1]['bearing'];
+        map.zoom = json[1]['zoom'];
+        map.panTo(GoogleMap.LatLng(json[1]['target'][0], json[1]['target'][1]));
+        map.tilt = json[1]['tilt'];
+        break;
+      case 'newLatLng':
+        map.panTo(GoogleMap.LatLng(json[1][0], json[1][1]));
+        break;
+      case 'newLatLngZoom':
+        map.zoom = json[2];
+        map.panTo(GoogleMap.LatLng(json[1][0], json[1][1]));
+        break;
+      case 'newLatLngBounds':
+        map.fitBounds(GoogleMap.LatLngBounds(
+          GoogleMap.LatLng(json[1][0][0],json[1][0][1]),
+          GoogleMap.LatLng(json[1][1][0],json[1][1][1])
+        ));
+        // padding = json[2];
+        // Needs package:google_maps ^4.0.0 to adjust the padding in fitBounds
+        break;
+      case 'scrollBy':
+        map.panBy(json[1], json[2]);
+        break;
+      case 'zoomBy':
+        double zoomDelta = json[1] ?? 0;
+        // Web only supports integer changes...
+        int newZoomDelta = zoomDelta < 0 ? zoomDelta.floor() : zoomDelta.ceil();
+        map.zoom = map.zoom + newZoomDelta;
+        if (json.length == 3) {
+          // With focus
+          map.panTo(GoogleMap.LatLng(json[2][0], json[2][1]));
+        }
+        break;
+      case 'zoomIn':
+        map.zoom++;
+        break;
+      case 'zoomOut':
+        map.zoom--;
+        break;
+      case 'zoomTo':
+        map.zoom = json[1];
+        break;
+      default:
+        throw UnimplementedError('moveCamera() does not implement: ${json[0]}.');
+    }
   }
 
   @override
