@@ -1,3 +1,7 @@
+## 0.5.9
+
+* Fix rare nullptr exception on Android.
+
 ## 0.5.8+6
 
 * Avoiding uses or overrides a deprecated API in CameraPlugin.java.
