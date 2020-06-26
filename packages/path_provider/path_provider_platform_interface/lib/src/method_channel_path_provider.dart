@@ -79,7 +79,8 @@ class MethodChannelPathProvider extends PathProviderPlatform {
 
   Future<String> getDownloadsPath() {
     if (!_platform.isMacOS && !_platform.isWindows) {
-      throw UnsupportedError('Functionality only available on macOS and Windows');
+      throw UnsupportedError(
+          'Functionality only available on macOS and Windows');
     }
     return methodChannel.invokeMethod<String>('getDownloadsDirectory');
   }
