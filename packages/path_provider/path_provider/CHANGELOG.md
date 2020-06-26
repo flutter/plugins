@@ -1,3 +1,7 @@
+## 1.6.12
+* Support for retrieving the downloads directory for Windows was added.
+  The call for this is `getDownloadsDirectory`.
+
 ## 1.6.11
 * Updated documentation to reflect the need for changes in testing for federated plugins
 
