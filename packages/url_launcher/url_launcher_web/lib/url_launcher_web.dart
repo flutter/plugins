@@ -7,8 +7,21 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 
 import 'package:platform_detect/platform_detect.dart' show browser;
 
-const _mailtoScheme = 'mailto';
 
+final _httpSchemes = {
+  'http',
+  'https',
+};
+
+final _mailtoScheme = {
+  'mailto',
+};
+
+final _phoneScheme = {
+  'tel',
+};
+
+final _validSchemes = _httpSchemes.union(_mailtoScheme).union(_phoneScheme);
 /// The web implementation of [UrlLauncherPlatform].
 ///
 /// This class implements the `package:url_launcher` functionality for the web.
@@ -16,7 +29,6 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   html.Window _window;
 
   // The set of schemes that can be handled by the plugin
-  static final _supportedSchemes = {'http', 'https', _mailtoScheme};
 
   /// A constructor that allows tests to override the window object used by the plugin.
   UrlLauncherPlugin({@visibleForTesting html.Window window})
@@ -44,7 +56,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
 
   @override
   Future<bool> canLaunch(String url) {
-    return Future<bool>.value(_supportedSchemes.contains(_getUrlScheme(url)));
+    return Future<bool>.value(_validSchemes.contains(_getUrlScheme(url)));
   }
 
   @override

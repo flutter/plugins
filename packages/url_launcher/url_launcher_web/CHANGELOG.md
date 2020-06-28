@@ -1,3 +1,7 @@
+# 0.1.2
+
+- Added support for tel scheme
+
 # 0.1.1+6
 
 - Open "mailto" urls with target set as "\_top" on Safari browsers.
