@@ -1,3 +1,7 @@
+## 5.4.12
+
+* Web: Added support for tel scheme
+  
 ## 5.4.11
 
 * Add documentation in README suggesting how to properly encode urls with special characters.
