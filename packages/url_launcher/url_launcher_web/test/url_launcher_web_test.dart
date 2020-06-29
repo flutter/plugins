@@ -39,6 +39,10 @@ void main() {
       test('"tel" URLs -> true', () {
         expect(plugin.canLaunch('tel:5551234567'), completion(isTrue));
       });
+
+      test('"sms" URLs -> true', () {
+        expect(plugin.canLaunch('sms:+19725551212?body=hello%20there'), completion(isTrue));
+      });
     });
 
     group('launch', () {
@@ -47,6 +51,10 @@ void main() {
         when(mockWindow.open('https://www.google.com', ''))
             .thenReturn(MockWindow());
         when(mockWindow.open('mailto:name@mydomain.com', ''))
+            .thenReturn(MockWindow());
+        when(mockWindow.open('tel:5551234567', ''))
+            .thenReturn(MockWindow());
+        when(mockWindow.open('sms:+19725551212?body=hello%20there', ''))
             .thenReturn(MockWindow());
       });
 
@@ -77,6 +85,34 @@ void main() {
             ),
             completion(isTrue));
       });
+
+      test('launching a "tel" returns true', () {
+        expect(
+            plugin.launch(
+              'tel:5551234567',
+              useSafariVC: null,
+              useWebView: null,
+              universalLinksOnly: null,
+              enableDomStorage: null,
+              enableJavaScript: null,
+              headers: null,
+            ),
+            completion(isTrue));
+      });
+
+      test('launching a "sms" returns true', () {
+        expect(
+            plugin.launch(
+              'sms:+19725551212?body=hello%20there',
+              useSafariVC: null,
+              useWebView: null,
+              universalLinksOnly: null,
+              enableDomStorage: null,
+              enableJavaScript: null,
+              headers: null,
+            ),
+            completion(isTrue));
+      });
     });
 
     group('openNewWindow', () {
@@ -96,6 +132,18 @@ void main() {
         plugin.openNewWindow('mailto:name@mydomain.com');
 
         verify(mockWindow.open('mailto:name@mydomain.com', ''));
+      });
+
+      test('tel urls should be launched on a new window', () {
+        plugin.openNewWindow('tel:5551234567');
+
+        verify(mockWindow.open('tel:5551234567', ''));
+      });
+
+      test('sms urls should be launched on a new window', () {
+        plugin.openNewWindow('sms:+19725551212?body=hello%20there');
+
+        verify(mockWindow.open('sms:+19725551212?body=hello%20there', ''));
       });
 
       group('Safari', () {
@@ -119,6 +167,18 @@ void main() {
           plugin.openNewWindow('mailto:name@mydomain.com');
 
           verify(mockWindow.open('mailto:name@mydomain.com', '_top'));
+        });
+
+        test('tel urls should be launched on the same window', () {
+          plugin.openNewWindow('tel:5551234567');
+
+          verify(mockWindow.open('tel:5551234567', '_top'));
+        });
+
+        test('sms urls should be launched on the same window', () {
+          plugin.openNewWindow('sms:+19725551212?body=hello%20there');
+
+          verify(mockWindow.open('sms:+19725551212?body=hello%20there', '_top'));
         });
       });
     });

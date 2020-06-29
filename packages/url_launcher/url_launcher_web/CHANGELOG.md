@@ -1,6 +1,6 @@
 # 0.1.2
 
-- Adds "tel" support 
+- Adds "tel" and "sms" support 
 
 # 0.1.1+6
 

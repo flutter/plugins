@@ -10,6 +10,7 @@ import 'package:platform_detect/platform_detect.dart' show browser;
 const _safariTargetTopSchemes = {
   'mailto',
   'tel',
+  'sms',
 };
 
 /// The web implementation of [UrlLauncherPlatform].
@@ -43,7 +44,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   /// Returns the newly created window.
   @visibleForTesting
   html.WindowBase openNewWindow(String url) {
-    // We need to open mailto urls on the _top window context on safari browsers.
+    // We need to open mailto, tel and sms urls on the _top window context on safari browsers.
     // See https://github.com/flutter/flutter/issues/51461 for reference.
     final target =
         browser.isSafari && _isSafariTargetTopScheme(url) ? '_top' : '';
