@@ -4,7 +4,7 @@ This Flutter plugin allows you to manage and interact with the application's
 home screen quick actions.
 
 Quick actions refer to the [eponymous
-concept](https://developer.apple.com/ios/human-interface-guidelines/extensions/home-screen-actions)
+concept](https://developer.apple.com/design/human-interface-guidelines/ios/system-capabilities/home-screen-actions/)
 on iOS and to the [App
 Shortcuts](https://developer.android.com/guide/topics/ui/shortcuts.html) APIs on
 Android (introduced in Android 7.1 / API level 25). It is safe to run this plugin
