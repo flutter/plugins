@@ -32,9 +32,9 @@ final response = await peopleApi.people.connections.list(
 
 This package contains a modified version of Flutter's Google Sign In example app that uses `package:googleapis`' API clients, instead of raw http requests.
 
-See it [here](https://github.com/google/google_sign_in_as_googleapis_auth/tree/master/example).
+See it [here](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/extension_google_sign_in_as_googleapis_auth/example/lib/main.dart).
 
-The original code (and its license) can be seen [here](https://github.com/flutter/plugins/tree/master/packages/google_sign_in/google_sign_in).
+The original code (and its license) can be seen [here](https://github.com/flutter/plugins/tree/master/packages/google_sign_in/google_sign_in/example/lib/main.dart).
 
 ## Testing
 
