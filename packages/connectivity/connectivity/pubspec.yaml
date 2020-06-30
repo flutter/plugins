@@ -17,6 +17,8 @@ flutter:
         pluginClass: FLTConnectivityPlugin
       macos:
         default_package: connectivity_macos
+      web:
+        default_package: connectivity_for_web
 
 dependencies:
   flutter:
@@ -24,6 +26,7 @@ dependencies:
   meta: "^1.0.5"
   connectivity_platform_interface: ^1.0.2
   connectivity_macos: ^0.1.0
+  connectivity_for_web: ^0.3.0
 
 dev_dependencies:
   flutter_test:
