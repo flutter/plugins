@@ -16,10 +16,10 @@ import 'package:http/http.dart' as http;
 extension GoogleApisGoogleSignInAuth on GoogleSignIn {
   /// Retrieve a `googleapis` authenticated client.
   Future<googleapis_auth.AuthClient> authenticatedClient({
-    @visibleForTesting GoogleSignInAuthentication authentication,
-    @visibleForTesting List<String> scopes = const [],
+    @visibleForTesting GoogleSignInAuthentication debugAuthentication,
+    @visibleForTesting List<String> debugScopes = const [],
   }) async {
-    final auth = authentication ?? await currentUser.authentication;
+    final auth = debugAuthentication ?? await currentUser.authentication;
     final credentials = googleapis_auth.AccessCredentials(
       googleapis_auth.AccessToken(
         'Bearer',
@@ -28,7 +28,7 @@ extension GoogleApisGoogleSignInAuth on GoogleSignIn {
         DateTime.now().toUtc().add(Duration(days: 365)),
       ),
       null, // We don't have a refreshToken
-      scopes ?? this.scopes,
+      debugScopes ?? this.scopes,
     );
 
     return googleapis_auth.authenticatedClient(http.Client(), credentials);

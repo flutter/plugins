@@ -28,14 +28,18 @@ void main() {
   });
 
   test('authenticatedClient returns an authenticated client', () async {
-    final client = await signIn.authenticatedClient(authentication: authMock);
+    final client = await signIn.authenticatedClient(
+      debugAuthentication: authMock,
+    );
     expect(client, isA<auth.AuthClient>());
   });
 
   test('authenticatedClient returned client contains the passed-in credentials',
       () async {
     final client = await signIn.authenticatedClient(
-        authentication: authMock, scopes: SOME_FAKE_SCOPES);
+      debugAuthentication: authMock,
+      debugScopes: SOME_FAKE_SCOPES,
+    );
     expect(client.credentials.accessToken.data, equals(SOME_FAKE_ACCESS_TOKEN));
     expect(client.credentials.scopes, equals(SOME_FAKE_SCOPES));
   });
