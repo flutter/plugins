@@ -5,7 +5,6 @@
 package dev.flutter.plugins.e2e;
 
 import android.content.Context;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -15,6 +14,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /** E2EPlugin */
 public class E2EPlugin implements MethodCallHandler, FlutterPlugin {
@@ -22,7 +22,7 @@ public class E2EPlugin implements MethodCallHandler, FlutterPlugin {
 
   private static final SettableFuture<Map<String, String>> testResultsSettable =
       SettableFuture.create();
-  public static final ListenableFuture<Map<String, String>> testResults = testResultsSettable;
+  public static final Future<Map<String, String>> testResults = testResultsSettable;
 
   private static final String CHANNEL = "plugins.flutter.io/e2e";
 
