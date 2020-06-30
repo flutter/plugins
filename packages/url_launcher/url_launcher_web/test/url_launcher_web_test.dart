@@ -41,7 +41,8 @@ void main() {
       });
 
       test('"sms" URLs -> true', () {
-        expect(plugin.canLaunch('sms:+19725551212?body=hello%20there'), completion(isTrue));
+        expect(plugin.canLaunch('sms:+19725551212?body=hello%20there'),
+            completion(isTrue));
       });
     });
 
@@ -52,8 +53,7 @@ void main() {
             .thenReturn(MockWindow());
         when(mockWindow.open('mailto:name@mydomain.com', ''))
             .thenReturn(MockWindow());
-        when(mockWindow.open('tel:5551234567', ''))
-            .thenReturn(MockWindow());
+        when(mockWindow.open('tel:5551234567', '')).thenReturn(MockWindow());
         when(mockWindow.open('sms:+19725551212?body=hello%20there', ''))
             .thenReturn(MockWindow());
       });
@@ -178,7 +178,8 @@ void main() {
         test('sms urls should be launched on the same window', () {
           plugin.openNewWindow('sms:+19725551212?body=hello%20there');
 
-          verify(mockWindow.open('sms:+19725551212?body=hello%20there', '_top'));
+          verify(
+              mockWindow.open('sms:+19725551212?body=hello%20there', '_top'));
         });
       });
     });
