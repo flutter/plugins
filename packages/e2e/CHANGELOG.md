@@ -1,3 +1,7 @@
+## 0.6.0
+
+* **Breaking change** `E2EPlugin` exports a `ListenableFuture` for `testResults`.
+
 ## 0.5.0+1
 
 * Fixed the device pixel ratio problem.
