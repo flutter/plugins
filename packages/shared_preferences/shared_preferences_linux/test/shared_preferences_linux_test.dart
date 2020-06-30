@@ -20,11 +20,13 @@ void main() {
   }
 
   _writeTestFile(String value) async {
-    await fs.file(await _getFilePath()).writeAsString(value);
+    fs.file(await _getFilePath())
+      ..createSync(recursive: true)
+      ..writeAsStringSync(value);
   }
 
   Future<String> _readTestFile() async {
-    return await fs.file(await _getFilePath()).readAsString();
+    return fs.file(await _getFilePath()).readAsStringSync();
   }
 
   SharedPreferencesLinux _getPreferences() {
@@ -34,7 +36,7 @@ void main() {
   }
 
   test('getAll', () async {
-    await _writeTestFile('{"key1": "one", "key2", 2}');
+    await _writeTestFile('{"key1": "one", "key2": 2}');
     var prefs = _getPreferences();
 
     var values = await prefs.getAll();
@@ -44,12 +46,12 @@ void main() {
   });
 
   test('remove', () async {
-    await _writeTestFile('{"key1": "one", "key2", 2}');
+    await _writeTestFile('{"key1":"one","key2":2}');
     var prefs = _getPreferences();
 
     await prefs.remove('key2');
 
-    expect(_readTestFile(), '{"key1": "one"}');
+    expect(await _readTestFile(), '{"key1":"one"}');
   });
 
   test('setValue', () async {
@@ -59,14 +61,14 @@ void main() {
     await prefs.setValue('', 'key1', 'one');
     await prefs.setValue('', 'key2', 2);
 
-    expect(await _readTestFile(), '{"key1": "one", "key2", 2}');
+    expect(await _readTestFile(), '{"key1":"one","key2":2}');
   });
 
   test('clear', () async {
-    await _writeTestFile('{"key1": "one", "key2", 2}');
+    await _writeTestFile('{"key1":"one","key2":2}');
     var prefs = _getPreferences();
 
     await prefs.clear();
-    expect(_readTestFile(), '{}');
+    expect(await _readTestFile(), '{}');
   });
 }
