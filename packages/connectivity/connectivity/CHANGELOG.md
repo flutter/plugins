@@ -1,3 +1,7 @@
+## 0.4.9
+
+* Add support for `web` (by endorsing `connectivity_for_web` 0.3.0)
+
 ## 0.4.8+6
 
 * Update lower bound of dart dependency to 2.1.0.
