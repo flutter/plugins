@@ -21,51 +21,43 @@ class ConnectivityPlugin extends ConnectivityPlatform {
 
   // The following are completely unsupported methods on the web platform.
 
+  // Creates an "unsupported_operation" PlatformException for a given `method` name.
+  Object _unsupported(String method) {
+    return PlatformException(
+      code: 'UNSUPPORTED_OPERATION',
+      message: '$method() is not supported on the web platform.',
+    );
+  }
+
   /// Obtains the wifi name (SSID) of the connected network
   @override
   Future<String> getWifiName() {
-    throw PlatformException(
-      code: 'UNSUPPORTED_OPERATION',
-      message: 'getWifiName() is not supported on the web platform.',
-    );
+    throw _unsupported('getWifiName');
   }
 
   /// Obtains the wifi BSSID of the connected network.
   @override
   Future<String> getWifiBSSID() {
-    throw PlatformException(
-      code: 'UNSUPPORTED_OPERATION',
-      message: 'getWifiBSSID() is not supported on the web platform.',
-    );
+    throw _unsupported('getWifiBSSID');
   }
 
   /// Obtains the IP address of the connected wifi network
   @override
   Future<String> getWifiIP() {
-    throw PlatformException(
-      code: 'UNSUPPORTED_OPERATION',
-      message: 'getWifiIP() is not supported on the web platform.',
-    );
+    throw _unsupported('getWifiIP');
   }
 
   /// Request to authorize the location service (Only on iOS).
   @override
-  Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
-      {bool requestAlwaysLocationUsage = false}) {
-    throw PlatformException(
-      code: 'UNSUPPORTED_OPERATION',
-      message:
-          'requestLocationServiceAuthorization() is not supported on the web platform.',
-    );
+  Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
+    bool requestAlwaysLocationUsage = false,
+  }) {
+    throw _unsupported('requestLocationServiceAuthorization');
   }
 
   /// Get the current location service authorization (Only on iOS).
   @override
   Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
-    throw PlatformException(
-      code: 'UNSUPPORTED_OPERATION',
-      message:
-          'getLocationServiceAuthorization() is not supported on the web platform.',
-    );
+    throw _unsupported('getLocationServiceAuthorization');
   }
 }

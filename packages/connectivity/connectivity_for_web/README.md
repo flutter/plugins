@@ -28,7 +28,7 @@ In order to retrieve information about the quality/speed of a browser's connecti
 
 ![Data on support for the netinfo feature across the major browsers from caniuse.com](https://caniuse.bitsofco.de/image/netinfo.png)
 
-On desktop browsers, this API only returns a very broad set of connectivity statuses (One of `'slow-2g', '2g', '3g', or '4g'`), and may *not* provide an Stream of changes. Firefox still hasn't enabled this feature by default.
+On desktop browsers, this API only returns a very broad set of connectivity statuses (One of `'slow-2g', '2g', '3g', or '4g'`), and may *not* provide a Stream of changes. Firefox still hasn't enabled this feature by default.
 
 **Fallback to `navigator.onLine`**
 
@@ -43,7 +43,7 @@ Other than the approximate "downlink" speed, where available, and due to securit
 
 ## Contributions and Testing
 
-Tests are a crucial to contributions to this package. All new contributions should be reasonably tested.
+Tests are crucial to contributions to this package. All new contributions should be reasonably tested.
 
 In order to run tests in this package, do:
 
