@@ -1,0 +1,15 @@
+name: shared_preferences_linux_example
+description: Demonstrates how to use the shared_preferences_linux plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences_linux: ^0.1.0
+
+dependency_overrides:
+  shared_preferences_linux:
+    path: ../
+
+flutter:
+  uses-material-design: true
+

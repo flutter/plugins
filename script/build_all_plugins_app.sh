@@ -26,6 +26,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "path_provider_platform_interface"
   "path_provider_web"
   "plugin_platform_interface"
+  "shared_preferences_linux"
   "shared_preferences_macos"
   "shared_preferences_platform_interface"
   "shared_preferences_web"
