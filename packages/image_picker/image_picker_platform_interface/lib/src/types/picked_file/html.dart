@@ -11,13 +11,24 @@ import './base.dart';
 class PickedFile extends PickedFileBase {
   final String path;
   final Uint8List _initBytes;
+  final int _length;
+  @override
+  final String name;
 
   /// Construct a PickedFile object from its ObjectUrl.
   ///
-  /// Optionally, this can be initialized with `bytes`
+  /// Optionally, this can be initialized with `bytes` and `length`
   /// so no http requests are performed to retrieve files later.
-  PickedFile(this.path, {Uint8List bytes})
-      : _initBytes = bytes,
+  ///
+  /// `name` needs to be passed from the outside, since we only have
+  /// access to it while we create the ObjectUrl.
+  PickedFile(
+    this.path, {
+    this.name,
+    int length,
+    Uint8List bytes,
+  })  : _initBytes = bytes,
+        _length = length,
         super(path);
 
   Future<Uint8List> get _bytes async {
@@ -25,6 +36,11 @@ class PickedFile extends PickedFileBase {
       return Future.value(UnmodifiableUint8ListView(_initBytes));
     }
     return http.readBytes(path);
+  }
+
+  @override
+  Future<int> length() async {
+    return _length ?? (await _bytes).length;
   }
 
   @override

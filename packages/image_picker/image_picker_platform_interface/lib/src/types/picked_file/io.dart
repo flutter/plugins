@@ -19,6 +19,16 @@ class PickedFile extends PickedFileBase {
   }
 
   @override
+  String get name {
+    return _file.path.split(Platform.pathSeparator).last;
+  }
+
+  @override
+  Future<int> length() {
+    return _file.length();
+  }
+
+  @override
   Future<String> readAsString({Encoding encoding = utf8}) {
     return _file.readAsString(encoding: encoding);
   }

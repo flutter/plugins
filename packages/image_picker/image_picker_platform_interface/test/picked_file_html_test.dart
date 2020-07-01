@@ -12,17 +12,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
 final String expectedStringContents = 'Hello, world!';
+final int expectedSize = expectedStringContents.length;
 final Uint8List bytes = utf8.encode(expectedStringContents);
 final html.File textFile = html.File([bytes], 'hello.txt');
 final String textFileUrl = html.Url.createObjectUrl(textFile);
 
 void main() {
   group('Create with an objectUrl', () {
-    final pickedFile = PickedFile(textFileUrl);
+    final pickedFile =
+        PickedFile(textFileUrl, length: expectedSize, name: 'hello.txt');
+
+    test('Can get length', () async {
+      expect(await pickedFile.length(), equals(expectedSize));
+    });
+
+    test('Can get length from bytes', () async {
+      final pickedFile = PickedFile(textFileUrl);
+      expect(await pickedFile.length(), equals(expectedSize));
+    });
+
+    test('Extracts the filename', () async {
+      expect(pickedFile.name, equals('hello.txt'));
+    });
 
     test('Can be read as a string', () async {
       expect(await pickedFile.readAsString(), equals(expectedStringContents));
     });
+
     test('Can be read as bytes', () async {
       expect(await pickedFile.readAsBytes(), equals(bytes));
     });

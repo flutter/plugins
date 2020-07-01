@@ -29,6 +29,18 @@ abstract class PickedFileBase {
     throw UnimplementedError('.path has not been implemented.');
   }
 
+  /// The name of the file as it was selected by the user in their device.
+  ///
+  /// Use only for cosmetic reasons, do not try to use this as a path.
+  String get name {
+    throw UnimplementedError('.name has not been implemented.');
+  }
+
+  /// Get the length of the file. Returns a `Future<int>` that completes with the length in bytes.
+  Future<int> length() {
+    throw UnimplementedError('.length() has not been implemented.');
+  }
+
   /// Synchronously read the entire file contents as a string using the given [Encoding].
   ///
   /// By default, `encoding` is [utf8].
