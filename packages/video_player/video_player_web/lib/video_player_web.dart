@@ -223,6 +223,7 @@ class _VideoPlayer {
   }
 
   void setVolume(double value) {
+    // TODO: Do we need to expose a "muted" API? https://github.com/flutter/flutter/issues/60721
     if (value > 0.0) {
       videoElement.muted = false;
     } else {
