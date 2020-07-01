@@ -40,7 +40,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     String capture = computeCaptureAttribute(source, preferredCameraDevice);
-    return pickFile(accept: _kAcceptImageMimeType, capture: capture);
+    return pickFileFromBrowser(accept: _kAcceptImageMimeType, capture: capture);
   }
 
   @override
@@ -50,7 +50,15 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     Duration maxDuration,
   }) {
     String capture = computeCaptureAttribute(source, preferredCameraDevice);
-    return pickFile(accept: _kAcceptVideoMimeType, capture: capture);
+    return pickFileFromBrowser(accept: _kAcceptVideoMimeType, capture: capture);
+  }
+
+  @override
+  Future<PickedFile> pickArbitraryFile({
+    List<String> allowedExtensions = const [],
+  }) {
+    String accept = computeAcceptAttribute(allowedExtensions);
+    return pickFileFromBrowser(accept: accept, capture: null);
   }
 
   /// Injects a file input with the specified accept+capture attributes, and
@@ -59,7 +67,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// `capture` is only supported in mobile browsers.
   /// See https://caniuse.com/#feat=html-media-capture
   @visibleForTesting
-  Future<PickedFile> pickFile({
+  Future<PickedFile> pickFileFromBrowser({
     String accept,
     String capture,
   }) {
@@ -81,6 +89,18 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return null;
   }
 
+  /// Converts a List of file extensions into the accept attribute.
+  ///
+  /// See: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept
+  @visibleForTesting
+  String computeAcceptAttribute(List<String> extensions) {
+    return extensions?.where((e) => e?.trim()?.isNotEmpty ?? false)?.map((e) {
+          String ext = e.trim();
+          return ext.startsWith('\.') ? ext : '.$ext';
+        })?.join(',') ??
+        '';
+  }
+
   html.File _getFileFromInput(html.FileUploadInputElement input) {
     if (_hasOverrides) {
       return _overrides.getFileFromInput(input);
@@ -90,12 +110,15 @@ class ImagePickerPlugin extends ImagePickerPlatform {
 
   /// Handles the OnChange event from a FileUploadInputElement object
   /// Returns the objectURL of the selected file.
-  String _handleOnChangeEvent(html.Event event) {
+  _HtmlFileInfo _handleOnChangeEvent(html.Event event) {
     final html.FileUploadInputElement input = event?.target;
     final html.File file = _getFileFromInput(input);
 
     if (file != null) {
-      return html.Url.createObjectUrl(file);
+      return _HtmlFileInfo()
+        ..url = html.Url.createObjectUrl(file)
+        ..length = file.size
+        ..name = file.name;
     }
     return null;
   }
@@ -105,9 +128,13 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     final Completer<PickedFile> _completer = Completer<PickedFile>();
     // Observe the input until we can return something
     input.onChange.first.then((event) {
-      final objectUrl = _handleOnChangeEvent(event);
+      final fileInfo = _handleOnChangeEvent(event);
       if (!_completer.isCompleted) {
-        _completer.complete(PickedFile(objectUrl));
+        _completer.complete(PickedFile(
+          fileInfo.url,
+          name: fileInfo.name,
+          length: fileInfo.length,
+        ));
       }
     });
     input.onError.first.then((event) {
@@ -142,7 +169,10 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       return _overrides.createInputElement(accept, capture);
     }
 
-    html.Element element = html.FileUploadInputElement()..accept = accept;
+    final element = html.FileUploadInputElement();
+    if (accept?.isNotEmpty ?? false) {
+      element.accept = accept;
+    }
 
     if (capture != null) {
       element.setAttribute('capture', capture);
@@ -157,6 +187,14 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     _target.children.add(element);
     element.click();
   }
+}
+
+/// A simple PODO to contain the information that we need
+/// from the selected html.File
+class _HtmlFileInfo {
+  int length;
+  String url;
+  String name;
 }
 
 // Some tools to override behavior for unit-testing
