@@ -1,3 +1,7 @@
+## 0.6.8
+
+* Add `getFile(allowedExtensions)` method so users can select any type of file (web only).
+
 ## 0.6.7+2
 
 * iOS: Fixes unpresentable album/image picker if window's root view controller is already presenting other view controller.

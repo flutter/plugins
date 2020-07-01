@@ -6,6 +6,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:intl/intl.dart' show NumberFormat;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -63,6 +64,16 @@ class _MyHomePageState extends State<MyHomePage> {
       await _controller.play();
       setState(() {});
     }
+  }
+
+  void _onSelectTextFilePressed({BuildContext context}) async {
+    if (_controller != null) {
+      await _controller.setVolume(0.0);
+    }
+    final PickedFile file = await _picker.getFile(
+      allowedExtensions: ['txt', 'json'],
+    );
+    return _displayTextFileContents(file, context: context);
   }
 
   void _onImageButtonPressed(ImageSource source, {BuildContext context}) async {
@@ -270,6 +281,19 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Icon(Icons.videocam),
             ),
           ),
+          if (kIsWeb)
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: FloatingActionButton(
+                backgroundColor: Colors.green,
+                onPressed: () {
+                  _onSelectTextFilePressed(context: context);
+                },
+                heroTag: 'file',
+                tooltip: 'Select a file (.txt|.json)',
+                child: const Icon(Icons.picture_as_pdf),
+              ),
+            ),
         ],
       ),
     );
@@ -282,6 +306,38 @@ class _MyHomePageState extends State<MyHomePage> {
       return result;
     }
     return null;
+  }
+
+  Future<void> _displayTextFileContents(
+    PickedFile file, {
+    BuildContext context,
+  }) async {
+    final fileContents = await file.readAsString();
+    final size = NumberFormat.compact().format(await file.length());
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('${file.name} (${size}B)'),
+          content: Scrollbar(
+            child: SingleChildScrollView(
+              child: Text(
+                fileContents,
+                style: TextStyle(fontFamily: "monospace"),
+              ),
+            ),
+          ),
+          actions: [
+            FlatButton(
+              child: const Text('CLOSE'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _displayPickImageDialog(

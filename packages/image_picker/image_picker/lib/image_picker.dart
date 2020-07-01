@@ -165,6 +165,18 @@ class ImagePicker {
     );
   }
 
+  /// Returns an arbitrary [PickedFile].
+  ///
+  /// The [allowedExtensions] argument controls what files may be selected, for example:
+  /// \['pdf', 'doc'] to allow only to pick .pdf or .doc files.
+  ///
+  /// When empty, the plugin lets the user pick any file.
+  Future<PickedFile> getFile({
+    List<String> allowedExtensions = const [],
+  }) {
+    return platform.pickArbitraryFile(allowedExtensions: allowedExtensions);
+  }
+
   /// Retrieve the lost image file when [pickImage] or [pickVideo] failed because the  MainActivity is destroyed. (Android only)
   ///
   /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.

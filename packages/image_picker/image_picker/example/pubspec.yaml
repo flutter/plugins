@@ -3,6 +3,7 @@ description: Demonstrates how to use the image_picker plugin.
 author: Flutter Team <flutter-dev@googlegroups.com>
 
 dependencies:
+  intl: ^0.16.1
   video_player: ^0.10.3
   flutter:
     sdk: flutter
@@ -21,5 +22,5 @@ flutter:
   uses-material-design: true
 
 environment:
-  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
   flutter: ">=1.10.0 <2.0.0"
