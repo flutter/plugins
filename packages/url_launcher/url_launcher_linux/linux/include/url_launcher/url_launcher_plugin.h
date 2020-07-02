@@ -26,8 +26,8 @@ G_BEGIN_DECLS
 #define FLUTTER_PLUGIN_EXPORT
 #endif
 
-G_DECLARE_FINAL_TYPE(FlUrlLauncherPlugin, fl_url_launcher_plugin, FL, URL_LAUNCHER_PLUGIN,
-                     GObject)
+G_DECLARE_FINAL_TYPE(FlUrlLauncherPlugin, fl_url_launcher_plugin, FL,
+                     URL_LAUNCHER_PLUGIN, GObject)
 
 FLUTTER_PLUGIN_EXPORT FlUrlLauncherPlugin* fl_url_launcher_plugin_new(
     FlPluginRegistrar* registrar);
