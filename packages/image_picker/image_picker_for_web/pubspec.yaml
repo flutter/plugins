@@ -1,0 +1,32 @@
+name: image_picker_for_web
+description: Web platform implementation of image_picker
+homepage: https://github.com/flutter/plugins/tree/master/packages/image_picker/image_picker_for_web
+# 0.1.y+z is compatible with 1.0.0, if you land a breaking change bump
+# the version to 2.0.0.
+# See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+version: 0.1.0+1
+
+flutter:
+  plugin:
+    platforms:
+      web:
+        pluginClass: ImagePickerPlugin
+        fileName: image_picker_for_web.dart
+
+dependencies:
+  image_picker_platform_interface: ^1.1.0
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  meta: ^1.1.7
+  js: ^0.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  pedantic: ^1.8.0
+
+environment:
+  sdk: ">=2.5.0 <3.0.0"
+  flutter: ">=1.10.0 <2.0.0"
