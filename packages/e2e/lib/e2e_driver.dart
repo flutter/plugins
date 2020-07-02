@@ -24,7 +24,6 @@ Future<void> e2eDriver({
   String testName,
   bool traceTimeline = false,
 }) async {
-
   print(testName);
   final FlutterDriver driver = await FlutterDriver.connect();
   String jsonResult;
@@ -32,10 +31,10 @@ Future<void> e2eDriver({
   Future<void> runner() async {
     jsonResult = await driver.requestData(null, timeout: timeout);
   }
+
   if (traceTimeline) {
     timeline = await driver.traceAction(runner);
-  }
-  else {
+  } else {
     await runner();
   }
   final e2e.Response response = e2e.Response.fromJson(jsonResult);
