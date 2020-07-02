@@ -1,3 +1,7 @@
+## 0.6.3
+
+* Add customizable `flutter_driver` adaptor.
+
 ## 0.6.2+1
 
 * Fix incorrect test results when one test passes then another fails
