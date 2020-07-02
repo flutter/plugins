@@ -1,3 +1,7 @@
+## 0.3.23
+
+* Added possibility to activate the zoom to WebView - IOS & Android.
+
 ## 0.3.22+1
 
 * Update the `setAndGetScrollPosition` to use hard coded values and add a `pumpAndSettle` call.
