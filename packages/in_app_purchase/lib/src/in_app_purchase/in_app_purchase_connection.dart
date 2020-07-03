@@ -71,7 +71,7 @@ abstract class InAppPurchaseConnection {
 
   /// Enable the [InAppPurchaseConnection] to handle pending purchases.
   ///
-  /// Android Only: This method is required to be called when initialize the application.
+  /// This method is required to be called when initialize the application.
   /// It is to acknowledge your application has been updated to support pending purchases.
   /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
   /// for more details.
