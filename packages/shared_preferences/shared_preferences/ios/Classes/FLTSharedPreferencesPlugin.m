@@ -62,7 +62,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
     } else if ([method isEqualToString:@"clear"]) {
       NSString *suiteName = arguments[@"suiteName"];
       NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:suiteName];
-      for (NSString *key in getAllPrefs()) {
+      for (NSString *key in getAllPrefs(suiteName)) {
         [defaults removeObjectForKey:key];
       }
       result(@YES);
@@ -74,7 +74,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
 
 #pragma mark - Private
 
-static NSMutableDictionary *getAllPrefs(NSString suiteName) {
+static NSMutableDictionary *getAllPrefs(NSString *suiteName) {
   NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
   NSDictionary *prefs = [[[NSUserDefaults alloc] initWithSuiteName:suiteName] persistentDomainForName:appDomain];
   NSMutableDictionary *filteredPrefs = [NSMutableDictionary dictionary];
