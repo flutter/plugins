@@ -10,7 +10,7 @@ iOS support is not available yet, but is planned in the future.
 
 Add a dependency on the `e2e` package in the
 `dev_dependencies` section of pubspec.yaml. For plugins, do this in the
-pubspec.yaml of the example app.
+`pubspec.yaml` of the example app.
 
 Invoke `E2EWidgetsFlutterBinding.ensureInitialized()` at the start
 of a test file, e.g.
@@ -45,7 +45,7 @@ import 'dart:async';
 
 import 'package:e2e/e2e_driver.dart' as e2e;
 
-Future<void> main() async => e2e.main();
+Future<void> main() async => e2e.e2eDriver();
 
 ```
 
