@@ -1,3 +1,6 @@
+## 0.3.4+2
+* iOS: Fix treating missing App Store receipt as an exception.
+
 ## 0.3.4+1
 
 * iOS: Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
