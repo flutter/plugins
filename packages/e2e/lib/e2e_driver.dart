@@ -42,6 +42,7 @@ Future<void> e2eDriver({
 
   if (traceTimeline) {
     timeline = await driver.traceAction(runner);
+    // In the traceAction call runner is awaited.
   } else {
     await runner();
   }
