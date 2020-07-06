@@ -19,12 +19,20 @@ Future<void> main() async => e2eDriver();
 /// Future<void> main() async => e2e.e2eDriver();
 ///
 /// ```
+///
+/// `timeout` controls the longest time waited before the test ends, not
+/// necessarily the execution time for the test app.
+///
+/// `traceTimeline` flag controls if timeline and timeline summary should be
+/// collected.
+///
+/// `testName` is used as the file name for the output timeline files.
 Future<void> e2eDriver({
   Duration timeout = const Duration(minutes: 1),
-  String testName,
   bool traceTimeline = false,
+  String testName,
 }) async {
-  print(testName);
+  assert(!traceTimeline || testName != null);
   final FlutterDriver driver = await FlutterDriver.connect();
   String jsonResult;
   Timeline timeline;
