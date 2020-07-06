@@ -8,7 +8,6 @@ flutter:
     platforms:
       linux:
         pluginClass: UrlLauncherPlugin
-        fileName: url_launcher_linux.dart
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

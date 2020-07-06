@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-set(PROJECT_NAME "url_launcher")
+set(PROJECT_NAME "url_launcher_linux")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 set(PLUGIN_NAME "${PROJECT_NAME}_plugin")
