@@ -8,8 +8,16 @@ Future<void> main() async => e2eDriver();
 
 /// Adaptor to run E2E test using `flutter drive`.
 ///
-/// For an E2E test `<test_name>.dart`, put a file named `<test_name>_test.dart`
-/// in the app's `test_driver` directory:
+/// `timeout` controls the longest time waited before the test ends, not
+/// necessarily the execution time for the test app.
+///
+/// `traceTimeline` flag controls if timeline and timeline summary should be
+/// collected.
+///
+/// `testName` is used as the file name for the output timeline files.
+///
+/// To an E2E test `<test_name>.dart` using `flutter drive`, put a file named
+/// `<test_name>_test.dart` in the app's `test_driver` directory:
 ///
 /// ```dart
 /// import 'dart:async';
@@ -19,14 +27,6 @@ Future<void> main() async => e2eDriver();
 /// Future<void> main() async => e2e.e2eDriver();
 ///
 /// ```
-///
-/// `timeout` controls the longest time waited before the test ends, not
-/// necessarily the execution time for the test app.
-///
-/// `traceTimeline` flag controls if timeline and timeline summary should be
-/// collected.
-///
-/// `testName` is used as the file name for the output timeline files.
 Future<void> e2eDriver({
   Duration timeout = const Duration(minutes: 1),
   bool traceTimeline = false,
