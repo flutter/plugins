@@ -52,13 +52,11 @@ static FlMethodResponse* can_launch(FlUrlLauncherPlugin* self, FlValue* args) {
 
   gboolean is_launchable = FALSE;
   g_autofree gchar* scheme = g_uri_parse_scheme(url);
-  if (scheme == nullptr) {
-    return FL_METHOD_RESPONSE(fl_method_error_response_new(
-        kLaunchError, "Unable to determine URL scheme", nullptr));
+  if (scheme != nullptr) {
+    g_autoptr(GAppInfo) app_info =
+        g_app_info_get_default_for_uri_scheme(scheme);
+    is_launchable = app_info != nullptr;
   }
-
-  g_autoptr(GAppInfo) app_info = g_app_info_get_default_for_uri_scheme(scheme);
-  is_launchable = app_info != nullptr;
 
   g_autoptr(FlValue) result = fl_value_new_bool(is_launchable);
   return FL_METHOD_RESPONSE(fl_method_success_response_new(result));
