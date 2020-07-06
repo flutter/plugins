@@ -1,4 +1,5 @@
 ## 0.6.7+4
+
 * Support iOS simulator x86_64 architecture.
 
 ## 0.6.7+3
