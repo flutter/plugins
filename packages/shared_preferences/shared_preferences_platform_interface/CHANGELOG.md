@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Added a `suiteName` parameter to `MethodChannelSharedPreferencesStore`.
+
 ## 1.0.4
 
 * Update lower bound of dart dependency to 2.1.0.
