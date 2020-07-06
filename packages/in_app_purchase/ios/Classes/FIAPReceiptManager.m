@@ -16,14 +16,14 @@
 
 - (NSString *)retrieveReceiptWithError:(FlutterError **)error {
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-  NSError *error;
-  NSData *receipt = [self getReceiptData:receiptURL error:&error];
+  NSError *err;
+  NSData *receipt = [self getReceiptData:receiptURL error:&err];
   if (!receipt) {
     return nil;
   }
   if (error) {
-    *error = [FlutterError errorWithCode:[[NSString alloc] initWithFormat:@"%li", error.code];
-                                 message:error.domain details:error.userInfo];
+    *error = [FlutterError errorWithCode:[[NSString alloc] initWithFormat:@"%li", err.code];
+                                 message:error.domain details:err.userInfo];
     return nil;
   }
   return [receipt base64EncodedStringWithOptions:kNilOptions];
