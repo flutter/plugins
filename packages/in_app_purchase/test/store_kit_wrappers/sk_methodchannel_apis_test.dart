@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
+import 'package:test/test.dart' show TypeMatcher;
 import 'sk_test_stub_objects.dart';
 
 void main() {
@@ -76,6 +77,12 @@ void main() {
       String receiptData = await SKReceiptManager.retrieveReceiptData();
       expect(receiptData, 'receipt data');
     });
+
+    test('should get null receipt if any exceptions are raised', () async {
+      fakeIOSPlatform.getReceiptFailTest = true;
+      expect(() async => SKReceiptManager.retrieveReceiptData(),
+          throwsA(TypeMatcher<PlatformException>()));
+    });
   });
 
   group('sk_payment_queue', () {
@@ -128,10 +135,14 @@ class FakeIOSPlatform {
   FakeIOSPlatform() {
     channel.setMockMethodCallHandler(onMethodCall);
     getProductRequestFailTest = false;
+    getReceiptFailTest = false;
   }
   // get product request
   List startProductRequestParam;
   bool getProductRequestFailTest;
+
+  // get receipt request
+  bool getReceiptFailTest;
 
   // refresh receipt request
   int refreshReceipt = 0;
@@ -161,6 +172,9 @@ class FakeIOSPlatform {
         return Future<void>.sync(() {});
       // receipt manager
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
+        if (getReceiptFailTest) {
+          throw ("some arbitrary error");
+        }
         return Future<String>.value('receipt data');
       // payment queue
       case '-[SKPaymentQueue canMakePayments:]':
