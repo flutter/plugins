@@ -8,8 +8,9 @@ Future<void> main() async => e2eDriver();
 
 /// Adaptor to run E2E test using `flutter drive`.
 ///
-/// `timeout` controls the longest time waited before the test ends, not
-/// necessarily the execution time for the test app.
+/// `timeout` controls the longest time waited before the test ends.
+/// It is not necessarily the execution time for the test app.
+/// The test can and usually runs for shorter time if the test ends early.
 ///
 /// `traceTimeline` flag controls if timeline and timeline summary should be
 /// collected.
