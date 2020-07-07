@@ -1,3 +1,8 @@
+
+## 5.4.12
+
+* Support Linux by default.
+
 ## 5.4.11
 
 * Add documentation in README suggesting how to properly encode urls with special characters.
@@ -46,7 +51,7 @@
 
 ## 5.4.0
 
-* Support macos by default.
+* Support macOS by default.
 
 ## 5.3.0
 
