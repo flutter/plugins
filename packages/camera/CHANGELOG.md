@@ -1,6 +1,6 @@
 ## 0.5.8+4
 
-* Improved error handling on Android when camera permissions are not granted.
+* Fixed bug caused by casting a `CameraAccessException` on Android.
 
 ## 0.5.8+3
 
