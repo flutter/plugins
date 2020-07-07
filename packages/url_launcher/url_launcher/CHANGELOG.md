@@ -1,5 +1,4 @@
-
-## 5.4.12
+## 5.5.0
 
 * Support Linux by default.
 
