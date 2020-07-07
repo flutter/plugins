@@ -6,10 +6,22 @@ The Linux implementation of [`url_launcher`][1].
 
 ### Import the package
 
-This package is an unendorsed Linux implementation of `url_launcher`.
+This package has been endorsed, meaning that you only need to add `url_launcher`
+as a dependency in your `pubspec.yaml`. It will be automatically included in your app
+when you depend on `package:url_launcher`.
 
-In order to use this now, you'll need to depend on `url_launcher_linux`.
-When this package is endorsed it will be automatically used by the `url_launcher` package and you can switch to that API.
+This is what the above means to your `pubspec.yaml`:
+
+```yaml
+...
+dependencies:
+  ...
+  url_launcher: ^5.5.0
+  ...
+```
+
+If you wish to use the Linux package only, you can add  `url_launcher_linux` as a
+dependency:
 
 ```yaml
 ...
