@@ -25,7 +25,7 @@ class SharedPreferences {
   static bool _manualDartRegistrationNeeded = true;
 
   static SharedPreferencesStorePlatform get _store {
-    // This is to manually endorse the linux path provider until automatic
+    // This is to manually endorse the Linux implementation until automatic
     // registration of dart plugins is implemented. For details see
     // https://github.com/flutter/flutter/issues/52267.
     if (_manualDartRegistrationNeeded) {
