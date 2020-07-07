@@ -10,6 +10,9 @@ dependencies:
 dependency_overrides:
   shared_preferences_linux:
     path: ../
+  # Remove this override once the endorsement is published.
+  shared_preferences:
+    path: ../../shared_preferences/
 
 dev_dependencies:
   flutter_driver:
