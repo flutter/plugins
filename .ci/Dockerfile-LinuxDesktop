@@ -28,4 +28,4 @@ RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' |
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends google-chrome-stable
 # Make it the default so http: has a handler.
 RUN sudo apt-get install -y xdg-utils
-xdg-settings set default-web-browser google-chrome.desktop
+RUN xdg-settings set default-web-browser google-chrome.desktop
