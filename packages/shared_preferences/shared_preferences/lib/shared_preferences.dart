@@ -5,7 +5,6 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
-
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:meta/meta.dart';
 
@@ -31,8 +30,10 @@ class SharedPreferences {
     if (_manualDartRegistrationNeeded) {
       // Only do the initial registration if it hasn't already been overridden
       // with a non-default instance.
-      if (!kIsWeb && Platform.isLinux &&
-          SharedPreferencesStorePlatform.instance is MethodChannelSharedPreferencesStore) {
+      if (!kIsWeb &&
+          Platform.isLinux &&
+          SharedPreferencesStorePlatform.instance
+              is MethodChannelSharedPreferencesStore) {
         SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
       }
       _manualDartRegistrationNeeded = false;
