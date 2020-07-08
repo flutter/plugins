@@ -1,3 +1,7 @@
+## 0.5.8
+
+* Support Linux by default.
+
 ## 0.5.7+3
 
 * Post-v2 Android embedding cleanup.
