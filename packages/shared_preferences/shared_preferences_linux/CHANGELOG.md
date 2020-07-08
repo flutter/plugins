@@ -1,3 +1,6 @@
+## 0.0.2+1
+* Replace path_provider dependency with path_provider_linux.
+
 ## 0.0.2
 * Add iOS stub.
 
