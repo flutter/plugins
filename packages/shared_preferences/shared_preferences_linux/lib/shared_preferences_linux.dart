@@ -9,8 +9,8 @@ import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
-import 'package:xdg_directories/xdg_directories.dart' as xdg;
 
 /// The Linux implementation of [SharedPreferencesStorePlatform].
 ///
@@ -26,19 +26,11 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
   @visibleForTesting
   FileSystem fs = LocalFileSystem();
 
-  Future<Directory> _getDataDirectory() async {
-    // TODO: Replace this with getApplicationSupportDirectory from
-    // path_provider_linux; currently plugin_tools can't handle dependencies
-    // between flutter/plugins plugins, so this is duplicated from there.
-    final processName = path.basenameWithoutExtension(
-        await fs.file('/proc/self/exe').resolveSymbolicLinks());
-    return fs.directory(path.join(xdg.dataHome.path, processName));
-  }
-
   /// Gets the file where the preferences are stored.
   Future<File> _getLocalDataFile() async {
-    var directory = await _getDataDirectory();
-    return fs.file(path.join(directory.path, 'shared_preferences.json'));
+    final pathProvider = PathProviderLinux();
+    final directory = await pathProvider.getApplicationSupportPath();
+    return fs.file(path.join(directory, 'shared_preferences.json'));
   }
 
   /// Gets the preferences from the stored file. Once read, the preferences are
