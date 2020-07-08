@@ -61,6 +61,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
       NSDictionary *arguments = [call arguments];
       NSString *shareText = arguments[@"text"];
       NSString *shareSubject = arguments[@"subject"];
+      NSString *shareUrl = arguments[@"url"];
 
       if (shareText.length == 0) {
         result([FlutterError errorWithCode:@"error"
@@ -82,6 +83,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
       [self share:shareText
                  subject:shareSubject
+                 url:shareUrl
           withController:[UIApplication sharedApplication].keyWindow.rootViewController
                 atSource:originRect];
       result(nil);
@@ -93,10 +95,11 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
 + (void)share:(NSString *)shareText
            subject:(NSString *)subject
+           url:(NSString *)url
     withController:(UIViewController *)controller
           atSource:(CGRect)origin {
             NSString *testToShare = shareText;
-                NSURL *urlToShare = [NSURL URLWithString:@"itms-apps://itunes.apple.com/app/id1510760825"];
+                NSURL *urlToShare = [NSURL URLWithString:url];
              NSArray *activityItems = @[testToShare,urlToShare];
   ShareData *data = [[ShareData alloc] initWithSubject:subject text:shareText];
   UIActivityViewController *activityViewController =
