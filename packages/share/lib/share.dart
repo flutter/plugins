@@ -33,6 +33,7 @@ class Share {
   static Future<void> share(
     String text, {
     String subject,
+    String url,
     Rect sharePositionOrigin,
   }) {
     assert(text != null);
@@ -40,6 +41,7 @@ class Share {
     final Map<String, dynamic> params = <String, dynamic>{
       'text': text,
       'subject': subject,
+      'url': url,
     };
 
     if (sharePositionOrigin != null) {
