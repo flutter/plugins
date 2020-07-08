@@ -18,11 +18,11 @@ class CirclesController extends AbstractController {
     }
   }
 
-  /// add [GoogleMap.Circle] to [GoogleMap.GMap].
+  /// add [gmaps.Circle] to [gmaps.GMap].
   void addCircle(Circle circle) {
     if(circle == null) return;
     final populationOptions =  _circleOptionsFromCircle(circle);
-    GoogleMap.Circle gmCircle = GoogleMap.Circle(populationOptions);
+    gmaps.Circle gmCircle = gmaps.Circle(populationOptions);
     gmCircle.map = googleMap;
     CircleController controller = CircleController(
         circle: gmCircle,

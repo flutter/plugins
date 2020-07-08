@@ -21,7 +21,7 @@ class PolygonsController extends AbstractController {
   void _addPolygon(Polygon polygon){
     if(polygon == null) return;
     final populationOptions =  _polygonOptionsFromPolygon(googleMap, polygon);
-    GoogleMap.Polygon  gmPolygon = GoogleMap.Polygon(populationOptions);
+    gmaps.Polygon  gmPolygon = gmaps.Polygon(populationOptions);
     gmPolygon.map = googleMap;
     PolygonController controller = PolygonController(
         polygon: gmPolygon,

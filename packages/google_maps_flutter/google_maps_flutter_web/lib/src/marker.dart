@@ -2,8 +2,8 @@ part of google_maps_flutter_web;
 
 class MarkerController {
 
-  GoogleMap.Marker _marker;
-  GoogleMap.InfoWindow infoWindow;
+  gmaps.Marker _marker;
+  gmaps.InfoWindow infoWindow;
   bool consumeTapEvents = false;
   ui.VoidCallback onTap;
   ui.VoidCallback onInfoWindowTap;
@@ -11,7 +11,7 @@ class MarkerController {
   bool infoWindowShown = false;
   ///
   MarkerController({
-    @required GoogleMap.Marker marker,
+    @required gmaps.Marker marker,
     this.infoWindow,
     this.consumeTapEvents,
     this.onTap,
@@ -35,9 +35,9 @@ class MarkerController {
   }
 
 
-  set marker (GoogleMap.Marker marker) => {_marker = marker};
+  set marker (gmaps.Marker marker) { _marker = marker; }
 
-  void update(GoogleMap.MarkerOptions options) {
+  void update(gmaps.MarkerOptions options) {
     _marker.options = options;
   }
 

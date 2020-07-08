@@ -3,13 +3,13 @@ part of google_maps_flutter_web;
 
 class PolylineController {
 
-  GoogleMap.Polyline _polyline;
+  gmaps.Polyline _polyline;
   bool consumeTapEvents = false;
   ui.VoidCallback onTap;
 
   ///
   PolylineController({
-    @required GoogleMap.Polyline polyline,
+    @required gmaps.Polyline polyline,
     bool consumeTapEvents,
     this.onTap
   }){
@@ -22,9 +22,9 @@ class PolylineController {
   }
 
 
-  set polyline (GoogleMap.Polyline polyline) => {_polyline = polyline};
+  set polyline (gmaps.Polyline polyline) {_polyline = polyline; }
 
-  void update(GoogleMap.PolylineOptions options) {
+  void update(gmaps.PolylineOptions options) {
     _polyline.options = options;
   }
 

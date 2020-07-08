@@ -3,14 +3,14 @@ part of google_maps_flutter_web;
 ///
 class CircleController {
 
-   GoogleMap.Circle _circle;
+   gmaps.Circle _circle;
 
   bool consumeTapEvents = false;
 
   ui.VoidCallback onTap;
 
   ///
-  CircleController({@required GoogleMap.Circle circle, this.consumeTapEvents, this.onTap}){
+  CircleController({@required gmaps.Circle circle, this.consumeTapEvents, this.onTap}){
     _circle = circle;
    if(consumeTapEvents) {
      circle.onClick.listen((event) {
@@ -19,10 +19,10 @@ class CircleController {
    }
   }
 
-  set circle (GoogleMap.Circle circle) => {_circle = circle};
+  set circle (gmaps.Circle circle) { _circle = circle; }
 
   ///TODO
-  void update(GoogleMap.CircleOptions options) {
+  void update(gmaps.CircleOptions options) {
     _circle.options = options;
   }
 

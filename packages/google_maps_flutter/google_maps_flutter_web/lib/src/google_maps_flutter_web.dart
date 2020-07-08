@@ -112,7 +112,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       return null;
     }
 
-    GoogleMap.GMap map = googleMapController.googleMap;
+    gmaps.GMap map = googleMapController.googleMap;
     // TODO: Subclass CameraUpdate so the below code is not stringly-typed.
     dynamic json = cameraUpdate.toJson();
 
@@ -120,20 +120,20 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       case 'newCameraPosition':
         map.heading = json[1]['bearing'];
         map.zoom = json[1]['zoom'];
-        map.panTo(GoogleMap.LatLng(json[1]['target'][0], json[1]['target'][1]));
+        map.panTo(gmaps.LatLng(json[1]['target'][0], json[1]['target'][1]));
         map.tilt = json[1]['tilt'];
         break;
       case 'newLatLng':
-        map.panTo(GoogleMap.LatLng(json[1][0], json[1][1]));
+        map.panTo(gmaps.LatLng(json[1][0], json[1][1]));
         break;
       case 'newLatLngZoom':
         map.zoom = json[2];
-        map.panTo(GoogleMap.LatLng(json[1][0], json[1][1]));
+        map.panTo(gmaps.LatLng(json[1][0], json[1][1]));
         break;
       case 'newLatLngBounds':
-        map.fitBounds(GoogleMap.LatLngBounds(
-          GoogleMap.LatLng(json[1][0][0],json[1][0][1]),
-          GoogleMap.LatLng(json[1][1][0],json[1][1][1])
+        map.fitBounds(gmaps.LatLngBounds(
+          gmaps.LatLng(json[1][0][0],json[1][0][1]),
+          gmaps.LatLng(json[1][1][0],json[1][1][1])
         ));
         // padding = json[2];
         // Needs package:google_maps ^4.0.0 to adjust the padding in fitBounds
@@ -148,7 +148,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
         map.zoom = map.zoom + newZoomDelta;
         if (json.length == 3) {
           // With focus
-          map.panTo(GoogleMap.LatLng(json[2][0], json[2][1]));
+          map.panTo(gmaps.LatLng(json[2][0], json[2][1]));
         }
         break;
       case 'zoomIn':
@@ -182,7 +182,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }) {
     GoogleMapController googleMapController = _mapById[mapId];
     if(googleMapController != null) {
-      GoogleMap.LatLngBounds latLngBounds = googleMapController.googleMap
+      gmaps.LatLngBounds latLngBounds = googleMapController.googleMap
           .bounds;
       if(latLngBounds != null) {
         return Future.value(_gmLatLngBoundsTolatLngBounds(latLngBounds));
@@ -202,7 +202,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       }) {
     GoogleMapController googleMapController = _mapById[mapId];
     if (googleMapController != null) {
-      GoogleMap.Point point = googleMapController.googleMap.projection
+      gmaps.Point point = googleMapController.googleMap.projection
           .fromLatLngToPoint(_latlngToGmLatlng(latLng));
       return Future.value(ScreenCoordinate(x: point.x, y: point.y));
     }
@@ -218,8 +218,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       }) {
     GoogleMapController googleMapController = _mapById[mapId];
     if(googleMapController != null) {
-      GoogleMap.LatLng latLng = googleMapController.googleMap.projection.fromPointToLatLng(
-        GoogleMap.Point(screenCoordinate.x, screenCoordinate.y)
+      gmaps.LatLng latLng = googleMapController.googleMap.projection.fromPointToLatLng(
+        gmaps.Point(screenCoordinate.x, screenCoordinate.y)
       );
       return Future.value(_gmLatlngToLatlng(latLng));
     }
@@ -273,7 +273,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     /**takeSnapshot
      *  if (googleMap != null) {
         final MethodChannel.Result _result = result;
-        googleMap.snapshot(
+        gmaps.snapshot(
         new SnapshotReadyCallback() {
         @Override
         public void onSnapshotReady(Bitmap bitmap) {
@@ -370,7 +370,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
     creationParams.remove('creationMapId');
 
-    GoogleMap.MapOptions options = GoogleMap.MapOptions();
+    gmaps.MapOptions options = gmaps.MapOptions();
     CameraPosition position;
 
     CircleUpdates     initialCircles    = null;
@@ -392,7 +392,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       } else if(key == 'initialCameraPosition') {
         position = CameraPosition.fromMap(value);
         options.zoom = position.zoom;
-        options.center = GoogleMap.LatLng(
+        options.center = gmaps.LatLng(
             position.target.latitude,
             position.target.longitude
         );

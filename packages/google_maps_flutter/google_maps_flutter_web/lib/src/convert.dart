@@ -1,10 +1,10 @@
 part of google_maps_flutter_web;
 
-void _optionsFromParams(GoogleMap.MapOptions options,
+void _optionsFromParams(gmaps.MapOptions options,
     Map<String, dynamic> optionsUpdate) {
   if(optionsUpdate['mapType'] != null) {
     options
-      ..mapTypeId = GoogleMap.MapTypeId.values[optionsUpdate['mapType']]
+      ..mapTypeId = gmaps.MapTypeId.values[optionsUpdate['mapType']]
     ;}
   options
     ..minZoom   = optionsUpdate['minMaxZoomPreference'][0]
@@ -66,16 +66,16 @@ void _optionsFromParams(GoogleMap.MapOptions options,
 //zoomControlOptions(ZoomControlOptions _zoomControlOptions)
 }
 
-List<GoogleMap.MapTypeStyle> _mapStyles(String mapStyle) {
-  List<GoogleMap.MapTypeStyle> styles = [];
+List<gmaps.MapTypeStyle> _mapStyles(String mapStyle) {
+  List<gmaps.MapTypeStyle> styles = [];
   if(mapStyle != null) {
     List list = json.decode(mapStyle);
     list.forEach((style) {
       List list2 = style['stylers'];
-      List<GoogleMap.MapTypeStyler> stylers = [];
+      List<gmaps.MapTypeStyler> stylers = [];
       list2.forEach((style) {
         stylers.add(
-            GoogleMap.MapTypeStyler()
+            gmaps.MapTypeStyler()
               ..color = style['color']
               ..gamma = style['gamma']
               ..hue = style['hue']
@@ -87,133 +87,133 @@ List<GoogleMap.MapTypeStyle> _mapStyles(String mapStyle) {
         );
       });
 
-      GoogleMap.MapTypeStyleElementType elementType;
+      gmaps.MapTypeStyleElementType elementType;
       if (style['elementType'] == 'geometry') {
-        elementType = GoogleMap.MapTypeStyleElementType.GEOMETRY;
+        elementType = gmaps.MapTypeStyleElementType.GEOMETRY;
       } else if (style['elementType'] == 'geometry.fill') {
-        elementType = GoogleMap.MapTypeStyleElementType.GEOMETRY_FILL;
+        elementType = gmaps.MapTypeStyleElementType.GEOMETRY_FILL;
       } else if (style['elementType'] == 'geometry.stroke') {
-        elementType = GoogleMap.MapTypeStyleElementType.GEOMETRY_STROKE;
+        elementType = gmaps.MapTypeStyleElementType.GEOMETRY_STROKE;
       } else if (style['elementType'] == 'labels') {
-        elementType = GoogleMap.MapTypeStyleElementType.LABELS;
+        elementType = gmaps.MapTypeStyleElementType.LABELS;
       } else if (style['elementType'] == 'labels.icon') {
-        elementType = GoogleMap.MapTypeStyleElementType.LABELS_ICON;
+        elementType = gmaps.MapTypeStyleElementType.LABELS_ICON;
       } else if (style['elementType'] == 'labels.text') {
-        elementType = GoogleMap.MapTypeStyleElementType.LABELS_TEXT;
+        elementType = gmaps.MapTypeStyleElementType.LABELS_TEXT;
       } else if (style['elementType'] == 'labels.text.fill') {
-        elementType = GoogleMap.MapTypeStyleElementType.LABELS_TEXT_FILL;
+        elementType = gmaps.MapTypeStyleElementType.LABELS_TEXT_FILL;
       } else if (style['elementType'] == 'labels.text.stroke') {
-        elementType = GoogleMap.MapTypeStyleElementType.LABELS_TEXT_STROKE;
+        elementType = gmaps.MapTypeStyleElementType.LABELS_TEXT_STROKE;
       }
 
-      GoogleMap.MapTypeStyleFeatureType featureType;
+      gmaps.MapTypeStyleFeatureType featureType;
       if (style[featureType] == 'administrative') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE;
+        featureType = gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE;
       }
       else if (style[featureType] == 'administrative.country') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE_COUNTRY;
+        featureType = gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_COUNTRY;
       }
       else if (style[featureType] == 'administrative.land_parcel') {
         featureType =
-            GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE_LAND_PARCEL;
+            gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LAND_PARCEL;
       }
       else if (style[featureType] == 'administrative.locality') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE_LOCALITY;
+        featureType = gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LOCALITY;
       }
       else if (style[featureType] == 'administrative.neighborhood') {
         featureType =
-            GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE_NEIGHBORHOOD;
+            gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_NEIGHBORHOOD;
       }
       else if (style[featureType] == 'administrative.province') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.ADMINISTRATIVE_PROVINCE;
+        featureType = gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_PROVINCE;
       }
       else if (style[featureType] == 'all') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.ALL;
+        featureType = gmaps.MapTypeStyleFeatureType.ALL;
       }
       else if (style[featureType] == 'landscape') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.LANDSCAPE;
+        featureType = gmaps.MapTypeStyleFeatureType.LANDSCAPE;
       }
       else if (style[featureType] == 'landscape.man_made') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.LANDSCAPE_MAN_MADE;
+        featureType = gmaps.MapTypeStyleFeatureType.LANDSCAPE_MAN_MADE;
       }
       else if (style[featureType] == 'landscape.natural') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.LANDSCAPE_NATURAL;
+        featureType = gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL;
       }
       else if (style[featureType] == 'landscape.natural.landcover') {
         featureType =
-            GoogleMap.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_LANDCOVER;
+            gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_LANDCOVER;
       }
       else if (style[featureType] == 'landscape.natural.terrain') {
         featureType =
-            GoogleMap.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_TERRAIN;
+            gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_TERRAIN;
       }
       else if (style[featureType] == 'poi') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.POI;
+        featureType = gmaps.MapTypeStyleFeatureType.POI;
       }
       else if (style[featureType] == 'poi.attraction') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.POI_ATTRACTION;
+        featureType = gmaps.MapTypeStyleFeatureType.POI_ATTRACTION;
       }
       else if (style[featureType] == 'poi.business') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.POI_BUSINESS;
+        featureType = gmaps.MapTypeStyleFeatureType.POI_BUSINESS;
       }
       else if (style[featureType] == 'poi.government') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.POI_GOVERNMENT;
+        featureType = gmaps.MapTypeStyleFeatureType.POI_GOVERNMENT;
       }
       else if (style[featureType] == 'poi.medical') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.POI_MEDICAL;
+        featureType = gmaps.MapTypeStyleFeatureType.POI_MEDICAL;
       }
       else if (style[featureType] == 'poi.park') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.POI_PARK;
+        featureType = gmaps.MapTypeStyleFeatureType.POI_PARK;
       }
       else if (style[featureType] == 'poi.place_of_worship') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.POI_PLACE_OF_WORSHIP;
+        featureType = gmaps.MapTypeStyleFeatureType.POI_PLACE_OF_WORSHIP;
       }
       else if (style[featureType] == 'poi.school') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.POI_SCHOOL;
+        featureType = gmaps.MapTypeStyleFeatureType.POI_SCHOOL;
       }
       else if (style[featureType] == 'poi.sports_complex') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.POI_SPORTS_COMPLEX;
+        featureType = gmaps.MapTypeStyleFeatureType.POI_SPORTS_COMPLEX;
       }
       else if (style[featureType] == 'road') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.ROAD;
+        featureType = gmaps.MapTypeStyleFeatureType.ROAD;
       }
       else if (style[featureType] == 'road.arterial') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.ROAD_ARTERIAL;
+        featureType = gmaps.MapTypeStyleFeatureType.ROAD_ARTERIAL;
       }
       else if (style[featureType] == 'road.highway') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.ROAD_HIGHWAY;
+        featureType = gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY;
       }
       else if (style[featureType] == 'road.highway.controlled_access') {
         featureType =
-            GoogleMap.MapTypeStyleFeatureType.ROAD_HIGHWAY_CONTROLLED_ACCESS;
+            gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY_CONTROLLED_ACCESS;
       }
       else if (style[featureType] == 'road.local') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.ROAD_LOCAL;
+        featureType = gmaps.MapTypeStyleFeatureType.ROAD_LOCAL;
       }
       else if (style[featureType] == 'transit') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT;
+        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT;
       }
       else if (style[featureType] == 'transit.line') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT_LINE;
+        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT_LINE;
       }
       else if (style[featureType] == 'transit.station') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT_STATION;
+        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT_STATION;
       }
       else if (style[featureType] == 'transit.station.airport') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT_STATION_AIRPORT;
+        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_AIRPORT;
       }
       else if (style[featureType] == 'transit.station.bus') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT_STATION_BUS;
+        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_BUS;
       }
       else if (style[featureType] == 'transit.station.rail') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.TRANSIT_STATION_RAIL;
+        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_RAIL;
       }
       else if (style[featureType] == 'water') {
-        featureType = GoogleMap.MapTypeStyleFeatureType.WATER;
+        featureType = gmaps.MapTypeStyleFeatureType.WATER;
       }
 
       styles.add(
-          GoogleMap.MapTypeStyle()
+          gmaps.MapTypeStyle()
             ..elementType = elementType
             ..featureType = featureType
             ..stylers = stylers
@@ -256,14 +256,14 @@ PolylineUpdates _polylineFromParams(value) {
   return null;
 }
 
-GoogleMap.PolylineOptions _polylineOptionsFromPolyline(GoogleMap.GMap googleMap,
+gmaps.PolylineOptions _polylineOptionsFromPolyline(gmaps.GMap googleMap,
     Polyline polyline) {
-  List<GoogleMap.LatLng> paths = [];
+  List<gmaps.LatLng> paths = [];
   polyline.points.forEach((point) {
     paths.add(_latlngToGmLatlng(point));
   });
 
-  return GoogleMap.PolylineOptions()
+  return gmaps.PolylineOptions()
     ..path = paths
     ..strokeOpacity = 1.0
     ..strokeWeight = polyline.width
@@ -310,13 +310,13 @@ PolygonUpdates _polygonFromParams(value) {
   return null;
 }
 
-GoogleMap.PolygonOptions _polygonOptionsFromPolygon(GoogleMap.GMap googleMap,
+gmaps.PolygonOptions _polygonOptionsFromPolygon(gmaps.GMap googleMap,
     Polygon polygon) {
-  List<GoogleMap.LatLng> paths = [];
+  List<gmaps.LatLng> paths = [];
   polygon.points.forEach((point) {
     paths.add(_latlngToGmLatlng(point));
   });
-  return GoogleMap.PolygonOptions()
+  return gmaps.PolygonOptions()
     ..paths = paths
     ..strokeColor = '#'+polygon.strokeColor.value.toRadixString(16)
     ..strokeOpacity = 0.8
@@ -329,22 +329,22 @@ GoogleMap.PolygonOptions _polygonOptionsFromPolygon(GoogleMap.GMap googleMap,
   ;
 }
 
-GoogleMap.LatLng _latlngToGmLatlng(LatLng latLng){
-  return GoogleMap.LatLng(latLng.latitude, latLng.longitude);
+gmaps.LatLng _latlngToGmLatlng(LatLng latLng){
+  return gmaps.LatLng(latLng.latitude, latLng.longitude);
 }
 
-LatLng _gmLatlngToLatlng(GoogleMap.LatLng latLng){
+LatLng _gmLatlngToLatlng(gmaps.LatLng latLng){
   return LatLng(latLng.lat, latLng.lng);
 }
 
-LatLngBounds _gmLatLngBoundsTolatLngBounds(GoogleMap.LatLngBounds latLngBounds){
+LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds latLngBounds){
   return LatLngBounds(
     southwest: _gmLatlngToLatlng(latLngBounds.southWest),
     northeast: _gmLatlngToLatlng(latLngBounds.northEast),
   );
 }
 
-CameraPosition _gmViewportToCameraPosition(GoogleMap.GMap map) {
+CameraPosition _gmViewportToCameraPosition(gmaps.GMap map) {
   return CameraPosition(
     target: _gmLatlngToLatlng(map.center),
     bearing: map.heading ?? 0,
@@ -388,28 +388,28 @@ MarkerUpdates _markerFromParams(value) {
   return null;
 }
 
-GoogleMap.InfoWindowOptions _infoWindowOPtionsFromMarker(Marker marker) {
-  return GoogleMap.InfoWindowOptions()
+gmaps.InfoWindowOptions _infoWindowOPtionsFromMarker(Marker marker) {
+  return gmaps.InfoWindowOptions()
     ..content = marker.infoWindow.snippet
     ..zIndex    = marker.zIndex
-    ..position = GoogleMap.LatLng(
+    ..position = gmaps.LatLng(
         marker.position.latitude,
         marker.position.longitude)
   ;
 }
 
-GoogleMap.MarkerOptions _markerOptionsFromMarker(GoogleMap.GMap googleMap,
+gmaps.MarkerOptions _markerOptionsFromMarker(gmaps.GMap googleMap,
     Marker marker) {
 
   final iconConfig = marker.icon.toJson();
-  GoogleMap.Icon icon;
+  gmaps.Icon icon;
 
   if(iconConfig[0] == 'fromAssetImage') {
-    icon = GoogleMap.Icon()
+    icon = gmaps.Icon()
       ..url = iconConfig[1];
   }
-  return GoogleMap.MarkerOptions()
-    ..position  = GoogleMap.LatLng(marker.position.latitude,
+  return gmaps.MarkerOptions()
+    ..position  = gmaps.LatLng(marker.position.latitude,
         marker.position.longitude,)
     ..title     = marker.infoWindow.title
     ..zIndex    = marker.zIndex
@@ -417,20 +417,20 @@ GoogleMap.MarkerOptions _markerOptionsFromMarker(GoogleMap.GMap googleMap,
     ..opacity   = marker.alpha
     ..draggable = marker.draggable
     ..icon      = icon
-    ..anchorPoint = GoogleMap.Point(marker.anchor.dx, marker.anchor.dy,);
+    ..anchorPoint = gmaps.Point(marker.anchor.dx, marker.anchor.dy,);
     // Flat and Rotation are not supported directly on the web.
 }
 
 
 
-GoogleMap.CircleOptions _circleOptionsFromCircle(Circle circle) {
-  final populationOptions = GoogleMap.CircleOptions()
+gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
+  final populationOptions = gmaps.CircleOptions()
     ..strokeColor = '#'+circle.strokeColor.value.toRadixString(16)
     ..strokeOpacity = 0.8
     ..strokeWeight = circle.strokeWidth
     ..fillColor = '#'+circle.fillColor.value.toRadixString(16)
     ..fillOpacity = 0.6
-    ..center = GoogleMap.LatLng(circle.center.latitude,circle.center.longitude)
+    ..center = gmaps.LatLng(circle.center.latitude,circle.center.longitude)
     ..radius = circle.radius
     ..visible = circle.visible
   ;

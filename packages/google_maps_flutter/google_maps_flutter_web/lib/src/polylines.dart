@@ -21,7 +21,7 @@ class PolylinesController extends AbstractController {
   void _addPolyline(Polyline polyline){
     if(polyline == null) return;
     final populationOptions =  _polylineOptionsFromPolyline(googleMap, polyline);
-    GoogleMap.Polyline  gmPolyline = GoogleMap.Polyline(populationOptions);
+    gmaps.Polyline  gmPolyline = gmaps.Polyline(populationOptions);
     gmPolyline.map = googleMap;
     PolylineController controller = PolylineController(
         polyline: gmPolyline,

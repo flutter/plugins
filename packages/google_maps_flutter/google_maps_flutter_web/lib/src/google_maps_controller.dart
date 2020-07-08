@@ -7,11 +7,11 @@ class GoogleMapController {
   ///TODO
   HtmlElementView html;
   ///TODO
-  GoogleMap.GMap googleMap;
+  gmaps.GMap googleMap;
   ///TODO
   DivElement div;
   ///TODO
-  final GoogleMap.MapOptions        options;
+  final gmaps.MapOptions        options;
   final StreamController<MapEvent>  streamController;
   CameraPosition                    position;
   CirclesController                 circlesController;
@@ -56,12 +56,12 @@ class GoogleMapController {
       'plugins.flutter.io/google_maps_$mapId',
           (int viewId) => div,
     );
-    googleMap = GoogleMap.GMap(div, options);
+    googleMap = gmaps.GMap(div, options);
     onMapReady(googleMap);
     _attachMapEvents(googleMap);
   }
 
-  void _attachMapEvents(GoogleMap.GMap map) {
+  void _attachMapEvents(gmaps.GMap map) {
     map.onClick.listen((event) {
       streamController.add(
           MapTapEvent(mapId, _gmLatlngToLatlng(event.latLng)),);
@@ -83,7 +83,7 @@ class GoogleMapController {
     });
   }
 
-  void onMapReady(GoogleMap.GMap googleMap) {
+  void onMapReady(gmaps.GMap googleMap) {
     this.googleMap = googleMap;
     // Bind map instance to the other geometry controllers.
     circlesController.bindToMap(mapId, googleMap);
@@ -146,9 +146,9 @@ class GoogleMapController {
 }
 
 abstract class AbstractController {
-  GoogleMap.GMap googleMap;
+  gmaps.GMap googleMap;
   int mapId;
-  void bindToMap(int mapId, GoogleMap.GMap googleMap) {
+  void bindToMap(int mapId, gmaps.GMap googleMap) {
     this.mapId = mapId;
     this.googleMap = googleMap;
   }

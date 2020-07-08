@@ -21,16 +21,16 @@ class MarkersController extends AbstractController {
   void _addMarker(Marker marker){
     if(marker == null) return;
     final infoWindoOptions = _infoWindowOPtionsFromMarker(marker);
-    GoogleMap.InfoWindow gmInfoWindow = GoogleMap.InfoWindow(infoWindoOptions);
+    gmaps.InfoWindow gmInfoWindow = gmaps.InfoWindow(infoWindoOptions);
     final populationOptions =  _markerOptionsFromMarker(googleMap, marker);
-    GoogleMap.Marker  gmMarker = GoogleMap.Marker(populationOptions);
+    gmaps.Marker  gmMarker = gmaps.Marker(populationOptions);
     gmMarker.map = googleMap;
     MarkerController controller = MarkerController(
         marker: gmMarker,
         infoWindow : gmInfoWindow,
         consumeTapEvents:marker.consumeTapEvents,
         onTap:(){ _onMarkerTap(marker.markerId);},
-        onDragEnd : (GoogleMap.LatLng latLng){
+        onDragEnd : (gmaps.LatLng latLng){
           _onMarkerDragEnd(marker.markerId, latLng);},
         onInfoWindowTap : (){ _onInfoWindowTap(marker.markerId);}
           );
@@ -101,11 +101,11 @@ class MarkersController extends AbstractController {
     _streamController.add(InfoWindowTapEvent(mapId, markerId));
   }
 
-  void _onMarkerDragEnd(MarkerId markerId, GoogleMap.LatLng latLng) {
+  void _onMarkerDragEnd(MarkerId markerId, gmaps.LatLng latLng) {
     _streamController.add(MarkerDragEndEvent(mapId,
         _gmLatlngToLatlng(latLng), markerId,));
   }
 
 }
 
-typedef LatLngCallback = void Function(GoogleMap.LatLng latLng);
+typedef LatLngCallback = void Function(gmaps.LatLng latLng);
