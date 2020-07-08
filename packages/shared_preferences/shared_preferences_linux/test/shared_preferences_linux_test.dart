@@ -4,19 +4,24 @@
 import 'package:file/memory.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
+import 'package:xdg_directories/xdg_directories.dart' as xdg;
 
-MemoryFileSystem fs = MemoryFileSystem.test();
+MemoryFileSystem fs;
 
 void main() {
-  setUp(() {});
+  setUp(() {
+    fs = MemoryFileSystem.test();
+    // Mock out /proc/self/exe for shared prefs to read.
+    final exePath = '/path/to/test';
+    fs.link('/proc/self/exe').createSync(exePath, recursive: true);
+    fs.file(exePath).createSync(recursive: true);
+  });
 
   tearDown(() {});
 
   Future<String> _getFilePath() async {
-    var directory = await getApplicationSupportDirectory();
-    return path.join(directory.path, 'shared_preferences.json');
+    return path.join(xdg.dataHome.path, 'test', 'shared_preferences.json');
   }
 
   _writeTestFile(String value) async {
