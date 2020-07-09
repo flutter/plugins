@@ -83,13 +83,28 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
                 && !TextUtils.isEmpty((String) call.argument("componentName")))
             ? new ComponentName(packageName, (String) call.argument("componentName"))
             : null;
+    String type = call.argument("type");
 
-    sender.send(action, flags, category, data, arguments, packageName, componentName);
+    Intent intent =
+        sender.buildIntent(
+            action, flags, category, data, arguments, packageName, componentName, type);
 
-    result.success(null);
+    if ("launch".equalsIgnoreCase(call.method)) {
+      sender.send(intent);
+
+      result.success(null);
+    } else if ("canResolveActivity".equalsIgnoreCase(call.method)) {
+      result.success(sender.canResolveActivity(intent));
+    } else {
+      result.notImplemented();
+    }
   }
 
   private static String convertAction(String action) {
+    if (action == null) {
+      return null;
+    }
+
     switch (action) {
       case "action_view":
         return Intent.ACTION_VIEW;
