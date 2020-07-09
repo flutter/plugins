@@ -97,7 +97,7 @@ class VideoPlayerValue {
   /// Returns [size.width] / [size.height] when size is non-null, or `1.0.` when
   /// size is null or the aspect ratio would be less than or equal to 0.0.
   double get aspectRatio {
-    if (size == null) {
+    if (size == null || size.width == 0 || size.height == 0) {
       return 1.0;
     }
     final double aspectRatio = size.width / size.height;

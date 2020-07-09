@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Plugin example app'),
+        title: const Text('Connectivity example app'),
       ),
       body: Center(child: Text('Connection Status: $_connectionStatus')),
     );
@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         String wifiName, wifiBSSID, wifiIP;
 
         try {
-          if (Platform.isIOS) {
+          if (!kIsWeb && Platform.isIOS) {
             LocationAuthorizationStatus status =
                 await _connectivity.getLocationServiceAuthorization();
             if (status == LocationAuthorizationStatus.notDetermined) {
@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         try {
-          if (Platform.isIOS) {
+          if (!kIsWeb && Platform.isIOS) {
             LocationAuthorizationStatus status =
                 await _connectivity.getLocationServiceAuthorization();
             if (status == LocationAuthorizationStatus.notDetermined) {
