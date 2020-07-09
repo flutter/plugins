@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:e2e/common.dart' as e2e;
 import 'package:flutter_driver/flutter_driver.dart';
 
-Future<void> main() async => e2eDriver();
+Future<void> main() => e2eDriver();
 
 /// Adaptor to run E2E test using `flutter drive`.
 ///
