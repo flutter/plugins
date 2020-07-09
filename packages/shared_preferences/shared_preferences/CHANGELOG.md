@@ -1,6 +1,10 @@
-## 0.5.8
+## 0.5.9
 
 * Added handling for a custom `suiteName` in iOS.
+
+## 0.5.8
+
+* Support Linux by default.
 
 ## 0.5.7+3
 
