@@ -2,29 +2,10 @@
 library network_information_types;
 
 import "package:js/js.dart";
-import "dart:html" show EventListener, EventTarget;
+import "dart:html" show EventListener;
 
 /// W3C Spec Draft http://wicg.github.io/netinfo/
 /// Edition: Draft Community Group Report 20 February 2019
-
-/// http://wicg.github.io/netinfo/#navigatornetworkinformation-interface
-@anonymous
-@JS()
-abstract class Navigator implements NavigatorNetworkInformation {}
-
-@anonymous
-@JS()
-abstract class WorkerNavigator implements NavigatorNetworkInformation {
-  external factory WorkerNavigator({NetworkInformation connection});
-}
-
-/// http://wicg.github.io/netinfo/#navigatornetworkinformation-interface
-@anonymous
-@JS()
-abstract class NavigatorNetworkInformation {
-  external NetworkInformation get connection;
-  external factory NavigatorNetworkInformation({NetworkInformation connection});
-}
 
 /// http://wicg.github.io/netinfo/#connection-types
 /*type ConnectionType =
@@ -50,7 +31,7 @@ abstract class NavigatorNetworkInformation {
 /// http://wicg.github.io/netinfo/#networkinformation-interface
 @anonymous
 @JS()
-abstract class NetworkInformation implements EventTarget {
+abstract class NetworkInformation /*implements EventTarget*/ {
   /// http://wicg.github.io/netinfo/#type-attribute
   external String /*'bluetooth'|'cellular'|'ethernet'|'mixed'|'none'|'other'|'unknown'|'wifi'|'wimax'*/ get type;
 
@@ -74,5 +55,6 @@ abstract class NetworkInformation implements EventTarget {
   external set onchange(EventListener v);
 }
 
-@JS()
-external Navigator get navigator;
+@anonymous
+@JS("window.navigator.connection")
+external NetworkInformation get connection;

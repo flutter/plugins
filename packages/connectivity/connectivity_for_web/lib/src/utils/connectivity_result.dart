@@ -1,26 +1,35 @@
+import 'dart:js_util';
+import 'package:connectivity_for_web/src/generated/network_information_types.dart';
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 
 /// Converts an incoming NetworkInformation object into the correct ConnectivityResult.
-//
-// We can't be more specific on the signature of this method because the API is odd,
-// data can come from a static value in the DOM, or as the 'target' of a DOM Event.
-//
-// If we type info as `NetworkInformation`, Dart will complain with:
-// "Uncaught Error: Expected a value of type 'NetworkInformation',
-// but got one of type 'NetworkInformation'"
 ConnectivityResult networkInformationToConnectivityResult(
-    dynamic /* NetworkInformation */ info) {
+  NetworkInformation info,
+) {
   if (info == null) {
     return ConnectivityResult.none;
   }
-  if (info.downlink == 0 && info.rtt == 0) {
+
+  // TODO: Remove this before pushing
+  try {
+    num dl = info.downlink;
+    print(dl);
+  } catch (e) {
+    print(e);
+  }
+
+  num downlink = getProperty(info, 'downlink');
+  num rtt = getProperty(info, 'rtt');
+  if (downlink == 0 && rtt == 0) {
     return ConnectivityResult.none;
   }
-  if (info.type != null) {
-    return _typeToConnectivityResult(info.type);
+  String effectiveType = getProperty(info, 'effectiveType');
+  if (effectiveType != null) {
+    return _effectiveTypeToConnectivityResult(effectiveType);
   }
-  if (info.effectiveType != null) {
-    return _effectiveTypeToConnectivityResult(info.effectiveType);
+  String type = getProperty(info, 'type');
+  if (type != null) {
+    return _typeToConnectivityResult(type);
   }
   return ConnectivityResult.none;
 }

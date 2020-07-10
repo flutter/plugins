@@ -4,6 +4,7 @@ import 'package:connectivity_platform_interface/connectivity_platform_interface.
 import 'package:connectivity_for_web/connectivity_for_web.dart';
 import 'package:flutter/foundation.dart';
 import 'package:js/js.dart';
+import 'package:js/js_util.dart';
 
 import 'generated/network_information_types.dart' as dom;
 import 'utils/connectivity_result.dart';
@@ -13,11 +14,11 @@ class NetworkInformationApiConnectivityPlugin extends ConnectivityPlugin {
   final dom.NetworkInformation _networkInformation;
 
   /// A check to determine if this version of the plugin can be used.
-  static bool isSupported() => dom.navigator?.connection != null;
+  static bool isSupported() => dom.connection != null;
 
   /// The constructor of the plugin.
   NetworkInformationApiConnectivityPlugin()
-      : this.withConnection(dom.navigator?.connection);
+      : this.withConnection(dom.connection);
 
   /// Creates the plugin, with an override of the NetworkInformation object.
   @visibleForTesting
@@ -38,10 +39,14 @@ class NetworkInformationApiConnectivityPlugin extends ConnectivityPlugin {
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_connectivityResult == null) {
       _connectivityResult = StreamController<ConnectivityResult>();
-      _networkInformation.onchange = allowInterop((_) {
-        _connectivityResult
-            .add(networkInformationToConnectivityResult(_networkInformation));
-      });
+      setProperty(
+        _networkInformation,
+        'onchange',
+        allowInterop((_) {
+          _connectivityResult
+              .add(networkInformationToConnectivityResult(_networkInformation));
+        }),
+      );
     }
     return _connectivityResult.stream;
   }
