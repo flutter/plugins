@@ -1,3 +1,7 @@
+## 0.5.8+1
+
+* Document the prefix necessary for testing.
+
 ## 0.5.8
 
 * Support Linux by default.
