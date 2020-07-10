@@ -63,5 +63,11 @@ SharedPreferences prefs2 = await SharedPreferences.getInstance(prefix: 'somethin
 You can populate `SharedPreferences` with initial values in your tests by running this code:
 
 ``` dart
+const Map<String, dynamic> values = <String, dynamic>{
+      'flutter.someKey': 'hello world',
+    };
 SharedPreferences.setMockInitialValues (Map<String, dynamic> values);
+expect(preferences.getString('someKey'), 'hello world');
 ```
+
+Note that this library adds a default prefix `flutter.` to all keys.
