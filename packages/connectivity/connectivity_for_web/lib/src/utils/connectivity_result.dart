@@ -1,35 +1,21 @@
-import 'dart:js_util';
-import 'package:connectivity_for_web/src/generated/network_information_types.dart';
+import 'dart:html' as html show NetworkInformation;
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 
 /// Converts an incoming NetworkInformation object into the correct ConnectivityResult.
 ConnectivityResult networkInformationToConnectivityResult(
-  NetworkInformation info,
+  html.NetworkInformation info,
 ) {
   if (info == null) {
     return ConnectivityResult.none;
   }
-
-  // TODO: Remove this before pushing
-  try {
-    num dl = info.downlink;
-    print(dl);
-  } catch (e) {
-    print(e);
-  }
-
-  num downlink = getProperty(info, 'downlink');
-  num rtt = getProperty(info, 'rtt');
-  if (downlink == 0 && rtt == 0) {
+  if (info.downlink == 0 && info.rtt == 0) {
     return ConnectivityResult.none;
   }
-  String effectiveType = getProperty(info, 'effectiveType');
-  if (effectiveType != null) {
-    return _effectiveTypeToConnectivityResult(effectiveType);
+  if (info.effectiveType != null) {
+    return _effectiveTypeToConnectivityResult(info.effectiveType);
   }
-  String type = getProperty(info, 'type');
-  if (type != null) {
-    return _typeToConnectivityResult(type);
+  if (info.type != null) {
+    return _typeToConnectivityResult(info.type);
   }
   return ConnectivityResult.none;
 }
