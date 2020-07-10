@@ -1,3 +1,8 @@
+## 0.3.4+1
+
+* iOS: Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
+* iOS: Fix the app crashes  if `InAppPurchaseConnection.instance` is called in the `main()`.
+
 ## 0.3.4
 
 * Expose SKError code to client apps.

@@ -5,6 +5,7 @@
 package dev.flutter.plugins.e2e;
 
 import android.content.Context;
+import com.google.common.util.concurrent.SettableFuture;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -13,13 +14,15 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.Map;
-import java9.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /** E2EPlugin */
 public class E2EPlugin implements MethodCallHandler, FlutterPlugin {
   private MethodChannel methodChannel;
 
-  public static CompletableFuture<Map<String, String>> testResults = new CompletableFuture<>();
+  private static final SettableFuture<Map<String, String>> testResultsSettable =
+      SettableFuture.create();
+  public static final Future<Map<String, String>> testResults = testResultsSettable;
 
   private static final String CHANNEL = "plugins.flutter.io/e2e";
 
@@ -49,7 +52,7 @@ public class E2EPlugin implements MethodCallHandler, FlutterPlugin {
   public void onMethodCall(MethodCall call, Result result) {
     if (call.method.equals("allTestsFinished")) {
       Map<String, String> results = call.argument("results");
-      testResults.complete(results);
+      testResultsSettable.set(results);
       result.success(null);
     } else {
       result.notImplemented();
