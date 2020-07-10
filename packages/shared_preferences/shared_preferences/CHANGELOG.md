@@ -1,6 +1,10 @@
-## 0.5.8
+## 0.5.9
 
 * Add `prefix` named argument to `getInstance` method.
+
+## 0.5.8
+
+* Support Linux by default.
 
 ## 0.5.7+3
 

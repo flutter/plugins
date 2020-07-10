@@ -1,3 +1,17 @@
+## 0.6.7+4
+
+* Support iOS simulator x86_64 architecture.
+
+## 0.6.7+3
+
+* Fixes to the example app:
+  * Make videos in web start muted. This allows auto-play across browsers.
+  * Prevent the app from disposing of video controllers too early.
+
+## 0.6.7+2
+
+* iOS: Fixes unpresentable album/image picker if window's root view controller is already presenting other view controller.
+
 ## 0.6.7+1
 
 * Add web support to the example app.

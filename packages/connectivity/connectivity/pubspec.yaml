@@ -5,7 +5,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity/c
 # 0.4.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.4.8+6
+version: 0.4.9
 
 flutter:
   plugin:
@@ -17,13 +17,16 @@ flutter:
         pluginClass: FLTConnectivityPlugin
       macos:
         default_package: connectivity_macos
+      web:
+        default_package: connectivity_for_web
 
 dependencies:
   flutter:
     sdk: flutter
-  meta: "^1.0.5"
+  meta: ^1.0.5
   connectivity_platform_interface: ^1.0.2
   connectivity_macos: ^0.1.0
+  connectivity_for_web: ^0.3.0
 
 dev_dependencies:
   flutter_test:
