@@ -212,6 +212,9 @@ class SharedPreferences {
 
   /// Initializes the shared preferences with mock values for testing.
   ///
+  /// Note that this library adds a default prefix `flutter.` to all keys
+  /// make sure to add the key to your mock data like 'flutter.someKey'.
+  ///
   /// If the singleton instance has been initialized already, it is nullified.
   @visibleForTesting
   static void setMockInitialValues(Map<String, dynamic> values) {
