@@ -89,7 +89,7 @@ public class Camera {
     this.enableAudio = enableAudio;
     if (imageFormat != 256 || imageFormat != 35) {
       this.imageFormat = 35;
-    }else{
+    } else {
       this.imageFormat = imageFormat;
     }
     this.flutterTexture = flutterTexture;
@@ -121,7 +121,6 @@ public class Camera {
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     previewSize = computeBestPreviewSize(cameraName, preset);
-
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
@@ -154,11 +153,9 @@ public class Camera {
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
 
     // Used to steam image byte data to dart side.
-      imageStreamReader =
-              ImageReader.newInstance(
-                      previewSize.getWidth(), previewSize.getHeight(), this.imageFormat, 2);
-
-
+    imageStreamReader =
+        ImageReader.newInstance(
+            previewSize.getWidth(), previewSize.getHeight(), this.imageFormat, 2);
 
     cameraManager.openCamera(
         cameraName,
