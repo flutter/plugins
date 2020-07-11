@@ -46,5 +46,4 @@ android {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
-//    implementation files('C:\\src\\flutter\\bin\\cache\\artifacts\\engine\\android-x64\\flutter.jar')
 }

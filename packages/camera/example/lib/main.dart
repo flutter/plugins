@@ -6,16 +6,11 @@
 
 import 'dart:async';
 import 'dart:io';
-implimport 'dart:typed_data';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
-
-import 'package:image/image.dart' as imglib;
 
 class CameraExampleHome extends StatefulWidget {
   @override
@@ -48,7 +43,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
-  CameraImage _cameraImage;
 
   @override
   void initState() {
@@ -124,20 +118,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     );
   }
 
-  Uint8List concatenatePlanes(List<Plane> planes) {
-    WriteBuffer allBytes = WriteBuffer();
-
-    planes.forEach((Plane plane) => allBytes.putUint8List(plane.bytes));
-
-    return allBytes.done().buffer.asUint8List();
-  }
-
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
-    if (_cameraImage != null) print(_cameraImage.format.raw);
-    if (controller == null ||
-        !controller.value.isInitialized ||
-        _cameraImage == null) {
+    if (controller == null || !controller.value.isInitialized) {
       return const Text(
         'Tap a camera',
         style: TextStyle(
@@ -147,15 +130,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         ),
       );
     } else {
-      return Image.memory(
-        imglib.encodeJpg(imglib.copyRotate(
-            imglib.decodeJpg(_cameraImage.planes[0].bytes), 90)),
-        gaplessPlayback: true,
+      return AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: CameraPreview(controller),
       );
-      // return AspectRatio(
-      //   aspectRatio: controller.value.aspectRatio,
-      //   child: CameraPreview(controller),
-      // );
     }
   }
 
@@ -301,8 +279,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (controller != null) {
       await controller.dispose();
     }
-    controller = CameraController(cameraDescription, ResolutionPreset.medium,
-        enableAudio: enableAudio, androidFormatCode: 256);
+    controller = CameraController(
+      cameraDescription,
+      ResolutionPreset.medium,
+      enableAudio: enableAudio,
+    );
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
@@ -314,8 +295,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.initialize();
-      await controller
-          .startImageStream((image) => setState(() => _cameraImage = image));
     } on CameraException catch (e) {
       _showCameraException(e);
     }
