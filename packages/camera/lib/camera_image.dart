@@ -61,7 +61,15 @@ enum ImageFormatGroup {
   ///
   /// On iOS, this is `kCVPixelFormatType_32BGRA`. See
   /// https://developer.apple.com/documentation/corevideo/1563591-pixel_format_identifiers/kcvpixelformattype_32bgra?language=objc
+  ///
   bgra8888,
+
+  /// 32-big RGB image encoded into JPEG bytes.
+  ///
+  /// On Android, this is `android.graphics.ImageFormat.JPEG`. See
+  /// https://developer.android.com/reference/android/graphics/ImageFormat#FLEX_RGBA_8888
+  ///
+  jpeg
 }
 
 /// Describes how pixels are represented in an image.
@@ -84,8 +92,10 @@ class ImageFormat {
 ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
   if (defaultTargetPlatform == TargetPlatform.android) {
     // android.graphics.ImageFormat.YUV_420_888
-    if (rawFormat == 35) {
-      return ImageFormatGroup.yuv420;
+    if (rawFormat == 256) {
+      return ImageFormatGroup.jpeg;
+    } else if (rawFormat == 42) {
+      return ImageFormatGroup.bgra8888;
     }
   }
 

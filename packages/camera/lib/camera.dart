@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -245,6 +246,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
+    this.androidFormatCode = 35,
   }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
@@ -252,6 +254,16 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
+
+  /// Define streaming image format for Android.
+  ///
+  /// Default is `35` which is `YUV_420_888` on Android. See:
+  /// https://developer.android.com/reference/android/graphics/ImageFormat#YUV_420_888
+  ///
+  /// Other option is `256` which is `JPEG`. When you specified the JPEG option,
+  /// [CameraImage] will have only one plane which is encoded JPEG bytes.
+  /// https://developer.android.com/reference/android/graphics/ImageFormat#JPEG
+  final int androidFormatCode;
 
   int _textureId;
   bool _isDisposed = false;
@@ -266,6 +278,10 @@ class CameraController extends ValueNotifier<CameraValue> {
     if (_isDisposed) {
       return Future<void>.value();
     }
+    if (androidFormatCode != 256 && androidFormatCode != 35) {
+      throw CameraException('Unknown Image Format Code.',
+          'CameraController initialized with an unknown Image Format Code.');
+    }
     try {
       _creatingCompleter = Completer<void>();
       final Map<String, dynamic> reply =
@@ -275,6 +291,7 @@ class CameraController extends ValueNotifier<CameraValue> {
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
           'enableAudio': enableAudio,
+          'androidFormatCode': androidFormatCode,
         },
       );
       _textureId = reply['textureId'];

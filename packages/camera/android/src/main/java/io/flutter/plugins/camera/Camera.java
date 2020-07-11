@@ -49,6 +49,7 @@ public class Camera {
   private final Size captureSize;
   private final Size previewSize;
   private final boolean enableAudio;
+  private final int imageFormat;
 
   private CameraDevice cameraDevice;
   private CameraCaptureSession cameraCaptureSession;
@@ -77,7 +78,8 @@ public class Camera {
       final DartMessenger dartMessenger,
       final String cameraName,
       final String resolutionPreset,
-      final boolean enableAudio)
+      final boolean enableAudio,
+      final int imageFormat)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
@@ -85,6 +87,11 @@ public class Camera {
 
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
+    if (imageFormat != 256 || imageFormat != 35) {
+      this.imageFormat = 35;
+    }else{
+      this.imageFormat = imageFormat;
+    }
     this.flutterTexture = flutterTexture;
     this.dartMessenger = dartMessenger;
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
@@ -114,6 +121,7 @@ public class Camera {
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     previewSize = computeBestPreviewSize(cameraName, preset);
+
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
@@ -146,9 +154,11 @@ public class Camera {
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
 
     // Used to steam image byte data to dart side.
-    imageStreamReader =
-        ImageReader.newInstance(
-            previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+      imageStreamReader =
+              ImageReader.newInstance(
+                      previewSize.getWidth(), previewSize.getHeight(), this.imageFormat, 2);
+
+
 
     cameraManager.openCamera(
         cameraName,
