@@ -8,7 +8,7 @@
 
 ## 0.5.8+2
 
-* Post*v2 embedding cleanups.
+* Post-v2 embedding cleanups.
 
 ## 0.5.8+1
 
@@ -81,7 +81,7 @@
 
 ## 0.5.4+2
 
-* Fix Android NullPointerException on devices with only front*facing camera.
+* Fix Android NullPointerException on devices with only front-facing camera.
 
 ## 0.5.4+1
 
@@ -115,7 +115,7 @@
 ## 0.5.1
 
 * Can now be compiled with earlier Android sdks below 21 when
-  `<uses*sdk tools:overrideLibrary="io.flutter.plugins.camera"/>` has been added to the project
+  `<uses-sdk tools:overrideLibrary="io.flutter.plugins.camera"/>` has been added to the project
   `AndroidManifest.xml`. For sdks below 21, the plugin won't be registered and calls to it will throw
   a `MissingPluginException.`
 
