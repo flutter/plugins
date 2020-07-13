@@ -16,7 +16,7 @@
 @property(nullable, copy, nonatomic) UpdatedDownloads updatedDownloads;
 
 @property(strong, nonatomic)
-    NSMutableDictionary<NSString *, SKPaymentTransaction *> *transactionsSetter;
+    NSMutableDictionary<NSString *, NSMutableArray<SKPaymentTransaction *> *> *transactionsSetter;
 
 @end
 
@@ -81,7 +81,11 @@
       //    will become impossible for clients to finish deferred transactions when needed.
       // 2. Using product identifiers can help prevent clients from purchasing the same
       //    subscription more than once by accident.
-      self.transactionsSetter[transaction.payment.productIdentifier] = transaction;
+        if ([self.transactionsSetter objectForKey:transaction.payment.productIdentifier] == nil) {
+            self.transactionsSetter[transaction.payment.productIdentifier] = [NSMutableArray array];
+        }
+
+        [self.transactionsSetter[transaction.payment.productIdentifier] addObject:transaction];
     }
   }
   // notify dart through callbacks.
@@ -92,7 +96,11 @@
 - (void)paymentQueue:(SKPaymentQueue *)queue
     removedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
   for (SKPaymentTransaction *transaction in transactions) {
-    [self.transactionsSetter removeObjectForKey:transaction.payment.productIdentifier];
+    if ([self.transactionsSetter objectForKey:transaction.payment.productIdentifier] == nil) {
+      continue;
+    }
+
+    [self.transactionsSetter[transaction.payment.productIdentifier] removeObject:transaction];
   }
   self.transactionsRemoved(transactions);
 }
@@ -128,7 +136,7 @@
 
 #pragma mark - getter
 
-- (NSDictionary<NSString *, SKPaymentTransaction *> *)transactions {
+- (NSDictionary<NSString *, NSMutableArray<SKPaymentTransaction *> *> *)transactions {
   return [self.transactionsSetter copy];
 }
 
