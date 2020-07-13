@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 import 'package:connectivity_for_web/src/network_information_api_connectivity_plugin.dart';
 
+import 'package:mockito/mockito.dart';
+
 import 'src/connectivity_mocks.dart';
 
 void main() {
@@ -16,11 +18,12 @@ void main() {
       num rtt = 50,
       ConnectivityResult expected,
     }) {
-      MockNetworkInformation connection = MockNetworkInformation(
-          type: type,
-          effectiveType: effectiveType,
-          downlink: downlink,
-          rtt: rtt);
+      final connection = MockNetworkInformation();
+      when(connection.type).thenReturn(type);
+      when(connection.effectiveType).thenReturn(effectiveType);
+      when(connection.downlink).thenReturn(downlink);
+      when(connection.rtt).thenReturn(downlink);
+
       NetworkInformationApiConnectivityPlugin plugin =
           NetworkInformationApiConnectivityPlugin.withConnection(connection);
       expect(plugin.checkConnectivity(), completion(equals(expected)));
@@ -53,16 +56,16 @@ void main() {
 
   group('get onConnectivityChanged', () {
     test('puts change events in a Stream', () async {
-      MockNetworkInformation connection =
-          MockNetworkInformation(effectiveType: '4g', downlink: 10, rtt: 50);
+      final connection = MockNetworkInformation();
       NetworkInformationApiConnectivityPlugin plugin =
           NetworkInformationApiConnectivityPlugin.withConnection(connection);
 
       Stream<ConnectivityResult> results = plugin.onConnectivityChanged;
 
       // Fake a disconnect-reconnect
-      connection.mockChangeValue(downlink: 0, rtt: 0);
-      connection.mockChangeValue(downlink: 10, rtt: 50);
+      await connection.mockChangeValue(downlink: 0, rtt: 0);
+      await connection.mockChangeValue(
+          downlink: 10, rtt: 50, effectiveType: '4g');
 
       // The stream of results is infinite, so we need to .take(2) for this test to complete.
       expect(

@@ -1,6 +1,6 @@
 name: connectivity_for_web
 description: An implementation for the web platform of the Flutter `connectivity` plugin. This uses the NetworkInformation Web API, with a fallback to Navigator.onLine.
-version: 0.3.0
+version: 0.3.1
 homepage: https://github.com/ditman/plugins/tree/connectivity-web/packages/connectivity/experimental_connectivity_web
 
 flutter:
@@ -12,7 +12,6 @@ flutter:
 
 dependencies:
   connectivity_platform_interface: ^1.0.3
-  js: ^0.6.1+1
   flutter_web_plugins:
     sdk: flutter
   flutter:
@@ -25,6 +24,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   e2e: ^0.2.4+3
+  mockito: ^4.1.1
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
