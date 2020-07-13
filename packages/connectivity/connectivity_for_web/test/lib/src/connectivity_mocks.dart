@@ -8,8 +8,7 @@ import 'package:mockito/mockito.dart';
 class MockNetworkInformation extends Mock implements NetworkInformation {
   StreamController<Event> _onChangeController = StreamController<Event>();
 
-  @override
-  Stream<Event> get onChange => _onChangeController.stream;
+  Function onchange;
 
   /// Changes the desired values, and triggers the change event listener.
   void mockChangeValue({
@@ -23,6 +22,6 @@ class MockNetworkInformation extends Mock implements NetworkInformation {
     when(this.downlink).thenAnswer((_) => downlink);
     when(this.rtt).thenAnswer((_) => rtt);
 
-    _onChangeController.add(Event('change'));
+    onchange(Event('change'));
   }
 }
