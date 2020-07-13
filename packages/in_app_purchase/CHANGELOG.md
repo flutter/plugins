@@ -1,3 +1,7 @@
+## 0.3.4+2
+
+* iOS: Fix the bug that prevent restored subscription transactions from being completed
+
 ## 0.3.4+1
 
 * iOS: Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
