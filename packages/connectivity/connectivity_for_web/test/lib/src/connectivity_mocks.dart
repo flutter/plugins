@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:html';
 
 import 'package:mockito/mockito.dart';
@@ -6,8 +5,7 @@ import 'package:mockito/mockito.dart';
 /// A Mock implementation of the NetworkInformation API that allows
 /// for external modification of its values.
 class MockNetworkInformation extends Mock implements NetworkInformation {
-  StreamController<Event> _onChangeController = StreamController<Event>();
-
+  /// The callback that will fire after the network information values change.
   Function onchange;
 
   /// Changes the desired values, and triggers the change event listener.

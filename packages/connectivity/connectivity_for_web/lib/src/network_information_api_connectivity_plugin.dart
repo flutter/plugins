@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:html' as html show window, NetworkInformation, Event;
+import 'dart:html' as html show window, NetworkInformation;
 import 'dart:js';
 import 'dart:js_util';
 
