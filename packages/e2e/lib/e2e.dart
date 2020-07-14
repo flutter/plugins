@@ -78,6 +78,20 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   static Map<String, String> _results = <String, String>{};
 
+  Map<String, dynamic> _reports;
+  /// Add fields to the reported result.
+  ///
+  /// The values in `report` should be json-serializable objects.
+  ///
+  /// For keys in `report` that's previously added, it will over write the
+  /// original values.
+  void addReportResult(Map<String, dynamic> report) {
+    _reports ??= <String, dynamic>{};
+    report.forEach((String key, dynamic value) {
+      _reports[key] = value;
+    });
+  }
+
   // Emulates the Flutter driver extension, returning 'pass' or 'fail'.
   @override
   void initServiceExtensions() {
@@ -90,8 +104,8 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
           final bool allTestsPassed = await _allTestsPassed.future;
           response = <String, String>{
             'message': allTestsPassed
-                ? Response.allTestsPassed().toJson()
-                : Response.someTestsFailed(_failureMethodsDetails).toJson(),
+                ? Response.allTestsPassed(_reports).toJson()
+                : Response.someTestsFailed(_failureMethodsDetails, _reports).toJson(),
           };
           break;
         case 'get_health':
