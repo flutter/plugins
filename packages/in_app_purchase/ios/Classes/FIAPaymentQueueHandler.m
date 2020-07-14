@@ -81,11 +81,11 @@
       //    will become impossible for clients to finish deferred transactions when needed.
       // 2. Using product identifiers can help prevent clients from purchasing the same
       //    subscription more than once by accident.
-        if ([self.transactionsSetter objectForKey:transaction.payment.productIdentifier] == nil) {
-            self.transactionsSetter[transaction.payment.productIdentifier] = [NSMutableArray array];
-        }
+      if ([self.transactionsSetter objectForKey:transaction.payment.productIdentifier] == nil) {
+        self.transactionsSetter[transaction.payment.productIdentifier] = [NSMutableArray array];
+      }
 
-        [self.transactionsSetter[transaction.payment.productIdentifier] addObject:transaction];
+      [self.transactionsSetter[transaction.payment.productIdentifier] addObject:transaction];
     }
   }
   // notify dart through callbacks.
@@ -96,11 +96,17 @@
 - (void)paymentQueue:(SKPaymentQueue *)queue
     removedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
   for (SKPaymentTransaction *transaction in transactions) {
-    if ([self.transactionsSetter objectForKey:transaction.payment.productIdentifier] == nil) {
+    NSString *productId = transaction.payment.productIdentifier;
+
+    if ([self.transactionsSetter objectForKey:productId] == nil) {
       continue;
     }
 
-    [self.transactionsSetter[transaction.payment.productIdentifier] removeObject:transaction];
+    [self.transactionsSetter[productId] removeObjectsInArray:[self.transactionsSetter[productId] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"transactionIdentifier == %@", transaction.transactionIdentifier]]];
+
+    if (!self.transactionsSetter[productId] || !self.transactionsSetter[productId].count) {
+      [self.transactionsSetter removeObjectForKey:productId];
+    }
   }
   self.transactionsRemoved(transactions);
 }
