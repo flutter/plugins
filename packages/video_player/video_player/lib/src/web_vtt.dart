@@ -16,7 +16,7 @@ class WebVTTCaptionFile extends ClosedCaptionFile {
   WebVTTCaptionFile(this.fileContents)
       : _captions = _parseCaptionsFromWebVTTString(fileContents);
 
-  /// The entire body of the SubRip file.
+  /// The entire body of the VTT file.
   final String fileContents;
 
   @override
@@ -139,7 +139,7 @@ Duration _parseWebVTTTimestamp(String timestampString) {
   );
 }
 
-// Reads on SubRip file and splits it into Lists of strings where each list is one
+// Reads on VTT file and splits it into Lists of strings where each list is one
 // caption.
 List<List<String>> _readWebVTTFile(String file) {
   final List<String> lines = LineSplitter.split(file).toList();
