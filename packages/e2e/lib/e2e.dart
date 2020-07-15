@@ -81,7 +81,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   /// The extra data for the reported result.
   ///
-  /// The values in `reportData` should be json-serializable objects or `null`.
+  /// The values in `reportData` must be json-serializable objects or `null`.
   /// If it's `null`, no extra data is attached to the result.
   ///
   /// The default value is `null`.
