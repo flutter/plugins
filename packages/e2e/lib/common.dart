@@ -18,12 +18,12 @@ class Response {
   Map<String, dynamic> extraInfo;
 
   /// Constructor to use for positive response.
-  Response.allTestsPassed([this.extraInfo])
+  Response.allTestsPassed({this.extraInfo})
       : this._allTestsPassed = true,
         this._failureDetails = null;
 
   /// Constructor for failure response.
-  Response.someTestsFailed(this._failureDetails, [this.extraInfo])
+  Response.someTestsFailed(this._failureDetails, {this.extraInfo})
       : this._allTestsPassed = false;
 
   /// Whether the test ran successfully or not.
@@ -59,11 +59,11 @@ class Response {
     final dynamic detail = responseJson['failureDetails'];
     responseJson.remove('failureDetails');
     if (result == 'true') {
-      return Response.allTestsPassed(responseJson);
+      return Response.allTestsPassed(extraInfo: responseJson);
     } else {
       return Response.someTestsFailed(
         _failureDetailsFromJson(detail),
-        responseJson,
+        extraInfo: responseJson,
       );
     }
   }
