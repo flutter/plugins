@@ -4,19 +4,21 @@
 
 import 'dart:convert';
 
+import 'package:html/dom.dart';
+
 import 'closed_caption_file.dart';
-import 'package:html/parser.dart';
+import 'package:html/parser.dart' as html_parser;
 
-/// Represents a [ClosedCaptionFile], parsed from the WebVTT file format.
-/// See: https://en.wikipedia.org/wiki/WebVTT
-class WebVTTCaptionFile extends ClosedCaptionFile {
+/// Represents a [ClosedCaptionFile], parsed from the WebVtt file format.
+/// See: https://en.wikipedia.org/wiki/WebVtt
+class WebVttCaptionFile extends ClosedCaptionFile {
   /// Parses a string into a [ClosedCaptionFile], assuming [fileContents] is in
-  /// the WebVTT file format.
-  /// * See: https://en.wikipedia.org/wiki/WebVTT
-  WebVTTCaptionFile(this.fileContents)
-      : _captions = _parseCaptionsFromWebVTTString(fileContents);
+  /// the WebVtt file format.
+  /// * See: https://en.wikipedia.org/wiki/WebVtt
+  WebVttCaptionFile(this.fileContents)
+      : _captions = _parseCaptionsFromWebVttString(fileContents);
 
-  /// The entire body of the VTT file.
+  /// The entire body of the Vtt file.
   final String fileContents;
 
   @override
@@ -25,10 +27,10 @@ class WebVTTCaptionFile extends ClosedCaptionFile {
   final List<Caption> _captions;
 }
 
-List<Caption> _parseCaptionsFromWebVTTString(String file) {
+List<Caption> _parseCaptionsFromWebVttString(String file) {
   final List<Caption> captions = <Caption>[];
   int number = 1;
-  for (List<String> captionLines in _readWebVTTFile(file)) {
+  for (List<String> captionLines in _readWebVttFile(file)) {
     if (captionLines.length < 2) continue;
 
     // Caption has header
@@ -38,12 +40,17 @@ List<Caption> _parseCaptionsFromWebVTTString(String file) {
     }
 
     final int captionNumber = number;
-    final _StartAndEnd startAndEnd = _StartAndEnd.fromWebVTTString(
-        hasHeader ? captionLines[1] : captionLines[0]);
+    final _StartAndEnd startAndEnd = _StartAndEnd.fromWebVttString(
+      hasHeader ? captionLines[1] : captionLines[0],
+    );
 
     final String text = captionLines.sublist(hasHeader ? 2 : 1).join('\n');
 
-    //TODO: Handle text format
+    /// TODO: Handle text formats
+    /// Some captions comes with anotations (information about who is speaking) and styles tags.
+    /// E.g:
+
+    /// <v.first.loud Neil deGrasse Tyson><i>Laughs</i>
     final String textWithoutFormat = _parseHtmlString(text);
 
     final Caption newCaption = Caption(
@@ -68,40 +75,41 @@ class _StartAndEnd {
 
   _StartAndEnd(this.start, this.end);
 
-  // Assumes format from an VTT file.
+  // Assumes format from an Vtt file.
   // For example:
   // 00:09.000 --> 00:11.000
-  static _StartAndEnd fromWebVTTString(String line) {
+  static _StartAndEnd fromWebVttString(String line) {
     final RegExp format =
-        RegExp(_webVTTTimeStamp + _webVTTArrow + _webVTTTimeStamp);
+        RegExp(_webVttTimeStamp + _webVttArrow + _webVttTimeStamp);
 
     if (!format.hasMatch(line)) {
       return _StartAndEnd(null, null);
     }
 
-    final List<String> times = line.split(_webVTTArrow);
+    final List<String> times = line.split(_webVttArrow);
 
-    final Duration start = _parseWebVTTTimestamp(times[0]);
-    final Duration end = _parseWebVTTTimestamp(times[1]);
+    final Duration start = _parseWebVttTimestamp(times[0]);
+    final Duration end = _parseWebVttTimestamp(times[1]);
 
     return _StartAndEnd(start, end);
   }
 }
 
 String _parseHtmlString(String htmlString) {
-  var document = parse(htmlString);
-  String parsedString = parse(document.body.text).documentElement.text;
+  final Document document = html_parser.parse(htmlString);
+  final String parsedString =
+      html_parser.parse(document.body.text).documentElement.text;
   return parsedString;
 }
 
-// Parses a time stamp in an VTT file into a Duration.
+// Parses a time stamp in an Vtt file into a Duration.
 // For example:
 //
-// _parseWebVTTimestamp('00:01:08.430')
+// _parseWebVttimestamp('00:01:08.430')
 // returns
 // Duration(hours: 0, minutes: 1, seconds: 8, milliseconds: 430)
-Duration _parseWebVTTTimestamp(String timestampString) {
-  if (!RegExp(_webVTTTimeStamp).hasMatch(timestampString)) {
+Duration _parseWebVttTimestamp(String timestampString) {
+  if (!RegExp(_webVttTimeStamp).hasMatch(timestampString)) {
     return null;
   }
 
@@ -130,7 +138,11 @@ Duration _parseWebVTTTimestamp(String timestampString) {
   }
 
   List<String> milisecondsStyles = dotSections[1].split(" ");
-  //TODO: Handle styles data on timestamp
+
+  /// TODO: Handle styles
+  /// Some captions comes with styles about where/how the caption should be rendered.
+  /// E.g:
+  /// 00:32.500 --> 00:33.500 align:left size:50%
   if (milisecondsStyles.length > 1) {
     styles = milisecondsStyles.sublist(1);
   }
@@ -144,9 +156,9 @@ Duration _parseWebVTTTimestamp(String timestampString) {
   );
 }
 
-// Reads on VTT file and splits it into Lists of strings where each list is one
+// Reads on Vtt file and splits it into Lists of strings where each list is one
 // caption.
-List<List<String>> _readWebVTTFile(String file) {
+List<List<String>> _readWebVttFile(String file) {
   final List<String> lines = LineSplitter.split(file).toList();
 
   final List<List<String>> captionStrings = <List<String>>[];
@@ -169,5 +181,5 @@ List<List<String>> _readWebVTTFile(String file) {
   return captionStrings;
 }
 
-const String _webVTTTimeStamp = r'(\d+):(\d{2})(:\d{2})?\.(\d{3})';
-const String _webVTTArrow = r' --> ';
+const String _webVttTimeStamp = r'(\d+):(\d{2})(:\d{2})?\.(\d{3})';
+const String _webVttArrow = r' --> ';
