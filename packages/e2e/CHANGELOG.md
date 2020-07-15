@@ -1,6 +1,6 @@
 ## 0.6.1
 
-* Added `extraInfo` in the reported json.
+* Added `data` in the reported json.
 
 ## 0.6.0
 

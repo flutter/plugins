@@ -78,18 +78,18 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   static Map<String, String> _results = <String, String>{};
 
-  Map<String, dynamic> _reports;
+  Map<String, dynamic> _data;
 
   /// Add fields to the reported result.
   ///
-  /// The values in `report` should be json-serializable objects.
+  /// The values in `data` should be json-serializable objects.
   ///
-  /// For keys in `report` that's previously added, it will over write the
+  /// For keys in `data` that's previously added, it will over write the
   /// original values.
-  void addReportResult(Map<String, dynamic> report) {
-    _reports ??= <String, dynamic>{};
-    report.forEach((String key, dynamic value) {
-      _reports[key] = value;
+  void addData(Map<String, dynamic> data) {
+    _data ??= <String, dynamic>{};
+    data.forEach((String key, dynamic value) {
+      _data[key] = value;
     });
   }
 
@@ -105,10 +105,10 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
           final bool allTestsPassed = await _allTestsPassed.future;
           response = <String, String>{
             'message': allTestsPassed
-                ? Response.allTestsPassed(extraInfo: _reports).toJson()
+                ? Response.allTestsPassed(data: _data).toJson()
                 : Response.someTestsFailed(
                     _failureMethodsDetails,
-                    extraInfo: _reports,
+                    data: _data,
                   ).toJson(),
           };
           break;

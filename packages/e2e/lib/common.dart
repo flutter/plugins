@@ -12,18 +12,15 @@ class Response {
   final bool _allTestsPassed;
 
   /// The extra information to be added along side the test result.
-  ///
-  /// Specially `'result'` and `'failureDetails'` keys are occupied, and will
-  /// be ignored.
-  Map<String, dynamic> extraInfo;
+  Map<String, dynamic> data;
 
   /// Constructor to use for positive response.
-  Response.allTestsPassed({this.extraInfo})
+  Response.allTestsPassed({this.data})
       : this._allTestsPassed = true,
         this._failureDetails = null;
 
   /// Constructor for failure response.
-  Response.someTestsFailed(this._failureDetails, {this.extraInfo})
+  Response.someTestsFailed(this._failureDetails, {this.data})
       : this._allTestsPassed = false;
 
   /// Whether the test ran successfully or not.
@@ -37,33 +34,23 @@ class Response {
   List<Failure> get failureDetails => _failureDetails;
 
   /// Serializes this message to a JSON map.
-  String toJson() {
-    final Map<String, dynamic> result = <String, dynamic>{};
-    result['result'] = allTestsPassed.toString();
-    result['failureDetails'] = _failureDetailsAsString();
-    if (extraInfo != null) {
-      extraInfo.forEach((String key, dynamic value) {
-        if (key != 'result' && key != 'failureDetails') {
-          result[key] = value;
-        }
+  String toJson() => json.encode(<String, dynamic>{
+        'result': allTestsPassed.toString(),
+        'failureDetails': _failureDetailsAsString(),
+        if (data != null) 'data': data
       });
-    }
-    return json.encode(result);
-  }
 
   /// Deserializes the result from JSON.
   static Response fromJson(String source) {
     final Map<String, dynamic> responseJson = json.decode(source);
     final String result = responseJson['result'] as String;
-    responseJson.remove('result');
     final dynamic detail = responseJson['failureDetails'];
-    responseJson.remove('failureDetails');
     if (result == 'true') {
-      return Response.allTestsPassed(extraInfo: responseJson);
+      return Response.allTestsPassed(data: responseJson['data']);
     } else {
       return Response.someTestsFailed(
         _failureDetailsFromJson(detail),
-        extraInfo: responseJson,
+        data: responseJson['data'],
       );
     }
   }
