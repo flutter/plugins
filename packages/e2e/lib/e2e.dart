@@ -93,36 +93,39 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     });
   }
 
+  /// the callback function to response the driver side input.
+  @visibleForTesting
+  Future<Map<String, dynamic>> callback(Map<String, String> params) async {
+    final String command = params['command'];
+    Map<String, String> response;
+    switch (command) {
+      case 'request_data':
+        final bool allTestsPassed = await _allTestsPassed.future;
+        response = <String, String>{
+          'message': allTestsPassed
+              ? Response.allTestsPassed(data: _data).toJson()
+              : Response.someTestsFailed(
+                  _failureMethodsDetails,
+                  data: _data,
+                ).toJson(),
+        };
+        break;
+      case 'get_health':
+        response = <String, String>{'status': 'ok'};
+        break;
+      default:
+        throw UnimplementedError('$command is not implemented');
+    }
+    return <String, dynamic>{
+      'isError': false,
+      'response': response,
+    };
+  }
+
   // Emulates the Flutter driver extension, returning 'pass' or 'fail'.
   @override
   void initServiceExtensions() {
     super.initServiceExtensions();
-    Future<Map<String, dynamic>> callback(Map<String, String> params) async {
-      final String command = params['command'];
-      Map<String, String> response;
-      switch (command) {
-        case 'request_data':
-          final bool allTestsPassed = await _allTestsPassed.future;
-          response = <String, String>{
-            'message': allTestsPassed
-                ? Response.allTestsPassed(data: _data).toJson()
-                : Response.someTestsFailed(
-                    _failureMethodsDetails,
-                    data: _data,
-                  ).toJson(),
-          };
-          break;
-        case 'get_health':
-          response = <String, String>{'status': 'ok'};
-          break;
-        default:
-          throw UnimplementedError('$command is not implemented');
-      }
-      return <String, dynamic>{
-        'isError': false,
-        'response': response,
-      };
-    }
 
     if (kIsWeb) {
       registerWebServiceExtension(callback);
