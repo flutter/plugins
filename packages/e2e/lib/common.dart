@@ -43,13 +43,11 @@ class Response {
   /// Deserializes the result from JSON.
   static Response fromJson(String source) {
     final Map<String, dynamic> responseJson = json.decode(source);
-    final String result = responseJson['result'] as String;
-    final dynamic detail = responseJson['failureDetails'];
-    if (result == 'true') {
+    if (responseJson['result'] as String == 'true') {
       return Response.allTestsPassed(data: responseJson['data']);
     } else {
       return Response.someTestsFailed(
-        _failureDetailsFromJson(detail),
+        _failureDetailsFromJson(responseJson['failureDetails']),
         data: responseJson['data'],
       );
     }
