@@ -133,7 +133,6 @@ Duration _parseWebVttTimestamp(String timestampString) {
   int hours = 0;
   int minutes = 0;
   int seconds = 0;
-  List<String> styles;
 
   if (hoursMinutesSeconds.length > 2) {
     // Timestamp takes the form of [hours]:[minutes]:[seconds].[milliseconds]
@@ -157,9 +156,9 @@ Duration _parseWebVttTimestamp(String timestampString) {
   /// Some captions comes with styles about where/how the caption should be rendered.
   /// E.g:
   /// 00:32.500 --> 00:33.500 align:left size:50%
-  if (milisecondsStyles.length > 1) {
-    styles = milisecondsStyles.sublist(1);
-  }
+  /// if (milisecondsStyles.length > 1) {
+  ///  List<String> styles = milisecondsStyles.sublist(1);
+  /// }
   int milliseconds = int.parse(milisecondsStyles[0]);
 
   return Duration(
