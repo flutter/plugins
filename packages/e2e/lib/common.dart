@@ -24,7 +24,7 @@ class Response {
 
   /// Constructor for failure response.
   Response.someTestsFailed(this._failureDetails, [this.extraInfo])
-    : this._allTestsPassed = false;
+      : this._allTestsPassed = false;
 
   /// Whether the test ran successfully or not.
   bool get allTestsPassed => _allTestsPassed;
@@ -38,7 +38,7 @@ class Response {
 
   /// Serializes this message to a JSON map.
   String toJson() {
-    Map<String, dynamic> result = <String, dynamic>{};
+    final Map<String, dynamic> result = <String, dynamic>{};
     result['result'] = allTestsPassed.toString();
     result['failureDetails'] = _failureDetailsAsString();
     if (extraInfo != null) {
@@ -53,10 +53,10 @@ class Response {
 
   /// Deserializes the result from JSON.
   static Response fromJson(String source) {
-    Map<String, dynamic> responseJson = json.decode(source);
-    String result = responseJson['result'] as String;
+    final Map<String, dynamic> responseJson = json.decode(source);
+    final String result = responseJson['result'] as String;
     responseJson.remove('result');
-    dynamic detail = responseJson['failureDetails'];
+    final dynamic detail = responseJson['failureDetails'];
     responseJson.remove('failureDetails');
     if (result == 'true') {
       return Response.allTestsPassed(responseJson);

@@ -79,6 +79,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
   static Map<String, String> _results = <String, String>{};
 
   Map<String, dynamic> _reports;
+
   /// Add fields to the reported result.
   ///
   /// The values in `report` should be json-serializable objects.
@@ -105,7 +106,8 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
           response = <String, String>{
             'message': allTestsPassed
                 ? Response.allTestsPassed(_reports).toJson()
-                : Response.someTestsFailed(_failureMethodsDetails, _reports).toJson(),
+                : Response.someTestsFailed(_failureMethodsDetails, _reports)
+                    .toJson(),
           };
           break;
         case 'get_health':
