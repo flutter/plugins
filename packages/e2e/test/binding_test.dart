@@ -24,7 +24,7 @@ void main() async {
         home: Text('Test'),
       ));
       expect(tester.binding, e2ebinding);
-      e2ebinding.addReportData(<String, dynamic>{'answer': 42});
+      e2ebinding.reportData = <String, dynamic>{'answer': 42};
     });
   });
 

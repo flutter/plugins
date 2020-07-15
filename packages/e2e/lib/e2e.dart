@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -78,20 +79,13 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   static Map<String, String> _results = <String, String>{};
 
-  Map<String, dynamic> _data;
-
-  /// Add data to the reported result.
+  /// The extra data for the reported result.
   ///
-  /// The values in `data` should be json-serializable objects.
+  /// The values in `reportData` should be json-serializable objects or `null`.
+  /// If it's `null`, no extra data is attached to the result.
   ///
-  /// For keys in `data` that's previously added, it will over write the
-  /// original values.
-  void addReportData(Map<String, dynamic> data) {
-    _data ??= <String, dynamic>{};
-    data.forEach((String key, dynamic value) {
-      _data[key] = value;
-    });
-  }
+  /// The default value is `null`.
+  Map<String, dynamic> reportData;
 
   /// the callback function to response the driver side input.
   @visibleForTesting
@@ -103,10 +97,10 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         final bool allTestsPassed = await _allTestsPassed.future;
         response = <String, String>{
           'message': allTestsPassed
-              ? Response.allTestsPassed(data: _data).toJson()
+              ? Response.allTestsPassed(data: reportData).toJson()
               : Response.someTestsFailed(
                   _failureMethodsDetails,
-                  data: _data,
+                  data: reportData,
                 ).toJson(),
         };
         break;
