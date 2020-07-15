@@ -33,20 +33,21 @@ List<Caption> _parseCaptionsFromWebVttString(String file) {
   /// Ignore metadata
   List<String> metadata = ['HEADER', 'NOTE', 'REGION', 'WEBVTT'];
 
-  int number = 1;
+  int captionNumber = 1;
   for (List<String> captionLines in _readWebVttFile(file)) {
+    // if caption has just header or time, but no text, captionLines.length will be < 1
     if (captionLines.length < 2) continue;
 
+    // if caption has header equal metadata, ignore
     String metadaType = captionLines[0]?.split(' ')[0];
     if (metadata.contains(metadaType)) continue;
 
     // Caption has header
     bool hasHeader = captionLines.length > 2;
-    if (hasHeader) {
-      number = int.parse(captionLines[0]);
+    if (hasHeader && int.tryParse(captionLines[0]) != null) {
+      captionNumber = int.parse(captionLines[0]);
     }
 
-    final int captionNumber = number;
     final _StartAndEnd startAndEnd = _StartAndEnd.fromWebVttString(
       hasHeader ? captionLines[1] : captionLines[0],
     );
@@ -68,7 +69,7 @@ List<Caption> _parseCaptionsFromWebVttString(String file) {
 
     if (newCaption.start != null && newCaption.end != null) {
       captions.add(newCaption);
-      number++;
+      captionNumber++;
     }
   }
 
