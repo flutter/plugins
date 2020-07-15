@@ -5,15 +5,11 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
-import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:e2e/e2e.dart';
 
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isLinux) {
-    PathProviderPlatform.instance = PathProviderLinux();
-  }
+
   testWidgets('getTemporaryDirectory', (WidgetTester tester) async {
     final Directory result = await getTemporaryDirectory();
     _verifySampleFile(result, 'temporaryDirectory');
