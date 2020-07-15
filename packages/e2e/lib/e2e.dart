@@ -80,13 +80,13 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   Map<String, dynamic> _data;
 
-  /// Add fields to the reported result.
+  /// Add data to the reported result.
   ///
   /// The values in `data` should be json-serializable objects.
   ///
   /// For keys in `data` that's previously added, it will over write the
   /// original values.
-  void addData(Map<String, dynamic> data) {
+  void addReportData(Map<String, dynamic> data) {
     _data ??= <String, dynamic>{};
     data.forEach((String key, dynamic value) {
       _data[key] = value;
