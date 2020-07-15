@@ -7,98 +7,82 @@ import 'package:video_player/src/closed_caption_file.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
-  test('Parses VTT file', () {
-    final WebVttCaptionFile parsedFile = WebVttCaptionFile(_validVTT);
+  group('Parse VTT file', () {
+    WebVttCaptionFile parsedFile;
 
-    expect(parsedFile.captions.length, 7);
+    test('with Metadata', () {
+      parsedFile = WebVttCaptionFile(_valid_vtt_with_metadata);
+      expect(parsedFile.captions.length, 1);
 
-    //[minutes]:[seconds].[milliseconds]
-    final Caption firstCaption = parsedFile.captions.first;
-    expect(firstCaption.number, 1);
-    expect(firstCaption.start, Duration(seconds: 1));
-    expect(firstCaption.end, Duration(seconds: 2, milliseconds: 500));
-    expect(firstCaption.text, 'We are in New York City');
+      expect(parsedFile.captions[0].start, Duration(seconds: 1));
+      expect(
+          parsedFile.captions[0].end, Duration(seconds: 2, milliseconds: 500));
+      expect(parsedFile.captions[0].text, 'We are in New York City');
+    });
 
-    //With multiline
-    final Caption secondCaption = parsedFile.captions[1];
-    expect(secondCaption.number, 2);
-    expect(
-      secondCaption.start,
-      Duration(minutes: 0, seconds: 2, milliseconds: 800),
-    );
-    expect(
-      secondCaption.end,
-      Duration(minutes: 0, seconds: 3, milliseconds: 283),
-    );
-    expect(secondCaption.text,
-        "— It will perforate your stomach.\n— You could die.");
+    test('with Multiline', () {
+      parsedFile = WebVttCaptionFile(_valid_vtt_with_multiline);
+      expect(parsedFile.captions.length, 1);
 
-    //With Long Text
-    final Caption thirdCaption = parsedFile.captions[2];
-    expect(thirdCaption.number, 3);
-    expect(
-      thirdCaption.start,
-      Duration(minutes: 0, seconds: 4, milliseconds: 0),
-    );
-    expect(
-      thirdCaption.end,
-      Duration(minutes: 0, seconds: 4, milliseconds: 900),
-    );
-    expect(thirdCaption.text,
-        "The Organisation for Sample Public Service Announcements accepts no liability for the content of this advertisement, or for the consequences of any actions taken on the basis of the information provided.");
+      expect(parsedFile.captions[0].start,
+          Duration(seconds: 2, milliseconds: 800));
+      expect(
+          parsedFile.captions[0].end, Duration(seconds: 3, milliseconds: 283));
+      expect(parsedFile.captions[0].text,
+          "— It will perforate your stomach.\n— You could die.");
+    });
 
-    //With styles on html style tags
-    final Caption fourthCaption = parsedFile.captions[3];
-    expect(fourthCaption.number, 4);
-    expect(
-      fourthCaption.start,
-      Duration(minutes: 0, seconds: 5, milliseconds: 200),
-    );
-    expect(
-      fourthCaption.end,
-      Duration(minutes: 0, seconds: 6, milliseconds: 0),
-    );
-    expect(fourthCaption.text,
-        "You know I'm so excited my glasses are falling off here.");
+    test('with styles tags', () {
+      parsedFile = WebVttCaptionFile(_valid_vtt_with_styles);
+      expect(parsedFile.captions.length, 3);
 
-    //With format [hours]:[minutes]:[seconds].[milliseconds]
-    final Caption fifthCaption = parsedFile.captions[4];
-    expect(fifthCaption.number, 5);
-    expect(
-      fifthCaption.start,
-      Duration(minutes: 0, seconds: 6, milliseconds: 050),
-    );
-    expect(
-      fifthCaption.end,
-      Duration(minutes: 0, seconds: 6, milliseconds: 150),
-    );
-    expect(fifthCaption.text, "I have a different time!");
+      expect(parsedFile.captions[0].start,
+          Duration(seconds: 5, milliseconds: 200));
+      expect(
+          parsedFile.captions[0].end, Duration(seconds: 6, milliseconds: 000));
+      expect(parsedFile.captions[0].text,
+          "You know I'm so excited my glasses are falling off here.");
+    });
 
-    //With custom html tag
-    final Caption sixthCaption = parsedFile.captions[5];
-    expect(sixthCaption.number, 6);
-    expect(
-      sixthCaption.start,
-      Duration(minutes: 0, seconds: 6, milliseconds: 200),
-    );
-    expect(
-      sixthCaption.end,
-      Duration(minutes: 0, seconds: 6, milliseconds: 900),
-    );
-    expect(sixthCaption.text, "This is yellow text on a blue background");
+    test('with subtitling features', () {
+      parsedFile = WebVttCaptionFile(_valid_vtt_with_subtitling_features);
+      expect(parsedFile.captions.length, 3);
 
-    //With format [hours]:[minutes].[milliseconds]
-    final Caption lastCaption = parsedFile.captions[6];
-    expect(lastCaption.number, 7);
-    expect(
-      lastCaption.start,
-      Duration(hours: 60, minutes: 1, seconds: 0, milliseconds: 000),
-    );
-    expect(
-      lastCaption.end,
-      Duration(hours: 60, minutes: 1, seconds: 0, milliseconds: 900),
-    );
-    expect(lastCaption.text, "Hour");
+      expect(parsedFile.captions[0].number, 1);
+      expect(parsedFile.captions.last.start, Duration(seconds: 4));
+      expect(parsedFile.captions.last.end, Duration(seconds: 5));
+      expect(parsedFile.captions.last.text, "Transcrit par Célestes™");
+    });
+
+    test('with [hours]:[minutes]:[seconds].[milliseconds]', () {
+      parsedFile = WebVttCaptionFile(_valid_vtt_with_hours);
+      expect(parsedFile.captions.length, 1);
+
+      expect(parsedFile.captions[0].number, 1);
+      expect(parsedFile.captions.last.start, Duration(seconds: 1));
+      expect(parsedFile.captions.last.end, Duration(seconds: 2));
+      expect(parsedFile.captions.last.text, "This is a test.");
+    });
+
+    test('with [hours]:[minutes].[milliseconds]', () {
+      parsedFile = WebVttCaptionFile(_valid_vtt_without_seconds);
+      expect(parsedFile.captions.length, 1);
+
+      expect(parsedFile.captions[0].number, 1);
+      expect(parsedFile.captions.last.start, Duration(hours: 60));
+      expect(parsedFile.captions.last.end, Duration(hours: 60, minutes: 2));
+      expect(parsedFile.captions.last.text, "This is a test.");
+    });
+
+    test('with [minutes]:[seconds].[milliseconds]', () {
+      parsedFile = WebVttCaptionFile(_valid_vtt_without_hours);
+      expect(parsedFile.captions.length, 1);
+
+      expect(parsedFile.captions[0].number, 1);
+      expect(parsedFile.captions.last.start, Duration(seconds: 3));
+      expect(parsedFile.captions.last.end, Duration(seconds: 4));
+      expect(parsedFile.captions.last.text, "This is a test.");
+    });
   });
 
   test('Parses VTT file with malformed input', () {
@@ -114,7 +98,8 @@ void main() {
   });
 }
 
-const String _validVTT = '''
+/// See https://www.w3.org/TR/webvtt1/#introduction-comments
+const String _valid_vtt_with_metadata = '''
 WEBVTT Kind: captions; Language: en
 
 REGION
@@ -137,14 +122,22 @@ when the cues should start or end.
 1
 00:01.000 --> 00:02.500
 <v Roger Bingham>We are in New York City
+''';
+
+/// See https://www.w3.org/TR/webvtt1/#introduction-multiple-lines
+const String _valid_vtt_with_multiline = '''
+WEBVTT
 
 2
 00:02.800 --> 00:03.283
 — It will perforate your stomach.
 — You could die.
 
-00:04.000 --> 00:04.900
-The Organisation for Sample Public Service Announcements accepts no liability for the content of this advertisement, or for the consequences of any actions taken on the basis of the information provided.
+''';
+
+/// See https://www.w3.org/TR/webvtt1/#styling
+const String _valid_vtt_with_styles = '''
+WEBVTT
 
 00:05.200 --> 00:06.000 align:start size:50%
 <v Roger Bingham><i>You know I'm so excited my glasses are falling off here.</i>
@@ -155,8 +148,51 @@ The Organisation for Sample Public Service Announcements accepts no liability fo
 00:06.200 --> 00:06.900
 <c.yellow.bg_blue>This is yellow text on a blue background</c>
 
-60:01.000 --> 60:01.900
-Hour
+''';
+
+//See https://www.w3.org/TR/webvtt1/#introduction-other-features
+const String _valid_vtt_with_subtitling_features = '''
+WEBVTT
+
+test
+00:00.000 --> 00:02.000
+This is a test.
+
+Slide 1
+00:00:00.000 --> 00:00:10.700
+Title Slide
+
+crédit de transcription
+00:04.000 --> 00:05.000
+Transcrit par Célestes™
+
+''';
+
+/// With format [hours]:[minutes]:[seconds].[milliseconds]
+const String _valid_vtt_with_hours = '''
+WEBVTT
+
+test
+00:00:01.000 --> 00:00:02.000
+This is a test.
+
+''';
+
+/// With format [hours]:[minutes].[milliseconds]
+const String _valid_vtt_without_seconds = '''
+WEBVTT
+
+60:00.000 --> 60:02.000
+This is a test.
+
+''';
+
+/// With format [minutes]:[seconds].[milliseconds]
+const String _valid_vtt_without_hours = '''
+WEBVTT
+
+00:03.000 --> 00:04.000
+This is a test.
 
 ''';
 
