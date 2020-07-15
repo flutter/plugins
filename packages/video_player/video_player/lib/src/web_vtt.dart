@@ -29,9 +29,16 @@ class WebVttCaptionFile extends ClosedCaptionFile {
 
 List<Caption> _parseCaptionsFromWebVttString(String file) {
   final List<Caption> captions = <Caption>[];
+
+  /// Ignore metadata
+  List<String> metadata = ['HEADER', 'NOTE', 'REGION', 'WEBVTT'];
+
   int number = 1;
   for (List<String> captionLines in _readWebVttFile(file)) {
     if (captionLines.length < 2) continue;
+
+    String metadaType = captionLines[0]?.split(' ')[0];
+    if (metadata.contains(metadaType)) continue;
 
     // Caption has header
     bool hasHeader = captionLines.length > 2;
@@ -47,9 +54,8 @@ List<Caption> _parseCaptionsFromWebVttString(String file) {
     final String text = captionLines.sublist(hasHeader ? 2 : 1).join('\n');
 
     /// TODO: Handle text formats
-    /// Some captions comes with anotations (information about who is speaking) and styles tags.
+    /// Some captions comes with anotations (information about who/how is the speech being delivered) and styles tags.
     /// E.g:
-
     /// <v.first.loud Neil deGrasse Tyson><i>Laughs</i>
     final String textWithoutFormat = _parseHtmlString(text);
 
