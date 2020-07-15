@@ -35,14 +35,21 @@ List<Caption> _parseCaptionsFromWebVttString(String file) {
 
   int captionNumber = 1;
   for (List<String> captionLines in _readWebVttFile(file)) {
-    // if caption has just header or time, but no text, captionLines.length will be < 1
+    /// CaptionLines represent a complete caption
+    /// E.g
+    /// [
+    ///  [00:00.000 --> 01:24.000 align:center]
+    ///  ['Introduction']
+    /// ]
+
+    /// if caption has just header or time, but no text, captionLines.length will be < 1
     if (captionLines.length < 2) continue;
 
-    // if caption has header equal metadata, ignore
+    /// if caption has header equal metadata, ignore
     String metadaType = captionLines[0]?.split(' ')[0];
     if (metadata.contains(metadaType)) continue;
 
-    // Caption has header
+    /// Caption has header
     bool hasHeader = captionLines.length > 2;
     if (hasHeader && int.tryParse(captionLines[0]) != null) {
       captionNumber = int.parse(captionLines[0]);
