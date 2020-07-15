@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,10 +16,11 @@ import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
+///
+/// On initialization, a listener is set up to report the test results through
+/// this channel.
 class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
-  /// Sets up a listener to report that the tests are finished when everything is
-  /// torn down.
-  E2EWidgetsFlutterBinding() {
+  E2EWidgetsFlutterBinding._() {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
       try {
@@ -66,9 +68,10 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
   ///
   /// Returns an instance of the [E2EWidgetsFlutterBinding], creating and
   /// initializing it if necessary.
-  static WidgetsBinding ensureInitialized() {
+  static Future<WidgetsBinding> ensureInitialized() async {
     if (WidgetsBinding.instance == null) {
-      E2EWidgetsFlutterBinding();
+      await _waitForPhysicalSize();
+      E2EWidgetsFlutterBinding._();
     }
     assert(WidgetsBinding.instance is E2EWidgetsFlutterBinding);
     return WidgetsBinding.instance;
@@ -140,4 +143,23 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     );
     _results[description] ??= 'success';
   }
+}
+
+/// Wait until the physical size is known to the Flutter engine.
+///
+/// This is needed because it is possible for [window.physicalSize] to be
+/// [Size.zero] when the app starts in release mode.
+Future<void> _waitForPhysicalSize() async {
+  if (window.physicalSize == Size.zero) {
+    final Completer physicalSizeReceived = Completer();
+
+    window.onMetricsChanged = () {
+      if (window.physicalSize != Size.zero) {
+        physicalSizeReceived.complete();
+        window.onMetricsChanged = null;
+      }
+    };
+    await physicalSizeReceived.future;
+  }
+  return E2EWidgetsFlutterBinding._();
 }

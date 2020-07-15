@@ -18,8 +18,8 @@ of a test file, e.g.
 ```dart
 import 'package:e2e/e2e.dart';
 
-void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  await E2EWidgetsFlutterBinding.ensureInitialized();
   testWidgets("failing test example", (WidgetTester tester) async {
     expect(2 + 2, equals(5));
   });
