@@ -30,13 +30,18 @@ List<Caption> _parseCaptionsFromWebVTTString(String file) {
   int number = 1;
   for (List<String> captionLines in _readWebVTTFile(file)) {
     if (captionLines.length < 2) continue;
-    print(captionLines);
+
+    // Caption has header
+    bool hasHeader = captionLines.length > 2;
+    if (hasHeader) {
+      number = int.parse(captionLines[0]);
+    }
 
     final int captionNumber = number;
-    final _StartAndEnd startAndEnd =
-        _StartAndEnd.fromWebVTTString(captionLines[0]);
+    final _StartAndEnd startAndEnd = _StartAndEnd.fromWebVTTString(
+        hasHeader ? captionLines[1] : captionLines[0]);
 
-    final String text = captionLines.sublist(1).join('\n');
+    final String text = captionLines.sublist(hasHeader ? 2 : 1).join('\n');
 
     //TODO: Handle text format
     final String textWithoutFormat = _parseHtmlString(text);
