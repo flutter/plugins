@@ -8,46 +8,101 @@ import 'package:video_player/video_player.dart';
 
 void main() {
   test('Parses VTT file', () {
-    final WebVTTCaptionFile parsedFile = WebVTTCaptionFile(_validVTT);
+    final WebVttCaptionFile parsedFile = WebVttCaptionFile(_validVTT);
 
-    expect(parsedFile.captions.length, 13);
+    expect(parsedFile.captions.length, 7);
 
+    //[minutes]:[seconds].[milliseconds]
     final Caption firstCaption = parsedFile.captions.first;
     expect(firstCaption.number, 1);
-    expect(firstCaption.start, Duration(seconds: 9));
-    expect(firstCaption.end, Duration(seconds: 11, milliseconds: 430));
+    expect(firstCaption.start, Duration(seconds: 1));
+    expect(firstCaption.end, Duration(seconds: 2, milliseconds: 500));
     expect(firstCaption.text, 'We are in New York City');
 
+    //With multiline
     final Caption secondCaption = parsedFile.captions[1];
     expect(secondCaption.number, 2);
     expect(
       secondCaption.start,
-      Duration(minutes: 0, seconds: 13, milliseconds: 0),
+      Duration(minutes: 0, seconds: 2, milliseconds: 800),
     );
     expect(
       secondCaption.end,
-      Duration(minutes: 0, seconds: 16, milliseconds: 0),
+      Duration(minutes: 0, seconds: 3, milliseconds: 283),
     );
     expect(secondCaption.text,
-        "We're actually at the Lucern Hotel, just down the street");
+        "— It will perforate your stomach.\n— You could die.");
 
-    //With styles on timestamp
-    final Caption lastCaption = parsedFile.captions[12];
-    expect(lastCaption.number, 13);
+    //With Long Text
+    final Caption thirdCaption = parsedFile.captions[2];
+    expect(thirdCaption.number, 3);
+    expect(
+      thirdCaption.start,
+      Duration(minutes: 0, seconds: 4, milliseconds: 0),
+    );
+    expect(
+      thirdCaption.end,
+      Duration(minutes: 0, seconds: 4, milliseconds: 900),
+    );
+    expect(thirdCaption.text,
+        "The Organisation for Sample Public Service Announcements accepts no liability for the content of this advertisement, or for the consequences of any actions taken on the basis of the information provided.");
+
+    //With styles on html style tags
+    final Caption fourthCaption = parsedFile.captions[3];
+    expect(fourthCaption.number, 4);
+    expect(
+      fourthCaption.start,
+      Duration(minutes: 0, seconds: 5, milliseconds: 200),
+    );
+    expect(
+      fourthCaption.end,
+      Duration(minutes: 0, seconds: 6, milliseconds: 0),
+    );
+    expect(fourthCaption.text,
+        "You know I'm so excited my glasses are falling off here.");
+
+    //With format [hours]:[minutes]:[seconds].[milliseconds]
+    final Caption fifthCaption = parsedFile.captions[4];
+    expect(fifthCaption.number, 5);
+    expect(
+      fifthCaption.start,
+      Duration(minutes: 0, seconds: 6, milliseconds: 050),
+    );
+    expect(
+      fifthCaption.end,
+      Duration(minutes: 0, seconds: 6, milliseconds: 150),
+    );
+    expect(fifthCaption.text, "I have a different time!");
+
+    //With custom html tag
+    final Caption sixthCaption = parsedFile.captions[5];
+    expect(sixthCaption.number, 6);
+    expect(
+      sixthCaption.start,
+      Duration(minutes: 0, seconds: 6, milliseconds: 200),
+    );
+    expect(
+      sixthCaption.end,
+      Duration(minutes: 0, seconds: 6, milliseconds: 900),
+    );
+    expect(sixthCaption.text, "This is yellow text on a blue background");
+
+    //With format [hours]:[minutes].[milliseconds]
+    final Caption lastCaption = parsedFile.captions[6];
+    expect(lastCaption.number, 7);
     expect(
       lastCaption.start,
-      Duration(minutes: 0, seconds: 35, milliseconds: 500),
+      Duration(hours: 60, minutes: 1, seconds: 0, milliseconds: 000),
     );
     expect(
       lastCaption.end,
-      Duration(minutes: 0, seconds: 38, milliseconds: 0),
+      Duration(hours: 60, minutes: 1, seconds: 0, milliseconds: 900),
     );
-    expect(lastCaption.text,
-        "You know I'm so excited my glasses are falling off here.");
+    expect(lastCaption.text, "Hour");
   });
 
   test('Parses VTT file with malformed input', () {
-    final ClosedCaptionFile parsedFile = WebVTTCaptionFile(_malformedVTT);
+    final ClosedCaptionFile parsedFile = WebVttCaptionFile(_malformedVTT);
 
     expect(parsedFile.captions.length, 1);
 
@@ -62,44 +117,46 @@ void main() {
 const String _validVTT = '''
 WEBVTT Kind: captions; Language: en
 
-00:09.000 --> 00:11.430
+REGION
+id:bill
+width:40%
+lines:3
+regionanchor:100%,100%
+viewportanchor:90%,90%
+scroll:up
+
+NOTE
+This file was written by Jill. I hope
+you enjoy reading it. Some things to
+bear in mind:
+- I was lip-reading, so the cues may
+not be 100% accurate
+- I didn’t pay too close attention to
+when the cues should start or end.
+
+1
+00:01.000 --> 00:02.500
 <v Roger Bingham>We are in New York City
 
-00:13.000 --> 00:16.000
-<v Roger Bingham>We're actually at the Lucern Hotel, just down the street
+2
+00:02.800 --> 00:03.283
+— It will perforate your stomach.
+— You could die.
 
-00:16.000 --> 00:18.000
-<v Roger Bingham>from the American Museum of Natural History
+00:04.000 --> 00:04.900
+The Organisation for Sample Public Service Announcements accepts no liability for the content of this advertisement, or for the consequences of any actions taken on the basis of the information provided.
 
-00:18.000 --> 00:20.000
-<v Roger Bingham>And with me is Neil deGrasse Tyson
+00:05.200 --> 00:06.000 align:start size:50%
+<v Roger Bingham><i>You know I'm so excited my glasses are falling off here.</i>
 
-00:20.000 --> 00:22.000
-<v Roger Bingham>Astrophysicist, Director of the Hayden Planetarium
+00:00:06.050 --> 00:00:06.150 
+<v Roger Bingham><i>I have a different time!</i>
 
-00:22.000 --> 00:24.000
-<v Roger Bingham>at the AMNH.
+00:06.200 --> 00:06.900
+<c.yellow.bg_blue>This is yellow text on a blue background</c>
 
-00:24.000 --> 00:26.000
-<v Roger Bingham>Thank you for walking down here.
-
-00:27.000 --> 00:30.000
-<v Roger Bingham>And I want to do a follow-up on the last conversation we did.
-
-00:30.000 --> 00:31.500 align:end size:50%
-<v Roger Bingham>When we e-mailed—
-
-00:30.500 --> 00:32.500 align:start size:50%
-<v Neil deGrasse Tyson>Didn't we talk about enough in that conversation?
-
-00:32.000 --> 00:35.500 align:end size:50%
-<v Roger Bingham>No! No no no no; 'cos 'cos obviously 'cos
-
-00:32.500 --> 00:33.500 align:start size:50%
-<v Neil deGrasse Tyson><i>Laughs</i>
-
-00:35.500 --> 00:38.000 align:start size:50%
-<v Roger Bingham>You know I'm so excited my glasses are falling off here.
+60:01.000 --> 60:01.900
+Hour
 
 ''';
 
