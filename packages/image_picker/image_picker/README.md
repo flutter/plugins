@@ -19,7 +19,7 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 
 ### Android
 
-The plugin should work out of the box.
+No configuration required - the plugin should work out of the box.
 
 ### Example
 
