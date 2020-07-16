@@ -210,8 +210,8 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
 
   Future<ClosedCaptionFile> _loadCaptions() async {
     final String fileContents = await DefaultAssetBundle.of(context)
-        .loadString('assets/bumble_bee_captions.srt');
-    return SubRipCaptionFile(
+        .loadString('assets/bumble_bee_captions.vtt');
+    return WebVttCaptionFile(
         fileContents); // For vtt files, use WebVttCaptionFile
   }
 
