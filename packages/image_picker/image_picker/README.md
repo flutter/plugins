@@ -19,12 +19,7 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 
 ### Android
 
-#### API 29+
-No configuration required - the plugin should work out of the box.
-
-#### API < 29
-
-Add `android:requestLegacyExternalStorage="true"` as an attribute to the `<application>` tag in AndroidManifest.xml. The [attribute](https://developer.android.com/training/data-storage/compatibility) is `false` by default on apps targeting Android Q. 
+The plugin should work out of the box.
 
 ### Example
 
