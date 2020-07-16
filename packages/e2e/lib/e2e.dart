@@ -78,33 +78,47 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   static Map<String, String> _results = <String, String>{};
 
+  /// The extra data for the reported result.
+  ///
+  /// The values in `reportData` must be json-serializable objects or `null`.
+  /// If it's `null`, no extra data is attached to the result.
+  ///
+  /// The default value is `null`.
+  Map<String, dynamic> reportData;
+
+  /// the callback function to response the driver side input.
+  @visibleForTesting
+  Future<Map<String, dynamic>> callback(Map<String, String> params) async {
+    final String command = params['command'];
+    Map<String, String> response;
+    switch (command) {
+      case 'request_data':
+        final bool allTestsPassed = await _allTestsPassed.future;
+        response = <String, String>{
+          'message': allTestsPassed
+              ? Response.allTestsPassed(data: reportData).toJson()
+              : Response.someTestsFailed(
+                  _failureMethodsDetails,
+                  data: reportData,
+                ).toJson(),
+        };
+        break;
+      case 'get_health':
+        response = <String, String>{'status': 'ok'};
+        break;
+      default:
+        throw UnimplementedError('$command is not implemented');
+    }
+    return <String, dynamic>{
+      'isError': false,
+      'response': response,
+    };
+  }
+
   // Emulates the Flutter driver extension, returning 'pass' or 'fail'.
   @override
   void initServiceExtensions() {
     super.initServiceExtensions();
-    Future<Map<String, dynamic>> callback(Map<String, String> params) async {
-      final String command = params['command'];
-      Map<String, String> response;
-      switch (command) {
-        case 'request_data':
-          final bool allTestsPassed = await _allTestsPassed.future;
-          response = <String, String>{
-            'message': allTestsPassed
-                ? Response.allTestsPassed().toJson()
-                : Response.someTestsFailed(_failureMethodsDetails).toJson(),
-          };
-          break;
-        case 'get_health':
-          response = <String, String>{'status': 'ok'};
-          break;
-        default:
-          throw UnimplementedError('$command is not implemented');
-      }
-      return <String, dynamic>{
-        'isError': false,
-        'response': response,
-      };
-    }
 
     if (kIsWeb) {
       registerWebServiceExtension(callback);
