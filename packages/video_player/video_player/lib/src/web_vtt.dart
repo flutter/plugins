@@ -41,7 +41,6 @@ List<Caption> _parseCaptionsFromWebVttString(String file) {
     ///  [00:00.000 --> 01:24.000 align:center]
     ///  ['Introduction']
     /// ]
-
     /// if caption has just header or time, but no text, captionLines.length will be < 1
     if (captionLines.length < 2) continue;
 
