@@ -1,69 +1,72 @@
 part of google_maps_flutter_web;
 
-void _optionsFromParams(gmaps.MapOptions options,
-    Map<String, dynamic> optionsUpdate) {
-  if(optionsUpdate['mapType'] != null) {
-    options
-      ..mapTypeId = gmaps.MapTypeId.values[optionsUpdate['mapType']]
-    ;}
-  options
-    ..minZoom   = optionsUpdate['minMaxZoomPreference'][0]
-    ..maxZoom   = optionsUpdate['minMaxZoomPreference'][1]
-  ;
-//  compassEnabled,
-//  mapToolbarEnabled,
-//  cameraTargetBounds,
-//  mapType,
-//  minMaxZoomPreference,
-//  rotateGesturesEnabled,
-//  scrollGesturesEnabled,
-//  tiltGesturesEnabled,
-//  trackCameraPosition,
-//  zoomGesturesEnabled,
-//  myLocationEnabled,
-//  myLocationButtonEnabled,
-//  padding,
-//  indoorViewEnabled,
-//  trafficEnabled,
-//  buildingsEnabled,
+// Indices in the plugin side don't match with the ones
+// in the gmaps lib. This translates from plugin -> gmaps.
+final _mapTypeToMapTypeId = {
+  0: gmaps.MapTypeId.ROADMAP, // "none" in the plugin
+  1: gmaps.MapTypeId.ROADMAP,
+  2: gmaps.MapTypeId.SATELLITE,
+  3: gmaps.MapTypeId.TERRAIN,
+  4: gmaps.MapTypeId.HYBRID,
+};
 
-// backgroundColor(String _backgroundColor)
-//center(LatLng _center)
-//clickableIcons(bool _clickableIcons)
-//disableDefaultUI(bool _disableDefaultUI)
-//disableDoubleClickZoom(bool _disableDoubleClickZoom)
-//draggable(bool _draggable)
-//draggableCursor(String _draggableCursor)
-//draggingCursor(String _draggingCursor)
-//fullscreenControl(bool _fullscreenControl)
-//fullscreenControlOptions(
-//gestureHandling(String _gestureHandling)
-//heading(num _heading)
-//keyboardShortcuts(bool _keyboardShortcuts)
-//mapTypeControl(bool _mapTypeControl)
-//mapTypeControlOptions(MapTypeControlOptions _mapTypeControlOptions)
-//_mapTypeId(dynamic __mapTypeId)
-//mapTypeId(dynamic /*MapTypeId|String*/ mapTypeId)
-//maxZoom(num _maxZoom)
-//minZoom(num _minZoom)
-//noClear(bool _noClear)
-//overviewMapControl(bool _overviewMapControl)
-//overviewMapControlOptions(
-//panControl(bool _panControl)
-//panControlOptions(PanControlOptions _panControlOptions)
-//rotateControl(bool _rotateControl)
-//rotateControlOptions(RotateControlOptions _rotateControlOptions)
-//scaleControl(bool _scaleControl)
-//scaleControlOptions(ScaleControlOptions _scaleControlOptions)
-//scrollwheel(bool _scrollwheel)
-//streetView(StreetViewPanorama _streetView)
-//streetViewControl(bool _streetViewControl)
-//streetViewControlOptions(
-//styles(List<MapTypeStyle> _styles)
-//tilt(num _tilt)
-//zoom(num _zoom)
-//zoomControl(bool _zoomControl)
-//zoomControlOptions(ZoomControlOptions _zoomControlOptions)
+/// Converts options from the plugin into gmaps.MapOptions that can be used by the JS SDK.
+// The following options are not handled here, for various reasons:
+// The following are not available in web, because the map doesn't rotate there:
+//   compassEnabled
+//   rotateGesturesEnabled
+//   tiltGesturesEnabled
+// mapToolbarEnabled is unused in web, there's no "map toolbar"
+// myLocationButtonEnabled Widget not available in web yet, it needs to be built on top of the maps widget
+//   See: https://developers.google.com/maps/documentation/javascript/examples/control-custom
+// myLocationEnabled needs to be built through dart:html navigator.geolocation
+//   See: https://api.dart.dev/stable/2.8.4/dart-html/Geolocation-class.html
+// trafficEnabled is handled when creating the GMap object, since it needs to be added as a layer.
+// trackCameraPosition is just a boolan value that indicates if the map has an onCameraMove handler.
+// indoorViewEnabled seems to not have an equivalent in web
+// buildingsEnabled seems to not have an equivalent in web
+// padding seems to behave differently in web than mobile. You can't move UI elements in web.
+gmaps.MapOptions _optionsFromParams(Map<String, dynamic> optionsUpdate, {
+      gmaps.MapOptions existingOptions,
+    }) {
+
+  gmaps.MapOptions options = existingOptions ?? gmaps.MapOptions();
+
+  if(_mapTypeToMapTypeId.containsKey(optionsUpdate['mapType'])) {
+    options.mapTypeId = _mapTypeToMapTypeId[optionsUpdate['mapType']];
+  }
+
+  if (optionsUpdate['minMaxZoomPreference'] != null) {
+    options
+      ..minZoom   = optionsUpdate['minMaxZoomPreference'][0]
+      ..maxZoom   = optionsUpdate['minMaxZoomPreference'][1];
+  }
+
+  if (optionsUpdate['cameraTargetBounds'] != null) {
+    // Needs gmaps.MapOptions.restriction and gmaps.MapRestriction
+    // see: https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions.restriction
+  }
+
+  if (optionsUpdate['zoomControlsEnabled'] != null) {
+    options.zoomControl = optionsUpdate['zoomControlsEnabled'];
+  }
+
+  if (optionsUpdate['styles'] != null) {
+    options.styles = optionsUpdate['styles'];
+  }
+
+  if (optionsUpdate['scrollGesturesEnabled'] == false || optionsUpdate['zoomGesturesEnabled'] == false) {
+    options.gestureHandling = 'none';
+  } else {
+    options.gestureHandling = 'auto';
+  }
+
+  // These don't have any optionUpdate entry, but they seem to be off in the native maps.
+  options.mapTypeControl = optionsUpdate['mapToolbarEnabled'] ?? false;
+  options.fullscreenControl = optionsUpdate['mapToolbarEnabled'] ?? false;
+  options.streetViewControl = false;
+
+  return options;
 }
 
 List<gmaps.MapTypeStyle> _mapStyles(String mapStyle) {

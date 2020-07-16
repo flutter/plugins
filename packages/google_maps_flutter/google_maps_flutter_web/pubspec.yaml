@@ -29,5 +29,5 @@ dev_dependencies:
     path: ../google_maps_flutter
 
 environment:
-  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  sdk: ">=2.3.0 <3.0.0"
   flutter: ">=1.10.0 <2.0.0"

@@ -10,12 +10,9 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     GoogleMapsFlutterPlatform.instance = GoogleMapsPlugin();
   }
 
-  static Future<String> get platformVersion async {
-    return "1.0";
-  }
-
   // This is a cache of rendered maps <-> GoogleMapControllers
-  HashMap _mapById = HashMap<int, GoogleMapController>();
+  Map _mapById = Map<int, GoogleMapController>();
+  Map _optionsById = Map<int, Map<String, dynamic>>();
 
   final StreamController<MapEvent> _controller =
   StreamController<MapEvent>.broadcast();
@@ -28,6 +25,16 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     /* Noop */
   }
 
+  // Updates the cache of map options for a given mapId, so we can 
+  // recrate the gmaps.MapOptions object from scratch.
+  Map<String, dynamic> _mergeRawMapOptions(dynamic newOptions, int mapId) {
+    _optionsById[mapId] = <String, dynamic>{
+      ..._optionsById[mapId] ?? {},
+      ...newOptions,
+    };
+    return _optionsById[mapId];
+  }
+
   @override
   Future<void> updateMapOptions(
       Map<String, dynamic> optionsUpdate, {
@@ -35,7 +42,11 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       }) {
     GoogleMapController googleMapController = _mapById[mapId];
     if(googleMapController != null) {
-      _optionsFromParams(googleMapController.options, optionsUpdate);
+      googleMapController.setOptions(
+        _optionsFromParams(
+          _mergeRawMapOptions(optionsUpdate, mapId),
+        ),
+      );
     } else {
       throw StateError("updateMapOptions called prior to map initialization");
     }
@@ -113,7 +124,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     }
 
     gmaps.GMap map = googleMapController.googleMap;
-    // TODO: Subclass CameraUpdate so the below code is not stringly-typed.
+    // TODO: Subclass CameraUpdate so the below code is not so stringly-typed?
     dynamic json = cameraUpdate.toJson();
 
     switch (json[0]) {
@@ -172,7 +183,11 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       }) {
     GoogleMapController googleMapController = _mapById[mapId];
     if(googleMapController != null) {
-      googleMapController.options.styles = _mapStyles(mapStyle);
+      googleMapController.setOptions(
+        _optionsFromParams(_mergeRawMapOptions({
+          'styles': _mapStyles(mapStyle),
+        }, mapId)),
+      );
     }
   }
 
@@ -188,10 +203,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
         return Future.value(_gmLatLngBoundsTolatLngBounds(latLngBounds));
       }
     }
-//    try { throw Error();  } catch (error, stacktrace) { print(stacktrace.toString());  }
-//    return Future.error(
-//        StateError("getVisibleRegion called prior to map initialization")
-//    );
     return Future.value(LatLngBounds(southwest: LatLng(0,0),northeast:LatLng(0,0) ));
   }
 
@@ -348,8 +359,12 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     return _events(mapId).whereType<MapLongPressEvent>();
   }
 
-  // TODO: Add a new dispose(int mapId) method to clear the cache of Controllers
-  // that the `buildView` method is creating!
+  // TODO: Make this method part of the interface!
+  void dispose({@required int mapId}) {
+    _mapById[mapId]?.dispose();
+    _mapById.remove(mapId);
+    _optionsById.remove(mapId);
+  }
 
   @override
   Widget buildView(
@@ -358,29 +373,38 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       PlatformViewCreatedCallback onPlatformViewCreated) {
 
     int mapId = creationParams['creationMapId'];
+    creationParams.remove('creationMapId');
 
     if (mapId == null) {
       throw PlatformException(code: 'maps_web_missing_creation_map_id', message: 'Pass a `creationMapId` in creationParams to prevent reloads in web.',);
     }
 
+    Map<String, dynamic> mergedRawOptions;
+
+    // Merge the raw options now, so we can adjust the traffic layer on the cached controller, if needed.
+    if (creationParams['options'] != null) {
+      mergedRawOptions = _mergeRawMapOptions(creationParams['options'], mapId);
+    }
+
     if (_mapById[mapId]?.html != null) {
-      // print('Map ID $mapId already exists, returning cached...');
+      // TODO: Toggling the traffic layer here needs a repaint that isn't happening.
+      // How to achieve that?
+      // _mapById[mapId].setTrafficLayer(mergedRawOptions['trafficEnabled'] ?? false);
       return _mapById[mapId].html;
     }
 
-    creationParams.remove('creationMapId');
 
     gmaps.MapOptions options = gmaps.MapOptions();
     CameraPosition position;
 
-    CircleUpdates     initialCircles    = null;
-    PolygonUpdates    initialPolygons   = null;
-    PolylineUpdates   initialPolylines  = null;
-    MarkerUpdates     initialMarkers    = null;
+    CircleUpdates     initialCircles;
+    PolygonUpdates    initialPolygons;
+    PolylineUpdates   initialPolylines;
+    MarkerUpdates     initialMarkers;
 
     creationParams.forEach((key, value) {
       if(key == 'options')    {
-        _optionsFromParams(options, value);
+        _optionsFromParams(mergedRawOptions, existingOptions: options);
       } else if(key == 'markersToAdd') {
         initialMarkers = _markerFromParams(value);
       } else if(key == 'polygonsToAdd') {
@@ -408,27 +432,16 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
           onPlatformViewCreated: onPlatformViewCreated,
           options: options,
           position: position,
-          initialCircles: initialCircles != null
-              ? initialCircles.circlesToAdd
-              : null,
-          initialPolygons: initialPolygons != null ? initialPolygons
-              .polygonsToAdd : null,
-          initialPolylines: initialPolylines != null ? initialPolylines
-              .polylinesToAdd : null,
-          initialMarkers: initialMarkers != null ? initialMarkers
-              .markersToAdd : null,
-        )
-    ;
+          initialCircles: initialCircles?.circlesToAdd,
+          initialPolygons: initialPolygons?.polygonsToAdd,
+          initialPolylines: initialPolylines?.polylinesToAdd,
+          initialMarkers: initialMarkers?.markersToAdd,
+        );
 
-
-    /** trafficEnabled
-     * var trafficLayer = new google.maps.TrafficLayer();
-        trafficLayer.setMap(map);
-     */
-
-
-//    try {throw Error();  } catch (error, stacktrace) { print(stacktrace.toString());  }
     onPlatformViewCreated.call(mapId);
+
+    // TODO: Enable layer support, once toggling works.
+    // _mapById[mapId].setTrafficLayer(mergedRawOptions['trafficEnabled'] ?? false);
 
     return _mapById[mapId].html;
   }

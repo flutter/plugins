@@ -6,19 +6,18 @@ class GoogleMapController {
   final int mapId;
   ///TODO
   HtmlElementView html;
-  ///TODO
+
+  gmaps.TrafficLayer _trafficLayer;
+  
+  /// TODO
   gmaps.GMap googleMap;
-  ///TODO
-  DivElement div;
-  ///TODO
-  final gmaps.MapOptions        options;
+
   final StreamController<MapEvent>  streamController;
   CameraPosition                    position;
   CirclesController                 circlesController;
   PolygonsController                polygonsController;
   PolylinesController               polylinesController;
   MarkersController               markersController;
-
 
   Set<Circle>     initialCircles;
   Set<Polygon>    initialPolygons;
@@ -31,7 +30,7 @@ class GoogleMapController {
   GoogleMapController.build({
     @required this.mapId,
     @required this.streamController,
-    @required this.options,
+    @required gmaps.MapOptions options,
     @required this.position,
     @required onPlatformViewCreated,
     @required this.initialCircles,
@@ -46,19 +45,45 @@ class GoogleMapController {
     html = HtmlElementView(
         viewType: 'plugins.flutter.io/google_maps_$mapId'
     );
-//    onPlatformViewCreated.call(mapId);
-    div = DivElement()
-      ..id = 'plugins.flutter.io/google_maps_$mapId'
-    ;
+    DivElement div = DivElement()
+      ..id = 'plugins.flutter.io/google_maps_$mapId';
+
     // TODO: Move the comment below to analysis-options.yaml
     // ignore:undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
       'plugins.flutter.io/google_maps_$mapId',
           (int viewId) => div,
     );
+
     googleMap = gmaps.GMap(div, options);
     onMapReady(googleMap);
     _attachMapEvents(googleMap);
+  }
+
+  void dispose() {
+    html = null;
+    googleMap = null;
+    circlesController = null;
+    polygonsController = null;
+    polylinesController = null;
+    markersController = null;
+    streamController.close();
+  }
+
+  /// Attaches/detaches a Traffic Layer on the current googleMap.
+  void setTrafficLayer(bool attach) {
+    if (attach && _trafficLayer == null) {
+      _trafficLayer = gmaps.TrafficLayer();
+      _trafficLayer.set('map', googleMap);
+      googleMap.panBy(1, 0);
+      googleMap.panBy(-1, 0);
+    }
+    if (!attach && _trafficLayer != null) {
+      _trafficLayer.set('map', null);
+      _trafficLayer = null;
+      googleMap.panBy(1, 0);
+      googleMap.panBy(-1, 0);
+    }
   }
 
   void _attachMapEvents(gmaps.GMap map) {
@@ -94,6 +119,10 @@ class GoogleMapController {
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialMarkers();
+  }
+
+  void setOptions(gmaps.MapOptions options) {
+    googleMap?.options = options;
   }
 
   void setInitialCircles(Set<Circle> initialCircles) {
