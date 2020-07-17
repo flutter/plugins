@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -40,6 +41,14 @@ class GoogleMapInspector {
     return await _channel.invokeMethod<bool>('map#isZoomGesturesEnabled');
   }
 
+  Future<bool> isZoomControlsEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isZoomControlsEnabled');
+  }
+
+  Future<bool> isLiteModeEnabled() async {
+    return await _channel.invokeMethod<bool>('map#isLiteModeEnabled');
+  }
+
   Future<bool> isRotateGesturesEnabled() async {
     return await _channel.invokeMethod<bool>('map#isRotateGesturesEnabled');
   }
@@ -62,5 +71,9 @@ class GoogleMapInspector {
 
   Future<bool> isBuildingsEnabled() async {
     return await _channel.invokeMethod<bool>('map#isBuildingsEnabled');
+  }
+
+  Future<Uint8List> takeSnapshot() async {
+    return await _channel.invokeMethod<Uint8List>('map#takeSnapshot');
   }
 }

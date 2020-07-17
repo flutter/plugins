@@ -316,9 +316,17 @@ class Convert {
     if (zoomGesturesEnabled != null) {
       sink.setZoomGesturesEnabled(toBoolean(zoomGesturesEnabled));
     }
+    final Object liteModeEnabled = data.get("liteModeEnabled");
+    if (liteModeEnabled != null) {
+      sink.setLiteModeEnabled(toBoolean(liteModeEnabled));
+    }
     final Object myLocationEnabled = data.get("myLocationEnabled");
     if (myLocationEnabled != null) {
       sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
+    }
+    final Object zoomControlsEnabled = data.get("zoomControlsEnabled");
+    if (zoomControlsEnabled != null) {
+      sink.setZoomControlsEnabled(toBoolean(zoomControlsEnabled));
     }
     final Object myLocationButtonEnabled = data.get("myLocationButtonEnabled");
     if (myLocationButtonEnabled != null) {

@@ -4,14 +4,14 @@
 Pod::Spec.new do |s|
   s.name             = 'shared_preferences_macos'
   s.version          = '0.0.1'
-  s.summary          = 'macOS implementation of the shared_preferences plugin for reading and writing simple key-value pairs.'
+  s.summary          = 'macOS implementation of the shared_preferences plugin.'
   s.description      = <<-DESC
-  macOS implementation of the shared_preferences plugin for reading and writing simple key-value pairs.
+Wraps NSUserDefaults, providing a persistent store for simple key-value pairs.
                        DESC
   s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences_macos'
-  s.license          = { :file => '../LICENSE' }
+  s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :path => '.' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences_macos' }
   s.source_files = 'Classes/**/*'
   s.dependency 'FlutterMacOS'
 

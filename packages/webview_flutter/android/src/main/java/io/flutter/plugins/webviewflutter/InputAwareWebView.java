@@ -7,10 +7,13 @@ package io.flutter.plugins.webviewflutter;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
 import android.content.Context;
+import android.graphics.Rect;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
+import android.widget.ListPopupWindow;
 
 /**
  * A WebView subclass that mirrors the same implementation hacks that the system WebView does in
@@ -185,5 +188,46 @@ final class InputAwareWebView extends WebView {
             imm.isActive(containerView);
           }
         });
+  }
+
+  @Override
+  protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
+    // This works around a crash when old (<67.0.3367.0) Chromium versions are used.
+
+    // Prior to Chromium 67.0.3367 the following sequence happens when a select drop down is shown
+    // on tablets:
+    //
+    //  - WebView is calling ListPopupWindow#show
+    //  - buildDropDown is invoked, which sets mDropDownList to a DropDownListView.
+    //  - showAsDropDown is invoked - resulting in mDropDownList being added to the window and is
+    //    also synchronously performing the following sequence:
+    //    - WebView's focus change listener is loosing focus (as mDropDownList got it)
+    //    - WebView is hiding all popups (as it lost focus)
+    //    - WebView's SelectPopupDropDown#hide is invoked.
+    //    - DropDownPopupWindow#dismiss is invoked setting mDropDownList to null.
+    //  - mDropDownList#setSelection is invoked and is throwing a NullPointerException (as we just set mDropDownList to null).
+    //
+    // To workaround this, we drop the problematic focus lost call.
+    // See more details on: https://github.com/flutter/flutter/issues/54164
+    //
+    // We don't do this after Android P as it shipped with a new enough WebView version, and it's
+    // better to not do this on all future Android versions in case DropDownListView's code changes.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P
+        && isCalledFromListPopupWindowShow()
+        && !focused) {
+      return;
+    }
+    super.onFocusChanged(focused, direction, previouslyFocusedRect);
+  }
+
+  private boolean isCalledFromListPopupWindowShow() {
+    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+    for (int i = 0; i < stackTraceElements.length; i++) {
+      if (stackTraceElements[i].getClassName().equals(ListPopupWindow.class.getCanonicalName())
+          && stackTraceElements[i].getMethodName().equals("show")) {
+        return true;
+      }
+    }
+    return false;
   }
 }
