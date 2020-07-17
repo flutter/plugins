@@ -355,6 +355,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     super.dispose();
   }
 
+  /// Public Method to set nw subtitles
+  ///
+  /// This can be called to set new subtitles.
+  /// It downloads the new subtitle as VTT and it is converted
+  /// with the class WebVttCaptionFile
   void setHlsSubtitle(String url) async {
     HlsMediaPlaylist media = await _getHlsData(url);
     Response response = await http.get(
