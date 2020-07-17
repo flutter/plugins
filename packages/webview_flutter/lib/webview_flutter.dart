@@ -156,6 +156,7 @@ class WebView extends StatefulWidget {
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.useExperimentalAndroidSurfaceView = false,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         super(key: key);
@@ -329,6 +330,16 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
+  /// Whether to use `AndroidViewSurface` and `SurfaceAndroidViewController` to create the widget.
+  ///
+  /// This flag is temporary and is highly subject to removal. One should only
+  /// use this if they are willing to test [WebView] features that aren't
+  /// available in the standard version and acknowledges that it is possible
+  /// this can have slower performance and/or unpredictable bugs.
+  ///
+  /// Defaults to false.
+  final bool useExperimentalAndroidSurfaceView;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -341,7 +352,17 @@ class _WebViewState extends State<WebView> {
 
   @override
   Widget build(BuildContext context) {
-    return WebView.platform.build(
+    final WebViewPlatform platform = WebView.platform;
+    if (widget.useExperimentalAndroidSurfaceView && platform is AndroidWebView) {
+      return platform.buildWithSurfaceView(
+        context: context,
+        onWebViewPlatformCreated: _onWebViewPlatformCreated,
+        webViewPlatformCallbacksHandler: _platformCallbacksHandler,
+        gestureRecognizers: widget.gestureRecognizers,
+        creationParams: _creationParamsfromWidget(widget),
+      );
+    }
+    return platform.build(
       context: context,
       onWebViewPlatformCreated: _onWebViewPlatformCreated,
       webViewPlatformCallbacksHandler: _platformCallbacksHandler,
@@ -445,9 +466,7 @@ WebSettings _clearUnchangedWebSettings(
 
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   final Set<String> channelNames = channels == null
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // ignore: prefer_collection_literals
-      ? Set<String>()
+      ? <String>{}
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;
 }

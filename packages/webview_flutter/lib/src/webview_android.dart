@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -55,6 +56,55 @@ class AndroidWebView implements WebViewPlatform {
             MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
         creationParamsCodec: const StandardMessageCodec(),
       ),
+    );
+  }
+
+  // ignore: public_member_api_docs
+  Widget buildWithSurfaceView({
+    BuildContext context,
+    CreationParams creationParams,
+    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+    WebViewPlatformCreatedCallback onWebViewPlatformCreated,
+    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+  }) {
+    assert(webViewPlatformCallbacksHandler != null);
+    return PlatformViewLink(
+      viewType: 'plugins.flutter.io/webview',
+      surfaceFactory: (
+        BuildContext context,
+        PlatformViewController controller,
+      ) {
+        return AndroidViewSurface(
+          controller: controller,
+          gestureRecognizers: gestureRecognizers ??
+              const <Factory<OneSequenceGestureRecognizer>>{},
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+        );
+      },
+      onCreatePlatformView: (PlatformViewCreationParams params) {
+        return PlatformViewsService.initSurfaceAndroidView(
+          id: params.id,
+          viewType: 'plugins.flutter.io/webview',
+          // WebView content is not affected by the Android view's layout direction,
+          // we explicitly set it here so that the widget doesn't require an ambient
+          // directionality.
+          layoutDirection: TextDirection.rtl,
+          creationParams: MethodChannelWebViewPlatform.creationParamsToMap(
+            creationParams,
+          ),
+          creationParamsCodec: const StandardMessageCodec(),
+        )
+          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+          ..addOnPlatformViewCreatedListener((int id) {
+            if (onWebViewPlatformCreated == null) {
+              return;
+            }
+            onWebViewPlatformCreated(
+              MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler),
+            );
+          })
+          ..create();
+      },
     );
   }
 

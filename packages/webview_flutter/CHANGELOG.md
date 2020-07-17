@@ -1,3 +1,19 @@
+## 0.3.23
+
+* Add `Webview.useExperimentalAndroidSurfaceView` flag that builds Android WebView using hybrid views.
+  To use this feature, set this value to `true` and have the following lines in your `android/app/src/main/AndroidManifest.xml`:
+```xml
+<application>
+.
+.
+<meta-data
+    android:name="io.flutter.embedded_views_preview"
+    android:value="true" />
+.
+.
+</application>
+```
+
 ## 0.3.22+1
 
 * Update the `setAndGetScrollPosition` to use hard coded values and add a `pumpAndSettle` call.
