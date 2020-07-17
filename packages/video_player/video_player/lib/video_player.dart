@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -358,7 +359,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     HlsMediaPlaylist media = await _getHlsData(url);
     Response response = await http.get(
         url.substring(0, url.lastIndexOf("/")) + "/" + media.segments[0].url);
-    _closedCaptionFile = WebVttCaptionFile(response.body);
+    _closedCaptionFile = WebVttCaptionFile(utf8.decode(response.bodyBytes));
   }
 
   /// Parse m3u8 manifest
@@ -371,7 +372,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     Uri parsedUrl = Uri.parse(url);
     try {
       dynamic playList = await HlsPlaylistParser.create()
-          .parseString(parsedUrl, response.body);
+          .parseString(parsedUrl, utf8.decode(response.bodyBytes));
 
       if (playList is HlsMasterPlaylist) {
         HlsMasterPlaylist playlist = playList;
