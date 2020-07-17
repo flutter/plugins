@@ -9,16 +9,16 @@ import 'package:html/dom.dart';
 import 'closed_caption_file.dart';
 import 'package:html/parser.dart' as html_parser;
 
-/// Represents a [ClosedCaptionFile], parsed from the WebVtt file format.
-/// See: https://en.wikipedia.org/wiki/WebVtt
+// Represents a [ClosedCaptionFile], parsed from the WebVtt file format.
+// See: https://en.wikipedia.org/wiki/WebVtt
 class WebVttCaptionFile extends ClosedCaptionFile {
-  /// Parses a string into a [ClosedCaptionFile], assuming [fileContents] is in
-  /// the WebVtt file format.
-  /// * See: https://en.wikipedia.org/wiki/WebVtt
+  // Parses a string into a [ClosedCaptionFile], assuming [fileContents] is in
+  // the WebVtt file format.
+  // * See: https://en.wikipedia.org/wiki/WebVtt
   WebVttCaptionFile(this.fileContents)
       : _captions = _parseCaptionsFromWebVttString(fileContents);
 
-  /// The entire body of the Vtt file.
+  // The entire body of the Vtt file.
   final String fileContents;
 
   @override
@@ -30,25 +30,25 @@ class WebVttCaptionFile extends ClosedCaptionFile {
 List<Caption> _parseCaptionsFromWebVttString(String file) {
   final List<Caption> captions = <Caption>[];
 
-  /// Ignore metadata
+  // Ignore metadata
   List<String> metadata = ['HEADER', 'NOTE', 'REGION', 'WEBVTT'];
 
   int captionNumber = 1;
   for (List<String> captionLines in _readWebVttFile(file)) {
-    /// CaptionLines represent a complete caption
-    /// E.g
-    /// [
-    ///  [00:00.000 --> 01:24.000 align:center]
-    ///  ['Introduction']
-    /// ]
-    /// if caption has just header or time, but no text, captionLines.length will be < 1
+    // CaptionLines represent a complete caption
+    // E.g
+    // [
+    //  [00:00.000 --> 01:24.000 align:center]
+    //  ['Introduction']
+    // ]
+    // if caption has just header or time, but no text, captionLines.length will be 1
     if (captionLines.length < 2) continue;
 
-    /// if caption has header equal metadata, ignore
+    // if caption has header equal metadata, ignore
     String metadaType = captionLines[0]?.split(' ')[0];
     if (metadata.contains(metadaType)) continue;
 
-    /// Caption has header
+    // Caption has header
     bool hasHeader = captionLines.length > 2;
     if (hasHeader && int.tryParse(captionLines[0]) != null) {
       captionNumber = int.parse(captionLines[0]);
@@ -60,10 +60,10 @@ List<Caption> _parseCaptionsFromWebVttString(String file) {
 
     final String text = captionLines.sublist(hasHeader ? 2 : 1).join('\n');
 
-    /// TODO: Handle text formats
-    /// Some captions comes with anotations (information about who/how is the speech being delivered) and styles tags.
-    /// E.g:
-    /// <v.first.loud Neil deGrasse Tyson><i>Laughs</i>
+    // TODO: Handle text formats
+    // Some captions comes with anotations (information about who/how is the speech being delivered) and styles tags.
+    // E.g:
+    // <v.first.loud Neil deGrasse Tyson><i>Laughs</i>
     final String textWithoutFormat = _parseHtmlString(text);
 
     final Caption newCaption = Caption(
@@ -151,13 +151,13 @@ Duration _parseWebVttTimestamp(String timestampString) {
 
   List<String> milisecondsStyles = dotSections[1].split(" ");
 
-  /// TODO: Handle styles
-  /// Some captions comes with styles about where/how the caption should be rendered.
-  /// E.g:
-  /// 00:32.500 --> 00:33.500 align:left size:50%
-  /// if (milisecondsStyles.length > 1) {
-  ///  List<String> styles = milisecondsStyles.sublist(1);
-  /// }
+  // TODO: Handle styles
+  // Some captions comes with styles about where/how the caption should be rendered.
+  // E.g:
+  // 00:32.500 --> 00:33.500 align:left size:50%
+  // if (milisecondsStyles.length > 1) {
+  //  List<String> styles = milisecondsStyles.sublist(1);
+  // }
   int milliseconds = int.parse(milisecondsStyles[0]);
 
   return Duration(
