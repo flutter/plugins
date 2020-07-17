@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SizedBox(height: 10),
             RaisedButton(
-              child: Text('Press for a message'),
+              child: Text('Press for a message and a file'),
               onPressed: () => { _getMessage() },
             ),
           ],
