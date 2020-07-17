@@ -1,4 +1,4 @@
-## 0.10.11+3
+## 0.10.12
 
 * Support to WebVtt added.
 
