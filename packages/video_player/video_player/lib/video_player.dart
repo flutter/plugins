@@ -8,6 +8,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hls_parser/flutter_hls_parser.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
@@ -16,6 +19,8 @@ export 'package:video_player_platform_interface/video_player_platform_interface.
 
 import 'src/closed_caption_file.dart';
 export 'src/closed_caption_file.dart';
+
+export 'package:flutter_hls_parser/flutter_hls_parser.dart' show Rendition;
 
 final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
   // This will clear all open videos on the platform when a full restart is
@@ -227,11 +232,19 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Completer<void> _creatingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
+  List<Rendition> _hlsSubtitles = [];
+
+  // List<Rendition> _hlsCaptions = [];
+  // List<Rendition> _hlsAudios = [];
 
   /// This is just exposed for testing. It shouldn't be used by anyone depending
   /// on the plugin.
   @visibleForTesting
   int get textureId => _textureId;
+
+  List<Rendition> get hlsSubtitles => _hlsSubtitles;
+  // List<Rendition> get hlsCaptions => _hlsCaptions;
+  // List<Rendition> get hlsAudios => _hlsAudios;
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
@@ -281,6 +294,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
+          if (formatHint == VideoFormat.hls) {
+            _getHlsData(dataSource);
+          }
           break;
         case VideoEventType.completed:
           value = value.copyWith(isPlaying: false, position: value.duration);
@@ -336,6 +352,49 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     _isDisposed = true;
     super.dispose();
+  }
+
+  void setHlsSubtitle(String url) async {
+    HlsMediaPlaylist media = await _getHlsData(url);
+    Response response = await http.get(
+        url.substring(0, url.lastIndexOf("/")) + "/" + media.segments[0].url);
+    _closedCaptionFile = WebVttCaptionFile(response.body);
+  }
+
+  /// Parse m3u8 manifest
+  ///
+  /// This method returns HlsMasterPlaylist or HlsMediaPlaylist
+  /// based on the manifest. This also populates _hlsSutitles, _hlsAudios and
+  /// _hlsCaptions when movie is played.
+  Future<dynamic> _getHlsData(String url) async {
+    Response response = await http.get(url);
+    Uri parsedUrl = Uri.parse(url);
+    try {
+      dynamic playList = await HlsPlaylistParser.create()
+          .parseString(parsedUrl, response.body);
+
+      if (playList is HlsMasterPlaylist) {
+        HlsMasterPlaylist playlist = playList;
+
+        //TODO: Support other subtitles formats
+        // Filtering to support VTT only
+        _hlsSubtitles = playlist.subtitles
+            .where((subtitle) =>
+                subtitle.format.sampleMimeType == MimeTypes.TEXT_VTT)
+            .toList();
+        ;
+
+        // TODO: handle audio steams
+        // _hlsAudios = playlist.audios;
+        // _hlsCaptions = playlist.closedCaptions;
+
+        return playlist;
+      } else if (playList is HlsMediaPlaylist) {
+        return playList;
+      }
+    } on ParserException catch (e) {
+      print(e);
+    }
   }
 
   /// Starts playing the video.

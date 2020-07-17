@@ -23,7 +23,7 @@ class _App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         key: const ValueKey<String>('home_page'),
         appBar: AppBar(
@@ -49,6 +49,10 @@ class _App extends StatelessWidget {
                 icon: Icon(Icons.cloud),
                 text: "Remote",
               ),
+              Tab(
+                icon: Icon(Icons.cloud),
+                text: "Hls",
+              ),
               Tab(icon: Icon(Icons.insert_drive_file), text: "Asset"),
               Tab(icon: Icon(Icons.list), text: "List example"),
             ],
@@ -57,6 +61,7 @@ class _App extends StatelessWidget {
         body: TabBarView(
           children: <Widget>[
             _BumbleBeeRemoteVideo(),
+            _HlsVideo(),
             _ButterFlyAssetVideo(),
             _ButterFlyAssetVideoInList(),
           ],
@@ -258,6 +263,90 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HlsVideo extends StatefulWidget {
+  @override
+  _HlsVideoState createState() => _HlsVideoState();
+}
+
+class _HlsVideoState extends State<_HlsVideo> {
+  VideoPlayerController _controller;
+  String selectedSubtitle;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.network(
+      'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+      formatHint: VideoFormat.hls,
+    );
+
+    _controller.addListener(() {
+      setState(() {});
+    });
+    _controller.setLooping(true);
+    _controller.initialize();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          Container(padding: const EdgeInsets.only(top: 20.0)),
+          const Text('With remote mp4'),
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: <Widget>[
+                  VideoPlayer(_controller),
+                  ClosedCaption(text: _controller.value.caption.text),
+                  _PlayPauseOverlay(controller: _controller),
+                  VideoProgressIndicator(_controller, allowScrubbing: true),
+                ],
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('Subtitles: '),
+              DropdownButton<String>(
+                  value: selectedSubtitle,
+                  iconSize: 24,
+                  elevation: 16,
+                  underline: Container(
+                    height: 1,
+                  ),
+                  onChanged: (String newValue) {
+                    setState(() {
+                      selectedSubtitle = newValue;
+                      _controller.setHlsSubtitle(selectedSubtitle);
+                    });
+                  },
+                  items: _controller.hlsSubtitles
+                      .map<DropdownMenuItem<String>>((Rendition value) {
+                    return DropdownMenuItem<String>(
+                      value: value.url.toString(),
+                      child: Text(value.name),
+                    );
+                  }).toList()),
+            ],
+          )
         ],
       ),
     );

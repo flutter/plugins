@@ -28,6 +28,8 @@ dependencies:
   # https://github.com/flutter/flutter/issues/46264
   video_player_web: ">=0.1.1 <2.0.0"
   html: ^0.14.0+3
+  flutter_hls_parser: ^1.0.0
+  http:
 
   flutter:
     sdk: flutter
