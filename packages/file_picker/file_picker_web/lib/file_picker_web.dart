@@ -28,7 +28,7 @@ class FilePickerPlugin extends FilePickerPlatform {
     html.AnchorElement element = html.AnchorElement(
       href: 'data:text/plain,Hello%2C%20World!',
     );
-    element.download = 'TestFile';
+    element.download = '';
 
     _target.children.clear();
     _target.children.add(element);

@@ -36,6 +36,13 @@ class MyHomePage extends StatefulWidget {
 /// State of Home Page
 class _MyHomePageState extends State<MyHomePage> {
   String _msg = "";
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   void _getMessage() async {
     String msg = await getMessage();
@@ -55,6 +62,16 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Container(
+              width: 150,
+              child: TextField(
+                textAlign: TextAlign.center,
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: 'Enter File Contents',
+                ),
+              ),
+            ),
             Text(
                 this._msg
             ),

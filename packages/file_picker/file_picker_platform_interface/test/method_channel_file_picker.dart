@@ -7,8 +7,5 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'package:file_picker_platform_interface/method_channel_file_picker.dart';
-import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
-
 void main() {
 }
