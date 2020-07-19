@@ -25,14 +25,25 @@ class FilePickerPlugin extends FilePickerPlatform {
 
   /// Test <a> download attribute.
   void _downloadTest() {
+    html.Blob blob = html.Blob(["Hello World from blob!"], 'text/plain');
+
+    String url = html.Url.createObjectUrl(blob);
+
     html.AnchorElement element = html.AnchorElement(
-      href: 'data:text/plain,Hello%2C%20World!',
+      href: url,
     );
     element.download = '';
 
     _target.children.clear();
     _target.children.add(element);
     element.click();
+  }
+
+  /// Web implementation of saveFile()
+  /// TODO: This should take input PickedFile or similar, not string
+  @override
+  Future<void> saveFile(String file_contents) {
+
   }
 
   @override
