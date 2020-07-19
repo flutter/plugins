@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show required;
 
-import 'file_picker_platform_interface.dart';
+import '../platform_interface/file_picker_interface.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/file_picker');
 
