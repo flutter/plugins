@@ -36,6 +36,12 @@ class _WebViewExampleState extends State<WebViewExample> {
       Completer<WebViewController>();
 
   @override
+  void initState() {
+    super.initState();
+    WebView.platform = SurfaceAndroidWebView();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -75,7 +81,6 @@ class _WebViewExampleState extends State<WebViewExample> {
             print('Page finished loading: $url');
           },
           gestureNavigationEnabled: true,
-          useExperimentalAndroidSurfaceView: true,
         );
       }),
       floatingActionButton: favoriteButton(),

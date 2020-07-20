@@ -6,11 +6,14 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'platform_interface.dart';
 import 'src/webview_android.dart';
 import 'src/webview_cupertino.dart';
+import 'src/webview_method_channel.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
@@ -62,6 +65,60 @@ enum NavigationDecision {
 
   /// Allow the navigation to take place.
   navigate,
+}
+
+/// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
+///
+/// To use this, set [WebView.platform] to an instance of this class.
+class SurfaceAndroidWebView extends AndroidWebView {
+  @override
+  Widget build({
+    BuildContext context,
+    CreationParams creationParams,
+    WebViewPlatformCreatedCallback onWebViewPlatformCreated,
+    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+  }) {
+    assert(webViewPlatformCallbacksHandler != null);
+    return PlatformViewLink(
+      viewType: 'plugins.flutter.io/webview',
+      surfaceFactory: (
+          BuildContext context,
+          PlatformViewController controller,
+          ) {
+        return AndroidViewSurface(
+          controller: controller,
+          gestureRecognizers: gestureRecognizers ??
+              const <Factory<OneSequenceGestureRecognizer>>{},
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+        );
+      },
+      onCreatePlatformView: (PlatformViewCreationParams params) {
+        return PlatformViewsService.initSurfaceAndroidView(
+          id: params.id,
+          viewType: 'plugins.flutter.io/webview',
+          // WebView content is not affected by the Android view's layout direction,
+          // we explicitly set it here so that the widget doesn't require an ambient
+          // directionality.
+          layoutDirection: TextDirection.rtl,
+          creationParams: MethodChannelWebViewPlatform.creationParamsToMap(
+            creationParams,
+          ),
+          creationParamsCodec: const StandardMessageCodec(),
+        )
+          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+          ..addOnPlatformViewCreatedListener((int id) {
+            if (onWebViewPlatformCreated == null) {
+              return;
+            }
+            onWebViewPlatformCreated(
+              MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler),
+            );
+          })
+          ..create();
+      },
+    );
+  }
 }
 
 /// Decides how to handle a specific navigation request.
@@ -156,7 +213,6 @@ class WebView extends StatefulWidget {
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
-    this.useExperimentalAndroidSurfaceView = false,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         super(key: key);
@@ -330,16 +386,6 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
-  /// Whether to use `AndroidViewSurface` and `SurfaceAndroidViewController` to create the widget.
-  ///
-  /// This flag is temporary and is highly subject to removal. One should only
-  /// use this if they are willing to test [WebView] features that aren't
-  /// available in the standard version and acknowledges that it is possible
-  /// this can have slower performance and/or unpredictable bugs.
-  ///
-  /// Defaults to false.
-  final bool useExperimentalAndroidSurfaceView;
-
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -352,17 +398,7 @@ class _WebViewState extends State<WebView> {
 
   @override
   Widget build(BuildContext context) {
-    final WebViewPlatform platform = WebView.platform;
-    if (widget.useExperimentalAndroidSurfaceView && platform is AndroidWebView) {
-      return platform.buildWithSurfaceView(
-        context: context,
-        onWebViewPlatformCreated: _onWebViewPlatformCreated,
-        webViewPlatformCallbacksHandler: _platformCallbacksHandler,
-        gestureRecognizers: widget.gestureRecognizers,
-        creationParams: _creationParamsfromWidget(widget),
-      );
-    }
-    return platform.build(
+    return WebView.platform.build(
       context: context,
       onWebViewPlatformCreated: _onWebViewPlatformCreated,
       webViewPlatformCallbacksHandler: _platformCallbacksHandler,
