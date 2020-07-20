@@ -25,7 +25,8 @@ First, add `video_player` as a [dependency in your pubspec.yaml file](https://fl
 
 Warning: The video player is not functional on iOS simulators. An iOS device must be used during development/testing.
 
-Add the following entry to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
+If you want to play videos over an insecure HTTP connection add the following entry to your _Info.plist_ file, 
+located in `<project root>/ios/Runner/Info.plist`:
 
 ```xml
 <key>NSAppTransportSecurity</key>
@@ -35,7 +36,7 @@ Add the following entry to your _Info.plist_ file, located in `<project root>/io
 </dict>
 ```
 
-This entry allows your app to access video files by URL.
+This entry allows your app to access video files by a HTTP URL, this is not needed if you always load your videos over HTTPS.
 
 ### Android
 
