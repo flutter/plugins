@@ -1,3 +1,8 @@
+## 0.3.4+2
+
+* Fixed typo 'manuelly' for 'manually' in documentation.
+* Updated CHANGELOG and pubspec.yaml to reflect the above.
+
 ## 0.3.4+1
 
 * iOS: Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
