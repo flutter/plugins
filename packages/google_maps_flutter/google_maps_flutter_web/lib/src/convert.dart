@@ -69,159 +69,94 @@ gmaps.MapOptions _optionsFromParams(Map<String, dynamic> optionsUpdate, {
   return options;
 }
 
-List<gmaps.MapTypeStyle> _mapStyles(String mapStyle) {
+// Coverts the incoming JSON object into a List of MapTypeStyler objects.
+List<gmaps.MapTypeStyler> _parseStylers(List stylerJsons) {
+  return stylerJsons?.map((styler) {
+    return gmaps.MapTypeStyler()
+      ..color = styler['color']
+      ..gamma = styler['gamma']
+      ..hue = styler['hue']
+      ..invertLightness = styler['invertLightness']
+      ..lightness = styler['lightness']
+      ..saturation = styler['saturation']
+      ..visibility = styler['visibility']
+      ..weight = styler['weight'];
+  })?.toList();
+}
+
+// Converts a String to its corresponding MapTypeStyleElementType enum value.
+final _elementTypeToEnum = <String, gmaps.MapTypeStyleElementType>{
+  'all': gmaps.MapTypeStyleElementType.ALL,
+  'geometry': gmaps.MapTypeStyleElementType.GEOMETRY,
+  'geometry.fill': gmaps.MapTypeStyleElementType.GEOMETRY_FILL,
+  'geometry.stroke': gmaps.MapTypeStyleElementType.GEOMETRY_STROKE,
+  'labels': gmaps.MapTypeStyleElementType.LABELS,
+  'labels.icon': gmaps.MapTypeStyleElementType.LABELS_ICON,
+  'labels.text': gmaps.MapTypeStyleElementType.LABELS_TEXT,
+  'labels.text.fill': gmaps.MapTypeStyleElementType.LABELS_TEXT_FILL,
+  'labels.text.stroke': gmaps.MapTypeStyleElementType.LABELS_TEXT_STROKE,
+};
+
+// Converts a String to its corresponding MapTypeStyleFeatureType enum value.
+final _featureTypeToEnum = <String, gmaps.MapTypeStyleFeatureType>{
+  'administrative': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE,
+  'administrative.country': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_COUNTRY,
+  'administrative.land_parcel': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LAND_PARCEL,
+  'administrative.locality': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LOCALITY,
+  'administrative.neighborhood': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_NEIGHBORHOOD,
+  'administrative.province': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_PROVINCE,
+  'all': gmaps.MapTypeStyleFeatureType.ALL,
+  'landscape': gmaps.MapTypeStyleFeatureType.LANDSCAPE,
+  'landscape.man_made': gmaps.MapTypeStyleFeatureType.LANDSCAPE_MAN_MADE,
+  'landscape.natural': gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL,
+  'landscape.natural.landcover': gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_LANDCOVER,
+  'landscape.natural.terrain': gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_TERRAIN,
+  'poi': gmaps.MapTypeStyleFeatureType.POI,
+  'poi.attraction': gmaps.MapTypeStyleFeatureType.POI_ATTRACTION,
+  'poi.business': gmaps.MapTypeStyleFeatureType.POI_BUSINESS,
+  'poi.government': gmaps.MapTypeStyleFeatureType.POI_GOVERNMENT,
+  'poi.medical': gmaps.MapTypeStyleFeatureType.POI_MEDICAL,
+  'poi.park': gmaps.MapTypeStyleFeatureType.POI_PARK,
+  'poi.place_of_worship': gmaps.MapTypeStyleFeatureType.POI_PLACE_OF_WORSHIP,
+  'poi.school': gmaps.MapTypeStyleFeatureType.POI_SCHOOL,
+  'poi.sports_complex': gmaps.MapTypeStyleFeatureType.POI_SPORTS_COMPLEX,
+  'road': gmaps.MapTypeStyleFeatureType.ROAD,
+  'road.arterial': gmaps.MapTypeStyleFeatureType.ROAD_ARTERIAL,
+  'road.highway': gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY,
+  'road.highway.controlled_access': gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY_CONTROLLED_ACCESS,
+  'road.local': gmaps.MapTypeStyleFeatureType.ROAD_LOCAL,
+  'transit': gmaps.MapTypeStyleFeatureType.TRANSIT,
+  'transit.line': gmaps.MapTypeStyleFeatureType.TRANSIT_LINE,
+  'transit.station': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION,
+  'transit.station.airport': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_AIRPORT,
+  'transit.station.bus': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_BUS,
+  'transit.station.rail': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_RAIL,
+  'water': gmaps.MapTypeStyleFeatureType.WATER,
+};
+
+// The keys we'd expect to see in a serialized MapTypeStyle JSON object.
+final _mapStyleKeys = {
+  'elementType', 'featureType', 'stylers',
+};
+
+// Checks if the passed in Map contains some of the _mapStyleKeys.
+bool _isJsonMapStyle(Map value) {
+  return _mapStyleKeys.intersection(value.keys.toSet()).isNotEmpty;
+}
+
+// Converts an incoming JSON-encoded Style info, into the correct gmaps array.
+List<gmaps.MapTypeStyle> _mapStyles(String mapStyleJson) {
   List<gmaps.MapTypeStyle> styles = [];
-  if(mapStyle != null) {
-    List list = json.decode(mapStyle);
-    list.forEach((style) {
-      List list2 = style['stylers'];
-      List<gmaps.MapTypeStyler> stylers = [];
-      list2.forEach((style) {
-        stylers.add(
-            gmaps.MapTypeStyler()
-              ..color = style['color']
-              ..gamma = style['gamma']
-              ..hue = style['hue']
-              ..invertLightness = style['invertLightness']
-              ..lightness = style['lightness']
-              ..saturation = style['saturation']
-              ..visibility = style['visibility']
-              ..weight = style['weight']
-        );
-      });
-
-      gmaps.MapTypeStyleElementType elementType;
-      if (style['elementType'] == 'geometry') {
-        elementType = gmaps.MapTypeStyleElementType.GEOMETRY;
-      } else if (style['elementType'] == 'geometry.fill') {
-        elementType = gmaps.MapTypeStyleElementType.GEOMETRY_FILL;
-      } else if (style['elementType'] == 'geometry.stroke') {
-        elementType = gmaps.MapTypeStyleElementType.GEOMETRY_STROKE;
-      } else if (style['elementType'] == 'labels') {
-        elementType = gmaps.MapTypeStyleElementType.LABELS;
-      } else if (style['elementType'] == 'labels.icon') {
-        elementType = gmaps.MapTypeStyleElementType.LABELS_ICON;
-      } else if (style['elementType'] == 'labels.text') {
-        elementType = gmaps.MapTypeStyleElementType.LABELS_TEXT;
-      } else if (style['elementType'] == 'labels.text.fill') {
-        elementType = gmaps.MapTypeStyleElementType.LABELS_TEXT_FILL;
-      } else if (style['elementType'] == 'labels.text.stroke') {
-        elementType = gmaps.MapTypeStyleElementType.LABELS_TEXT_STROKE;
+  if(mapStyleJson != null) {
+    styles = json.decode(mapStyleJson, reviver: (key, value) {
+      if (value is Map && _isJsonMapStyle(value)) {
+        return gmaps.MapTypeStyle()
+          ..elementType = _elementTypeToEnum[value['elementType']]
+          ..featureType = _featureTypeToEnum[value['featureType']]
+          ..stylers = _parseStylers(value['stylers']);
       }
-
-      gmaps.MapTypeStyleFeatureType featureType;
-      if (style[featureType] == 'administrative') {
-        featureType = gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE;
-      }
-      else if (style[featureType] == 'administrative.country') {
-        featureType = gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_COUNTRY;
-      }
-      else if (style[featureType] == 'administrative.land_parcel') {
-        featureType =
-            gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LAND_PARCEL;
-      }
-      else if (style[featureType] == 'administrative.locality') {
-        featureType = gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LOCALITY;
-      }
-      else if (style[featureType] == 'administrative.neighborhood') {
-        featureType =
-            gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_NEIGHBORHOOD;
-      }
-      else if (style[featureType] == 'administrative.province') {
-        featureType = gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_PROVINCE;
-      }
-      else if (style[featureType] == 'all') {
-        featureType = gmaps.MapTypeStyleFeatureType.ALL;
-      }
-      else if (style[featureType] == 'landscape') {
-        featureType = gmaps.MapTypeStyleFeatureType.LANDSCAPE;
-      }
-      else if (style[featureType] == 'landscape.man_made') {
-        featureType = gmaps.MapTypeStyleFeatureType.LANDSCAPE_MAN_MADE;
-      }
-      else if (style[featureType] == 'landscape.natural') {
-        featureType = gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL;
-      }
-      else if (style[featureType] == 'landscape.natural.landcover') {
-        featureType =
-            gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_LANDCOVER;
-      }
-      else if (style[featureType] == 'landscape.natural.terrain') {
-        featureType =
-            gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_TERRAIN;
-      }
-      else if (style[featureType] == 'poi') {
-        featureType = gmaps.MapTypeStyleFeatureType.POI;
-      }
-      else if (style[featureType] == 'poi.attraction') {
-        featureType = gmaps.MapTypeStyleFeatureType.POI_ATTRACTION;
-      }
-      else if (style[featureType] == 'poi.business') {
-        featureType = gmaps.MapTypeStyleFeatureType.POI_BUSINESS;
-      }
-      else if (style[featureType] == 'poi.government') {
-        featureType = gmaps.MapTypeStyleFeatureType.POI_GOVERNMENT;
-      }
-      else if (style[featureType] == 'poi.medical') {
-        featureType = gmaps.MapTypeStyleFeatureType.POI_MEDICAL;
-      }
-      else if (style[featureType] == 'poi.park') {
-        featureType = gmaps.MapTypeStyleFeatureType.POI_PARK;
-      }
-      else if (style[featureType] == 'poi.place_of_worship') {
-        featureType = gmaps.MapTypeStyleFeatureType.POI_PLACE_OF_WORSHIP;
-      }
-      else if (style[featureType] == 'poi.school') {
-        featureType = gmaps.MapTypeStyleFeatureType.POI_SCHOOL;
-      }
-      else if (style[featureType] == 'poi.sports_complex') {
-        featureType = gmaps.MapTypeStyleFeatureType.POI_SPORTS_COMPLEX;
-      }
-      else if (style[featureType] == 'road') {
-        featureType = gmaps.MapTypeStyleFeatureType.ROAD;
-      }
-      else if (style[featureType] == 'road.arterial') {
-        featureType = gmaps.MapTypeStyleFeatureType.ROAD_ARTERIAL;
-      }
-      else if (style[featureType] == 'road.highway') {
-        featureType = gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY;
-      }
-      else if (style[featureType] == 'road.highway.controlled_access') {
-        featureType =
-            gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY_CONTROLLED_ACCESS;
-      }
-      else if (style[featureType] == 'road.local') {
-        featureType = gmaps.MapTypeStyleFeatureType.ROAD_LOCAL;
-      }
-      else if (style[featureType] == 'transit') {
-        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT;
-      }
-      else if (style[featureType] == 'transit.line') {
-        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT_LINE;
-      }
-      else if (style[featureType] == 'transit.station') {
-        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT_STATION;
-      }
-      else if (style[featureType] == 'transit.station.airport') {
-        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_AIRPORT;
-      }
-      else if (style[featureType] == 'transit.station.bus') {
-        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_BUS;
-      }
-      else if (style[featureType] == 'transit.station.rail') {
-        featureType = gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_RAIL;
-      }
-      else if (style[featureType] == 'water') {
-        featureType = gmaps.MapTypeStyleFeatureType.WATER;
-      }
-
-      styles.add(
-          gmaps.MapTypeStyle()
-            ..elementType = elementType
-            ..featureType = featureType
-            ..stylers = stylers
-      );
-    });
+      return value;
+    }).cast<gmaps.MapTypeStyle>();
   }
   return styles;
 }
