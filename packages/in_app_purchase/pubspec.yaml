@@ -8,8 +8,7 @@ dependencies:
   collection: ^1.14.11
   flutter:
     sdk: flutter
-  json_annotation
-  : ^3.0.0
+  json_annotation: ^3.0.0
   meta: ^1.1.6
 
 dev_dependencies:
