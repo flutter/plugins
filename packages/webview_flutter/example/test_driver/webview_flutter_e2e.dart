@@ -633,18 +633,18 @@ void main() {
       ''';
 
       final String scrollTestPageBase64 =
-      base64Encode(const Utf8Encoder().convert(scrollTestPage));
+          base64Encode(const Utf8Encoder().convert(scrollTestPage));
 
       final Completer<void> pageLoaded = Completer<void>();
       final Completer<WebViewController> controllerCompleter =
-      Completer<WebViewController>();
+          Completer<WebViewController>();
 
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
             initialUrl:
-            'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
+                'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },

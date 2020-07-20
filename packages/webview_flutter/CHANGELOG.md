@@ -1,7 +1,8 @@
 ## 0.3.23
 
-* Add `Webview.useExperimentalAndroidSurfaceView` flag that builds Android WebView using hybrid views.
-  To use this feature, set this value to `true` and have the following lines in your `android/app/src/main/AndroidManifest.xml`:
+* Add support for building `WebView` widget with Android hybrid views. To use this feature, set
+  `WebView.platform` to an instance of `SurfaceAndroidWebView` and add the following lines to your
+  `android/app/src/main/AndroidManifest.xml`:
 ```xml
 <application>
 .

@@ -83,9 +83,9 @@ class SurfaceAndroidWebView extends AndroidWebView {
     return PlatformViewLink(
       viewType: 'plugins.flutter.io/webview',
       surfaceFactory: (
-          BuildContext context,
-          PlatformViewController controller,
-          ) {
+        BuildContext context,
+        PlatformViewController controller,
+      ) {
         return AndroidViewSurface(
           controller: controller,
           gestureRecognizers: gestureRecognizers ??
