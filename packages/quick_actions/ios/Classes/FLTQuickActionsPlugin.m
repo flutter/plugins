@@ -14,93 +14,93 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 @implementation FLTQuickActionsPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-    FlutterMethodChannel *channel =
-    [FlutterMethodChannel methodChannelWithName:CHANNEL_NAME
-                                binaryMessenger:[registrar messenger]];
-    FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] init];
-    instance.channel = channel;
-    [registrar addMethodCallDelegate:instance channel:channel];
-    [registrar addApplicationDelegate:instance];
+  FlutterMethodChannel *channel =
+  [FlutterMethodChannel methodChannelWithName:CHANNEL_NAME
+                              binaryMessenger:[registrar messenger]];
+  FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] init];
+  instance.channel = channel;
+  [registrar addMethodCallDelegate:instance channel:channel];
+  [registrar addApplicationDelegate:instance];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-    if (@available(iOS 9.0, *)) {
-        if ([call.method isEqualToString:@"setShortcutItems"]) {
-            _setShortcutItems(call.arguments);
-            result(nil);
-        } else if ([call.method isEqualToString:@"clearShortcutItems"]) {
-            [UIApplication sharedApplication].shortcutItems = @[];
-            result(nil);
-        } else if ([call.method isEqualToString:@"getLaunchAction"]) {
-            result(self.shortcutType);  // This is used when the app is killed and open the first time via
-            // quick actions
-            self.shortcutType = nil;
-        } else {
-            result(FlutterMethodNotImplemented);
-        }
+  if (@available(iOS 9.0, *)) {
+    if ([call.method isEqualToString:@"setShortcutItems"]) {
+      _setShortcutItems(call.arguments);
+      result(nil);
+    } else if ([call.method isEqualToString:@"clearShortcutItems"]) {
+      [UIApplication sharedApplication].shortcutItems = @[];
+      result(nil);
+    } else if ([call.method isEqualToString:@"getLaunchAction"]) {
+      result(self.shortcutType);  // This is used when the app is killed and open the first time via
+      // quick actions
+      self.shortcutType = nil;
     } else {
-        NSLog(@"Shortcuts are not supported prior to iOS 9.");
-        result(nil);
+      result(FlutterMethodNotImplemented);
     }
+  } else {
+    NSLog(@"Shortcuts are not supported prior to iOS 9.");
+    result(nil);
+  }
 }
 
 - (void)dealloc {
-    [_channel setMethodCallHandler:nil];
-    _channel = nil;
+  [_channel setMethodCallHandler:nil];
+  _channel = nil;
 }
 
 - (BOOL)application:(UIApplication *)application
 WillFinishLaunchingWithOptions:
 (NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions {
-    if (@available(iOS 9.0, *)) {
-        UIApplicationShortcutItem *shortcutItem =
-        launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
-        if (shortcutItem != NULL) {
-            self.shortcutType = shortcutItem.type;
-            [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
-            return NO;
-        } else {
-            [self.channel invokeMethod:@"launch" arguments:nil];
-            self.shortcutType = nil;
-        }
+  if (@available(iOS 9.0, *)) {
+    UIApplicationShortcutItem *shortcutItem =
+    launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
+    if (shortcutItem != NULL) {
+      self.shortcutType = shortcutItem.type;
+      [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
+      return NO;
+    } else {
+      [self.channel invokeMethod:@"launch" arguments:nil];
+      self.shortcutType = nil;
     }
-    return YES;
+  }
+  return YES;
 }
 
 - (BOOL)application:(UIApplication *)application
 performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
   completionHandler:(void (^)(BOOL succeeded))completionHandler
 API_AVAILABLE(ios(9.0)) {
-    self.shortcutType = shortcutItem.type;
-    [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
-    return YES;
+  self.shortcutType = shortcutItem.type;
+  [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
+  return YES;
 }
 
 #pragma mark Private functions
 
 NS_INLINE void _setShortcutItems(NSArray *items) API_AVAILABLE(ios(9.0)) {
-    NSMutableArray<UIApplicationShortcutItem *> *newShortcuts = [[NSMutableArray alloc] init];
-    
-    for (id item in items) {
-        UIApplicationShortcutItem *shortcut = _deserializeShortcutItem(item);
-        [newShortcuts addObject:shortcut];
-    }
-    
-    [UIApplication sharedApplication].shortcutItems = newShortcuts;
+  NSMutableArray<UIApplicationShortcutItem *> *newShortcuts = [[NSMutableArray alloc] init];
+  
+  for (id item in items) {
+    UIApplicationShortcutItem *shortcut = _deserializeShortcutItem(item);
+    [newShortcuts addObject:shortcut];
+  }
+  
+  [UIApplication sharedApplication].shortcutItems = newShortcuts;
 }
 
 NS_INLINE UIApplicationShortcutItem *_deserializeShortcutItem(NSDictionary *serialized)
 API_AVAILABLE(ios(9.0)) {
-    UIApplicationShortcutIcon *icon =
-    [serialized[@"icon"] isKindOfClass:[NSNull class]]
-    ? nil
-    : [UIApplicationShortcutIcon iconWithTemplateImageName:serialized[@"icon"]];
-    
-    return [[UIApplicationShortcutItem alloc] initWithType:serialized[@"type"]
-                                            localizedTitle:serialized[@"localizedTitle"]
-                                         localizedSubtitle:nil
-                                                      icon:icon
-                                                  userInfo:nil];
+  UIApplicationShortcutIcon *icon =
+  [serialized[@"icon"] isKindOfClass:[NSNull class]]
+  ? nil
+  : [UIApplicationShortcutIcon iconWithTemplateImageName:serialized[@"icon"]];
+  
+  return [[UIApplicationShortcutItem alloc] initWithType:serialized[@"type"]
+                                          localizedTitle:serialized[@"localizedTitle"]
+                                       localizedSubtitle:nil
+                                                    icon:icon
+                                                userInfo:nil];
 }
 
 @end
