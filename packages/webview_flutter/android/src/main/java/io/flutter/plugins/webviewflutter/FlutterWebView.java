@@ -28,6 +28,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+  private String baseUrl;
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @SuppressWarnings("unchecked")
@@ -65,7 +66,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String userAgent = (String) params.get("userAgent");
       updateUserAgent(userAgent);
     }
-    if (params.containsKey("initialUrl")) {
+    if (params.containsKey("html")) {
+      String html = (String) params.get("html");
+      if (params.containsKey("baseUrl")) {
+        baseUrl = (String) params.get("baseUrl");
+        webView.loadDataWithBaseURL(baseUrl, html, "text/html", "UTF-8", null);
+      } else {
+        webView.loadData(html, "text/html", "UTF-8");
+      }
+    } else if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
@@ -121,6 +130,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     switch (methodCall.method) {
       case "loadUrl":
         loadUrl(methodCall, result);
+        break;
+      case "loadHtml":
+        loadHtml(methodCall, result);
         break;
       case "updateSettings":
         updateSettings(methodCall, result);
@@ -184,6 +196,20 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       headers = Collections.emptyMap();
     }
     webView.loadUrl(url, headers);
+    result.success(null);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void loadHtml(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    String html = (String) request.get("html");
+    if (html != null) {
+      if (baseUrl != null) {
+        webView.loadDataWithBaseURL(baseUrl, html, "text/html", "UTF-8", null);
+      } else {
+        webView.loadData(html, "text/html", "UTF-8");
+      }
+    }
     result.success(null);
   }
 
