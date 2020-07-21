@@ -6,7 +6,7 @@ import io.flutter.embedding.android.FlutterFragmentActivity;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
-@RunWith(FlutterRunner.class)
+@RunWith(FlutterTestRunner.class)
 public class FlutterFragmentActivityTest {
   @Rule
   public ActivityTestRule<FlutterFragmentActivity> rule =

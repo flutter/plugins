@@ -7,7 +7,7 @@ import io.flutter.plugins.pathproviderexample.EmbeddingV1Activity;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
-@RunWith(FlutterRunner.class)
+@RunWith(FlutterTestRunner.class)
 public class EmbeddingV1ActivityTest {
   @Rule
   public ActivityTestRule<EmbeddingV1Activity> rule =
