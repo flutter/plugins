@@ -1,3 +1,7 @@
+## 0.1.0
+* This release updates getApplicationSupportPath to use the application ID instead of the executable name.
+  * No migration is provided, so any older apps that were using this path will now have a different directory.
+
 ## 0.0.1+2
 * This release updates the example to depend on the endorsed plugin rather than relative path
 
