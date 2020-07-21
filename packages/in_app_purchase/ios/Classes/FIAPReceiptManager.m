@@ -18,12 +18,12 @@
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
   NSError *err;
   NSData *receipt = [self getReceiptData:receiptURL error:&err];
-  if (!receipt) {
-    return nil;
-  }
   if (error) {
     *error = [FlutterError errorWithCode:[[NSString alloc] initWithFormat:@"%li", err.code];
                                  message:error.domain details:err.userInfo];
+    return nil;
+  }
+  if (!receipt) {
     return nil;
   }
   return [receipt base64EncodedStringWithOptions:kNilOptions];
