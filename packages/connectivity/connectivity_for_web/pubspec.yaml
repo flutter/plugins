@@ -23,7 +23,8 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  e2e: ^0.2.4+3
+  e2e:
+    path: ../../e2e
   mockito: ^4.1.1
 
 environment:

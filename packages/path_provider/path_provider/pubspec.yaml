@@ -25,7 +25,8 @@ dependencies:
   path_provider_linux: ^0.0.1
 
 dev_dependencies:
-  e2e: ^0.2.1
+  e2e:
+    path: ../../e2e
   flutter_test:
     sdk: flutter
   flutter_driver:

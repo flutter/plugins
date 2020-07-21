@@ -23,7 +23,8 @@ dev_dependencies:
   video_player: ^0.10.3
   flutter_test:
     sdk: flutter
-  e2e: ^0.2.1
+  e2e:
+    path: ../../e2e
   pedantic: ^1.8.0
 
 environment:

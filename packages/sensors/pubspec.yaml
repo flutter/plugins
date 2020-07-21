@@ -24,7 +24,8 @@ dev_dependencies:
   test: ^1.3.0
   flutter_test:
     sdk: flutter
-  e2e: ^0.2.0
+  e2e:
+    path: ../e2e
   mockito: ^4.1.1
   pedantic: ^1.8.0
 
