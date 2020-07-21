@@ -1,6 +1,6 @@
 # plugin_platform_interface
 
-This package provides a base class for platform interfaces of [federated flutter plugins](https://fluter.dev/go/federated-plugins).
+This package provides a base class for platform interfaces of [federated flutter plugins](https://flutter.dev/go/federated-plugins).
 
 Platform implementations should extend their platform interface classes rather than implement it as
 newly added methods to platform interfaces are not considered as breaking changes. Extending a platform
