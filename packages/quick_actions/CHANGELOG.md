@@ -1,3 +1,8 @@
+## 0.4.0+7
+
+* Fixed iOS lifecycle. Quick actions work when the app is running in 
+  the background as well as not running at all
+
 ## 0.4.0+6
 
 * Post-v2 Android embedding cleanup.
