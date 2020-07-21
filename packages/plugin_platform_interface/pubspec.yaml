@@ -14,7 +14,7 @@ description: Reusable base class for Flutter plugin platform interfaces.
 # `plugin_platform_interface: >=1.X.Y <3.0.0`).
 version: 1.0.2
 
-homepage: https://github.com/flutter/plugins/plugin_platform_interface
+homepage: https://github.com/flutter/plugins/tree/master/packages/plugin_platform_interface
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
