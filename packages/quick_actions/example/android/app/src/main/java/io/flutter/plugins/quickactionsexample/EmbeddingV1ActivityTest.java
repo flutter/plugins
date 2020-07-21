@@ -5,7 +5,7 @@
 package io.flutter.plugins.quickactionsexample;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.e2e.FlutterRunner;
+import dev.flutter.plugins.e2e.FlutterTestRunner;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 

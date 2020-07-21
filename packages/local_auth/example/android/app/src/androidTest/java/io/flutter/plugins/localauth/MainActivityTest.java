@@ -1,7 +1,7 @@
 package io.flutter.plugins.localauth;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.e2e.FlutterRunner;
+import dev.flutter.plugins.e2e.FlutterTestRunner;
 import io.flutter.embedding.android.FlutterFragmentActivity;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
