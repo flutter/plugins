@@ -32,17 +32,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String shortcut = "no action set";
+  final QuickActions quickActions = QuickActions();
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    final QuickActions quickActions = QuickActions();
+    print('DidChangeDependencies');
     quickActions.initialize((String shortcutType) {
-      setState(() {
-        if (shortcutType != null) shortcut = shortcutType;
-      });
+      print('ShortcutType: $shortcutType');
+
+      _shortcutDialog(context, shortcutType);
     });
 
     quickActions.setShortcutItems(<ShortcutItem>[
@@ -62,16 +62,39 @@ class _MyHomePageState extends State<MyHomePage> {
     ]);
   }
 
+  Future<void> _shortcutDialog(BuildContext context, String shortcutType) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Opened via Actions'),
+          content: Text('Opened via shortcut: $shortcutType'),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$shortcut'),
+        title: const Text('Flutter Quick Actions Demo'),
       ),
       body: const Center(
-        child: Text('On home screen, long press the app icon to '
-            'get Action one or Action two options. Tapping on that action should  '
-            'set the toolbar title.'),
+        child: Padding(
+          padding: EdgeInsets.all(32.0),
+          child: Text('On home screen, long press the app icon to '
+              'get Action one or Action two options. Tapping on that action should  '
+              'set the toolbar title.'),
+        ),
       ),
     );
   }
