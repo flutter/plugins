@@ -1,3 +1,7 @@
+## 1.0.2+1
+
+* Fix (url) typos in documentation.
+
 ## 1.0.2
 
 * Make the pedantic dev_dependency explicit.
