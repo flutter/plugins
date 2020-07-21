@@ -1,7 +1,14 @@
+## 1.6.12
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 1.6.11
+
 * Updated documentation to reflect the need for changes in testing for federated plugins
 
 ## 1.6.10
+
 * Linux implementation endorsement
 
 ## 1.6.9
