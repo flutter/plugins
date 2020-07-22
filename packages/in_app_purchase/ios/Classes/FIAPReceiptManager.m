@@ -20,7 +20,8 @@
   NSData *receipt = [self getReceiptData:receiptURL error:&err];
   if (err) {
     *error = [FlutterError errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)err.code]
-                                 message:err.domain details:err.userInfo];
+                                 message:err.domain
+                                 details:err.userInfo];
     return nil;
   }
   if (!receipt) {
