@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+
+
 
 void main() {
   runApp(MyApp());
@@ -35,7 +39,6 @@ class MyHomePage extends StatefulWidget {
 
 /// State of Home Page
 class _MyHomePageState extends State<MyHomePage> {
-  String _msg = "";
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -44,11 +47,12 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  void _getMessage() async {
-    String msg = await getMessage();
-    setState(() {
-      this._msg = "Here is your message: " + msg;
-    });
+  void _saveFile() async {
+    Uint8List data;
+    data = Uint8List.fromList(_controller.text.codeUnits);
+
+    // await?
+    saveFile(data);
   }
 
   @override
@@ -72,13 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            Text(
-                this._msg
-            ),
             SizedBox(height: 10),
             RaisedButton(
-              child: Text('Press for a message and a file'),
-              onPressed: () => { _getMessage() },
+              child: Text('Press to save file'),
+              onPressed: () => { _saveFile() },
             ),
           ],
         ),

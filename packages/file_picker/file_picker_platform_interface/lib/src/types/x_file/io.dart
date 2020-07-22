@@ -4,12 +4,12 @@ import 'dart:typed_data';
 
 import './base.dart';
 
-/// A PickedFile backed by a dart:io File.
-class PickedFile extends PickedFileBase {
+/// A XFile backed by a dart:io File.
+class XFile extends XFileBase {
   final File _file;
 
-  /// Construct a PickedFile object backed by a dart:io File.
-  PickedFile(String path)
+  /// Construct a XFile object backed by a dart:io File.
+  XFile(String path)
       : _file = File(path),
         super(path);
 

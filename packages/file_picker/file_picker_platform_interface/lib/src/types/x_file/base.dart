@@ -3,18 +3,17 @@ import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 
-/// The interface for a PickedFile.
+/// The interface for a XFile.
 ///
-/// A PickedFile is a container that wraps the path of a selected
+/// A XFile is a container that wraps the path of a selected
 /// file by the user and (in some platforms, like web) the bytes
 /// with the contents of the file.
 ///
 /// This class is a very limited subset of dart:io [File], so all
 /// the methods should seem familiar.
-@immutable
-abstract class PickedFileBase {
-  /// Construct a PickedFile
-  PickedFileBase(String path);
+abstract class XFileBase {
+  /// Construct a XFile
+  XFileBase(String path);
 
   /// Get the path of the picked file.
   ///
@@ -24,7 +23,7 @@ abstract class PickedFileBase {
   ///
   /// Accessing the data contained in the picked file by its path
   /// is platform-dependant (and won't work on web), so use the
-  /// byte getters in the PickedFile instance instead.
+  /// byte getters in the XFile instance instead.
   String get path {
     throw UnimplementedError('.path has not been implemented.');
   }
