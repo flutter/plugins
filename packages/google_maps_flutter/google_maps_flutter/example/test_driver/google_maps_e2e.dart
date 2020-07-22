@@ -424,6 +424,7 @@ void main() {
   });
 
   testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(800.0, 600.0));
     final Completer<GoogleMapController> mapControllerCompleter =
         Completer<GoogleMapController>();
     final Key key = GlobalKey();
@@ -444,10 +445,14 @@ void main() {
 
     await tester.pumpAndSettle();
 
+    // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+    // in `mapRendered`.
+    // https://github.com/flutter/flutter/issues/54758
+    await Future.delayed(Duration(seconds: 1));
+
     ScreenCoordinate coordinate =
         await mapController.getScreenCoordinate(_kInitialCameraPosition.target);
     Rect rect = tester.getRect(find.byKey(key));
-    print(coordinate);
     if (Platform.isIOS) {
       // On iOS, the coordinate value from the GoogleMapSdk doesn't include the devicePixelRatio`.
       // So we don't need to do the conversion like we did below for other platforms.
@@ -465,7 +470,8 @@ void main() {
                   tester.binding.window.devicePixelRatio)
               .round());
     }
-  }, skip: true); // https://github.com/flutter/flutter/issues/54758
+    await tester.binding.setSurfaceSize(null);
+  });
 
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
     final Key key = GlobalKey();

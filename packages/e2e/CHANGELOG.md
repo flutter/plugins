@@ -1,3 +1,7 @@
+## 0.6.2
+
+* Fix `setSurfaceSize` for e2e tests.
+
 ## 0.6.1
 
 * Added `data` in the reported json.
