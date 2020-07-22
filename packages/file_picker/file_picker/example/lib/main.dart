@@ -55,6 +55,14 @@ class _MyHomePageState extends State<MyHomePage> {
     saveFile(data);
   }
 
+  void _loadFile() async {
+    XFile file = await loadFile();
+
+    String text = await file.readAsString();
+
+    _controller.text = text;
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -80,6 +88,10 @@ class _MyHomePageState extends State<MyHomePage> {
             RaisedButton(
               child: Text('Press to save file'),
               onPressed: () => { _saveFile() },
+            ),
+            RaisedButton(
+              child: Text('Press to load a file'),
+              onPressed: () => { _loadFile() },
             ),
           ],
         ),

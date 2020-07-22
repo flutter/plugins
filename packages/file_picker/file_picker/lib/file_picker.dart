@@ -20,3 +20,8 @@ Future<String> getMessage() async {
 void saveFile(Uint8List data) async {
   return FilePickerPlatform.instance.saveFile(data);
 }
+
+/// Loads File from user's file system
+Future<XFile> loadFile() {
+  return FilePickerPlatform.instance.loadFile();
+}
