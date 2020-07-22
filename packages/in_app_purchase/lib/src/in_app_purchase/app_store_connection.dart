@@ -82,7 +82,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
     List<PurchaseDetails> pastPurchases = [];
 
     try {
-      String receiptData = await getReceiptData();
+      String receiptData = await _observer.getReceiptData();
       final List<SKPaymentTransactionWrapper> restoredTransactions =
           await _observer.getRestoredTransactions(
               queue: _skPaymentQueueWrapper,
@@ -124,11 +124,15 @@ class AppStoreConnection implements InAppPurchaseConnection {
   @override
   Future<PurchaseVerificationData> refreshPurchaseVerificationData() async {
     await SKRequestMaker().startRefreshReceiptRequest();
-    String receipt = await getReceiptData();
+    try {
+      String receipt = await KReceiptManager.retrieveReceiptData();
     return PurchaseVerificationData(
         localVerificationData: receipt,
         serverVerificationData: receipt,
         source: IAPSource.AppStore);
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Query the product detail list.
