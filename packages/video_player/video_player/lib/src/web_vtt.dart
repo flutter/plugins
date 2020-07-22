@@ -9,10 +9,10 @@ import 'package:html/dom.dart';
 import 'closed_caption_file.dart';
 import 'package:html/parser.dart' as html_parser;
 
-// Represents a [ClosedCaptionFile], parsed from the WebVtt file format.
+/// Represents a [ClosedCaptionFile], parsed from the WebVtt file format.
 // See: https://en.wikipedia.org/wiki/WebVtt
 class WebVttCaptionFile extends ClosedCaptionFile {
-  // Parses a string into a [ClosedCaptionFile], assuming [fileContents] is in
+  /// Parses a string into a [ClosedCaptionFile], assuming [fileContents] is in
   // the WebVtt file format.
   // * See: https://en.wikipedia.org/wiki/WebVtt
   WebVttCaptionFile(this.fileContents)
