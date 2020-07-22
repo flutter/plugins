@@ -61,8 +61,9 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
   Future<void> setSurfaceSize(Size size) {
     return TestAsyncUtils.guard<void>(() async {
       assert(inTest);
-      if (_surfaceSize == size)
+      if (_surfaceSize == size) {
         return;
+      }
       _surfaceSize = size;
       handleMetricsChanged();
     });
