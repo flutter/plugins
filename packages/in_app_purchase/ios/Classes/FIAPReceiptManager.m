@@ -18,9 +18,9 @@
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
   NSError *err;
   NSData *receipt = [self getReceiptData:receiptURL error:&err];
-  if (error) {
+  if (err) {
     *error = [FlutterError errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)err.code]
-                                 message:error.domain details:err.userInfo];
+                                 message:err.domain details:err.userInfo];
     return nil;
   }
   if (!receipt) {
