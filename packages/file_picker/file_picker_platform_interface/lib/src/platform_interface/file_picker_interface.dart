@@ -49,7 +49,7 @@ abstract class FilePickerPlatform extends PlatformInterface {
   }
 
   /// Saves the file to user's Disk
-  void saveFile(Uint8List data) async {
+  void saveFile(Uint8List data, {String suggestedName}) async {
     throw UnimplementedError('saveFile() has not been implemented.');
   }
 }

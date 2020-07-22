@@ -39,20 +39,25 @@ class MyHomePage extends StatefulWidget {
 
 /// State of Home Page
 class _MyHomePageState extends State<MyHomePage> {
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _fileController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   void dispose() {
-    _controller.dispose();
+    _fileController.dispose();
     super.dispose();
   }
 
   void _saveFile() async {
     Uint8List data;
-    data = Uint8List.fromList(_controller.text.codeUnits);
+    data = Uint8List.fromList(_fileController.text.codeUnits);
 
     // await?
-    saveFile(data);
+    if (_nameController.text == '') {
+      saveFile(data);
+    } else {
+      saveFile(data, suggestedName: _nameController.text);
+    }
   }
 
   void _loadFile() async {
@@ -60,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     String text = await file.readAsString();
 
-    _controller.text = text;
+    _fileController.text = text;
   }
 
   @override
@@ -75,10 +80,20 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              width: 150,
+              width: 300,
               child: TextField(
                 textAlign: TextAlign.center,
-                controller: _controller,
+                controller: _nameController,
+                decoration: InputDecoration(
+                  hintText: '(Optional) Suggest File Name',
+                ),
+              ),
+            ),
+            Container(
+              width: 300,
+              child: TextField(
+                textAlign: TextAlign.center,
+                controller: _fileController,
                 decoration: InputDecoration(
                   hintText: 'Enter File Contents',
                 ),
