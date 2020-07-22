@@ -447,6 +447,7 @@ void main() {
         await mapControllerCompleter.future;
 
     await tester.pumpAndSettle();
+    await onCameraIdleCompleter.future;
 
     await onCameraIdleCompleter.future;
 

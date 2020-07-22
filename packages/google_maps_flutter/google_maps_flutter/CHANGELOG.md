@@ -1,3 +1,7 @@
+## 0.5.28+3
+
+* Update the e2e tests to use `onCameraIdle` instead of using an arbitrary delay.
+
 ## 0.5.28+2
 
 * Move test introduced in #2449 to its right location.
