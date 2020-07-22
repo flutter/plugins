@@ -19,7 +19,7 @@
   NSError *err;
   NSData *receipt = [self getReceiptData:receiptURL error:&err];
   if (error) {
-    *error = [FlutterError errorWithCode:[[NSString alloc] initWithFormat:@"%li", err.code];
+    *error = [FlutterError errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)err.code]
                                  message:error.domain details:err.userInfo];
     return nil;
   }
