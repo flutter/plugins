@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/services.dart';
-import '../types.dart'; // TODO: use 'package:...' instead
+import '../types.dart';
 
 /// The response object of [ImagePicker.retrieveLostData].
 ///
@@ -31,7 +31,7 @@ class LostData {
   /// The file that was lost in a previous [pickImage] or [pickVideo] call due to MainActivity being destroyed.
   ///
   /// Can be null if [exception] exists.
-  final PickedFile file;
+  final XFile file;
 
   /// The exception of the last [pickImage] or [pickVideo].
   ///

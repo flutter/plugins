@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
+
+export 'package:file_picker_platform_interface/file_picker_platform_interface.dart'
+  show XFile;
 
 /// Gets message from platform implementation
 Future<String> getMessage() async {
@@ -12,3 +16,7 @@ Future<String> getMessage() async {
   return result;
 }
 
+/// Saves File to user's file system
+void saveFile(Uint8List data) async {
+  return FilePickerPlatform.instance.saveFile(data);
+}

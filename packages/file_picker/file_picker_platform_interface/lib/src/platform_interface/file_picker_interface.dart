@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -39,5 +40,11 @@ abstract class FilePickerPlatform extends PlatformInterface {
   /// Returns the message from each platform implementation
   Future<String> getMessage() {
     throw UnimplementedError('getMessage() has not been implemented.');
+  }
+
+  /// Saves the file to user's Disk
+  /// TODO: Parameters should not be string
+  void saveFile(Uint8List data) async {
+    throw UnimplementedError('saveFile() has not been implemented.');
   }
 }

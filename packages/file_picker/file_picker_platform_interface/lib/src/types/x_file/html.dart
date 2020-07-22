@@ -1,28 +1,29 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:html';
 
 import 'package:http/http.dart' as http show readBytes;
 
 import './base.dart';
 
-/// A PickedFile that works on web.
+/// A XFile that works on web.
 ///
 /// It wraps the bytes of a selected file.
-class PickedFile extends PickedFileBase {
+class XFile extends XFileBase {
   final String path;
   final Uint8List _initBytes;
   final int _length;
   @override
   final String name;
 
-  /// Construct a PickedFile object from its ObjectUrl.
+  /// Construct a XFile object from its ObjectUrl.
   ///
   /// Optionally, this can be initialized with `bytes` and `length`
   /// so no http requests are performed to retrieve files later.
   ///
   /// `name` needs to be passed from the outside, since we only have
   /// access to it while we create the ObjectUrl.
-  PickedFile(
+  XFile(
     this.path, {
     this.name,
     int length,

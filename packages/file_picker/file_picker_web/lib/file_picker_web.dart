@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import 'dart:typed_data';
 
 import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -23,32 +24,27 @@ class FilePickerPlugin extends FilePickerPlatform {
     FilePickerPlatform.instance = FilePickerPlugin();
   }
 
-  /// Test <a> download attribute.
-  void _downloadTest() {
-    html.Blob blob = html.Blob(["Hello World from blob!"], 'text/plain');
-
+  /// Web implementation of saveFile()
+  /// TODO: This should take input PickedFile or similar, not string
+  @override
+  void saveFile(Uint8List data, {String suggestedName = ''}) async {
+    // Create blob from data
+    // TODO: Handle different types
+    html.Blob blob = html.Blob([data], 'text/plain');
     String url = html.Url.createObjectUrl(blob);
 
+    // Create an <a> tag with the appropriate download attributes and click it
     html.AnchorElement element = html.AnchorElement(
       href: url,
     );
-    element.download = '';
-
+    element.download = suggestedName;
     _target.children.clear();
     _target.children.add(element);
     element.click();
   }
 
-  /// Web implementation of saveFile()
-  /// TODO: This should take input PickedFile or similar, not string
-  @override
-  Future<void> saveFile(String file_contents) {
-
-  }
-
   @override
   Future<String> getMessage() {
-    _downloadTest();
     return Future<String>.value("Hello from the web implementation of file_picker!");
   }
 
