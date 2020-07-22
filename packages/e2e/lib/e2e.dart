@@ -37,7 +37,6 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
       } on MissingPluginException {
         print('Warning: E2E test plugin was not detected.');
       }
-      print(_results);
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
   }
