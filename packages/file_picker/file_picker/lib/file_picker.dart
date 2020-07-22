@@ -17,8 +17,8 @@ Future<String> getMessage() async {
 }
 
 /// Saves File to user's file system
-void saveFile(Uint8List data) async {
-  return FilePickerPlatform.instance.saveFile(data);
+void saveFile(Uint8List data, {String suggestedName}) async {
+  return FilePickerPlatform.instance.saveFile(data, suggestedName: suggestedName);
 }
 
 /// Loads File from user's file system
