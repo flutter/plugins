@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../method_channel/method_channel_file_picker.dart';
@@ -42,8 +43,12 @@ abstract class FilePickerPlatform extends PlatformInterface {
     throw UnimplementedError('getMessage() has not been implemented.');
   }
 
+  /// Load file from user's computer and return it as an XFile
+  Future<XFile> loadFile() {
+    throw UnimplementedError('loadFile() has not been implemented.');
+  }
+
   /// Saves the file to user's Disk
-  /// TODO: Parameters should not be string
   void saveFile(Uint8List data) async {
     throw UnimplementedError('saveFile() has not been implemented.');
   }

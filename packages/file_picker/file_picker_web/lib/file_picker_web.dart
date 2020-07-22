@@ -24,8 +24,39 @@ class FilePickerPlugin extends FilePickerPlatform {
     FilePickerPlatform.instance = FilePickerPlugin();
   }
 
+  /// Load file from user's computer and return it as an XFile
+  /// TODO: multiple files
+  Future<XFile> loadFile() {
+    // Create a file input element
+    html.FileUploadInputElement element = html.FileUploadInputElement();
+    element.accept = 'text/plain'; // TODO: accept different types
+    element.multiple = true;
+
+    // Add the file input element and click it
+    _target.children.clear();
+    _target.children.add(element);
+    element.click();
+    
+    Completer<XFile> _completer = Completer<XFile>();
+    
+    // Get the returned files
+    // TODO: Handle errors
+    element.onChange.first.then((event) {
+      // TODO: Multiple files
+      html.File files = element.files.first;
+      String url = html.Url.createObjectUrl(files);
+      String name = files.name;
+      int length = files.size;
+      
+      XFile loadedFile = XFile(url, name: name, length: length);
+      
+      _completer.complete(loadedFile);
+    });
+    
+    return _completer.future;
+  }
+
   /// Web implementation of saveFile()
-  /// TODO: This should take input PickedFile or similar, not string
   @override
   void saveFile(Uint8List data, {String suggestedName = ''}) async {
     // Create blob from data
@@ -43,6 +74,7 @@ class FilePickerPlugin extends FilePickerPlatform {
     element.click();
   }
 
+  /// "Hello World" function for testing
   @override
   Future<String> getMessage() {
     return Future<String>.value("Hello from the web implementation of file_picker!");
