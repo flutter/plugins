@@ -55,11 +55,6 @@ Future<void> main() async {
     'android.permission.RECORD_AUDIO'
   ]);
 
-  final String data = await driver.requestData(
-    null,
-    timeout: const Duration(minutes: 1),
-  );
-
   final Map<String, dynamic> result = jsonDecode(data);
   exit(result['result'] == 'true' ? 0 : 1);
 }
