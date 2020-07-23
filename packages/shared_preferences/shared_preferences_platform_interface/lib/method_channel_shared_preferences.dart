@@ -17,19 +17,24 @@ const MethodChannel _kChannel =
 /// Data is persisted to disk asynchronously.
 class MethodChannelSharedPreferencesStore
     extends SharedPreferencesStorePlatform {
+  final String _suiteName;
+
+  /// Instantiates a new `MethodChannelSharedPreferencesStore`.
+  /// [suiteName] is only for iOS and allows to change underlying `NSUserDefaults`'`suiteName`.
+  /// By default `null` which means the standard `NSUserDefaults` (read : no need to change anything for most users).
+  MethodChannelSharedPreferencesStore({String suiteName})
+      : _suiteName = suiteName;
+
   @override
   Future<bool> remove(String key) {
-    return _invokeBoolMethod('remove', <String, dynamic>{
-      'key': key,
-    });
+    return _invokeBoolMethod(
+        'remove', <String, dynamic>{'key': key, 'suiteName': _suiteName});
   }
 
   @override
   Future<bool> setValue(String valueType, String key, Object value) {
-    return _invokeBoolMethod('set$valueType', <String, dynamic>{
-      'key': key,
-      'value': value,
-    });
+    return _invokeBoolMethod('set$valueType',
+        <String, dynamic>{'key': key, 'value': value, 'suiteName': _suiteName});
   }
 
   Future<bool> _invokeBoolMethod(String method, Map<String, dynamic> params) {
@@ -46,11 +51,16 @@ class MethodChannelSharedPreferencesStore
 
   @override
   Future<bool> clear() {
-    return _kChannel.invokeMethod<bool>('clear');
+    return _kChannel.invokeMethod<bool>('clear', <String, dynamic>{
+      'suiteName': _suiteName,
+    });
   }
 
   @override
   Future<Map<String, Object>> getAll() {
-    return _kChannel.invokeMapMethod<String, Object>('getAll');
+    return _kChannel
+        .invokeMapMethod<String, Object>('getAll', <String, dynamic>{
+      'suiteName': _suiteName,
+    });
   }
 }
