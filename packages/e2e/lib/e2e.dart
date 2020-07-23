@@ -39,6 +39,19 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
       }
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
+
+    // TODO(jackson): Report the results individually instead of all at once
+    // See https://github.com/flutter/flutter/issues/38985
+    final TestExceptionReporter oldTestExceptionReporter = reportTestException;
+    reportTestException =
+        (FlutterErrorDetails details, String testDescription) {
+      _results[testDescription] = 'failed';
+      _failureMethodsDetails.add(Failure(testDescription, details.toString()));
+      if (!_allTestsPassed.isCompleted) {
+        _allTestsPassed.complete(false);
+      }
+      oldTestExceptionReporter(details, testDescription);
+    };
   }
 
   // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
@@ -134,18 +147,6 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     String description = '',
     Duration timeout,
   }) async {
-    // TODO(jackson): Report the results individually instead of all at once
-    // See https://github.com/flutter/flutter/issues/38985
-    final TestExceptionReporter oldTestExceptionReporter = reportTestException;
-    reportTestException =
-        (FlutterErrorDetails details, String testDescription) {
-      _results[description] = 'failed';
-      _failureMethodsDetails.add(Failure(testDescription, details.toString()));
-      if (!_allTestsPassed.isCompleted) {
-        _allTestsPassed.complete(false);
-      }
-      oldTestExceptionReporter(details, testDescription);
-    };
     await super.runTest(
       testBody,
       invariantTester,
