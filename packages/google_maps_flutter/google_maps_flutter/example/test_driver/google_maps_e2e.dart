@@ -449,8 +449,6 @@ void main() {
     await tester.pumpAndSettle();
     await onCameraIdleCompleter.future;
 
-    await onCameraIdleCompleter.future;
-
     ScreenCoordinate coordinate =
         await mapController.getScreenCoordinate(_kInitialCameraPosition.target);
     Rect rect = tester.getRect(find.byKey(key));
