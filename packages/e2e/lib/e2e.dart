@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -25,16 +26,34 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         // `plugins.flutter.io/e2e`. Mark the tests as complete before invoking
         // the channel.
         if (kIsWeb) {
-          if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
+          if (!_allTestsPassed.isCompleted) {
+            _allTestsPassed.complete(true);
+          }
         }
         await _channel.invokeMethod<void>(
-            'allTestsFinished', <String, dynamic>{'results': _results});
+          'allTestsFinished',
+          <String, dynamic>{'results': _results},
+        );
       } on MissingPluginException {
         print('Warning: E2E test plugin was not detected.');
       }
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
   }
+
+  // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
+  // ignore: override_on_non_overriding_member
+  @override
+  bool get overrideHttpClient => false;
+
+  // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
+  // ignore: override_on_non_overriding_member
+  @override
+  bool get registerTestTextInput => false;
+
+  @override
+  ViewConfiguration createViewConfiguration() => TestViewConfiguration(
+      size: window.physicalSize / window.devicePixelRatio);
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
@@ -59,33 +78,47 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   static Map<String, String> _results = <String, String>{};
 
+  /// The extra data for the reported result.
+  ///
+  /// The values in `reportData` must be json-serializable objects or `null`.
+  /// If it's `null`, no extra data is attached to the result.
+  ///
+  /// The default value is `null`.
+  Map<String, dynamic> reportData;
+
+  /// the callback function to response the driver side input.
+  @visibleForTesting
+  Future<Map<String, dynamic>> callback(Map<String, String> params) async {
+    final String command = params['command'];
+    Map<String, String> response;
+    switch (command) {
+      case 'request_data':
+        final bool allTestsPassed = await _allTestsPassed.future;
+        response = <String, String>{
+          'message': allTestsPassed
+              ? Response.allTestsPassed(data: reportData).toJson()
+              : Response.someTestsFailed(
+                  _failureMethodsDetails,
+                  data: reportData,
+                ).toJson(),
+        };
+        break;
+      case 'get_health':
+        response = <String, String>{'status': 'ok'};
+        break;
+      default:
+        throw UnimplementedError('$command is not implemented');
+    }
+    return <String, dynamic>{
+      'isError': false,
+      'response': response,
+    };
+  }
+
   // Emulates the Flutter driver extension, returning 'pass' or 'fail'.
   @override
   void initServiceExtensions() {
     super.initServiceExtensions();
-    Future<Map<String, dynamic>> callback(Map<String, String> params) async {
-      final String command = params['command'];
-      Map<String, String> response;
-      switch (command) {
-        case 'request_data':
-          final bool allTestsPassed = await _allTestsPassed.future;
-          response = <String, String>{
-            'message': allTestsPassed
-                ? Response.allTestsPassed().toJson()
-                : Response.someTestsFailed(_failureMethodsDetails).toJson(),
-          };
-          break;
-        case 'get_health':
-          response = <String, String>{'status': 'ok'};
-          break;
-        default:
-          throw UnimplementedError('$command is not implemented');
-      }
-      return <String, dynamic>{
-        'isError': false,
-        'response': response,
-      };
-    }
 
     if (kIsWeb) {
       registerWebServiceExtension(callback);
@@ -95,20 +128,30 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
   }
 
   @override
-  Future<void> runTest(Future<void> testBody(), VoidCallback invariantTester,
-      {String description = '', Duration timeout}) async {
+  Future<void> runTest(
+    Future<void> testBody(),
+    VoidCallback invariantTester, {
+    String description = '',
+    Duration timeout,
+  }) async {
     // TODO(jackson): Report the results individually instead of all at once
     // See https://github.com/flutter/flutter/issues/38985
-    final TestExceptionReporter valueBeforeTest = reportTestException;
+    final TestExceptionReporter oldTestExceptionReporter = reportTestException;
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
       _results[description] = 'failed';
       _failureMethodsDetails.add(Failure(testDescription, details.toString()));
-      if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(false);
-      valueBeforeTest(details, testDescription);
+      if (!_allTestsPassed.isCompleted) {
+        _allTestsPassed.complete(false);
+      }
+      oldTestExceptionReporter(details, testDescription);
     };
-    await super.runTest(testBody, invariantTester,
-        description: description, timeout: timeout);
+    await super.runTest(
+      testBody,
+      invariantTester,
+      description: description,
+      timeout: timeout,
+    );
     _results[description] ??= 'success';
   }
 }

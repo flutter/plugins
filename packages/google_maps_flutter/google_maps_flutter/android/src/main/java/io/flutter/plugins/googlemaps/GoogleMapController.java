@@ -70,7 +70,8 @@ final class GoogleMapController
   private final int id;
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
-  private final MapView mapView;
+  private final GoogleMapOptions options;
+  @Nullable private MapView mapView;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
@@ -111,6 +112,7 @@ final class GoogleMapController
     this.id = id;
     this.context = context;
     this.activityState = activityState;
+    this.options = options;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel = new MethodChannel(binaryMessenger, "plugins.flutter.io/google_maps_" + id);
@@ -383,6 +385,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
           break;
         }
+      case "map#isLiteModeEnabled":
+        {
+          result.success(options.getLiteMode());
+          break;
+        }
       case "map#isZoomControlsEnabled":
         {
           result.success(googleMap.getUiSettings().isZoomControlsEnabled());
@@ -527,6 +534,7 @@ final class GoogleMapController
     disposed = true;
     methodChannel.setMethodCallHandler(null);
     setGoogleMapListener(null);
+    destroyMapViewIfNecessary();
     getApplication().unregisterActivityLifecycleCallbacks(this);
   }
 
@@ -611,7 +619,7 @@ final class GoogleMapController
     if (disposed || activity.hashCode() != getActivityHashCode()) {
       return;
     }
-    mapView.onDestroy();
+    destroyMapViewIfNecessary();
   }
 
   // DefaultLifecycleObserver and OnSaveInstanceStateListener
@@ -661,7 +669,7 @@ final class GoogleMapController
     if (disposed) {
       return;
     }
-    mapView.onDestroy();
+    destroyMapViewIfNecessary();
   }
 
   @Override
@@ -747,6 +755,12 @@ final class GoogleMapController
   @Override
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     googleMap.getUiSettings().setZoomGesturesEnabled(zoomGesturesEnabled);
+  }
+
+  /** This call will have no effect on already created map */
+  @Override
+  public void setLiteModeEnabled(boolean liteModeEnabled) {
+    options.liteMode(liteModeEnabled);
   }
 
   @Override
@@ -876,6 +890,14 @@ final class GoogleMapController
     } else {
       return mApplication;
     }
+  }
+
+  private void destroyMapViewIfNecessary() {
+    if (mapView == null) {
+      return;
+    }
+    mapView.onDestroy();
+    mapView = null;
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {

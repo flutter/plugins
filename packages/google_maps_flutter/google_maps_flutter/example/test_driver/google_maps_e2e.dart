@@ -263,6 +263,46 @@ void main() {
     }
   });
 
+  testWidgets('testLiteModeEnabled', (WidgetTester tester) async {
+    final Key key = GlobalKey();
+    final Completer<GoogleMapInspector> inspectorCompleter =
+        Completer<GoogleMapInspector>();
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        liteModeEnabled: false,
+        onMapCreated: (GoogleMapController controller) {
+          final GoogleMapInspector inspector =
+              // ignore: invalid_use_of_visible_for_testing_member
+              GoogleMapInspector(controller.channel);
+          inspectorCompleter.complete(inspector);
+        },
+      ),
+    ));
+
+    final GoogleMapInspector inspector = await inspectorCompleter.future;
+    bool liteModeEnabled = await inspector.isLiteModeEnabled();
+    expect(liteModeEnabled, false);
+
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.ltr,
+      child: GoogleMap(
+        key: key,
+        initialCameraPosition: _kInitialCameraPosition,
+        liteModeEnabled: true,
+        onMapCreated: (GoogleMapController controller) {
+          fail("OnMapCreated should get called only once.");
+        },
+      ),
+    ));
+
+    liteModeEnabled = await inspector.isLiteModeEnabled();
+    expect(liteModeEnabled, true);
+  }, skip: !Platform.isAndroid);
+
   testWidgets('testRotateGesturesEnabled', (WidgetTester tester) async {
     final Key key = GlobalKey();
     final Completer<GoogleMapInspector> inspectorCompleter =
@@ -940,5 +980,8 @@ void main() {
     final GoogleMapInspector inspector = await inspectorCompleter.future;
     final Uint8List bytes = await inspector.takeSnapshot();
     expect(bytes?.isNotEmpty, true);
-  });
+  },
+      // TODO(cyanglaz): un-skip the test when we can test this on CI with API key enabled.
+      // https://github.com/flutter/flutter/issues/57057
+      skip: Platform.isAndroid);
 }

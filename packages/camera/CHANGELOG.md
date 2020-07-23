@@ -1,3 +1,15 @@
+## 0.5.8+3
+
+* Fix bug in usage example in README.md 
+
+## 0.5.8+2
+
+* Post-v2 embedding cleanups.
+
+## 0.5.8+1
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.5.8
 
 * Remove Android dependencies fallback.

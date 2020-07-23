@@ -121,6 +121,7 @@
                                           @"simulatesAskToBuyInSandBox" : @YES,
                                         }];
   SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
+  queue.testState = SKPaymentTransactionStatePurchased;
   self.plugin.paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
       transactionsUpdated:^(NSArray<SKPaymentTransaction*>* _Nonnull transactions) {
       }
