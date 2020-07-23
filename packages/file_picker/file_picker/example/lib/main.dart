@@ -66,6 +66,10 @@ class _MyHomePageState extends State<MyHomePage> {
     String text = await file.readAsString();
 
     _fileController.text = text;
+
+    if (file.name != '') {
+      _nameController.text = file.name;
+    }
   }
 
   @override
