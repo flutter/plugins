@@ -257,7 +257,7 @@
 
 @implementation FIAPReceiptManagerStub : FIAPReceiptManager
 
-- (NSData *)getReceiptData:(NSURL *)url error:(NSError **)error{
+- (NSData *)getReceiptData:(NSURL *)url error:(NSError **)error {
   NSString *originalString = [NSString stringWithFormat:@"test"];
   return [[NSData alloc] initWithBase64EncodedString:originalString options:kNilOptions];
 }
