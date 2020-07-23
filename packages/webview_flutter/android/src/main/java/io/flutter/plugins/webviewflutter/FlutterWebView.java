@@ -5,6 +5,7 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
@@ -18,6 +19,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+import io.flutter.app.FlutterApplication;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +39,19 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       int id,
       Map<String, Object> params,
       View containerView) {
-
+    Context activityContext = context;
+    Context appContext = context.getApplicationContext();
+    if(appContext instanceof  FlutterApplication){
+      Activity currentActivity = ((FlutterApplication) appContext).getCurrentActivity();
+      if(currentActivity!=null){
+        activityContext = currentActivity;
+      }
+    }
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
     DisplayManager displayManager =
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
-    webView = new InputAwareWebView(context, containerView);
+    webView = new InputAwareWebView(activityContext, containerView);
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
     platformThreadHandler = new Handler(context.getMainLooper());
