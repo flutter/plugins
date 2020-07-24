@@ -2,24 +2,26 @@ part of google_maps_flutter_web;
 
 ///
 class CircleController {
-
-   gmaps.Circle _circle;
+  gmaps.Circle _circle;
 
   bool consumeTapEvents = false;
 
   ui.VoidCallback onTap;
 
   ///
-  CircleController({@required gmaps.Circle circle, this.consumeTapEvents, this.onTap}){
+  CircleController(
+      {@required gmaps.Circle circle, this.consumeTapEvents, this.onTap}) {
     _circle = circle;
-   if(consumeTapEvents) {
-     circle.onClick.listen((event) {
-       if(onTap !=null) onTap.call();
-     });
-   }
+    if (consumeTapEvents) {
+      circle.onClick.listen((event) {
+        if (onTap != null) onTap.call();
+      });
+    }
   }
 
-  set circle (gmaps.Circle circle) { _circle = circle; }
+  set circle(gmaps.Circle circle) {
+    _circle = circle;
+  }
 
   ///TODO
   void update(gmaps.CircleOptions options) {

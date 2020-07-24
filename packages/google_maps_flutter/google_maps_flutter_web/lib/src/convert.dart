@@ -26,20 +26,20 @@ final _mapTypeToMapTypeId = {
 // indoorViewEnabled seems to not have an equivalent in web
 // buildingsEnabled seems to not have an equivalent in web
 // padding seems to behave differently in web than mobile. You can't move UI elements in web.
-gmaps.MapOptions _optionsFromParams(Map<String, dynamic> optionsUpdate, {
-      gmaps.MapOptions existingOptions,
-    }) {
-
+gmaps.MapOptions _optionsFromParams(
+  Map<String, dynamic> optionsUpdate, {
+  gmaps.MapOptions existingOptions,
+}) {
   gmaps.MapOptions options = existingOptions ?? gmaps.MapOptions();
 
-  if(_mapTypeToMapTypeId.containsKey(optionsUpdate['mapType'])) {
+  if (_mapTypeToMapTypeId.containsKey(optionsUpdate['mapType'])) {
     options.mapTypeId = _mapTypeToMapTypeId[optionsUpdate['mapType']];
   }
 
   if (optionsUpdate['minMaxZoomPreference'] != null) {
     options
-      ..minZoom   = optionsUpdate['minMaxZoomPreference'][0]
-      ..maxZoom   = optionsUpdate['minMaxZoomPreference'][1];
+      ..minZoom = optionsUpdate['minMaxZoomPreference'][0]
+      ..maxZoom = optionsUpdate['minMaxZoomPreference'][1];
   }
 
   if (optionsUpdate['cameraTargetBounds'] != null) {
@@ -55,7 +55,8 @@ gmaps.MapOptions _optionsFromParams(Map<String, dynamic> optionsUpdate, {
     options.styles = optionsUpdate['styles'];
   }
 
-  if (optionsUpdate['scrollGesturesEnabled'] == false || optionsUpdate['zoomGesturesEnabled'] == false) {
+  if (optionsUpdate['scrollGesturesEnabled'] == false ||
+      optionsUpdate['zoomGesturesEnabled'] == false) {
     options.gestureHandling = 'none';
   } else {
     options.gestureHandling = 'auto';
@@ -100,17 +101,24 @@ final _elementTypeToEnum = <String, gmaps.MapTypeStyleElementType>{
 // Converts a String to its corresponding MapTypeStyleFeatureType enum value.
 final _featureTypeToEnum = <String, gmaps.MapTypeStyleFeatureType>{
   'administrative': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE,
-  'administrative.country': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_COUNTRY,
-  'administrative.land_parcel': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LAND_PARCEL,
-  'administrative.locality': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LOCALITY,
-  'administrative.neighborhood': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_NEIGHBORHOOD,
-  'administrative.province': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_PROVINCE,
+  'administrative.country':
+      gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_COUNTRY,
+  'administrative.land_parcel':
+      gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LAND_PARCEL,
+  'administrative.locality':
+      gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LOCALITY,
+  'administrative.neighborhood':
+      gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_NEIGHBORHOOD,
+  'administrative.province':
+      gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_PROVINCE,
   'all': gmaps.MapTypeStyleFeatureType.ALL,
   'landscape': gmaps.MapTypeStyleFeatureType.LANDSCAPE,
   'landscape.man_made': gmaps.MapTypeStyleFeatureType.LANDSCAPE_MAN_MADE,
   'landscape.natural': gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL,
-  'landscape.natural.landcover': gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_LANDCOVER,
-  'landscape.natural.terrain': gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_TERRAIN,
+  'landscape.natural.landcover':
+      gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_LANDCOVER,
+  'landscape.natural.terrain':
+      gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_TERRAIN,
   'poi': gmaps.MapTypeStyleFeatureType.POI,
   'poi.attraction': gmaps.MapTypeStyleFeatureType.POI_ATTRACTION,
   'poi.business': gmaps.MapTypeStyleFeatureType.POI_BUSINESS,
@@ -123,12 +131,14 @@ final _featureTypeToEnum = <String, gmaps.MapTypeStyleFeatureType>{
   'road': gmaps.MapTypeStyleFeatureType.ROAD,
   'road.arterial': gmaps.MapTypeStyleFeatureType.ROAD_ARTERIAL,
   'road.highway': gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY,
-  'road.highway.controlled_access': gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY_CONTROLLED_ACCESS,
+  'road.highway.controlled_access':
+      gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY_CONTROLLED_ACCESS,
   'road.local': gmaps.MapTypeStyleFeatureType.ROAD_LOCAL,
   'transit': gmaps.MapTypeStyleFeatureType.TRANSIT,
   'transit.line': gmaps.MapTypeStyleFeatureType.TRANSIT_LINE,
   'transit.station': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION,
-  'transit.station.airport': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_AIRPORT,
+  'transit.station.airport':
+      gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_AIRPORT,
   'transit.station.bus': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_BUS,
   'transit.station.rail': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_RAIL,
   'water': gmaps.MapTypeStyleFeatureType.WATER,
@@ -136,7 +146,9 @@ final _featureTypeToEnum = <String, gmaps.MapTypeStyleFeatureType>{
 
 // The keys we'd expect to see in a serialized MapTypeStyle JSON object.
 final _mapStyleKeys = {
-  'elementType', 'featureType', 'stylers',
+  'elementType',
+  'featureType',
+  'stylers',
 };
 
 // Checks if the passed in Map contains some of the _mapStyleKeys.
@@ -147,7 +159,7 @@ bool _isJsonMapStyle(Map value) {
 // Converts an incoming JSON-encoded Style info, into the correct gmaps array.
 List<gmaps.MapTypeStyle> _mapStyles(String mapStyleJson) {
   List<gmaps.MapTypeStyle> styles = [];
-  if(mapStyleJson != null) {
+  if (mapStyleJson != null) {
     styles = json.decode(mapStyleJson, reviver: (key, value) {
       if (value is Map && _isJsonMapStyle(value)) {
         return gmaps.MapTypeStyle()
@@ -172,30 +184,28 @@ PolylineUpdates _polylineFromParams(value) {
       jsonPoints.forEach((p) {
         points.add(LatLng.fromJson(p));
       });
-      current.add(
-          Polyline(
-            polylineId: polylineId,
-            consumeTapEvents: polyline['consumeTapEvents'],
-            color: Color(polyline['color']),
-            geodesic: polyline['geodesic'],
-            visible: polyline['visible'],
-            zIndex: polyline['zIndex'],
-            width: polyline['width'],
-            points: points,
+      current.add(Polyline(
+        polylineId: polylineId,
+        consumeTapEvents: polyline['consumeTapEvents'],
+        color: Color(polyline['color']),
+        geodesic: polyline['geodesic'],
+        visible: polyline['visible'],
+        zIndex: polyline['zIndex'],
+        width: polyline['width'],
+        points: points,
 //            endCap = Cap.buttCap,
 //            jointType = JointType.mitered,
 //            patterns = const <PatternItem>[],
 //            startCap = Cap.buttCap,
-          )
-      );
+      ));
     });
     return PolylineUpdates.from(null, current);
   }
   return null;
 }
 
-gmaps.PolylineOptions _polylineOptionsFromPolyline(gmaps.GMap googleMap,
-    Polyline polyline) {
+gmaps.PolylineOptions _polylineOptionsFromPolyline(
+    gmaps.GMap googleMap, Polyline polyline) {
   List<gmaps.LatLng> paths = [];
   polyline.points.forEach((point) {
     paths.add(_latlngToGmLatlng(point));
@@ -205,18 +215,16 @@ gmaps.PolylineOptions _polylineOptionsFromPolyline(gmaps.GMap googleMap,
     ..path = paths
     ..strokeOpacity = 1.0
     ..strokeWeight = polyline.width
-    ..strokeColor =  '#'+polyline.color.value.toRadixString(16).substring(0,6)
+    ..strokeColor = '#' + polyline.color.value.toRadixString(16).substring(0, 6)
     ..visible = polyline.visible
     ..zIndex = polyline.zIndex
-    ..geodesic = polyline.geodesic
-  ;
+    ..geodesic = polyline.geodesic;
 //  this.endCap = Cap.buttCap,
 //  this.jointType = JointType.mitered,
 //  this.patterns = const <PatternItem>[],
 //  this.startCap = Cap.buttCap,
 //  this.width = 10,
 }
-
 
 PolygonUpdates _polygonFromParams(value) {
   if (value != null) {
@@ -229,53 +237,50 @@ PolygonUpdates _polygonFromParams(value) {
       jsonPoints.forEach((p) {
         points.add(LatLng.fromJson(p));
       });
-      current.add(
-          Polygon(
-            polygonId: polygonId,
-            consumeTapEvents: polygon['consumeTapEvents'],
-            fillColor: Color(polygon['fillColor']),
-            geodesic: polygon['geodesic'],
-            strokeColor: Color(polygon['strokeColor']),
-            strokeWidth: polygon['strokeWidth'],
-            visible: polygon['visible'],
-            zIndex: polygon['zIndex'],
-            points: points,
-          )
-      );
+      current.add(Polygon(
+        polygonId: polygonId,
+        consumeTapEvents: polygon['consumeTapEvents'],
+        fillColor: Color(polygon['fillColor']),
+        geodesic: polygon['geodesic'],
+        strokeColor: Color(polygon['strokeColor']),
+        strokeWidth: polygon['strokeWidth'],
+        visible: polygon['visible'],
+        zIndex: polygon['zIndex'],
+        points: points,
+      ));
     });
     return PolygonUpdates.from(null, current);
   }
   return null;
 }
 
-gmaps.PolygonOptions _polygonOptionsFromPolygon(gmaps.GMap googleMap,
-    Polygon polygon) {
+gmaps.PolygonOptions _polygonOptionsFromPolygon(
+    gmaps.GMap googleMap, Polygon polygon) {
   List<gmaps.LatLng> paths = [];
   polygon.points.forEach((point) {
     paths.add(_latlngToGmLatlng(point));
   });
   return gmaps.PolygonOptions()
     ..paths = paths
-    ..strokeColor = '#'+polygon.strokeColor.value.toRadixString(16)
+    ..strokeColor = '#' + polygon.strokeColor.value.toRadixString(16)
     ..strokeOpacity = 0.8
     ..strokeWeight = polygon.strokeWidth
-    ..fillColor = '#'+polygon.fillColor.value.toRadixString(16)
+    ..fillColor = '#' + polygon.fillColor.value.toRadixString(16)
     ..fillOpacity = 0.35
     ..visible = polygon.visible
     ..zIndex = polygon.zIndex
-    ..geodesic = polygon.geodesic
-  ;
+    ..geodesic = polygon.geodesic;
 }
 
-gmaps.LatLng _latlngToGmLatlng(LatLng latLng){
+gmaps.LatLng _latlngToGmLatlng(LatLng latLng) {
   return gmaps.LatLng(latLng.latitude, latLng.longitude);
 }
 
-LatLng _gmLatlngToLatlng(gmaps.LatLng latLng){
+LatLng _gmLatlngToLatlng(gmaps.LatLng latLng) {
   return LatLng(latLng.lat, latLng.lng);
 }
 
-LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds latLngBounds){
+LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds latLngBounds) {
   return LatLngBounds(
     southwest: _gmLatlngToLatlng(latLngBounds.southWest),
     northeast: _gmLatlngToLatlng(latLngBounds.northEast),
@@ -297,29 +302,25 @@ MarkerUpdates _markerFromParams(value) {
     Set<Marker> current = Set<Marker>();
     list.forEach((marker) {
       MarkerId markerId = MarkerId(marker['markerId']);
-      Offset offset = Offset(
-          (marker['anchor'][0]),
-          (marker['anchor'][1]));
-      current.add(
-          Marker(
-            markerId: markerId,
-            alpha: marker['alpha'],
-            anchor: offset,
-            consumeTapEvents: marker['consumeTapEvents'],
-            draggable: marker['draggable'],
-            flat:  marker['flat'],
-            icon: BitmapDescriptor.defaultMarker,
-            infoWindow: InfoWindow(
-              title: marker['infoWindow']['title'] ?? '',
-              snippet: marker['snippet'],
-              anchor : offset,
-            ),
-            position: LatLng.fromJson(marker['position']),
-            rotation: marker['rotation'],
-            visible: marker['visible'],
-            zIndex: marker['zIndex'],
-          )
-      );
+      Offset offset = Offset((marker['anchor'][0]), (marker['anchor'][1]));
+      current.add(Marker(
+        markerId: markerId,
+        alpha: marker['alpha'],
+        anchor: offset,
+        consumeTapEvents: marker['consumeTapEvents'],
+        draggable: marker['draggable'],
+        flat: marker['flat'],
+        icon: BitmapDescriptor.defaultMarker,
+        infoWindow: InfoWindow(
+          title: marker['infoWindow']['title'] ?? '',
+          snippet: marker['snippet'],
+          anchor: offset,
+        ),
+        position: LatLng.fromJson(marker['position']),
+        rotation: marker['rotation'],
+        visible: marker['visible'],
+        zIndex: marker['zIndex'],
+      ));
     });
     return MarkerUpdates.from(null, current);
   }
@@ -329,49 +330,47 @@ MarkerUpdates _markerFromParams(value) {
 gmaps.InfoWindowOptions _infoWindowOPtionsFromMarker(Marker marker) {
   return gmaps.InfoWindowOptions()
     ..content = marker.infoWindow.snippet
-    ..zIndex    = marker.zIndex
-    ..position = gmaps.LatLng(
-        marker.position.latitude,
-        marker.position.longitude)
-  ;
+    ..zIndex = marker.zIndex
+    ..position =
+        gmaps.LatLng(marker.position.latitude, marker.position.longitude);
 }
 
-gmaps.MarkerOptions _markerOptionsFromMarker(gmaps.GMap googleMap,
-    Marker marker) {
-
+gmaps.MarkerOptions _markerOptionsFromMarker(
+    gmaps.GMap googleMap, Marker marker) {
   final iconConfig = marker.icon.toJson();
   gmaps.Icon icon;
 
-  if(iconConfig[0] == 'fromAssetImage') {
-    icon = gmaps.Icon()
-      ..url = iconConfig[1];
+  if (iconConfig[0] == 'fromAssetImage') {
+    icon = gmaps.Icon()..url = iconConfig[1];
   }
   return gmaps.MarkerOptions()
-    ..position  = gmaps.LatLng(marker.position.latitude,
-        marker.position.longitude,)
-    ..title     = marker.infoWindow.title
-    ..zIndex    = marker.zIndex
-    ..visible   = marker.visible
-    ..opacity   = marker.alpha
+    ..position = gmaps.LatLng(
+      marker.position.latitude,
+      marker.position.longitude,
+    )
+    ..title = marker.infoWindow.title
+    ..zIndex = marker.zIndex
+    ..visible = marker.visible
+    ..opacity = marker.alpha
     ..draggable = marker.draggable
-    ..icon      = icon
-    ..anchorPoint = gmaps.Point(marker.anchor.dx, marker.anchor.dy,);
-    // Flat and Rotation are not supported directly on the web.
+    ..icon = icon
+    ..anchorPoint = gmaps.Point(
+      marker.anchor.dx,
+      marker.anchor.dy,
+    );
+  // Flat and Rotation are not supported directly on the web.
 }
-
-
 
 gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
   final populationOptions = gmaps.CircleOptions()
-    ..strokeColor = '#'+circle.strokeColor.value.toRadixString(16)
+    ..strokeColor = '#' + circle.strokeColor.value.toRadixString(16)
     ..strokeOpacity = 0.8
     ..strokeWeight = circle.strokeWidth
-    ..fillColor = '#'+circle.fillColor.value.toRadixString(16)
+    ..fillColor = '#' + circle.fillColor.value.toRadixString(16)
     ..fillOpacity = 0.6
-    ..center = gmaps.LatLng(circle.center.latitude,circle.center.longitude)
+    ..center = gmaps.LatLng(circle.center.latitude, circle.center.longitude)
     ..radius = circle.radius
-    ..visible = circle.visible
-  ;
+    ..visible = circle.visible;
   return populationOptions;
 }
 
@@ -381,19 +380,17 @@ CircleUpdates _circleFromParams(value) {
     Set<Circle> current = Set<Circle>();
     list.forEach((circle) {
       CircleId circleId = CircleId(circle['circleId']);
-      current.add(
-          Circle(
-            circleId: circleId,
-            consumeTapEvents: circle['consumeTapEvents'],
-            fillColor: Color(circle['fillColor']),
-            center: LatLng.fromJson(circle['center']),
-            radius: circle['radius'],
-            strokeColor: Color(circle['strokeColor']),
-            strokeWidth: circle['strokeWidth'],
-            visible: circle['visible'],
-            zIndex: circle['zIndex'],
-          )
-      );
+      current.add(Circle(
+        circleId: circleId,
+        consumeTapEvents: circle['consumeTapEvents'],
+        fillColor: Color(circle['fillColor']),
+        center: LatLng.fromJson(circle['center']),
+        radius: circle['radius'],
+        strokeColor: Color(circle['strokeColor']),
+        strokeWidth: circle['strokeWidth'],
+        visible: circle['visible'],
+        zIndex: circle['zIndex'],
+      ));
     });
     return CircleUpdates.from(null, current);
   }

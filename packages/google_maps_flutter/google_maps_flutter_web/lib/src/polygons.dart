@@ -1,32 +1,34 @@
 part of google_maps_flutter_web;
 
 class PolygonsController extends AbstractController {
-
   final Map<PolygonId, PolygonController> _polygonIdToController;
 
   StreamController<MapEvent> _streamController;
 
   PolygonsController({
     @required StreamController<MapEvent> stream,
-  }): _streamController = stream, _polygonIdToController = Map<PolygonId, PolygonController>();
+  })  : _streamController = stream,
+        _polygonIdToController = Map<PolygonId, PolygonController>();
 
   void addPolygons(Set<Polygon> polygonsToAdd) {
-    if(polygonsToAdd != null) {
+    if (polygonsToAdd != null) {
       polygonsToAdd.forEach((polygon) {
         _addPolygon(polygon);
       });
     }
   }
 
-  void _addPolygon(Polygon polygon){
-    if(polygon == null) return;
-    final populationOptions =  _polygonOptionsFromPolygon(googleMap, polygon);
-    gmaps.Polygon  gmPolygon = gmaps.Polygon(populationOptions);
+  void _addPolygon(Polygon polygon) {
+    if (polygon == null) return;
+    final populationOptions = _polygonOptionsFromPolygon(googleMap, polygon);
+    gmaps.Polygon gmPolygon = gmaps.Polygon(populationOptions);
     gmPolygon.map = googleMap;
     PolygonController controller = PolygonController(
         polygon: gmPolygon,
-        consumeTapEvents:polygon.consumeTapEvents,
-        onTap:(){ _onPolygonTap(polygon.polygonId);});
+        consumeTapEvents: polygon.consumeTapEvents,
+        onTap: () {
+          _onPolygonTap(polygon.polygonId);
+        });
     _polygonIdToController[polygon.polygonId] = controller;
   }
 
@@ -39,21 +41,26 @@ class PolygonsController extends AbstractController {
   }
 
   void changePolygon(Polygon polygon) {
-    if (polygon == null) { return;}
+    if (polygon == null) {
+      return;
+    }
 
-    PolygonController polygonController = _polygonIdToController[polygon.polygonId];
+    PolygonController polygonController =
+        _polygonIdToController[polygon.polygonId];
     if (polygonController != null) {
-      polygonController.update(
-          _polygonOptionsFromPolygon(googleMap, polygon));
+      polygonController.update(_polygonOptionsFromPolygon(googleMap, polygon));
     }
   }
 
   void removePolygons(Set<PolygonId> polygonIdsToRemove) {
-    if (polygonIdsToRemove == null) {return;}
+    if (polygonIdsToRemove == null) {
+      return;
+    }
     polygonIdsToRemove.forEach((polygonId) {
-      if(polygonId != null) {
-        final PolygonController polygonController = _polygonIdToController[polygonId];
-        if(polygonController != null) {
+      if (polygonId != null) {
+        final PolygonController polygonController =
+            _polygonIdToController[polygonId];
+        if (polygonController != null) {
           polygonController.remove();
           _polygonIdToController.remove(polygonId.value);
         }

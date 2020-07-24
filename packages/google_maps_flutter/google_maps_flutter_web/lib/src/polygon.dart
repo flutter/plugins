@@ -1,29 +1,25 @@
 part of google_maps_flutter_web;
 
-
 ///
 class PolygonController {
-
   gmaps.Polygon _polygon;
   bool consumeTapEvents = false;
   ui.VoidCallback onTap;
 
   ///
-  PolygonController({
-    @required gmaps.Polygon polygon,
-    bool consumeTapEvents,
-    this.onTap
-  }){
+  PolygonController(
+      {@required gmaps.Polygon polygon, bool consumeTapEvents, this.onTap}) {
     _polygon = polygon;
-    if(consumeTapEvents) {
+    if (consumeTapEvents) {
       polygon.onClick.listen((event) {
-        if(onTap !=null) onTap.call();
+        if (onTap != null) onTap.call();
       });
     }
   }
 
-
-  set polygon (gmaps.Polygon polygon) { _polygon = polygon; }
+  set polygon(gmaps.Polygon polygon) {
+    _polygon = polygon;
+  }
 
   void update(gmaps.PolygonOptions options) {
     _polygon.options = options;

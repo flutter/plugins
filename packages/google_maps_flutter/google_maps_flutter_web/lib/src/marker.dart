@@ -1,7 +1,6 @@
 part of google_maps_flutter_web;
 
 class MarkerController {
-
   gmaps.Marker _marker;
   gmaps.InfoWindow infoWindow;
   bool consumeTapEvents = false;
@@ -9,6 +8,7 @@ class MarkerController {
   ui.VoidCallback onInfoWindowTap;
   LatLngCallback onDragEnd;
   bool infoWindowShown = false;
+
   ///
   MarkerController({
     @required gmaps.Marker marker,
@@ -17,25 +17,27 @@ class MarkerController {
     this.onTap,
     this.onDragEnd,
     this.onInfoWindowTap,
-  }){
+  }) {
     _marker = marker;
-    if(consumeTapEvents) {
-    }
-    if(onTap !=null){
-      marker.onClick.listen((event) {onTap.call(); });
-    }
-    if(_marker.draggable) {
-      marker.onDragend.listen((event) {
-        if(onDragEnd !=null) onDragEnd.call(event.latLng);
+    if (consumeTapEvents) {}
+    if (onTap != null) {
+      marker.onClick.listen((event) {
+        onTap.call();
       });
     }
-    if(onInfoWindowTap !=null) {
+    if (_marker.draggable) {
+      marker.onDragend.listen((event) {
+        if (onDragEnd != null) onDragEnd.call(event.latLng);
+      });
+    }
+    if (onInfoWindowTap != null) {
       infoWindow.addListener('click', onInfoWindowTap);
     }
   }
 
-
-  set marker (gmaps.Marker marker) { _marker = marker; }
+  set marker(gmaps.Marker marker) {
+    _marker = marker;
+  }
 
   void update(gmaps.MarkerOptions options) {
     _marker.options = options;
@@ -49,7 +51,7 @@ class MarkerController {
   }
 
   void hideInfoWindow() {
-    if(infoWindow != null) {
+    if (infoWindow != null) {
       infoWindow.close();
       infoWindowShown = false;
     }

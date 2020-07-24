@@ -4,7 +4,6 @@ part of google_maps_flutter_web;
 ///
 /// This class implements the `package:google_maps_flutter` functionality for the web.
 class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
-
   /// Registers this class as the default instance of [GoogleMapsFlutterPlatform].
   static void registerWith(Registrar registrar) {
     GoogleMapsFlutterPlatform.instance = GoogleMapsPlugin();
@@ -15,7 +14,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Map _optionsById = Map<int, Map<String, dynamic>>();
 
   final StreamController<MapEvent> _controller =
-  StreamController<MapEvent>.broadcast();
+      StreamController<MapEvent>.broadcast();
 
   Stream<MapEvent> _events(int mapId) =>
       _controller.stream.where((event) => event.mapId == mapId);
@@ -25,7 +24,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     /* Noop */
   }
 
-  // Updates the cache of map options for a given mapId, so we can 
+  // Updates the cache of map options for a given mapId, so we can
   // recrate the gmaps.MapOptions object from scratch.
   Map<String, dynamic> _mergeRawMapOptions(dynamic newOptions, int mapId) {
     _optionsById[mapId] = <String, dynamic>{
@@ -37,11 +36,11 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
   @override
   Future<void> updateMapOptions(
-      Map<String, dynamic> optionsUpdate, {
-        @required int mapId,
-      }) async {
+    Map<String, dynamic> optionsUpdate, {
+    @required int mapId,
+  }) async {
     GoogleMapController googleMapController = _mapById[mapId];
-    if(googleMapController != null) {
+    if (googleMapController != null) {
       googleMapController.setOptions(
         _optionsFromParams(
           _mergeRawMapOptions(optionsUpdate, mapId),
@@ -54,70 +53,77 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
   @override
   Future<void> updateMarkers(
-      MarkerUpdates markerUpdates, {
-        @required int mapId,
-      }) async {
-    _mapById[mapId].markersController
-        .addMarkers(markerUpdates.markersToAdd);
-    _mapById[mapId].markersController
+    MarkerUpdates markerUpdates, {
+    @required int mapId,
+  }) async {
+    _mapById[mapId].markersController.addMarkers(markerUpdates.markersToAdd);
+    _mapById[mapId]
+        .markersController
         .changeMarkers(markerUpdates.markersToChange);
-    _mapById[mapId].markersController
+    _mapById[mapId]
+        .markersController
         .removeMarkers(markerUpdates.markerIdsToRemove);
   }
 
   @override
   Future<void> updatePolygons(
-      PolygonUpdates polygonUpdates, {
-        @required int mapId,
-      }) async {
-    _mapById[mapId].polygonsController
+    PolygonUpdates polygonUpdates, {
+    @required int mapId,
+  }) async {
+    _mapById[mapId]
+        .polygonsController
         .addPolygons(polygonUpdates.polygonsToAdd);
-    _mapById[mapId].polygonsController
+    _mapById[mapId]
+        .polygonsController
         .changePolygons(polygonUpdates.polygonsToChange);
-    _mapById[mapId].polygonsController
+    _mapById[mapId]
+        .polygonsController
         .removePolygons(polygonUpdates.polygonIdsToRemove);
   }
 
   @override
   Future<void> updatePolylines(
-      PolylineUpdates polylineUpdates, {
-        @required int mapId,
-      }) async {
-    _mapById[mapId].polylinesController
+    PolylineUpdates polylineUpdates, {
+    @required int mapId,
+  }) async {
+    _mapById[mapId]
+        .polylinesController
         .addPolylines(polylineUpdates.polylinesToAdd);
-    _mapById[mapId].polylinesController
+    _mapById[mapId]
+        .polylinesController
         .changePolylines(polylineUpdates.polylinesToChange);
-    _mapById[mapId].polylinesController
+    _mapById[mapId]
+        .polylinesController
         .removePolylines(polylineUpdates.polylineIdsToRemove);
   }
 
   @override
   Future<void> updateCircles(
-      CircleUpdates circleUpdates, {
-        @required int mapId,
-      }) async {
-    _mapById[mapId].circlesController
-        .addCircles(circleUpdates.circlesToAdd);
-    _mapById[mapId].circlesController
+    CircleUpdates circleUpdates, {
+    @required int mapId,
+  }) async {
+    _mapById[mapId].circlesController.addCircles(circleUpdates.circlesToAdd);
+    _mapById[mapId]
+        .circlesController
         .changeCircles(circleUpdates.circlesToChange);
-    _mapById[mapId].circlesController
+    _mapById[mapId]
+        .circlesController
         .removeCircles(circleUpdates.circleIdsToRemove);
   }
 
   @override
   Future<void> animateCamera(
-      CameraUpdate cameraUpdate, {
-        @required int mapId,
-      }) async {
+    CameraUpdate cameraUpdate, {
+    @required int mapId,
+  }) async {
     return moveCamera(cameraUpdate, mapId: mapId);
   }
 
   @override
   Future<void> moveCamera(
-      CameraUpdate cameraUpdate, {
-        @required int mapId,
-      }) async {
-
+    CameraUpdate cameraUpdate, {
+    @required int mapId,
+  }) async {
     GoogleMapController googleMapController = _mapById[mapId];
     if (googleMapController == null) {
       return null;
@@ -143,9 +149,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
         break;
       case 'newLatLngBounds':
         map.fitBounds(gmaps.LatLngBounds(
-          gmaps.LatLng(json[1][0][0],json[1][0][1]),
-          gmaps.LatLng(json[1][1][0],json[1][1][1])
-        ));
+            gmaps.LatLng(json[1][0][0], json[1][0][1]),
+            gmaps.LatLng(json[1][1][0], json[1][1][1])));
         // padding = json[2];
         // Needs package:google_maps ^4.0.0 to adjust the padding in fitBounds
         break;
@@ -172,17 +177,18 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
         map.zoom = json[1];
         break;
       default:
-        throw UnimplementedError('moveCamera() does not implement: ${json[0]}.');
+        throw UnimplementedError(
+            'moveCamera() does not implement: ${json[0]}.');
     }
   }
 
   @override
   Future<void> setMapStyle(
-      String mapStyle, {
-        @required int mapId,
-      }) async {
+    String mapStyle, {
+    @required int mapId,
+  }) async {
     GoogleMapController googleMapController = _mapById[mapId];
-    if(googleMapController != null) {
+    if (googleMapController != null) {
       googleMapController.setOptions(
         _optionsFromParams(_mergeRawMapOptions({
           'styles': _mapStyles(mapStyle),
@@ -196,21 +202,21 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     @required int mapId,
   }) {
     GoogleMapController googleMapController = _mapById[mapId];
-    if(googleMapController != null) {
-      gmaps.LatLngBounds latLngBounds = googleMapController.googleMap
-          .bounds;
-      if(latLngBounds != null) {
+    if (googleMapController != null) {
+      gmaps.LatLngBounds latLngBounds = googleMapController.googleMap.bounds;
+      if (latLngBounds != null) {
         return Future.value(_gmLatLngBoundsTolatLngBounds(latLngBounds));
       }
     }
-    return Future.value(LatLngBounds(southwest: LatLng(0,0),northeast:LatLng(0,0) ));
+    return Future.value(
+        LatLngBounds(southwest: LatLng(0, 0), northeast: LatLng(0, 0)));
   }
 
   @override
   Future<ScreenCoordinate> getScreenCoordinate(
-      LatLng latLng, {
-        @required int mapId,
-      }) {
+    LatLng latLng, {
+    @required int mapId,
+  }) {
     GoogleMapController googleMapController = _mapById[mapId];
     if (googleMapController != null) {
       gmaps.Point point = googleMapController.googleMap.projection
@@ -218,54 +224,51 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       return Future.value(ScreenCoordinate(x: point.x, y: point.y));
     }
     return Future.error(
-        StateError("getScreenCoordinate called prior to map initialization")
-    );
+        StateError("getScreenCoordinate called prior to map initialization"));
   }
 
   @override
   Future<LatLng> getLatLng(
-      ScreenCoordinate screenCoordinate, {
-        @required int mapId,
-      }) {
+    ScreenCoordinate screenCoordinate, {
+    @required int mapId,
+  }) {
     GoogleMapController googleMapController = _mapById[mapId];
-    if(googleMapController != null) {
-      gmaps.LatLng latLng = googleMapController.googleMap.projection.fromPointToLatLng(
-        gmaps.Point(screenCoordinate.x, screenCoordinate.y)
-      );
+    if (googleMapController != null) {
+      gmaps.LatLng latLng = googleMapController.googleMap.projection
+          .fromPointToLatLng(
+              gmaps.Point(screenCoordinate.x, screenCoordinate.y));
       return Future.value(_gmLatlngToLatlng(latLng));
     }
     return Future.error(
-        StateError("getLatLng called prior to map initialization")
-    );
+        StateError("getLatLng called prior to map initialization"));
   }
 
   @override
   Future<void> showMarkerInfoWindow(
-      MarkerId markerId, {
-        @required int mapId,
-      }) async {
+    MarkerId markerId, {
+    @required int mapId,
+  }) async {
     GoogleMapController googleMapController = _mapById[mapId];
     googleMapController.markersController.showMarkerInfoWindow(markerId);
   }
 
   @override
   Future<void> hideMarkerInfoWindow(
-      MarkerId markerId, {
-        @required int mapId,
-      }) async {
+    MarkerId markerId, {
+    @required int mapId,
+  }) async {
     GoogleMapController googleMapController = _mapById[mapId];
     googleMapController.markersController.hideMarkerInfoWindow(markerId);
   }
 
   @override
   Future<bool> isMarkerInfoWindowShown(
-      MarkerId markerId, {
-        @required int mapId,
-      }) {
+    MarkerId markerId, {
+    @required int mapId,
+  }) {
     GoogleMapController googleMapController = _mapById[mapId];
     return Future.value(
-        googleMapController.markersController.isInfoWindowShown(markerId)
-    );
+        googleMapController.markersController.isInfoWindowShown(markerId));
   }
 
   @override
@@ -371,12 +374,15 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       Map<String, dynamic> creationParams,
       Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
       PlatformViewCreatedCallback onPlatformViewCreated) {
-
     int mapId = creationParams['creationMapId'];
     creationParams.remove('creationMapId');
 
     if (mapId == null) {
-      throw PlatformException(code: 'maps_web_missing_creation_map_id', message: 'Pass a `creationMapId` in creationParams to prevent reloads in web.',);
+      throw PlatformException(
+        code: 'maps_web_missing_creation_map_id',
+        message:
+            'Pass a `creationMapId` in creationParams to prevent reloads in web.',
+      );
     }
 
     Map<String, dynamic> mergedRawOptions;
@@ -393,50 +399,46 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       return _mapById[mapId].html;
     }
 
-
     gmaps.MapOptions options = gmaps.MapOptions();
     CameraPosition position;
 
-    CircleUpdates     initialCircles;
-    PolygonUpdates    initialPolygons;
-    PolylineUpdates   initialPolylines;
-    MarkerUpdates     initialMarkers;
+    CircleUpdates initialCircles;
+    PolygonUpdates initialPolygons;
+    PolylineUpdates initialPolylines;
+    MarkerUpdates initialMarkers;
 
     creationParams.forEach((key, value) {
-      if(key == 'options')    {
+      if (key == 'options') {
         _optionsFromParams(mergedRawOptions, existingOptions: options);
-      } else if(key == 'markersToAdd') {
+      } else if (key == 'markersToAdd') {
         initialMarkers = _markerFromParams(value);
-      } else if(key == 'polygonsToAdd') {
+      } else if (key == 'polygonsToAdd') {
         initialPolygons = _polygonFromParams(value);
-      } else if(key == 'polylinesToAdd') {
+      } else if (key == 'polylinesToAdd') {
         initialPolylines = _polylineFromParams(value);
-      } else if(key == 'circlesToAdd') {
+      } else if (key == 'circlesToAdd') {
         initialCircles = _circleFromParams(value);
-      } else if(key == 'initialCameraPosition') {
+      } else if (key == 'initialCameraPosition') {
         position = CameraPosition.fromMap(value);
         options.zoom = position.zoom;
-        options.center = gmaps.LatLng(
-            position.target.latitude,
-            position.target.longitude
-        );
+        options.center =
+            gmaps.LatLng(position.target.latitude, position.target.longitude);
       } else {
         print('un-handle >>$key');
       }
     });
 
-    _mapById[mapId] =
-        GoogleMapController.build(
-          mapId: mapId,
-          streamController: _controller,
-          onPlatformViewCreated: onPlatformViewCreated,
-          options: options,
-          position: position,
-          initialCircles: initialCircles?.circlesToAdd,
-          initialPolygons: initialPolygons?.polygonsToAdd,
-          initialPolylines: initialPolylines?.polylinesToAdd,
-          initialMarkers: initialMarkers?.markersToAdd,
-        );
+    _mapById[mapId] = GoogleMapController.build(
+      mapId: mapId,
+      streamController: _controller,
+      onPlatformViewCreated: onPlatformViewCreated,
+      options: options,
+      position: position,
+      initialCircles: initialCircles?.circlesToAdd,
+      initialPolygons: initialPolygons?.polygonsToAdd,
+      initialPolylines: initialPolylines?.polylinesToAdd,
+      initialMarkers: initialMarkers?.markersToAdd,
+    );
 
     onPlatformViewCreated.call(mapId);
 

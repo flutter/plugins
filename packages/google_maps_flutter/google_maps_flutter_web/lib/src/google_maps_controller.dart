@@ -4,25 +4,26 @@ part of google_maps_flutter_web;
 class GoogleMapController {
   ///TODO
   final int mapId;
+
   ///TODO
   HtmlElementView html;
 
   gmaps.TrafficLayer _trafficLayer;
-  
+
   /// TODO
   gmaps.GMap googleMap;
 
-  final StreamController<MapEvent>  streamController;
-  CameraPosition                    position;
-  CirclesController                 circlesController;
-  PolygonsController                polygonsController;
-  PolylinesController               polylinesController;
-  MarkersController               markersController;
+  final StreamController<MapEvent> streamController;
+  CameraPosition position;
+  CirclesController circlesController;
+  PolygonsController polygonsController;
+  PolylinesController polylinesController;
+  MarkersController markersController;
 
-  Set<Circle>     initialCircles;
-  Set<Polygon>    initialPolygons;
-  Set<Polyline>   initialPolylines;
-  Set<Marker>     initialMarkers;
+  Set<Circle> initialCircles;
+  Set<Polygon> initialPolygons;
+  Set<Polyline> initialPolylines;
+  Set<Marker> initialMarkers;
 
   bool _mapIsMoving = false;
 
@@ -42,17 +43,14 @@ class GoogleMapController {
     polygonsController = PolygonsController(stream: this.streamController);
     polylinesController = PolylinesController(stream: this.streamController);
     markersController = MarkersController(stream: this.streamController);
-    html = HtmlElementView(
-        viewType: 'plugins.flutter.io/google_maps_$mapId'
-    );
-    DivElement div = DivElement()
-      ..id = 'plugins.flutter.io/google_maps_$mapId';
+    html = HtmlElementView(viewType: 'plugins.flutter.io/google_maps_$mapId');
+    DivElement div = DivElement()..id = 'plugins.flutter.io/google_maps_$mapId';
 
     // TODO: Move the comment below to analysis-options.yaml
     // ignore:undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
       'plugins.flutter.io/google_maps_$mapId',
-          (int viewId) => div,
+      (int viewId) => div,
     );
 
     googleMap = gmaps.GMap(div, options);
@@ -89,18 +87,22 @@ class GoogleMapController {
   void _attachMapEvents(gmaps.GMap map) {
     map.onClick.listen((event) {
       streamController.add(
-          MapTapEvent(mapId, _gmLatlngToLatlng(event.latLng)),);
+        MapTapEvent(mapId, _gmLatlngToLatlng(event.latLng)),
+      );
     });
     map.onRightclick.listen((event) {
       streamController.add(
-          MapLongPressEvent(mapId, _gmLatlngToLatlng(event.latLng)),);
+        MapLongPressEvent(mapId, _gmLatlngToLatlng(event.latLng)),
+      );
     });
     map.onBoundsChanged.listen((event) {
       if (!_mapIsMoving) {
         _mapIsMoving = true;
         streamController.add(CameraMoveStartedEvent(mapId));
       }
-      streamController.add(CameraMoveEvent(mapId, _gmViewportToCameraPosition(map)),);
+      streamController.add(
+        CameraMoveEvent(mapId, _gmViewportToCameraPosition(map)),
+      );
     });
     map.onIdle.listen((event) {
       _mapIsMoving = false;
@@ -133,7 +135,7 @@ class GoogleMapController {
   }
 
   void updateInitialCircles() {
-    if(initialCircles == null) return;
+    if (initialCircles == null) return;
     circlesController.addCircles(initialCircles);
   }
 
@@ -159,17 +161,17 @@ class GoogleMapController {
   }
 
   void updateInitialPolygons() {
-    if(initialPolygons == null) return;
+    if (initialPolygons == null) return;
     polygonsController.addPolygons(initialPolygons);
   }
 
   void updateInitialPolylines() {
-    if(initialPolylines == null) return;
+    if (initialPolylines == null) return;
     polylinesController.addPolylines(initialPolylines);
   }
 
   void updateInitialMarkers() {
-    if(initialMarkers == null) return;
+    if (initialMarkers == null) return;
     markersController.addMarkers(initialMarkers);
   }
 }
