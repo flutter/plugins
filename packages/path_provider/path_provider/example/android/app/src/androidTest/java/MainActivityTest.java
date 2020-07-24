@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 @RunWith(FlutterRunner.class)
-public class FlutterActivityTest {
+public class MainActivityTest {
   @Rule
   public ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(FlutterActivity.class);
 }
