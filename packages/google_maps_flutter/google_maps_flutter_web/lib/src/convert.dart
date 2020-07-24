@@ -62,8 +62,8 @@ gmaps.MapOptions _optionsFromParams(Map<String, dynamic> optionsUpdate, {
   }
 
   // These don't have any optionUpdate entry, but they seem to be off in the native maps.
-  options.mapTypeControl = optionsUpdate['mapToolbarEnabled'] ?? false;
-  options.fullscreenControl = optionsUpdate['mapToolbarEnabled'] ?? false;
+  options.mapTypeControl = false;
+  options.fullscreenControl = false;
   options.streetViewControl = false;
 
   return options;
