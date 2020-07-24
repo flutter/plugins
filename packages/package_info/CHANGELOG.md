@@ -1,3 +1,8 @@
+## 0.4.2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.4.1
 
 * Add support for macOS.

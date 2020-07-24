@@ -9,7 +9,8 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  e2e: ^0.2.1
+  e2e:
+    path: ../../../e2e
   flutter_driver:
     sdk: flutter
   test: any
