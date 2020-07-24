@@ -10,7 +10,8 @@ dependencies:
 
 dev_dependencies:
   pedantic: ^1.8.0
-  e2e:  ^0.2.1
+  e2e:
+    path: ../../../e2e
   flutter_driver:
     sdk: flutter
 

@@ -51,9 +51,33 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
   @override
   bool get registerTestTextInput => false;
 
+  Size _surfaceSize;
+
+  /// Artificially changes the surface size to `size` on the Widget binding,
+  /// then flushes microtasks.
+  ///
+  /// Set to null to use the default surface size.
   @override
-  ViewConfiguration createViewConfiguration() => TestViewConfiguration(
-      size: window.physicalSize / window.devicePixelRatio);
+  Future<void> setSurfaceSize(Size size) {
+    return TestAsyncUtils.guard<void>(() async {
+      assert(inTest);
+      if (_surfaceSize == size) {
+        return;
+      }
+      _surfaceSize = size;
+      handleMetricsChanged();
+    });
+  }
+
+  @override
+  ViewConfiguration createViewConfiguration() {
+    final double devicePixelRatio = window.devicePixelRatio;
+    final Size size = _surfaceSize ?? window.physicalSize / devicePixelRatio;
+    return TestViewConfiguration(
+      size: size,
+      window: window,
+    );
+  }
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
