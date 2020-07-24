@@ -37,19 +37,13 @@ abstract class FilePickerPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-
-  /// Returns the message from each platform implementation
-  Future<String> getMessage() {
-    throw UnimplementedError('getMessage() has not been implemented.');
-  }
-
   /// Load file from user's computer and return it as an XFile
-  Future<XFile> loadFile() {
+  Future<List<XFile>> loadFile({List<String> acceptedTypes}) {
     throw UnimplementedError('loadFile() has not been implemented.');
   }
 
   /// Saves the file to user's Disk
-  void saveFile(Uint8List data, {String suggestedName}) async {
+  void saveFile(Uint8List data, {String type, String suggestedName}) async {
     throw UnimplementedError('saveFile() has not been implemented.');
   }
 }

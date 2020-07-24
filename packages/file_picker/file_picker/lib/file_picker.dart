@@ -10,18 +10,12 @@ import 'package:file_picker_platform_interface/file_picker_platform_interface.da
 export 'package:file_picker_platform_interface/file_picker_platform_interface.dart'
   show XFile;
 
-/// Gets message from platform implementation
-Future<String> getMessage() async {
-  final String result = await FilePickerPlatform.instance.getMessage();
-  return result;
-}
-
 /// Saves File to user's file system
-void saveFile(Uint8List data, {String suggestedName}) async {
-  return FilePickerPlatform.instance.saveFile(data, suggestedName: suggestedName);
+void saveFile(Uint8List data, {String type = '', String suggestedName}) async {
+  return FilePickerPlatform.instance.saveFile(data, type: type, suggestedName: suggestedName);
 }
 
 /// Loads File from user's file system
-Future<XFile> loadFile() {
-  return FilePickerPlatform.instance.loadFile();
+Future<List<XFile>> loadFile({List<String> acceptedTypes}) {
+  return FilePickerPlatform.instance.loadFile(acceptedTypes: acceptedTypes);
 }
