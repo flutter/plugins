@@ -32,7 +32,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         }
         await _channel.invokeMethod<void>(
           'allTestsFinished',
-          <String, dynamic>{'results': _results},
+          <String, dynamic>{'results': results},
         );
       } on MissingPluginException {
         print('Warning: E2E test plugin was not detected.');
@@ -45,7 +45,7 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     final TestExceptionReporter oldTestExceptionReporter = reportTestException;
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
-      _results[testDescription] = 'failed';
+      results[testDescription] = 'failed';
       _failureMethodsDetails.add(Failure(testDescription, details.toString()));
       if (!_allTestsPassed.isCompleted) {
         _allTestsPassed.complete(false);
@@ -89,7 +89,12 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   static const MethodChannel _channel = MethodChannel('plugins.flutter.io/e2e');
 
-  static Map<String, String> _results = <String, String>{};
+  /// Test results that will be populated after the tests have completed.
+  ///
+  /// Keys are the test descriptions, and values are either `success` or
+  /// `failed`.
+  @visibleForTesting
+  Map<String, String> results = <String, String>{};
 
   /// The extra data for the reported result.
   ///
@@ -153,6 +158,6 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
       description: description,
       timeout: timeout,
     );
-    _results[description] ??= 'success';
+    results[description] ??= 'success';
   }
 }
