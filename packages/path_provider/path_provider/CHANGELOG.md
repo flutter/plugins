@@ -1,7 +1,11 @@
-## 1.6.12
+## 1.6.13
 
 * Update package:e2e reference to use the local version in the flutter/plugins
   repository.
+
+## 1.6.12
+
+* Fixed a Java lint in a test.
 
 ## 1.6.11
 
