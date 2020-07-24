@@ -1,3 +1,7 @@
+## 1.6.12
+
+* Fixed a Java lint in a test.
+
 ## 1.6.11
 * Updated documentation to reflect the need for changes in testing for federated plugins
 
