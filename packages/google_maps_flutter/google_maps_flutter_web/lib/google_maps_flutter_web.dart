@@ -3,7 +3,6 @@ library google_maps_flutter_web;
 import 'dart:async';
 import 'dart:html';
 import 'dart:ui' as ui;
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:typed_data';
 

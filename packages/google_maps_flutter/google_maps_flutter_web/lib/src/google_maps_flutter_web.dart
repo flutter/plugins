@@ -39,7 +39,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<void> updateMapOptions(
       Map<String, dynamic> optionsUpdate, {
         @required int mapId,
-      }) {
+      }) async {
     GoogleMapController googleMapController = _mapById[mapId];
     if(googleMapController != null) {
       googleMapController.setOptions(
@@ -56,7 +56,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<void> updateMarkers(
       MarkerUpdates markerUpdates, {
         @required int mapId,
-      }) {
+      }) async {
     _mapById[mapId].markersController
         .addMarkers(markerUpdates.markersToAdd);
     _mapById[mapId].markersController
@@ -69,7 +69,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<void> updatePolygons(
       PolygonUpdates polygonUpdates, {
         @required int mapId,
-      }) {
+      }) async {
     _mapById[mapId].polygonsController
         .addPolygons(polygonUpdates.polygonsToAdd);
     _mapById[mapId].polygonsController
@@ -82,7 +82,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<void> updatePolylines(
       PolylineUpdates polylineUpdates, {
         @required int mapId,
-      }) {
+      }) async {
     _mapById[mapId].polylinesController
         .addPolylines(polylineUpdates.polylinesToAdd);
     _mapById[mapId].polylinesController
@@ -95,7 +95,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<void> updateCircles(
       CircleUpdates circleUpdates, {
         @required int mapId,
-      }) {
+      }) async {
     _mapById[mapId].circlesController
         .addCircles(circleUpdates.circlesToAdd);
     _mapById[mapId].circlesController
@@ -108,15 +108,15 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<void> animateCamera(
       CameraUpdate cameraUpdate, {
         @required int mapId,
-      }) {
-    moveCamera(cameraUpdate, mapId: mapId);
+      }) async {
+    return moveCamera(cameraUpdate, mapId: mapId);
   }
 
   @override
   Future<void> moveCamera(
       CameraUpdate cameraUpdate, {
         @required int mapId,
-      }) {
+      }) async {
 
     GoogleMapController googleMapController = _mapById[mapId];
     if (googleMapController == null) {
@@ -180,7 +180,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<void> setMapStyle(
       String mapStyle, {
         @required int mapId,
-      }) {
+      }) async {
     GoogleMapController googleMapController = _mapById[mapId];
     if(googleMapController != null) {
       googleMapController.setOptions(
@@ -243,7 +243,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<void> showMarkerInfoWindow(
       MarkerId markerId, {
         @required int mapId,
-      }) {
+      }) async {
     GoogleMapController googleMapController = _mapById[mapId];
     googleMapController.markersController.showMarkerInfoWindow(markerId);
   }
@@ -252,7 +252,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<void> hideMarkerInfoWindow(
       MarkerId markerId, {
         @required int mapId,
-      }) {
+      }) async {
     GoogleMapController googleMapController = _mapById[mapId];
     googleMapController.markersController.hideMarkerInfoWindow(markerId);
   }
