@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'File Picker Demo Home Page'),
+      home: MyHomePage(title: 'File Selector Demo Home Page'),
     );
   }
 }
@@ -41,6 +41,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _fileController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _extensionController = TextEditingController();
 
   @override
   void dispose() {
@@ -54,21 +55,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // await?
     if (_nameController.text == '') {
-      saveFile(data);
+      saveFile(data, type: 'text/plain');
     } else {
-      saveFile(data, suggestedName: _nameController.text);
+      saveFile(data, type: 'text/plain', suggestedName: _nameController.text);
     }
   }
 
   void _loadFile() async {
-    XFile file = await loadFile();
+    List<XFile> file;
+    if (_extensionController.text.isNotEmpty) {
+      file = await loadFile(acceptedTypes: _extensionController.text.split(','));
+    } else {
+      file = await loadFile();
+    }
 
-    String text = await file.readAsString();
+    String text = await file.first.readAsString();
 
     _fileController.text = text;
 
-    if (file.name != '') {
-      _nameController.text = file.name;
+    if (file.first.name.isNotEmpty) {
+      _nameController.text = file.first.name;
     }
   }
 
@@ -86,7 +92,6 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: 300,
               child: TextField(
-                textAlign: TextAlign.center,
                 controller: _nameController,
                 decoration: InputDecoration(
                   hintText: '(Optional) Suggest File Name',
@@ -96,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: 300,
               child: TextField(
-                textAlign: TextAlign.center,
+                maxLines: null,
                 controller: _fileController,
                 decoration: InputDecoration(
                   hintText: 'Enter File Contents',
@@ -107,6 +112,15 @@ class _MyHomePageState extends State<MyHomePage> {
             RaisedButton(
               child: Text('Press to save file'),
               onPressed: () => { _saveFile() },
+            ),
+            Container(
+              width: 300,
+              child: TextField(
+                controller: _extensionController,
+                decoration: InputDecoration(
+                  hintText: '(Optional) Accepted Load Extensions',
+                ),
+              ),
             ),
             RaisedButton(
               child: Text('Press to load a file'),
