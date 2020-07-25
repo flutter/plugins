@@ -130,7 +130,7 @@ documentation](https://firebase.google.com/docs/test-lab/?gclid=EAIaIQobChMIs5qV
 to set up a project.
 
 To run an e2e test on Android devices using Firebase Test Lab, use gradle commands to build an
-instrumentation test for Android.
+instrumentation test for Android, after creating `androidTest` as suggested in the last section.
 
 ```
 pushd android
