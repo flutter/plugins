@@ -1,3 +1,8 @@
+## 1.0.2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 1.0.1
 
 * Update lower bound of dart dependency to 2.1.0.

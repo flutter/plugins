@@ -1,3 +1,8 @@
+## 0.5.9
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.5.8
 
 * Support Linux by default.
