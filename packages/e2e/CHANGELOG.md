@@ -1,6 +1,10 @@
+## 0.6.2+1
+
+* Fix incorrect test results when one test passes then another fails
+
 ## 0.6.2
 
-* Fix `setSurfaceSize` for e2e tests.
+* Fix `setSurfaceSize` for e2e tests
 
 ## 0.6.1
 
