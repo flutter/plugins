@@ -178,6 +178,7 @@ class ImagePicker {
   /// See also:
   /// * [LostDataResponse], for what's included in the response.
   /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
+  @Deprecated('Use imagePicker.getLostData() method instead.')
   static Future<LostDataResponse> retrieveLostData() {
     return platform.retrieveLostDataAsDartIoFile();
   }
