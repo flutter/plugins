@@ -6,7 +6,8 @@ dependencies:
     sdk: flutter
   package_info:
     path: ../
-  e2e: "^0.2.1"
+  e2e:
+    path: ../../e2e
 
 dev_dependencies:
   flutter_driver:

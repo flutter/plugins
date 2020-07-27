@@ -2,7 +2,7 @@ name: local_auth
 description: Flutter plugin for Android and iOS device authentication sensors
   such as Fingerprint Reader and Touch ID.
 homepage: https://github.com/flutter/plugins/tree/master/packages/local_auth
-version: 0.6.2+3
+version: 0.6.2+4
 
 flutter:
   plugin:
@@ -22,7 +22,8 @@ dependencies:
   flutter_plugin_android_lifecycle: ^1.0.2
 
 dev_dependencies:
-  e2e: ^0.2.1
+  e2e:
+    path: ../e2e
   flutter_driver:
     sdk: flutter
   flutter_test:

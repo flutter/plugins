@@ -10,7 +10,8 @@ dependencies:
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-  e2e: ^0.2.0
+  e2e:
+    path: ../../e2e
   pedantic: ^1.8.0
 
 flutter:
@@ -19,4 +20,4 @@ flutter:
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
   flutter: ">=1.9.1+hotfix.2 <2.0.0"
-  
+
