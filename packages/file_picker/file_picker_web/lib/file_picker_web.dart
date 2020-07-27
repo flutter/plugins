@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:html' as html;
+import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
@@ -11,7 +11,7 @@ final String _kFilePickerInputsDomId = '__file_picker_web-file-input';
 ///
 /// This class implements the `package:file_picker` functionality for the web.
 class FilePickerPlugin extends FilePickerPlatform {
-  html.Element _target;
+  Element _target;
 
   /// Default constructor, initializes _target to a DOM element
   /// that we can use to host HTML elements
@@ -27,18 +27,12 @@ class FilePickerPlugin extends FilePickerPlatform {
   /// Load file from user's computer and return it as an XFile
   /// TODO: multiple files
   Future<List<XFile>> loadFile({List<String> acceptedTypes}) {
-    String inputString = '';
-    for (String element in acceptedTypes) {
-      if (inputString.isNotEmpty) {
-        inputString += ',';
-      }
-      inputString += element;
-    }
+    String acceptedTypeString = acceptedTypes.where((e) => e.isNotEmpty).join(',');
     
     // Create a file input element
-    html.FileUploadInputElement element = html.FileUploadInputElement();
-    if (inputString.isNotEmpty) {
-      element.accept = inputString;
+    final FileUploadInputElement element = FileUploadInputElement();
+    if (acceptedTypeString.isNotEmpty) {
+      element.accept = acceptedTypeString;
     }
     element.multiple = true;
 
@@ -47,17 +41,17 @@ class FilePickerPlugin extends FilePickerPlatform {
     _target.children.add(element);
     element.click();
     
-    Completer<List<XFile>> _completer = Completer<List<XFile>>();
+    final Completer<List<XFile>> _completer = Completer();
     
     // Get the returned files
     // TODO: Handle errors
     element.onChange.first.then((event) {
-      // TODO: Multiple files
-      List<html.File> files = element.files;
+      // File type from dart:html class
+      List<File> files = element.files;
       List<XFile> returnFiles = List<XFile>();
 
-      for (html.File file in files) {
-        String url = html.Url.createObjectUrl(file);
+      for (File file in files) {
+        String url = Url.createObjectUrl(file);
         String name = file.name;
         int length = file.size;
 
@@ -76,16 +70,13 @@ class FilePickerPlugin extends FilePickerPlatform {
   void saveFile(Uint8List data, {String type = '', String suggestedName = ''}) async {
     // Create blob from data
     // TODO: Handle different types
-    html.Blob blob;
-    if(type.isEmpty) {
-      blob = html.Blob([data]);
-    } else {
-      blob = html.Blob([data], type);
-    }
-    String url = html.Url.createObjectUrl(blob);
+
+    final Blob blob = type.isEmpty ? Blob([data]) : Blob([data]);
+
+    String url = Url.createObjectUrl(blob);
 
     // Create an <a> tag with the appropriate download attributes and click it
-    html.AnchorElement element = html.AnchorElement(
+    final AnchorElement element = AnchorElement(
       href: url,
     );
     element.download = suggestedName;
@@ -95,13 +86,13 @@ class FilePickerPlugin extends FilePickerPlatform {
   }
 
   /// Initializes a DOM container where we can host input elements.
-  html.Element _ensureInitialized(String id) {
-    var target = html.querySelector('#${id}');
+  Element _ensureInitialized(String id) {
+    var target = querySelector('#${id}');
     if (target == null) {
-      final html.Element targetElement =
-      html.Element.tag('flt-image-picker-inputs')..id = id;
+      final Element targetElement =
+      Element.tag('flt-image-picker-inputs')..id = id;
 
-      html.querySelector('body').children.add(targetElement);
+      querySelector('body').children.add(targetElement);
       target = targetElement;
     }
     return target;
