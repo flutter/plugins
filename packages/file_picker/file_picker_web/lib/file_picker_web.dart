@@ -61,7 +61,7 @@ class FilePickerPlugin extends FilePickerPlatform {
         String name = file.name;
         int length = file.size;
 
-        returnFiles.add(new XFile(url, name: name, length: length));
+        returnFiles.add(XFile(url, name: name, length: length));
       }
 
       
