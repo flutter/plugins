@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Remove method `retrieveLostDataAsDartIoFile()` eliminating `dart.io` library dependency for class `ImagePickerPlatform`. 
+
 ## 1.1.0
 
 * Introduce PickedFile type for the new API.

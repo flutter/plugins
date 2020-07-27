@@ -137,40 +137,4 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       type: retrieveType,
     );
   }
-
-  @override
-  // ignore: deprecated_member_use_from_same_package
-  Future<LostDataResponse> retrieveLostDataAsDartIoFile() async {
-    final Map<String, dynamic> result =
-        await _channel.invokeMapMethod<String, dynamic>('retrieve');
-    if (result == null) {
-      // ignore: deprecated_member_use_from_same_package
-      return LostDataResponse.empty();
-    }
-    assert(result.containsKey('path') ^ result.containsKey('errorCode'));
-
-    final String type = result['type'];
-    assert(type == kTypeImage || type == kTypeVideo);
-
-    RetrieveType retrieveType;
-    if (type == kTypeImage) {
-      retrieveType = RetrieveType.image;
-    } else if (type == kTypeVideo) {
-      retrieveType = RetrieveType.video;
-    }
-
-    PlatformException exception;
-    if (result.containsKey('errorCode')) {
-      exception = PlatformException(
-          code: result['errorCode'], message: result['errorMessage']);
-    }
-
-    final String path = result['path'];
-
-    // ignore: deprecated_member_use_from_same_package
-    return LostDataResponse(
-        file: path == null ? null : File(path),
-        exception: exception,
-        type: retrieveType);
-  }
 }

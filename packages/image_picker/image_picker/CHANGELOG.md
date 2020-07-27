@@ -1,3 +1,8 @@
+## 0.6.8
+
+* Bump `image_picker_platform_interface` dependency, a `dart.io` free platform interface.
+* Refactor method `retrieveLostData()` to not use class `File` within platform interface.
+
 ## 0.6.7+5
 
 * Update package:e2e reference to use the local version in the flutter/plugins

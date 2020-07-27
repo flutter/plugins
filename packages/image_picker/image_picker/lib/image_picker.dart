@@ -178,8 +178,16 @@ class ImagePicker {
   /// See also:
   /// * [LostDataResponse], for what's included in the response.
   /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
-  static Future<LostDataResponse> retrieveLostData() {
-    return platform.retrieveLostDataAsDartIoFile();
+  static Future<LostDataResponse> retrieveLostData() async {
+    LostData lostData = await platform.retrieveLostData();
+    if (lostData.isEmpty) {
+      return LostDataResponse.empty();
+    }
+    String path = lostData?.file?.path;
+    return LostDataResponse(
+        file: path == null ? null : File(path),
+        exception: lostData.exception,
+        type: lostData.type);
   }
 
   /// Retrieve the lost [PickedFile] when [selectImage] or [selectVideo] failed because the  MainActivity is destroyed. (Android only)
