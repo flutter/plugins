@@ -11,13 +11,17 @@ class Response {
 
   final bool _allTestsPassed;
 
+  /// The extra information to be added along side the test result.
+  Map<String, dynamic> data;
+
   /// Constructor to use for positive response.
-  Response.allTestsPassed()
+  Response.allTestsPassed({this.data})
       : this._allTestsPassed = true,
         this._failureDetails = null;
 
   /// Constructor for failure response.
-  Response.someTestsFailed(this._failureDetails) : this._allTestsPassed = false;
+  Response.someTestsFailed(this._failureDetails, {this.data})
+      : this._allTestsPassed = false;
 
   /// Whether the test ran successfully or not.
   bool get allTestsPassed => _allTestsPassed;
@@ -33,16 +37,19 @@ class Response {
   String toJson() => json.encode(<String, dynamic>{
         'result': allTestsPassed.toString(),
         'failureDetails': _failureDetailsAsString(),
+        if (data != null) 'data': data
       });
 
   /// Deserializes the result from JSON.
   static Response fromJson(String source) {
-    Map<String, dynamic> responseJson = json.decode(source);
-    if (responseJson['result'] == 'true') {
-      return Response.allTestsPassed();
+    final Map<String, dynamic> responseJson = json.decode(source);
+    if (responseJson['result'] as String == 'true') {
+      return Response.allTestsPassed(data: responseJson['data']);
     } else {
       return Response.someTestsFailed(
-          _failureDetailsFromJson(responseJson['failureDetails']));
+        _failureDetailsFromJson(responseJson['failureDetails']),
+        data: responseJson['data'],
+      );
     }
   }
 

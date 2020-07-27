@@ -1,3 +1,8 @@
+## 0.4.2+3
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.4.2+2
 
 * Post-v2 Android embedding cleanup.
