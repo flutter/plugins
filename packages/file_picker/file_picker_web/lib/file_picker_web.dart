@@ -90,7 +90,7 @@ class FilePickerPlugin extends FilePickerPlatform {
     var target = querySelector('#${id}');
     if (target == null) {
       final Element targetElement =
-      Element.tag('flt-image-picker-inputs')..id = id;
+      Element.tag('flt-file-picker-inputs')..id = id;
 
       querySelector('body').children.add(targetElement);
       target = targetElement;
