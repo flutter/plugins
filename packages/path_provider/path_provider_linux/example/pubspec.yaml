@@ -24,7 +24,8 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  e2e: ^0.2.1
+  e2e:
+    path: ../../../e2e
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

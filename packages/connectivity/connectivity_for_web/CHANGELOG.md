@@ -1,3 +1,8 @@
+## 0.3.1+1
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.3.1
 
 * Use NetworkInformation API from dart:html, instead of the JS-interop version.

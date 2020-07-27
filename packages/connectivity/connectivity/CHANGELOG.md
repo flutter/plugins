@@ -1,3 +1,8 @@
+## 0.4.9+1
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.4.9
 
 * Add support for `web` (by endorsing `connectivity_for_web` 0.3.0)
