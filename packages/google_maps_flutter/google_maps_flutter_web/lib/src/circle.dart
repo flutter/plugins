@@ -1,38 +1,38 @@
 part of google_maps_flutter_web;
 
-///
+/// The CircleController class wraps a Circle and its onTap behavior.
 class CircleController {
   gmaps.Circle _circle;
 
-  bool consumeTapEvents = false;
+  final bool _consumeTapEvents;
 
-  ui.VoidCallback onTap;
-
-  ///
-  CircleController(
-      {@required gmaps.Circle circle, this.consumeTapEvents, this.onTap}) {
-    _circle = circle;
-    if (consumeTapEvents) {
-      circle.onClick.listen((event) {
-        if (onTap != null) onTap.call();
+  /// Creates a CircleController, that wraps a Circle object and its onTap behavior.
+  CircleController({
+    @required gmaps.Circle circle,
+    bool consumeTapEvents = false,
+    ui.VoidCallback onTap,
+  })  : _circle = circle,
+        _consumeTapEvents = consumeTapEvents {
+    if (_consumeTapEvents) {
+      circle.onClick.listen((_) {
+        onTap?.call();
       });
     }
   }
 
-  set circle(gmaps.Circle circle) {
-    _circle = circle;
-  }
+  /// Returns [true] if this Controller will use its own onTap handler to consume events.
+  bool get consumeTapEvents => _consumeTapEvents;
 
-  ///TODO
+  /// Updates the options of the wrapped [gmaps.Circle] object.
   void update(gmaps.CircleOptions options) {
     _circle.options = options;
   }
 
+  /// Disposes of the currently wrapped [gmaps.Circle].
   void remove() {
     _circle.visible = false;
     _circle.radius = 0;
     _circle.map = null;
     _circle = null;
-    //_circle.remove();
   }
 }

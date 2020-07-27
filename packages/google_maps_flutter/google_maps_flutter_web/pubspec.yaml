@@ -17,7 +17,7 @@ dependencies:
     sdk: flutter
   meta: ^1.1.7
   google_maps_flutter_platform_interface: ^1.0.1
-  google_maps: ">=3.0.0 <4.0.0"
+  google_maps: ^3.0.0
   stream_transform: ^1.2.0
 
 dev_dependencies:
@@ -25,8 +25,7 @@ dev_dependencies:
     sdk: flutter
   url_launcher: ^5.2.5
   pedantic: ^1.8.0
-  google_maps_flutter:
-    path: ../google_maps_flutter
+  mockito: ^4.1.1
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
