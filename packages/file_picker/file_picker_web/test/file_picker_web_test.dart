@@ -4,6 +4,7 @@
 
 @TestOn('chrome') // Uses web-only Flutter SDK
 
+import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:file_picker_web/file_picker_web.dart';
@@ -14,4 +15,12 @@ import 'package:platform_detect/test_utils.dart' as platform;
 class MockWindow extends Mock implements html.Window {}
 
 void main() {
+  // Under test..
+  FilePicker plugin;
+
+  setUp(() {
+    plugin = FilePicker();
+  });
+
+  
 }

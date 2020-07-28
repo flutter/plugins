@@ -42,9 +42,9 @@ class FilePickerPlugin extends FilePickerPlatform {
   }
 
   /// Load file from user's computer and return it as an XFile
-  Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes = const []}) {
+  Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
     List<String> allExtensions = List();
-    for (FileTypeFilterGroup group in acceptedTypes) {
+    for (FileTypeFilterGroup group in acceptedTypes ?? []) {
       allExtensions += group.fileExtensions;
     }
     String acceptedTypeString = allExtensions?.where((e) => e.isNotEmpty)?.join(',') ?? '';
