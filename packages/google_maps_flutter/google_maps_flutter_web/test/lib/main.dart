@@ -1,5 +1,5 @@
-import 'src/circle_test.dart';
+import 'src/shape_test.dart';
 
 void main() {
-  circleTests();
+  shapeTests();
 }
