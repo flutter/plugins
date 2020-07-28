@@ -13,9 +13,9 @@ class PolygonController {
     ui.VoidCallback onTap,
   })  : _polygon = polygon,
         _consumeTapEvents = consumeTapEvents {
-    if (_consumeTapEvents) {
+    if (_consumeTapEvents && onTap != null) {
       polygon.onClick.listen((event) {
-        if (onTap != null) onTap.call();
+        onTap.call();
       });
     }
   }

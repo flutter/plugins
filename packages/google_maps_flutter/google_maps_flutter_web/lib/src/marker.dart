@@ -1,68 +1,70 @@
 part of google_maps_flutter_web;
 
+typedef LatLngCallback = void Function(gmaps.LatLng latLng);
+
+/// This class wraps a [gmaps.Marker], how it handles events, and its associated [gmaps.InfoWindow] widget (optional).
 class MarkerController {
   gmaps.Marker _marker;
-  gmaps.InfoWindow infoWindow;
-  bool consumeTapEvents = false;
-  ui.VoidCallback onTap;
-  ui.VoidCallback onInfoWindowTap;
-  LatLngCallback onDragEnd;
-  bool infoWindowShown = false;
 
-  ///
+  final bool _consumeTapEvents;
+
+  final gmaps.InfoWindow _infoWindow;
+
+  bool _infoWindowShown = false;
+
+  /// Creates a MarkerController, that wraps a Marker object, its onTap/Drag behavior, and its associated InfoWindow.
   MarkerController({
     @required gmaps.Marker marker,
-    this.infoWindow,
-    this.consumeTapEvents,
-    this.onTap,
-    this.onDragEnd,
-    this.onInfoWindowTap,
-  }) {
-    _marker = marker;
-    if (consumeTapEvents) {}
-    if (onTap != null) {
+    gmaps.InfoWindow infoWindow,
+    bool consumeTapEvents = false,
+    LatLngCallback onDragEnd,
+    ui.VoidCallback onTap,
+  })  : _marker = marker,
+        _infoWindow = infoWindow,
+        _consumeTapEvents = consumeTapEvents {
+    if (consumeTapEvents && onTap != null) {
       marker.onClick.listen((event) {
         onTap.call();
       });
     }
-    if (_marker.draggable) {
+    if ((_marker?.draggable ?? false) && onDragEnd != null) {
       marker.onDragend.listen((event) {
-        if (onDragEnd != null) onDragEnd.call(event.latLng);
+        onDragEnd.call(event.latLng);
       });
     }
-    if (onInfoWindowTap != null) {
-      infoWindow.addListener('click', onInfoWindowTap);
-    }
   }
 
-  set marker(gmaps.Marker marker) {
-    _marker = marker;
-  }
+  /// Returns [true] if this Controller will use its own onTap handler to consume events.
+  bool get consumeTapEvents => _consumeTapEvents;
 
+  /// Returns [true] if the InfoWindow associated to this marker is being shown.
+  bool get infoWindowShown => _infoWindowShown;
+
+  /// Updates the options of the wrapped [gmaps.Polygon] object.
   void update(gmaps.MarkerOptions options) {
     _marker.options = options;
   }
 
+  /// Disposes of the currently wrapped Marker.
   void remove() {
     _marker.visible = false;
     _marker.map = null;
     _marker = null;
-    //_marker.remove();
   }
 
+  /// Hide the associated InfoWindow.
   void hideInfoWindow() {
-    if (infoWindow != null) {
-      infoWindow.close();
-      infoWindowShown = false;
+    if (_infoWindow != null) {
+      _infoWindow.close();
+      _infoWindowShown = false;
     }
   }
 
-  void showMarkerInfoWindow() {
-    infoWindow.open(_marker.map);
-    infoWindowShown = true;
-  }
-
-  bool isInfoWindowShown() {
-    return infoWindowShown;
+  /// Show the associated InfoWindow.
+  void showInfoWindow() {
+    if (_infoWindow != null) {
+      _infoWindow.open(_marker.map);
+      _infoWindowShown = true;
+    }
   }
 }

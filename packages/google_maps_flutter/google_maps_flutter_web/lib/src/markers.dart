@@ -21,23 +21,24 @@ class MarkersController extends AbstractController {
   void _addMarker(Marker marker) {
     if (marker == null) return;
     final infoWindoOptions = _infoWindowOPtionsFromMarker(marker);
-    gmaps.InfoWindow gmInfoWindow = gmaps.InfoWindow(infoWindoOptions);
+    gmaps.InfoWindow gmInfoWindow = gmaps.InfoWindow(infoWindoOptions)
+      ..addListener('click', () {
+        _onInfoWindowTap(marker.markerId);
+      });
     final populationOptions = _markerOptionsFromMarker(googleMap, marker);
     gmaps.Marker gmMarker = gmaps.Marker(populationOptions);
     gmMarker.map = googleMap;
     MarkerController controller = MarkerController(
-        marker: gmMarker,
-        infoWindow: gmInfoWindow,
-        consumeTapEvents: marker.consumeTapEvents,
-        onTap: () {
-          _onMarkerTap(marker.markerId);
-        },
-        onDragEnd: (gmaps.LatLng latLng) {
-          _onMarkerDragEnd(marker.markerId, latLng);
-        },
-        onInfoWindowTap: () {
-          _onInfoWindowTap(marker.markerId);
-        });
+      marker: gmMarker,
+      infoWindow: gmInfoWindow,
+      consumeTapEvents: marker.consumeTapEvents,
+      onTap: () {
+        _onMarkerTap(marker.markerId);
+      },
+      onDragEnd: (gmaps.LatLng latLng) {
+        _onMarkerDragEnd(marker.markerId, latLng);
+      },
+    );
     _markerIdToController[marker.markerId] = controller;
   }
 
@@ -77,24 +78,17 @@ class MarkersController extends AbstractController {
 
   void showMarkerInfoWindow(MarkerId markerId) {
     MarkerController markerController = _markerIdToController[markerId];
-    if (markerController != null) {
-      markerController.showMarkerInfoWindow();
-    }
+    markerController?.showInfoWindow();
   }
 
   bool isInfoWindowShown(MarkerId markerId) {
     MarkerController markerController = _markerIdToController[markerId];
-    if (markerController != null) {
-      return markerController.isInfoWindowShown();
-    }
-    return false;
+    return markerController?.infoWindowShown ?? false;
   }
 
   void hideMarkerInfoWindow(MarkerId markerId) {
     MarkerController markerController = _markerIdToController[markerId];
-    if (markerController != null) {
-      markerController.hideInfoWindow();
-    }
+    markerController?.hideInfoWindow();
   }
 
   // Handle internal events
@@ -117,5 +111,3 @@ class MarkersController extends AbstractController {
     ));
   }
 }
-
-typedef LatLngCallback = void Function(gmaps.LatLng latLng);
