@@ -15,7 +15,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/file_picker');
 class MethodChannelFilePicker extends FilePickerPlatform {
   /// Load file from user's computer and return it as an XFile
   @override
-  Future<List<XFile>> loadFile({List<String> acceptedTypes}) {
+  Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
     return _channel.invokeMethod<List<XFile>>(
       'loadFile',
       <String, Object> {

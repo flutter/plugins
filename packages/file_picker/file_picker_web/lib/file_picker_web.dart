@@ -42,15 +42,19 @@ class FilePickerPlugin extends FilePickerPlatform {
   }
 
   /// Load file from user's computer and return it as an XFile
-  Future<List<XFile>> loadFile({List<String> acceptedTypes = const []}) {
-    String acceptedTypeString = acceptedTypes?.where((e) => e.isNotEmpty)?.join(',') ?? '';
+  Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes = const []}) {
+    List<String> allExtensions = List();
+    for (FileTypeFilterGroup group in acceptedTypes) {
+      allExtensions += group.fileExtensions;
+    }
+    String acceptedTypeString = allExtensions?.where((e) => e.isNotEmpty)?.join(',') ?? '';
 
     final FileUploadInputElement element = _createFileInputElement(acceptedTypeString);
 
     _addElementToDomAndClick(element);
     
     final Completer<List<XFile>> _completer = Completer();
-    
+
     // Get the returned files
     // TODO: Handle errors
     element.onChange.first.then((event) {

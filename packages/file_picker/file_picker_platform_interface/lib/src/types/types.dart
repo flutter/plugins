@@ -4,6 +4,8 @@ export 'lost_data_response.dart';
 export 'retrieve_type.dart';
 export 'x_file/x_file.dart';
 
+export 'filter_group/filter_group.dart';
+
 /// Denotes that an image is being picked.
 const String kTypeImage = 'image';
 

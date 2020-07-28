@@ -38,7 +38,7 @@ abstract class FilePickerPlatform extends PlatformInterface {
   }
 
   /// Load file from user's computer and return it as an XFile
-  Future<List<XFile>> loadFile({List<String> acceptedTypes}) {
+  Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
     throw UnimplementedError('loadFile() has not been implemented.');
   }
 
