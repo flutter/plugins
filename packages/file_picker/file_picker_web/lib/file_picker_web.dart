@@ -24,22 +24,30 @@ class FilePickerPlugin extends FilePickerPlatform {
     FilePickerPlatform.instance = FilePickerPlugin();
   }
 
-  /// Load file from user's computer and return it as an XFile
-  /// TODO: multiple files
-  Future<List<XFile>> loadFile({List<String> acceptedTypes}) {
-    String acceptedTypeString = acceptedTypes.where((e) => e.isNotEmpty).join(',');
-    
-    // Create a file input element
+  FileUploadInputElement _createFileInputElement(String accepted) {
     final FileUploadInputElement element = FileUploadInputElement();
-    if (acceptedTypeString.isNotEmpty) {
-      element.accept = acceptedTypeString;
+    if (accepted.isNotEmpty) {
+      element.accept = accepted;
     }
     element.multiple = true;
 
+    return element;
+  }
+
+  void _addElementToDomAndClick(Element element) {
     // Add the file input element and click it
     _target.children.clear();
     _target.children.add(element);
     element.click();
+  }
+
+  /// Load file from user's computer and return it as an XFile
+  Future<List<XFile>> loadFile({List<String> acceptedTypes = const []}) {
+    String acceptedTypeString = acceptedTypes?.where((e) => e.isNotEmpty)?.join(',') ?? '';
+
+    final FileUploadInputElement element = _createFileInputElement(acceptedTypeString);
+
+    _addElementToDomAndClick(element);
     
     final Completer<List<XFile>> _completer = Completer();
     
@@ -58,7 +66,6 @@ class FilePickerPlugin extends FilePickerPlatform {
         returnFiles.add(XFile(url, name: name, length: length));
       }
 
-      
       _completer.complete(returnFiles);
     });
     
@@ -71,18 +78,15 @@ class FilePickerPlugin extends FilePickerPlatform {
     // Create blob from data
     // TODO: Handle different types
 
-    final Blob blob = type.isEmpty ? Blob([data]) : Blob([data]);
+    final Blob blob = type.isEmpty ? Blob([data]) : Blob([data], type);
 
     String url = Url.createObjectUrl(blob);
 
     // Create an <a> tag with the appropriate download attributes and click it
-    final AnchorElement element = AnchorElement(
-      href: url,
-    );
+    final AnchorElement element = AnchorElement(href: url);
     element.download = suggestedName;
-    _target.children.clear();
-    _target.children.add(element);
-    element.click();
+
+    _addElementToDomAndClick(element);
   }
 
   /// Initializes a DOM container where we can host input elements.
