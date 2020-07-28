@@ -32,13 +32,26 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
         }
         await _channel.invokeMethod<void>(
           'allTestsFinished',
-          <String, dynamic>{'results': _results},
+          <String, dynamic>{'results': results},
         );
       } on MissingPluginException {
         print('Warning: E2E test plugin was not detected.');
       }
       if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
     });
+
+    // TODO(jackson): Report the results individually instead of all at once
+    // See https://github.com/flutter/flutter/issues/38985
+    final TestExceptionReporter oldTestExceptionReporter = reportTestException;
+    reportTestException =
+        (FlutterErrorDetails details, String testDescription) {
+      results[testDescription] = 'failed';
+      _failureMethodsDetails.add(Failure(testDescription, details.toString()));
+      if (!_allTestsPassed.isCompleted) {
+        _allTestsPassed.complete(false);
+      }
+      oldTestExceptionReporter(details, testDescription);
+    };
   }
 
   // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
@@ -51,9 +64,33 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
   @override
   bool get registerTestTextInput => false;
 
+  Size _surfaceSize;
+
+  /// Artificially changes the surface size to `size` on the Widget binding,
+  /// then flushes microtasks.
+  ///
+  /// Set to null to use the default surface size.
   @override
-  ViewConfiguration createViewConfiguration() =>
-      TestViewConfiguration(size: window.physicalSize);
+  Future<void> setSurfaceSize(Size size) {
+    return TestAsyncUtils.guard<void>(() async {
+      assert(inTest);
+      if (_surfaceSize == size) {
+        return;
+      }
+      _surfaceSize = size;
+      handleMetricsChanged();
+    });
+  }
+
+  @override
+  ViewConfiguration createViewConfiguration() {
+    final double devicePixelRatio = window.devicePixelRatio;
+    final Size size = _surfaceSize ?? window.physicalSize / devicePixelRatio;
+    return TestViewConfiguration(
+      size: size,
+      window: window,
+    );
+  }
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
@@ -76,35 +113,54 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
 
   static const MethodChannel _channel = MethodChannel('plugins.flutter.io/e2e');
 
-  static Map<String, String> _results = <String, String>{};
+  /// Test results that will be populated after the tests have completed.
+  ///
+  /// Keys are the test descriptions, and values are either `success` or
+  /// `failed`.
+  @visibleForTesting
+  Map<String, String> results = <String, String>{};
+
+  /// The extra data for the reported result.
+  ///
+  /// The values in `reportData` must be json-serializable objects or `null`.
+  /// If it's `null`, no extra data is attached to the result.
+  ///
+  /// The default value is `null`.
+  Map<String, dynamic> reportData;
+
+  /// the callback function to response the driver side input.
+  @visibleForTesting
+  Future<Map<String, dynamic>> callback(Map<String, String> params) async {
+    final String command = params['command'];
+    Map<String, String> response;
+    switch (command) {
+      case 'request_data':
+        final bool allTestsPassed = await _allTestsPassed.future;
+        response = <String, String>{
+          'message': allTestsPassed
+              ? Response.allTestsPassed(data: reportData).toJson()
+              : Response.someTestsFailed(
+                  _failureMethodsDetails,
+                  data: reportData,
+                ).toJson(),
+        };
+        break;
+      case 'get_health':
+        response = <String, String>{'status': 'ok'};
+        break;
+      default:
+        throw UnimplementedError('$command is not implemented');
+    }
+    return <String, dynamic>{
+      'isError': false,
+      'response': response,
+    };
+  }
 
   // Emulates the Flutter driver extension, returning 'pass' or 'fail'.
   @override
   void initServiceExtensions() {
     super.initServiceExtensions();
-    Future<Map<String, dynamic>> callback(Map<String, String> params) async {
-      final String command = params['command'];
-      Map<String, String> response;
-      switch (command) {
-        case 'request_data':
-          final bool allTestsPassed = await _allTestsPassed.future;
-          response = <String, String>{
-            'message': allTestsPassed
-                ? Response.allTestsPassed().toJson()
-                : Response.someTestsFailed(_failureMethodsDetails).toJson(),
-          };
-          break;
-        case 'get_health':
-          response = <String, String>{'status': 'ok'};
-          break;
-        default:
-          throw UnimplementedError('$command is not implemented');
-      }
-      return <String, dynamic>{
-        'isError': false,
-        'response': response,
-      };
-    }
 
     if (kIsWeb) {
       registerWebServiceExtension(callback);
@@ -120,24 +176,12 @@ class E2EWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
     String description = '',
     Duration timeout,
   }) async {
-    // TODO(jackson): Report the results individually instead of all at once
-    // See https://github.com/flutter/flutter/issues/38985
-    final TestExceptionReporter oldTestExceptionReporter = reportTestException;
-    reportTestException =
-        (FlutterErrorDetails details, String testDescription) {
-      _results[description] = 'failed';
-      _failureMethodsDetails.add(Failure(testDescription, details.toString()));
-      if (!_allTestsPassed.isCompleted) {
-        _allTestsPassed.complete(false);
-      }
-      oldTestExceptionReporter(details, testDescription);
-    };
     await super.runTest(
       testBody,
       invariantTester,
       description: description,
       timeout: timeout,
     );
-    _results[description] ??= 'success';
+    results[description] ??= 'success';
   }
 }
