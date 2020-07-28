@@ -8,7 +8,7 @@ import 'dart:typed_data';
 import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
 
 export 'package:file_picker_platform_interface/file_picker_platform_interface.dart'
-  show XFile;
+  show XFile, FileTypeFilterGroup;
 
 /// Saves File to user's file system
 void saveFile(Uint8List data, {String type = '', String suggestedName}) async {
@@ -16,6 +16,6 @@ void saveFile(Uint8List data, {String type = '', String suggestedName}) async {
 }
 
 /// Loads File from user's file system
-Future<List<XFile>> loadFile({List<String> acceptedTypes}) {
+Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
   return FilePickerPlatform.instance.loadFile(acceptedTypes: acceptedTypes);
 }

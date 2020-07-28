@@ -3,8 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
-
-
 void main() {
   runApp(MyApp());
 }
@@ -64,7 +62,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loadFile() async {
     List<XFile> file;
     if (_extensionController.text.isNotEmpty) {
-      file = await loadFile(acceptedTypes: _extensionController.text.split(','));
+      List<FileTypeFilterGroup> type = List();
+      type.add(FileTypeFilterGroup(label: 'Example Files', fileExtensions: _extensionController.text.split(',')));
+      file = await loadFile(acceptedTypes: type);
     } else {
       file = await loadFile();
     }
