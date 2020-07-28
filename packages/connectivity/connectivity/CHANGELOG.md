@@ -1,3 +1,7 @@
+## 0.4.9+2
+
+* Updated the link in the Readme.md file to a secure link.
+
 ## 0.4.9+1
 
 * Update package:e2e reference to use the local version in the flutter/plugins
