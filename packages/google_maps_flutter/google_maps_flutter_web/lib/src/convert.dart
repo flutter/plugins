@@ -341,7 +341,11 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
   gmaps.Icon icon;
 
   if (iconConfig[0] == 'fromAssetImage') {
-    icon = gmaps.Icon()..url = iconConfig[1];
+    // iconConfig[2] contains the DPIs of the screen, but that information is
+    // already encoded in the iconConfig[1]
+
+    icon = gmaps.Icon()
+      ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1]);
   }
   return gmaps.MarkerOptions()
     ..position = gmaps.LatLng(
