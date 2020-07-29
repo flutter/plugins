@@ -13,7 +13,7 @@ class PolygonController {
     ui.VoidCallback onTap,
   })  : _polygon = polygon,
         _consumeTapEvents = consumeTapEvents {
-    if (_consumeTapEvents && onTap != null) {
+    if (onTap != null) {
       polygon.onClick.listen((event) {
         onTap.call();
       });

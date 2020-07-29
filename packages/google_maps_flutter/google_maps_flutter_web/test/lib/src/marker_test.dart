@@ -46,38 +46,19 @@ void markerTests() {
       marker = _MockMarker();
     });
 
-    test('_consumeTapEvents true', () async {
-      MarkerController(marker: marker, consumeTapEvents: true, onTap: onTap);
-      expect(marker.onClickController.hasListener, isTrue);
+    test('onTap gets called', () async {
+      MarkerController(marker: marker, onTap: onTap);
       // Simulate a click
       await marker.onClickController.add(null);
       expect(called, isTrue);
     });
 
-    test('_consumeTapEvents false', () async {
-      MarkerController(marker: marker, consumeTapEvents: false, onTap: onTap);
-      expect(marker.onClickController.hasListener, isFalse);
-      // Simulate a click
-      await marker.onClickController.add(null);
-      expect(called, isFalse);
-    });
-
-    test('marker.draggable true', () async {
+    test('onDragEnd gets called', () async {
       when(marker.draggable).thenReturn(true);
       MarkerController(marker: marker, onDragEnd: onDragEnd);
-      expect(marker.onDragEndController.hasListener, isTrue);
-      // Simulate a click
+      // Simulate a drag end
       await marker.onDragEndController.add(_MockMouseEvent());
       expect(called, isTrue);
-    });
-
-    test('marker.draggable false', () async {
-      when(marker.draggable).thenReturn(false);
-      MarkerController(marker: marker, onDragEnd: onDragEnd);
-      expect(marker.onDragEndController.hasListener, isFalse);
-      // Simulate a click
-      await marker.onDragEndController.add(null);
-      expect(called, isFalse);
     });
 
     test('update', () {

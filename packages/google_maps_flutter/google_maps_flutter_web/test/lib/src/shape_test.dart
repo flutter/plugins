@@ -43,20 +43,12 @@ void shapeTests() {
       circle = _MockCircle();
     });
 
-    test('_consumeTapEvents true', () async {
+    test('onTap gets called', () async {
       CircleController(circle: circle, consumeTapEvents: true, onTap: onTap);
       expect(circle.onClickController.hasListener, isTrue);
       // Simulate a click
       await circle.onClickController.add(null);
       expect(called, isTrue);
-    });
-
-    test('_consumeTapEvents false', () async {
-      CircleController(circle: circle, consumeTapEvents: false, onTap: onTap);
-      expect(circle.onClickController.hasListener, isFalse);
-      // Simulate a click
-      await circle.onClickController.add(null);
-      expect(called, isFalse);
     });
 
     test('update', () {
@@ -74,21 +66,12 @@ void shapeTests() {
       polygon = _MockPolygon();
     });
 
-    test('_consumeTapEvents true', () async {
+    test('onTap gets called', () async {
       PolygonController(polygon: polygon, consumeTapEvents: true, onTap: onTap);
       expect(polygon.onClickController.hasListener, isTrue);
       // Simulate a click
       await polygon.onClickController.add(null);
       expect(called, isTrue);
-    });
-
-    test('_consumeTapEvents false', () async {
-      PolygonController(
-          polygon: polygon, consumeTapEvents: false, onTap: onTap);
-      expect(polygon.onClickController.hasListener, isFalse);
-      // Simulate a click
-      await polygon.onClickController.add(null);
-      expect(called, isFalse);
     });
 
     test('update', () {
@@ -106,22 +89,13 @@ void shapeTests() {
       polyline = _MockPolyline();
     });
 
-    test('_consumeTapEvents true', () async {
+    test('onTap gets called', () async {
       PolylineController(
           polyline: polyline, consumeTapEvents: true, onTap: onTap);
       expect(polyline.onClickController.hasListener, isTrue);
       // Simulate a click
       await polyline.onClickController.add(null);
       expect(called, isTrue);
-    });
-
-    test('_consumeTapEvents false', () async {
-      PolylineController(
-          polyline: polyline, consumeTapEvents: false, onTap: onTap);
-      expect(polyline.onClickController.hasListener, isFalse);
-      // Simulate a click
-      await polyline.onClickController.add(null);
-      expect(called, isFalse);
     });
 
     test('update', () {

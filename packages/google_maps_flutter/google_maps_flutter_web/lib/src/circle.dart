@@ -13,7 +13,7 @@ class CircleController {
     ui.VoidCallback onTap,
   })  : _circle = circle,
         _consumeTapEvents = consumeTapEvents {
-    if (_consumeTapEvents && onTap != null) {
+    if (onTap != null) {
       circle.onClick.listen((_) {
         onTap.call();
       });

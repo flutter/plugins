@@ -46,4 +46,6 @@ There's no "My Location" widget in web (for now), so the following options are i
 * `myLocationButtonEnabled` ([doable](https://developers.google.com/maps/documentation/javascript/examples/control-custom))
 * `myLocationEnabled` ([doable](https://api.dart.dev/stable/2.8.4/dart-html/Geolocation-class.html))
 
+There's no `defaultMarkerWithHue` in web. If you want colored pins/markers, you should use your own asset images.
+
 Traffic, indoor and building layers are still not available on the web.

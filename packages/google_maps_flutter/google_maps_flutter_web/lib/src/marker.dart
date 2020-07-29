@@ -22,13 +22,14 @@ class MarkerController {
   })  : _marker = marker,
         _infoWindow = infoWindow,
         _consumeTapEvents = consumeTapEvents {
-    if (consumeTapEvents && onTap != null) {
-      marker.onClick.listen((event) {
+    if (onTap != null) {
+      _marker.onClick.listen((event) {
         onTap.call();
       });
     }
-    if ((_marker?.draggable ?? false) && onDragEnd != null) {
-      marker.onDragend.listen((event) {
+    if (onDragEnd != null) {
+      _marker.onDragend.listen((event) {
+        _marker.position = event.latLng;
         onDragEnd.call(event.latLng);
       });
     }

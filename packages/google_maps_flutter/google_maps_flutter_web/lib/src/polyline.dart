@@ -13,7 +13,7 @@ class PolylineController {
     ui.VoidCallback onTap,
   })  : _polyline = polyline,
         _consumeTapEvents = consumeTapEvents {
-    if (consumeTapEvents && onTap != null) {
+    if (onTap != null) {
       polyline.onClick.listen((event) {
         onTap.call();
       });
