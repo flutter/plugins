@@ -36,12 +36,42 @@ class FilePickerPlugin extends FilePickerPlatform {
 
   void _addElementToDomAndClick(Element element) {
     // Add the file input element and click it
+    // All previous elements will be removed before adding the new one
     _target.children.clear();
     _target.children.add(element);
     element.click();
   }
 
+  Future<List<XFile>> _getFileFromInputElement(InputElement element) {
+    // Listens for element change
+    element.onChange.first.then((event) {
+      // File type from dart:html class
+      List<File> files = element.files;
+      List<XFile> returnFiles = List<XFile>();
+
+      // Create XFiles from dart:html Files
+      for (File file in files) {
+        String url = Url.createObjectUrl(file);
+        String name = file.name;
+        int length = file.size;
+
+        returnFiles.add(XFile(url, name: name, length: length));
+      }
+
+      _completer.complete(returnFiles);
+    });
+
+    element.onError.first.then((event) {
+      if (!_completer.isCompleted) {
+        _completer.completeError(event);
+      }
+    });
+
+    return _completer.future;
+  }
+
   /// Load file from user's computer and return it as an XFile
+  @override
   Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
     List<String> allExtensions = List();
     for (FileTypeFilterGroup group in acceptedTypes ?? []) {
@@ -54,26 +84,14 @@ class FilePickerPlugin extends FilePickerPlatform {
     _addElementToDomAndClick(element);
     
     final Completer<List<XFile>> _completer = Completer();
-
-    // Get the returned files
-    // TODO: Handle errors
-    element.onChange.first.then((event) {
-      // File type from dart:html class
-      List<File> files = element.files;
-      List<XFile> returnFiles = List<XFile>();
-
-      for (File file in files) {
-        String url = Url.createObjectUrl(file);
-        String name = file.name;
-        int length = file.size;
-
-        returnFiles.add(XFile(url, name: name, length: length));
-      }
-
-      _completer.complete(returnFiles);
-    });
     
-    return _completer.future;
+    return _getFileFromInputElement(element);
+  }
+
+  AnchorElement _createAnchorElement(String href, String suggestedName) {
+    final AnchorElement element = AnchorElement(href: url);
+    element.download = suggestedName;
+    return element;
   }
 
   /// Web implementation of saveFile()
@@ -87,13 +105,12 @@ class FilePickerPlugin extends FilePickerPlatform {
     String url = Url.createObjectUrl(blob);
 
     // Create an <a> tag with the appropriate download attributes and click it
-    final AnchorElement element = AnchorElement(href: url);
-    element.download = suggestedName;
+    final AnchorElement element = _createAnchorElement(href: url, suggestedName: suggestedName);
 
     _addElementToDomAndClick(element);
   }
 
-  /// Initializes a DOM container where we can host input elements.
+  /// Initializes a DOM container where we can host elements.
   Element _ensureInitialized(String id) {
     var target = querySelector('#${id}');
     if (target == null) {
@@ -105,4 +122,10 @@ class FilePickerPlugin extends FilePickerPlatform {
     }
     return target;
   }
+}
+
+/// Overrides some functions to allow testing
+@visibleForTesting
+class FilePickerPluginTestOverrides {
+
 }
