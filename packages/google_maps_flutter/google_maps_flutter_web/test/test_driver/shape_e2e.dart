@@ -1,7 +1,6 @@
-@TestOn('chrome') // Uses web-only Flutter SDKs...
-
 import 'dart:async';
 
+import 'package:e2e/e2e.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,7 +25,9 @@ class _MockPolyline extends Mock implements gmaps.Polyline {
 }
 
 /// Test Shapes (Circle, Polygon, Polyline)
-void shapeTests() {
+void main() {
+  E2EWidgetsFlutterBinding.ensureInitialized() as E2EWidgetsFlutterBinding;
+
   bool called = false;
   void onTap() {
     called = true;
@@ -43,7 +44,7 @@ void shapeTests() {
       circle = _MockCircle();
     });
 
-    test('onTap gets called', () async {
+    testWidgets('onTap gets called', (WidgetTester tester) async {
       CircleController(circle: circle, consumeTapEvents: true, onTap: onTap);
       expect(circle.onClickController.hasListener, isTrue);
       // Simulate a click
@@ -51,7 +52,7 @@ void shapeTests() {
       expect(called, isTrue);
     });
 
-    test('update', () {
+    testWidgets('update', (WidgetTester tester) async {
       final controller = CircleController(circle: circle);
       final options = gmaps.CircleOptions()..draggable = false;
       controller.update(options);
@@ -66,7 +67,7 @@ void shapeTests() {
       polygon = _MockPolygon();
     });
 
-    test('onTap gets called', () async {
+    testWidgets('onTap gets called', (WidgetTester tester) async {
       PolygonController(polygon: polygon, consumeTapEvents: true, onTap: onTap);
       expect(polygon.onClickController.hasListener, isTrue);
       // Simulate a click
@@ -74,7 +75,7 @@ void shapeTests() {
       expect(called, isTrue);
     });
 
-    test('update', () {
+    testWidgets('update', (WidgetTester tester) async {
       final controller = PolygonController(polygon: polygon);
       final options = gmaps.PolygonOptions()..draggable = false;
       controller.update(options);
@@ -89,7 +90,7 @@ void shapeTests() {
       polyline = _MockPolyline();
     });
 
-    test('onTap gets called', () async {
+    testWidgets('onTap gets called', (WidgetTester tester) async {
       PolylineController(
           polyline: polyline, consumeTapEvents: true, onTap: onTap);
       expect(polyline.onClickController.hasListener, isTrue);
@@ -98,7 +99,7 @@ void shapeTests() {
       expect(called, isTrue);
     });
 
-    test('update', () {
+    testWidgets('update', (WidgetTester tester) async {
       final controller = PolylineController(polyline: polyline);
       final options = gmaps.PolylineOptions()..draggable = false;
       controller.update(options);

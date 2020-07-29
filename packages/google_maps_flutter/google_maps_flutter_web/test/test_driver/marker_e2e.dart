@@ -1,7 +1,6 @@
-@TestOn('chrome') // Uses web-only Flutter SDKs...
-
 import 'dart:async';
 
+import 'package:e2e/e2e.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,10 +21,11 @@ class _MockMouseEvent extends Mock implements gmaps.MouseEvent {}
 
 class _MockInfoWindow extends Mock implements gmaps.InfoWindow {}
 
-final gmaps.LatLng _nullIsland = gmaps.LatLng(0, 0);
 
-/// Test Shapes (Circle, Polygon, Polyline)
-void markerTests() {
+/// Test Markers
+void main() {
+  E2EWidgetsFlutterBinding.ensureInitialized() as E2EWidgetsFlutterBinding;
+
   bool called = false;
   void onTap() {
     called = true;
@@ -46,14 +46,14 @@ void markerTests() {
       marker = _MockMarker();
     });
 
-    test('onTap gets called', () async {
+    testWidgets('onTap gets called', (WidgetTester tester) async {
       MarkerController(marker: marker, onTap: onTap);
       // Simulate a click
       await marker.onClickController.add(null);
       expect(called, isTrue);
     });
 
-    test('onDragEnd gets called', () async {
+    testWidgets('onDragEnd gets called', (WidgetTester tester) async {
       when(marker.draggable).thenReturn(true);
       MarkerController(marker: marker, onDragEnd: onDragEnd);
       // Simulate a drag end
@@ -61,20 +61,20 @@ void markerTests() {
       expect(called, isTrue);
     });
 
-    test('update', () {
+    testWidgets('update', (WidgetTester tester) async {
       final controller = MarkerController(marker: marker);
       final options = gmaps.MarkerOptions()..draggable = false;
       controller.update(options);
       verify(marker.options = options);
     });
 
-    test('infoWindow null, showInfoWindow.', () {
+    testWidgets('infoWindow null, showInfoWindow.', (WidgetTester tester) async {
       final controller = MarkerController(marker: marker);
       controller.showInfoWindow();
       expect(controller.infoWindowShown, isFalse);
     });
 
-    test('showInfoWindow', () {
+    testWidgets('showInfoWindow', (WidgetTester tester) async {
       final infoWindow = _MockInfoWindow();
       final controller =
           MarkerController(marker: marker, infoWindow: infoWindow);
@@ -83,7 +83,7 @@ void markerTests() {
       expect(controller.infoWindowShown, isTrue);
     });
 
-    test('hideInfoWindow', () {
+    testWidgets('hideInfoWindow', (WidgetTester tester) async {
       final infoWindow = _MockInfoWindow();
       final controller =
           MarkerController(marker: marker, infoWindow: infoWindow);

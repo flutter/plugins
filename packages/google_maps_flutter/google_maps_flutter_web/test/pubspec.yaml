@@ -1,27 +1,22 @@
-name: google_maps_flutter_web_tests
-description: Tests web app for the google_maps_flutter_web plugin
-version: 0.1.0
-homepage: https://github.com/flutter/plugins/tree/master/packages/google_maps_flutter/google_maps_flutter_web
+name: regular_integration_tests
+publish_to: none
+
+environment:
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
-  google_maps_flutter_web:
-    path: ../
-  js: ^0.6.1+1
-  flutter_web_plugins:
-    sdk: flutter
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  google_maps_flutter_web:
+    path: ../
+  google_maps: ^3.4.4
   flutter_driver:
     sdk: flutter
-  e2e:
-    path: ../../../e2e
+  flutter_test:
+    sdk: flutter
+  e2e: ^0.6.1
+  http: ^0.12.2
   mockito: ^4.1.1
-
-environment:
-  sdk: ">=2.6.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.4"
 
