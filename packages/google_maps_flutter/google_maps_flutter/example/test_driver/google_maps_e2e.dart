@@ -424,6 +424,7 @@ void main() {
   });
 
   testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(800.0, 600.0));
     final Completer<GoogleMapController> mapControllerCompleter =
         Completer<GoogleMapController>();
     final Key key = GlobalKey();
@@ -443,6 +444,7 @@ void main() {
         await mapControllerCompleter.future;
 
     await tester.pumpAndSettle();
+
     // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
     // in `mapRendered`.
     // https://github.com/flutter/flutter/issues/54758
@@ -468,6 +470,7 @@ void main() {
                   tester.binding.window.devicePixelRatio)
               .round());
     }
+    await tester.binding.setSurfaceSize(null);
   });
 
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {

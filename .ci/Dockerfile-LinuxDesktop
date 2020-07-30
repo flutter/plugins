@@ -21,3 +21,11 @@ RUN sudo apt-get install -y xvfb libegl1-mesa
 RUN sudo apt-get install -y clang cmake ninja-build file pkg-config
 # Install necessary libraries.
 RUN sudo apt-get install -y libgtk-3-dev
+
+# Add repo for Google Chrome and install it, for url_launcher tests.
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
+RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends google-chrome-stable
+# Make it the default so http: has a handler.
+RUN sudo apt-get install -y xdg-utils
+RUN xdg-settings set default-web-browser google-chrome.desktop

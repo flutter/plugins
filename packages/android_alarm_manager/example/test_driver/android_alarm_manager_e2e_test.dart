@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_driver/flutter_driver.dart';
@@ -33,9 +34,12 @@ Future<void> main() async {
   // for this plugin will need to be resumed for the test to pass.
   final StreamSubscription<VMIsolateRef> subscription =
       await resumeIsolatesOnPause(driver);
-  final String result =
-      await driver.requestData(null, timeout: const Duration(minutes: 5));
+  final String data = await driver.requestData(
+    null,
+    timeout: const Duration(minutes: 1),
+  );
   await driver.close();
   await subscription.cancel();
-  exit(result == 'pass' ? 0 : 1);
+  final Map<String, dynamic> result = jsonDecode(data);
+  exit(result['result'] == 'true' ? 0 : 1);
 }
