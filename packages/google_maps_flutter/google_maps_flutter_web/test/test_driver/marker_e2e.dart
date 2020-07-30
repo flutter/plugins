@@ -21,7 +21,6 @@ class _MockMouseEvent extends Mock implements gmaps.MouseEvent {}
 
 class _MockInfoWindow extends Mock implements gmaps.InfoWindow {}
 
-
 /// Test Markers
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized() as E2EWidgetsFlutterBinding;
@@ -68,7 +67,8 @@ void main() {
       verify(marker.options = options);
     });
 
-    testWidgets('infoWindow null, showInfoWindow.', (WidgetTester tester) async {
+    testWidgets('infoWindow null, showInfoWindow.',
+        (WidgetTester tester) async {
       final controller = MarkerController(marker: marker);
       controller.showInfoWindow();
       expect(controller.infoWindowShown, isFalse);

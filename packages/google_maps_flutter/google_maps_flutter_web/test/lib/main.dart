@@ -19,4 +19,3 @@ class MyAppState extends State<MyApp> {
     return Text('Testing... Look at the console output for results!');
   }
 }
-
