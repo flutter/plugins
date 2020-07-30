@@ -1,3 +1,50 @@
+## 0.6.2+1
+
+* Fix incorrect test results when one test passes then another fails
+
+## 0.6.2
+
+* Fix `setSurfaceSize` for e2e tests
+
+## 0.6.1
+
+* Added `data` in the reported json.
+
+## 0.6.0
+
+* **Breaking change** `E2EPlugin` exports a `Future` for `testResults`.
+
+## 0.5.0+1
+
+* Fixed the device pixel ratio problem.
+
+## 0.5.0
+
+* **Breaking change** by default, tests will use the device window size.
+  Tests can still override the window size by using the `setSurfaceSize` method.
+* **Breaking change** If using Flutter 1.19.0-2.0.pre.196 or greater, the
+  `testTextInput` will no longer automatically register.
+* **Breaking change** If using Flutter 1.19.0-2.0.pre.196 or greater, the
+  `HttpOverrides` will no longer be set by default.
+* Minor formatting changes to Dart code.
+
+## 0.4.3+3
+
+* Fixed code snippet in readme that referenced a non-existent `result` variable.
+
+## 0.4.3+2
+
+* Bumps AGP to 3.6.3
+* Changes android-retrofuture dependency type to "implementation"
+
+## 0.4.3+1
+
+* Post-v2 Android embedding cleanup.
+
+## 0.4.3
+
+* Uses CompletableFuture from android-retrofuture allow compatibility with API < 24.
+
 ## 0.4.2
 
 * Adds support for Android E2E tests that utilize other @Rule's, like GrantPermissionRule.
