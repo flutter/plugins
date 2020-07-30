@@ -424,6 +424,7 @@ void main() {
   });
 
   testWidgets('testInitialCenterLocationAtCenter', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(800.0, 600.0));
     final Completer<GoogleMapController> mapControllerCompleter =
         Completer<GoogleMapController>();
     final Completer<void> onCameraIdleCompleter = Completer<void>();
@@ -469,6 +470,7 @@ void main() {
                   tester.binding.window.devicePixelRatio)
               .round());
     }
+    await tester.binding.setSurfaceSize(null);
   });
 
   testWidgets('testGetVisibleRegion', (WidgetTester tester) async {
