@@ -131,6 +131,9 @@ class AppStoreConnection implements InAppPurchaseConnection {
           serverVerificationData: receipt,
           source: IAPSource.AppStore);
     } catch (e) {
+      print(
+          'Something is wrong while fetching the receipt, this normally happens when the app is '
+          'running on a simulator: $e');
       return null;
     }
   }

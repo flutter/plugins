@@ -1,5 +1,12 @@
+## 0.3.4+3
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+  
 ## 0.3.4+2
-* iOS: Fix treating missing App Store receipt as an exception.
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
 
 ## 0.3.4+1
 
