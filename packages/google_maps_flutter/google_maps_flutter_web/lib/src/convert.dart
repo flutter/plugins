@@ -346,8 +346,13 @@ gmaps.MarkerOptions _markerOptionsFromMarker(Marker marker, gmaps.Marker current
     // iconConfig[2] contains the DPIs of the screen, but that information is
     // already encoded in the iconConfig[1]
 
+    // iconConfig[3] contain the [width, height] of the image, if available
     icon = gmaps.Icon()
       ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1]);
+
+    if (iconConfig[3] != null) {
+      icon..size = gmaps.Size(iconConfig[3][0], iconConfig[3][1]);
+    }
   }
   return gmaps.MarkerOptions()
     ..position = currentMarker?.position ?? gmaps.LatLng(
