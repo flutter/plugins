@@ -1,14 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+import 'dart:async';
 
-//@TestOn('chrome') // Uses web-only Flutter SDK
+import 'package:e2e/e2e.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+
 
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:html';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:file_picker_web/file_picker_web.dart';
 import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
 
@@ -19,40 +19,32 @@ final expectedSize = expectedStringContents.length;
 final Uint8List bytes = utf8.encode(expectedStringContents);
 final File textFile = File([bytes], 'hello.txt');
 
+/// Test Markers
 void main() {
-  // Under test..
-  FilePickerPlugin plugin;
+  E2EWidgetsFlutterBinding.ensureInitialized() as E2EWidgetsFlutterBinding;
 
-  setUp(() {
-    plugin = FilePickerPlugin();
-  });
-
-  test('Basic', () { expect(1+1, 2); });
-/*
-  test('Select a file to load', () async {
+  test('Select a single file to load', () async {
     final mockInput = FileUploadInputElement();
 
-    final plugin = ImagePickerPlugin(
-      overrides: FilePickerPluginTestOverrides()
-          ..createFileInputElement((_) => mockInput)
-          ..getFileFromInputElement((_) => textFile)
+    final plugin = FilePickerPlugin(
+        overrides: FilePickerPluginTestOverrides()
+          ..createFileInputElement = ((_) => mockInput)
+          ..getFilesFromInputElement = ((_) => [textFile])
     );
 
     // Call load file
-    final XFile file = plugin.loadFile();
-
+    final files = plugin.loadFile();
     // Mock selection of a file
     mockInput.dispatchEvent(Event('change'));
 
     // Expect the file to complete
-    expect(file, completes);
+    expect(files, completes);
 
     // Expect that we can read from the file
-    final loadedFile = await file;
+    final loadedFiles = await files;
+    final loadedFile = loadedFiles.first;
     expect(loadedFile.readAsBytes(), completion(isNotEmpty));
-    expect(pickedFile.length(), completion(equals(expectedSize)));
+    expect(loadedFile.length(), completion(equals(expectedSize)));
     expect(loadedFile.name, 'hello.txt');
   });
-
- */
 }

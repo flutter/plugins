@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:meta/meta.dart';
 
 final String _kFilePickerInputsDomId = '__file_picker_web-file-input';
 
@@ -12,10 +13,15 @@ final String _kFilePickerInputsDomId = '__file_picker_web-file-input';
 /// This class implements the `package:file_picker` functionality for the web.
 class FilePickerPlugin extends FilePickerPlatform {
   Element _target;
+  final FilePickerPluginTestOverrides _overrides;
+  bool get _hasTestOverrides => _overrides != null;
 
-  /// Default constructor, initializes _target to a DOM element
-  /// that we can use to host HTML elements
-  FilePickerPlugin() {
+  /// Default constructor, initializes _target to a DOM element that we can use 
+  /// to host HTML elements.
+  /// overrides parameter allows for testing to override functions
+  FilePickerPlugin({
+    @visibleForTesting FilePickerPluginTestOverrides overrides,
+  }) : _overrides = overrides {
     _target = _ensureInitialized(_kFilePickerInputsDomId);
   }
 
@@ -23,8 +29,23 @@ class FilePickerPlugin extends FilePickerPlatform {
   static void registerWith(Registrar registrar) {
     FilePickerPlatform.instance = FilePickerPlugin();
   }
+  
+  /// Convert list of filter groups to a comma-separated string
+  String _getStringFromFilterGroup (List<FileTypeFilterGroup> acceptedTypes) {
+    List<String> allExtensions = List();
+    for (FileTypeFilterGroup group in acceptedTypes ?? []) {
+      allExtensions += group.fileExtensions;
+    }
+    return allExtensions?.where((e) => e.isNotEmpty)?.join(',') ?? '';
+  }
 
-  FileUploadInputElement _createFileInputElement(String accepted) {
+  /// Creates a file input element with only the accept attribute
+  @visibleForTesting
+  FileUploadInputElement createFileInputElement(String accepted) {
+    if (_hasTestOverrides) {
+      return _overrides.createFileInputElement(accepted);
+    }
+    
     final FileUploadInputElement element = FileUploadInputElement();
     if (accepted.isNotEmpty) {
       element.accept = accepted;
@@ -42,11 +63,39 @@ class FilePickerPlugin extends FilePickerPlatform {
     element.click();
   }
 
-  Future<List<XFile>> _getFileFromInputElement(InputElement element) {
+  List<XFile> _getXFilesFromFiles (List<File> files) {
+    List<XFile> xFiles = List<XFile>();
+
+    for (File file in files) {
+      String url = Url.createObjectUrl(file);
+      String name = file.name;
+      int length = file.size;
+
+      xFiles.add(XFile(url, name: name, length: length));
+    }
+
+    return xFiles;
+  }
+
+  /// Getter for retrieving files from an input element
+  @visibleForTesting
+  List<File> getFilesFromInputElement(InputElement element) {
+    if(_hasTestOverrides) {
+      return _overrides.getFilesFromInputElement(element);
+    }
+
+    return element?.files ?? [];
+  }
+
+  /// Listen for file input element to change and retrieve files when
+  /// this happens.
+  Future<List<XFile>> _getFilesWhenReady(InputElement element) {
+    final Completer<List<XFile>> _completer = Completer();
+
     // Listens for element change
     element.onChange.first.then((event) {
       // File type from dart:html class
-      List<File> files = element.files;
+      List<File> files = getFilesFromInputElement(element);
       List<XFile> returnFiles = List<XFile>();
 
       // Create XFiles from dart:html Files
@@ -73,23 +122,17 @@ class FilePickerPlugin extends FilePickerPlatform {
   /// Load file from user's computer and return it as an XFile
   @override
   Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
-    List<String> allExtensions = List();
-    for (FileTypeFilterGroup group in acceptedTypes ?? []) {
-      allExtensions += group.fileExtensions;
-    }
-    String acceptedTypeString = allExtensions?.where((e) => e.isNotEmpty)?.join(',') ?? '';
+    final  acceptedTypeString = _getStringFromFilterGroup(acceptedTypes);
 
-    final FileUploadInputElement element = _createFileInputElement(acceptedTypeString);
+    final FileUploadInputElement element = createFileInputElement(acceptedTypeString);
 
     _addElementToDomAndClick(element);
-    
-    final Completer<List<XFile>> _completer = Completer();
-    
-    return _getFileFromInputElement(element);
+
+    return _getFilesWhenReady(element);
   }
 
   AnchorElement _createAnchorElement(String href, String suggestedName) {
-    final AnchorElement element = AnchorElement(href: url);
+    final AnchorElement element = AnchorElement(href: href);
     element.download = suggestedName;
     return element;
   }
@@ -98,14 +141,12 @@ class FilePickerPlugin extends FilePickerPlatform {
   @override
   void saveFile(Uint8List data, {String type = '', String suggestedName = ''}) async {
     // Create blob from data
-    // TODO: Handle different types
-
     final Blob blob = type.isEmpty ? Blob([data]) : Blob([data], type);
 
     String url = Url.createObjectUrl(blob);
 
     // Create an <a> tag with the appropriate download attributes and click it
-    final AnchorElement element = _createAnchorElement(href: url, suggestedName: suggestedName);
+    final AnchorElement element = _createAnchorElement(url, suggestedName);
 
     _addElementToDomAndClick(element);
   }
@@ -127,5 +168,9 @@ class FilePickerPlugin extends FilePickerPlatform {
 /// Overrides some functions to allow testing
 @visibleForTesting
 class FilePickerPluginTestOverrides {
-
+  /// For overriding the creation of the file input element.
+  Element Function(String accepted) createFileInputElement;
+  
+  /// For overriding retrieving a file from the input element.
+  List<File> Function(InputElement input) getFilesFromInputElement;
 }
