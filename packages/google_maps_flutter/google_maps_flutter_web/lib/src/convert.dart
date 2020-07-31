@@ -335,8 +335,10 @@ gmaps.InfoWindowOptions _infoWindowOPtionsFromMarker(Marker marker) {
         gmaps.LatLng(marker.position.latitude, marker.position.longitude);
 }
 
-gmaps.MarkerOptions _markerOptionsFromMarker(
-    gmaps.GMap googleMap, Marker marker) {
+// Computes the options for a new [gmaps.Marker] from an incoming set of options
+// [marker], and the existing marker registered with the map: [currentMarker].
+// Preserves the position from the [currentMarker], if set.
+gmaps.MarkerOptions _markerOptionsFromMarker(Marker marker, gmaps.Marker currentMarker) {
   final iconConfig = marker.icon.toJson();
   gmaps.Icon icon;
 
@@ -348,7 +350,7 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
       ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1]);
   }
   return gmaps.MarkerOptions()
-    ..position = gmaps.LatLng(
+    ..position = currentMarker?.position ?? gmaps.LatLng(
       marker.position.latitude,
       marker.position.longitude,
     )

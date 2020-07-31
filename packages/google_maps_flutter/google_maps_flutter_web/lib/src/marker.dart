@@ -41,6 +41,9 @@ class MarkerController {
   /// Returns [true] if the InfoWindow associated to this marker is being shown.
   bool get infoWindowShown => _infoWindowShown;
 
+  /// Returns the marker associated to this controller.
+  gmaps.Marker get marker => _marker;
+
   /// Updates the options of the wrapped [gmaps.Polygon] object.
   void update(gmaps.MarkerOptions options) {
     _marker.options = options;

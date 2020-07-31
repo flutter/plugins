@@ -20,12 +20,16 @@ class MarkersController extends AbstractController {
 
   void _addMarker(Marker marker) {
     if (marker == null) return;
+
     final infoWindoOptions = _infoWindowOPtionsFromMarker(marker);
     gmaps.InfoWindow gmInfoWindow = gmaps.InfoWindow(infoWindoOptions)
       ..addListener('click', () {
         _onInfoWindowTap(marker.markerId);
       });
-    final populationOptions = _markerOptionsFromMarker(googleMap, marker);
+
+    final currentMarker = _markerIdToController[marker.markerId]?.marker;
+
+    final populationOptions = _markerOptionsFromMarker(marker, currentMarker);
     gmaps.Marker gmMarker = gmaps.Marker(populationOptions);
     gmMarker.map = googleMap;
     MarkerController controller = MarkerController(
@@ -56,7 +60,7 @@ class MarkersController extends AbstractController {
     }
     MarkerController markerController = _markerIdToController[marker.markerId];
     if (markerController != null) {
-      markerController.update(_markerOptionsFromMarker(googleMap, marker));
+      markerController.update(_markerOptionsFromMarker(marker, markerController.marker));
     }
   }
 

@@ -31,34 +31,6 @@ Modify the `<head>` tag of your `web/index.html` to load the Google Maps JavaScr
 
 Now you should be able to use the Google Maps plugin normally.
 
-## My draggable markers are resetting their position after other changes
-
-The web version of the plugin does not attempt to reconcile the currently-rendered Markers with the incoming set of markers from your App.
-
-If you're keeping a cache of Markers on your app (similar to how the `example` app works), you'll have to refresh your Markers' positions `onDragEnd`, so the map renders your Markers in the correct position after they've been dropped:
-
-```dart
-  // When creating your Marker...
-  final Marker marker = Marker(
-    markerId: markerId,
-    position: LatLng(...),
-    ...
-    // Add the onDragEnd handler:
-    onDragEnd: (LatLng position) {
-      _onMarkerDragEnd(markerId, position);
-    },
-  );
-
-void _onMarkerDragEnd(MarkerId markerId, LatLng newPosition) async {
-  ...
-  if (markers[markerId] != null) {
-    // Then update your local cache with the latest position:
-    markers[markerId] = markers[markerId].copyWith(positionParam: newPosition);
-    ...
-```
-
-That way your App's Marker cache will reflect all the latest changes.
-
 ## Limitations of the web version
 
 The following map options are not available in web, because the map doesn't rotate there:
