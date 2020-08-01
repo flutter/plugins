@@ -131,22 +131,29 @@ class FilePickerPlugin extends FilePickerPlatform {
     return _getFilesWhenReady(element);
   }
 
-  AnchorElement _createAnchorElement(String href, String suggestedName) {
+  /// Create anchor element with download attribute
+  @visibleForTesting
+  AnchorElement createAnchorElement(String href, String suggestedName) {
     final AnchorElement element = AnchorElement(href: href);
     element.download = suggestedName;
     return element;
+  }
+
+  /// Create blob with specified data of indicated type
+  @visibleForTesting
+  Blob createBlob(Uint8List data, String type) {
+    return type.isEmpty ? Blob([data]) : Blob([data], type);
   }
 
   /// Web implementation of saveFile()
   @override
   void saveFile(Uint8List data, {String type = '', String suggestedName = ''}) async {
     // Create blob from data
-    final Blob blob = type.isEmpty ? Blob([data]) : Blob([data], type);
-
+    final blob = createBlob(data, type);
     String url = Url.createObjectUrl(blob);
 
     // Create an <a> tag with the appropriate download attributes and click it
-    final AnchorElement element = _createAnchorElement(url, suggestedName);
+    final AnchorElement element = createAnchorElement(url, suggestedName);
 
     _addElementToDomAndClick(element);
   }
@@ -170,7 +177,7 @@ class FilePickerPlugin extends FilePickerPlatform {
 class FilePickerPluginTestOverrides {
   /// For overriding the creation of the file input element.
   Element Function(String accepted) createFileInputElement;
-  
+
   /// For overriding retrieving a file from the input element.
   List<File> Function(InputElement input) getFilesFromInputElement;
 }
