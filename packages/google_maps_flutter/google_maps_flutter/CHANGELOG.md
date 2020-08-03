@@ -1,6 +1,6 @@
 ## 0.5.29
 
-* Pass a constant `creationMapId` to `platform.buildView`, so web can return a cached widget DOM when flutter attempts to repaint there.
+* Pass a constant `_web_only_mapCreationId` to `platform.buildView`, so web can return a cached widget DOM when flutter attempts to repaint there.
 * Modify some examples slightly so they're more web-friendly.
 
 ## 0.5.28+2
