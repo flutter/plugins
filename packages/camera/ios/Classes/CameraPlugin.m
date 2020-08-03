@@ -212,6 +212,9 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 }
 // Format used for video and image streaming.
 FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
+// Set videoFormat to kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange to output
+// pixelbuffer in 420v format, the engine compiled with this PR(https://github.com/flutter/engine/pull/20082) can render 420v
+//FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
