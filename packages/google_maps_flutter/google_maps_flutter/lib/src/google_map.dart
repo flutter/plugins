@@ -14,7 +14,7 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 // to the buildView function, so the web implementation can use it as a
 // cache key. This needs to be provided from the outside, because web
 // views seem to re-render much more often that mobile platform views.
-int _web_only_platformId = 0;
+int _webOnlyMapId = 0;
 
 /// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
@@ -211,7 +211,7 @@ class GoogleMap extends StatefulWidget {
 }
 
 class _GoogleMapState extends State<GoogleMap> {
-  final _web_only_mapCreationId = _web_only_platformId++;
+  final _webOnlyMapCreationId = _webOnlyMapId++;
 
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
@@ -231,7 +231,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'polygonsToAdd': serializePolygonSet(widget.polygons),
       'polylinesToAdd': serializePolylineSet(widget.polylines),
       'circlesToAdd': serializeCircleSet(widget.circles),
-      '_web_only_mapCreationId': _web_only_mapCreationId,
+      '_webOnlyMapCreationId': _webOnlyMapCreationId,
     };
 
     return _googleMapsFlutterPlatform.buildView(
