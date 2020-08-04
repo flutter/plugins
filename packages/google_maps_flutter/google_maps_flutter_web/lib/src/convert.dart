@@ -338,7 +338,10 @@ gmaps.InfoWindowOptions _infoWindowOPtionsFromMarker(Marker marker) {
 // Computes the options for a new [gmaps.Marker] from an incoming set of options
 // [marker], and the existing marker registered with the map: [currentMarker].
 // Preserves the position from the [currentMarker], if set.
-gmaps.MarkerOptions _markerOptionsFromMarker(Marker marker, gmaps.Marker currentMarker) {
+gmaps.MarkerOptions _markerOptionsFromMarker(
+  Marker marker,
+  gmaps.Marker currentMarker,
+) {
   final iconConfig = marker.icon.toJson();
   gmaps.Icon icon;
 
@@ -348,6 +351,8 @@ gmaps.MarkerOptions _markerOptionsFromMarker(Marker marker, gmaps.Marker current
 
     // iconConfig[3] contain the [width, height] of the image, if available
     icon = gmaps.Icon()
+      // TODO: Move the comment below to analysis-options.yaml
+      // ignore:undefined_prefixed_name
       ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1]);
 
     if (iconConfig[3] != null) {
@@ -355,10 +360,11 @@ gmaps.MarkerOptions _markerOptionsFromMarker(Marker marker, gmaps.Marker current
     }
   }
   return gmaps.MarkerOptions()
-    ..position = currentMarker?.position ?? gmaps.LatLng(
-      marker.position.latitude,
-      marker.position.longitude,
-    )
+    ..position = currentMarker?.position ??
+        gmaps.LatLng(
+          marker.position.latitude,
+          marker.position.longitude,
+        )
     ..title = marker.infoWindow.title
     ..zIndex = marker.zIndex
     ..visible = marker.visible
