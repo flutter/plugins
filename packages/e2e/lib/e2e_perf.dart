@@ -58,12 +58,15 @@ class FrameTimingSummarizer {
     final List<Duration> frameBuildTime = List<Duration>.unmodifiable(
       data.map<Duration>((FrameTiming datum) => datum.buildDuration),
     );
-    final List<Duration> frameBuildTimeSorted = List<Duration>.from(frameBuildTime)..sort();
+    final List<Duration> frameBuildTimeSorted =
+        List<Duration>.from(frameBuildTime)..sort();
     final List<Duration> frameRasterizerTime = List<Duration>.unmodifiable(
       data.map<Duration>((FrameTiming datum) => datum.rasterDuration),
     );
-    final List<Duration> frameRasterizerTimeSorted = List<Duration>.from(frameRasterizerTime)..sort();
-    final Duration Function(Duration, Duration) add = (Duration a, Duration b) => a + b;
+    final List<Duration> frameRasterizerTimeSorted =
+        List<Duration>.from(frameRasterizerTime)..sort();
+    final Duration Function(Duration, Duration) add =
+        (Duration a, Duration b) => a + b;
     return FrameTimingSummarizer._(
       frameBuildTime: frameBuildTime,
       frameRasterizerTime: frameRasterizerTime,
@@ -74,11 +77,13 @@ class FrameTimingSummarizer {
       p99FrameBuildTime: _findPercentile(frameBuildTimeSorted, 0.99),
       worstFrameBuildTime: frameBuildTimeSorted.last,
       missedFrameBuildBudget: _countExceed(frameBuildTimeSorted, kBuildBudget),
-      averageFrameRasterizerTime: frameRasterizerTime.reduce(add) ~/ data.length,
+      averageFrameRasterizerTime:
+          frameRasterizerTime.reduce(add) ~/ data.length,
       p90FrameRasterizerTime: _findPercentile(frameRasterizerTimeSorted, 0.90),
       p99FrameRasterizerTime: _findPercentile(frameRasterizerTimeSorted, 0.99),
       worstFrameRasterizerTime: frameRasterizerTimeSorted.last,
-      missedFrameRasterizerBudget: _countExceed(frameRasterizerTimeSorted, kBuildBudget),
+      missedFrameRasterizerBudget:
+          _countExceed(frameRasterizerTimeSorted, kBuildBudget),
     );
   }
 
@@ -94,7 +99,7 @@ class FrameTimingSummarizer {
     @required this.p90FrameRasterizerTime,
     @required this.p99FrameRasterizerTime,
     @required this.worstFrameRasterizerTime,
-    @required this.missedFrameRasterizerBudget
+    @required this.missedFrameRasterizerBudget,
   });
 
   /// List of frame build time in microseconds
@@ -137,30 +142,32 @@ class FrameTimingSummarizer {
   ///
   /// See [TimelineSummary.summaryJson] for detail.
   Map<String, dynamic> get summary => <String, dynamic>{
-    'average_frame_build_time_millis':
-        averageFrameBuildTime.inMicroseconds / 1E3,
-    '90th_percentile_frame_build_time_millis':
-        p90FrameBuildTime.inMicroseconds / 1E3,
-    '99th_percentile_frame_build_time_millis':
-        p99FrameBuildTime.inMicroseconds / 1E3,
-    'worst_frame_build_time_millis':
-        worstFrameBuildTime.inMicroseconds / 1E3,
-    'missed_frame_build_budget_count': missedFrameBuildBudget,
-    'average_frame_rasterizer_time_millis':
-        averageFrameRasterizerTime.inMicroseconds / 1E3,
-    '90th_percentile_frame_rasterizer_time_millis':
-        p90FrameRasterizerTime.inMicroseconds / 1E3,
-    '99th_percentile_frame_rasterizer_time_millis':
-        p99FrameRasterizerTime.inMicroseconds / 1E3,
-    'worst_frame_rasterizer_time_millis':
-        worstFrameRasterizerTime.inMicroseconds / 1E3,
-    'missed_frame_rasterizer_budget_count': missedFrameRasterizerBudget,
-    'frame_count': frameBuildTime.length,
-    'frame_build_times': frameBuildTime
-        .map<int>((Duration datum) => datum.inMicroseconds).toList(),
-    'frame_rasterizer_times': frameRasterizerTime
-        .map<int>((Duration datum) => datum.inMicroseconds).toList(),
-  };
+        'average_frame_build_time_millis':
+            averageFrameBuildTime.inMicroseconds / 1E3,
+        '90th_percentile_frame_build_time_millis':
+            p90FrameBuildTime.inMicroseconds / 1E3,
+        '99th_percentile_frame_build_time_millis':
+            p99FrameBuildTime.inMicroseconds / 1E3,
+        'worst_frame_build_time_millis':
+            worstFrameBuildTime.inMicroseconds / 1E3,
+        'missed_frame_build_budget_count': missedFrameBuildBudget,
+        'average_frame_rasterizer_time_millis':
+            averageFrameRasterizerTime.inMicroseconds / 1E3,
+        '90th_percentile_frame_rasterizer_time_millis':
+            p90FrameRasterizerTime.inMicroseconds / 1E3,
+        '99th_percentile_frame_rasterizer_time_millis':
+            p99FrameRasterizerTime.inMicroseconds / 1E3,
+        'worst_frame_rasterizer_time_millis':
+            worstFrameRasterizerTime.inMicroseconds / 1E3,
+        'missed_frame_rasterizer_budget_count': missedFrameRasterizerBudget,
+        'frame_count': frameBuildTime.length,
+        'frame_build_times': frameBuildTime
+            .map<int>((Duration datum) => datum.inMicroseconds)
+            .toList(),
+        'frame_rasterizer_times': frameRasterizerTime
+            .map<int>((Duration datum) => datum.inMicroseconds)
+            .toList(),
+      };
 }
 
 // The following helper functions require data sorted
@@ -173,5 +180,6 @@ T _findPercentile<T>(List<T> data, double p) {
 
 // return the number of items in data that > threshold
 int _countExceed<T extends Comparable<T>>(List<T> data, T threshold) {
-  return data.length - data.indexWhere((T datum) => datum.compareTo(threshold) > 0);
+  return data.length -
+      data.indexWhere((T datum) => datum.compareTo(threshold) > 0);
 }

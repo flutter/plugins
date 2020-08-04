@@ -19,7 +19,8 @@ Future<void> main() => e2eDriver();
 /// Tests should write any output files to this directory. Defaults to the path
 /// set in the FLUTTER_TEST_OUTPUTS_DIR environment variable, or `build` if
 /// unset.
-String testOutputsDirectory = Platform.environment['FLUTTER_TEST_OUTPUTS_DIR'] ?? 'build';
+String testOutputsDirectory =
+    Platform.environment['FLUTTER_TEST_OUTPUTS_DIR'] ?? 'build';
 
 /// The callback type to handle [e2e.Response.data] after the test succcess.
 typedef ResponseDataCallback = FutureOr<void> Function(Map<String, dynamic>);
@@ -28,14 +29,15 @@ typedef ResponseDataCallback = FutureOr<void> Function(Map<String, dynamic>);
 /// [testOutputsDirectory]/`testOutputFilename.json`.
 ///
 /// This is the default `responseDataCallback` in [e2eDriver].
-Future<void> writeResponseData(Map<String, dynamic> data, {
+Future<void> writeResponseData(
+  Map<String, dynamic> data, {
   String testOutputFilename = 'e2e_perf_summary',
 }) async {
   assert(testOutputFilename != null);
   await fs.directory(testOutputsDirectory).create(recursive: true);
   final File file = fs.file(path.join(
     testOutputsDirectory,
-    '$testOutputFilename.json'
+    '$testOutputFilename.json',
   ));
   final String resultString = _encodeJson(data, true);
   await file.writeAsString(resultString);
@@ -66,8 +68,7 @@ Future<void> e2eDriver({
   ResponseDataCallback responseDataCallback = writeResponseData,
 }) async {
   final FlutterDriver driver = await FlutterDriver.connect();
-  final String jsonResult =
-      await driver.requestData(null, timeout: timeout);
+  final String jsonResult = await driver.requestData(null, timeout: timeout);
   final e2e.Response response = e2e.Response.fromJson(jsonResult);
   await driver.close();
 
@@ -84,7 +85,5 @@ Future<void> e2eDriver({
 const JsonEncoder _prettyEncoder = JsonEncoder.withIndent('  ');
 
 String _encodeJson(Map<String, dynamic> jsonObject, bool pretty) {
-  return pretty
-    ? _prettyEncoder.convert(jsonObject)
-    : json.encode(jsonObject);
+  return pretty ? _prettyEncoder.convert(jsonObject) : json.encode(jsonObject);
 }

@@ -14,6 +14,7 @@ dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+  path:
 
 dev_dependencies:
   pedantic: ^1.8.0

@@ -7,13 +7,11 @@ import 'package:e2e/e2e_perf.dart';
 void main() {
   test('Test FrameTimingSummarizer', () {
     List<int> buildTimes = <int>[
-      for (int i = 1; i <= 100; i += 1)
-        1000 * i,
+      for (int i = 1; i <= 100; i += 1) 1000 * i,
     ];
     buildTimes = buildTimes.reversed.toList();
     List<int> rasterTimes = <int>[
-      for (int i = 1; i <= 100; i += 1)
-        1000 * i + 1000,
+      for (int i = 1; i <= 100; i += 1) 1000 * i + 1000,
     ];
     rasterTimes = rasterTimes.reversed.toList();
     List<FrameTiming> inputData = <FrameTiming>[
