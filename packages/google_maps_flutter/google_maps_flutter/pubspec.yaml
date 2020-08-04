@@ -19,6 +19,7 @@ dev_dependencies:
     sdk: flutter
   test: ^1.6.0
   pedantic: ^1.8.0
+  plugin_platform_interface: ^1.0.2
   mockito: ^4.1.1
 
 flutter:
