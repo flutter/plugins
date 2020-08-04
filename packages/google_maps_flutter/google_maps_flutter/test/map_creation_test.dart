@@ -26,7 +26,6 @@ void main() {
   testWidgets('_webOnlyMapCreationId increments with each GoogleMap widget', (
     WidgetTester tester,
   ) async {
-
     // Inject two map widgets...
     await tester.pumpWidget(
       Directionality(
@@ -34,10 +33,14 @@ void main() {
         child: Column(
           children: const [
             GoogleMap(
-              initialCameraPosition: CameraPosition(target: LatLng(43.362, -5.849)),
+              initialCameraPosition: CameraPosition(
+                target: LatLng(43.362, -5.849),
+              ),
             ),
             GoogleMap(
-              initialCameraPosition: CameraPosition(target: LatLng(47.649, -122.350)),
+              initialCameraPosition: CameraPosition(
+                target: LatLng(47.649, -122.350),
+              ),
             ),
           ],
         ),
