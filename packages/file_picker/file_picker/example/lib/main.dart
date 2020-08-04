@@ -92,6 +92,8 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: 300,
               child: TextField(
+                minLines: 1,
+                maxLines: 12,
                 controller: _nameController,
                 decoration: InputDecoration(
                   hintText: '(Optional) Suggest File Name',
@@ -101,7 +103,8 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: 300,
               child: TextField(
-                maxLines: null,
+                minLines: 1,
+                maxLines: 12,
                 controller: _fileController,
                 decoration: InputDecoration(
                   hintText: 'Enter File Contents',
