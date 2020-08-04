@@ -39,6 +39,15 @@ To use this plugin, add `google_maps_flutter` as a [dependency in your pubspec.y
 
 ### Android
 
+Add WAKE_LOCK permission in the application manifest `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.android.application">
+ 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+```
+
 Specify your API key in the application manifest `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
