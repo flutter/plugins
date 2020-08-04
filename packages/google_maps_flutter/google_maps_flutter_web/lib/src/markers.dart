@@ -1,15 +1,26 @@
 part of google_maps_flutter_web;
 
+/// This class manages a set of [MarkerController]s associated to a Google Map Controller.
 class MarkersController extends AbstractController {
+  // A cache of markerIds to their controllers
   final Map<MarkerId, MarkerController> _markerIdToController;
 
+  // The stream over which markers broadcast their events
   StreamController<MapEvent> _streamController;
 
+  /// Initializes the cache. The StreamController is shared with the Google Map Controller.
   MarkersController({
     @required StreamController<MapEvent> stream,
   })  : _streamController = stream,
         _markerIdToController = Map<MarkerId, MarkerController>();
 
+  @visibleForTesting
+  /// Returns the cache of markers. Test only.
+  Map<MarkerId, MarkerController> get markers => _markerIdToController;
+
+  /// Adds a set of [Marker] objects to the cache.
+  ///
+  /// (Wraps each Marker into its corresponding [MarkerController])
   void addMarkers(Set<Marker> markersToAdd) {
     if (markersToAdd != null) {
       markersToAdd.forEach((marker) {
@@ -46,24 +57,29 @@ class MarkersController extends AbstractController {
     _markerIdToController[marker.markerId] = controller;
   }
 
+  /// Updates a set of [Marker] objects with new options.
   void changeMarkers(Set<Marker> markersToChange) {
     if (markersToChange != null) {
       markersToChange.forEach((markerToChange) {
-        changeMarker(markerToChange);
+        _changeMarker(markerToChange);
       });
     }
   }
 
-  void changeMarker(Marker marker) {
+  void _changeMarker(Marker marker) {
     if (marker == null) {
       return;
     }
     MarkerController markerController = _markerIdToController[marker.markerId];
     if (markerController != null) {
-      markerController.update(_markerOptionsFromMarker(marker, markerController.marker));
+      markerController.update(_markerOptionsFromMarker(
+        marker,
+        markerController.marker,
+      ));
     }
   }
 
+  /// Removes a set of [MarkerId]s from the cache.
   void removeMarkers(Set<MarkerId> markerIdsToRemove) {
     if (markerIdsToRemove == null) {
       return;
@@ -74,25 +90,30 @@ class MarkersController extends AbstractController {
             _markerIdToController[markerId];
         if (markerController != null) {
           markerController.remove();
-          _markerIdToController.remove(markerId.value);
+          _markerIdToController.remove(markerId);
         }
       }
     });
   }
 
+  // InfoWindow...
+
+  /// Shows the [InfoWindow] of a Marker.
   void showMarkerInfoWindow(MarkerId markerId) {
     MarkerController markerController = _markerIdToController[markerId];
     markerController?.showInfoWindow();
   }
 
-  bool isInfoWindowShown(MarkerId markerId) {
-    MarkerController markerController = _markerIdToController[markerId];
-    return markerController?.infoWindowShown ?? false;
-  }
-
+  /// Hides the [InfoWindow] of a Marker.
   void hideMarkerInfoWindow(MarkerId markerId) {
     MarkerController markerController = _markerIdToController[markerId];
     markerController?.hideInfoWindow();
+  }
+
+  /// Returns whether or not the [InfoWindow] of a Marker is shown.
+  bool isInfoWindowShown(MarkerId markerId) {
+    MarkerController markerController = _markerIdToController[markerId];
+    return markerController?.infoWindowShown ?? false;
   }
 
   // Handle internal events
