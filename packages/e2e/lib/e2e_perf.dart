@@ -24,6 +24,24 @@ typedef ControlCallback = Future<void> Function(WidgetController controller);
 
 bool _firstRun = true;
 
+/// The warning message to show when a benchmark is performed with assert on.
+/// TODO(CareF) remove this and update pubspect when flutter/flutter#61509 is
+/// in released version.
+const String kDebugWarning = '''
+┏╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍┓
+┇ ⚠    THIS BENCHMARK IS BEING RUN IN DEBUG MODE     ⚠  ┇
+┡╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍┦
+│                                                       │
+│  Numbers obtained from a benchmark while asserts are  │
+│  enabled will not accurately reflect the performance  │
+│  that will be experienced by end users using release  ╎
+│  builds. Benchmarks should be run using this command  ╎
+│  line:  "flutter run --profile test.dart" or          ┊
+│  or "flutter drive --profile -t test.dart".           ┊
+│                                                       ┊
+└─────────────────────────────────────────────────╌┄┈  🐢
+''';
+
 /// watches the [FrameTiming] of `action` and report it to the e2e binding.
 Future<void> watchPerformance(
   E2EWidgetsFlutterBinding binding,
