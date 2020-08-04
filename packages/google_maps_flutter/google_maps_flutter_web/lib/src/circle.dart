@@ -20,6 +20,11 @@ class CircleController {
     }
   }
 
+  @visibleForTesting
+
+  /// Returns the wrapped circle. Only used for testing.
+  gmaps.Circle get circle => _circle;
+
   /// Returns [true] if this Controller will use its own onTap handler to consume events.
   bool get consumeTapEvents => _consumeTapEvents;
 
