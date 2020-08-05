@@ -1,3 +1,8 @@
+## 0.6.3
+
+* Add customizable `flutter_driver` adaptor.
+* Add utilities for tracking frame performance in an e2e test.
+
 ## 0.6.2+1
 
 * Fix incorrect test results when one test passes then another fails
