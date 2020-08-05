@@ -41,7 +41,7 @@ class FilePickerPlugin extends FilePickerPlatform {
 
   /// Creates a file input element with only the accept attribute
   @visibleForTesting
-  FileUploadInputElement createFileInputElement(String accepted) {
+  FileUploadInputElement createFileInputElement(String accepted, bool multiple) {
     if (_hasTestOverrides) {
       return _overrides.createFileInputElement(accepted);
     }
@@ -50,7 +50,7 @@ class FilePickerPlugin extends FilePickerPlatform {
     if (accepted.isNotEmpty) {
       element.accept = accepted;
     }
-    element.multiple = true;
+    element.multiple = multiple;
 
     return element;
   }
@@ -63,18 +63,19 @@ class FilePickerPlugin extends FilePickerPlatform {
     element.click();
   }
 
-  List<XFile> _getXFilesFromFiles (List<File> files) {
-    List<XFile> xFiles = List<XFile>();
+  List<XPath> _getXPathsFromFiles (List<File> files) {
+    List<XPath> xPaths = List<XPath>();
 
     for (File file in files) {
       String url = Url.createObjectUrl(file);
       String name = file.name;
       int length = file.size;
+      int modified = file.lastModified;
 
-      xFiles.add(XFile(url, name: name, length: length));
+      xPaths.add(XPath(url, name: name, modified: modified));
     }
 
-    return xFiles;
+    return xPaths;
   }
 
   /// Getter for retrieving files from an input element
@@ -87,27 +88,34 @@ class FilePickerPlugin extends FilePickerPlatform {
     return element?.files ?? [];
   }
 
+  Future<XPath> _getFileWhenReady(InputElement element)  {
+    final Completer<XPath> _completer = Completer();
+    
+    _getFilesWhenReady(element)
+      .then((list) {
+        _completer.complete(list[0]);
+      })
+      .catchError((err) {
+        _completer.completeError(err);
+    });
+    
+    return _completer.future;
+  }
+  
   /// Listen for file input element to change and retrieve files when
   /// this happens.
-  Future<List<XFile>> _getFilesWhenReady(InputElement element) {
+  Future<List<XPath>> _getFilesWhenReady(InputElement element)  {
     final Completer<List<XFile>> _completer = Completer();
 
     // Listens for element change
     element.onChange.first.then((event) {
       // File type from dart:html class
-      List<File> files = getFilesFromInputElement(element);
-      List<XFile> returnFiles = List<XFile>();
+      final List<File> files = getFilesFromInputElement(element);
 
-      // Create XFiles from dart:html Files
-      for (File file in files) {
-        String url = Url.createObjectUrl(file);
-        String name = file.name;
-        int length = file.size;
+      // Create XPath from dart:html Files
+      final returnPaths = _getXPathsFromFiles(files);
 
-        returnFiles.add(XFile(url, name: name, length: length));
-      }
-
-      _completer.complete(returnFiles);
+      _completer.complete(returnPaths);
     });
 
     element.onError.first.then((event) {
@@ -119,22 +127,10 @@ class FilePickerPlugin extends FilePickerPlatform {
     return _completer.future;
   }
 
-  /// Load file from user's computer and return it as an XFile
-  @override
-  Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
-    final  acceptedTypeString = _getStringFromFilterGroup(acceptedTypes);
-
-    final FileUploadInputElement element = createFileInputElement(acceptedTypeString);
-
-    _addElementToDomAndClick(element);
-
-    return _getFilesWhenReady(element);
-  }
-
   /// Create anchor element with download attribute
   @visibleForTesting
   AnchorElement createAnchorElement(String href, String suggestedName) {
-    final AnchorElement element = AnchorElement(href: href);
+    final element = AnchorElement(href: href);
     element.download = suggestedName;
     return element;
   }
@@ -143,19 +139,6 @@ class FilePickerPlugin extends FilePickerPlatform {
   @visibleForTesting
   Blob createBlob(Uint8List data, String type) {
     return type.isEmpty ? Blob([data]) : Blob([data], type);
-  }
-
-  /// Web implementation of saveFile()
-  @override
-  void saveFile(Uint8List data, {String type = '', String suggestedName = ''}) async {
-    // Create blob from data
-    final blob = createBlob(data, type);
-    String url = Url.createObjectUrl(blob);
-
-    // Create an <a> tag with the appropriate download attributes and click it
-    final AnchorElement element = createAnchorElement(url, suggestedName);
-
-    _addElementToDomAndClick(element);
   }
 
   /// Initializes a DOM container where we can host elements.
@@ -169,6 +152,50 @@ class FilePickerPlugin extends FilePickerPlatform {
       target = targetElement;
     }
     return target;
+  }
+  
+  /// NEW API
+  
+  // Load Helper
+  Future<List<XPath>> _readPathHelper (bool multiple, List<FileTypeFilterGroup> acceptedTypes) {
+    final  acceptedTypeString = _getStringFromFilterGroup(acceptedTypes);
+
+    final FileUploadInputElement element = createFileInputElement(acceptedTypeString, multiple);
+
+    _addElementToDomAndClick(element);
+
+    return _getFilesWhenReady(element);
+  }
+  
+  /// Open file dialog for loading files and return a file path
+  @override
+  Future<XPath> getReadPath({List<FileTypeFilterGroup> acceptedTypes}) {
+    return _readPathHelper(false, acceptedTypes);
+  }
+
+  /// Open file dialog for loading files and return a list of file paths
+  @override
+  Future<List<XPath>> getReadPaths({List<FileTypeFilterGroup> acceptedTypes}) {
+    return _readPathHelper(true, acceptedTypes);
+  }
+
+  /// Open file dialog for saving files and return a file path at which to save
+  @override
+  Future<XPath> getSavePath() {
+    throw UnimplementedError('loadFile() has not been implemented.');
+  }
+
+  /// Web implementation of saveFile()
+  @override
+  void saveFile(Uint8List data, {String type = '', String suggestedName = ''}) async {
+    // Create blob from data
+    final blob = createBlob(data, type);
+    String url = Url.createObjectUrl(blob);
+
+    // Create an <a> tag with the appropriate download attributes and click it
+    final AnchorElement element = createAnchorElement(url, suggestedName);
+
+    _addElementToDomAndClick(element);
   }
 }
 
