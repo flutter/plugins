@@ -190,7 +190,7 @@ class FilePickerPlugin extends FilePickerPlatform {
   /// Open file dialog for saving files and return a file path at which to save
   @override
   Future<XPath> getSavePath() {
-    throw UnimplementedError('loadFile() has not been implemented.');
+    return Future<XPath>.value();
   }
 
   /// Web implementation of saveFile()
