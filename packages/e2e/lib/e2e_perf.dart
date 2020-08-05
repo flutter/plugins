@@ -18,10 +18,6 @@ import 'package:e2e/e2e.dart';
 Duration kBuildBudget = const Duration(milliseconds: 16);
 // TODO(CareF): Automatically calculate the refresh budget (#61958)
 
-/// Usually it's recommended to limit callbacks of the test to [WidgetController]
-/// API so it can be more universally used.
-typedef ControlCallback = Future<void> Function(WidgetController controller);
-
 bool _firstRun = true;
 
 /// The warning message to show when a benchmark is performed with assert on.
