@@ -1,15 +1,26 @@
 part of google_maps_flutter_web;
 
+/// This class manages all the (poly)lines associated to any given Google Map Controller.
 class PolylinesController extends AbstractController {
+  // A cache of polylineIds to their controllers
   final Map<PolylineId, PolylineController> _polylineIdToController;
 
+  // The stream over which polylines broadcast their events
   StreamController<MapEvent> _streamController;
 
+  /// Initializes the cache. The StreamController is shared with the Google Map Controller.
   PolylinesController({
     @required StreamController<MapEvent> stream,
   })  : _streamController = stream,
         _polylineIdToController = Map<PolylineId, PolylineController>();
 
+  /// Returns the cache of polylines. Test only.
+  @visibleForTesting
+  Map<PolylineId, PolylineController> get lines => _polylineIdToController;
+
+  /// Adds a set of [Polyline] objects to the cache.
+  ///
+  /// (Wraps each line into its corresponding [PolylineController])
   void addPolylines(Set<Polyline> polylinesToAdd) {
     if (polylinesToAdd != null) {
       polylinesToAdd.forEach((polyline) {
@@ -32,15 +43,16 @@ class PolylinesController extends AbstractController {
     _polylineIdToController[polyline.polylineId] = controller;
   }
 
+  /// Updates a set of [Polyline] objects with new options.
   void changePolylines(Set<Polyline> polylinesToChange) {
     if (polylinesToChange != null) {
       polylinesToChange.forEach((polylineToChange) {
-        changePolyline(polylineToChange);
+        _changePolyline(polylineToChange);
       });
     }
   }
 
-  void changePolyline(Polyline polyline) {
+  void _changePolyline(Polyline polyline) {
     if (polyline == null) {
       return;
     }
@@ -52,6 +64,7 @@ class PolylinesController extends AbstractController {
     }
   }
 
+  /// Removes a set of [PolylineId]s from the cache.
   void removePolylines(Set<PolylineId> polylineIdsToRemove) {
     if (polylineIdsToRemove == null) {
       return;

@@ -20,6 +20,10 @@ class PolylineController {
     }
   }
 
+  /// Returns the wrapped circle. Only used for testing.
+  @visibleForTesting
+  gmaps.Polyline get line => _polyline;
+
   /// Returns [true] if this Controller will use its own onTap handler to consume events.
   bool get consumeTapEvents => _consumeTapEvents;
 

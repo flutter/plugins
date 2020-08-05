@@ -14,8 +14,8 @@ class MarkersController extends AbstractController {
   })  : _streamController = stream,
         _markerIdToController = Map<MarkerId, MarkerController>();
 
-  @visibleForTesting
   /// Returns the cache of markers. Test only.
+  @visibleForTesting
   Map<MarkerId, MarkerController> get markers => _markerIdToController;
 
   /// Adds a set of [Marker] objects to the cache.

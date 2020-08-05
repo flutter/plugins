@@ -14,8 +14,8 @@ class CirclesController extends AbstractController {
   })  : _streamController = stream,
         _circleIdToController = Map<CircleId, CircleController>();
 
-  @visibleForTesting
   /// Returns the cache of circles. Test only.
+  @visibleForTesting
   Map<CircleId, CircleController> get circles => _circleIdToController;
 
   /// Adds a set of [Circle] objects to the cache.

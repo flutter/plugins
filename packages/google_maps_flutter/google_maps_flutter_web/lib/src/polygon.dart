@@ -20,6 +20,10 @@ class PolygonController {
     }
   }
 
+  /// Returns the wrapped circle. Only used for testing.
+  @visibleForTesting
+  gmaps.Polygon get polygon => _polygon;
+
   /// Returns [true] if this Controller will use its own onTap handler to consume events.
   bool get consumeTapEvents => _consumeTapEvents;
 

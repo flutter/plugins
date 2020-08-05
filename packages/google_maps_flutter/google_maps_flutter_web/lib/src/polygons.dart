@@ -1,15 +1,26 @@
 part of google_maps_flutter_web;
 
+/// This class manages all the polygons associated to any given Google Map Controller.
 class PolygonsController extends AbstractController {
+  // A cache of polygonIDs to their controllers
   final Map<PolygonId, PolygonController> _polygonIdToController;
 
+  // The stream over which polygons broadcast events
   StreamController<MapEvent> _streamController;
 
+  /// Initializes the cache. The StreamController is shared with the Google Map Controller.
   PolygonsController({
     @required StreamController<MapEvent> stream,
   })  : _streamController = stream,
         _polygonIdToController = Map<PolygonId, PolygonController>();
 
+  /// Returns the cache of polygons. Test only.
+  @visibleForTesting
+  Map<PolygonId, PolygonController> get polygons => _polygonIdToController;
+
+  /// Adds a set of [Polygon] objects to the cache.
+  ///
+  /// (Wraps each Polygon into its corresponding [PolygonController])
   void addPolygons(Set<Polygon> polygonsToAdd) {
     if (polygonsToAdd != null) {
       polygonsToAdd.forEach((polygon) {
@@ -32,15 +43,16 @@ class PolygonsController extends AbstractController {
     _polygonIdToController[polygon.polygonId] = controller;
   }
 
+  /// Updates a set of [Polygon] objects with new options.
   void changePolygons(Set<Polygon> polygonsToChange) {
     if (polygonsToChange != null) {
       polygonsToChange.forEach((polygonToChange) {
-        changePolygon(polygonToChange);
+        _changePolygon(polygonToChange);
       });
     }
   }
 
-  void changePolygon(Polygon polygon) {
+  void _changePolygon(Polygon polygon) {
     if (polygon == null) {
       return;
     }
@@ -52,6 +64,7 @@ class PolygonsController extends AbstractController {
     }
   }
 
+  /// Removes a set of [PolygonId]s from the cache.
   void removePolygons(Set<PolygonId> polygonIdsToRemove) {
     if (polygonIdsToRemove == null) {
       return;
@@ -62,14 +75,13 @@ class PolygonsController extends AbstractController {
             _polygonIdToController[polygonId];
         if (polygonController != null) {
           polygonController.remove();
-          _polygonIdToController.remove(polygonId.value);
+          _polygonIdToController.remove(polygonId);
         }
       }
     });
   }
 
   // Handle internal events
-
   bool _onPolygonTap(PolygonId polygonId) {
     _streamController.add(PolygonTapEvent(mapId, polygonId));
     // Stop propagation?
