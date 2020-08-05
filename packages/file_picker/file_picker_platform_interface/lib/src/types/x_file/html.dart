@@ -11,7 +11,6 @@ import '../types.dart';
 ///
 /// It wraps the bytes of a selected file.
 class XFile extends XFileBase {
-  final String path; // TODO: get rid of this guy
   final XPath xPath;
   final Uint8List _initBytes;
   final int _length;
@@ -25,16 +24,14 @@ class XFile extends XFileBase {
   ///
   /// `name` needs to be passed from the outside, since we only have
   /// access to it while we create the ObjectUrl.
-  // TODO: Replace this constructor
   XFile(
-    this.path, {
+    this.xPath, {
     this.name,
     int length,
     Uint8List bytes,
-    this.xPath ,
   })  : _initBytes = bytes,
         _length = length,
-        super(path);
+        super(xPath);
 
   /// Constructor from XPath
   XFile.fromXPath(
@@ -43,9 +40,8 @@ class XFile extends XFileBase {
       Uint8List bytes,
   })  : _initBytes = bytes,
         _length = length,
-        path = xPath.path, // TODO: just replace path everywhere
         name = xPath.name,
-        super(xPath.path);
+        super(xPath);
 
   Future<Uint8List> get _bytes async {
     if (_initBytes != null) {
@@ -74,4 +70,7 @@ class XFile extends XFileBase {
     final bytes = await _bytes;
     yield bytes.sublist(start ?? 0, end ?? bytes.length);
   }
+
+  @override
+  String get path => xPath.path;
 }
