@@ -356,7 +356,10 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
       ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1]);
 
     if (iconConfig[3] != null) {
-      icon..size = gmaps.Size(iconConfig[3][0], iconConfig[3][1]);
+      final size = gmaps.Size(iconConfig[3][0], iconConfig[3][1]);
+      icon
+        ..size = size
+        ..scaledSize = size;
     }
   }
   return gmaps.MarkerOptions()
