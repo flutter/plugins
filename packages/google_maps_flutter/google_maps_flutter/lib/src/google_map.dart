@@ -10,6 +10,12 @@ part of google_maps_flutter;
 /// map is created.
 typedef void MapCreatedCallback(GoogleMapController controller);
 
+// This counter is used to provide a stable "constant" initialization id
+// to the buildView function, so the web implementation can use it as a
+// cache key. This needs to be provided from the outside, because web
+// views seem to re-render much more often that mobile platform views.
+int _webOnlyMapId = 0;
+
 /// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
   /// Creates a widget displaying data from Google Maps services.
@@ -205,6 +211,8 @@ class GoogleMap extends StatefulWidget {
 }
 
 class _GoogleMapState extends State<GoogleMap> {
+  final _webOnlyMapCreationId = _webOnlyMapId++;
+
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
@@ -223,7 +231,9 @@ class _GoogleMapState extends State<GoogleMap> {
       'polygonsToAdd': serializePolygonSet(widget.polygons),
       'polylinesToAdd': serializePolylineSet(widget.polylines),
       'circlesToAdd': serializeCircleSet(widget.circles),
+      '_webOnlyMapCreationId': _webOnlyMapCreationId,
     };
+
     return _googleMapsFlutterPlatform.buildView(
       creationParams,
       widget.gestureRecognizers,
