@@ -74,6 +74,25 @@ void main() {
       expect(controller.markers, isNot(contains(MarkerId('3'))));
     });
 
-    testWidgets('update', (WidgetTester tester) async {});
+    testWidgets('InfoWindow show/hide', (WidgetTester tester) async {
+      final markers = {
+        Marker(
+          markerId: MarkerId('1'),
+          infoWindow: InfoWindow(title: "Title", snippet: "Snippet"),
+        ),
+      };
+
+      controller.addMarkers(markers);
+
+      expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
+
+      controller.showMarkerInfoWindow(MarkerId('1'));
+
+      expect(controller.markers[MarkerId('1')].infoWindowShown, isTrue);
+
+      controller.hideMarkerInfoWindow(MarkerId('1'));
+
+      expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
+    });
   });
 }
