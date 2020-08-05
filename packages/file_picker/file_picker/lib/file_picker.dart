@@ -8,22 +8,22 @@ import 'dart:typed_data';
 import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
 
 export 'package:file_picker_platform_interface/file_picker_platform_interface.dart'
-  show XFile, FileTypeFilterGroup;
+  show XFile, FileTypeFilterGroup, XPath;
 
 /// NEW API
 
 /// Open file dialog for loading files and return a file path
-XPath getReadPath({List<FileTypeFilterGroup> acceptedTypes}) {
+Future<XPath> getReadPath({List<FileTypeFilterGroup> acceptedTypes}) {
   return FilePickerPlatform.instance.getReadPath(acceptedTypes: acceptedTypes);
 }
 
 /// Open file dialog for loading files and return a list of file paths
-List<XPath> getReadPaths({List<FileTypeFilterGroup> acceptedTypes}) {
+Future<List<XPath>> getReadPaths({List<FileTypeFilterGroup> acceptedTypes}) {
   return FilePickerPlatform.instance.getReadPaths(acceptedTypes: acceptedTypes);
 }
 
 /// Open file dialog for saving files and return a file path at which to save
-XPath getSavePath() {
+Future<XPath> getSavePath() {
   throw UnimplementedError('loadFile() has not been implemented.');
 }
 
