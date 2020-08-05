@@ -31,12 +31,14 @@ typedef ResponseDataCallback = FutureOr<void> Function(Map<String, dynamic>);
 /// This is the default `responseDataCallback` in [e2eDriver].
 Future<void> writeResponseData(
   Map<String, dynamic> data, {
-  String testOutputFilename = 'e2e_perf_summary',
+  String testOutputFilename = 'e2e_response_data',
+  String destinationDirectory,
 }) async {
   assert(testOutputFilename != null);
-  await fs.directory(testOutputsDirectory).create(recursive: true);
+  destinationDirectory ??= testOutputsDirectory;
+  await fs.directory(destinationDirectory).create(recursive: true);
   final File file = fs.file(path.join(
-    testOutputsDirectory,
+    destinationDirectory,
     '$testOutputFilename.json',
   ));
   final String resultString = _encodeJson(data, true);
@@ -74,7 +76,9 @@ Future<void> e2eDriver({
 
   if (response.allTestsPassed) {
     print('All tests passed.');
-    await responseDataCallback(response.data);
+    if (responseDataCallback != null) {
+      await responseDataCallback(response.data);
+    }
     exit(0);
   } else {
     print('Failure Details:\n${response.formattedFailureDetails}');

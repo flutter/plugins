@@ -41,8 +41,9 @@ const String kDebugWarning = '''
 /// watches the [FrameTiming] of `action` and report it to the e2e binding.
 Future<void> watchPerformance(
   E2EWidgetsFlutterBinding binding,
-  Future<void> action(),
-) async {
+  Future<void> action(), {
+  String metricName = 'performance',
+}) async {
   assert(() {
     if (_firstRun) {
       debugPrint(kDebugWarning);
@@ -55,9 +56,8 @@ Future<void> watchPerformance(
   binding.addTimingsCallback(watcher);
   await action();
   binding.removeTimingsCallback(watcher);
-  // TODO(CareF): determine if it's running on firebase and report metric online
   final FrameTimingSummarizer frameTimes = FrameTimingSummarizer(frameTimings);
-  binding.reportData = <String, dynamic>{'performance': frameTimes.summary};
+  binding.reportData = <String, dynamic>{metricName: frameTimes.summary};
 }
 
 /// This class and summarizes a list of [FrameTiming] for the performance
