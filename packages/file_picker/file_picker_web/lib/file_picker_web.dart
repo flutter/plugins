@@ -105,7 +105,7 @@ class FilePickerPlugin extends FilePickerPlatform {
   /// Listen for file input element to change and retrieve files when
   /// this happens.
   Future<List<XPath>> _getFilesWhenReady(InputElement element)  {
-    final Completer<List<XFile>> _completer = Completer();
+    final Completer<List<XPath>> _completer = Completer();
 
     // Listens for element change
     element.onChange.first.then((event) {
@@ -170,7 +170,15 @@ class FilePickerPlugin extends FilePickerPlatform {
   /// Open file dialog for loading files and return a file path
   @override
   Future<XPath> getReadPath({List<FileTypeFilterGroup> acceptedTypes}) {
-    return _readPathHelper(false, acceptedTypes);
+    Completer<XPath> _completer = Completer();
+    _readPathHelper(false, acceptedTypes).then((list) {
+        _completer.complete(list.first);
+      })
+      .catchError((err) {
+        _completer.completeError(err);
+      });
+    
+    return _completer.future;
   }
 
   /// Open file dialog for loading files and return a list of file paths

@@ -60,21 +60,23 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _loadFile() async {
-    List<XFile> file;
+    XPath path;
     if (_extensionController.text.isNotEmpty) {
-      List<FileTypeFilterGroup> type = List();
-      type.add(FileTypeFilterGroup(label: 'Example Files', fileExtensions: _extensionController.text.split(',')));
-      file = await loadFile(acceptedTypes: type);
+      List<FileTypeFilterGroup> types = List();
+      types.add(FileTypeFilterGroup(label: 'Example Files', fileExtensions: _extensionController.text.split(',')));
+      path = await getReadPath(acceptedTypes: types);
     } else {
-      file = await loadFile();
+      path = await getReadPath();
     }
 
-    String text = await file.first.readAsString();
+    XFile file = XFile.fromXPath(path);
+
+    String text = await file.readAsString();
 
     _fileController.text = text;
 
-    if (file.first.name.isNotEmpty) {
-      _nameController.text = file.first.name;
+    if (file.name.isNotEmpty) {
+      _nameController.text = file.name;
     }
   }
 
