@@ -42,7 +42,7 @@ const String kDebugWarning = '''
 Future<void> watchPerformance(
   E2EWidgetsFlutterBinding binding,
   Future<void> action(), {
-  String metricName = 'performance',
+  String reportKey = 'performance',
 }) async {
   assert(() {
     if (_firstRun) {
@@ -57,7 +57,7 @@ Future<void> watchPerformance(
   await action();
   binding.removeTimingsCallback(watcher);
   final FrameTimingSummarizer frameTimes = FrameTimingSummarizer(frameTimings);
-  binding.reportData = <String, dynamic>{metricName: frameTimes.summary};
+  binding.reportData = <String, dynamic>{reportKey: frameTimes.summary};
 }
 
 /// This class and summarizes a list of [FrameTiming] for the performance
