@@ -4,13 +4,15 @@ import 'dart:typed_data';
 
 import './base.dart';
 
+import '../types.dart';
+
 /// A XFile backed by a dart:io File.
 class XFile extends XFileBase {
   final File _file;
 
   /// Construct a XFile object backed by a dart:io File.
-  XFile(String path)
-      : _file = File(path),
+  XFile(XPath path)
+      : _file = File(path.path),
         super(path);
 
   @override
