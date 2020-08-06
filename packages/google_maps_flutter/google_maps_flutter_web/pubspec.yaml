@@ -27,6 +27,7 @@ dev_dependencies:
   url_launcher: ^5.2.5
   pedantic: ^1.8.0
   mockito: ^4.1.1
+  e2e: ^0.6.1
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
