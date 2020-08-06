@@ -344,9 +344,9 @@ gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
   }
 
   final content = '<h3 class="infowindow-title">' +
-      sanitizeHtml(marker.infoWindow.title) +
+      sanitizeHtml(marker.infoWindow.title ?? "") +
       '</h3>' +
-      sanitizeHtml(marker.infoWindow.snippet);
+      sanitizeHtml(marker.infoWindow.snippet ?? "");
 
   return gmaps.InfoWindowOptions()
     ..content = content
