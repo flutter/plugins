@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:ui' as ui;
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -20,7 +19,6 @@ import 'package:stream_transform/stream_transform.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
-//import 'package:js/js.dart';
 
 part 'src/google_maps_flutter_web.dart';
 part 'src/google_maps_controller.dart';

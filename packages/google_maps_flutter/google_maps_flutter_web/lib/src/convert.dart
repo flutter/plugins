@@ -1,5 +1,11 @@
 part of google_maps_flutter_web;
 
+final _nullLatLng = LatLng(0, 0);
+final _nullLatLngBounds = LatLngBounds(
+  northeast: _nullLatLng,
+  southwest: _nullLatLng,
+);
+
 // Indices in the plugin side don't match with the ones
 // in the gmaps lib. This translates from plugin -> gmaps.
 final _mapTypeToMapTypeId = {
@@ -281,6 +287,10 @@ LatLng _gmLatlngToLatlng(gmaps.LatLng latLng) {
 }
 
 LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds latLngBounds) {
+  if (latLngBounds == null) {
+    return _nullLatLngBounds;
+  }
+
   return LatLngBounds(
     southwest: _gmLatlngToLatlng(latLngBounds.southWest),
     northeast: _gmLatlngToLatlng(latLngBounds.northEast),
@@ -422,4 +432,55 @@ CircleUpdates _circleFromParams(value) {
     return CircleUpdates.from(null, current);
   }
   return null;
+}
+
+// Translates a [CameraUpdate] into operations on a [gmaps.GMap].
+void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
+  final json = update.toJson();
+  switch (json[0]) {
+    case 'newCameraPosition':
+      map.heading = json[1]['bearing'];
+      map.zoom = json[1]['zoom'];
+      map.panTo(gmaps.LatLng(json[1]['target'][0], json[1]['target'][1]));
+      map.tilt = json[1]['tilt'];
+      break;
+    case 'newLatLng':
+      map.panTo(gmaps.LatLng(json[1][0], json[1][1]));
+      break;
+    case 'newLatLngZoom':
+      map.zoom = json[2];
+      map.panTo(gmaps.LatLng(json[1][0], json[1][1]));
+      break;
+    case 'newLatLngBounds':
+      map.fitBounds(gmaps.LatLngBounds(
+          gmaps.LatLng(json[1][0][0], json[1][0][1]),
+          gmaps.LatLng(json[1][1][0], json[1][1][1])));
+      // padding = json[2];
+      // Needs package:google_maps ^4.0.0 to adjust the padding in fitBounds
+      break;
+    case 'scrollBy':
+      map.panBy(json[1], json[2]);
+      break;
+    case 'zoomBy':
+      double zoomDelta = json[1] ?? 0;
+      // Web only supports integer changes...
+      int newZoomDelta = zoomDelta < 0 ? zoomDelta.floor() : zoomDelta.ceil();
+      map.zoom = map.zoom + newZoomDelta;
+      if (json.length == 3) {
+        // With focus
+        map.panTo(gmaps.LatLng(json[2][0], json[2][1]));
+      }
+      break;
+    case 'zoomIn':
+      map.zoom++;
+      break;
+    case 'zoomOut':
+      map.zoom--;
+      break;
+    case 'zoomTo':
+      map.zoom = json[1];
+      break;
+    default:
+      throw UnimplementedError('Unimplemented CameraMove: ${json[0]}.');
+  }
 }

@@ -1,184 +1,248 @@
 part of google_maps_flutter_web;
 
-///TODO
+/// Encapsulates a [gmaps.GMap], its events, and where in the DOM it's rendered.
 class GoogleMapController {
-  ///TODO
-  final int mapId;
+  // The internal ID of the map. Used to broadcast events, DOM IDs and everything where a unique ID is needed.
+  final int _mapId;
 
-  ///TODO
-  HtmlElementView html;
+  // The Flutter widget that contains the rendered Map.
+  HtmlElementView _widget;
 
+  /// The Flutter widget that contains the rendered Map. Used for caching.
+  HtmlElementView get widget => _widget;
+
+  // The currently-enabled traffic layer.
   gmaps.TrafficLayer _trafficLayer;
 
-  /// TODO
-  gmaps.GMap googleMap;
+  // The underlying GMap instance. This is the interface with the JS SDK.
+  gmaps.GMap _googleMap;
 
-  final StreamController<MapEvent> streamController;
-  CameraPosition position;
-  CirclesController circlesController;
-  PolygonsController polygonsController;
-  PolylinesController polylinesController;
-  MarkersController markersController;
+  // The Stream over which all controllers broadcast their events.
+  final StreamController<MapEvent> _streamController;
 
-  Set<Circle> initialCircles;
-  Set<Polygon> initialPolygons;
-  Set<Polyline> initialPolylines;
-  Set<Marker> initialMarkers;
+  // Geometry controllers, for different features of the map.
+  CirclesController _circlesController;
+  PolygonsController _polygonsController;
+  PolylinesController _polylinesController;
+  MarkersController _markersController;
+  // Keeps track if _attachGeometryControllers has been called or not.
+  bool _controllersBoundToMap = false;
 
+  // Keeps track if the map is moving or not.
   bool _mapIsMoving = false;
 
-  ///TODO
-  GoogleMapController.build({
-    @required this.mapId,
-    @required this.streamController,
+  /// Initializes the GMap, and the sub-controllers related to it. Wires events.
+  GoogleMapController({
+    @required int mapId,
+    @required StreamController<MapEvent> streamController,
     @required gmaps.MapOptions options,
-    @required this.position,
-    @required onPlatformViewCreated,
-    @required this.initialCircles,
-    @required this.initialPolygons,
-    @required this.initialPolylines,
-    @required this.initialMarkers,
-  }) {
-    circlesController = CirclesController(stream: this.streamController);
-    polygonsController = PolygonsController(stream: this.streamController);
-    polylinesController = PolylinesController(stream: this.streamController);
-    markersController = MarkersController(stream: this.streamController);
-    html = HtmlElementView(viewType: 'plugins.flutter.io/google_maps_$mapId');
-    DivElement div = DivElement()..id = 'plugins.flutter.io/google_maps_$mapId';
+    @required Set<Circle> initialCircles,
+    @required Set<Polygon> initialPolygons,
+    @required Set<Polyline> initialPolylines,
+    @required Set<Marker> initialMarkers,
+  })  : this._mapId = mapId,
+        this._streamController = streamController {
+    _circlesController = CirclesController(stream: this._streamController);
+    _polygonsController = PolygonsController(stream: this._streamController);
+    _polylinesController = PolylinesController(stream: this._streamController);
+    _markersController = MarkersController(stream: this._streamController);
 
+    // Create the widget. Note that we need to "leak" the div, so it can be used
+    // to build the gmaps.GMap object.
+    _widget =
+        HtmlElementView(viewType: 'plugins.flutter.io/google_maps_$mapId');
+    final div = DivElement()..id = 'plugins.flutter.io/google_maps_$mapId';
     // TODO: Move the comment below to analysis-options.yaml
     // ignore:undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
       'plugins.flutter.io/google_maps_$mapId',
       (int viewId) => div,
     );
+    _googleMap = gmaps.GMap(div, options);
 
-    googleMap = gmaps.GMap(div, options);
-    onMapReady(googleMap);
-    _attachMapEvents(googleMap);
+    _attachMapEvents(_googleMap);
+    _attachGeometryControllers(_googleMap);
+    _renderInitialGeometry(
+      markers: initialMarkers,
+      circles: initialCircles,
+      polygons: initialPolygons,
+      polylines: initialPolylines,
+    );
   }
 
-  void dispose() {
-    html = null;
-    googleMap = null;
-    circlesController = null;
-    polygonsController = null;
-    polylinesController = null;
-    markersController = null;
-    streamController.close();
+  // Funnels map gmap events into the plugin's stream controller.
+  void _attachMapEvents(gmaps.GMap map) {
+    map.onClick.listen((event) {
+      _streamController.add(
+        MapTapEvent(_mapId, _gmLatlngToLatlng(event.latLng)),
+      );
+    });
+    map.onRightclick.listen((event) {
+      _streamController.add(
+        MapLongPressEvent(_mapId, _gmLatlngToLatlng(event.latLng)),
+      );
+    });
+    map.onBoundsChanged.listen((event) {
+      if (!_mapIsMoving) {
+        _mapIsMoving = true;
+        _streamController.add(CameraMoveStartedEvent(_mapId));
+      }
+      _streamController.add(
+        CameraMoveEvent(_mapId, _gmViewportToCameraPosition(map)),
+      );
+    });
+    map.onIdle.listen((event) {
+      _mapIsMoving = false;
+      _streamController.add(CameraIdleEvent(_mapId));
+    });
+  }
+
+  // Binds the Geometry controllers to a map instance
+  void _attachGeometryControllers(gmaps.GMap map) {
+    // Now we can add the initial geometry.
+    // And bind the (ready) map instance to the other geometry controllers.
+    _circlesController.bindToMap(_mapId, map);
+    _polygonsController.bindToMap(_mapId, map);
+    _polylinesController.bindToMap(_mapId, map);
+    _markersController.bindToMap(_mapId, map);
+    _controllersBoundToMap = true;
+  }
+
+  // Renders the initial sets of geometry.
+  void _renderInitialGeometry({
+    Set<Marker> markers,
+    Set<Circle> circles,
+    Set<Polygon> polygons,
+    Set<Polyline> polylines,
+  }) {
+    assert(
+        _controllersBoundToMap,
+        'Geometry controllers must be bound to a map before any geometry can ' +
+            'be added to them. Ensure _attachGeometryControllers is called first.');
+    _markersController.addMarkers(markers);
+    _circlesController.addCircles(circles);
+    _polygonsController.addPolygons(polygons);
+    _polylinesController.addPolylines(polylines);
+  }
+
+  /// Sets new [gmaps.MapOptions] on the wrapped map.
+  void setOptions(gmaps.MapOptions options) {
+    _googleMap?.options = options;
   }
 
   /// Attaches/detaches a Traffic Layer on the current googleMap.
   void setTrafficLayer(bool attach) {
     if (attach && _trafficLayer == null) {
       _trafficLayer = gmaps.TrafficLayer();
-      _trafficLayer.set('map', googleMap);
-      googleMap.panBy(1, 0);
-      googleMap.panBy(-1, 0);
+      _trafficLayer.set('map', _googleMap);
     }
     if (!attach && _trafficLayer != null) {
       _trafficLayer.set('map', null);
       _trafficLayer = null;
-      googleMap.panBy(1, 0);
-      googleMap.panBy(-1, 0);
     }
   }
 
-  void _attachMapEvents(gmaps.GMap map) {
-    map.onClick.listen((event) {
-      streamController.add(
-        MapTapEvent(mapId, _gmLatlngToLatlng(event.latLng)),
-      );
-    });
-    map.onRightclick.listen((event) {
-      streamController.add(
-        MapLongPressEvent(mapId, _gmLatlngToLatlng(event.latLng)),
-      );
-    });
-    map.onBoundsChanged.listen((event) {
-      if (!_mapIsMoving) {
-        _mapIsMoving = true;
-        streamController.add(CameraMoveStartedEvent(mapId));
-      }
-      streamController.add(
-        CameraMoveEvent(mapId, _gmViewportToCameraPosition(map)),
-      );
-    });
-    map.onIdle.listen((event) {
-      _mapIsMoving = false;
-      streamController.add(CameraIdleEvent(mapId));
-    });
+  // _googleMap manipulation
+  // Viewport
+
+  /// Returns the [LatLngBounds] of the current viewport.
+  Future<LatLngBounds> getVisibleRegion() async {
+    return _gmLatLngBoundsTolatLngBounds(await _googleMap.bounds);
   }
 
-  void onMapReady(gmaps.GMap googleMap) {
-    this.googleMap = googleMap;
-    // Bind map instance to the other geometry controllers.
-    circlesController.bindToMap(mapId, googleMap);
-    polygonsController.bindToMap(mapId, googleMap);
-    polylinesController.bindToMap(mapId, googleMap);
-    markersController.bindToMap(mapId, googleMap);
-    updateInitialCircles();
-    updateInitialPolygons();
-    updateInitialPolylines();
-    updateInitialMarkers();
+  /// Returns the [ScreenCoordinate] for a given viewport [LatLng].
+  Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
+    final point =
+        _googleMap.projection.fromLatLngToPoint(_latlngToGmLatlng(latLng));
+    return ScreenCoordinate(x: point.x, y: point.y);
   }
 
-  void setOptions(gmaps.MapOptions options) {
-    googleMap?.options = options;
+  /// Returns the [LatLng] for a `screenCoordinate` (in pixels) of the viewport.
+  Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) async {
+    final latLng = _googleMap.projection.fromPointToLatLng(
+      gmaps.Point(screenCoordinate.x, screenCoordinate.y),
+    );
+    return _gmLatlngToLatlng(latLng);
   }
 
-  void setInitialCircles(Set<Circle> initialCircles) {
-    this.initialCircles = initialCircles;
-    if (googleMap != null) {
-      updateInitialCircles();
-    }
+  /// Applies a `cameraUpdate` to the current viewport.
+  Future<void> moveCamera(CameraUpdate cameraUpdate) async {
+    return _applyCameraUpdate(_googleMap, cameraUpdate);
   }
 
-  void updateInitialCircles() {
-    if (initialCircles == null) return;
-    circlesController.addCircles(initialCircles);
+  /// Returns the zoom level of the current viewport.
+  Future<double> getZoomLevel() async => _googleMap.zoom.toDouble();
+
+  // Geometry manipulation
+
+  /// Applies [CircleUpdates] to the currently managed circles.
+  void updateCircles(CircleUpdates updates) {
+    _circlesController?.addCircles(updates.circlesToAdd);
+    _circlesController?.changeCircles(updates.circlesToChange);
+    _circlesController?.removeCircles(updates.circleIdsToRemove);
   }
 
-  void setInitialPolygons(Set<Polygon> initialPolygons) {
-    this.initialPolygons = initialPolygons;
-    if (googleMap != null) {
-      updateInitialPolygons();
-    }
+  /// Applies [PolygonUpdates] to the currently managed polygons.
+  void updatePolygons(PolygonUpdates updates) {
+    _polygonsController?.addPolygons(updates.polygonsToAdd);
+    _polygonsController?.changePolygons(updates.polygonsToChange);
+    _polygonsController?.removePolygons(updates.polygonIdsToRemove);
   }
 
-  void setInitialPolylines(Set<Polyline> initialPolylines) {
-    this.initialPolylines = initialPolylines;
-    if (googleMap != null) {
-      updateInitialPolylines();
-    }
+  /// Applies [PolylineUpdates] to the currently managed lines.
+  void updatePolylines(PolylineUpdates updates) {
+    _polylinesController?.addPolylines(updates.polylinesToAdd);
+    _polylinesController?.changePolylines(updates.polylinesToChange);
+    _polylinesController?.removePolylines(updates.polylineIdsToRemove);
   }
 
-  void setInitialMarkers(Set<Marker> initialMarkers) {
-    this.initialMarkers = initialMarkers;
-    if (googleMap != null) {
-      updateInitialMarkers();
-    }
+  /// Applies [MarkerUpdates] to the currently managed markers.
+  void updateMarkers(MarkerUpdates updates) {
+    _markersController?.addMarkers(updates.markersToAdd);
+    _markersController?.changeMarkers(updates.markersToChange);
+    _markersController?.removeMarkers(updates.markerIdsToRemove);
   }
 
-  void updateInitialPolygons() {
-    if (initialPolygons == null) return;
-    polygonsController.addPolygons(initialPolygons);
+  /// Shows the [InfoWindow] of the marker identified by its [MarkerId].
+  void showInfoWindow(MarkerId markerId) {
+    _markersController?.showMarkerInfoWindow(markerId);
   }
 
-  void updateInitialPolylines() {
-    if (initialPolylines == null) return;
-    polylinesController.addPolylines(initialPolylines);
+  /// Hides the [InfoWindow] of the marker identified by its [MarkerId].
+  void hideInfoWindow(MarkerId markerId) {
+    _markersController?.hideMarkerInfoWindow(markerId);
   }
 
-  void updateInitialMarkers() {
-    if (initialMarkers == null) return;
-    markersController.addMarkers(initialMarkers);
+  /// Returns true if the [InfoWindow] of the marker identified by [MarkerId] is shown.
+  Future<bool> isInfoWindowShown(MarkerId markerId) async {
+    return _markersController?.isInfoWindowShown(markerId);
+  }
+
+  // Cleanup
+
+  /// Disposes of this controller and its resources.
+  void dispose() {
+    _widget = null;
+    _googleMap = null;
+    _circlesController = null;
+    _polygonsController = null;
+    _polylinesController = null;
+    _markersController = null;
+    _streamController.close();
   }
 }
 
+/// The base class for all "geometry" controllers.
+///
+/// This lets all Geometry controllers be bound to a given mapID and GMap.
 abstract class AbstractController {
+  /// The GMap instance that this controller operates on.
   gmaps.GMap googleMap;
+
+  /// The map ID for events.
   int mapId;
+
+  /// Binds a mapId and its instance to this controller.
   void bindToMap(int mapId, gmaps.GMap googleMap) {
     this.mapId = mapId;
     this.googleMap = googleMap;

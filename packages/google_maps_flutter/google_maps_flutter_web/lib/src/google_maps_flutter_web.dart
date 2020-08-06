@@ -9,19 +9,25 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     GoogleMapsFlutterPlatform.instance = GoogleMapsPlugin();
   }
 
-  // This is a cache of rendered maps <-> GoogleMapControllers
+  // A cache of map controllers by map Id.
   Map _mapById = Map<int, GoogleMapController>();
+  // A cache of map options by map Id
   Map _optionsById = Map<int, Map<String, dynamic>>();
 
+  // A broadcast StreamControlled shared across all controllers.
   final StreamController<MapEvent> _controller =
       StreamController<MapEvent>.broadcast();
 
+  // Convenience getter for a stream of events filtered by their mapId.
   Stream<MapEvent> _events(int mapId) =>
       _controller.stream.where((event) => event.mapId == mapId);
 
-  @override
-  Future<void> init(int mapId) async {
-    /* Noop */
+  // Convenience getter for a map controller by its mapId.
+  GoogleMapController _map(int mapId) {
+    final controller = _mapById[mapId];
+    assert(controller != null,
+        'Attempted to retrieve a map before its initialization!');
+    return controller;
   }
 
   // Updates the cache of map options for a given mapId, so we can
@@ -35,67 +41,63 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   @override
+  Future<void> init(int mapId) async {
+    /* Noop */
+  }
+
+  /// Updates the options of a given `mapId`.
+  ///
+  /// This attempts to merge the new `optionsUpdate` passed in, with the previous
+  /// options passed to the map (in other updates, or when creating it).
+  @override
   Future<void> updateMapOptions(
     Map<String, dynamic> optionsUpdate, {
     @required int mapId,
   }) async {
-    GoogleMapController googleMapController = _mapById[mapId];
-    if (googleMapController != null) {
-      final mergedRawOptions = _mergeRawMapOptions(optionsUpdate, mapId);
-      googleMapController.setOptions(
-        _optionsFromParams(mergedRawOptions),
-      );
-      googleMapController
-          .setTrafficLayer(mergedRawOptions['trafficEnabled'] ?? false);
-    } else {
-      throw StateError("updateMapOptions called prior to map initialization");
-    }
+    final map = _map(mapId);
+    final mergedRawOptions = _mergeRawMapOptions(optionsUpdate, mapId);
+
+    map.setOptions(_optionsFromParams(mergedRawOptions));
+    map.setTrafficLayer(mergedRawOptions['trafficEnabled'] ?? false);
   }
 
+  /// Applies the passed in `markerUpdates` to the `mapId`.
   @override
   Future<void> updateMarkers(
     MarkerUpdates markerUpdates, {
     @required int mapId,
   }) async {
-    final markers = _mapById[mapId]?.markersController;
-    markers?.addMarkers(markerUpdates.markersToAdd);
-    markers?.changeMarkers(markerUpdates.markersToChange);
-    markers?.removeMarkers(markerUpdates.markerIdsToRemove);
+    _map(mapId).updateMarkers(markerUpdates);
   }
 
+  /// Applies the passed in `polygonUpdates` to the `mapId`.
   @override
   Future<void> updatePolygons(
     PolygonUpdates polygonUpdates, {
     @required int mapId,
   }) async {
-    final polygons = _mapById[mapId]?.polygonsController;
-    polygons?.addPolygons(polygonUpdates.polygonsToAdd);
-    polygons?.changePolygons(polygonUpdates.polygonsToChange);
-    polygons?.removePolygons(polygonUpdates.polygonIdsToRemove);
+    _map(mapId).updatePolygons(polygonUpdates);
   }
 
+  /// Applies the passed in `polylineUpdates` to the `mapId`.
   @override
   Future<void> updatePolylines(
     PolylineUpdates polylineUpdates, {
     @required int mapId,
   }) async {
-    final polylines = _mapById[mapId]?.polylinesController;
-    polylines?.addPolylines(polylineUpdates.polylinesToAdd);
-    polylines?.changePolylines(polylineUpdates.polylinesToChange);
-    polylines?.removePolylines(polylineUpdates.polylineIdsToRemove);
+    _map(mapId).updatePolylines(polylineUpdates);
   }
 
+  /// Applies the passed in `circleUpdates` to the `mapId`.
   @override
   Future<void> updateCircles(
     CircleUpdates circleUpdates, {
     @required int mapId,
   }) async {
-    final circles = _mapById[mapId].circlesController;
-    circles?.addCircles(circleUpdates.circlesToAdd);
-    circles?.changeCircles(circleUpdates.circlesToChange);
-    circles?.removeCircles(circleUpdates.circleIdsToRemove);
+    _map(mapId).updateCircles(circleUpdates);
   }
 
+  /// Applies the given `cameraUpdate` to the current viewport (with animation).
   @override
   Future<void> animateCamera(
     CameraUpdate cameraUpdate, {
@@ -104,164 +106,97 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     return moveCamera(cameraUpdate, mapId: mapId);
   }
 
+  /// Applies the given `cameraUpdate` to the current viewport.
+  //
+  // TODO: do not access googleMap directly !!!
   @override
   Future<void> moveCamera(
     CameraUpdate cameraUpdate, {
     @required int mapId,
   }) async {
-    GoogleMapController googleMapController = _mapById[mapId];
-    if (googleMapController == null) {
-      return null;
-    }
-
-    gmaps.GMap map = googleMapController.googleMap;
-    // TODO: Subclass CameraUpdate so the below code is not so stringly-typed?
-    dynamic json = cameraUpdate.toJson();
-
-    switch (json[0]) {
-      case 'newCameraPosition':
-        map.heading = json[1]['bearing'];
-        map.zoom = json[1]['zoom'];
-        map.panTo(gmaps.LatLng(json[1]['target'][0], json[1]['target'][1]));
-        map.tilt = json[1]['tilt'];
-        break;
-      case 'newLatLng':
-        map.panTo(gmaps.LatLng(json[1][0], json[1][1]));
-        break;
-      case 'newLatLngZoom':
-        map.zoom = json[2];
-        map.panTo(gmaps.LatLng(json[1][0], json[1][1]));
-        break;
-      case 'newLatLngBounds':
-        map.fitBounds(gmaps.LatLngBounds(
-            gmaps.LatLng(json[1][0][0], json[1][0][1]),
-            gmaps.LatLng(json[1][1][0], json[1][1][1])));
-        // padding = json[2];
-        // Needs package:google_maps ^4.0.0 to adjust the padding in fitBounds
-        break;
-      case 'scrollBy':
-        map.panBy(json[1], json[2]);
-        break;
-      case 'zoomBy':
-        double zoomDelta = json[1] ?? 0;
-        // Web only supports integer changes...
-        int newZoomDelta = zoomDelta < 0 ? zoomDelta.floor() : zoomDelta.ceil();
-        map.zoom = map.zoom + newZoomDelta;
-        if (json.length == 3) {
-          // With focus
-          map.panTo(gmaps.LatLng(json[2][0], json[2][1]));
-        }
-        break;
-      case 'zoomIn':
-        map.zoom++;
-        break;
-      case 'zoomOut':
-        map.zoom--;
-        break;
-      case 'zoomTo':
-        map.zoom = json[1];
-        break;
-      default:
-        throw UnimplementedError(
-            'moveCamera() does not implement: ${json[0]}.');
-    }
+    return _map(mapId).moveCamera(cameraUpdate);
   }
 
+  /// Sets the passed-in `mapStyle` to the map.
+  ///
+  /// This function just adds a 'styles' option to the current map options.
+  ///
+  /// Subsequent calls to this method override previous calls, you need to
+  /// pass full styles.
   @override
   Future<void> setMapStyle(
     String mapStyle, {
     @required int mapId,
   }) async {
-    GoogleMapController googleMapController = _mapById[mapId];
-    if (googleMapController != null) {
-      googleMapController.setOptions(
-        _optionsFromParams(_mergeRawMapOptions({
+    _map(mapId).setOptions(
+      _optionsFromParams(_mergeRawMapOptions(
+        {
           'styles': _mapStyles(mapStyle),
-        }, mapId)),
-      );
-    }
+        },
+        mapId,
+      )),
+    );
   }
 
+  /// Returns the bounds of the current viewport.
   @override
   Future<LatLngBounds> getVisibleRegion({
     @required int mapId,
   }) {
-    GoogleMapController googleMapController = _mapById[mapId];
-    if (googleMapController != null) {
-      gmaps.LatLngBounds latLngBounds = googleMapController.googleMap.bounds;
-      if (latLngBounds != null) {
-        return Future.value(_gmLatLngBoundsTolatLngBounds(latLngBounds));
-      }
-    }
-    return Future.value(
-        LatLngBounds(southwest: LatLng(0, 0), northeast: LatLng(0, 0)));
+    return _map(mapId).getVisibleRegion();
   }
 
+  /// Returns the screen coordinate (in pixels) of a given `latLng`.
   @override
   Future<ScreenCoordinate> getScreenCoordinate(
     LatLng latLng, {
     @required int mapId,
   }) {
-    GoogleMapController googleMapController = _mapById[mapId];
-    if (googleMapController != null) {
-      gmaps.Point point = googleMapController.googleMap.projection
-          .fromLatLngToPoint(_latlngToGmLatlng(latLng));
-      return Future.value(ScreenCoordinate(x: point.x, y: point.y));
-    }
-    return Future.error(
-        StateError("getScreenCoordinate called prior to map initialization"));
+    return _map(mapId).getScreenCoordinate(latLng);
   }
 
+  /// Returns the [LatLng] of a [ScreenCoordinate] of the viewport.
   @override
   Future<LatLng> getLatLng(
     ScreenCoordinate screenCoordinate, {
     @required int mapId,
   }) {
-    GoogleMapController googleMapController = _mapById[mapId];
-    if (googleMapController != null) {
-      gmaps.LatLng latLng = googleMapController.googleMap.projection
-          .fromPointToLatLng(
-              gmaps.Point(screenCoordinate.x, screenCoordinate.y));
-      return Future.value(_gmLatlngToLatlng(latLng));
-    }
-    return Future.error(
-        StateError("getLatLng called prior to map initialization"));
+    return _map(mapId).getLatLng(screenCoordinate);
   }
 
+  /// Shows the [InfoWindow] (if any) of the [Marker] identified by `markerId`.
   @override
   Future<void> showMarkerInfoWindow(
     MarkerId markerId, {
     @required int mapId,
   }) async {
-    GoogleMapController googleMapController = _mapById[mapId];
-    googleMapController.markersController.showMarkerInfoWindow(markerId);
+    _map(mapId).showInfoWindow(markerId);
   }
 
+  /// Hides the [InfoWindow] (if any) of the [Marker] identified by `markerId`.
   @override
   Future<void> hideMarkerInfoWindow(
     MarkerId markerId, {
     @required int mapId,
   }) async {
-    GoogleMapController googleMapController = _mapById[mapId];
-    googleMapController.markersController.hideMarkerInfoWindow(markerId);
+    _map(mapId).hideInfoWindow(markerId);
   }
 
+  /// Returns true if the [InfoWindow] of the [Marker] identified by `markerId` is shown.
   @override
   Future<bool> isMarkerInfoWindowShown(
     MarkerId markerId, {
     @required int mapId,
   }) {
-    GoogleMapController googleMapController = _mapById[mapId];
-    return Future.value(
-        googleMapController.markersController.isInfoWindowShown(markerId));
+    return _map(mapId).isInfoWindowShown(markerId);
   }
 
+  // TODO: do not access googleMap directly !!!
   @override
   Future<double> getZoomLevel({
     @required int mapId,
   }) {
-    GoogleMapController googleMapController = _mapById[mapId];
-    return Future.value(googleMapController.googleMap.zoom.toDouble());
+    return _map(mapId).getZoomLevel();
   }
 
   // The following are the 11 possible streams of data from the native side
@@ -322,6 +257,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     return _events(mapId).whereType<MapLongPressEvent>();
   }
 
+  /// Disposes of the current map. The map can't be used afterwards!
   // TODO: Make this method part of the interface!
   void dispose({@required int mapId}) {
     _mapById[mapId]?.dispose();
@@ -345,8 +281,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     }
 
     // Bail fast if we've already rendered this mapId...
-    if (_mapById[mapId]?.html != null) {
-      return _mapById[mapId].html;
+    if (_mapById[mapId]?.widget != null) {
+      return _mapById[mapId].widget;
     }
 
     Map<String, dynamic> mergedRawOptions;
@@ -355,8 +291,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     }
 
     gmaps.MapOptions options = gmaps.MapOptions();
-    CameraPosition position;
-
     CircleUpdates initialCircles;
     PolygonUpdates initialPolygons;
     PolylineUpdates initialPolylines;
@@ -374,7 +308,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       } else if (key == 'circlesToAdd') {
         initialCircles = _circleFromParams(value);
       } else if (key == 'initialCameraPosition') {
-        position = CameraPosition.fromMap(value);
+        final position = CameraPosition.fromMap(value);
         options.zoom = position.zoom;
         options.center =
             gmaps.LatLng(position.target.latitude, position.target.longitude);
@@ -383,12 +317,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       }
     });
 
-    final mapController = GoogleMapController.build(
+    final mapController = GoogleMapController(
       mapId: mapId,
       streamController: _controller,
-      onPlatformViewCreated: onPlatformViewCreated,
       options: options,
-      position: position,
       initialCircles: initialCircles?.circlesToAdd,
       initialPolygons: initialPolygons?.polygonsToAdd,
       initialPolylines: initialPolylines?.polylinesToAdd,
@@ -403,6 +335,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
     onPlatformViewCreated.call(mapId);
 
-    return mapController.html;
+    return mapController.widget;
   }
 }
