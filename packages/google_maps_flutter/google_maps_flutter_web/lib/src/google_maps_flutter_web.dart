@@ -41,11 +41,12 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }) async {
     GoogleMapController googleMapController = _mapById[mapId];
     if (googleMapController != null) {
+      final mergedRawOptions = _mergeRawMapOptions(optionsUpdate, mapId);
       googleMapController.setOptions(
-        _optionsFromParams(
-          _mergeRawMapOptions(optionsUpdate, mapId),
-        ),
+        _optionsFromParams(mergedRawOptions),
       );
+      googleMapController
+          .setTrafficLayer(mergedRawOptions['trafficEnabled'] ?? false);
     } else {
       throw StateError("updateMapOptions called prior to map initialization");
     }
@@ -56,13 +57,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     MarkerUpdates markerUpdates, {
     @required int mapId,
   }) async {
-    _mapById[mapId].markersController.addMarkers(markerUpdates.markersToAdd);
-    _mapById[mapId]
-        .markersController
-        .changeMarkers(markerUpdates.markersToChange);
-    _mapById[mapId]
-        .markersController
-        .removeMarkers(markerUpdates.markerIdsToRemove);
+    final markers = _mapById[mapId]?.markersController;
+    markers?.addMarkers(markerUpdates.markersToAdd);
+    markers?.changeMarkers(markerUpdates.markersToChange);
+    markers?.removeMarkers(markerUpdates.markerIdsToRemove);
   }
 
   @override
@@ -70,15 +68,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     PolygonUpdates polygonUpdates, {
     @required int mapId,
   }) async {
-    _mapById[mapId]
-        .polygonsController
-        .addPolygons(polygonUpdates.polygonsToAdd);
-    _mapById[mapId]
-        .polygonsController
-        .changePolygons(polygonUpdates.polygonsToChange);
-    _mapById[mapId]
-        .polygonsController
-        .removePolygons(polygonUpdates.polygonIdsToRemove);
+    final polygons = _mapById[mapId]?.polygonsController;
+    polygons?.addPolygons(polygonUpdates.polygonsToAdd);
+    polygons?.changePolygons(polygonUpdates.polygonsToChange);
+    polygons?.removePolygons(polygonUpdates.polygonIdsToRemove);
   }
 
   @override
@@ -86,15 +79,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     PolylineUpdates polylineUpdates, {
     @required int mapId,
   }) async {
-    _mapById[mapId]
-        .polylinesController
-        .addPolylines(polylineUpdates.polylinesToAdd);
-    _mapById[mapId]
-        .polylinesController
-        .changePolylines(polylineUpdates.polylinesToChange);
-    _mapById[mapId]
-        .polylinesController
-        .removePolylines(polylineUpdates.polylineIdsToRemove);
+    final polylines = _mapById[mapId]?.polylinesController;
+    polylines?.addPolylines(polylineUpdates.polylinesToAdd);
+    polylines?.changePolylines(polylineUpdates.polylinesToChange);
+    polylines?.removePolylines(polylineUpdates.polylineIdsToRemove);
   }
 
   @override
@@ -102,13 +90,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     CircleUpdates circleUpdates, {
     @required int mapId,
   }) async {
-    _mapById[mapId].circlesController.addCircles(circleUpdates.circlesToAdd);
-    _mapById[mapId]
-        .circlesController
-        .changeCircles(circleUpdates.circlesToChange);
-    _mapById[mapId]
-        .circlesController
-        .removeCircles(circleUpdates.circleIdsToRemove);
+    final circles = _mapById[mapId].circlesController;
+    circles?.addCircles(circleUpdates.circlesToAdd);
+    circles?.changeCircles(circleUpdates.circlesToChange);
+    circles?.removeCircles(circleUpdates.circleIdsToRemove);
   }
 
   @override
@@ -279,31 +264,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     return Future.value(googleMapController.googleMap.zoom.toDouble());
   }
 
-  @override
-  Future<Uint8List> takeSnapshot({
-    @required int mapId,
-  }) {
-    throw UnimplementedError('takeSnapshot() has not been implemented.');
-    /**takeSnapshot
-     *  if (googleMap != null) {
-        final MethodChannel.Result _result = result;
-        gmaps.snapshot(
-        new SnapshotReadyCallback() {
-        @Override
-        public void onSnapshotReady(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-        bitmap.recycle();
-        _result.success(byteArray);
-        }
-        });
-        } else {
-        result.error("GoogleMap uninitialized", "takeSnapshot", null);
-        }
-     */
-  }
-
   // The following are the 11 possible streams of data from the native side
   // into the plugin
 
@@ -374,8 +334,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       Map<String, dynamic> creationParams,
       Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
       PlatformViewCreatedCallback onPlatformViewCreated) {
-    int mapId = creationParams['_webOnlyMapCreationId'];
-    creationParams.remove('_webOnlyMapCreationId');
+    int mapId = creationParams.remove('_webOnlyMapCreationId');
 
     if (mapId == null) {
       throw PlatformException(
@@ -385,18 +344,14 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       );
     }
 
-    Map<String, dynamic> mergedRawOptions;
-
-    // Merge the raw options now, so we can adjust the traffic layer on the cached controller, if needed.
-    if (creationParams['options'] != null) {
-      mergedRawOptions = _mergeRawMapOptions(creationParams['options'], mapId);
+    // Bail fast if we've already rendered this mapId...
+    if (_mapById[mapId]?.html != null) {
+      return _mapById[mapId].html;
     }
 
-    if (_mapById[mapId]?.html != null) {
-      // TODO: Toggling the traffic layer here needs a repaint that isn't happening.
-      // How to achieve that?
-      // _mapById[mapId].setTrafficLayer(mergedRawOptions['trafficEnabled'] ?? false);
-      return _mapById[mapId].html;
+    Map<String, dynamic> mergedRawOptions;
+    if (creationParams['options'] != null) {
+      mergedRawOptions = _mergeRawMapOptions(creationParams['options'], mapId);
     }
 
     gmaps.MapOptions options = gmaps.MapOptions();
@@ -428,7 +383,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       }
     });
 
-    _mapById[mapId] = GoogleMapController.build(
+    final mapController = GoogleMapController.build(
       mapId: mapId,
       streamController: _controller,
       onPlatformViewCreated: onPlatformViewCreated,
@@ -440,11 +395,14 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       initialMarkers: initialMarkers?.markersToAdd,
     );
 
+    _mapById[mapId] = mapController;
+
+    mapController.setTrafficLayer(
+      mergedRawOptions['trafficEnabled'] ?? false,
+    );
+
     onPlatformViewCreated.call(mapId);
 
-    // TODO: Enable layer support, once toggling works.
-    // _mapById[mapId].setTrafficLayer(mergedRawOptions['trafficEnabled'] ?? false);
-
-    return _mapById[mapId].html;
+    return mapController.html;
   }
 }
