@@ -107,8 +107,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   /// Applies the given `cameraUpdate` to the current viewport.
-  //
-  // TODO: do not access googleMap directly !!!
   @override
   Future<void> moveCamera(
     CameraUpdate cameraUpdate, {
@@ -191,8 +189,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     return _map(mapId).isInfoWindowShown(markerId);
   }
 
-  // TODO: do not access googleMap directly !!!
   @override
+  /// Returns the zoom level of the `mapId`.
   Future<double> getZoomLevel({
     @required int mapId,
   }) {
@@ -260,7 +258,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   /// Disposes of the current map. The map can't be used afterwards!
   // TODO: Make this method part of the interface!
   void dispose({@required int mapId}) {
-    _mapById[mapId]?.dispose();
+    _map(mapId)?.dispose();
     _mapById.remove(mapId);
     _optionsById.remove(mapId);
   }

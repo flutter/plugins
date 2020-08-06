@@ -79,7 +79,7 @@ void main() {
       final controller =
           MarkerController(marker: marker, infoWindow: infoWindow);
       controller.showInfoWindow();
-      verify(infoWindow.open(any)).called(1);
+      verify(infoWindow.open(any, any)).called(1);
       expect(controller.infoWindowShown, isTrue);
     });
 

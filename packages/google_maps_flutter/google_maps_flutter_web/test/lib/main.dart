@@ -8,12 +8,13 @@ void main() {
   runApp(MyApp());
 }
 
+/// App for testing
 class MyApp extends StatefulWidget {
   @override
-  MyAppState createState() => MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
-class MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Text('Testing... Look at the console output for results!');
