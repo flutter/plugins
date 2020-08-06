@@ -45,8 +45,14 @@ class MarkerController {
   gmaps.Marker get marker => _marker;
 
   /// Updates the options of the wrapped [gmaps.Polygon] object.
-  void update(gmaps.MarkerOptions options) {
+  void update(
+    gmaps.MarkerOptions options, {
+    String newInfoWindowContent,
+  }) {
     _marker.options = options;
+    if (_infoWindow != null && newInfoWindowContent != null) {
+      _infoWindow.content = newInfoWindowContent;
+    }
   }
 
   /// Disposes of the currently wrapped Marker.
@@ -67,7 +73,7 @@ class MarkerController {
   /// Show the associated InfoWindow.
   void showInfoWindow() {
     if (_infoWindow != null) {
-      _infoWindow.open(_marker.map);
+      _infoWindow.open(_marker.map, _marker);
       _infoWindowShown = true;
     }
   }

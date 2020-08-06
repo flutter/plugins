@@ -23,20 +23,22 @@ class MarkersController extends AbstractController {
   /// (Wraps each Marker into its corresponding [MarkerController])
   void addMarkers(Set<Marker> markersToAdd) {
     if (markersToAdd != null) {
-      markersToAdd.forEach((marker) {
-        _addMarker(marker);
-      });
+      markersToAdd.forEach(_addMarker);
     }
   }
 
   void _addMarker(Marker marker) {
     if (marker == null) return;
 
-    final infoWindoOptions = _infoWindowOPtionsFromMarker(marker);
-    gmaps.InfoWindow gmInfoWindow = gmaps.InfoWindow(infoWindoOptions)
-      ..addListener('click', () {
-        _onInfoWindowTap(marker.markerId);
-      });
+    final infoWindowOptions = _infoWindowOptionsFromMarker(marker);
+    gmaps.InfoWindow gmInfoWindow;
+
+    if (infoWindowOptions != null) {
+      gmInfoWindow = gmaps.InfoWindow(infoWindowOptions)
+        ..addListener('click', () {
+          _onInfoWindowTap(marker.markerId);
+        });
+    }
 
     final currentMarker = _markerIdToController[marker.markerId]?.marker;
 
@@ -48,6 +50,8 @@ class MarkersController extends AbstractController {
       infoWindow: gmInfoWindow,
       consumeTapEvents: marker.consumeTapEvents,
       onTap: () {
+        // TODO: If has infowindow...
+        this.showMarkerInfoWindow(marker.markerId);
         _onMarkerTap(marker.markerId);
       },
       onDragEnd: (gmaps.LatLng latLng) {
@@ -60,9 +64,7 @@ class MarkersController extends AbstractController {
   /// Updates a set of [Marker] objects with new options.
   void changeMarkers(Set<Marker> markersToChange) {
     if (markersToChange != null) {
-      markersToChange.forEach((markerToChange) {
-        _changeMarker(markerToChange);
-      });
+      markersToChange.forEach(_changeMarker);
     }
   }
 
@@ -72,10 +74,15 @@ class MarkersController extends AbstractController {
     }
     MarkerController markerController = _markerIdToController[marker.markerId];
     if (markerController != null) {
-      markerController.update(_markerOptionsFromMarker(
+      final markerOptions = _markerOptionsFromMarker(
         marker,
         markerController.marker,
-      ));
+      );
+      final infoWindow = _infoWindowOptionsFromMarker(marker);
+      markerController.update(
+        markerOptions,
+        newInfoWindowContent: infoWindow?.content,
+      );
     }
   }
 
@@ -84,16 +91,17 @@ class MarkersController extends AbstractController {
     if (markerIdsToRemove == null) {
       return;
     }
-    markerIdsToRemove.forEach((markerId) {
-      if (markerId != null) {
-        final MarkerController markerController =
-            _markerIdToController[markerId];
-        if (markerController != null) {
-          markerController.remove();
-          _markerIdToController.remove(markerId);
-        }
-      }
-    });
+    markerIdsToRemove.forEach(_removeMarker);
+  }
+
+  void _removeMarker(MarkerId markerId) {
+    if (markerId == null) return;
+
+    final MarkerController markerController = _markerIdToController[markerId];
+    if (markerController != null) {
+      markerController.remove();
+      _markerIdToController.remove(markerId);
+    }
   }
 
   // InfoWindow...

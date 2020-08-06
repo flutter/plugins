@@ -327,12 +327,22 @@ MarkerUpdates _markerFromParams(value) {
   return null;
 }
 
-gmaps.InfoWindowOptions _infoWindowOPtionsFromMarker(Marker marker) {
+gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
+  if ((marker.infoWindow?.title?.isEmpty ?? true) &&
+      (marker.infoWindow?.snippet?.isEmpty ?? true)) {
+    return null;
+  }
+
+  final content = '<h3 class="infowindow-title">' +
+      sanitizeHtml(marker.infoWindow.title) +
+      '</h3>' +
+      sanitizeHtml(marker.infoWindow.snippet);
+
   return gmaps.InfoWindowOptions()
-    ..content = marker.infoWindow.snippet
-    ..zIndex = marker.zIndex
-    ..position =
-        gmaps.LatLng(marker.position.latitude, marker.position.longitude);
+    ..content = content
+    ..zIndex = marker.zIndex;
+  // TODO: Compute the pixelOffset of the infoWindow, from the size of the Marker,
+  // and the marker.infoWindow.anchor property.
 }
 
 // Computes the options for a new [gmaps.Marker] from an incoming set of options
@@ -368,16 +378,13 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
           marker.position.latitude,
           marker.position.longitude,
         )
-    ..title = marker.infoWindow.title
+    ..title = sanitizeHtml(marker.infoWindow?.title ?? "")
     ..zIndex = marker.zIndex
     ..visible = marker.visible
     ..opacity = marker.alpha
     ..draggable = marker.draggable
-    ..icon = icon
-    ..anchorPoint = gmaps.Point(
-      marker.anchor.dx,
-      marker.anchor.dy,
-    );
+    ..icon = icon;
+  // TODO: Compute anchor properly, otherwise infowindows attach to the wrong spot.
   // Flat and Rotation are not supported directly on the web.
 }
 
