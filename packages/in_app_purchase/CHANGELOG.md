@@ -1,3 +1,9 @@
+## 0.3.4+4
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
+
 ## 0.3.4+3
 
 * Fixed typo 'manuelly' for 'manually'.
