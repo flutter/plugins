@@ -11,16 +11,13 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
   // A cache of map controllers by map Id.
   Map _mapById = Map<int, GoogleMapController>();
-  // A cache of map options by map Id
+  // A cache of map options by map Id.
   Map _optionsById = Map<int, Map<String, dynamic>>();
-
-  // A broadcast StreamControlled shared across all controllers.
-  final StreamController<MapEvent> _controller =
-      StreamController<MapEvent>.broadcast();
+  // A cache of Stream controllers by map Id.
+  Map _streamsById = Map<int, StreamController<MapEvent>>();
 
   // Convenience getter for a stream of events filtered by their mapId.
-  Stream<MapEvent> _events(int mapId) =>
-      _controller.stream.where((event) => event.mapId == mapId);
+  Stream<MapEvent> _events(int mapId) => _streamsById[mapId].stream;
 
   // Convenience getter for a map controller by its mapId.
   GoogleMapController _map(int mapId) {
@@ -256,11 +253,13 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   /// Disposes of the current map. The map can't be used afterwards!
-  // TODO: Make this method part of the interface!
+  @override
+  // ignore:override_on_non_overriding_member
   void dispose({@required int mapId}) {
     _map(mapId)?.dispose();
     _mapById.remove(mapId);
     _optionsById.remove(mapId);
+    _streamsById.remove(mapId);
   }
 
   @override
@@ -311,13 +310,16 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
         options.center =
             gmaps.LatLng(position.target.latitude, position.target.longitude);
       } else {
-        print('un-handle >>$key');
+        print('Unknown creation parameter: $key');
       }
     });
 
+    final StreamController<MapEvent> controller =
+        StreamController<MapEvent>.broadcast();
+
     final mapController = GoogleMapController(
       mapId: mapId,
-      streamController: _controller,
+      streamController: controller,
       options: options,
       initialCircles: initialCircles?.circlesToAdd,
       initialPolygons: initialPolygons?.polygonsToAdd,
@@ -326,6 +328,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     );
 
     _mapById[mapId] = mapController;
+    _streamsById[mapId] = controller;
 
     mapController.setTrafficLayer(
       mergedRawOptions['trafficEnabled'] ?? false,
