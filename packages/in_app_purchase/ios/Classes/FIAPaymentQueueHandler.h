@@ -18,9 +18,6 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 
 @interface FIAPaymentQueueHandler : NSObject <SKPaymentTransactionObserver>
 
-// Unfinished transactions.
-@property(nonatomic, readonly) NSDictionary<NSString *, SKPaymentTransaction *> *transactions;
-
 - (instancetype)initWithQueue:(nonnull SKPaymentQueue *)queue
                      transactionsUpdated:(nullable TransactionsUpdated)transactionsUpdated
                       transactionRemoved:(nullable TransactionsRemoved)transactionsRemoved
@@ -40,8 +37,7 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 // Appends a payment to the SKPaymentQueue.
 //
 // @param payment Payment object to be added to the payment queue.
-// @return whether "addPayment" was successful.
-- (BOOL)addPayment:(SKPayment *)payment;
+- (void)addPayment:(SKPayment *)payment;
 
 @end
 
