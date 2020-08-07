@@ -68,9 +68,8 @@ void main() {
   ) async {
     await tester.pumpWidget(_DisappearingMap());
 
-    final _DisappearingMapState state = tester.allStates
-        .firstWhere((element) => element is _DisappearingMapState);
-
+    final state =
+        tester.state<_DisappearingMapState>(find.byType(_DisappearingMap));
     // ignore:invalid_use_of_protected_member
     state.setState(() {
       state.visible = false;
