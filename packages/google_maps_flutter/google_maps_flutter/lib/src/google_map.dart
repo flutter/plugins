@@ -252,6 +252,13 @@ class _GoogleMapState extends State<GoogleMap> {
   }
 
   @override
+  void dispose() async {
+    super.dispose();
+    GoogleMapController controller = await _controller.future;
+    controller.dispose();
+  }
+
+  @override
   void didUpdateWidget(GoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updateOptions();

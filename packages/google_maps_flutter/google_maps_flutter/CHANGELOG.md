@@ -1,3 +1,8 @@
+## 0.5.30
+
+* Add a `dispose` method to the controller to let the native side know that we're done with said controller.
+* Call `controller.dispose()` from the `dispose` method of the `GoogleMap` widget.
+
 ## 0.5.29
 
 * Pass a constant `_web_only_mapCreationId` to `platform.buildView`, so web can return a cached widget DOM when flutter attempts to repaint there.
