@@ -81,8 +81,8 @@
       //    will become impossible for clients to finish deferred transactions when needed.
       // 2. Using product identifiers can help prevent clients from purchasing the same
       //    subscription more than once by accident.
-      NSMutableArray *transactionArray = [self.transactionsSetter
-                                          objectForKey:transaction.payment.productIdentifier];
+      NSMutableArray *transactionArray =
+          [self.transactionsSetter objectForKey:transaction.payment.productIdentifier];
       if (transactionArray == nil) {
         transactionArray = [NSMutableArray array];
       }
@@ -104,10 +104,10 @@
       continue;
     }
 
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:
-                              @"transactionIdentifier == %@", transaction.transactionIdentifier];
-    NSArray<SKPaymentTransaction *> *filteredTransactions = [self.transactionsSetter[productId]
-                                                           filteredArrayUsingPredicate:predicate];
+    NSPredicate *predicate = [NSPredicate
+        predicateWithFormat:@"transactionIdentifier == %@", transaction.transactionIdentifier];
+    NSArray<SKPaymentTransaction *> *filteredTransactions =
+        [self.transactionsSetter[productId] filteredArrayUsingPredicate:predicate];
     [self.transactionsSetter[productId] removeObjectsInArray:filteredTransactions];
 
     if (!self.transactionsSetter[productId] || !self.transactionsSetter[productId].count) {
