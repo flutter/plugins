@@ -1,3 +1,7 @@
+## 0.3.4+4
+
+* iOS: Fix the bug that prevent restored subscription transactions from being completed
+
 ## 0.3.4+3
 
 * Fixed typo 'manuelly' for 'manually'.
