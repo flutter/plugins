@@ -1,6 +1,11 @@
+## 0.3.4+3
+
+* Fixed typo 'manuelly' for 'manually'.
+
 ## 0.3.4+2
 
-* iOS: Fix the bug that prevent restored subscription transactions from being completed
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
 
 ## 0.3.4+1
 
