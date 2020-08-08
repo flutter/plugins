@@ -13,11 +13,9 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Map _mapById = Map<int, GoogleMapController>();
   // A cache of map options by map Id.
   Map _optionsById = Map<int, Map<String, dynamic>>();
-  // A cache of Stream controllers by map Id.
-  Map _streamsById = Map<int, StreamController<MapEvent>>();
 
   // Convenience getter for a stream of events filtered by their mapId.
-  Stream<MapEvent> _events(int mapId) => _streamsById[mapId].stream;
+  Stream<MapEvent> _events(int mapId) => _map(mapId).events;
 
   // Convenience getter for a map controller by its mapId.
   GoogleMapController _map(int mapId) {
@@ -259,7 +257,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     _map(mapId)?.dispose();
     _mapById.remove(mapId);
     _optionsById.remove(mapId);
-    _streamsById.remove(mapId);
   }
 
   @override
@@ -328,7 +325,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     );
 
     _mapById[mapId] = mapController;
-    _streamsById[mapId] = controller;
 
     mapController.setTrafficLayer(
       mergedRawOptions['trafficEnabled'] ?? false,

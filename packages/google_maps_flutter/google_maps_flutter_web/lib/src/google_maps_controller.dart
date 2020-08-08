@@ -17,8 +17,11 @@ class GoogleMapController {
   // The underlying GMap instance. This is the interface with the JS SDK.
   gmaps.GMap _googleMap;
 
-  // The Stream over which all controllers broadcast their events.
+  // The StreamController used by this controller and the geometry ones.
   final StreamController<MapEvent> _streamController;
+
+  /// The Stream over which this controller broadcasts events.
+  Stream<MapEvent> get events => _streamController.stream;
 
   // Geometry controllers, for different features of the map.
   CirclesController _circlesController;
