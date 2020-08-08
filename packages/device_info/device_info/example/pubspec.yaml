@@ -1,0 +1,19 @@
+name: device_info_example
+description: Demonstrates how to use the device_info plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  e2e:
+  device_info:
+    path: ../
+
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  pedantic: ^1.9.2
+  device_info_platform_interface:
+    path: ../../device_info_platform_interface
+
+flutter:
+  uses-material-design: true
