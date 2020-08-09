@@ -1,3 +1,7 @@
+## 0.4.2+6
+
+* Miration to use platform interface.
+
 ## 0.4.2+5
 
 * Update package:e2e reference to use the local version in the flutter/plugins
