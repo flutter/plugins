@@ -6,12 +6,11 @@ dependencies:
     sdk: flutter
   device_info:
     path: ../
+  e2e: ^0.6.3
 
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-  e2e:
-    path: ../../e2e
   pedantic: ^1.8.0
 
 flutter:
