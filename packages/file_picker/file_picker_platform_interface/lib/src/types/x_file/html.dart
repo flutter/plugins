@@ -5,13 +5,11 @@ import 'package:http/http.dart' as http show readBytes;
 
 import './base.dart';
 
-import '../types.dart';
-
 /// A XFile that works on web.
 ///
 /// It wraps the bytes of a selected file.
 class XFile extends XFileBase {
-  final XPath xPath;
+  final String path;
   final Uint8List _initBytes;
   final int _length;
   @override
@@ -25,23 +23,13 @@ class XFile extends XFileBase {
   /// `name` needs to be passed from the outside, since we only have
   /// access to it while we create the ObjectUrl.
   XFile(
-    this.xPath, {
-    this.name,
-    int length,
-    Uint8List bytes,
-  })  : _initBytes = bytes,
+      this.path, {
+        this.name,
+        int length,
+        Uint8List bytes,
+      })  : _initBytes = bytes,
         _length = length,
-        super(xPath);
-
-  /// Constructor from XPath
-  XFile.fromXPath(
-      this.xPath, {
-      int length,
-      Uint8List bytes,
-  })  : _initBytes = bytes,
-        _length = length,
-        name = xPath.name,
-        super(xPath);
+        super(path);
 
   Future<Uint8List> get _bytes async {
     if (_initBytes != null) {
@@ -70,7 +58,4 @@ class XFile extends XFileBase {
     final bytes = await _bytes;
     yield bytes.sublist(start ?? 0, end ?? bytes.length);
   }
-
-  @override
-  String get path => xPath.path;
 }

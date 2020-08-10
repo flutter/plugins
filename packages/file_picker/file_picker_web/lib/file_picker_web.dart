@@ -169,7 +169,7 @@ class FilePickerPlugin extends FilePickerPlatform {
   
   /// Open file dialog for loading files and return a file path
   @override
-  Future<XPath> getReadPath({List<FileTypeFilterGroup> acceptedTypes}) {
+  Future<XPath> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
     Completer<XPath> _completer = Completer();
     _readPathHelper(false, acceptedTypes).then((list) {
         _completer.complete(list.first);
@@ -183,18 +183,14 @@ class FilePickerPlugin extends FilePickerPlatform {
 
   /// Open file dialog for loading files and return a list of file paths
   @override
-  Future<List<XPath>> getReadPaths({List<FileTypeFilterGroup> acceptedTypes}) {
+  Future<List<XPath>> loadFiles({List<FileTypeFilterGroup> acceptedTypes}) {
     return _readPathHelper(true, acceptedTypes);
   }
-
-  /// Open file dialog for saving files and return a file path at which to save
+  
   @override
-  Future<XPath> getSavePath() {
-    return Future<XPath>.value();
-  }
+  Future<String> getSavePath() => Future.value();
 
   /// Web implementation of saveFile()
-  @override
   void saveFile(Uint8List data, {String type = '', String suggestedName = ''}) async {
     // Create blob from data
     final blob = createBlob(data, type);

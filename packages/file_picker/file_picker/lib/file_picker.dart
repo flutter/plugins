@@ -13,29 +13,20 @@ export 'package:file_picker_platform_interface/file_picker_platform_interface.da
 /// NEW API
 
 /// Open file dialog for loading files and return a file path
-Future<XPath> getReadPath({List<FileTypeFilterGroup> acceptedTypes}) {
+Future<XFile> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
   return FilePickerPlatform.instance.getReadPath(acceptedTypes: acceptedTypes);
 }
 
 /// Open file dialog for loading files and return a list of file paths
-Future<List<XPath>> getReadPaths({List<FileTypeFilterGroup> acceptedTypes}) {
+Future<List<XFile>> loadFiles({List<FileTypeFilterGroup> acceptedTypes}) {
   return FilePickerPlatform.instance.getReadPaths(acceptedTypes: acceptedTypes);
 }
 
-/// Open file dialog for saving files and return a file path at which to save
-Future<XPath> getSavePath() {
-  throw UnimplementedError('loadFile() has not been implemented.');
-}
-
-
-/// OLD API
-
 /// Saves File to user's file system
-void saveFile(Uint8List data, {String type = '', String suggestedName}) async {
-  return FilePickerPlatform.instance.saveFile(data, type: type, suggestedName: suggestedName);
-}
-
-/// Loads File from user's file system
-Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
-  return FilePickerPlatform.instance.loadFile(acceptedTypes: acceptedTypes);
+Future<String> getSavePath(
+  XFile file, {
+  String type = '',
+  String suggestedName,
+}) async {
+  return FilePickerPlatform.instance.getSavePath(data, type: type, suggestedName: suggestedName);
 }

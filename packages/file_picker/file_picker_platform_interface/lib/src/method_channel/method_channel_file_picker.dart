@@ -13,11 +13,22 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/file_picker');
 
 /// An implementation of [FilePickerPlatform] that uses method channels.
 class MethodChannelFilePicker extends FilePickerPlatform {
-  /// Load file from user's computer and return it as an XFile
+  /// Load a file from user's computer and return it as an XFile
   @override
-  Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
-    return _channel.invokeMethod<List<XFile>>(
+  Future<XFile> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
+    return _channel.invokeMethod<XFile>(
       'loadFile',
+      <String, Object> {
+        'acceptedTypes': acceptedTypes,
+      },
+    );
+  }
+
+  /// Load multiple files from user's computer and return it as an XFile
+  @override
+  Future<List<XFile>> loadFiles({List<FileTypeFilterGroup> acceptedTypes}) {
+    return _channel.invokeMethod<List<XFile>>(
+      'loadFiles',
       <String, Object> {
         'acceptedTypes': acceptedTypes,
       },
@@ -26,12 +37,11 @@ class MethodChannelFilePicker extends FilePickerPlatform {
 
   /// Saves the file to user's Disk
   @override
-  void saveFile(Uint8List data, {String type, String suggestedName}) async {
-    await _channel.invokeMethod(
+  Future<String> getSavePath() async {
+    return _channel.invokeMethod(
       'saveFile',
       <String, Object> {
-        'type': type,
-        'suggestedName': suggestedName,
+
       },
     );
   }

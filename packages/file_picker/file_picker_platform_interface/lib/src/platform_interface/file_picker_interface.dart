@@ -41,30 +41,17 @@ abstract class FilePickerPlatform extends PlatformInterface {
   }
 
   /// Open file dialog for loading files and return a file path
-  Future<XPath> getReadPath({List<FileTypeFilterGroup> acceptedTypes}) {
-    throw UnimplementedError('getReadPath() has not been implemented.');
+  Future<XFile> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
+    throw UnimplementedError('loadFile() has not been implemented.');
   }
 
   /// Open file dialog for loading files and return a list of file paths
-  Future<List<XPath>> getReadPaths({List<FileTypeFilterGroup> acceptedTypes}) {
-    throw UnimplementedError('getReadPaths() has not been implemented.');
+  Future<List<XFile>> loadFiles({List<FileTypeFilterGroup> acceptedTypes}) {
+    throw UnimplementedError('loadFile() has not been implemented.');
   }
 
   /// Open file dialog for saving files and return a file path at which to save
-  Future<XPath> getSavePath() {
-    throw UnimplementedError('loadFile() has not been implemented.');
-  }
-
-
-  /// OLD API:
-
-  /// Load file from user's computer and return it as an XFile
-  Future<List<XFile>> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
-    throw UnimplementedError('loadFile() has not been implemented.');
-  }
-
-  /// Saves the file to user's Disk
-  void saveFile(Uint8List data, {String type, String suggestedName}) async {
+  Future<String> getSavePath() {
     throw UnimplementedError('saveFile() has not been implemented.');
   }
 }
