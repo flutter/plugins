@@ -17,6 +17,8 @@ void main() {
     List<FrameTiming> inputData = <FrameTiming>[
       for (int i = 0; i < 100; i += 1)
         FrameTiming(
+          // TODO: Add vsyncStart to the FrameTimingSummarizer (?)
+          vsyncStart: 0,
           buildStart: 0,
           buildFinish: buildTimes[i],
           rasterStart: 500,
