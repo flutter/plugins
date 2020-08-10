@@ -80,7 +80,8 @@ static FlutterError *getFlutterError(NSError *error) {
         [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
         [GIDSignIn sharedInstance].serverClientID = plist[kServerClientIdKey];
         [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
-        [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+	NSString *hostedDomain = call.arguments[@"hostedDomain"];
+	[GIDSignIn sharedInstance].hostedDomain = hostedDomain != (id)[NSNull null] ? hostedDomain : @"";
         result(nil);
       } else {
         result([FlutterError errorWithCode:@"missing-config"
