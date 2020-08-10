@@ -63,19 +63,17 @@ void main() {
     ]);
   });
 
-  testWidgets('Calls platform.dispose widget is disposed of', (
+  testWidgets('Calls platform.dispose when GoogleMap is disposed of', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(_DisappearingMap());
+    await tester.pumpWidget(GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: LatLng(43.3608, -5.8702),
+      ),
+    ));
 
-    final state =
-        tester.state<_DisappearingMapState>(find.byType(_DisappearingMap));
-    // ignore:invalid_use_of_protected_member
-    state.setState(() {
-      state.visible = false;
-    });
-
-    await tester.pumpAndSettle();
+    // Now dispose of the map...
+    await tester.pumpWidget(Container());
 
     verify(platform.dispose(mapId: anyNamed('mapId')));
   });
@@ -120,24 +118,4 @@ void _setupMock(MockGoogleMapsFlutterPlatform platform) {
       .thenAnswer((_) => _MockStream<PolylineTapEvent>());
   when(platform.onTap(mapId: anyNamed('mapId')))
       .thenAnswer((_) => _MockStream<MapTapEvent>());
-}
-
-/// A class that renders a map when its state.visible = true.
-class _DisappearingMap extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _DisappearingMapState();
-}
-
-class _DisappearingMapState extends State<_DisappearingMap> {
-  bool visible = true;
-  @override
-  Widget build(BuildContext context) {
-    return !visible
-        ? Container()
-        : GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: LatLng(43.3608, -5.8702),
-            ),
-          );
-  }
 }
