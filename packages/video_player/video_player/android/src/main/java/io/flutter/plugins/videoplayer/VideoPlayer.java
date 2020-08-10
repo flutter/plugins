@@ -136,7 +136,7 @@ final class VideoPlayer {
         return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
       case C.TYPE_OTHER:
         return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
-            .setExtractorsFactory(new DefaultExtractorsFactory().setConstantBitrateSeekingEnabled(true))
+            .setExtractorsFactory(new DefaultExtractorsFactory())
             .createMediaSource(uri);
       default:
         {
