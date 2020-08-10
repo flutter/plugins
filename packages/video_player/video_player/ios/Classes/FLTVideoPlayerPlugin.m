@@ -165,6 +165,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
   AVAsset *asset = [AVURLAsset URLAssetWithURL:url options:@{AVURLAssetPreferPreciseDurationAndTimingKey: @NO}];
   AVPlayerItem* item = [AVPlayerItem playerItemWithAsset:asset];
+    NSLog(@"url:::: %@",url.description);
+   // AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
   return [self initWithPlayerItem:item frameUpdater:frameUpdater];
 }
 
@@ -258,6 +260,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     switch (item.status) {
       case AVPlayerItemStatusFailed:
         if (_eventSink != nil) {
+            
+            NSLog(@"AVURLAsset:%@",((AVURLAsset *) [[_player currentItem] asset]).URL.description);
           _eventSink([FlutterError
               errorWithCode:@"VideoError"
                     message:[@"Failed to load video: "
@@ -310,9 +314,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     CGFloat height = size.height;
 
     // The player has not yet initialized.
-    if (height == CGSizeZero.height && width == CGSizeZero.width) {
-      return;
-    }
+//    if (height == CGSizeZero.height && width == CGSizeZero.width) {
+//      return;
+//    }
     // The player may be initialized but still needs to determine the duration.
     if ([self duration] == 0) {
       return;
