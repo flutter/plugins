@@ -60,13 +60,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _loadFile() async {
-    XPath path;
+    XFile file;
     if (_extensionController.text.isNotEmpty) {
       List<FileTypeFilterGroup> types = List();
       types.add(FileTypeFilterGroup(label: 'Example Files', fileExtensions: _extensionController.text.split(',')));
-      path = await getReadPath(acceptedTypes: types);
+      file = await loadFile(acceptedTypes: types);
     } else {
-      path = await getReadPath();
+      file = await loadFile();
     }
 
     XFile file = XFile.fromXPath(path);
@@ -136,4 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+class XPath {
 }

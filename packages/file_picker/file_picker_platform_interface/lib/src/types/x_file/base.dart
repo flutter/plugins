@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../types.dart';
-
 /// The interface for a XFile.
 ///
 /// A XFile is a container that wraps the path of a selected
@@ -13,7 +11,7 @@ import '../types.dart';
 /// the methods should seem familiar.
 abstract class XFileBase {
   /// Construct a XFile
-  XFileBase(XPath path);
+  XFileBase(String path);
 
   /// Get the path of the picked file.
   ///

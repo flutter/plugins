@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import './base.dart';
-import '../types.dart';
 
 /// A XFile is a cross-platform, simplified File abstraction.
 ///
@@ -16,7 +15,7 @@ class XFile extends XFileBase {
   /// `path` of the file doesn't match what the user sees when selecting it
   /// (like in web)
   XFile(
-    XPath path, {
+    String path, {
     String name,
     int length,
     Uint8List bytes,

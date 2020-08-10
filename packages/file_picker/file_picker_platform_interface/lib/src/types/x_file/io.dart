@@ -11,8 +11,8 @@ class XFile extends XFileBase {
   final File _file;
 
   /// Construct a XFile object backed by a dart:io File.
-  XFile(XPath path)
-      : _file = File(path.path),
+  XFile(String path)
+      : _file = File(path),
         super(path);
 
   @override
