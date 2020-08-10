@@ -24,8 +24,8 @@ dev_dependencies:
   mockito: 3.0.0
   flutter_test:
     sdk: flutter
-  e2e:
-    path: ../e2e
+  integration_test:
+    path: ../integration_test
   pedantic: ^1.8.0
 
 environment:

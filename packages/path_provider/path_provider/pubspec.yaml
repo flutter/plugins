@@ -25,8 +25,8 @@ dependencies:
   path_provider_linux: ^0.0.1
 
 dev_dependencies:
-  e2e:
-    path: ../../e2e
+  integration_test:
+    path: ../../integration_test
   flutter_test:
     sdk: flutter
   flutter_driver:

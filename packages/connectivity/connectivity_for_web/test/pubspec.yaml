@@ -17,8 +17,8 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  e2e:
-    path: ../../../e2e
+  integration_test:
+    path: ../../../integration_test
   mockito: ^4.1.1
 
 environment:

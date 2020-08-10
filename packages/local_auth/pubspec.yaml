@@ -22,8 +22,8 @@ dependencies:
   flutter_plugin_android_lifecycle: ^1.0.2
 
 dev_dependencies:
-  e2e:
-    path: ../e2e
+  integration_test:
+    path: ../integration_test
   flutter_driver:
     sdk: flutter
   flutter_test:
