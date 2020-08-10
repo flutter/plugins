@@ -1,3 +1,28 @@
+## 0.6.3
+
+* Add customizable `flutter_driver` adaptor.
+* Add utilities for tracking frame performance in an e2e test.
+
+## 0.6.2+1
+
+* Fix incorrect test results when one test passes then another fails
+
+## 0.6.2
+
+* Fix `setSurfaceSize` for e2e tests
+
+## 0.6.1
+
+* Added `data` in the reported json.
+
+## 0.6.0
+
+* **Breaking change** `E2EPlugin` exports a `Future` for `testResults`.
+
+## 0.5.0+1
+
+* Fixed the device pixel ratio problem.
+
 ## 0.5.0
 
 * **Breaking change** by default, tests will use the device window size.

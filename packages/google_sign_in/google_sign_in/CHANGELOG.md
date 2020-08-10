@@ -1,6 +1,11 @@
-## 4.5.2
+## 4.5.3
 
 * Prevent exceptions from crashing app on iOS.
+
+## 4.5.2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
 
 ## 4.5.1
 
