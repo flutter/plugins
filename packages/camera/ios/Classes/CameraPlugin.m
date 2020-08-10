@@ -250,7 +250,19 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if ([_captureDevice position] == AVCaptureDevicePositionFront) {
     connection.videoMirrored = YES;
   }
-  connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+
+  [UIDevice.currentDevice beginGeneratingDeviceOrientationNotifications];
+  UIDeviceOrientation orientation = UIDevice.currentDevice.orientation;
+  if (orientation == UIDeviceOrientationPortrait) {
+    connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+  } else if (orientation == UIDeviceOrientationLandscapeLeft) {
+    connection.videoOrientation = AVCaptureVideoOrientationLandscapeRight;
+  } else if (orientation == UIDeviceOrientationLandscapeRight) {
+    connection.videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
+  } else if (orientation == UIDeviceOrientationPortraitUpsideDown) {
+    connection.videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
+  }
+
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
   [_captureSession addConnection:connection];
@@ -554,6 +566,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (void)close {
   [_captureSession stopRunning];
+  [UIDevice.currentDevice endGeneratingDeviceOrientationNotifications];
   for (AVCaptureInput *input in [_captureSession inputs]) {
     [_captureSession removeInput:input];
   }
