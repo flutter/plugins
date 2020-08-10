@@ -16,7 +16,12 @@ void main() {
     rasterTimes = rasterTimes.reversed.toList();
     List<FrameTiming> inputData = <FrameTiming>[
       for (int i = 0; i < 100; i += 1)
-        FrameTiming(<int>[0, buildTimes[i], 500, rasterTimes[i]]),
+        FrameTiming(
+          buildStart: 0,
+          buildFinish: buildTimes[i],
+          rasterStart: 500,
+          rasterFinish: rasterTimes[i],
+        ),
     ];
     FrameTimingSummarizer summary = FrameTimingSummarizer(inputData);
     expect(summary.averageFrameBuildTime.inMicroseconds, 50500);

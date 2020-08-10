@@ -1,3 +1,7 @@
+## 0.6.3+1
+
+* Update test to use new `FrameTiming` constructor.
+
 ## 0.6.3
 
 * Add customizable `flutter_driver` adaptor.
