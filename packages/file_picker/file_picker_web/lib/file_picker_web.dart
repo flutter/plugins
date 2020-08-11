@@ -63,8 +63,8 @@ class FilePickerPlugin extends FilePickerPlatform {
     element.click();
   }
 
-  List<XPath> _getXPathsFromFiles (List<File> files) {
-    List<XPath> xPaths = List<XPath>();
+  List<XFile> _getXFilesFromFiles (List<File> files) {
+    List<XFile> xFiles = List<XFile>();
 
     for (File file in files) {
       String url = Url.createObjectUrl(file);
@@ -72,10 +72,10 @@ class FilePickerPlugin extends FilePickerPlatform {
       int length = file.size;
       int modified = file.lastModified;
 
-      xPaths.add(XPath(url, name: name, modified: modified));
+      xFiles.add(XFile(url, name: name));
     }
 
-    return xPaths;
+    return xFiles;
   }
 
   /// Getter for retrieving files from an input element
@@ -88,8 +88,8 @@ class FilePickerPlugin extends FilePickerPlatform {
     return element?.files ?? [];
   }
 
-  Future<XPath> _getFileWhenReady(InputElement element)  {
-    final Completer<XPath> _completer = Completer();
+  Future<XFile> _getFileWhenReady(InputElement element)  {
+    final Completer<XFile> _completer = Completer();
     
     _getFilesWhenReady(element)
       .then((list) {
@@ -104,16 +104,16 @@ class FilePickerPlugin extends FilePickerPlatform {
   
   /// Listen for file input element to change and retrieve files when
   /// this happens.
-  Future<List<XPath>> _getFilesWhenReady(InputElement element)  {
-    final Completer<List<XPath>> _completer = Completer();
+  Future<List<XFile>> _getFilesWhenReady(InputElement element)  {
+    final Completer<List<XFile>> _completer = Completer();
 
     // Listens for element change
     element.onChange.first.then((event) {
       // File type from dart:html class
       final List<File> files = getFilesFromInputElement(element);
 
-      // Create XPath from dart:html Files
-      final returnPaths = _getXPathsFromFiles(files);
+      // Create XFile from dart:html Files
+      final returnPaths = _getXFilesFromFiles(files);
 
       _completer.complete(returnPaths);
     });
@@ -125,20 +125,6 @@ class FilePickerPlugin extends FilePickerPlatform {
     });
 
     return _completer.future;
-  }
-
-  /// Create anchor element with download attribute
-  @visibleForTesting
-  AnchorElement createAnchorElement(String href, String suggestedName) {
-    final element = AnchorElement(href: href);
-    element.download = suggestedName;
-    return element;
-  }
-
-  /// Create blob with specified data of indicated type
-  @visibleForTesting
-  Blob createBlob(Uint8List data, String type) {
-    return type.isEmpty ? Blob([data]) : Blob([data], type);
   }
 
   /// Initializes a DOM container where we can host elements.
@@ -156,8 +142,8 @@ class FilePickerPlugin extends FilePickerPlatform {
   
   /// NEW API
   
-  // Load Helper
-  Future<List<XPath>> _readPathHelper (bool multiple, List<FileTypeFilterGroup> acceptedTypes) {
+  /// Load Helper
+  Future<List<XFile>> _loadFileHelper (bool multiple, List<FileTypeFilterGroup> acceptedTypes) {
     final  acceptedTypeString = _getStringFromFilterGroup(acceptedTypes);
 
     final FileUploadInputElement element = createFileInputElement(acceptedTypeString, multiple);
@@ -169,9 +155,9 @@ class FilePickerPlugin extends FilePickerPlatform {
   
   /// Open file dialog for loading files and return a file path
   @override
-  Future<XPath> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
-    Completer<XPath> _completer = Completer();
-    _readPathHelper(false, acceptedTypes).then((list) {
+  Future<XFile> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
+    Completer<XFile> _completer = Completer();
+    _loadFileHelper(false, acceptedTypes).then((list) {
         _completer.complete(list.first);
       })
       .catchError((err) {
@@ -183,24 +169,12 @@ class FilePickerPlugin extends FilePickerPlatform {
 
   /// Open file dialog for loading files and return a list of file paths
   @override
-  Future<List<XPath>> loadFiles({List<FileTypeFilterGroup> acceptedTypes}) {
-    return _readPathHelper(true, acceptedTypes);
+  Future<List<XFile>> loadFiles({List<FileTypeFilterGroup> acceptedTypes}) {
+    return _loadFileHelper(true, acceptedTypes);
   }
   
   @override
   Future<String> getSavePath() => Future.value();
-
-  /// Web implementation of saveFile()
-  void saveFile(Uint8List data, {String type = '', String suggestedName = ''}) async {
-    // Create blob from data
-    final blob = createBlob(data, type);
-    String url = Url.createObjectUrl(blob);
-
-    // Create an <a> tag with the appropriate download attributes and click it
-    final AnchorElement element = createAnchorElement(url, suggestedName);
-
-    _addElementToDomAndClick(element);
-  }
 }
 
 /// Overrides some functions to allow testing
