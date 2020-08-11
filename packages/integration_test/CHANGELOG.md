@@ -1,6 +1,10 @@
-## 0.7.0
+## 0.8.0
 
 * Rename plugin to integration_test.
+
+## 0.7.0
+
+* Move utilities for tracking frame performance in an e2e test to `flutter_test`.
 
 ## 0.6.3
 
