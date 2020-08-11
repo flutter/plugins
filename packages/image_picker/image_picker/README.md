@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
             : Image.file(_image),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: getImage,
+        onPressed: getImage(),
         tooltip: 'Pick Image',
         child: Icon(Icons.add_a_photo),
       ),
