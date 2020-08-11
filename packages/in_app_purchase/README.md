@@ -52,6 +52,19 @@ use.
 ### Initializing the plugin
 
 ```dart
+void main() {
+  // Inform the plugin that this app supports pending purchases on Android.
+  // An error will occur on Android if you access the plugin `instance`
+  // without this call.
+  //
+  // On iOS this is a no-op.
+  InAppPurchaseConnection.enablePendingPurchases();
+  
+  runApp(MyApp());
+}
+```
+
+```dart
 // Subscribe to any incoming purchases at app initialization. These can
 // propagate from either storefront so it's important to listen as soon as
 // possible to avoid losing events.
