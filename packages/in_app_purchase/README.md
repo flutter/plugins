@@ -103,7 +103,7 @@ if (!available) {
 // Set literals require Dart 2.2. Alternatively, use `Set<String> _kIds = <String>['product1', 'product2'].toSet()`.
 const Set<String> _kIds = {'product1', 'product2'};
 final ProductDetailsResponse response = await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
-if (!response.notFoundIDs.isEmpty) {
+if (response.notFoundIDs.isNotEmpty) {
     // Handle the error.
 }
 List<ProductDetails> products = response.productDetails;
