@@ -1,6 +1,6 @@
 ## 0.5.29+1
 
-* (ios) Pin dependency on GoogleMaps pod to `~>2.7`, to address https://github.com/flutter/flutter/issues/63447
+* (ios) Pin dependency on GoogleMaps pod to `< 3.10`, to address https://github.com/flutter/flutter/issues/63447
 
 ## 0.5.29
 
