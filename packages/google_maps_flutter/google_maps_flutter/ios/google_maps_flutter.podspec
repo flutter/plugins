@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'google_maps_flutter'
-  s.version          = '0.0.1'
+  s.version          = '0.0.2'
   s.summary          = 'Google Maps for Flutter'
   s.description      = <<-DESC
 A Flutter plugin that provides a Google Maps widget.
