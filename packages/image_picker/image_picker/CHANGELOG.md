@@ -1,4 +1,4 @@
-## 0.6.7+5
+## 0.6.7+6
 
 * Updated README code sample snippet.
 
