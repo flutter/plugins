@@ -51,12 +51,15 @@ class _MyHomePageState extends State<MyHomePage> {
     Uint8List data;
     data = Uint8List.fromList(_fileController.text.codeUnits);
 
+    XFile new_file;
     // await?
     if (_nameController.text == '') {
-      saveFile(data, type: 'text/plain');
+      new_file = XFile.fromData(data);
     } else {
-      saveFile(data, type: 'text/plain', suggestedName: _nameController.text);
+      new_file = XFile.fromData(data, name: _nameController.text);
     }
+
+    new_file.saveTo('');
   }
 
   void _loadFile() async {
@@ -68,8 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       file = await loadFile();
     }
-
-    XFile file = XFile.fromXPath(path);
 
     String text = await file.readAsString();
 

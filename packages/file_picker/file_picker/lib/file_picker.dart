@@ -14,19 +14,15 @@ export 'package:file_picker_platform_interface/file_picker_platform_interface.da
 
 /// Open file dialog for loading files and return a file path
 Future<XFile> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
-  return FilePickerPlatform.instance.getReadPath(acceptedTypes: acceptedTypes);
+  return FilePickerPlatform.instance.loadFile(acceptedTypes: acceptedTypes);
 }
 
 /// Open file dialog for loading files and return a list of file paths
 Future<List<XFile>> loadFiles({List<FileTypeFilterGroup> acceptedTypes}) {
-  return FilePickerPlatform.instance.getReadPaths(acceptedTypes: acceptedTypes);
+  return FilePickerPlatform.instance.loadFiles(acceptedTypes: acceptedTypes);
 }
 
 /// Saves File to user's file system
-Future<String> getSavePath(
-  XFile file, {
-  String type = '',
-  String suggestedName,
-}) async {
-  return FilePickerPlatform.instance.getSavePath(data, type: type, suggestedName: suggestedName);
+Future<String> getSavePath() async {
+  return FilePickerPlatform.instance.getSavePath();
 }

@@ -23,4 +23,15 @@ class XFile extends XFileBase {
     throw UnimplementedError(
         'XFile is not available in your current platform.');
   }
+
+  /// Construct a XFile object from its data
+  XFile.fromData(
+      Uint8List data, {
+        String path,
+        String name,
+        int length,
+      }) : super(path) {
+    throw UnimplementedError(
+        'XFile is not available in your current platform.');
+  }
 }

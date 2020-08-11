@@ -13,6 +13,11 @@ abstract class XFileBase {
   /// Construct a XFile
   XFileBase(String path);
 
+  /// Save the XFile at the indicated file path.
+  void saveTo(String path) {
+    throw UnimplementedError('saveTo has not been implemented.');
+  }
+
   /// Get the path of the picked file.
   ///
   /// This should only be used as a backwards-compatibility clutch

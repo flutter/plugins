@@ -9,10 +9,21 @@ import '../types.dart';
 /// A XFile backed by a dart:io File.
 class XFile extends XFileBase {
   final File _file;
+  final Uint8List _data;
 
   /// Construct a XFile object backed by a dart:io File.
   XFile(String path)
       : _file = File(path),
+        _data = null,
+        super(path);
+
+  /// Construct an XFile from its data
+  XFile.fromData(Uint8List data, {
+      String path,
+      String name,
+      int length,
+    }): _data = data,
+        _file = File(path),
         super(path);
 
   @override
