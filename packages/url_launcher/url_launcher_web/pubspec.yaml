@@ -14,8 +14,7 @@ flutter:
         fileName: url_launcher_web.dart
 
 dependencies:
-  url_launcher_platform_interface:
-    path: ../url_launcher_platform_interface
+  url_launcher_platform_interface: ^1.0.1
   platform_detect: ^1.4.0
   flutter:
     sdk: flutter
