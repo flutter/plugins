@@ -11,8 +11,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
   // A cache of map controllers by map Id.
   Map _mapById = Map<int, GoogleMapController>();
-  // A cache of map options by map Id.
-  Map _optionsById = Map<int, Map<String, dynamic>>();
 
   // Convenience getter for a stream of events filtered by their mapId.
   Stream<MapEvent> _events(int mapId) => _map(mapId).events;
@@ -25,19 +23,9 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     return controller;
   }
 
-  // Updates the cache of map options for a given mapId, so we can
-  // recrate the gmaps.MapOptions object from scratch.
-  Map<String, dynamic> _mergeRawMapOptions(dynamic newOptions, int mapId) {
-    _optionsById[mapId] = <String, dynamic>{
-      ..._optionsById[mapId] ?? {},
-      ...newOptions,
-    };
-    return _optionsById[mapId];
-  }
-
   @override
   Future<void> init(int mapId) async {
-    /* Noop */
+    _map(mapId).init();
   }
 
   /// Updates the options of a given `mapId`.
@@ -49,11 +37,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     Map<String, dynamic> optionsUpdate, {
     @required int mapId,
   }) async {
-    final map = _map(mapId);
-    final mergedRawOptions = _mergeRawMapOptions(optionsUpdate, mapId);
-
-    map.setOptions(_optionsFromParams(mergedRawOptions));
-    map.setTrafficLayer(mergedRawOptions['trafficEnabled'] ?? false);
+    _map(mapId).updateRawOptions(optionsUpdate);
   }
 
   /// Applies the passed in `markerUpdates` to the `mapId`.
@@ -121,14 +105,9 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     String mapStyle, {
     @required int mapId,
   }) async {
-    _map(mapId).setOptions(
-      _optionsFromParams(_mergeRawMapOptions(
-        {
-          'styles': _mapStyles(mapStyle),
-        },
-        mapId,
-      )),
-    );
+    _map(mapId).updateRawOptions({
+      'styles': _mapStyles(mapStyle),
+    });
   }
 
   /// Returns the bounds of the current viewport.
@@ -184,8 +163,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     return _map(mapId).isInfoWindowShown(markerId);
   }
 
-  @override
   /// Returns the zoom level of the `mapId`.
+  @override
   Future<double> getZoomLevel({
     @required int mapId,
   }) {
@@ -250,12 +229,11 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     return _events(mapId).whereType<MapLongPressEvent>();
   }
 
-  /// Disposes of the current map. The map can't be used afterwards!
+  /// Disposes of the current map. It can't be used afterwards!
   @override
   void dispose({@required int mapId}) {
     _map(mapId)?.dispose();
     _mapById.remove(mapId);
-    _optionsById.remove(mapId);
   }
 
   @override
@@ -278,56 +256,16 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       return _mapById[mapId].widget;
     }
 
-    Map<String, dynamic> mergedRawOptions;
-    if (creationParams['options'] != null) {
-      mergedRawOptions = _mergeRawMapOptions(creationParams['options'], mapId);
-    }
-
-    gmaps.MapOptions options = gmaps.MapOptions();
-    CircleUpdates initialCircles;
-    PolygonUpdates initialPolygons;
-    PolylineUpdates initialPolylines;
-    MarkerUpdates initialMarkers;
-
-    creationParams.forEach((key, value) {
-      if (key == 'options') {
-        _optionsFromParams(mergedRawOptions, existingOptions: options);
-      } else if (key == 'markersToAdd') {
-        initialMarkers = _markerFromParams(value);
-      } else if (key == 'polygonsToAdd') {
-        initialPolygons = _polygonFromParams(value);
-      } else if (key == 'polylinesToAdd') {
-        initialPolylines = _polylineFromParams(value);
-      } else if (key == 'circlesToAdd') {
-        initialCircles = _circleFromParams(value);
-      } else if (key == 'initialCameraPosition') {
-        final position = CameraPosition.fromMap(value);
-        options.zoom = position.zoom;
-        options.center =
-            gmaps.LatLng(position.target.latitude, position.target.longitude);
-      } else {
-        print('Unknown creation parameter: $key');
-      }
-    });
-
     final StreamController<MapEvent> controller =
         StreamController<MapEvent>.broadcast();
 
     final mapController = GoogleMapController(
       mapId: mapId,
       streamController: controller,
-      options: options,
-      initialCircles: initialCircles?.circlesToAdd,
-      initialPolygons: initialPolygons?.polygonsToAdd,
-      initialPolylines: initialPolylines?.polylinesToAdd,
-      initialMarkers: initialMarkers?.markersToAdd,
+      rawOptions: creationParams,
     );
 
     _mapById[mapId] = mapController;
-
-    mapController.setTrafficLayer(
-      mergedRawOptions['trafficEnabled'] ?? false,
-    );
 
     onPlatformViewCreated.call(mapId);
 
