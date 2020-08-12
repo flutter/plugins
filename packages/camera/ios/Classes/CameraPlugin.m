@@ -19,18 +19,6 @@ static FlutterError *getFlutterError(NSError *error) {
 @property(readonly, nonatomic) FlutterResult result;
 @property(readonly, nonatomic) CMMotionManager *motionManager;
 @property(readonly, nonatomic) AVCaptureDevicePosition cameraPosition;
-
-- initWithPath:(NSString *)filename
-            result:(FlutterResult)result
-     motionManager:(CMMotionManager *)motionManager
-    cameraPosition:(AVCaptureDevicePosition)cameraPosition;
-
-- (void)captureOutput:(AVCapturePhotoOutput *)output
-didFinishProcessingPhotoSampleBuffer:(CMSampleBufferRef)photoSampleBuffer
-            previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
-                    resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings
-                     bracketSettings:(AVCaptureBracketedStillImageSettings *)bracketSettings
-                error:(NSError *)error API_AVAILABLE(ios(10));
 @end
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
@@ -75,7 +63,7 @@ didFinishProcessingPhotoSampleBuffer:(CMSampleBufferRef)photoSampleBuffer
                 previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
                         resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings
                          bracketSettings:(AVCaptureBracketedStillImageSettings *)bracketSettings
-                                   error:(NSError *)error {
+                                   error:(NSError *)error API_AVAILABLE(ios(10)) {
   selfReference = nil;
   if (error) {
     _result(getFlutterError(error));
@@ -199,19 +187,6 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) CMTime audioTimeOffset;
 @property(nonatomic) CMMotionManager *motionManager;
 @property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
-- (instancetype)initWithCameraName:(NSString *)cameraName
-                  resolutionPreset:(NSString *)resolutionPreset
-                       enableAudio:(BOOL)enableAudio
-                     dispatchQueue:(dispatch_queue_t)dispatchQueue
-                             error:(NSError **)error;
-
-- (void)start;
-- (void)stop;
-- (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
-- (void)stopVideoRecordingWithResult:(FlutterResult)result;
-- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
-- (void)stopImageStream;
-- (void)captureToFile:(NSString *)filename result:(FlutterResult)result API_AVAILABLE(ios(10));
 @end
 
 @implementation FLTCam {
@@ -282,19 +257,17 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_captureSession stopRunning];
 }
 
-- (void)captureToFile:(NSString *)path result:(FlutterResult)result {
-  if (@available(iOS 10.0, *)) {
-    AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
-    if (_resolutionPreset == max) {
-      [settings setHighResolutionPhotoEnabled:YES];
-    }
-    [_capturePhotoOutput
-        capturePhotoWithSettings:settings
-                        delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                     result:result
-                                                              motionManager:_motionManager
-                                                             cameraPosition:_captureDevice.position]];
+- (void)captureToFile:(NSString *)path result:(FlutterResult)result API_AVAILABLE(ios(10)) {
+  AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
+  if (_resolutionPreset == max) {
+    [settings setHighResolutionPhotoEnabled:YES];
   }
+  [_capturePhotoOutput
+      capturePhotoWithSettings:settings
+                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                                    result:result
+                                                            motionManager:_motionManager
+                                                            cameraPosition:_captureDevice.position]];
 }
 
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
