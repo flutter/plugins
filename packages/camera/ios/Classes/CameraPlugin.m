@@ -24,6 +24,13 @@ static FlutterError *getFlutterError(NSError *error) {
             result:(FlutterResult)result
      motionManager:(CMMotionManager *)motionManager
     cameraPosition:(AVCaptureDevicePosition)cameraPosition;
+
+- (void)captureOutput:(AVCapturePhotoOutput *)output
+didFinishProcessingPhotoSampleBuffer:(CMSampleBufferRef)photoSampleBuffer
+            previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
+                    resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings
+                     bracketSettings:(AVCaptureBracketedStillImageSettings *)bracketSettings
+                error:(NSError *)error API_AVAILABLE(ios(10));
 @end
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
@@ -160,14 +167,14 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
                               AVCaptureAudioDataOutputSampleBufferDelegate,
                               FlutterStreamHandler>
 @property(readonly, nonatomic) int64_t textureId;
-@property(nonatomic, copy) void (^onFrameAvailable)();
+@property(nonatomic, copy) void (^onFrameAvailable)(void);
 @property BOOL enableAudio;
 @property(nonatomic) FlutterEventChannel *eventChannel;
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 @property(readonly, nonatomic) AVCaptureDevice *captureDevice;
-@property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput;
+@property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
 @property(readonly, nonatomic) AVCaptureVideoDataOutput *captureVideoOutput;
 @property(readonly, nonatomic) AVCaptureInput *captureVideoInput;
 @property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
@@ -254,9 +261,12 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
   [_captureSession addConnection:connection];
-  _capturePhotoOutput = [AVCapturePhotoOutput new];
-  [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
-  [_captureSession addOutput:_capturePhotoOutput];
+
+  if (@available(iOS 10.0, *)) {
+    _capturePhotoOutput = [AVCapturePhotoOutput new];
+    [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
+    [_captureSession addOutput:_capturePhotoOutput];
+  }
   _motionManager = [[CMMotionManager alloc] init];
   [_motionManager startAccelerometerUpdates];
 
@@ -273,16 +283,18 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
-  AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
-  if (_resolutionPreset == max) {
-    [settings setHighResolutionPhotoEnabled:YES];
+  if (@available(iOS 10.0, *)) {
+    AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
+    if (_resolutionPreset == max) {
+      [settings setHighResolutionPhotoEnabled:YES];
+    }
+    [_capturePhotoOutput
+        capturePhotoWithSettings:settings
+                        delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                                     result:result
+                                                              motionManager:_motionManager
+                                                             cameraPosition:_captureDevice.position]];
   }
-  [_capturePhotoOutput
-      capturePhotoWithSettings:settings
-                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                   result:result
-                                                            motionManager:_motionManager
-                                                           cameraPosition:_captureDevice.position]];
 }
 
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
@@ -851,7 +863,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       int64_t textureId = [_registry registerTexture:cam];
       _camera = cam;
       cam.onFrameAvailable = ^{
-        [_registry textureFrameAvailable:textureId];
+        [self.registry textureFrameAvailable:textureId];
       };
       FlutterEventChannel *eventChannel = [FlutterEventChannel
           eventChannelWithName:[NSString
