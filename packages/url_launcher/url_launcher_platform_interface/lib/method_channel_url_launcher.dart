@@ -27,16 +27,14 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
   }
 
   @override
-  Future<bool> launch(
-    String url, {
-    @required bool useSafariVC,
-    @required bool useWebView,
-    @required bool enableJavaScript,
-    @required bool enableDomStorage,
-    @required bool universalLinksOnly,
-    @required Map<String, String> headers,
-    @required String windowName
-  }) {
+  Future<bool> launch(String url,
+      {@required bool useSafariVC,
+      @required bool useWebView,
+      @required bool enableJavaScript,
+      @required bool enableDomStorage,
+      @required bool universalLinksOnly,
+      @required Map<String, String> headers,
+      @required String windowName}) {
     return _channel.invokeMethod<bool>(
       'launch',
       <String, Object>{
@@ -47,7 +45,7 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
         'enableDomStorage': enableDomStorage,
         'universalLinksOnly': universalLinksOnly,
         'headers': headers,
-        'windowName' : windowName
+        'windowName': windowName
       },
     );
   }

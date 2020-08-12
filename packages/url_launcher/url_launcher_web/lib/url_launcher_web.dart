@@ -43,7 +43,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   ///
   /// Returns the newly created window.
   @visibleForTesting
-  html.WindowBase openNewWindow(String url,String windowName) {
+  html.WindowBase openNewWindow(String url, String windowName) {
     // We need to open mailto, tel and sms urls on the _top window context on safari browsers.
     // See https://github.com/flutter/flutter/issues/51461 for reference.
     final target =
@@ -57,16 +57,14 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   }
 
   @override
-  Future<bool> launch(
-    String url, {
-    @required bool useSafariVC,
-    @required bool useWebView,
-    @required bool enableJavaScript,
-    @required bool enableDomStorage,
-    @required bool universalLinksOnly,
-    @required Map<String, String> headers,
-    String windowName
-  }) {
-    return Future<bool>.value(openNewWindow(url,windowName) != null);
+  Future<bool> launch(String url,
+      {@required bool useSafariVC,
+      @required bool useWebView,
+      @required bool enableJavaScript,
+      @required bool enableDomStorage,
+      @required bool universalLinksOnly,
+      @required Map<String, String> headers,
+      String windowName}) {
+    return Future<bool>.value(openNewWindow(url, windowName) != null);
   }
 }
