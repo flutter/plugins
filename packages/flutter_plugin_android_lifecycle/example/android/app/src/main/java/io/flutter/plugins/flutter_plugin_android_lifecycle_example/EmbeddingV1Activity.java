@@ -9,7 +9,8 @@ public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    IntegrationTestPlugin.registerWith(registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
+    IntegrationTestPlugin.registerWith(
+        registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
     FlutterAndroidLifecyclePlugin.registerWith(
         registrarFor(
             "io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin"));

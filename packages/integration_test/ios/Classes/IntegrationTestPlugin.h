@@ -11,8 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
  * completion, it is
  * @c nil.
  */
-@property(nonatomic, readonly, nullable)
-    NSDictionary<NSString *, NSString *> *testResults;
+@property(nonatomic, readonly, nullable) NSDictionary<NSString *, NSString *> *testResults;
 
 /** Fetches the singleton instance of the plugin. */
 + (IntegrationTestPlugin *)instance;

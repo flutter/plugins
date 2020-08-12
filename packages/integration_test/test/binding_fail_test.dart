@@ -6,7 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Assumes that the flutter command is in `$PATH`.
 const String _flutterBin = 'flutter';
-const String _integrationResultsPrefix = 'IntegrationTestWidgetsFlutterBinding test results:';
+const String _integrationResultsPrefix =
+    'IntegrationTestWidgetsFlutterBinding test results:';
 
 void main() async {
   group('Integration binding result', () {
@@ -73,8 +74,8 @@ Future<Map<String, dynamic>> _runTest(String scriptPath) async {
           .where((dynamic testEvent) =>
               testEvent != null && testEvent['type'] == 'print')
           .map((dynamic printEvent) => printEvent['message'] as String)
-          .firstWhere(
-              (String message) => message.startsWith(_integrationResultsPrefix)))
+          .firstWhere((String message) =>
+              message.startsWith(_integrationResultsPrefix)))
       .replaceAll(_integrationResultsPrefix, '');
 
   return jsonDecode(testResults);

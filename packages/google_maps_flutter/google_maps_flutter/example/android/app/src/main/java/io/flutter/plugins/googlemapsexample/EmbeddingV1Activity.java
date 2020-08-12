@@ -10,6 +10,7 @@ public class EmbeddingV1Activity extends FlutterActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     GoogleMapsPlugin.registerWith(registrarFor("io.flutter.plugins.googlemaps.GoogleMapsPlugin"));
-    IntegrationTestPlugin.registerWith(registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
+    IntegrationTestPlugin.registerWith(
+        registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
   }
 }

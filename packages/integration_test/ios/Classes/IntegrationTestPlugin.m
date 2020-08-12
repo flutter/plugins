@@ -1,13 +1,11 @@
 #import "IntegrationTestPlugin.h"
 
-static NSString *const kIntegrationTestPluginChannel =
-    @"plugins.flutter.io/integratoin_test";
+static NSString *const kIntegrationTestPluginChannel = @"plugins.flutter.io/integratoin_test";
 static NSString *const kMethodTestFinished = @"allTestsFinished";
 
 @interface IntegrationTestPlugin ()
 
-@property(nonatomic, readwrite)
-    NSDictionary<NSString *, NSString *> *testResults;
+@property(nonatomic, readwrite) NSDictionary<NSString *, NSString *> *testResults;
 
 @end
 
@@ -39,14 +37,12 @@ static NSString *const kMethodTestFinished = @"allTestsFinished";
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:kIntegrationTestPluginChannel
                                   binaryMessenger:binaryMessenger];
-  [channel
-      setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
-        [self handleMethodCall:call result:result];
-      }];
+  [channel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
+    [self handleMethodCall:call result:result];
+  }];
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call
-                  result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([kMethodTestFinished isEqual:call.method]) {
     self.testResults = call.arguments[@"results"];
     result(nil);

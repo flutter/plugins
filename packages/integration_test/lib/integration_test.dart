@@ -15,7 +15,8 @@ import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
-class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding {
+class IntegrationTestWidgetsFlutterBinding
+    extends LiveTestWidgetsFlutterBinding {
   /// Sets up a listener to report that the tests are finished when everything is
   /// torn down.
   IntegrationTestWidgetsFlutterBinding() {
@@ -111,7 +112,8 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     return WidgetsBinding.instance;
   }
 
-  static const MethodChannel _channel = MethodChannel('plugins.flutter.io/integrat_test');
+  static const MethodChannel _channel =
+      MethodChannel('plugins.flutter.io/integrat_test');
 
   /// Test results that will be populated after the tests have completed.
   ///

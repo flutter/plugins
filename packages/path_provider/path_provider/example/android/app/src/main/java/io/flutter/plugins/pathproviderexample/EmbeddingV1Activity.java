@@ -10,7 +10,8 @@ public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    IntegrationTestPlugin.registerWith(registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
+    IntegrationTestPlugin.registerWith(
+        registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
     PathProviderPlugin.registerWith(
         registrarFor("io.flutter.plugins.pathprovider.PathProviderPlugin"));
   }

@@ -14,6 +14,7 @@ public class EmbedderV1Activity extends FlutterActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     BatteryPlugin.registerWith(registrarFor("io.flutter.plugins.battery.BatteryPlugin"));
-    IntegrationTestPlugin.registerWith(registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
+    IntegrationTestPlugin.registerWith(
+        registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
   }
 }
