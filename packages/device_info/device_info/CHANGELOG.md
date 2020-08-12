@@ -1,3 +1,7 @@
+## 0.4.2+6
+
+* Moved everything from device_info to device_info/device_info
+
 ## 0.4.2+5
 
 * Update package:e2e reference to use the local version in the flutter/plugins
