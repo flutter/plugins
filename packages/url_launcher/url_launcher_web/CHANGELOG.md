@@ -1,3 +1,6 @@
+# 0.1.3
+- Added "windowName" parameter that lets you launch url in new tab,same tab or in an iframe
+
 # 0.1.2
 
 - Adds "tel" and "sms" support 

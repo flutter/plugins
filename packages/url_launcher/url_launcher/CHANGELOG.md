@@ -1,3 +1,5 @@
+## 5.5.1
+Added windowName web only parameter
 ## 5.5.0
 
 * Support Linux by default.
