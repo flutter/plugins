@@ -1,3 +1,8 @@
+## 0.5.30
+
+* Add a `dispose` method to the controller to let the native side know that we're done with said controller.
+* Call `controller.dispose()` from the `dispose` method of the `GoogleMap` widget.
+
 ## 0.5.29+1
 
 * (ios) Pin dependency on GoogleMaps pod to `< 3.10`, to address https://github.com/flutter/flutter/issues/63447
