@@ -252,7 +252,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
   /// Disposes of the current map. The map can't be used afterwards!
   @override
-  // ignore:override_on_non_overriding_member
   void dispose({@required int mapId}) {
     _map(mapId)?.dispose();
     _mapById.remove(mapId);
