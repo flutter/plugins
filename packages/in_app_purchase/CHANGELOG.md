@@ -1,3 +1,7 @@
+## 0.3.4+4
+
+* Update package:e2e -> package:integration_test
+
 ## 0.3.4+3
 
 * Fixed typo 'manuelly' for 'manually'.
