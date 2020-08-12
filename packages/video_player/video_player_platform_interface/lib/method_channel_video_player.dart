@@ -125,6 +125,13 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     return Texture(textureId: textureId);
   }
 
+  @override
+  Future<void> setMixWithOthers(bool mixWithOthers) {
+    return _api.setMixWithOthers(
+      MixWithOthersMessage()..mixWithOthers = mixWithOthers,
+    );
+  }
+
   EventChannel _eventChannelFor(int textureId) {
     return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
   }
