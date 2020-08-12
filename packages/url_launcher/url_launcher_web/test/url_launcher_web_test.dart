@@ -68,6 +68,7 @@ void main() {
               enableDomStorage: null,
               enableJavaScript: null,
               headers: null,
+              windowName: "_blank",
             ),
             completion(isTrue));
       });
@@ -82,6 +83,7 @@ void main() {
               enableDomStorage: null,
               enableJavaScript: null,
               headers: null,
+              windowName: "_blank",
             ),
             completion(isTrue));
       });
@@ -96,6 +98,7 @@ void main() {
               enableDomStorage: null,
               enableJavaScript: null,
               headers: null,
+              windowName: "_blank",
             ),
             completion(isTrue));
       });
@@ -110,6 +113,7 @@ void main() {
               enableDomStorage: null,
               enableJavaScript: null,
               headers: null,
+              windowName: "_blank",
             ),
             completion(isTrue));
       });

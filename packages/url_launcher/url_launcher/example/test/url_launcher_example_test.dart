@@ -16,27 +16,34 @@ void main() {
     const Map<String, String> defaultHeaders = {
       'my_header_key': 'my_header_value'
     };
-    verifyNever(mock.launch(defaultUrl,
-        useSafariVC: false,
-        useWebView: false,
-        enableDomStorage: false,
-        enableJavaScript: false,
-        universalLinksOnly: false,
-        headers: defaultHeaders));
+    verifyNever(mock.launch(
+      defaultUrl,
+      useSafariVC: false,
+      useWebView: false,
+      enableDomStorage: false,
+      enableJavaScript: false,
+      universalLinksOnly: false,
+      headers: defaultHeaders,
+      windowName: "_blank",
+    ));
 
     Finder browserlaunchBtn =
         find.widgetWithText(RaisedButton, 'Launch in browser');
     expect(browserlaunchBtn, findsOneWidget);
     await tester.tap(browserlaunchBtn);
 
-    verify(mock.launch(defaultUrl,
-            useSafariVC: false,
-            useWebView: false,
-            enableDomStorage: false,
-            enableJavaScript: false,
-            universalLinksOnly: false,
-            headers: defaultHeaders))
-        .called(1);
+    verify(
+      mock.launch(
+        defaultUrl,
+        useSafariVC: false,
+        useWebView: false,
+        enableDomStorage: false,
+        enableJavaScript: false,
+        universalLinksOnly: false,
+        headers: defaultHeaders,
+        windowName: "_blank",
+      ),
+    ).called(1);
   });
 }
 

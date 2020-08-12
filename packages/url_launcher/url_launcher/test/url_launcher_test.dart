@@ -44,7 +44,7 @@ void main() {
     });
 
     test('default behavior', () async {
-      await launch('http://flutter.dev/');
+      await launch('http://flutter.dev/', windowName: "_blank");
       expect(
         verify(mock.launch(
           captureAny,
@@ -54,6 +54,7 @@ void main() {
           enableDomStorage: captureAnyNamed('enableDomStorage'),
           universalLinksOnly: captureAnyNamed('universalLinksOnly'),
           headers: captureAnyNamed('headers'),
+          windowName: captureAnyNamed('windowName'),
         )).captured,
         <dynamic>[
           'http://flutter.dev/',
@@ -63,6 +64,7 @@ void main() {
           false,
           false,
           <String, String>{},
+          "_blank",
         ],
       );
     });
@@ -81,6 +83,7 @@ void main() {
           enableDomStorage: anyNamed('enableDomStorage'),
           universalLinksOnly: anyNamed('universalLinksOnly'),
           headers: captureAnyNamed('headers'),
+          windowName: anyNamed('windowName'),
         )).captured.single,
         <String, String>{'key': 'value'},
       );
@@ -97,6 +100,7 @@ void main() {
           enableDomStorage: anyNamed('enableDomStorage'),
           universalLinksOnly: anyNamed('universalLinksOnly'),
           headers: anyNamed('headers'),
+          windowName: anyNamed('windowName'),
         )).captured.single,
         true,
       );
@@ -114,6 +118,7 @@ void main() {
           enableDomStorage: anyNamed('enableDomStorage'),
           universalLinksOnly: captureAnyNamed('universalLinksOnly'),
           headers: anyNamed('headers'),
+          windowName: anyNamed('windowName'),
         )).captured,
         <bool>[false, true],
       );
@@ -130,6 +135,7 @@ void main() {
           enableDomStorage: anyNamed('enableDomStorage'),
           universalLinksOnly: anyNamed('universalLinksOnly'),
           headers: anyNamed('headers'),
+          windowName: anyNamed('windowName'),
         )).captured.single,
         true,
       );
@@ -147,6 +153,7 @@ void main() {
           enableDomStorage: anyNamed('enableDomStorage'),
           universalLinksOnly: anyNamed('universalLinksOnly'),
           headers: anyNamed('headers'),
+          windowName: anyNamed('windowName'),
         )).captured,
         <bool>[true, true],
       );
@@ -164,6 +171,7 @@ void main() {
           enableDomStorage: captureAnyNamed('enableDomStorage'),
           universalLinksOnly: anyNamed('universalLinksOnly'),
           headers: anyNamed('headers'),
+          windowName: anyNamed('windowName'),
         )).captured,
         <bool>[true, true],
       );
@@ -181,6 +189,7 @@ void main() {
           enableDomStorage: anyNamed('enableDomStorage'),
           universalLinksOnly: anyNamed('universalLinksOnly'),
           headers: anyNamed('headers'),
+          windowName: anyNamed('windowName'),
         )).captured.single,
         false,
       );
