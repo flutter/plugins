@@ -204,7 +204,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopImageStream;
-- (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
+- (void)captureToFile:(NSString *)filename result:(FlutterResult)result API_AVAILABLE(ios(10));
 @end
 
 @implementation FLTCam {
@@ -288,17 +288,19 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
   switch (resolutionPreset) {
     case max:
+    case ultraHigh:
+      if (@available(iOS 9.0, *)) {
+        if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
+          _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
+          _previewSize = CGSizeMake(3840, 2160);
+          break;
+        }
+      }
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
         _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
         _previewSize =
             CGSizeMake(_captureDevice.activeFormat.highResolutionStillImageDimensions.width,
                        _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
-        break;
-      }
-    case ultraHigh:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
-        _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
-        _previewSize = CGSizeMake(3840, 2160);
         break;
       }
     case veryHigh:
@@ -800,34 +802,36 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 
 - (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"availableCameras" isEqualToString:call.method]) {
-    AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
-        discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
-                              mediaType:AVMediaTypeVideo
-                               position:AVCaptureDevicePositionUnspecified];
-    NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
-    NSMutableArray<NSDictionary<NSString *, NSObject *> *> *reply =
-        [[NSMutableArray alloc] initWithCapacity:devices.count];
-    for (AVCaptureDevice *device in devices) {
-      NSString *lensFacing;
-      switch ([device position]) {
-        case AVCaptureDevicePositionBack:
-          lensFacing = @"back";
-          break;
-        case AVCaptureDevicePositionFront:
-          lensFacing = @"front";
-          break;
-        case AVCaptureDevicePositionUnspecified:
-          lensFacing = @"external";
-          break;
+  if (@available(iOS 10.0, *)) {
+    if ([@"availableCameras" isEqualToString:call.method]) {
+      AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
+          discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
+                                mediaType:AVMediaTypeVideo
+                                position:AVCaptureDevicePositionUnspecified];
+      NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
+      NSMutableArray<NSDictionary<NSString *, NSObject *> *> *reply =
+          [[NSMutableArray alloc] initWithCapacity:devices.count];
+      for (AVCaptureDevice *device in devices) {
+        NSString *lensFacing;
+        switch ([device position]) {
+          case AVCaptureDevicePositionBack:
+            lensFacing = @"back";
+            break;
+          case AVCaptureDevicePositionFront:
+            lensFacing = @"front";
+            break;
+          case AVCaptureDevicePositionUnspecified:
+            lensFacing = @"external";
+            break;
+        }
+        [reply addObject:@{
+          @"name" : [device uniqueID],
+          @"lensFacing" : lensFacing,
+          @"sensorOrientation" : @90,
+        }];
       }
-      [reply addObject:@{
-        @"name" : [device uniqueID],
-        @"lensFacing" : lensFacing,
-        @"sensorOrientation" : @90,
-      }];
+      result(reply);
     }
-    result(reply);
   } else if ([@"initialize" isEqualToString:call.method]) {
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
@@ -880,9 +884,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
-
-    if ([@"takePicture" isEqualToString:call.method]) {
-      [_camera captureToFile:call.arguments[@"path"] result:result];
+    if (@available(iOS 10.0, *)) {
+      if ([@"takePicture" isEqualToString:call.method]) {
+        [_camera captureToFile:call.arguments[@"path"] result:result];
+      }
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_camera close];
