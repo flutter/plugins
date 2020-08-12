@@ -807,7 +807,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
           discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
                                 mediaType:AVMediaTypeVideo
-                                position:AVCaptureDevicePositionUnspecified];
+                                 position:AVCaptureDevicePositionUnspecified];
       NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
       NSMutableArray<NSDictionary<NSString *, NSObject *> *> *reply =
           [[NSMutableArray alloc] initWithCapacity:devices.count];
