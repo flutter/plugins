@@ -837,7 +837,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       }
       int64_t textureId = [_registry registerTexture:cam];
       _camera = cam;
-      __weak CameraPlugin* weakSelf = self;
+      __weak CameraPlugin *weakSelf = self;
       cam.onFrameAvailable = ^{
         [weakSelf.registry textureFrameAvailable:textureId];
       };
