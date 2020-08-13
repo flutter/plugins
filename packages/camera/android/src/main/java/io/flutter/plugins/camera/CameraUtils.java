@@ -2,7 +2,6 @@ package io.flutter.plugins.camera;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
@@ -19,10 +18,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.graphics.Point;
+import android.graphics.SurfaceTexture;
+
+import android.view.Display;
+import android.util.Log;
+
 /** Provides various utilities for camera. */
 public final class CameraUtils {
 
-  private CameraUtils() {}
+    private CameraUtils() {}
 
   static Size computeBestPreviewSize(String cameraName, ResolutionPreset preset) {
     if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
@@ -34,12 +39,51 @@ public final class CameraUtils {
     return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
   }
 
-  static Size computeBestCaptureSize(StreamConfigurationMap streamConfigurationMap) {
-    // For still image captures, we use the largest available size.
-    return Collections.max(
-        Arrays.asList(streamConfigurationMap.getOutputSizes(ImageFormat.JPEG)),
-        new CompareSizesByArea());
-  }
+    private static Size previewSize;
+    static int screenWidth = 0;
+    static int screenHeight = 0;
+
+    static Size computeBestCaptureSize(String cameraName, CameraManager cameraManager,
+                                       Activity activity) {
+        try {
+            CameraCharacteristics characteristics =
+                    cameraManager.getCameraCharacteristics(cameraName);
+            StreamConfigurationMap streamConfigurationMap =
+                    characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            List<Size> sizes =
+                    Arrays.asList(streamConfigurationMap.getOutputSizes(SurfaceTexture.class));
+
+            Point screenResolution = new Point();
+
+            if (activity == null) {
+                throw new IllegalStateException("No activity available!");
+            }
+
+            Display display = activity.getWindowManager().getDefaultDisplay();
+            display.getSize(screenResolution);
+
+            final boolean swapWH = getMediaOrientation() % 180 == 90;
+            screenWidth = swapWH ? screenResolution.y : screenResolution.x;
+            screenHeight = swapWH ? screenResolution.x : screenResolution.y;
+
+            List<Size> goodEnough;
+
+            goodEnough = getDesiredAspectRatiosList(sizes);
+
+            if (goodEnough.isEmpty()) {
+                previewSize = sizes.get(0);
+            } else {
+                previewSize = goodEnough.get(0);
+                Collections.reverse(goodEnough);
+            }
+
+            Log.d("final preview size:", previewSize.toString());
+        } catch (Exception ex) {
+            Log.d("unhandled", "camera char exception");
+        }
+
+        return new Size(previewSize.getWidth(), previewSize.getHeight());
+    }
 
   public static List<Map<String, Object>> getAvailableCameras(Activity activity)
       throws CameraAccessException {
@@ -109,12 +153,30 @@ public final class CameraUtils {
     }
   }
 
-  private static class CompareSizesByArea implements Comparator<Size> {
-    @Override
-    public int compare(Size lhs, Size rhs) {
-      // We cast here to ensure the multiplications won't overflow.
-      return Long.signum(
-          (long) lhs.getWidth() * lhs.getHeight() - (long) rhs.getWidth() * rhs.getHeight());
+    private static class CompareSizesByArea implements Comparator<Size> {
+        @Override
+        public int compare(Size lhs, Size rhs) {
+            // We cast here to ensure the multiplications won't overflow.
+            return Long.signum(
+                    (long) lhs.getWidth() * lhs.getHeight() - (long) rhs.getWidth() * rhs.getHeight());
+        }
     }
-  }
+
+    private static List<Size> getDesiredAspectRatiosList(List<Size> sizes) {
+        List<Size> potentialSizes = new ArrayList<>();
+        for (Size size : sizes) {
+            if (size.getWidth() * 9 / 16 == size.getHeight() &&
+                    size.getWidth() <= screenWidth
+                    && size.getHeight() <= screenHeight
+            ) {
+                potentialSizes.add(size);
+                Log.d("potential preview size", size.toString());
+            }
+        }
+        return potentialSizes;
+    }
+
+    private static int getMediaOrientation() {
+        return 90;
+    }
 }
