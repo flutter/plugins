@@ -265,9 +265,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_capturePhotoOutput
       capturePhotoWithSettings:settings
                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                    result:result
+                                                                   result:result
                                                             motionManager:_motionManager
-                                                            cameraPosition:_captureDevice.position]];
+                                                           cameraPosition:_captureDevice.position]];
 }
 
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
@@ -787,8 +787,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 
 - (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (@available(iOS 10.0, *)) {
-    if ([@"availableCameras" isEqualToString:call.method]) {
+  if ([@"availableCameras" isEqualToString:call.method]) {
+    if (@available(iOS 10.0, *)) {
       AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
           discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
                                 mediaType:AVMediaTypeVideo
@@ -816,6 +816,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
         }];
       }
       result(reply);
+    } else {
+      result(FlutterMethodNotImplemented);
     }
   } else if ([@"initialize" isEqualToString:call.method]) {
     NSString *cameraName = call.arguments[@"cameraName"];
