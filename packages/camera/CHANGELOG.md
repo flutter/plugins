@@ -1,3 +1,7 @@
+## 0.5.8+6
+
+* Fix camera's captured image stretching issue on some low end android devices.
+
 ## 0.5.8+5
 
 * Fix compilation/availability issues on iOS.
