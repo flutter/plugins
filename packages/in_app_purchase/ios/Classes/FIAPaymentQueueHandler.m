@@ -75,7 +75,7 @@
 - (void)paymentQueue:(SKPaymentQueue *)queue
     updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
   for (SKPaymentTransaction *transaction in transactions) {
-    if (transaction.transactionIdentifier) {
+    if (transaction.transactionState != SKPaymentTransactionStatePurchasing) {
       // Use product identifier instead of transaction identifier for few reasons:
       // 1. Only transactions with purchased state and failed state will have a transaction id, it
       //    will become impossible for clients to finish deferred transactions when needed.
@@ -92,9 +92,7 @@
 - (void)paymentQueue:(SKPaymentQueue *)queue
     removedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
   for (SKPaymentTransaction *transaction in transactions) {
-    if (transaction.transactionIdentifier) {
-      [self.transactionsSetter removeObjectForKey:transaction.payment.productIdentifier];
-    }
+    [self.transactionsSetter removeObjectForKey:transaction.payment.productIdentifier];
   }
   self.transactionsRemoved(transactions);
 }

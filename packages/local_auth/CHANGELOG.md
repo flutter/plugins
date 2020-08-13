@@ -1,3 +1,16 @@
+## 0.6.2+4
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.6.2+3
+
+* Post-v2 Android embedding cleanup.
+
+## 0.6.2+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.6.2+1
 
 * Fix CocoaPods podspec lint warnings.

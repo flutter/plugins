@@ -1,6 +1,47 @@
-## 0.5.28
+## 0.5.31
 
 * Add support for holes in Polygons.
+
+## 0.5.30
+
+* Add a `dispose` method to the controller to let the native side know that we're done with said controller.
+* Call `controller.dispose()` from the `dispose` method of the `GoogleMap` widget.
+
+## 0.5.29+1
+
+* (ios) Pin dependency on GoogleMaps pod to `< 3.10`, to address https://github.com/flutter/flutter/issues/63447
+
+## 0.5.29
+
+* Pass a constant `_web_only_mapCreationId` to `platform.buildView`, so web can return a cached widget DOM when flutter attempts to repaint there.
+* Modify some examples slightly so they're more web-friendly.
+
+## 0.5.28+2
+
+* Move test introduced in #2449 to its right location.
+
+## 0.5.28+1
+
+* Android: Make sure map view only calls onDestroy once.
+* Android: Fix a memory leak regression caused in `0.5.26+4`.
+
+## 0.5.28
+
+* Android: Add liteModeEnabled option.
+
+## 0.5.27+3
+
+* iOS: Update the gesture recognizer blocking policy to "WaitUntilTouchesEnded", which fixes the camera idle callback not triggered issue.
+* Update the min flutter version to 1.16.3.
+* Skip `testTakeSnapshot` test on Android.
+
+## 0.5.27+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.5.27+1
+
+* Remove endorsement of `web` platform, it's not ready yet.
 
 ## 0.5.27
 

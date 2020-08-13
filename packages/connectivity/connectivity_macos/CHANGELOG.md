@@ -1,9 +1,19 @@
+## 0.1.0+5
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.1.0+4
+
+* Remove Android folder from `connectivity_macos`.
+
 ## 0.1.0+3
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.
 * Clean up various Android workarounds no longer needed after framework v1.12.
 * Complete v2 embedding support.
 * Fix CocoaPods podspec lint warnings.
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
 
 ## 0.1.0+2
 
