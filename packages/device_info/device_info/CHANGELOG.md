@@ -1,3 +1,7 @@
+## 0.4.2+7
+
+* Platform interface package added.
+
 ## 0.4.2+6
 
 * Moved everything from device_info to device_info/device_info
