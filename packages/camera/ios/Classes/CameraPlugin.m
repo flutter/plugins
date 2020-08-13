@@ -472,7 +472,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
       if (_audioTimeOffset.value != 0) {
         CFRelease(sampleBuffer);
-        sampleBuffer = [self copyAdjustTime:sampleBuffer by:_audioTimeOffset];
+        sampleBuffer = [self adjustTime:sampleBuffer by:_audioTimeOffset];
       }
 
       [self newAudioSample:sampleBuffer];
@@ -482,7 +482,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
 }
 
-- (CMSampleBufferRef)copyAdjustTime:(CMSampleBufferRef)sample by:(CMTime)offset {
+- (CMSampleBufferRef)adjustTime:(CMSampleBufferRef)sample by:(CMTime)offset CF_RETURNS_RETAINED {
   CMItemCount count;
   CMSampleBufferGetSampleTimingInfoArray(sample, 0, nil, &count);
   CMSampleTimingInfo *pInfo = malloc(sizeof(CMSampleTimingInfo) * count);
