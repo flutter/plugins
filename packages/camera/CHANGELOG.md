@@ -1,10 +1,14 @@
+## 0.5.8+5
+
+* Fix compilation/availability issues on iOS.
+
 ## 0.5.8+4
 
 * Fixed bug caused by casting a `CameraAccessException` on Android.
 
 ## 0.5.8+3
 
-* Fix bug in usage example in README.md 
+* Fix bug in usage example in README.md
 
 ## 0.5.8+2
 
