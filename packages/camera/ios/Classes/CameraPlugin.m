@@ -872,9 +872,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
-    if (@available(iOS 10.0, *)) {
-      if ([@"takePicture" isEqualToString:call.method]) {
+    if ([@"takePicture" isEqualToString:call.method]) {
+      if (@available(iOS 10.0, *)) {
         [_camera captureToFile:call.arguments[@"path"] result:result];
+      } else {
+        result(FlutterMethodNotImplemented);
       }
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
