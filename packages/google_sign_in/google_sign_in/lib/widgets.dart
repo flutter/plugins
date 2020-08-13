@@ -2,10 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import 'src/common.dart';
 import 'src/fife.dart' as fife;
@@ -117,9 +116,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
           child: Stack(fit: StackFit.expand, children: <Widget>[
             placeholder,
             FadeInImage.memoryNetwork(
-              // This creates a transparent placeholder image, so that
-              // [placeholder] shows through.
-              placeholder: Uint8List((size.round() * size.round())),
+              placeholder: kTransparentImage,
               image: sizedPhotoUrl,
             )
           ]),
