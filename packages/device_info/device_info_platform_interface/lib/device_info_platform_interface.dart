@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:device_info_platform_interface/model/androidDeviceIno.dart';
+import 'package:device_info_platform_interface/model/iosDeviceInfo.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'method_channel_device_info.dart';
@@ -33,13 +35,13 @@ abstract class DeviceInfoPlatform extends PlatformInterface {
 
   // Gets the Android device information.
   // ignore: public_member_api_docs
-  Future<Map<String, dynamic>> androidInfo() {
+  Future<AndroidDeviceInfo> androidInfo() {
     throw UnimplementedError('androidInfo() has not been implemented.');
   }
 
   // Gets the iOS device information.
   // ignore: public_member_api_docs
-  Future<Map<String, dynamic>> iosInfo() {
+  Future<IosDeviceInfo> iosInfo() {
     throw UnimplementedError('iosInfo() has not been implemented.');
   }
 }
