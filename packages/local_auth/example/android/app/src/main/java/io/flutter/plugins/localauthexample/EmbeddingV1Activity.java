@@ -1,7 +1,7 @@
 package io.flutter.plugins.localauthexample;
 
 import android.os.Bundle;
-import dev.flutter.plugins.integrationTest.IntegrationTestPlugin;
+import dev.flutter.plugins.integration_test.integration_testPlugin;
 import io.flutter.app.FlutterFragmentActivity;
 import io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin;
 import io.flutter.plugins.localauth.LocalAuthPlugin;
@@ -11,7 +11,7 @@ public class EmbeddingV1Activity extends FlutterFragmentActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
+        registrarFor("dev.flutter.plugins.integration_test.integration_testPlugin"));
     FlutterAndroidLifecyclePlugin.registerWith(
         registrarFor(
             "io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin"));

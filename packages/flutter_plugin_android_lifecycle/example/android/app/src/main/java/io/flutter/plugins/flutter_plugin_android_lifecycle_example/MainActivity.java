@@ -6,7 +6,7 @@ package io.flutter.plugins.flutter_plugin_android_lifecycle_example;
 
 import android.util.Log;
 import androidx.lifecycle.Lifecycle;
-import dev.flutter.plugins.integrationTest.IntegrationTestPlugin;
+import dev.flutter.plugins.integration_test.integration_testPlugin;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;

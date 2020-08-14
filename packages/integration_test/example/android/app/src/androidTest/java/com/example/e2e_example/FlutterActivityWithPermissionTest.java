@@ -3,7 +3,7 @@ package com.example.integration_test_example;
 import android.Manifest.permission;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
-import dev.flutter.plugins.integrationTest.FlutterTestRunner;
+import dev.flutter.plugins.integration_test.FlutterTestRunner;
 import io.flutter.embedding.android.FlutterActivity;
 import org.junit.Rule;
 import org.junit.runner.RunWith;

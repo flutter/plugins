@@ -5,7 +5,7 @@
 package com.example.integration_test_example;
 
 import android.os.Bundle;
-import dev.flutter.plugins.integrationTest.IntegrationTestPlugin;
+import dev.flutter.plugins.integration_test.integration_testPlugin;
 import io.flutter.app.FlutterActivity;
 
 public class EmbedderV1Activity extends FlutterActivity {
@@ -13,6 +13,6 @@ public class EmbedderV1Activity extends FlutterActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
+        registrarFor("dev.flutter.plugins.integration_test.integration_testPlugin"));
   }
 }

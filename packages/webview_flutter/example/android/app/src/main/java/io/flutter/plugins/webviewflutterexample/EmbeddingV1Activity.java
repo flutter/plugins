@@ -5,7 +5,7 @@
 package io.flutter.plugins.webviewflutterexample;
 
 import android.os.Bundle;
-import dev.flutter.plugins.integrationTest.IntegrationTestPlugin;
+import dev.flutter.plugins.integration_test.integration_testPlugin;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin;
 
@@ -14,7 +14,7 @@ public class EmbeddingV1Activity extends FlutterActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
+        registrarFor("dev.flutter.plugins.integration_test.integration_testPlugin"));
     WebViewFlutterPlugin.registerWith(
         registrarFor("io.flutter.plugins.webviewflutter.WebViewFlutterPlugin"));
   }

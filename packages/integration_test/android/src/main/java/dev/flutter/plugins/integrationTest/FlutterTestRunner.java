@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package dev.flutter.plugins.integrationTest;
+package dev.flutter.plugins.integration_test;
 
 import android.util.Log;
 import androidx.test.rule.ActivityTestRule;

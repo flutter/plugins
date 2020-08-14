@@ -1,7 +1,7 @@
 package io.flutter.plugins.cameraexample;
 
 import android.os.Bundle;
-import dev.flutter.plugins.integrationTest.IntegrationTestPlugin;
+import dev.flutter.plugins.integration_test.integration_testPlugin;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.camera.CameraPlugin;
 import io.flutter.plugins.pathprovider.PathProviderPlugin;
@@ -13,7 +13,7 @@ public class EmbeddingV1Activity extends FlutterActivity {
     super.onCreate(savedInstanceState);
     CameraPlugin.registerWith(registrarFor("io.flutter.plugins.camera.CameraPlugin"));
     IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
+        registrarFor("dev.flutter.plugins.integration_test.integration_testPlugin"));
     PathProviderPlugin.registerWith(
         registrarFor("io.flutter.plugins.pathprovider.PathProviderPlugin"));
     VideoPlayerPlugin.registerWith(

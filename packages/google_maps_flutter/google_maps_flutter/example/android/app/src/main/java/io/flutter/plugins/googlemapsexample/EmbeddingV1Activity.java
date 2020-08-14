@@ -1,7 +1,7 @@
 package io.flutter.plugins.googlemapsexample;
 
 import android.os.Bundle;
-import dev.flutter.plugins.integrationTest.IntegrationTestPlugin;
+import dev.flutter.plugins.integration_test.integration_testPlugin;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.googlemaps.GoogleMapsPlugin;
 
@@ -11,6 +11,6 @@ public class EmbeddingV1Activity extends FlutterActivity {
     super.onCreate(savedInstanceState);
     GoogleMapsPlugin.registerWith(registrarFor("io.flutter.plugins.googlemaps.GoogleMapsPlugin"));
     IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
+        registrarFor("dev.flutter.plugins.integration_test.integration_testPlugin"));
   }
 }

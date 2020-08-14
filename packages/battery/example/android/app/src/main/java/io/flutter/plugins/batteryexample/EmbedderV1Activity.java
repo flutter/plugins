@@ -5,7 +5,7 @@
 package io.flutter.plugins.batteryexample;
 
 import android.os.Bundle;
-import dev.flutter.plugins.integrationTest.IntegrationTestPlugin;
+import dev.flutter.plugins.integration_test.integration_testPlugin;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.battery.BatteryPlugin;
 
@@ -15,6 +15,6 @@ public class EmbedderV1Activity extends FlutterActivity {
     super.onCreate(savedInstanceState);
     BatteryPlugin.registerWith(registrarFor("io.flutter.plugins.battery.BatteryPlugin"));
     IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integrationTest.IntegrationTestPlugin"));
+        registrarFor("dev.flutter.plugins.integration_test.integration_testPlugin"));
   }
 }
