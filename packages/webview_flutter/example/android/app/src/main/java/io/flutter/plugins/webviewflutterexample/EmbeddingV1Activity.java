@@ -5,7 +5,6 @@
 package io.flutter.plugins.webviewflutterexample;
 
 import android.os.Bundle;
-import dev.flutter.plugins.integration_test.integration_testPlugin;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin;
 

@@ -1,7 +1,6 @@
 package io.flutter.plugins.localauthexample;
 
 import android.os.Bundle;
-import dev.flutter.plugins.integration_test.integration_testPlugin;
 import io.flutter.app.FlutterFragmentActivity;
 import io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin;
 import io.flutter.plugins.localauth.LocalAuthPlugin;
