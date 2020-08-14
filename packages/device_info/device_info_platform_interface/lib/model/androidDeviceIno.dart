@@ -2,7 +2,8 @@
 ///
 /// See: https://developer.android.com/reference/android/os/Build.html
 class AndroidDeviceInfo {
-  AndroidDeviceInfo._({
+  /// Android device Info class.
+  AndroidDeviceInfo({
     this.version,
     this.board,
     this.bootloader,
@@ -107,9 +108,9 @@ class AndroidDeviceInfo {
 
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo fromMap(Map<String, dynamic> map) {
-    return AndroidDeviceInfo._(
-      version:
-          AndroidBuildVersion._fromMap(map['version']?.cast<String, dynamic>()),
+    return AndroidDeviceInfo(
+      version: AndroidBuildVersion._fromMap(
+          map['version']?.cast<String, dynamic>() ?? {}),
       board: map['board'],
       bootloader: map['bootloader'],
       brand: map['brand'],
@@ -122,14 +123,14 @@ class AndroidDeviceInfo {
       manufacturer: map['manufacturer'],
       model: map['model'],
       product: map['product'],
-      supported32BitAbis: _fromList(map['supported32BitAbis']),
-      supported64BitAbis: _fromList(map['supported64BitAbis']),
-      supportedAbis: _fromList(map['supportedAbis']),
+      supported32BitAbis: _fromList(map['supported32BitAbis'] ?? []),
+      supported64BitAbis: _fromList(map['supported64BitAbis'] ?? []),
+      supportedAbis: _fromList(map['supportedAbis'] ?? []),
       tags: map['tags'],
       type: map['type'],
       isPhysicalDevice: map['isPhysicalDevice'],
       androidId: map['androidId'],
-      systemFeatures: _fromList(map['systemFeatures']),
+      systemFeatures: _fromList(map['systemFeatures'] ?? []),
     );
   }
 

@@ -1,9 +1,9 @@
-
 /// Information derived from `UIDevice`.
 ///
 /// See: https://developer.apple.com/documentation/uikit/uidevice
 class IosDeviceInfo {
-  IosDeviceInfo._({
+  /// IOS device info class.
+  IosDeviceInfo({
     this.name,
     this.systemName,
     this.systemVersion,
@@ -40,7 +40,7 @@ class IosDeviceInfo {
 
   /// Deserializes from the map message received from [_kChannel].
   static IosDeviceInfo fromMap(Map<String, dynamic> map) {
-    return IosDeviceInfo._(
+    return IosDeviceInfo(
       name: map['name'],
       systemName: map['systemName'],
       systemVersion: map['systemVersion'],
@@ -48,7 +48,8 @@ class IosDeviceInfo {
       localizedModel: map['localizedModel'],
       identifierForVendor: map['identifierForVendor'],
       isPhysicalDevice: map['isPhysicalDevice'] == 'true',
-      utsname: IosUtsname._fromMap(map['utsname']?.cast<String, dynamic>()),
+      utsname:
+          IosUtsname._fromMap(map['utsname']?.cast<String, dynamic>() ?? {}),
     );
   }
 }

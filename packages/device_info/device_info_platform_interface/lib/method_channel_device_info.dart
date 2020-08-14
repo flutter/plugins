@@ -4,27 +4,28 @@ import 'package:flutter/services.dart';
 import 'package:device_info_platform_interface/model/androidDeviceIno.dart';
 import 'package:device_info_platform_interface/model/iosDeviceInfo.dart';
 
-import 'device_info_platform_interface.dart';
+import 'package:meta/meta.dart';
 
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/device_info');
+import 'device_info_platform_interface.dart';
 
 /// An implementation of [DeviceInfoPlatform] that uses method channels.
 class MethodChannelDeviceInfo extends DeviceInfoPlatform {
+  /// The method channel used to interact with the native platform.
+  @visibleForTesting
+  MethodChannel channel = MethodChannel('plugins.flutter.io/device_info');
+
   // Method channel for Android devices
   Future<AndroidDeviceInfo> androidInfo() async {
     return AndroidDeviceInfo.fromMap(
-      Map<String, dynamic>.from(
-        await _channel.invokeMethod('getAndroidDeviceInfo'),
-      ),
+      (await channel.invokeMethod('getAndroidDeviceInfo'))
+          .cast<String, dynamic>(),
     );
   }
 
   // Method channel for iOS devices
   Future<IosDeviceInfo> iosInfo() async {
     return IosDeviceInfo.fromMap(
-      Map<String, dynamic>.from(
-        await _channel.invokeMethod('getIosDeviceInfo'),
-      ),
+      (await channel.invokeMethod('getIosDeviceInfo')).cast<String, dynamic>(),
     );
   }
 }
