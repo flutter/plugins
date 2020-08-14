@@ -23,7 +23,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: dev.flutter.plugins.integrationTest
+        package: dev.flutter.plugins.integration_test
         pluginClass: IntegrationTestPlugin
       ios:
         pluginClass: IntegrationTestPlugin
