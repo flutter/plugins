@@ -1,5 +1,10 @@
 # 0.1.3
+
 - Added "windowName" parameter that lets you launch url in new tab,same tab or in an iframe
+
+# 0.1.2+1
+
+- Update docs
 
 # 0.1.2
 
