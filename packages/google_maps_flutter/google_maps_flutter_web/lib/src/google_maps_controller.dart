@@ -1,5 +1,10 @@
 part of google_maps_flutter_web;
 
+/// Type used when passing an override to the _createMap function.
+@visibleForTesting
+typedef DebugCreateMapFunction = gmaps.GMap Function(
+    HtmlElement div, gmaps.MapOptions options);
+
 /// Encapsulates a [gmaps.GMap], its events, and where in the DOM it's rendered.
 class GoogleMapController {
   // The internal ID of the map. Used to broadcast events, DOM IDs and everything where a unique ID is needed.
@@ -11,15 +16,29 @@ class GoogleMapController {
     'options': {},
   };
 
+  // Creates the 'viewType' for the _widget
+  String _getViewType(int mapId) => 'plugins.flutter.io/google_maps_$mapId';
+
   // The Flutter widget that contains the rendered Map.
   HtmlElementView _widget;
   HtmlElement _div;
 
-  /// The Flutter widget that contains the rendered Map. Used for caching.
-  HtmlElementView get widget => _widget;
+  /// The Flutter widget that will contain the rendered Map. Used for caching.
+  HtmlElementView get widget {
+    if (_widget == null && !_streamController.isClosed) {
+      _widget = HtmlElementView(
+        viewType: _getViewType(_mapId),
+      );
+    }
+    return _widget;
+  }
 
   // The currently-enabled traffic layer.
   gmaps.TrafficLayer _trafficLayer;
+
+  /// A getter for the current traffic layer. Only for tests.
+  @visibleForTesting
+  gmaps.TrafficLayer get trafficLayer => _trafficLayer;
 
   // The underlying GMap instance. This is the interface with the JS SDK.
   gmaps.GMap _googleMap;
@@ -54,27 +73,50 @@ class GoogleMapController {
     _polylinesController = PolylinesController(stream: this._streamController);
     _markersController = MarkersController(stream: this._streamController);
 
-    // Create the widget. Note that we need to "leak" the div, so it can be used
-    // to build the gmaps.GMap object.
-    _widget =
-        HtmlElementView(viewType: 'plugins.flutter.io/google_maps_$mapId');
-    _div = DivElement()..id = 'plugins.flutter.io/google_maps_$mapId';
+    // Register the view factory that will hold the `_div` that will hold the map.
+    // Note that we need to "leak" the div, so it can be used to build the gmaps.GMap object on init().
+    _div = DivElement()..id = _getViewType(mapId);
     // TODO: Move the comment below to analysis-options.yaml
     // ignore:undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
-      'plugins.flutter.io/google_maps_$mapId',
+      _getViewType(mapId),
       (int viewId) => _div,
     );
+  }
+
+  /// Overrides certain properties to install mocks defined during testing.
+  @visibleForTesting
+  void debugSetOverrides({
+    DebugCreateMapFunction createMap,
+    MarkersController markers,
+    CirclesController circles,
+    PolygonsController polygons,
+    PolylinesController polylines,
+  }) {
+    _overrideCreateMap = createMap;
+    _markersController = markers ?? _markersController;
+    _circlesController = circles ?? _circlesController;
+    _polygonsController = polygons ?? _polygonsController;
+    _polylinesController = polylines ?? _polylinesController;
+  }
+
+  DebugCreateMapFunction _overrideCreateMap;
+
+  gmaps.GMap _createMap(HtmlElement div, gmaps.MapOptions options) {
+    if (_overrideCreateMap != null) {
+      return _overrideCreateMap(div, options);
+    }
+    return gmaps.GMap(div, options);
   }
 
   /// Initializes the [gmaps.GMap] instance from the stored `rawOptions`.
   void init() {
     var options = _rawOptionsToGmapsOptions(_rawOptions);
     // Initial position can only to be set here!
-    options = _setInitialPosition(_rawOptions, options);
+    options = _applyInitialPosition(_rawOptions, options);
 
     // Create the map...
-    _googleMap = gmaps.GMap(_div, options);
+    _googleMap = _createMap(_div, options);
 
     _attachMapEvents(_googleMap);
     _attachGeometryControllers(_googleMap);
@@ -86,19 +128,19 @@ class GoogleMapController {
       polylines: _rawOptionsToInitialPolylines(_rawOptions),
     );
 
-    _setTrafficLayer(_isTrafficLayerEnabled(_rawOptions));
+    _setTrafficLayer(_googleMap, _isTrafficLayerEnabled(_rawOptions));
   }
 
   // Funnels map gmap events into the plugin's stream controller.
   void _attachMapEvents(gmaps.GMap map) {
     map.onClick.listen((event) {
       _streamController.add(
-        MapTapEvent(_mapId, _gmLatlngToLatlng(event.latLng)),
+        MapTapEvent(_mapId, _gmLatLngToLatLng(event.latLng)),
       );
     });
     map.onRightclick.listen((event) {
       _streamController.add(
-        MapLongPressEvent(_mapId, _gmLatlngToLatlng(event.latLng)),
+        MapLongPressEvent(_mapId, _gmLatLngToLatLng(event.latLng)),
       );
     });
     map.onBoundsChanged.listen((event) {
@@ -144,12 +186,17 @@ class GoogleMapController {
     _polylinesController.addPolylines(polylines);
   }
 
-  // Merges new options coming from the plugin into the 'options' entry of the
-  // _rawOptions map.
+  // Merges new options coming from the plugin into the `key` entry of the _rawOptions map.
+  //
+  // By default: `key` is 'options'.
+  //
   // Returns the updated _rawOptions object.
-  Map<String, dynamic> _mergeRawOptions(Map<String, dynamic> newOptions) {
-    _rawOptions['options'] = <String, dynamic>{
-      ..._rawOptions['options'],
+  Map<String, dynamic> _mergeRawOptions(
+    Map<String, dynamic> newOptions, {
+    String key = 'options',
+  }) {
+    _rawOptions[key] = <String, dynamic>{
+      ...(_rawOptions[key] ?? {}),
       ...newOptions,
     };
     return _rawOptions;
@@ -162,7 +209,7 @@ class GoogleMapController {
     final newOptions = _mergeRawOptions(optionsUpdate);
 
     _setOptions(_rawOptionsToGmapsOptions(newOptions));
-    _setTrafficLayer(_isTrafficLayerEnabled(newOptions));
+    _setTrafficLayer(_googleMap, _isTrafficLayerEnabled(newOptions));
   }
 
   /// Sets new [gmaps.MapOptions] on the wrapped map.
@@ -170,11 +217,11 @@ class GoogleMapController {
     _googleMap?.options = options;
   }
 
-  /// Attaches/detaches a Traffic Layer on the current googleMap.
-  void _setTrafficLayer(bool attach) {
+  /// Attaches/detaches a Traffic Layer on the passed `map` if `attach` is true/false.
+  void _setTrafficLayer(gmaps.GMap map, bool attach) {
     if (attach && _trafficLayer == null) {
       _trafficLayer = gmaps.TrafficLayer();
-      _trafficLayer.set('map', _googleMap);
+      _trafficLayer.set('map', map);
     }
     if (!attach && _trafficLayer != null) {
       _trafficLayer.set('map', null);
@@ -193,7 +240,7 @@ class GoogleMapController {
   /// Returns the [ScreenCoordinate] for a given viewport [LatLng].
   Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
     final point =
-        _googleMap.projection.fromLatLngToPoint(_latlngToGmLatlng(latLng));
+        _googleMap.projection.fromLatLngToPoint(_latLngToGmLatLng(latLng));
     return ScreenCoordinate(x: point.x, y: point.y);
   }
 
@@ -202,7 +249,7 @@ class GoogleMapController {
     final latLng = _googleMap.projection.fromPointToLatLng(
       gmaps.Point(screenCoordinate.x, screenCoordinate.y),
     );
-    return _gmLatlngToLatlng(latLng);
+    return _gmLatLngToLatLng(latLng);
   }
 
   /// Applies a `cameraUpdate` to the current viewport.
@@ -254,7 +301,7 @@ class GoogleMapController {
   }
 
   /// Returns true if the [InfoWindow] of the marker identified by [MarkerId] is shown.
-  Future<bool> isInfoWindowShown(MarkerId markerId) async {
+  bool isInfoWindowShown(MarkerId markerId) {
     return _markersController?.isInfoWindowShown(markerId);
   }
 

@@ -6,6 +6,10 @@ final _nullLatLngBounds = LatLngBounds(
   southwest: _nullLatLng,
 );
 
+// Defaults taken from the Google Maps Platform SDK documentation.
+final _defaultStrokeColor = Colors.black.value;
+final _defaultFillColor = Colors.transparent.value;
+
 // Indices in the plugin side don't match with the ones
 // in the gmaps lib. This translates from plugin -> gmaps.
 final _mapTypeToMapTypeId = {
@@ -75,7 +79,10 @@ gmaps.MapOptions _rawOptionsToGmapsOptions(Map<String, dynamic> rawOptions) {
   return options;
 }
 
-gmaps.MapOptions _setInitialPosition(Map<String, dynamic> rawOptions, gmaps.MapOptions options) {
+gmaps.MapOptions _applyInitialPosition(
+  Map<String, dynamic> rawOptions,
+  gmaps.MapOptions options,
+) {
   // Adjust the initial position, if passed...
   Map<String, dynamic> initialPosition = rawOptions['initialCameraPosition'];
   if (initialPosition != null) {
@@ -198,11 +205,13 @@ List<gmaps.MapTypeStyle> _mapStyles(String mapStyleJson) {
   return styles;
 }
 
-gmaps.LatLng _latlngToGmLatlng(LatLng latLng) {
+gmaps.LatLng _latLngToGmLatLng(LatLng latLng) {
+  if (latLng == null) return null;
   return gmaps.LatLng(latLng.latitude, latLng.longitude);
 }
 
-LatLng _gmLatlngToLatlng(gmaps.LatLng latLng) {
+LatLng _gmLatLngToLatLng(gmaps.LatLng latLng) {
+  if (latLng == null) return _nullLatLng;
   return LatLng(latLng.lat, latLng.lng);
 }
 
@@ -212,17 +221,17 @@ LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds latLngBounds) {
   }
 
   return LatLngBounds(
-    southwest: _gmLatlngToLatlng(latLngBounds.southWest),
-    northeast: _gmLatlngToLatlng(latLngBounds.northEast),
+    southwest: _gmLatLngToLatLng(latLngBounds.southWest),
+    northeast: _gmLatLngToLatLng(latLngBounds.northEast),
   );
 }
 
 CameraPosition _gmViewportToCameraPosition(gmaps.GMap map) {
   return CameraPosition(
-    target: _gmLatlngToLatlng(map.center),
+    target: _gmLatLngToLatLng(map.center),
     bearing: map.heading ?? 0,
-    tilt: map.tilt,
-    zoom: map.zoom.toDouble(),
+    tilt: map.tilt ?? 0,
+    zoom: map.zoom?.toDouble() ?? 10,
   );
 }
 
@@ -230,8 +239,24 @@ Set<Marker> _rawOptionsToInitialMarkers(Map<String, dynamic> rawOptions) {
   final List<Map<String, dynamic>> list = rawOptions['markersToAdd'];
   Set<Marker> markers = {};
   markers.addAll(list?.map((rawMarker) {
-        Offset offset =
-            Offset((rawMarker['anchor'][0]), (rawMarker['anchor'][1]));
+        Offset offset;
+        LatLng position;
+        InfoWindow infoWindow;
+        if (rawMarker['anchor'] != null) {
+          offset = Offset((rawMarker['anchor'][0]), (rawMarker['anchor'][1]));
+        }
+        if (rawMarker['position'] != null) {
+          position = LatLng.fromJson(rawMarker['position']);
+        }
+        if (rawMarker['infoWindow'] != null || rawMarker['snippet'] != null) {
+          String title = rawMarker['infoWindow'] != null
+              ? rawMarker['infoWindow']['title']
+              : null;
+          infoWindow = InfoWindow(
+            title: title ?? '',
+            snippet: rawMarker['snippet'] ?? '',
+          );
+        }
         return Marker(
           markerId: MarkerId(rawMarker['markerId']),
           alpha: rawMarker['alpha'],
@@ -239,14 +264,10 @@ Set<Marker> _rawOptionsToInitialMarkers(Map<String, dynamic> rawOptions) {
           consumeTapEvents: rawMarker['consumeTapEvents'],
           draggable: rawMarker['draggable'],
           flat: rawMarker['flat'],
-          icon: BitmapDescriptor
-              .defaultMarker, // TODO: Doesn't this support custom icons?
-          infoWindow: InfoWindow(
-            title: rawMarker['infoWindow']['title'] ?? '',
-            snippet: rawMarker['snippet'],
-            anchor: offset, // TODO: Check this value. Is it correct?
-          ),
-          position: LatLng.fromJson(rawMarker['position']),
+          // TODO: Doesn't this support custom icons?
+          icon: BitmapDescriptor.defaultMarker,
+          infoWindow: infoWindow,
+          position: position ?? _nullLatLng,
           rotation: rawMarker['rotation'],
           visible: rawMarker['visible'],
           zIndex: rawMarker['zIndex'],
@@ -260,13 +281,17 @@ Set<Circle> _rawOptionsToInitialCircles(Map<String, dynamic> rawOptions) {
   final List<Map<String, dynamic>> list = rawOptions['circlesToAdd'];
   Set<Circle> circles = {};
   circles.addAll(list?.map((rawCircle) {
+        LatLng center;
+        if (rawCircle['center'] != null) {
+          center = LatLng.fromJson(rawCircle['center']);
+        }
         return Circle(
           circleId: CircleId(rawCircle['circleId']),
           consumeTapEvents: rawCircle['consumeTapEvents'],
-          fillColor: Color(rawCircle['fillColor']),
-          center: LatLng.fromJson(rawCircle['center']),
+          fillColor: Color(rawCircle['fillColor'] ?? _defaultFillColor),
+          center: center ?? _nullLatLng,
           radius: rawCircle['radius'],
-          strokeColor: Color(rawCircle['strokeColor']),
+          strokeColor: Color(rawCircle['strokeColor'] ?? _defaultStrokeColor),
           strokeWidth: rawCircle['strokeWidth'],
           visible: rawCircle['visible'],
           zIndex: rawCircle['zIndex'],
@@ -284,7 +309,7 @@ Set<Polyline> _rawOptionsToInitialPolylines(Map<String, dynamic> rawOptions) {
         return Polyline(
           polylineId: PolylineId(rawPolyline['polylineId']),
           consumeTapEvents: rawPolyline['consumeTapEvents'],
-          color: Color(rawPolyline['color']),
+          color: Color(rawPolyline['color'] ?? _defaultStrokeColor),
           geodesic: rawPolyline['geodesic'],
           visible: rawPolyline['visible'],
           zIndex: rawPolyline['zIndex'],
@@ -306,9 +331,9 @@ Set<Polygon> _rawOptionsToInitialPolygons(Map<String, dynamic> rawOptions) {
         return Polygon(
           polygonId: PolygonId(rawPolygon['polygonId']),
           consumeTapEvents: rawPolygon['consumeTapEvents'],
-          fillColor: Color(rawPolygon['fillColor']),
+          fillColor: Color(rawPolygon['fillColor'] ?? _defaultFillColor),
           geodesic: rawPolygon['geodesic'],
-          strokeColor: Color(rawPolygon['strokeColor']),
+          strokeColor: Color(rawPolygon['strokeColor'] ?? _defaultStrokeColor),
           strokeWidth: rawPolygon['strokeWidth'],
           visible: rawPolygon['visible'],
           zIndex: rawPolygon['zIndex'],
@@ -403,7 +428,7 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
     gmaps.GMap googleMap, Polygon polygon) {
   List<gmaps.LatLng> paths = [];
   polygon.points.forEach((point) {
-    paths.add(_latlngToGmLatlng(point));
+    paths.add(_latLngToGmLatLng(point));
   });
   return gmaps.PolygonOptions()
     ..paths = paths
@@ -421,7 +446,7 @@ gmaps.PolylineOptions _polylineOptionsFromPolyline(
     gmaps.GMap googleMap, Polyline polyline) {
   List<gmaps.LatLng> paths = [];
   polyline.points.forEach((point) {
-    paths.add(_latlngToGmLatlng(point));
+    paths.add(_latLngToGmLatLng(point));
   });
 
   return gmaps.PolylineOptions()
@@ -467,13 +492,22 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
       map.panBy(json[1], json[2]);
       break;
     case 'zoomBy':
+      gmaps.LatLng focusLatLng;
       double zoomDelta = json[1] ?? 0;
       // Web only supports integer changes...
       int newZoomDelta = zoomDelta < 0 ? zoomDelta.floor() : zoomDelta.ceil();
-      map.zoom = map.zoom + newZoomDelta;
       if (json.length == 3) {
         // With focus
-        map.panTo(gmaps.LatLng(json[2][0], json[2][1]));
+        try {
+          focusLatLng = _pixelToLatLng(map, json[2][0], json[2][1]);
+        } catch (e) {
+          // https://github.com/a14n/dart-google-maps/issues/87
+          // print('Error computing new focus LatLng. JS Error: ' + e.toString());
+        }
+      }
+      map.zoom = map.zoom + newZoomDelta;
+      if (focusLatLng != null) {
+        map.panTo(focusLatLng);
       }
       break;
     case 'zoomIn':
@@ -488,4 +522,21 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
     default:
       throw UnimplementedError('Unimplemented CameraMove: ${json[0]}.');
   }
+}
+
+// original JS by: Byron Singh (https://stackoverflow.com/a/30541162)
+gmaps.LatLng _pixelToLatLng(gmaps.GMap map, int x, int y) {
+  final ne = map.bounds.northEast;
+  final sw = map.bounds.southWest;
+  final projection = map.projection;
+
+  final topRight = projection.fromLatLngToPoint(ne);
+  final bottomLeft = projection.fromLatLngToPoint(sw);
+
+  final scale = 1 << map.zoom; // 2 ^ zoom
+
+  final point =
+      gmaps.Point((x / scale) + bottomLeft.x, (y / scale) + topRight.y);
+
+  return projection.fromPointToLatLng(point);
 }

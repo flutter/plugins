@@ -139,7 +139,7 @@ class MarkersController extends AbstractController {
   void _onMarkerDragEnd(MarkerId markerId, gmaps.LatLng latLng) {
     _streamController.add(MarkerDragEndEvent(
       mapId,
-      _gmLatlngToLatlng(latLng),
+      _gmLatLngToLatLng(latLng),
       markerId,
     ));
   }

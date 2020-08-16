@@ -165,7 +165,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   Future<bool> isMarkerInfoWindowShown(
     MarkerId markerId, {
     @required int mapId,
-  }) {
+  }) async {
     return _map(mapId).isInfoWindowShown(markerId);
   }
 
