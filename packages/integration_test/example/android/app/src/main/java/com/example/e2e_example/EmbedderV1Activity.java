@@ -5,6 +5,7 @@
 package com.example.integration_test_example;
 
 import android.os.Bundle;
+import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
 import io.flutter.app.FlutterActivity;
 
 public class EmbedderV1Activity extends FlutterActivity {

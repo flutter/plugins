@@ -1,6 +1,7 @@
 package io.flutter.plugins.cameraexample;
 
 import android.os.Bundle;
+import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.camera.CameraPlugin;
 import io.flutter.plugins.pathprovider.PathProviderPlugin;

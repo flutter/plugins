@@ -5,6 +5,7 @@
 package io.flutter.plugins.videoplayerexample;
 
 import android.os.Bundle;
+import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.videoplayer.VideoPlayerPlugin;
 
