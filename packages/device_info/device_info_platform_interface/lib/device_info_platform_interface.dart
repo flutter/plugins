@@ -1,10 +1,18 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 
-import 'package:device_info_platform_interface/model/androidDeviceIno.dart';
-import 'package:device_info_platform_interface/model/iosDeviceInfo.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'method_channel_device_info.dart';
+import 'method_channel/method_channel_device_info.dart';
+
+import 'model/android_device_info.dart';
+import 'model/ios_device_info.dart';
+
+export 'model/android_device_info.dart';
+export 'model/ios_device_info.dart';
 
 /// The interface that implementations of device_info must implement.
 ///

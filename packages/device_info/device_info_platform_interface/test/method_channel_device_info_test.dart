@@ -1,8 +1,13 @@
-import 'package:device_info_platform_interface/model/androidDeviceIno.dart';
-import 'package:device_info_platform_interface/model/iosDeviceInfo.dart';
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:device_info_platform_interface/method_channel_device_info.dart';
+
+import 'package:device_info_platform_interface/device_info_platform_interface.dart';
+
+import 'package:device_info_platform_interface/method_channel/method_channel_device_info.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

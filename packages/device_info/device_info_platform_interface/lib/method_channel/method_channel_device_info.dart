@@ -1,12 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:device_info_platform_interface/model/androidDeviceIno.dart';
-import 'package:device_info_platform_interface/model/iosDeviceInfo.dart';
-
 import 'package:meta/meta.dart';
 
-import 'device_info_platform_interface.dart';
+import 'package:device_info_platform_interface/device_info_platform_interface.dart';
 
 /// An implementation of [DeviceInfoPlatform] that uses method channels.
 class MethodChannelDeviceInfo extends DeviceInfoPlatform {
