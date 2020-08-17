@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
       List<XTypeGroup> typeGroups = List();
 
       List<XType> types = List();
-      _extensionController.text.split(',').forEach((type) => types.add(XType.fromExtension(type)));
+      _extensionController.text.split(',').forEach((type) => types.add(XType(extension: type)));
 
       typeGroups.add(XTypeGroup(label: 'Example Files', fileTypes: types));
       file = await loadFile(acceptedTypeGroups: typeGroups);
