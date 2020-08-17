@@ -12,7 +12,7 @@ public class EmbeddingV1Activity extends FlutterActivity {
     super.onCreate(savedInstanceState);
     CameraPlugin.registerWith(registrarFor("io.flutter.plugins.camera.CameraPlugin"));
     IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integration_test.integration_testPlugin"));
+        registrarFor("dev.flutter.plugins.integration_test.IntegrationTestPlugin"));
     PathProviderPlugin.registerWith(
         registrarFor("io.flutter.plugins.pathprovider.PathProviderPlugin"));
     VideoPlayerPlugin.registerWith(

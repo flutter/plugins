@@ -10,7 +10,7 @@ public class EmbeddingV1Activity extends FlutterFragmentActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integration_test.integration_testPlugin"));
+        registrarFor("dev.flutter.plugins.integration_test.IntegrationTestPlugin"));
     FlutterAndroidLifecyclePlugin.registerWith(
         registrarFor(
             "io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin"));

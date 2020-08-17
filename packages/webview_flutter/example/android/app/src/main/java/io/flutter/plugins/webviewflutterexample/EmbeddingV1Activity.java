@@ -13,7 +13,7 @@ public class EmbeddingV1Activity extends FlutterActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integration_test.integration_testPlugin"));
+        registrarFor("dev.flutter.plugins.integration_test.IntegrationTestPlugin"));
     WebViewFlutterPlugin.registerWith(
         registrarFor("io.flutter.plugins.webviewflutter.WebViewFlutterPlugin"));
   }
