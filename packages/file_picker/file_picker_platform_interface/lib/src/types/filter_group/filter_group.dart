@@ -43,12 +43,6 @@ class XType {
   }) :  this._extension = extension,
         this._mime = mime;
 
-  /// Constructors that take other files types as input
-  XType.fromMime(String mime) : this._mime = mime;
-
-  /// Constructor that takes extension as input
-  XType.fromExtension(String extension) : this._extension = extension;
-
   /// Get the mime type from this XType
   String get mime {
     if (mime == null) {
