@@ -41,12 +41,12 @@ abstract class FilePickerPlatform extends PlatformInterface {
   }
 
   /// Open file dialog for loading files and return a file path
-  Future<XFile> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
+  Future<XFile> loadFile({List<XTypeGroup> acceptedTypeGroups}) {
     throw UnimplementedError('loadFile() has not been implemented.');
   }
 
   /// Open file dialog for loading files and return a list of file paths
-  Future<List<XFile>> loadFiles({List<FileTypeFilterGroup> acceptedTypes}) {
+  Future<List<XFile>> loadFiles({List<XTypeGroup> acceptedTypeGroups}) {
     throw UnimplementedError('loadFile() has not been implemented.');
   }
 
