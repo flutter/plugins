@@ -241,9 +241,11 @@ static FlutterError *getFlutterError(NSError *error) {
 #pragma mark - private methods
 
 - (void)respondWithAccount:(id)account error:(NSError *)error {
-  FlutterResult result = _accountRequest;
-  _accountRequest = nil;
-  result(error != nil ? getFlutterError(error) : account);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    FlutterResult result = _accountRequest;
+    _accountRequest = nil;
+    result(error != nil ? getFlutterError(error) : account);
+  });
 }
 
 - (UIViewController *)topViewController {
