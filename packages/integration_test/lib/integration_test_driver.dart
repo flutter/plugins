@@ -11,9 +11,6 @@ import 'package:flutter_driver/flutter_driver.dart';
 import 'package:integration_test/common.dart';
 import 'package:path/path.dart' as path;
 
-/// This method remains for backword compatibility.
-Future<void> integration_main() => integrationDriver();
-
 /// Flutter Driver test output directory.
 ///
 /// Tests should write any output files to this directory. Defaults to the path
