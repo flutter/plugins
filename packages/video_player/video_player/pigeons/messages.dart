@@ -26,10 +26,6 @@ class CreateMessage {
   String formatHint;
 }
 
-class MixWithOthersMessage {
-  bool mixWithOthers;
-}
-
 @HostApi()
 abstract class VideoPlayerApi {
   void initialize();
@@ -41,7 +37,6 @@ abstract class VideoPlayerApi {
   PositionMessage position(TextureMessage msg);
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
-  void setMixWithOthers(MixWithOthersMessage msg);
 }
 
 void configurePigeon(PigeonOptions opts) {
