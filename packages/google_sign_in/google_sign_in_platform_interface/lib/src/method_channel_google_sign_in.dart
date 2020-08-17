@@ -29,6 +29,7 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
       'signInOption': signInOption.toString(),
       'scopes': scopes,
       'hostedDomain': hostedDomain,
+      'clientId': clientId
     });
   }
 
