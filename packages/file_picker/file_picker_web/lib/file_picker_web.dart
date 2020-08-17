@@ -31,10 +31,12 @@ class FilePickerPlugin extends FilePickerPlatform {
   }
   
   /// Convert list of filter groups to a comma-separated string
-  String _getStringFromFilterGroup (List<FileTypeFilterGroup> acceptedTypes) {
+  String _getStringFromFilterGroup (List<XTypeGroup> acceptedTypes) {
     List<String> allExtensions = List();
-    for (FileTypeFilterGroup group in acceptedTypes ?? []) {
-      allExtensions += group.fileExtensions;
+    for (XTypeGroup group in acceptedTypes ?? []) {
+      for (XType type in group.fileTypes ?? []) {
+        allExtensions.add(type.extension);
+      }
     }
     return allExtensions?.where((e) => e.isNotEmpty)?.join(',') ?? '';
   }
@@ -143,7 +145,7 @@ class FilePickerPlugin extends FilePickerPlatform {
   /// NEW API
   
   /// Load Helper
-  Future<List<XFile>> _loadFileHelper (bool multiple, List<FileTypeFilterGroup> acceptedTypes) {
+  Future<List<XFile>> _loadFileHelper (bool multiple, List<XTypeGroup> acceptedTypes) {
     final  acceptedTypeString = _getStringFromFilterGroup(acceptedTypes);
 
     final FileUploadInputElement element = createFileInputElement(acceptedTypeString, multiple);
@@ -155,9 +157,9 @@ class FilePickerPlugin extends FilePickerPlatform {
   
   /// Open file dialog for loading files and return a file path
   @override
-  Future<XFile> loadFile({List<FileTypeFilterGroup> acceptedTypes}) {
+  Future<XFile> loadFile({List<XTypeGroup> acceptedTypeGroups}) {
     Completer<XFile> _completer = Completer();
-    _loadFileHelper(false, acceptedTypes).then((list) {
+    _loadFileHelper(false, acceptedTypeGroups).then((list) {
         _completer.complete(list.first);
       })
       .catchError((err) {
@@ -169,8 +171,8 @@ class FilePickerPlugin extends FilePickerPlatform {
 
   /// Open file dialog for loading files and return a list of file paths
   @override
-  Future<List<XFile>> loadFiles({List<FileTypeFilterGroup> acceptedTypes}) {
-    return _loadFileHelper(true, acceptedTypes);
+  Future<List<XFile>> loadFiles({List<XTypeGroup> acceptedTypeGroups}) {
+    return _loadFileHelper(true, acceptedTypeGroups);
   }
   
   @override

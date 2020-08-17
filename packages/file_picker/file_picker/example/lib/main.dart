@@ -65,9 +65,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loadFile() async {
     XFile file;
     if (_extensionController.text.isNotEmpty) {
-      List<FileTypeFilterGroup> types = List();
-      types.add(FileTypeFilterGroup(label: 'Example Files', fileExtensions: _extensionController.text.split(',')));
-      file = await loadFile(acceptedTypes: types);
+      List<XTypeGroup> typeGroups = List();
+
+      List<XType> types = List();
+      _extensionController.text.split(',').forEach((type) => types.add(XType.fromExtension(type)));
+
+      typeGroups.add(XTypeGroup(label: 'Example Files', fileTypes: types));
+      file = await loadFile(acceptedTypeGroups: typeGroups);
     } else {
       file = await loadFile();
     }
