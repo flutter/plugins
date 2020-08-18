@@ -1,3 +1,7 @@
+## 0.5.30+1
+
+* Fix in example app to properly place polyline at initial camera position.
+
 ## 0.5.30
 
 * Add a `dispose` method to the controller to let the native side know that we're done with said controller.
