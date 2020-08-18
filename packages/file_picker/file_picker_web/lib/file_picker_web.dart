@@ -35,7 +35,10 @@ class FilePickerPlugin extends FilePickerPlatform {
     List<String> allExtensions = List();
     for (XTypeGroup group in acceptedTypes ?? []) {
       for (XType type in group.fileTypes ?? []) {
-        allExtensions.add(type.extension);
+        if (type.extension == null) {
+          continue;
+        }
+        allExtensions.add('.' + type.extension);
       }
     }
     return allExtensions?.where((e) => e.isNotEmpty)?.join(',') ?? '';
