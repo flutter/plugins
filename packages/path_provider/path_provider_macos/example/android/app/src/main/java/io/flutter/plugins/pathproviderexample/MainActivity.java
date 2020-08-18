@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.pathproviderexample;
 
+import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugins.pathprovider.PathProviderPlugin;
