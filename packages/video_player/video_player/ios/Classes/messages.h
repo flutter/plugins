@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class FLTLoopingMessage;
 @class FLTVolumeMessage;
 @class FLTPositionMessage;
-@class FLTMixWithOthersMessage;
 
 @interface FLTTextureMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber *textureId;
@@ -40,10 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber *position;
 @end
 
-@interface FLTMixWithOthersMessage : NSObject
-@property(nonatomic, strong, nullable) NSNumber *mixWithOthers;
-@end
-
 @protocol FLTVideoPlayerApi
 - (void)initialize:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable FLTTextureMessage *)create:(FLTCreateMessage *)input
@@ -56,8 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
                                     error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)seekTo:(FLTPositionMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)pause:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setMixWithOthers:(FLTMixWithOthersMessage *)input
-                   error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger,
