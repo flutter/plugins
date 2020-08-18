@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
@@ -29,6 +29,9 @@ elif [[ "${ACTIONS[@]}" == "analyze" ]]; then
 fi
 
 BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
+
+# This has to be turned into a list and then split out to the command line,
+# otherwise it gets treated as a single argument.
 PLUGIN_SHARDING=($PLUGIN_SHARDING)
 
 if [[ "${BRANCH_NAME}" == "master" ]]; then
