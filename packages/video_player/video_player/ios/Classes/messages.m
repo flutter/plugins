@@ -40,10 +40,6 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
 + (FLTPositionMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
-@interface FLTMixWithOthersMessage ()
-+ (FLTMixWithOthersMessage *)fromMap:(NSDictionary *)dict;
-- (NSDictionary *)toMap;
-@end
 
 @implementation FLTTextureMessage
 + (FLTTextureMessage *)fromMap:(NSDictionary *)dict {
@@ -155,22 +151,6 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
                                    @"textureId",
                                    (self.position != nil ? self.position : [NSNull null]),
                                    @"position", nil];
-}
-@end
-
-@implementation FLTMixWithOthersMessage
-+ (FLTMixWithOthersMessage *)fromMap:(NSDictionary *)dict {
-  FLTMixWithOthersMessage *result = [[FLTMixWithOthersMessage alloc] init];
-  result.mixWithOthers = dict[@"mixWithOthers"];
-  if ((NSNull *)result.mixWithOthers == [NSNull null]) {
-    result.mixWithOthers = nil;
-  }
-  return result;
-}
-- (NSDictionary *)toMap {
-  return [NSDictionary
-      dictionaryWithObjectsAndKeys:(self.mixWithOthers != nil ? self.mixWithOthers : [NSNull null]),
-                                   @"mixWithOthers", nil];
 }
 @end
 
@@ -303,21 +283,6 @@ void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTVi
         FlutterError *error;
         FLTTextureMessage *input = [FLTTextureMessage fromMap:message];
         [api pause:input error:&error];
-        callback(wrapResult(nil, error));
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.VideoPlayerApi.setMixWithOthers"
-               binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTMixWithOthersMessage *input = [FLTMixWithOthersMessage fromMap:message];
-        [api setMixWithOthers:input error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {

@@ -10,8 +10,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player_platform_interface/messages.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+import 'package:video_player_platform_interface/messages.dart';
 
 class FakeController extends ValueNotifier<VideoPlayerValue>
     implements VideoPlayerController {
@@ -52,9 +52,6 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   Future<ClosedCaptionFile> get closedCaptionFile => _loadClosedCaption();
-
-  @override
-  VideoPlayerOptions get videoPlayerOptions => null;
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -577,14 +574,6 @@ void main() {
     expect(colors.playedColor, playedColor);
     expect(colors.bufferedColor, bufferedColor);
     expect(colors.backgroundColor, backgroundColor);
-  });
-
-  test('setMixWithOthers', () {
-    final VideoPlayerController controller = VideoPlayerController.file(
-        File(''),
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
-    controller.initialize();
-    expect(controller.videoPlayerOptions.mixWithOthers, true);
   });
 }
 

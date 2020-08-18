@@ -56,18 +56,14 @@ final class VideoPlayer {
 
   private boolean isInitialized = false;
 
-  private final VideoPlayerOptions options;
-
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
       String dataSource,
-      String formatHint,
-      VideoPlayerOptions options) {
+      String formatHint) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
-    this.options = options;
 
     TrackSelector trackSelector = new DefaultTrackSelector();
     exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
@@ -167,7 +163,7 @@ final class VideoPlayer {
 
     surface = new Surface(textureEntry.surfaceTexture());
     exoPlayer.setVideoSurface(surface);
-    setAudioAttributes(exoPlayer, options.mixWithOthers);
+    setAudioAttributes(exoPlayer);
 
     exoPlayer.addListener(
         new EventListener() {
@@ -207,10 +203,10 @@ final class VideoPlayer {
   }
 
   @SuppressWarnings("deprecation")
-  private static void setAudioAttributes(SimpleExoPlayer exoPlayer, boolean isMixMode) {
+  private static void setAudioAttributes(SimpleExoPlayer exoPlayer) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       exoPlayer.setAudioAttributes(
-          new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(), !isMixMode);
+          new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build());
     } else {
       exoPlayer.setAudioStreamType(C.STREAM_TYPE_MUSIC);
     }
