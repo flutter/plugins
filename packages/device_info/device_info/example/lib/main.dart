@@ -11,6 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:device_info/device_info.dart';
 
+import 'package:device_info_platform_interface/device_info_platform_interface.dart';
+import 'package:device_info_platform_interface/model/android_device_info.dart';
+
 void main() {
   runZoned(() {
     runApp(MyApp());
