@@ -4,7 +4,7 @@
 
 part of google_maps_flutter_web;
 
-/// The `CircleController` class wraps a [gmaps.Circle] and its onTap behavior.
+/// The `CircleController` class wraps a [gmaps.Circle] and its `onTap` behavior.
 class CircleController {
   gmaps.Circle _circle;
 
