@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
