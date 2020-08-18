@@ -13,7 +13,6 @@ import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.videoplayer.Messages.CreateMessage;
 import io.flutter.plugins.videoplayer.Messages.LoopingMessage;
-import io.flutter.plugins.videoplayer.Messages.MixWithOthersMessage;
 import io.flutter.plugins.videoplayer.Messages.PositionMessage;
 import io.flutter.plugins.videoplayer.Messages.TextureMessage;
 import io.flutter.plugins.videoplayer.Messages.VideoPlayerApi;
@@ -26,7 +25,6 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
   private static final String TAG = "VideoPlayerPlugin";
   private final LongSparseArray<VideoPlayer> videoPlayers = new LongSparseArray<>();
   private FlutterState flutterState;
-  private VideoPlayerOptions options = new VideoPlayerOptions();
 
   /** Register this with the v2 embedding for the plugin to respond to lifecycle callbacks. */
   public VideoPlayerPlugin() {}
@@ -115,8 +113,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               eventChannel,
               handle,
               "asset:///" + assetLookupKey,
-              null,
-              options);
+              null);
       videoPlayers.put(handle.id(), player);
     } else {
       player =
@@ -125,8 +122,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               eventChannel,
               handle,
               arg.getUri(),
-              arg.getFormatHint(),
-              options);
+              arg.getFormatHint());
       videoPlayers.put(handle.id(), player);
     }
 
@@ -172,11 +168,6 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
   public void pause(TextureMessage arg) {
     VideoPlayer player = videoPlayers.get(arg.getTextureId());
     player.pause();
-  }
-
-  @Override
-  public void setMixWithOthers(MixWithOthersMessage arg) {
-    options.mixWithOthers = arg.getMixWithOthers();
   }
 
   private interface KeyForAssetFn {
