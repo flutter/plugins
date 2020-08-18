@@ -29,6 +29,8 @@ elif [[ "${ACTIONS[@]}" == "analyze" ]]; then
 fi
 
 BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
+PLUGIN_SHARDING="${PLUGIN_SHARDING%\'}"
+PLUGIN_SHARDING="${PLUGIN_SHARDING#\'}"
 if [[ "${BRANCH_NAME}" == "master" ]]; then
   echo "Running for all packages"
   (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
