@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:e2e/e2e.dart';
@@ -69,7 +73,7 @@ void main() {
           (WidgetTester tester) async {
         expect(
           () => plugin.buildView({}, null, onPlatformViewCreated),
-          throwsException,
+          throwsAssertionError,
           reason:
               '_webOnlyMapCreationId is mandatory to prevent unnecessary reloads in web.',
         );

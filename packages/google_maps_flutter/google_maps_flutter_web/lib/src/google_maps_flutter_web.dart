@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 part of google_maps_flutter_web;
 
 /// The web implementation of [GoogleMapsFlutterPlatform].
@@ -143,6 +147,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   /// Shows the [InfoWindow] (if any) of the [Marker] identified by `markerId`.
+  ///
+  /// See also:
+  ///   * [hideMarkerInfoWindow] to hide the info window.
+  ///   * [isMarkerInfoWindowShown] to check if the info window is visible/hidden.
   @override
   Future<void> showMarkerInfoWindow(
     MarkerId markerId, {
@@ -152,6 +160,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   /// Hides the [InfoWindow] (if any) of the [Marker] identified by `markerId`.
+  ///
+  /// See also:
+  ///   * [showMarkerInfoWindow] to show the info window.
+  ///   * [isMarkerInfoWindowShown] to check if the info window is shown.
   @override
   Future<void> hideMarkerInfoWindow(
     MarkerId markerId, {
@@ -161,6 +173,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   /// Returns true if the [InfoWindow] of the [Marker] identified by `markerId` is shown.
+  ///
+  /// See also:
+  ///   * [showMarkerInfoWindow] to show the info window.
+  ///   * [hideMarkerInfoWindow] to hide the info window.
   @override
   Future<bool> isMarkerInfoWindowShown(
     MarkerId markerId, {
@@ -249,13 +265,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       PlatformViewCreatedCallback onPlatformViewCreated) {
     int mapId = creationParams.remove('_webOnlyMapCreationId');
 
-    if (mapId == null) {
-      throw PlatformException(
-        code: 'maps_web_missing_creation_map_id',
-        message:
-            'Pass a `_webOnlyMapCreationId` in creationParams to prevent reloads in web.',
-      );
-    }
+    assert(mapId != null,
+        'buildView needs a `_webOnlyMapCreationId` in its creationParams to prevent widget reloads in web.');
 
     // Bail fast if we've already rendered this mapId...
     if (_mapById[mapId]?.widget != null) {

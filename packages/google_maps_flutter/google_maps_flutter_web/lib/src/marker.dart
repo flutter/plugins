@@ -1,8 +1,10 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 part of google_maps_flutter_web;
 
-typedef LatLngCallback = void Function(gmaps.LatLng latLng);
-
-/// This class wraps a [gmaps.Marker], how it handles events, and its associated [gmaps.InfoWindow] widget (optional).
+/// The `MarkerController` class wraps a [gmaps.Marker], how it handles events, and its associated (optional) [gmaps.InfoWindow] widget.
 class MarkerController {
   gmaps.Marker _marker;
 
@@ -12,7 +14,7 @@ class MarkerController {
 
   bool _infoWindowShown = false;
 
-  /// Creates a MarkerController, that wraps a Marker object, its onTap/Drag behavior, and its associated InfoWindow.
+  /// Creates a `MarkerController`, which wraps a [gmaps.Marker] object, its `onTap`/`onDrag` behavior, and its associated [gmaps.InfoWindow].
   MarkerController({
     @required gmaps.Marker marker,
     gmaps.InfoWindow infoWindow,
@@ -35,16 +37,16 @@ class MarkerController {
     }
   }
 
-  /// Returns [true] if this Controller will use its own onTap handler to consume events.
+  /// Returns `true` if this Controller will use its own `onTap` handler to consume events.
   bool get consumeTapEvents => _consumeTapEvents;
 
-  /// Returns [true] if the InfoWindow associated to this marker is being shown.
+  /// Returns `true` if the [gmaps.InfoWindow] associated to this marker is being shown.
   bool get infoWindowShown => _infoWindowShown;
 
-  /// Returns the marker associated to this controller.
+  /// Returns the [gmaps.Marker] associated to this controller.
   gmaps.Marker get marker => _marker;
 
-  /// Updates the options of the wrapped [gmaps.Polygon] object.
+  /// Updates the options of the wrapped [gmaps.Marker] object.
   void update(
     gmaps.MarkerOptions options, {
     String newInfoWindowContent,
@@ -55,14 +57,14 @@ class MarkerController {
     }
   }
 
-  /// Disposes of the currently wrapped Marker.
+  /// Disposes of the currently wrapped [gmaps.Marker].
   void remove() {
     _marker.visible = false;
     _marker.map = null;
     _marker = null;
   }
 
-  /// Hide the associated InfoWindow.
+  /// Hide the associated [gmaps.InfoWindow].
   void hideInfoWindow() {
     if (_infoWindow != null) {
       _infoWindow.close();
@@ -70,7 +72,7 @@ class MarkerController {
     }
   }
 
-  /// Show the associated InfoWindow.
+  /// Show the associated [gmaps.InfoWindow].
   void showInfoWindow() {
     if (_infoWindow != null) {
       _infoWindow.open(_marker.map, _marker);

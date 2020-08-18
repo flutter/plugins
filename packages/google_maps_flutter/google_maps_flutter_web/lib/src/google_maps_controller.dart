@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 part of google_maps_flutter_web;
 
 /// Type used when passing an override to the _createMap function.
@@ -73,11 +77,11 @@ class GoogleMapController {
     _polylinesController = PolylinesController(stream: this._streamController);
     _markersController = MarkersController(stream: this._streamController);
 
-    // Register the view factory that will hold the `_div` that will hold the map.
-    // Note that we need to "leak" the div, so it can be used to build the gmaps.GMap object on init().
+    // Register the view factory that will hold the `_div` that holds the map in the DOM.
+    // The `_div` needs to be created outside of the ViewFactory (and cached!) so we can
+    // use it to create the [gmaps.GMap] in the `init()` method of this class.
     _div = DivElement()..id = _getViewType(mapId);
-    // TODO: Move the comment below to analysis-options.yaml
-    // ignore:undefined_prefixed_name
+
     ui.platformViewRegistry.registerViewFactory(
       _getViewType(mapId),
       (int viewId) => _div,
@@ -110,6 +114,12 @@ class GoogleMapController {
   }
 
   /// Initializes the [gmaps.GMap] instance from the stored `rawOptions`.
+  ///
+  /// This method actually renders the GMap into the cached `_div`. This is
+  /// called by the [GoogleMapsPlugin.init] method when appropriate.
+  ///
+  /// Failure to call this method would result in the GMap not rendering at all,
+  /// and most of the public methods on this class no-op'ing.
   void init() {
     var options = _rawOptionsToGmapsOptions(_rawOptions);
     // Initial position can only to be set here!
@@ -212,12 +222,12 @@ class GoogleMapController {
     _setTrafficLayer(_googleMap, _isTrafficLayerEnabled(newOptions));
   }
 
-  /// Sets new [gmaps.MapOptions] on the wrapped map.
+  // Sets new [gmaps.MapOptions] on the wrapped map.
   void _setOptions(gmaps.MapOptions options) {
     _googleMap?.options = options;
   }
 
-  /// Attaches/detaches a Traffic Layer on the passed `map` if `attach` is true/false.
+  // Attaches/detaches a Traffic Layer on the passed `map` if `attach` is true/false.
   void _setTrafficLayer(gmaps.GMap map, bool attach) {
     if (attach && _trafficLayer == null) {
       _trafficLayer = gmaps.TrafficLayer();
@@ -316,22 +326,5 @@ class GoogleMapController {
     _polylinesController = null;
     _markersController = null;
     _streamController.close();
-  }
-}
-
-/// The base class for all "geometry" controllers.
-///
-/// This lets all Geometry controllers be bound to a given mapID and GMap.
-abstract class AbstractController {
-  /// The GMap instance that this controller operates on.
-  gmaps.GMap googleMap;
-
-  /// The map ID for events.
-  int mapId;
-
-  /// Binds a mapId and its instance to this controller.
-  void bindToMap(int mapId, gmaps.GMap googleMap) {
-    this.mapId = mapId;
-    this.googleMap = googleMap;
   }
 }

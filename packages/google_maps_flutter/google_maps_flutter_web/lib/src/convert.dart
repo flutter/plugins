@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 part of google_maps_flutter_web;
 
 final _nullLatLng = LatLng(0, 0);
@@ -383,8 +387,6 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
     // already encoded in the iconConfig[1]
 
     icon = gmaps.Icon()
-      // TODO: Move the comment below to analysis-options.yaml
-      // ignore:undefined_prefixed_name
       ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1]);
 
     // iconConfig[3] may contain the [width, height] of the image, if passed!

@@ -1,12 +1,16 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 part of google_maps_flutter_web;
 
-/// The CircleController class wraps a Circle and its onTap behavior.
+/// The `CircleController` class wraps a [gmaps.Circle] and its onTap behavior.
 class CircleController {
   gmaps.Circle _circle;
 
   final bool _consumeTapEvents;
 
-  /// Creates a CircleController, that wraps a Circle object and its onTap behavior.
+  /// Creates a `CircleController`, which wraps a [gmaps.Circle] object and its `onTap` behavior.
   CircleController({
     @required gmaps.Circle circle,
     bool consumeTapEvents = false,
@@ -20,11 +24,11 @@ class CircleController {
     }
   }
 
-  /// Returns the wrapped circle. Only used for testing.
+  /// Returns the wrapped [gmaps.Circle]. Only used for testing.
   @visibleForTesting
   gmaps.Circle get circle => _circle;
 
-  /// Returns [true] if this Controller will use its own onTap handler to consume events.
+  /// Returns `true` if this Controller will use its own `onTap` handler to consume events.
   bool get consumeTapEvents => _consumeTapEvents;
 
   /// Updates the options of the wrapped [gmaps.Circle] object.
