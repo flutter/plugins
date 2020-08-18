@@ -223,31 +223,6 @@ public class Messages {
     }
   }
 
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class MixWithOthersMessage {
-    private Boolean mixWithOthers;
-
-    public Boolean getMixWithOthers() {
-      return mixWithOthers;
-    }
-
-    public void setMixWithOthers(Boolean setterArg) {
-      this.mixWithOthers = setterArg;
-    }
-
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<String, Object>();
-      toMapResult.put("mixWithOthers", mixWithOthers);
-      return toMapResult;
-    }
-
-    static MixWithOthersMessage fromMap(HashMap map) {
-      MixWithOthersMessage fromMapResult = new MixWithOthersMessage();
-      fromMapResult.mixWithOthers = (Boolean) map.get("mixWithOthers");
-      return fromMapResult;
-    }
-  }
-
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface VideoPlayerApi {
     void initialize();
@@ -267,8 +242,6 @@ public class Messages {
     void seekTo(PositionMessage arg);
 
     void pause(TextureMessage arg);
-
-    void setMixWithOthers(MixWithOthersMessage arg);
 
     /** Sets up an instance of `VideoPlayerApi` to handle messages through the `binaryMessenger` */
     public static void setup(BinaryMessenger binaryMessenger, VideoPlayerApi api) {
@@ -485,31 +458,6 @@ public class Messages {
                   HashMap<String, HashMap> wrapped = new HashMap<String, HashMap>();
                   try {
                     api.pause(input);
-                    wrapped.put("result", null);
-                  } catch (Exception exception) {
-                    wrapped.put("error", wrapError(exception));
-                  }
-                  reply.reply(wrapped);
-                }
-              });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<Object>(
-                binaryMessenger,
-                "dev.flutter.pigeon.VideoPlayerApi.setMixWithOthers",
-                new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler(
-              new BasicMessageChannel.MessageHandler<Object>() {
-                public void onMessage(Object message, BasicMessageChannel.Reply<Object> reply) {
-                  MixWithOthersMessage input = MixWithOthersMessage.fromMap((HashMap) message);
-                  HashMap<String, HashMap> wrapped = new HashMap<String, HashMap>();
-                  try {
-                    api.setMixWithOthers(input);
                     wrapped.put("result", null);
                   } catch (Exception exception) {
                     wrapped.put("error", wrapError(exception));
