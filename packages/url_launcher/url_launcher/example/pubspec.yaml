@@ -8,9 +8,13 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  e2e: "^0.2.0"
+  e2e:
+    path: ../../../e2e
   flutter_driver:
     sdk: flutter
+  pedantic: ^1.8.0
+  mockito: ^4.1.1
+  plugin_platform_interface: ^1.0.0
 
 flutter:
   uses-material-design: true

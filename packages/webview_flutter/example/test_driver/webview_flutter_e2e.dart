@@ -4,12 +4,14 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:e2e/e2e.dart';
 
@@ -245,7 +247,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           key: _globalKey,
-          initialUrl: 'https://flutter.dev/',
+          initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent1',
           onWebViewCreated: (WebViewController controller) {
@@ -263,7 +265,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           key: _globalKey,
-          initialUrl: 'https://flutter.dev/',
+          initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent2',
         ),
@@ -301,7 +303,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           key: _globalKey,
-          initialUrl: 'https://flutter.dev/',
+          initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent',
         ),
@@ -315,7 +317,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           key: _globalKey,
-          initialUrl: 'https://flutter.dev/',
+          initialUrl: 'about:blank',
           javascriptMode: JavascriptMode.unrestricted,
         ),
       ),
@@ -536,6 +538,76 @@ void main() {
     expect(title, 'Some title');
   });
 
+  group('Programmatic Scroll', () {
+    testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
+      final String scrollTestPage = '''
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              body {
+                height: 100%;
+                width: 100%;
+              }
+              #container{
+                width:5000px;
+                height:5000px;
+            }
+            </style>
+          </head>
+          <body>
+            <div id="container"/>
+          </body>
+        </html>
+      ''';
+
+      final String scrollTestPageBase64 =
+          base64Encode(const Utf8Encoder().convert(scrollTestPage));
+
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            initialUrl:
+                'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            onPageFinished: (String url) {
+              pageLoaded.complete(null);
+            },
+          ),
+        ),
+      );
+
+      final WebViewController controller = await controllerCompleter.future;
+      await pageLoaded.future;
+
+      await tester.pumpAndSettle(Duration(seconds: 3));
+
+      // Check scrollTo()
+      const int X_SCROLL = 123;
+      const int Y_SCROLL = 321;
+
+      await controller.scrollTo(X_SCROLL, Y_SCROLL);
+      int scrollPosX = await controller.getScrollX();
+      int scrollPosY = await controller.getScrollY();
+      expect(X_SCROLL, scrollPosX);
+      expect(Y_SCROLL, scrollPosY);
+
+      // Check scrollBy() (on top of scrollTo())
+      await controller.scrollBy(X_SCROLL, Y_SCROLL);
+      scrollPosX = await controller.getScrollX();
+      scrollPosY = await controller.getScrollY();
+      expect(X_SCROLL * 2, scrollPosX);
+      expect(Y_SCROLL * 2, scrollPosY);
+    });
+  });
+
   group('NavigationDelegate', () {
     final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
     final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
@@ -574,6 +646,57 @@ void main() {
       await pageLoads.stream.first; // Wait for the next page load.
       final String currentUrl = await controller.currentUrl();
       expect(currentUrl, 'https://www.google.com/');
+    });
+
+    testWidgets('onWebResourceError', (WidgetTester tester) async {
+      final Completer<WebResourceError> errorCompleter =
+          Completer<WebResourceError>();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: 'https://www.notawebsite..com',
+            onWebResourceError: (WebResourceError error) {
+              errorCompleter.complete(error);
+            },
+          ),
+        ),
+      );
+
+      final WebResourceError error = await errorCompleter.future;
+      expect(error, isNotNull);
+
+      if (Platform.isIOS) {
+        expect(error.domain, isNotNull);
+        expect(error.failingUrl, isNull);
+      } else if (Platform.isAndroid) {
+        expect(error.errorType, isNotNull);
+        expect(error.failingUrl, 'https://www.notawebsite..com');
+      }
+    });
+
+    testWidgets('onWebResourceError is not called with valid url',
+        (WidgetTester tester) async {
+      final Completer<WebResourceError> errorCompleter =
+          Completer<WebResourceError>();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl:
+                'data:text/html;charset=utf-8;base64,PCFET0NUWVBFIGh0bWw+',
+            onWebResourceError: (WebResourceError error) {
+              errorCompleter.complete(error);
+            },
+          ),
+        ),
+      );
+
+      expect(errorCompleter.future, doesNotComplete);
     });
 
     testWidgets('can block requests', (WidgetTester tester) async {
@@ -677,6 +800,33 @@ void main() {
     final WebViewController controller = await controllerCompleter.future;
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter.dev/');
+  });
+
+  testWidgets('target _blank opens in same window',
+      (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final Completer<void> pageLoaded = Completer<void>();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+          onPageFinished: (String url) {
+            pageLoaded.complete(null);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    await controller.evaluateJavascript('window.open("about:blank", "_blank")');
+    await pageLoaded.future;
+    final String currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'about:blank');
   });
 }
 

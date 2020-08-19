@@ -12,11 +12,14 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  e2e: "^0.2.0"
+  e2e:
+    path: ../../../e2e
   test: any
+  pedantic: ^1.8.0
 
 flutter:
   uses-material-design: true
   assets:
    - assets/flutter-mark-square-64.png
    - assets/Butterfly-209.mp4
+   - assets/bumble_bee_captions.srt

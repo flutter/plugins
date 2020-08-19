@@ -1,3 +1,46 @@
+## 0.4.5+12
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.5+11
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.4.5+10
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.4.5+9
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.4.5+8
+
+* Remove `MainActivity` references in android example app and tests.
+
+## 0.4.5+7
+
+* Update minimum Flutter version to 1.12.13+hotfix.5
+* Clean up various Android workarounds no longer needed after framework v1.12.
+* Complete v2 embedding support.
+
+## 0.4.5+6
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.4.5+5
+
+* Added an Espresso test.
+
+## 0.4.5+4
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.4.5+3
+
+* Fixed issue where callback lookup would fail while running in the background.
+
 ## 0.4.5+2
 
 * Remove the deprecated `author:` field from pubspec.yaml

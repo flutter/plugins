@@ -31,7 +31,6 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.view.TextureRegistry;
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,15 +56,18 @@ final class VideoPlayer {
 
   private boolean isInitialized = false;
 
+  private final VideoPlayerOptions options;
+
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
       String dataSource,
-      Result result,
-      String formatHint) {
+      String formatHint,
+      VideoPlayerOptions options) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
+    this.options = options;
 
     TrackSelector trackSelector = new DefaultTrackSelector();
     exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
@@ -88,7 +90,7 @@ final class VideoPlayer {
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
     exoPlayer.prepare(mediaSource);
 
-    setupVideoPlayer(eventChannel, textureEntry, result);
+    setupVideoPlayer(eventChannel, textureEntry);
   }
 
   private static boolean isHTTP(Uri uri) {
@@ -148,7 +150,7 @@ final class VideoPlayer {
   }
 
   private void setupVideoPlayer(
-      EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry, Result result) {
+      EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry) {
 
     eventChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
@@ -165,7 +167,7 @@ final class VideoPlayer {
 
     surface = new Surface(textureEntry.surfaceTexture());
     exoPlayer.setVideoSurface(surface);
-    setAudioAttributes(exoPlayer);
+    setAudioAttributes(exoPlayer, options.mixWithOthers);
 
     exoPlayer.addListener(
         new EventListener() {
@@ -193,10 +195,6 @@ final class VideoPlayer {
             }
           }
         });
-
-    Map<String, Object> reply = new HashMap<>();
-    reply.put("textureId", textureEntry.id());
-    result.success(reply);
   }
 
   void sendBufferingUpdate() {
@@ -209,10 +207,10 @@ final class VideoPlayer {
   }
 
   @SuppressWarnings("deprecation")
-  private static void setAudioAttributes(SimpleExoPlayer exoPlayer) {
+  private static void setAudioAttributes(SimpleExoPlayer exoPlayer, boolean isMixMode) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       exoPlayer.setAudioAttributes(
-          new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build());
+          new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(), !isMixMode);
     } else {
       exoPlayer.setAudioStreamType(C.STREAM_TYPE_MUSIC);
     }

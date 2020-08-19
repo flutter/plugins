@@ -5,11 +5,11 @@
 package io.flutter.plugins.batteryexample;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.e2e.FlutterRunner;
+import dev.flutter.plugins.e2e.FlutterTestRunner;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
-@RunWith(FlutterRunner.class)
+@RunWith(FlutterTestRunner.class)
 public class EmbedderV1ActivityTest {
   @Rule
   public ActivityTestRule<EmbedderV1Activity> rule =

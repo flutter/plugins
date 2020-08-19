@@ -1,3 +1,71 @@
+## 0.3.22+2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.3.22+1
+
+* Update the `setAndGetScrollPosition` to use hard coded values and add a `pumpAndSettle` call.
+
+## 0.3.22
+
+* Add support for passing a failing url.
+
+## 0.3.21
+
+* Enable programmatic scrolling using Android's WebView.scrollTo & iOS WKWebView.scrollView.contentOffset.
+
+## 0.3.20+2
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.3.20+1
+
+* OCMock module import -> #import, unit tests compile generated as library.
+* Fix select drop down crash on old Android tablets (https://github.com/flutter/flutter/issues/54164).
+
+## 0.3.20
+
+* Added support for receiving web resource loading errors. See `WebView.onWebResourceError`.
+
+## 0.3.19+10
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.3.19+9
+
+* Remove example app's iOS workspace settings.
+
+## 0.3.19+8
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.3.19+7
+
+* Remove the Flutter SDK constraint upper bound.
+
+## 0.3.19+6
+
+* Enable opening links that target the "_blank" window (links open in same window).
+
+## 0.3.19+5
+
+* On iOS, always keep contentInsets of the WebView to be 0.
+* Fix XCTest case to follow XCTest naming convention.
+
+## 0.3.19+4
+
+* On iOS, fix the scroll view content inset is automatically adjusted. After the fix, the content position of the WebView is customizable by Flutter.
+* Fix an iOS 13 bug where the scroll indicator shows at random location.
+
+## 0.3.19+3
+
+* Setup XCTests.
+
+## 0.3.19+2
+
+* Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+
 ## 0.3.19+1
 
 * Raise min Flutter SDK requirement to the latest stable. v2 embedding apps no

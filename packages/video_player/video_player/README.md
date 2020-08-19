@@ -2,7 +2,14 @@
 
 [![pub package](https://img.shields.io/pub/v/video_player.svg)](https://pub.dartlang.org/packages/video_player)
 
-A Flutter plugin for iOS and Android for playing back video on a Widget surface.
+A Flutter plugin for iOS, Android and Web for playing back video on a Widget surface.
+
+**Please set your constraint to `video_player: '>=0.10.y+x <2.0.0'`**
+
+## Backward compatible 1.0.0 version is coming
+The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.10.y+z`.
+Please use `video_player: '>=0.10.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
+For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
 
 ![The example app running in iOS](https://github.com/flutter/plugins/blob/master/packages/video_player/video_player/doc/demo_ipod.gif?raw=true)
 
@@ -40,15 +47,24 @@ Ensure the following permission is present in your Android Manifest file, locate
 
 The Flutter project template adds it, so it may already be there.
 
-### Supported Formats
+### Web
+
+This plugin compiles for the web platform since version `0.10.5`, in recent enough versions of Flutter (`>=1.12.13+hotfix.4`).
+
+> The Web platform does **not** suppport `dart:io`, so avoid using the `VideoPlayerController.file` constructor for the plugin. Using the constructor attempts to create a `VideoPlayerController.file` that will throw an `UnimplementedError`.
+
+Different web browsers may have different video-playback capabilities (supported formats, autoplay...). Check [package:video_player_web](https://pub.dev/packages/video_player_web) for more web-specific information.
+
+## Supported Formats
 
 - On iOS, the backing player is [AVPlayer](https://developer.apple.com/documentation/avfoundation/avplayer).
   The supported formats vary depending on the version of iOS, [AVURLAsset](https://developer.apple.com/documentation/avfoundation/avurlasset) class
   has [audiovisualTypes](https://developer.apple.com/documentation/avfoundation/avurlasset/1386800-audiovisualtypes?language=objc) that you can query for supported av formats.
 - On Android, the backing player is [ExoPlayer](https://google.github.io/ExoPlayer/),
   please refer [here](https://google.github.io/ExoPlayer/supported-formats.html) for list of supported formats.
+- On Web, available formats depend on your users' browsers (vendor and version). Check [package:video_player_web](https://pub.dev/packages/video_player_web) for more specific information.
 
-### Example
+## Example
 
 ```dart
 import 'package:video_player/video_player.dart';

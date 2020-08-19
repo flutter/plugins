@@ -1,3 +1,40 @@
+## 0.5.8+5
+
+* Fix compilation/availability issues on iOS.
+
+## 0.5.8+4
+
+* Fixed bug caused by casting a `CameraAccessException` on Android.
+
+## 0.5.8+3
+
+* Fix bug in usage example in README.md
+
+## 0.5.8+2
+
+* Post-v2 embedding cleanups.
+
+## 0.5.8+1
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.5.8
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+
+## 0.5.7+5
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.5.7+4
+
+* Add `pedantic` to dev_dependency.
+
+## 0.5.7+3
+
+* Fix an Android crash when permissions are requested multiple times.
+
 ## 0.5.7+2
 
 * Remove the deprecated `author:` field from pubspec.yaml
