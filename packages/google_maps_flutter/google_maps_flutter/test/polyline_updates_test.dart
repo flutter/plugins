@@ -211,4 +211,26 @@ void main() {
     expect(platformGoogleMap.polylineIdsToRemove.isEmpty, true);
     expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
   });
+
+  testWidgets("Update non platform related attr", (WidgetTester tester) async {
+    Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"), onTap: null);
+    final Set<Polyline> prev = _toSet(
+      p1: p1,
+    );
+    p1 = Polyline(
+        polylineId: PolylineId("polyline_1"), onTap: () => print(2 + 2));
+    final Set<Polyline> cur = _toSet(
+      p1: p1,
+    );
+
+    await tester.pumpWidget(_mapWithPolylines(prev));
+    await tester.pumpWidget(_mapWithPolylines(cur));
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.polylinesToChange.isEmpty, true);
+    expect(platformGoogleMap.polylineIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
+  });
 }

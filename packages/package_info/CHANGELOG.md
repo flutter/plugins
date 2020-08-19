@@ -1,3 +1,23 @@
+## 0.4.2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.1
+
+* Add support for macOS.
+
+## 0.4.0+18
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.4.0+17
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Clean up various Android workarounds no longer needed after framework v1.12.
+* Complete v2 embedding support.
+* Fix CocoaPods podspec lint warnings.
+
 ## 0.4.0+16
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
