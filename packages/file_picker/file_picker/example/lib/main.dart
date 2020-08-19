@@ -52,11 +52,12 @@ class _MyHomePageState extends State<MyHomePage> {
     data = Uint8List.fromList(_fileController.text.codeUnits);
 
     XFile new_file;
-    // await?
+    XType type = XType(extension: '.txt');
+
     if (_nameController.text == '') {
-      new_file = XFile.fromData(data);
+      new_file = XFile.fromData(data, type: type);
     } else {
-      new_file = XFile.fromData(data, name: _nameController.text);
+      new_file = XFile.fromData(data, type: type, name: _nameController.text);
     }
 
     new_file.saveTo('');
