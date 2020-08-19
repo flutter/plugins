@@ -50,6 +50,11 @@ class Battery {
       .invokeMethod<int>('getBatteryLevel')
       .then<int>((dynamic result) => result);
 
+  /// Returns isLowPowerModeEnabled for iOS devices (9.0)
+  Future<bool> get isLowPowerModeEnabled => _methodChannel
+      .invokeMethod<bool>('isLowPowerModeEnabled')
+      .then<bool>((dynamic result) => result);
+
   /// Fires whenever the battery state changes.
   Stream<BatteryState> get onBatteryStateChanged {
     if (_onBatteryStateChanged == null) {
