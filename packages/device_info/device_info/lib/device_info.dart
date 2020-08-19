@@ -5,8 +5,8 @@
 import 'dart:async';
 import 'package:device_info_platform_interface/device_info_platform_interface.dart';
 
-export 'package:device_info_platform_interface/model/android_device_info.dart';
-export 'package:device_info_platform_interface/model/ios_device_info.dart';
+export 'package:device_info_platform_interface/device_info_platform_interface.dart'
+    show AndroidBuildVersion, AndroidDeviceInfo, IosDeviceInfo, IosUtsname;
 
 /// Provides device and operating system information.
 class DeviceInfoPlugin {
