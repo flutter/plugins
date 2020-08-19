@@ -80,7 +80,9 @@ static FlutterError *getFlutterError(NSError *error) {
         [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
         [GIDSignIn sharedInstance].serverClientID = plist[kServerClientIdKey];
         [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
-        [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+        NSString *hostedDomain = call.arguments[@"hostedDomain"];
+        [GIDSignIn sharedInstance].hostedDomain =
+            hostedDomain != (id)[NSNull null] ? hostedDomain : @"";
         result(nil);
       } else {
         result([FlutterError errorWithCode:@"missing-config"
@@ -102,7 +104,6 @@ static FlutterError *getFlutterError(NSError *error) {
         [[GIDSignIn sharedInstance] signIn];
       } @catch (NSException *e) {
         result([FlutterError errorWithCode:@"google_sign_in" message:e.reason details:e.name]);
-        [e raise];
       }
     }
   } else if ([call.method isEqualToString:@"getTokens"]) {
@@ -240,9 +241,11 @@ static FlutterError *getFlutterError(NSError *error) {
 #pragma mark - private methods
 
 - (void)respondWithAccount:(id)account error:(NSError *)error {
-  FlutterResult result = _accountRequest;
-  _accountRequest = nil;
-  result(error != nil ? getFlutterError(error) : account);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    FlutterResult result = _accountRequest;
+    _accountRequest = nil;
+    result(error != nil ? getFlutterError(error) : account);
+  });
 }
 
 - (UIViewController *)topViewController {
