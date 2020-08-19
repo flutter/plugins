@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
@@ -17,7 +17,7 @@ class _MockGoogleMapController extends Mock implements GoogleMapController {}
 
 /// Test GoogleMapsPlugin
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized() as E2EWidgetsFlutterBinding;
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('GoogleMapsPlugin', () {
     _MockGoogleMapController controller;
