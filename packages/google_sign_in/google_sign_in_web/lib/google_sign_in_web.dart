@@ -105,7 +105,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       // state of the authentication, i.e: if you logout elsewhere...
 
       isAuthInitialized.complete();
-    }), allowInterop((dynamic reason) {
+    }), allowInterop((auth2.GoogleAuthInitFailureError reason) {
       // onError
       throw PlatformException(
         code: 'google_sign_in',

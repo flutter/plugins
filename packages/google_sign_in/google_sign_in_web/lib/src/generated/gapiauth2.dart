@@ -16,6 +16,16 @@ import "package:js/js_util.dart" show promiseToFuture;
 
 /// <reference types="gapi" />
 
+// @anonymous
+@JS()
+class GoogleAuthInitFailureError {
+  external String get error;
+  external set name(String value);
+
+  external String get details;
+  external set details(String value);
+}
+
 // Module gapi.auth2
 /// GoogleAuth is a singleton class that provides methods to allow the user to sign in with a Google account,
 /// get the user's current sign-in status, get specific data from the user's Google profile,
@@ -30,7 +40,7 @@ class GoogleAuth {
   /// Calls the onInit function when the GoogleAuth object is fully initialized, or calls the onFailure function if
   /// initialization fails.
   external dynamic then(dynamic onInit(GoogleAuth googleAuth),
-      [dynamic onFailure(dynamic /*{error: string, details: string}*/ reason)]);
+      [dynamic onFailure(GoogleAuthInitFailureError reason)]);
 
   /// Signs out all accounts from the application.
   external dynamic signOut();
