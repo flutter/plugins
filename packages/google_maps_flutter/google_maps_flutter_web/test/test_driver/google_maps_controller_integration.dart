@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -40,7 +40,7 @@ class _MockGMap extends Mock implements gmaps.GMap {
 
 /// Test Google Map Controller
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized() as E2EWidgetsFlutterBinding;
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('GoogleMapController', () {
     final int mapId = 33930;
