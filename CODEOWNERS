@@ -10,11 +10,11 @@ packages/battery/*                            @amirh @matthew-carroll
 packages/camera/*                             @bparrishMines
 packages/connectivity/*                       @cyanglaz @matthew-carroll
 packages/device_info/*                        @matthew-carroll
-packages/e2e/*                                @collinjackson @dnfield
 packages/espresso/*                           @collinjackson @adazh
 packages/google_maps_flutter/*                @cyanglaz
 packages/google_sign_in/*                     @cyanglaz @mehmetf
 packages/image_picker/*                       @cyanglaz
+packages/integration_test/*                   @dnfield
 packages/in_app_purchase/*                    @mklim @cyanglaz @LHLL
 packages/ios_platform_images/*                @gaaclarke
 packages/package_info/*                       @cyanglaz @matthew-carroll
