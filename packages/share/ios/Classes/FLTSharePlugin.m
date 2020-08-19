@@ -194,21 +194,20 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   }
 
   for (int i = 0; i < [paths count]; i++) {
-      NSString *path = paths[i];
-      NSString *pathExtension = [path pathExtension];
-      NSString *mimeType = mimeTypes[i];
-      if([pathExtension.lowercaseString isEqualToString:@"jpg"] || 
-         [pathExtension.lowercaseString isEqualToString:@"jpeg"] || 
-         [pathExtension.lowercaseString isEqualToString:@"png"] || 
-         [mimeType.lowercaseString isEqualToString:@"image/jpg"]|| 
-         [mimeType.lowercaseString isEqualToString:@"image/jpeg"]|| 
-         [mimeType.lowercaseString isEqualToString:@"image/png"]) {
-          UIImage *image = [UIImage imageWithContentsOfFile:path];
-          [items addObject:image];
-      }
-      else {
-          [items addObject:[[ShareData alloc] initWithFile:path mimeType:mimeType]];
-      }
+    NSString *path = paths[i];
+    NSString *pathExtension = [path pathExtension];
+    NSString *mimeType = mimeTypes[i];
+    if ([pathExtension.lowercaseString isEqualToString:@"jpg"] ||
+        [pathExtension.lowercaseString isEqualToString:@"jpeg"] ||
+        [pathExtension.lowercaseString isEqualToString:@"png"] ||
+        [mimeType.lowercaseString isEqualToString:@"image/jpg"] ||
+        [mimeType.lowercaseString isEqualToString:@"image/jpeg"] ||
+        [mimeType.lowercaseString isEqualToString:@"image/png"]) {
+      UIImage *image = [UIImage imageWithContentsOfFile:path];
+      [items addObject:image];
+    } else {
+      [items addObject:[[ShareData alloc] initWithFile:path mimeType:mimeType]];
+    }
   }
 
   [self share:items withController:controller atSource:origin];
