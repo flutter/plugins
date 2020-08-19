@@ -64,12 +64,15 @@ class DemoAppState extends State<DemoApp> {
                   leading: Icon(Icons.add),
                   title: Text("Add image"),
                   onTap: () async {
-                    final image = await ImagePicker.pickImage(
+                    final imagePicker = ImagePicker();
+                    final pickedFile = await imagePicker.getImage(
                       source: ImageSource.gallery,
                     );
-                    setState(() {
-                      imageFiles.add(image);
-                    });
+                    if (pickedFile != null) {
+                      setState(() {
+                        imageFiles.add(File(pickedFile.path));
+                      });
+                    }
                   },
                 ),
                 const Padding(padding: EdgeInsets.only(top: 12.0)),
