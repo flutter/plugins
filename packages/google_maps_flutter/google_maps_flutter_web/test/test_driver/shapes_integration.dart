@@ -4,14 +4,14 @@
 
 import 'dart:async';
 
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Test Shapes (Circle, Polygon, Polyline)
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized() as E2EWidgetsFlutterBinding;
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('CirclesController', () {
     StreamController<MapEvent> stream;
