@@ -104,7 +104,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
     NSNumber *originWidth = arguments[@"originWidth"];
     NSNumber *originHeight = arguments[@"originHeight"];
 
-    CGRect originRect;
+    CGRect originRect = CGRectZero;
     if (originX != nil && originY != nil && originWidth != nil && originHeight != nil) {
       originRect = CGRectMake([originX doubleValue], [originY doubleValue],
                               [originWidth doubleValue], [originHeight doubleValue]);
