@@ -108,9 +108,9 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     }), allowInterop((auth2.GoogleAuthInitFailureError reason) {
       // onError
       throw PlatformException(
-        code: 'google_sign_in',
-        message: reason.error,
-        details: reason.details,
+        code: reason.error,
+        message: reason.details,
+        details: 'google_sign_in',
       );
     }));
 
@@ -128,8 +128,15 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   @override
   Future<GoogleSignInUserData> signIn() async {
     await initialized;
-
-    return gapiUserToPluginUserData(await auth2.getAuthInstance().signIn());
+    try {
+      return gapiUserToPluginUserData(await auth2.getAuthInstance().signIn());
+    } on auth2.GoogleAuthSignInError catch (reason) {
+      throw PlatformException(
+        code: reason.error,
+        message: 'Exception raised from GoogleAuth.signIn()',
+        details: 'google_sign_in',
+      );
+    }
   }
 
   @override

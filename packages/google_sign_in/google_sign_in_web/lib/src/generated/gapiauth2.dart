@@ -16,7 +16,7 @@ import "package:js/js_util.dart" show promiseToFuture;
 
 /// <reference types="gapi" />
 
-// @anonymous
+@anonymous
 @JS()
 class GoogleAuthInitFailureError {
   external String get error;
@@ -24,6 +24,13 @@ class GoogleAuthInitFailureError {
 
   external String get details;
   external set details(String value);
+}
+
+@anonymous
+@JS()
+class GoogleAuthSignInError {
+  external String get error;
+  external set name(String value);
 }
 
 // Module gapi.auth2
