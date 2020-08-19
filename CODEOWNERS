@@ -10,7 +10,7 @@ packages/battery/*                            @amirh @matthew-carroll
 packages/camera/*                             @bparrishMines
 packages/connectivity/*                       @cyanglaz @matthew-carroll
 packages/device_info/*                        @matthew-carroll
-packages/e2e/*                                @collinjackson @digiter
+packages/e2e/*                                @collinjackson @dnfield
 packages/espresso/*                           @collinjackson @adazh
 packages/google_maps_flutter/*                @cyanglaz
 packages/google_sign_in/*                     @cyanglaz @mehmetf
