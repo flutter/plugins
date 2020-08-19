@@ -116,6 +116,11 @@
       NSString* baseURLString = args[@"baseUrl"];
       if ([baseURLString isKindOfClass:[NSString class]]) {
         baseURL = [NSURL URLWithString:baseURLString];
+        if (@available(iOS 9.0, *)) {
+            [_webView loadFileURL:baseURL allowingReadAccessToURL:baseURL];
+        } else {
+            // Fallback on earlier versions
+        }
         [_webView loadHTMLString:html baseURL:baseURL];
       } else {
         [_webView loadHTMLString:html baseURL:nil];
