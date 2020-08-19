@@ -5,24 +5,24 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
-export 'package:file_picker_platform_interface/file_picker_platform_interface.dart'
+export 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
   show XFile, XTypeGroup, XType;
 
 /// NEW API
 
 /// Open file dialog for loading files and return a file path
 Future<XFile> loadFile({List<XTypeGroup> acceptedTypeGroups}) {
-  return FilePickerPlatform.instance.loadFile(acceptedTypeGroups: acceptedTypeGroups);
+  return FileSelectorPlatform.instance.loadFile(acceptedTypeGroups: acceptedTypeGroups);
 }
 
 /// Open file dialog for loading files and return a list of file paths
 Future<List<XFile>> loadFiles({List<XTypeGroup> acceptedTypeGroups}) {
-  return FilePickerPlatform.instance.loadFiles(acceptedTypeGroups: acceptedTypeGroups);
+  return FileSelectorPlatform.instance.loadFiles(acceptedTypeGroups: acceptedTypeGroups);
 }
 
 /// Saves File to user's file system
 Future<String> getSavePath() async {
-  return FilePickerPlatform.instance.getSavePath();
+  return FileSelectorPlatform.instance.getSavePath();
 }
