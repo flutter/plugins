@@ -17,6 +17,7 @@ CUSTOM_ANALYSIS_PLUGINS=(
   "in_app_purchase"
   "camera"
   "video_player/video_player_web"
+  "google_maps_flutter/google_maps_flutter_web"
 )
 # Comma-separated string of the list above
 readonly CUSTOM_FLAG=$(IFS=, ; echo "${CUSTOM_ANALYSIS_PLUGINS[*]}")

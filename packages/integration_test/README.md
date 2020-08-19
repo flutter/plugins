@@ -4,8 +4,6 @@ This package enables self-driving testing of Flutter code on devices and emulato
 It adapts flutter_test results into a format that is compatible with `flutter drive`
 and native Android instrumentation testing.
 
-iOS support is not available yet, but is planned in the future.
-
 ## Usage
 
 Add a dependency on the `integration_test` package in the
