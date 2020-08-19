@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import '../x_type/x_type.dart';
 
 /// The interface for a XFile.
 ///
@@ -14,7 +15,7 @@ abstract class XFileBase {
   XFileBase(String path);
 
   /// Save the XFile at the indicated file path.
-  void saveTo(String path) {
+  void saveTo(String path) async {
     throw UnimplementedError('saveTo has not been implemented.');
   }
 

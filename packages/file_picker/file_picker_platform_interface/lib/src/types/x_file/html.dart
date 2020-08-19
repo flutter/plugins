@@ -7,14 +7,17 @@ import 'dart:html';
 
 import './base.dart';
 
+import '../x_type/x_type.dart';
+
 /// A XFile that works on web.
 ///
 /// It wraps the bytes of a selected file.
 class XFile extends XFileBase {
   String path;
+  final XType type;
+
   final Uint8List _data;
   final int _length;
-  @override
   final String name;
   Element _target;
 
@@ -27,6 +30,7 @@ class XFile extends XFileBase {
   /// access to it while we create the ObjectUrl.
   XFile(
       this.path, {
+        this.type,
         this.name,
         int length,
         Uint8List bytes,
@@ -40,12 +44,18 @@ class XFile extends XFileBase {
   /// Construct an XFile from its data
   XFile.fromData(
       Uint8List bytes, {
+        this.type,
         this.name,
         int length,
       })  : _data = bytes,
         _length = length,
         super('') {
-    Blob blob = Blob([bytes]);
+    Blob blob;
+    if (type.mime == null) {
+      blob = Blob([bytes]);
+    } else {
+      blob = Blob([bytes], type.mime);
+    }
     this.path = Url.createObjectUrl(blob);
     // Create a DOM container where we can host the anchor.
     _target = _ensureInitialized(this.name + '-x-file-dom-element');
@@ -83,7 +93,7 @@ class XFile extends XFileBase {
 
   /// Saves the data of this XFile at the location indicated by path.
   /// For the web implementation, the path variable is ignored.
-  void saveTo(String path) {
+  void saveTo(String path) async {
     // Create an <a> tag with the appropriate download attributes and click it
     final AnchorElement element = createAnchorElement(this.path, this.name);
 

@@ -45,7 +45,7 @@ class XType {
 
   /// Get the mime type from this XType
   String get mime {
-    if (mime == null) {
+    if (_mime == null) {
       _mime = mimeFromExtension(_extension);
     }
     return _mime;
