@@ -5,10 +5,10 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import '../method_channel/method_channel_file_picker.dart';
+import '../method_channel/method_channel_file_selector.dart';
 
 
 
@@ -19,23 +19,23 @@ import '../method_channel/method_channel_file_picker.dart';
 /// does not consider newly added methods to be breaking changes. Extending this class
 /// (using `extends`) ensures that the subclass will get the default implementation, while
 /// platform implementations that `implements` this interface will be broken by newly added
-/// [FilePickerPlatform] methods.
-abstract class FilePickerPlatform extends PlatformInterface {
-  /// Constructs a FilePickerPlatform.
-  FilePickerPlatform() : super(token: _token);
+/// [FileSelectorPlatform] methods.
+abstract class FileSelectorPlatform extends PlatformInterface {
+  /// Constructs a FileSelectorPlatform.
+  FileSelectorPlatform() : super(token: _token);
 
   static final Object _token = Object();
 
-  static FilePickerPlatform _instance = MethodChannelFilePicker();
+  static FileSelectorPlatform _instance = MethodChannelFileSelector();
 
-  /// The default instance of [FilePickerPlatform] to use.
+  /// The default instance of [FileSelectorPlatform] to use.
   ///
-  /// Defaults to [MethodChannelFilePicker].
-  static FilePickerPlatform get instance => _instance;
+  /// Defaults to [MethodChannelFileSelector].
+  static FileSelectorPlatform get instance => _instance;
 
   /// Platform-specific plugins should set this with their own platform-specific
-  /// class that extends [FilePickerPlatform] when they register themselves.
-  static set instance(FilePickerPlatform instance) {
+  /// class that extends [FileSelectorPlatform] when they register themselves.
+  static set instance(FileSelectorPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }

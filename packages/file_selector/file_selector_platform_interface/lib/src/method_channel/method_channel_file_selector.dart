@@ -6,13 +6,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 
-import '../platform_interface/file_picker_interface.dart';
-import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
+import '../platform_interface/file_selector_interface.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/file_picker');
 
-/// An implementation of [FilePickerPlatform] that uses method channels.
-class MethodChannelFilePicker extends FilePickerPlatform {
+/// An implementation of [FileSelectorPlatform] that uses method channels.
+class MethodChannelFileSelector extends FileSelectorPlatform {
   /// Load a file from user's computer and return it as an XFile
   @override
   Future<XFile> loadFile({List<XTypeGroup> acceptedTypeGroups}) {

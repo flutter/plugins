@@ -2,32 +2,32 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
-import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 
-final String _kFilePickerInputsDomId = '__file_picker_web-file-input';
+final String _kFileSelectorInputsDomId = '__file_selector_web-file-input';
 
-/// The web implementation of [FilePickerPlatform].
+/// The web implementation of [FileSelectorPlatform].
 ///
-/// This class implements the `package:file_picker` functionality for the web.
-class FilePickerPlugin extends FilePickerPlatform {
+/// This class implements the `package:file_selector` functionality for the web.
+class FileSelectorPlugin extends FileSelectorPlatform {
   Element _target;
-  final FilePickerPluginTestOverrides _overrides;
+  final FileSelectorPluginTestOverrides _overrides;
   bool get _hasTestOverrides => _overrides != null;
 
   /// Default constructor, initializes _target to a DOM element that we can use 
   /// to host HTML elements.
   /// overrides parameter allows for testing to override functions
-  FilePickerPlugin({
-    @visibleForTesting FilePickerPluginTestOverrides overrides,
+  FileSelectorPlugin({
+    @visibleForTesting FileSelectorPluginTestOverrides overrides,
   }) : _overrides = overrides {
-    _target = _ensureInitialized(_kFilePickerInputsDomId);
+    _target = _ensureInitialized(_kFileSelectorInputsDomId);
   }
 
-  /// Registers this class as the default instance of [FilePickerPlatform].
+  /// Registers this class as the default instance of [FileSelectorPlatform].
   static void registerWith(Registrar registrar) {
-    FilePickerPlatform.instance = FilePickerPlugin();
+    FileSelectorPlatform.instance = FileSelectorPlugin();
   }
   
   /// Convert list of filter groups to a comma-separated string
@@ -184,7 +184,7 @@ class FilePickerPlugin extends FilePickerPlatform {
 
 /// Overrides some functions to allow testing
 @visibleForTesting
-class FilePickerPluginTestOverrides {
+class FileSelectorPluginTestOverrides {
   /// For overriding the creation of the file input element.
   Element Function(String accepted) createFileInputElement;
 

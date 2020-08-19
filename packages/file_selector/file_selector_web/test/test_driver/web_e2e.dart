@@ -9,7 +9,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:html';
 
-import 'package:file_picker_web/file_picker_web.dart';
+import 'package:file_picker_web/file_selector_web.dart';
 import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
 
 import 'package:platform_detect/test_utils.dart' as platform;

@@ -1,6 +1,6 @@
-name: file_picker_web
-description: Web platform implementation of file_picker
-homepage: https://github.com/flutter/plugins/tree/master/packages/file_picker/file_picker
+name: file_selector_web
+description: Web platform implementation of file_selector
+homepage: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector
 # 0.1.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
@@ -10,12 +10,12 @@ flutter:
   plugin:
     platforms:
       web:
-        pluginClass: FilePickerPlugin
-        fileName: file_picker_web.dart
+        pluginClass: FileSelectorPlugin
+        fileName: file_selector_web.dart
 
 dependencies:
-  file_picker_platform_interface:
-    path: ../file_picker_platform_interface
+  file_selector_platform_interface:
+    path: ../file_selector_platform_interface
   platform_detect: ^1.4.0
   flutter:
     sdk: flutter

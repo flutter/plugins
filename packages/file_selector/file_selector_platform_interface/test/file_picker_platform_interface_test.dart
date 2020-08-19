@@ -7,8 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'package:file_picker_platform_interface/file_picker_platform_interface.dart';
-import 'package:file_picker_platform_interface/src/method_channel/method_channel_file_picker.dart';
+import 'package:file_picker_platform_interface/file_selector_platform_interface.dart';
+import 'package:file_picker_platform_interface/src/method_channel/method_channel_file_selector.dart';
 
 void main() {
   group('$FilePickerPlatform', () {
