@@ -8,6 +8,7 @@ import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
+import 'package:mime/mime.dart' show lookupMimeType;
 
 /// Plugin for summoning a platform share sheet.
 class Share {
@@ -127,53 +128,6 @@ class Share {
 
   static String _mimeTypeForFile(File file) {
     assert(file != null);
-    final String path = file.path;
-
-    final int extensionIndex = path.lastIndexOf("\.");
-    if (extensionIndex == -1 || extensionIndex == 0) {
-      return null;
-    }
-
-    final String extension = path.substring(extensionIndex + 1);
-    switch (extension) {
-      // image
-      case 'jpeg':
-      case 'jpg':
-        return 'image/jpeg';
-      case 'gif':
-        return 'image/gif';
-      case 'png':
-        return 'image/png';
-      case 'svg':
-        return 'image/svg+xml';
-      case 'tif':
-      case 'tiff':
-        return 'image/tiff';
-      // audio
-      case 'aac':
-        return 'audio/aac';
-      case 'oga':
-        return 'audio/ogg';
-      // video
-      case 'avi':
-        return 'video/x-msvideo';
-      case 'mpeg':
-        return 'video/mpeg';
-      case 'ogv':
-        return 'video/ogg';
-      // other
-      case 'csv':
-        return 'text/csv';
-      case 'htm':
-      case 'html':
-        return 'text/html';
-      case 'json':
-        return 'application/json';
-      case 'pdf':
-        return 'application/pdf';
-      case 'txt':
-        return 'text/plain';
-    }
-    return null;
+    return lookupMimeType(file.path);
   }
 }
