@@ -36,8 +36,8 @@
       result(@(batteryLevel));
     }
   }else if ([@"isLowPowerModeEnabled" isEqualToString:call.method]){
-      BOOL powerEnabled = [self isLowPowerModeEnabled];
-      result(@(powerEnabled));
+    BOOL powerEnabled = [self isLowPowerModeEnabled];
+    result(@(powerEnabled));
   }else {
     result(FlutterMethodNotImplemented);
   }
@@ -48,11 +48,11 @@
 }
 
 - (BOOL)isLowPowerModeEnabled {
-    if (@available(iOS 9.0, *)){
-      return [[NSProcessInfo processInfo] isLowPowerModeEnabled]; 
-    }else{
-      return NO;
-    }
+  if (@available(iOS 9.0, *)){
+    return [[NSProcessInfo processInfo] isLowPowerModeEnabled]; 
+  }else{
+    return NO;
+  }
 }
 
 - (void)sendBatteryStateEvent {
