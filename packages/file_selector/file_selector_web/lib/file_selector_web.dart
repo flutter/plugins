@@ -160,9 +160,12 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     return _getFilesWhenReady(element);
   }
   
-  /// Open file dialog for loading files and return a file path
+  /// Open file dialog for loading files and return a XFile
   @override
-  Future<XFile> loadFile({List<XTypeGroup> acceptedTypeGroups}) {
+  Future<XFile> loadFile({
+    List<XTypeGroup> acceptedTypeGroups,
+    String initialDirectory,
+  }) {
     Completer<XFile> _completer = Completer();
     _loadFileHelper(false, acceptedTypeGroups).then((list) {
         _completer.complete(list.first);
@@ -174,14 +177,20 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     return _completer.future;
   }
 
-  /// Open file dialog for loading files and return a list of file paths
+  /// Open file dialog for loading files and return a XFile
   @override
-  Future<List<XFile>> loadFiles({List<XTypeGroup> acceptedTypeGroups}) {
+  Future<List<XFile>> loadFiles({
+    List<XTypeGroup> acceptedTypeGroups,
+    String initialDirectory,
+  }) {
     return _loadFileHelper(true, acceptedTypeGroups);
   }
   
   @override
-  Future<String> getSavePath() => Future.value();
+  Future<String> getSavePath({
+    String initialDirectory,
+    String suggestedName,
+  }) => Future.value();
 }
 
 /// Overrides some functions to allow testing

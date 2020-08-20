@@ -15,7 +15,10 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/file_picker');
 class MethodChannelFileSelector extends FileSelectorPlatform {
   /// Load a file from user's computer and return it as an XFile
   @override
-  Future<XFile> loadFile({List<XTypeGroup> acceptedTypeGroups}) {
+  Future<XFile> loadFile({
+    List<XTypeGroup> acceptedTypeGroups,
+    String initialDirectory,
+  }) {
     return _channel.invokeMethod<XFile>(
       'loadFile',
       <String, Object> {
@@ -26,7 +29,10 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
 
   /// Load multiple files from user's computer and return it as an XFile
   @override
-  Future<List<XFile>> loadFiles({List<XTypeGroup> acceptedTypeGroups}) {
+  Future<List<XFile>> loadFiles({
+    List<XTypeGroup> acceptedTypeGroups,
+    String initialDirectory,
+  }) {
     return _channel.invokeMethod<List<XFile>>(
       'loadFiles',
       <String, Object> {
@@ -37,7 +43,10 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
 
   /// Saves the file to user's Disk
   @override
-  Future<String> getSavePath() async {
+  Future<String> getSavePath({
+    String initialDirectory,
+    String suggestedName,
+  }) async {
     return _channel.invokeMethod(
       'saveFile',
       <String, Object> {
