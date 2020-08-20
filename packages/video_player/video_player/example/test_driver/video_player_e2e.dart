@@ -3,14 +3,14 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:io';
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
 
 const Duration _playDuration = Duration(seconds: 1);
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   VideoPlayerController _controller;
   tearDown(() async => _controller.dispose());
 

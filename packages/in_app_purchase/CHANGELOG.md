@@ -1,3 +1,11 @@
+## 0.3.4+4
+
+* Update package:e2e -> package:integration_test
+
+## 0.3.4+3
+
+* Fixed typo 'manuelly' for 'manually'.
+
 ## 0.3.4+2
 
 * Update package:e2e reference to use the local version in the flutter/plugins

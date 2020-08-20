@@ -6,7 +6,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,7 +20,7 @@ const CameraPosition _kInitialCameraPosition =
     CameraPosition(target: _kInitialMapCenter, zoom: _kInitialZoomLevel);
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('testCompassToggle', (WidgetTester tester) async {
     final Key key = GlobalKey();
