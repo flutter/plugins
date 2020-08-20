@@ -35,7 +35,7 @@
     } else {
       result(@(batteryLevel));
     }
-  } else if ([@"isLowPowerModeEnabled" isEqualToString:call.method]){
+  } else if ([@"isLowPowerModeEnabled" isEqualToString:call.method]) {
     BOOL powerEnabled = [self isLowPowerModeEnabled];
     result(@(powerEnabled));
   } else {
@@ -48,7 +48,7 @@
 }
 
 - (BOOL)isLowPowerModeEnabled {
-  if (@available(iOS 9.0, *)){
+  if (@available(iOS 9.0, *)) {
     return [[NSProcessInfo processInfo] isLowPowerModeEnabled]; 
   } else {
     return NO;
