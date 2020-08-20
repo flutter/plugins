@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:vm_service/vm_service.dart' as vm;
+import 'package:vm_service/vm_service_io.dart' as vm_io;
 
 import 'common.dart';
 import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
@@ -190,5 +193,79 @@ class IntegrationTestWidgetsFlutterBinding
       timeout: timeout,
     );
     results[description] ??= _success;
+  }
+
+  vm.VmService _vmService;
+
+  /// Initialize the [vm.VmService] settings for the timeline.
+  @visibleForTesting
+  Future<void> enableTimeline({
+    List<String> streams = const <String>['all'],
+    @visibleForTesting vm.VmService vmService,
+  }) async {
+    assert(streams != null);
+    assert(streams.isNotEmpty);
+    if (vmService != null) {
+      _vmService = vmService;
+    }
+    if (_vmService == null) {
+      final developer.ServiceProtocolInfo info = await developer.Service.getInfo();
+      assert(info.serverUri != null);
+      _vmService = await vm_io.vmServiceConnectUri(
+        'ws://localhost:${info.serverUri.port}${info.serverUri.path}ws',
+      );
+    }
+    await _vmService.setVMTimelineFlags(streams);
+  }
+
+  /// Runs [action] and outputs a [vm.Timeline] trace for it.
+  ///
+  /// Waits for the `Future` returned by [action] to complete prior to stopping
+  /// the trace.
+  ///
+  /// `streams` limits the recorded timeline event streams to only the ones
+  /// listed. By default, all streams are recorded.
+  /// See `timeline_streams` in
+  /// https://github.com/dart-lang/sdk/blob/master/runtime/vm/timeline.cc
+  ///
+  /// If [retainPriorEvents] is true, retains events recorded prior to calling
+  /// [action]. Otherwise, prior events are cleared before calling [action]. By
+  /// default, prior events are cleared.
+  Future<vm.Timeline> traceTimeline(
+    Future<dynamic> action(), {
+    List<String> streams = const <String>['all'],
+    bool retainPriorEvents = false,
+  }) async {
+    await enableTimeline(streams: streams);
+    if (retainPriorEvents) {
+      await action();
+      return await _vmService.getVMTimeline();
+    }
+
+    await _vmService.clearVMTimeline();
+    final vm.Timestamp startTime = await _vmService.getVMTimelineMicros();
+    await action();
+    final vm.Timestamp endTime = await _vmService.getVMTimelineMicros();
+    return await _vmService.getVMTimeline(
+      timeOriginMicros: startTime.timestamp,
+      timeExtentMicros: endTime.timestamp,
+    );
+  }
+
+  /// This is a convience wrap of [traceTimeline] and send the result back to
+  /// the host.
+  Future<void> traceAction(
+    Future<dynamic> action(), {
+    List<String> streams = const <String>['all'],
+    bool retainPriorEvents = false,
+    String reportKey = 'timeline',
+  }) async {
+    vm.Timeline timeline = await traceTimeline(
+      action,
+      streams: streams,
+      retainPriorEvents: retainPriorEvents,
+    );
+    reportData ??= <String, dynamic>{};
+    reportData[reportKey] = timeline.toJson();
   }
 }
