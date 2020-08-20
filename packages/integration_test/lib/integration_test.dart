@@ -209,7 +209,8 @@ class IntegrationTestWidgetsFlutterBinding
       _vmService = vmService;
     }
     if (_vmService == null) {
-      final developer.ServiceProtocolInfo info = await developer.Service.getInfo();
+      final developer.ServiceProtocolInfo info =
+          await developer.Service.getInfo();
       assert(info.serverUri != null);
       _vmService = await vm_io.vmServiceConnectUri(
         'ws://localhost:${info.serverUri.port}${info.serverUri.path}ws',
