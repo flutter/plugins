@@ -27,6 +27,12 @@ void main() {
     expect(await battery.batteryLevel, 42);
   });
 
+  test('isLowPowerMode', () async {
+    when(methodChannel.invokeMethod<bool>('isLowPowerModeEnabled'))
+        .thenAnswer((Invocation invoke) => Future<bool>.value(true));
+    expect(await battery.isLowPowerModeEnabled, true);
+  });
+
   group('battery state', () {
     StreamController<String> controller;
 

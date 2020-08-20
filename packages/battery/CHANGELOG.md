@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Adding a feature in battery plugin from which user can check low power mode in battery is enabled or not for iOS devices above 9.0  and above version
+
 ## 1.0.2
 
 * Update package:e2e reference to use the local version in the flutter/plugins
