@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
@@ -67,18 +66,17 @@ class Share {
   /// May throw [PlatformException] or [FormatException]
   /// from [MethodChannel].
   static Future<void> shareFile(
-    File file, {
+    String path, {
     String mimeType,
     String subject,
     String text,
     Rect sharePositionOrigin,
   }) {
-    assert(file != null);
-    assert(file.existsSync());
+    assert(path != null);
 
     return shareFiles(
-      <File>[file],
-      mimeTypes: <String>[mimeType ?? _mimeTypeForFile(file)],
+      <String>[path],
+      mimeTypes: <String>[mimeType ?? _mimeTypeForPath(path)],
       subject: subject,
       text: text,
       sharePositionOrigin: sharePositionOrigin,
@@ -98,19 +96,18 @@ class Share {
   /// May throw [PlatformException] or [FormatException]
   /// from [MethodChannel].
   static Future<void> shareFiles(
-    List<File> files, {
+    List<String> paths, {
     List<String> mimeTypes,
     String subject,
     String text,
     Rect sharePositionOrigin,
   }) {
-    assert(files != null);
-    assert(files.isNotEmpty);
-    assert(files.every((file) => file.existsSync()));
+    assert(paths != null);
+    assert(paths.isNotEmpty);
     final Map<String, dynamic> params = <String, dynamic>{
-      'paths': files.map((file) => file.path).toList(),
+      'paths': paths,
       'mimeTypes':
-          mimeTypes ?? files.map((file) => _mimeTypeForFile(file)).toList(),
+          mimeTypes ?? paths.map((String path) => _mimeTypeForPath(path)).toList(),
     };
 
     if (subject != null) params['subject'] = subject;
@@ -126,8 +123,8 @@ class Share {
     return channel.invokeMethod('shareFiles', params);
   }
 
-  static String _mimeTypeForFile(File file) {
-    assert(file != null);
-    return lookupMimeType(file.path) ?? 'application/octet-stream';
+  static String _mimeTypeForPath(String path) {
+    assert(path != null);
+    return lookupMimeType(path) ?? 'application/octet-stream';
   }
 }

@@ -74,21 +74,14 @@ void main() {
     verifyZeroInteractions(mockChannel);
   });
 
-  test('sharing non existing file fails', () {
-    expect(
-      () => Share.shareFile(File('/sdcard/nofile.txt')),
-      throwsA(const TypeMatcher<AssertionError>()),
-    );
-    verifyZeroInteractions(mockChannel);
-  });
-
   test('sharing file sets correct mimeType', () async {
-    final File file = File('tempfile-83649a.png');
+    final String path = 'tempfile-83649a.png';
+    final File file = File(path);
     try {
       file.createSync();
-      await Share.shareFile(file);
+      await Share.shareFile(path);
       verify(mockChannel.invokeMethod('shareFiles', <String, dynamic>{
-        'paths': [file.path],
+        'paths': [path],
         'mimeTypes': ['image/png'],
       }));
     } finally {
@@ -97,10 +90,11 @@ void main() {
   });
 
   test('sharing file sets passed mimeType', () async {
-    final File file = File('tempfile-83649a.png');
+    final String path = 'tempfile-83649a.png';
+    final File file = File(path);
     try {
       file.createSync();
-      await Share.shareFile(file, mimeType: '*/*');
+      await Share.shareFile(path, mimeType: '*/*');
       verify(mockChannel.invokeMethod('shareFiles', <String, dynamic>{
         'paths': [file.path],
         'mimeTypes': ['*/*'],

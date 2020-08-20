@@ -22,7 +22,7 @@ class DemoApp extends StatefulWidget {
 class DemoAppState extends State<DemoApp> {
   String text = '';
   String subject = '';
-  List<File> imageFiles = [];
+  List<String> imagePaths = [];
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class DemoAppState extends State<DemoApp> {
                     );
                     if (pickedFile != null) {
                       setState(() {
-                        imageFiles.add(File(pickedFile.path));
+                        imagePaths.add(pickedFile.path);
                       });
                     }
                   },
@@ -92,16 +92,16 @@ class DemoAppState extends State<DemoApp> {
                               // has its position and size after it's built.
                               final RenderBox box = context.findRenderObject();
 
-                              if (imageFiles.isNotEmpty) {
-                                if (imageFiles.length == 1) {
-                                  await Share.shareFile(imageFiles[0],
+                              if (imagePaths.isNotEmpty) {
+                                if (imagePaths.length == 1) {
+                                  await Share.shareFile('',
                                       text: text,
                                       subject: subject,
                                       sharePositionOrigin:
                                           box.localToGlobal(Offset.zero) &
                                               box.size);
                                 } else {
-                                  await Share.shareFiles(imageFiles,
+                                  await Share.shareFiles(imagePaths,
                                       text: text,
                                       subject: subject,
                                       sharePositionOrigin:
@@ -126,10 +126,10 @@ class DemoAppState extends State<DemoApp> {
   }
 
   Widget _buildImagePreviews() {
-    if (imageFiles.isEmpty) return Container();
+    if (imagePaths.isEmpty) return Container();
 
     List<Widget> imageWidgets = [];
-    for (int i = 0; i < imageFiles.length; i++) {
+    for (int i = 0; i < imagePaths.length; i++) {
       imageWidgets.add(_buildImagePreview(i));
     }
 
@@ -140,7 +140,7 @@ class DemoAppState extends State<DemoApp> {
   }
 
   Widget _buildImagePreview(int position) {
-    File imageFile = imageFiles[position];
+    File imageFile = File(imagePaths[position]);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Stack(
@@ -161,7 +161,7 @@ class DemoAppState extends State<DemoApp> {
                 child: Icon(Icons.delete),
                 onPressed: () {
                   setState(() {
-                    imageFiles.removeAt(position);
+                    imagePaths.removeAt(position);
                   });
                 },
               ),
