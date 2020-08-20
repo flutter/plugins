@@ -1,3 +1,7 @@
+## 0.4.2+7
+
+* Port device_info plugin to use platform interface.
+
 ## 0.4.2+6
 
 * Moved everything from device_info to device_info/device_info
