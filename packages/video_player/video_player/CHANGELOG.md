@@ -1,4 +1,4 @@
-## 0.10.13
+## 0.10.12+1
 
 * Support to closed caption web vtt format added.
 
