@@ -1,3 +1,7 @@
+## 0.6.3+1
+
+* Update package:e2e -> package:integration_test
+
 ## 0.6.3
 
 * Increase upper range of `package:platform` constraint to allow 3.X versions.

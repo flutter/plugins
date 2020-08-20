@@ -2,7 +2,7 @@
 package io.flutter.plugins.pathprovider;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.e2e.FlutterTestRunner;
+import dev.flutter.plugins.integration_test.FlutterTestRunner;
 import io.flutter.plugins.pathproviderexample.EmbeddingV1Activity;
 import org.junit.Rule;
 import org.junit.runner.RunWith;

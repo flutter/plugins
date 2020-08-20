@@ -5,10 +5,10 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sensors/sensors.dart';
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('Can subscript to accelerometerEvents and get non-null events',
       (WidgetTester tester) async {

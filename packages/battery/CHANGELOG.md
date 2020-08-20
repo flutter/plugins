@@ -1,6 +1,10 @@
-## 1.0.3
+## 1.0.4
 
 * Adding a feature in battery plugin from which user can check low power mode in battery is enabled or not for iOS devices above 9.0  and above version
+
+## 1.0.3
+
+* Update package:e2e to use package:integration_test
 
 ## 1.0.2
 
