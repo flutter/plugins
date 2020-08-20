@@ -71,13 +71,15 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   List<XFile> _getXFilesFromFiles (List<File> files) {
     List<XFile> xFiles = List<XFile>();
 
+    Duration timeZoneOffset = DateTime.now().timeZoneOffset;
+
     for (File file in files) {
       String url = Url.createObjectUrl(file);
       String name = file.name;
       int length = file.size;
-      int modified = file.lastModified;
+      DateTime modified = file.lastModifiedDate.add(timeZoneOffset);
 
-      xFiles.add(XFile(url, name: name));
+      xFiles.add(XFile(url, name: name, lastModified: modified));
     }
 
     return xFiles;

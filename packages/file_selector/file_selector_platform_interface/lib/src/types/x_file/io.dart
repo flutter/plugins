@@ -15,6 +15,8 @@ class XFile extends XFileBase {
 
   final XType type;
 
+  DateTime get lastModified => _file.lastModifiedSync();
+
   /// Construct a XFile object backed by a dart:io File.
   XFile(String path, { this.type })
       : _file = File(path),
