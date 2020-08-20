@@ -15,7 +15,8 @@ class WebVttCaptionFile extends ClosedCaptionFile {
   /// Parses a string into a [ClosedCaptionFile], assuming [fileContents] is in
   /// the WebVtt file format.
   /// * See: https://en.wikipedia.org/wiki/WebVtt
-  WebVttCaptionFile(this.fileContents) : _captions = _parseCaptionsFromWebVttString(fileContents);
+  WebVttCaptionFile(this.fileContents)
+      : _captions = _parseCaptionsFromWebVttString(fileContents);
 
   /// The entire body of the Vtt file.
   final String fileContents;
@@ -91,7 +92,8 @@ class _StartAndEnd {
   // For example:
   // 00:09.000 --> 00:11.000
   static _StartAndEnd fromWebVttString(String line) {
-    final RegExp format = RegExp(_webVttTimeStamp + _webVttArrow + _webVttTimeStamp);
+    final RegExp format =
+        RegExp(_webVttTimeStamp + _webVttArrow + _webVttTimeStamp);
 
     if (!format.hasMatch(line)) {
       return _StartAndEnd(null, null);
@@ -108,7 +110,8 @@ class _StartAndEnd {
 
 String _parseHtmlString(String htmlString) {
   final Document document = html_parser.parse(htmlString);
-  final String parsedString = html_parser.parse(document.body.text).documentElement.text;
+  final String parsedString =
+      html_parser.parse(document.body.text).documentElement.text;
   return parsedString;
 }
 
