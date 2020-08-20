@@ -1,3 +1,16 @@
+## 0.6.3+1
+
+* Update package:e2e -> package:integration_test
+
+## 0.6.3
+
+* Increase upper range of `package:platform` constraint to allow 3.X versions.
+
+## 0.6.2+4
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.6.2+3
 
 * Post-v2 Android embedding cleanup.

@@ -1,3 +1,12 @@
+## 0.4.0+8
+
+* Update package:e2e -> package:integration_test
+
+## 0.4.0+7
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.4.0+6
 
 * Post-v2 Android embedding cleanup.

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('$SharedPreferences', () {
     const Map<String, dynamic> kTestValues = <String, dynamic>{
