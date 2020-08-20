@@ -128,6 +128,6 @@ class Share {
 
   static String _mimeTypeForFile(File file) {
     assert(file != null);
-    return lookupMimeType(file.path);
+    return lookupMimeType(file.path) ?? 'application/octet-stream';
   }
 }
