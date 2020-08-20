@@ -19,6 +19,7 @@ class XFile extends XFileBase {
   final Uint8List _data;
   final int _length;
   final String name;
+  final DateTime lastModified;
   Element _target;
 
   /// Construct a XFile object from its ObjectUrl.
@@ -34,6 +35,7 @@ class XFile extends XFileBase {
         this.name,
         int length,
         Uint8List bytes,
+        this.lastModified,
       })  : _data = bytes,
         _length = length,
         super(path) {
@@ -47,6 +49,7 @@ class XFile extends XFileBase {
         this.type,
         this.name,
         int length,
+        this.lastModified,
       })  : _data = bytes,
         _length = length,
         super('') {
