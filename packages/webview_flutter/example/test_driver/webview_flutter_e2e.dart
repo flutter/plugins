@@ -13,10 +13,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('initalUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -542,41 +542,22 @@ void main() {
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
       final String scrollTestPage = '''
         <!DOCTYPE html>
-        <html>    
+        <html>
           <head>
             <style>
-              html {
-                height: 100%;
-                width: 100%;
-                overflow-x: auto;
-                overflow-y: auto;
-              }
-      
               body {
                 height: 100%;
                 width: 100%;
               }
+              #container{
+                width:5000px;
+                height:5000px;
+            }
             </style>
-      
-            <script type="text/javascript">
-              function config() {
-                // Create a page with dimensions big enough to allow scrolling on both x & y.
-                document.body.style.padding =  getScreenHeight() + 'px'
-              }
-      
-              function getScreenHeight() {
-                var body = document.body,
-                  html = document.documentElement;
-      
-                var height = Math.max(body.clientHeight, body.scrollHeight, body.offsetHeight,
-                  html.clientHeight, html.scrollHeight, html.offsetHeight);
-      
-                return height;
-              }
-            </script>
           </head>
-      
-          <body onload="config();"/>
+          <body>
+            <div id="container"/>
+          </body>
         </html>
       ''';
 
@@ -605,6 +586,8 @@ void main() {
 
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
+
+      await tester.pumpAndSettle(Duration(seconds: 3));
 
       // Check scrollTo()
       const int X_SCROLL = 123;
@@ -685,8 +668,13 @@ void main() {
       final WebResourceError error = await errorCompleter.future;
       expect(error, isNotNull);
 
-      if (Platform.isIOS) expect(error.domain, isNotNull);
-      if (Platform.isAndroid) expect(error.errorType, isNotNull);
+      if (Platform.isIOS) {
+        expect(error.domain, isNotNull);
+        expect(error.failingUrl, isNull);
+      } else if (Platform.isAndroid) {
+        expect(error.errorType, isNotNull);
+        expect(error.failingUrl, 'https://www.notawebsite..com');
+      }
     });
 
     testWidgets('onWebResourceError is not called with valid url',

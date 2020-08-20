@@ -1,3 +1,16 @@
+## 0.4.2+4
+
+* Update package:e2e -> package:integration_test
+
+## 0.4.2+3
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.2+2
+
+* Post-v2 Android embedding cleanup.
+
 ## 0.4.2+1
 
 * Update lower bound of dart dependency to 2.1.0.

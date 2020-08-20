@@ -3,14 +3,47 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Directory;
+import 'dart:io' show Directory, Platform;
 
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
+import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
 
-PathProviderPlatform get _platform => PathProviderPlatform.instance;
+/// Disables platform override in order to use a manually registered [PathProviderPlatform], only for testing right now
+///
+/// Make sure to disable the override before using any of the `path_provider` methods
+/// To use your own [PathProviderPlatform], make sure to include the following lines
+/// ```
+/// PathProviderPlatform.instance = YourPathProviderPlatform();
+/// disablePathProviderPlatformOverride = true;
+/// // Use the `path_provider` methods:
+/// final dir = await getTemporaryDirectory();
+/// ```
+/// See this issue https://github.com/flutter/flutter/issues/52267 for why this is required
+@visibleForTesting
+set disablePathProviderPlatformOverride(bool override) {
+  _disablePlatformOverride = override;
+}
+
+bool _disablePlatformOverride = false;
+PathProviderPlatform __platform;
+
+// This is to manually endorse the linux path provider until automatic registration of dart plugins is implemented.
+// See this issue https://github.com/flutter/flutter/issues/52267 for details
+PathProviderPlatform get _platform {
+  if (__platform != null) {
+    return __platform;
+  }
+  if (!kIsWeb && Platform.isLinux && !_disablePlatformOverride) {
+    __platform = PathProviderLinux();
+  } else {
+    __platform = PathProviderPlatform.instance;
+  }
+  return __platform;
+}
 
 /// Path to the temporary directory on the device that is not backed up and is
 /// suitable for storing caches of downloaded files.
