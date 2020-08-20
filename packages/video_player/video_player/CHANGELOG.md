@@ -1,6 +1,10 @@
+## 0.10.13
+
+* Support to closed caption web vtt format added.
+
 ## 0.10.12
 
-* Support to WebVtt added.
+* Introduce VideoPlayerOptions to set the audio mix mode.
 
 ## 0.10.11+2
 
