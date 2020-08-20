@@ -1,3 +1,7 @@
+## 0.8.2
+
+* Add support to get timeline.
+
 ## 0.8.1
 
 * Show stack trace of widget test errors on the platform side
