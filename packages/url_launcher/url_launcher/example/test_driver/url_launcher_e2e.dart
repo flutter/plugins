@@ -6,11 +6,11 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   test('canLaunch', () async {
     expect(await canLaunch('randomstring'), false);

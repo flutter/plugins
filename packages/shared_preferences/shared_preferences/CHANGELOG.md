@@ -1,3 +1,7 @@
+## 0.5.10
+
+* Update package:e2e -> package:integration_test
+
 ## 0.5.9
 
 * Update package:e2e reference to use the local version in the flutter/plugins
