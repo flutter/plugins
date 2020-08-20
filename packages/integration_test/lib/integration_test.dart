@@ -22,7 +22,6 @@ class IntegrationTestWidgetsFlutterBinding
   IntegrationTestWidgetsFlutterBinding() {
     // TODO(jackson): Report test results as they arrive
     tearDownAll(() async {
-      print('TESTING123: TEARING HER DOWN');
       try {
         // For web integration tests we are not using the
         // `plugins.flutter.io/integration_test`. Mark the tests as complete
@@ -106,7 +105,6 @@ class IntegrationTestWidgetsFlutterBinding
   /// Returns an instance of the [IntegrationTestWidgetsFlutterBinding], creating and
   /// initializing it if necessary.
   static WidgetsBinding ensureInitialized() {
-    print('TESTING123 ensuring init');
     if (WidgetsBinding.instance == null) {
       IntegrationTestWidgetsFlutterBinding();
     }
