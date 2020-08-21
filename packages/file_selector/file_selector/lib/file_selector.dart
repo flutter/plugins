@@ -17,7 +17,7 @@ Future<XFile> loadFile({
   List<XTypeGroup> acceptedTypeGroups,
   String initialDirectory,
 }) {
-  return FileSelectorPlatform.instance.loadFile(acceptedTypeGroups: acceptedTypeGroups);
+  return FileSelectorPlatform.instance.loadFile(acceptedTypeGroups: acceptedTypeGroups, initialDirectory: initialDirectory);
 }
 
 /// Open file dialog for loading files and return a list of file paths
@@ -25,7 +25,7 @@ Future<List<XFile>> loadFiles({
   List<XTypeGroup> acceptedTypeGroups,
   String initialDirectory,
 }) {
-  return FileSelectorPlatform.instance.loadFiles(acceptedTypeGroups: acceptedTypeGroups);
+  return FileSelectorPlatform.instance.loadFiles(acceptedTypeGroups: acceptedTypeGroups, initialDirectory: initialDirectory);
 }
 
 /// Saves File to user's file system
@@ -33,5 +33,5 @@ Future<String> getSavePath({
   String initialDirectory,
   String suggestedName,
 }) async {
-  return FileSelectorPlatform.instance.getSavePath();
+  return FileSelectorPlatform.instance.getSavePath(initialDirectory: initialDirectory, suggestedName: suggestedName);
 }
