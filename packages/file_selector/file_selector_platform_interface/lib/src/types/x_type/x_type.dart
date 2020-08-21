@@ -41,7 +41,12 @@ class XType {
     String extension,
     String mime,
   }) :  this._extension = extension,
-        this._mime = mime;
+        this._mime = mime
+  {
+    if (_extension != null && _extension[0] == '.') {
+      _extension = _extension.substring(1);
+    }
+  }
 
   /// Get the mime type from this XType
   String get mime {

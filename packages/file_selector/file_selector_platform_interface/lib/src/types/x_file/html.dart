@@ -39,8 +39,6 @@ class XFile extends XFileBase {
       })  : _data = bytes,
         _length = length,
         super(path) {
-    // Create a DOM container where we can host the anchor.
-    _target = _ensureInitialized(this.name + '-x-file-dom-element');
   }
 
   /// Construct an XFile from its data
@@ -60,8 +58,6 @@ class XFile extends XFileBase {
       blob = Blob([bytes], type.mime);
     }
     this.path = Url.createObjectUrl(blob);
-    // Create a DOM container where we can host the anchor.
-    _target = _ensureInitialized(this.name + '-x-file-dom-element');
   }
 
 
@@ -97,6 +93,9 @@ class XFile extends XFileBase {
   /// Saves the data of this XFile at the location indicated by path.
   /// For the web implementation, the path variable is ignored.
   void saveTo(String path) async {
+    // Create a DOM container where we can host the anchor.
+    _target = _ensureInitialized('-x-file-dom-element');
+
     // Create an <a> tag with the appropriate download attributes and click it
     final AnchorElement element = createAnchorElement(this.path, this.name);
 

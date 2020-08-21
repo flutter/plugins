@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
+/// Page for showing an example of saving with file_selector
 class SaveTest extends StatefulWidget {
   SaveTest({Key key, this.title}) : super(key: key);
 
@@ -49,6 +49,8 @@ class _SaveTestState extends State<SaveTest> {
   }
 
   void _saveFile() async {
+    String path = await getSavePath();
+
     Uint8List data;
     data = Uint8List.fromList(_fileController.text.codeUnits);
 
@@ -61,7 +63,7 @@ class _SaveTestState extends State<SaveTest> {
       new_file = XFile.fromData(data, type: type, name: _nameController.text);
     }
 
-    new_file.saveTo('');
+    new_file.saveTo(path);
   }
 
   @override
@@ -99,7 +101,7 @@ class _SaveTestState extends State<SaveTest> {
             ),
             SizedBox(height: 10),
             RaisedButton(
-              child: Text('Press to save file'),
+              child: Text('Press to save a text file'),
               onPressed: () => { _saveFile() },
             ),
           ],
@@ -109,7 +111,9 @@ class _SaveTestState extends State<SaveTest> {
   }
 }
 
+/// Screen that shows an example of loadFile(s)
 class LoadTest extends StatefulWidget {
+  /// Default constructor
   LoadTest({Key key, this.title}) : super(key: key);
 
   /// Title of Home Page
@@ -121,31 +125,38 @@ class LoadTest extends StatefulWidget {
 }
 
 class _LoadTestState extends State<LoadTest> {
-  final TextEditingController _fileController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _extensionController = TextEditingController();
 
-  void _loadFile() async {
-    XFile file;
-    if (_extensionController.text.isNotEmpty) {
-      List<XTypeGroup> typeGroups = List();
+  void _onLoadImageFile() async {
+    XType jpg = XType(extension: '.jpg');
+    XType png = XType(extension: '.png');
+    XTypeGroup typeGroup = XTypeGroup(label: 'images', fileTypes: [ jpg, png ]);
 
-      List<XType> types = List();
-      _extensionController.text.split(',').forEach((type) => types.add(XType(extension: type)));
+    XFile file = await loadFile(acceptedTypeGroups: [ typeGroup ]);
 
-      typeGroups.add(XTypeGroup(label: 'Example Files', fileTypes: types));
-      file = await loadFile(acceptedTypeGroups: typeGroups);
-    } else {
-      file = await loadFile();
-    }
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return ImageDisplay(file: file);
+      }
+    );
 
-    String text = await file.readAsString();
 
-    _fileController.text = text;
+  }
 
-    if (file.name.isNotEmpty) {
-      _nameController.text = file.name;
-    }
+  void _onLoadTextFile() async {
+    XType txt = XType(extension: '.txt');
+    XType json = XType(extension: '.json');
+    XTypeGroup typeGroup = XTypeGroup(label: 'images', fileTypes: [ txt, json ]);
+
+    XFile file = await loadFile(acceptedTypeGroups: [typeGroup]);
+
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return TextDisplay(file: file);
+        }
+    );
   }
 
   @override
@@ -158,46 +169,103 @@ class _LoadTestState extends State<LoadTest> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
-              width: 300,
-              child: TextField(
-                enabled: false,
-                minLines: 1,
-                maxLines: 12,
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: 'File Name Will Appear Here',
-                ),
-              ),
-            ),
-            Container(
-              width: 300,
-              child: TextField(
-                enabled: false,
-                minLines: 1,
-                maxLines: 12,
-                controller: _fileController,
-                decoration: InputDecoration(
-                  hintText: 'File Contents Will Appear Here',
-                ),
-              ),
-            ),
-            Container(
-              width: 300,
-              child: TextField(
-                controller: _extensionController,
-                decoration: InputDecoration(
-                  hintText: '(Optional) Accepted Load Extensions',
-                ),
-              ),
+            RaisedButton(
+              child: Text('Press to load an image file(png, jpg)'),
+              onPressed: () => _onLoadImageFile(),
             ),
             RaisedButton(
-              child: Text('Press to load a file'),
-              onPressed: () => { _loadFile() },
+              child: Text('Press to load a text file (json, txt)'),
+              onPressed: () => _onLoadTextFile(),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Widget that displays a text file in a dialog
+class TextDisplay extends StatefulWidget {
+  /// File to display
+  final XFile file;
+
+  /// Default Constructor
+  TextDisplay({Key key, @required this.file}) : super(key: key);
+
+  @override
+  _TextDisplayState createState() => _TextDisplayState();
+}
+
+class _TextDisplayState extends State<TextDisplay> {
+  String fileContents;
+
+  @override
+  void initState() {
+    super.initState();
+    _getFileContents();
+  }
+
+  void _getFileContents() async {
+    String contents = await widget.file.readAsString();
+    setState(() => fileContents = contents);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.file.name),
+      content: Scrollbar(
+        child: SingleChildScrollView(
+          child: Text(
+            fileContents ?? 'Loading file contents...\nThis may take a while if your file is large.',
+          ),
+        ),
+      ),
+      actions: [
+        FlatButton(
+          child: const Text('Close'),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+/// Widget that displays a text file in a dialog
+class ImageDisplay extends StatefulWidget {
+  /// File to display
+  final XFile file;
+
+  /// Default Constructor
+  ImageDisplay({Key key, @required this.file}) : super(key: key);
+
+  @override
+  _ImageDisplayState createState() => _ImageDisplayState();
+}
+
+class _ImageDisplayState extends State<ImageDisplay> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.file.name),
+      content: Image.network(widget.file.path),
+
+      actions: [
+        FlatButton(
+          child: const Text('Close'),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 }
@@ -230,7 +298,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-
             SizedBox(height: 10),
             RaisedButton(
               child: Text('Press to try saving a file'),
