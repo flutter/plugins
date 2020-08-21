@@ -15,7 +15,7 @@ environment:
   flutter: ">=1.12.8 <2.0.0"
 
 dependencies:
-  file: ">=5.1.0 < 7.0.0"
+  file: ">=5.1.0 <7.0.0"
   flutter:
     sdk: flutter
   meta: ^1.0.4
