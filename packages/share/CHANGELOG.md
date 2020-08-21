@@ -1,3 +1,7 @@
+## 0.6.5
+
+* Added support for sharing files
+
 ## 0.6.4+5
 
 * Update package:e2e -> package:integration_test
