@@ -1,3 +1,7 @@
+## 0.10.12+1
+
+* Fix missing comma after `isBuffering: $isBuffering` in `VideoPlayerValue.toString()`.
+
 ## 0.10.12
 
 * Introduce VideoPlayerOptions to set the audio mix mode.

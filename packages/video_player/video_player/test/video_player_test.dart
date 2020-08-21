@@ -511,7 +511,7 @@ void main() {
           volume: volume);
 
       expect(value.toString(),
-          'VideoPlayerValue(duration: 0:00:05.000000, size: Size(400.0, 300.0), position: 0:00:01.000000, caption: Instance of \'Caption\', buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], isPlaying: true, isLooping: true, isBuffering: truevolume: 0.5, errorDescription: null)');
+          'VideoPlayerValue(duration: 0:00:05.000000, size: Size(400.0, 300.0), position: 0:00:01.000000, caption: Instance of \'Caption\', buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], isPlaying: true, isLooping: true, isBuffering: true, volume: 0.5, errorDescription: null)');
     });
 
     test('copyWith()', () {
