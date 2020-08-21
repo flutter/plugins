@@ -106,8 +106,8 @@ class Share {
     assert(paths.isNotEmpty);
     final Map<String, dynamic> params = <String, dynamic>{
       'paths': paths,
-      'mimeTypes':
-          mimeTypes ?? paths.map((String path) => _mimeTypeForPath(path)).toList(),
+      'mimeTypes': mimeTypes ??
+          paths.map((String path) => _mimeTypeForPath(path)).toList(),
     };
 
     if (subject != null) params['subject'] = subject;
