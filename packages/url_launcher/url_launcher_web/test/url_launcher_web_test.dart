@@ -5,11 +5,11 @@
 @TestOn('chrome') // Uses web-only Flutter SDK
 
 import 'dart:html' as html;
-import 'package:flutter_test/flutter_test.dart';
-import 'package:url_launcher_web/url_launcher_web.dart';
-import 'package:mockito/mockito.dart';
 
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:platform_detect/test_utils.dart' as platform;
+import 'package:url_launcher_web/url_launcher_web.dart';
 
 class MockWindow extends Mock implements html.Window {}
 
@@ -32,8 +32,7 @@ void main() {
       });
 
       test('"mailto" URLs -> true', () {
-        expect(
-            plugin.canLaunch('mailto:name@mydomain.com'), completion(isTrue));
+        expect(plugin.canLaunch('mailto:name@mydomain.com'), completion(isTrue));
       });
 
       test('"tel" URLs -> true', () {
@@ -41,21 +40,17 @@ void main() {
       });
 
       test('"sms" URLs -> true', () {
-        expect(plugin.canLaunch('sms:+19725551212?body=hello%20there'),
-            completion(isTrue));
+        expect(plugin.canLaunch('sms:+19725551212?body=hello%20there'), completion(isTrue));
       });
     });
 
     group('launch', () {
       setUp(() {
         // Simulate that window.open does something.
-        when(mockWindow.open('https://www.google.com', ''))
-            .thenReturn(MockWindow());
-        when(mockWindow.open('mailto:name@mydomain.com', ''))
-            .thenReturn(MockWindow());
+        when(mockWindow.open('https://www.google.com', '')).thenReturn(MockWindow());
+        when(mockWindow.open('mailto:name@mydomain.com', '')).thenReturn(MockWindow());
         when(mockWindow.open('tel:5551234567', '')).thenReturn(MockWindow());
-        when(mockWindow.open('sms:+19725551212?body=hello%20there', ''))
-            .thenReturn(MockWindow());
+        when(mockWindow.open('sms:+19725551212?body=hello%20there', '')).thenReturn(MockWindow());
       });
 
       test('launching a URL returns true', () {
@@ -67,6 +62,7 @@ void main() {
               universalLinksOnly: null,
               enableDomStorage: null,
               enableJavaScript: null,
+              newTask: null,
               headers: null,
             ),
             completion(isTrue));
@@ -81,6 +77,7 @@ void main() {
               universalLinksOnly: null,
               enableDomStorage: null,
               enableJavaScript: null,
+              newTask: null,
               headers: null,
             ),
             completion(isTrue));
@@ -95,6 +92,7 @@ void main() {
               universalLinksOnly: null,
               enableDomStorage: null,
               enableJavaScript: null,
+              newTask: null,
               headers: null,
             ),
             completion(isTrue));
@@ -109,6 +107,7 @@ void main() {
               universalLinksOnly: null,
               enableDomStorage: null,
               enableJavaScript: null,
+              newTask: null,
               headers: null,
             ),
             completion(isTrue));
@@ -178,8 +177,7 @@ void main() {
         test('sms urls should be launched on the same window', () {
           plugin.openNewWindow('sms:+19725551212?body=hello%20there');
 
-          verify(
-              mockWindow.open('sms:+19725551212?body=hello%20there', '_top'));
+          verify(mockWindow.open('sms:+19725551212?body=hello%20there', '_top'));
         });
       });
     });

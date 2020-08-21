@@ -34,6 +34,7 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
     @required bool enableJavaScript,
     @required bool enableDomStorage,
     @required bool universalLinksOnly,
+    @required bool newTask,
     @required Map<String, String> headers,
   }) {
     return _channel.invokeMethod<bool>(
@@ -45,6 +46,7 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
         'enableJavaScript': enableJavaScript,
         'enableDomStorage': enableDomStorage,
         'universalLinksOnly': universalLinksOnly,
+        'newTask': newTask,
         'headers': headers,
       },
     );

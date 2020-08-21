@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
 import 'package:url_launcher_platform_interface/method_channel_url_launcher.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
@@ -15,8 +14,7 @@ void main() {
 
   group('$UrlLauncherPlatform', () {
     test('$MethodChannelUrlLauncher() is the default instance', () {
-      expect(UrlLauncherPlatform.instance,
-          isInstanceOf<MethodChannelUrlLauncher>());
+      expect(UrlLauncherPlatform.instance, isInstanceOf<MethodChannelUrlLauncher>());
     });
 
     test('Cannot be implemented with `implements`', () {
@@ -36,8 +34,7 @@ void main() {
   });
 
   group('$MethodChannelUrlLauncher', () {
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/url_launcher');
+    const MethodChannel channel = MethodChannel('plugins.flutter.io/url_launcher');
     final List<MethodCall> log = <MethodCall>[];
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       log.add(methodCall);
@@ -69,6 +66,7 @@ void main() {
         enableJavaScript: false,
         enableDomStorage: false,
         universalLinksOnly: false,
+        newTask: false,
         headers: const <String, String>{},
       );
       expect(
@@ -81,6 +79,7 @@ void main() {
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': false,
+            'newTask': false,
             'headers': <String, String>{},
           })
         ],
@@ -95,6 +94,7 @@ void main() {
         enableJavaScript: false,
         enableDomStorage: false,
         universalLinksOnly: false,
+        newTask: false,
         headers: const <String, String>{'key': 'value'},
       );
       expect(
@@ -107,6 +107,7 @@ void main() {
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': false,
+            'newTask': false,
             'headers': <String, String>{'key': 'value'},
           })
         ],
@@ -121,6 +122,7 @@ void main() {
         enableJavaScript: false,
         enableDomStorage: false,
         universalLinksOnly: false,
+        newTask: false,
         headers: const <String, String>{},
       );
       expect(
@@ -133,6 +135,7 @@ void main() {
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': false,
+            'newTask': false,
             'headers': <String, String>{},
           })
         ],
@@ -147,6 +150,7 @@ void main() {
         enableJavaScript: false,
         enableDomStorage: false,
         universalLinksOnly: true,
+        newTask: false,
         headers: const <String, String>{},
       );
       expect(
@@ -159,6 +163,35 @@ void main() {
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': true,
+            'newTask': false,
+            'headers': <String, String>{},
+          })
+        ],
+      );
+    });
+
+    test('launch in new task', () async {
+      await launcher.launch(
+        'http://example.com/',
+        useSafariVC: false,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        newTask: true,
+        headers: const <String, String>{},
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('launch', arguments: <String, Object>{
+            'url': 'http://example.com/',
+            'useSafariVC': false,
+            'useWebView': false,
+            'enableJavaScript': false,
+            'enableDomStorage': false,
+            'universalLinksOnly': false,
+            'newTask': true,
             'headers': <String, String>{},
           })
         ],
@@ -173,6 +206,7 @@ void main() {
         enableJavaScript: false,
         enableDomStorage: false,
         universalLinksOnly: false,
+        newTask: false,
         headers: const <String, String>{},
       );
       expect(
@@ -185,6 +219,7 @@ void main() {
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': false,
+            'newTask': false,
             'headers': <String, String>{},
           })
         ],
@@ -199,6 +234,7 @@ void main() {
         enableJavaScript: true,
         enableDomStorage: false,
         universalLinksOnly: false,
+        newTask: false,
         headers: const <String, String>{},
       );
       expect(
@@ -211,6 +247,7 @@ void main() {
             'enableJavaScript': true,
             'enableDomStorage': false,
             'universalLinksOnly': false,
+            'newTask': false,
             'headers': <String, String>{},
           })
         ],
@@ -225,6 +262,7 @@ void main() {
         enableJavaScript: false,
         enableDomStorage: true,
         universalLinksOnly: false,
+        newTask: false,
         headers: const <String, String>{},
       );
       expect(
@@ -237,6 +275,7 @@ void main() {
             'enableJavaScript': false,
             'enableDomStorage': true,
             'universalLinksOnly': false,
+            'newTask': false,
             'headers': <String, String>{},
           })
         ],
@@ -251,6 +290,7 @@ void main() {
         enableJavaScript: false,
         enableDomStorage: false,
         universalLinksOnly: false,
+        newTask: false,
         headers: const <String, String>{},
       );
       expect(
@@ -263,6 +303,7 @@ void main() {
             'enableJavaScript': false,
             'enableDomStorage': false,
             'universalLinksOnly': false,
+            'newTask': false,
             'headers': <String, String>{},
           })
         ],
@@ -279,11 +320,8 @@ void main() {
   });
 }
 
-class UrlLauncherPlatformMock extends Mock
-    with MockPlatformInterfaceMixin
-    implements UrlLauncherPlatform {}
+class UrlLauncherPlatformMock extends Mock with MockPlatformInterfaceMixin implements UrlLauncherPlatform {}
 
-class ImplementsUrlLauncherPlatform extends Mock
-    implements UrlLauncherPlatform {}
+class ImplementsUrlLauncherPlatform extends Mock implements UrlLauncherPlatform {}
 
 class ExtendsUrlLauncherPlatform extends UrlLauncherPlatform {}

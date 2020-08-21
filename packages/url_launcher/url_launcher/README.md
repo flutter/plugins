@@ -96,3 +96,11 @@ If you do this for a URL of a page containing JavaScript, make sure to pass in
 `enableJavaScript: true`, or else the launch method will not work properly. On
 iOS, the default behavior is to open all web URLs within the app. Everything
 else is redirected to the app handler.
+
+## Task modes
+
+On Android, launching a URL is done inside the calling task by default. A task
+[can span multiple apps with a single backstack](https://developer.android.com/guide/components/activities/tasks-and-back-stack#ManagingTasks). 
+If a URL should be launching in a new task instead, a [NEW_TASK](https://developer.android.com/reference/android/content/Intent#FLAG_ACTIVITY_NEW_TASK) 
+flag can be set by supplying `newTask: true` with the `launch` method.
+ 

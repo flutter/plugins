@@ -81,6 +81,7 @@ final class MethodCallHandlerImpl implements MethodCallHandler {
   }
 
   private void onLaunch(MethodCall call, Result result, String url) {
+    final boolean newTask = call.argument("newTask");
     final boolean useWebView = call.argument("useWebView");
     final boolean enableJavaScript = call.argument("enableJavaScript");
     final boolean enableDomStorage = call.argument("enableDomStorage");
@@ -88,7 +89,7 @@ final class MethodCallHandlerImpl implements MethodCallHandler {
     final Bundle headersBundle = extractBundle(headersMap);
 
     LaunchStatus launchStatus =
-        urlLauncher.launch(url, headersBundle, useWebView, enableJavaScript, enableDomStorage);
+        urlLauncher.launch(url, headersBundle, newTask, useWebView, enableJavaScript, enableDomStorage);
 
     if (launchStatus == LaunchStatus.NO_ACTIVITY) {
       result.error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);

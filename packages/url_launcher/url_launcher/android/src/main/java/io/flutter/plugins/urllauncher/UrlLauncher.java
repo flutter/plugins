@@ -53,6 +53,7 @@ class UrlLauncher {
   LaunchStatus launch(
       String url,
       Bundle headersBundle,
+      boolean newTask,
       boolean useWebView,
       boolean enableJavaScript,
       boolean enableDomStorage) {
@@ -70,6 +71,9 @@ class UrlLauncher {
           new Intent(Intent.ACTION_VIEW)
               .setData(Uri.parse(url))
               .putExtra(Browser.EXTRA_HEADERS, headersBundle);
+      if (newTask) {
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      }
     }
 
     activity.startActivity(launchIntent);

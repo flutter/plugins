@@ -48,6 +48,9 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
 ///
+/// [newTask\ is an Android only setting and is ignored if a webview is used.
+/// It adds a NEW_TASK flag, causing the URL to launch in a new task.
+///
 /// [statusBarBrightness] Sets the status bar brightness of the application
 /// after opening a link on iOS. Does nothing if no value is passed. This does
 /// not handle resetting the previous status bar style.
@@ -62,6 +65,7 @@ Future<bool> launch(
   bool enableDomStorage,
   bool universalLinksOnly,
   Map<String, String> headers,
+  bool newTask,
   Brightness statusBarBrightness,
 }) async {
   assert(urlString != null);
@@ -76,14 +80,11 @@ Future<bool> launch(
 
   /// [true] so that ui is automatically computed if [statusBarBrightness] is set.
   bool previousAutomaticSystemUiAdjustment = true;
-  if (statusBarBrightness != null &&
-      defaultTargetPlatform == TargetPlatform.iOS) {
-    previousAutomaticSystemUiAdjustment =
-        WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
+  if (statusBarBrightness != null && defaultTargetPlatform == TargetPlatform.iOS) {
+    previousAutomaticSystemUiAdjustment = WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
     WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
-    SystemChrome.setSystemUIOverlayStyle(statusBarBrightness == Brightness.light
-        ? SystemUiOverlayStyle.dark
-        : SystemUiOverlayStyle.light);
+    SystemChrome.setSystemUIOverlayStyle(
+        statusBarBrightness == Brightness.light ? SystemUiOverlayStyle.dark : SystemUiOverlayStyle.light);
   }
   final bool result = await UrlLauncherPlatform.instance.launch(
     urlString,
@@ -92,12 +93,12 @@ Future<bool> launch(
     enableJavaScript: enableJavaScript ?? false,
     enableDomStorage: enableDomStorage ?? false,
     universalLinksOnly: universalLinksOnly ?? false,
+    newTask: newTask ?? false,
     headers: headers ?? <String, String>{},
   );
   assert(previousAutomaticSystemUiAdjustment != null);
   if (statusBarBrightness != null) {
-    WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
-        previousAutomaticSystemUiAdjustment;
+    WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = previousAutomaticSystemUiAdjustment;
   }
   return result;
 }
