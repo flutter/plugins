@@ -36,10 +36,10 @@ and send a [pull request](https://github.com/flutter/plugins/pulls).
 ## Plugins
 These are the available plugins in this repository.
 
-| Plugin | Pub |
-|--------|-----|
-| [android_alarm_manager](./packages/android_alarm_manager/) | [![pub package](https://img.shields.io/pub/v/android_alarm_manager.svg)](https://pub.dev/packages/android_alarm_manager) |
-| [android_intent](./packages/android_intent/) | [![pub package](https://img.shields.io/pub/v/android_intent.svg)](https://pub.dev/packages/android_intent) |
+| Plugin | Pub | Points | Popularity | Likes |
+|--------|-----|--------|------------|-------|
+| [android_alarm_manager](./packages/android_alarm_manager/) | [![pub package](https://img.shields.io/pub/v/android_alarm_manager.svg)](https://pub.dev/packages/android_alarm_manager) | [![pub points](https://badges.bar/android_alarm_manager/pub%20points)](https://pub.dev/packages/android_alarm_manager/score) |  [![popularity](https://badges.bar/android_alarm_manager/popularity)](https://pub.dev/packages/android_alarm_manager/score) | [![likes](https://badges.bar/android_alarm_manager/likes)](https://pub.dev/packages/android_alarm_manager/score) |
+| [android_intent](./packages/android_intent/) | [![pub package](https://img.shields.io/pub/v/android_intent.svg)](https://pub.dev/packages/android_intent) | [![pub points](https://badges.bar/android_intent/pub%20points)](https://pub.dev/packages/android_intent/score) | [![popularity](https://badges.bar/android_intent/popularity)](https://pub.dev/packages/android_intent/score) | [![likes](https://badges.bar/android_intent/likes)](https://pub.dev/packages/android_intent/score) |
 | [battery](./packages/battery/) | [![pub package](https://img.shields.io/pub/v/battery.svg)](https://pub.dev/packages/battery) |
 | [camera](./packages/camera/) | [![pub package](https://img.shields.io/pub/v/camera.svg)](https://pub.dev/packages/camera) |
 | [connectivity](./packages/connectivity/) | [![pub package](https://img.shields.io/pub/v/connectivity.svg)](https://pub.dev/packages/connectivity) |
