@@ -47,7 +47,8 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   /// Creates a file input element with only the accept attribute
   @visibleForTesting
   FileUploadInputElement createFileInputElement(String accepted, bool multiple) {
-    if (_hasTestOverrides) {
+    if (_hasTestOverrides && _overrides.createFileInputElement != null) {
+      print ("createFileInputElement overridden");
       return _overrides.createFileInputElement(accepted);
     }
     
@@ -88,30 +89,23 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   /// Getter for retrieving files from an input element
   @visibleForTesting
   List<File> getFilesFromInputElement(InputElement element) {
-    if(_hasTestOverrides) {
+    if(_hasTestOverrides && _overrides.getFilesFromInputElement != null) {
+      print ("getFilesFromInputElement overridden");
       return _overrides.getFilesFromInputElement(element);
     }
 
     return element?.files ?? [];
   }
-
-  Future<XFile> _getFileWhenReady(InputElement element)  {
-    final Completer<XFile> _completer = Completer();
-    
-    _getFilesWhenReady(element)
-      .then((list) {
-        _completer.complete(list[0]);
-      })
-      .catchError((err) {
-        _completer.completeError(err);
-    });
-    
-    return _completer.future;
-  }
   
   /// Listen for file input element to change and retrieve files when
   /// this happens.
-  Future<List<XFile>> _getFilesWhenReady(InputElement element)  {
+  @visibleForTesting
+  Future<List<XFile>> getFilesWhenReady(InputElement element)  {
+    if(_hasTestOverrides && _overrides.getFilesWhenReady != null) {
+      print ("getFilesWhenReady overridden");
+      return _overrides.getFilesWhenReady(element);
+    }
+
     final Completer<List<XFile>> _completer = Completer();
 
     // Listens for element change
@@ -157,7 +151,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
 
     _addElementToDomAndClick(element);
 
-    return _getFilesWhenReady(element);
+    return getFilesWhenReady(element);
   }
   
   /// Open file dialog for loading files and return a XFile
@@ -201,4 +195,9 @@ class FileSelectorPluginTestOverrides {
 
   /// For overriding retrieving a file from the input element.
   List<File> Function(InputElement input) getFilesFromInputElement;
+
+  /// For overriding waiting for the files to be ready. Useful for testing so we do not hang here.
+  Future<List<XFile>> Function(InputElement input) getFilesWhenReady;
+
+  FileSelectorPluginTestOverrides({this.createFileInputElement, this.getFilesFromInputElement, this.getFilesWhenReady});
 }

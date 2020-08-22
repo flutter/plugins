@@ -9,10 +9,10 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  file_picker_web:
+  file_selector_web:
     path: ../
-  file_picker_platform_interface:
-    path: ../../file_picker_platform_interface
+  file_selector_platform_interface:
+    path: ../../file_selector_platform_interface
   google_maps: ^3.4.4
   flutter_driver:
     sdk: flutter
