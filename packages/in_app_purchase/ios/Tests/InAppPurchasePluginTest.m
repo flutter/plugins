@@ -146,7 +146,7 @@
                     XCTAssertEqualObjects(
                         error.message,
                         @"There is a pending transaction for the same product identifier. Please "
-                        @"either wait for it to be finished or finish it manuelly using "
+                        @"either wait for it to be finished or finish it manually using "
                         @"`completePurchase` to avoid edge cases.");
                     [expectation fulfill];
                   }];

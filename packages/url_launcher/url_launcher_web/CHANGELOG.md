@@ -1,3 +1,7 @@
+# 0.1.2+1
+
+- Update docs
+
 # 0.1.2
 
 - Adds "tel" and "sms" support 

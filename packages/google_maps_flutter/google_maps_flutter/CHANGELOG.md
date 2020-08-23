@@ -1,7 +1,20 @@
-
-## 0.5.28+3
+## 0.5.30+1
 
 * Geodesic Polyline support for iOS
+
+## 0.5.30
+
+* Add a `dispose` method to the controller to let the native side know that we're done with said controller.
+* Call `controller.dispose()` from the `dispose` method of the `GoogleMap` widget.
+
+## 0.5.29+1
+
+* (ios) Pin dependency on GoogleMaps pod to `< 3.10`, to address https://github.com/flutter/flutter/issues/63447
+
+## 0.5.29
+
+* Pass a constant `_web_only_mapCreationId` to `platform.buildView`, so web can return a cached widget DOM when flutter attempts to repaint there.
+* Modify some examples slightly so they're more web-friendly.
 
 ## 0.5.28+2
 
