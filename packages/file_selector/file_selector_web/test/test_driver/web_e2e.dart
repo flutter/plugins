@@ -16,7 +16,8 @@ import 'package:platform_detect/test_utils.dart' as platform;
 
 import 'dart:developer';
 
-final String domElementId = '__file_selector_web-file-input';
+final String domElementId = '__file_selector_web_file_input';
+final String xFileDomElementId = '__x_file_dom_element';
 
 final textGroup = XTypeGroup(label: 'test',
     fileTypes: [
@@ -35,6 +36,8 @@ final File textFile2 = File([bytes2], 'test2.txt');
 /// Test Markers
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized() as E2EWidgetsFlutterBinding;
+
+  print("Note that the following message can be ignored in the test output:\n'File chooser dialog can only be shown with a user activation'");
 
   FileSelectorPlugin plugin;
 
@@ -57,7 +60,6 @@ void main() {
 
       final container = querySelector('#${domElementId}');
 
-      print("Expect message: 'File chooser dialog can only be shown with a user activation'");
       final file = await plugin.loadFile(acceptedTypeGroups: [ textGroup ]);
 
       expect(file, isNotNull);
@@ -76,9 +78,7 @@ void main() {
         getFilesWhenReady: (_) => Future.value([ XFile('path') ]),
         createFileInputElement: (_, __) => mockInput,
       );
-
-
-
+      
       plugin = FileSelectorPlugin(
         overrides: overrides,
       );
@@ -86,7 +86,6 @@ void main() {
       bool clicked = false;
       mockInput.onClick.listen((event) => clicked = true);
 
-      print("Expect message: 'File chooser dialog can only be shown with a user activation'");
       final file = await plugin.loadFile(acceptedTypeGroups: [ textGroup ]);
 
       expect(clicked, true);
@@ -134,7 +133,6 @@ void main() {
 
       final container = querySelector('#${domElementId}');
 
-      print("Expect message: 'File chooser dialog can only be shown with a user activation'");
       final files = await plugin.loadFiles(acceptedTypeGroups: [ textGroup ]);
 
       expect(files, isNotNull);
@@ -164,7 +162,6 @@ void main() {
       bool clicked = false;
       mockInput.onClick.listen((event) => clicked = true);
 
-      print("Expect message: 'File chooser dialog can only be shown with a user activation'");
       final file = await plugin.loadFiles(acceptedTypeGroups: [ textGroup ]);
 
       expect(clicked, true);
@@ -195,7 +192,7 @@ void main() {
       final loadedFiles = await files;
       final loadedFile1 = loadedFiles[0];
       final loadedFile2 = loadedFiles[1];
-      
+
       final contents = await loadedFile1.readAsString();
       expect(contents, expectedStringContents);
       expect(loadedFile1.name, textFile.name);
@@ -211,5 +208,49 @@ void main() {
     final path = plugin.getSavePath();
     expect(path, completes);
   });
+
+  group('XFile saveTo(..)', () {
+    testWidgets('creates a DOM container', (WidgetTester tester) async {
+      XFile file = XFile.fromData(bytes);
+      
+      await file.saveTo('');
+
+      final container = querySelector('#${xFileDomElementId}');
+      
+      expect(container, isNotNull);
+    });
+    
+    testWidgets('create anchor element', (WidgetTester tester) async {
+      XFile file = XFile.fromData(bytes, name: textFile.name);
+      
+      await file.saveTo('path');
+
+      final container = querySelector('#${xFileDomElementId}');
+      final AnchorElement element = container?.children?.firstWhere((element) => element.tagName == 'A', orElse: () => null);
+      
+      expect(element, isNotNull);
+      expect(element.href, file.path);
+      expect(element.download, file.name);
+    });
+    
+    testWidgets('anchor element is clicked', (WidgetTester tester) async {
+      final mockAnchor = AnchorElement();
+      
+      XFileTestOverrides overrides = XFileTestOverrides(
+        createAnchorElement: (_,__) => mockAnchor,
+      );
+      
+      XFile file = XFile.fromData(bytes, name: textFile.name, overrides: overrides);
+      
+      bool clicked = false;
+      mockAnchor.onClick.listen((event) => clicked = true);
+      
+      await file.saveTo('path');
+      
+      expect(clicked, true);
+    });
+  });
+
+  print("Note that the following message can be ignored in the test output:\n'File chooser dialog can only be shown with a user activation'");
 
 }

@@ -22,6 +22,10 @@ class XFile extends XFileBase {
   final DateTime lastModified;
   Element _target;
 
+  final XFileTestOverrides _overrides;
+
+  bool get _hasTestOverrides => _overrides != null;
+
   /// Construct a XFile object from its ObjectUrl.
   ///
   /// Optionally, this can be initialized with `bytes` and `length`
@@ -36,10 +40,11 @@ class XFile extends XFileBase {
         int length,
         Uint8List bytes,
         this.lastModified,
+        @visibleForTesting XFileTestOverrides overrides,
       })  : _data = bytes,
         _length = length,
-        super(path) {
-  }
+        _overrides = overrides,
+        super(path);
 
   /// Construct an XFile from its data
   XFile.fromData(
@@ -48,11 +53,13 @@ class XFile extends XFileBase {
         this.name,
         int length,
         this.lastModified,
+        @visibleForTesting XFileTestOverrides overrides,
       })  : _data = bytes,
         _length = length,
+        _overrides = overrides,
         super('') {
     Blob blob;
-    if (type.mime == null) {
+    if (type == null) {
       blob = Blob([bytes]);
     } else {
       blob = Blob([bytes], type.mime);
@@ -94,7 +101,7 @@ class XFile extends XFileBase {
   /// For the web implementation, the path variable is ignored.
   void saveTo(String path) async {
     // Create a DOM container where we can host the anchor.
-    _target = _ensureInitialized('-x-file-dom-element');
+    _target = _ensureInitialized('__x_file_dom_element');
 
     // Create an <a> tag with the appropriate download attributes and click it
     final AnchorElement element = createAnchorElement(this.path, this.name);
@@ -105,6 +112,10 @@ class XFile extends XFileBase {
   /// Create anchor element with download attribute
   @visibleForTesting
   AnchorElement createAnchorElement(String href, String suggestedName) {
+    if (_hasTestOverrides && _overrides.createAnchorElement != null) {
+      return _overrides.createAnchorElement(href, suggestedName);
+    }
+
     final element = AnchorElement(href: href);
     element.download = suggestedName;
     return element;
@@ -123,11 +134,22 @@ class XFile extends XFileBase {
     var target = querySelector('#${id}');
     if (target == null) {
       final Element targetElement =
-      Element.tag('flt-x-file-input')..id = id;
+      Element.tag('flt-x-file')..id = id;
 
       querySelector('body').children.add(targetElement);
       target = targetElement;
     }
     return target;
   }
+}
+
+
+/// Overrides some functions to allow testing
+@visibleForTesting
+class XFileTestOverrides {
+  /// For overriding the creation of the file input element.
+  Element Function(String href, String suggestedName) createAnchorElement;
+
+  /// Default constructor for overrides
+  XFileTestOverrides({this.createAnchorElement});
 }
