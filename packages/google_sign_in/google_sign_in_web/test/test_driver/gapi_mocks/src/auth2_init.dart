@@ -45,3 +45,23 @@ GapiAuth2.prototype.getAuthInstance = function () {
 
 window.gapi.auth2 = new GapiAuth2();
 ''');
+
+String auth2InitError() => testIife('''
+${gapi()}
+
+function GapiAuth2() {}
+GapiAuth2.prototype.init = function (initOptions) {
+  return {
+    then: (onSuccess, onError) => {
+      window.setTimeout(() => {
+        onError({
+          error: 'idpiframe_initialization_failed',
+          details: 'This error was raised from a test.',
+        });
+      }, 30);
+    }
+  }
+};
+
+window.gapi.auth2 = new GapiAuth2();
+''');

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/services.dart';
 import 'package:integration_test/integration_test.dart';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -24,63 +25,139 @@ void main() {
     idToken: expectedTokenData.idToken,
   );
 
-  // The pre-configured use case for the instances of the plugin in this test
-  gapiUrl = toBase64Url(gapi_mocks.auth2InitSuccess(expectedUserData));
-
   GoogleSignInPlugin plugin;
 
-  setUp(() {
-    plugin = GoogleSignInPlugin();
+  group('plugin.init() throws a catchable exception', () {
+    setUp(() {
+      // The pre-configured use case for the instances of the plugin in this test
+      gapiUrl = toBase64Url(gapi_mocks.auth2InitError());
+      plugin = GoogleSignInPlugin();
+    });
+
+    testWidgets('init throws PlatformException', (WidgetTester tester) async {
+      await expectLater(
+          plugin.init(
+            hostedDomain: 'foo',
+            scopes: <String>['some', 'scope'],
+            clientId: '1234',
+          ),
+          throwsA(isA<PlatformException>()));
+    });
+
+    testWidgets('init forwards error code from JS',
+        (WidgetTester tester) async {
+      try {
+        await plugin.init(
+          hostedDomain: 'foo',
+          scopes: <String>['some', 'scope'],
+          clientId: '1234',
+        );
+        fail('plugin.init should have thrown an exception!');
+      } catch (e) {
+        expect(e.code, 'idpiframe_initialization_failed');
+      }
+    });
   });
 
-  testWidgets('Init requires clientId', (WidgetTester tester) async {
-    expect(plugin.init(hostedDomain: ''), throwsAssertionError);
-  });
+  group('other methods also throw catchable exceptions on init fail', () {
+    // This function ensures that init gets called, but for some reason, we
+    // ignored that it has thrown stuff...
+    void _discardInit() async {
+      try {
+        await plugin.init(
+          hostedDomain: 'foo',
+          scopes: <String>['some', 'scope'],
+          clientId: '1234',
+        );
+      } catch (e) {
+        // Noop so we can call other stuff
+      }
+    }
 
-  testWidgets('Init doesn\'t accept spaces in scopes',
-      (WidgetTester tester) async {
-    expect(
-        plugin.init(
-          hostedDomain: '',
-          clientId: '',
-          scopes: <String>['scope with spaces'],
-        ),
-        throwsAssertionError);
-  });
-
-  group('Successful .init, then', () {
-    setUp(() async {
-      await plugin.init(
-        hostedDomain: 'foo',
-        scopes: <String>['some', 'scope'],
-        clientId: '1234',
-      );
-      await plugin.initialized;
+    setUp(() {
+      gapiUrl = toBase64Url(gapi_mocks.auth2InitError());
+      plugin = GoogleSignInPlugin();
     });
 
-    testWidgets('signInSilently', (WidgetTester tester) async {
-      GoogleSignInUserData actualUser = await plugin.signInSilently();
-
-      expect(actualUser, expectedUserData);
+    testWidgets('signInSilently throws', (WidgetTester tester) async {
+      await _discardInit();
+      await expectLater(
+          plugin.signInSilently(), throwsA(isA<PlatformException>()));
     });
 
-    testWidgets('signIn', (WidgetTester tester) async {
-      GoogleSignInUserData actualUser = await plugin.signIn();
-
-      expect(actualUser, expectedUserData);
+    testWidgets('signIn throws', (WidgetTester tester) async {
+      await _discardInit();
+      await expectLater(plugin.signIn(), throwsA(isA<PlatformException>()));
     });
 
-    testWidgets('getTokens', (WidgetTester tester) async {
-      GoogleSignInTokenData actualToken =
-          await plugin.getTokens(email: expectedUserData.email);
-
-      expect(actualToken, expectedTokenData);
+    testWidgets('getTokens throws', (WidgetTester tester) async {
+      await _discardInit();
+      await expectLater(plugin.getTokens(email: 'test@example.com'),
+          throwsA(isA<PlatformException>()));
     });
-
     testWidgets('requestScopes', (WidgetTester tester) async {
-      bool scopeGranted = await plugin.requestScopes(['newScope']);
+      await _discardInit();
+      await expectLater(plugin.requestScopes(['newScope']),
+          throwsA(isA<PlatformException>()));
+    });
+  });
 
-      expect(scopeGranted, isTrue);
+  group('auth2 Init Successful', () {
+    setUp(() {
+      // The pre-configured use case for the instances of the plugin in this test
+      gapiUrl = toBase64Url(gapi_mocks.auth2InitSuccess(expectedUserData));
+      plugin = GoogleSignInPlugin();
+    });
+
+    testWidgets('Init requires clientId', (WidgetTester tester) async {
+      expect(plugin.init(hostedDomain: ''), throwsAssertionError);
+    });
+
+    testWidgets('Init doesn\'t accept spaces in scopes',
+        (WidgetTester tester) async {
+      expect(
+          plugin.init(
+            hostedDomain: '',
+            clientId: '',
+            scopes: <String>['scope with spaces'],
+          ),
+          throwsAssertionError);
+    });
+
+    group('Successful .init, then', () {
+      setUp(() async {
+        await plugin.init(
+          hostedDomain: 'foo',
+          scopes: <String>['some', 'scope'],
+          clientId: '1234',
+        );
+        await plugin.initialized;
+      });
+
+      testWidgets('signInSilently', (WidgetTester tester) async {
+        GoogleSignInUserData actualUser = await plugin.signInSilently();
+
+        expect(actualUser, expectedUserData);
+      });
+
+      testWidgets('signIn', (WidgetTester tester) async {
+        GoogleSignInUserData actualUser = await plugin.signIn();
+
+        expect(actualUser, expectedUserData);
+      });
+
+      testWidgets('getTokens', (WidgetTester tester) async {
+        GoogleSignInTokenData actualToken =
+            await plugin.getTokens(email: expectedUserData.email);
+
+        expect(actualToken, expectedTokenData);
+      });
+
+      testWidgets('requestScopes', (WidgetTester tester) async {
+        bool scopeGranted = await plugin.requestScopes(['newScope']);
+
+        expect(scopeGranted, isTrue);
+      });
     });
   });
 }
