@@ -65,3 +65,43 @@ GapiAuth2.prototype.init = function (initOptions) {
 
 window.gapi.auth2 = new GapiAuth2();
 ''');
+
+String auth2SignInError([String error = 'popup_closed_by_user']) => testIife('''
+${gapi()}
+
+var mockUser = null;
+
+function GapiAuth2() {}
+GapiAuth2.prototype.init = function (initOptions) {
+  return {
+    then: (onSuccess, onError) => {
+      window.setTimeout(() => {
+        onSuccess(window.gapi.auth2);
+      }, 30);
+    },
+    currentUser: {
+      listen: (cb) => {
+        window.setTimeout(() => {
+          cb(mockUser);
+        }, 30);
+      }
+    }
+  }
+};
+
+GapiAuth2.prototype.getAuthInstance = function () {
+  return {
+    signIn: () => {
+      return new Promise((resolve, reject) => {
+        window.setTimeout(() => {
+          reject({
+            error: '${error}'
+          });
+        }, 30);
+      });
+    },
+  }
+};
+
+window.gapi.auth2 = new GapiAuth2();
+''');

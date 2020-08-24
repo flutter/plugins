@@ -20,7 +20,7 @@ import "package:js/js_util.dart" show promiseToFuture;
 @JS()
 class GoogleAuthInitFailureError {
   external String get error;
-  external set name(String value);
+  external set error(String value);
 
   external String get details;
   external set details(String value);
@@ -30,7 +30,7 @@ class GoogleAuthInitFailureError {
 @JS()
 class GoogleAuthSignInError {
   external String get error;
-  external set name(String value);
+  external set error(String value);
 }
 
 // Module gapi.auth2

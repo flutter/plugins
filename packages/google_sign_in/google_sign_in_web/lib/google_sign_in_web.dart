@@ -107,14 +107,14 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       isAuthInitialized.complete();
     }), allowInterop((auth2.GoogleAuthInitFailureError reason) {
       // onError
-      throw PlatformException(
+      isAuthInitialized.completeError(PlatformException(
         code: reason.error,
         message: reason.details,
         details: 'google_sign_in',
-      );
+      ));
     }));
 
-    return null;
+    return _isAuthInitialized;
   }
 
   @override

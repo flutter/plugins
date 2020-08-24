@@ -160,4 +160,33 @@ void main() {
       });
     });
   });
+
+  group('auth2 Init successful, but exception on signIn() method', () {
+    setUp(() async {
+      // The pre-configured use case for the instances of the plugin in this test
+      gapiUrl = toBase64Url(gapi_mocks.auth2SignInError());
+      plugin = GoogleSignInPlugin();
+      await plugin.init(
+        hostedDomain: 'foo',
+        scopes: <String>['some', 'scope'],
+        clientId: '1234',
+      );
+      await plugin.initialized;
+    });
+
+    testWidgets('User aborts sign in flow, throws PlatformException',
+        (WidgetTester tester) async {
+      await expectLater(plugin.signIn(), throwsA(isA<PlatformException>()));
+    });
+
+    testWidgets('User aborts sign in flow, error code is forwarded from JS',
+        (WidgetTester tester) async {
+      try {
+        await plugin.signIn();
+        fail('plugin.signIn() should have thrown an exception!');
+      } catch (e) {
+        expect(e.code, 'popup_closed_by_user');
+      }
+    });
+  });
 }
