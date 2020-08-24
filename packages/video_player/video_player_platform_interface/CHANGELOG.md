@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Add AndroidVideoPlayerOptions with mp4ExtractorSkipEditLists
+
 ## 2.1.0
 
 * Add VideoPlayerOptions with audo mix mode

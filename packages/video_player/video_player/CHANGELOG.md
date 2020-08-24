@@ -1,3 +1,8 @@
+## 0.10.12+1
+
+* `VideoPlayerOptions` add `AndroidVideoPlayerOptions` to add addition optional player setting for android platform.
+* Android: set `AndroidVideoPlayerOptions.mp4ExtractorSkipEditLists` to `true` to fix the issue: part of the media is unexpectedly missing or repeated.
+
 ## 0.10.12
 
 * Introduce VideoPlayerOptions to set the audio mix mode.
