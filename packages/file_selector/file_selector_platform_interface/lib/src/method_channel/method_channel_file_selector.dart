@@ -23,6 +23,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
       'loadFile',
       <String, Object> {
         'acceptedTypes': acceptedTypeGroups,
+        'initialDirectory': initialDirectory,
       },
     );
   }
@@ -37,6 +38,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
       'loadFiles',
       <String, Object> {
         'acceptedTypes': acceptedTypeGroups,
+        'initialDirectory': initialDirectory,
       },
     );
   }
@@ -50,7 +52,8 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     return _channel.invokeMethod(
       'saveFile',
       <String, Object> {
-
+        'initialDirectory': initialDirectory,
+        'suggestedName': suggestedName,
       },
     );
   }
