@@ -1,3 +1,7 @@
+## 0.8.1
+
+* Fix spelling error on iOS `MethodChannel` name.
+
 ## 0.8.0
 
 * Rename plugin to integration_test.
