@@ -3,6 +3,7 @@
 * Throw PlatformExceptions from where the GMaps SDK may throw exceptions: `init()` and `signIn()`.
 * Add two new JS-interop types to be able to unwrap JS errors in release mode.
 * Align the fields of the thrown PlatformExceptions with the mobile version.
+* Migrate tests to run with `flutter drive`
 
 ## 0.9.1+2
 
