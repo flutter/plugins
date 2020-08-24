@@ -120,7 +120,7 @@ class MethodCallHandlerImpl
         break;
       case InAppPurchasePlugin.MethodNames.LAUNCH_BILLING_FLOW:
         launchBillingFlow(
-            (String) call.argument("sku"), (String) call.argument("accountId"), result);
+            (String) call.argument("sku"), (String) call.argument("obfuscatedAccountId"), result);
         break;
       case InAppPurchasePlugin.MethodNames.QUERY_PURCHASES:
         queryPurchases((String) call.argument("skuType"), result);
@@ -189,7 +189,7 @@ class MethodCallHandlerImpl
   }
 
   private void launchBillingFlow(
-      String sku, @Nullable String accountId, MethodChannel.Result result) {
+      String sku, @Nullable String obfuscatedAccountId, MethodChannel.Result result) {
     if (billingClientError(result)) {
       return;
     }
@@ -215,8 +215,8 @@ class MethodCallHandlerImpl
 
     BillingFlowParams.Builder paramsBuilder =
         BillingFlowParams.newBuilder().setSkuDetails(skuDetails);
-    if (accountId != null && !accountId.isEmpty()) {
-      paramsBuilder.setAccountId(accountId);
+    if (obfuscatedAccountId != null && !obfuscatedAccountId.isEmpty()) {
+      paramsBuilder.setObfuscatedAccountId(obfuscatedAccountId);
     }
     result.success(
         Translator.fromBillingResult(

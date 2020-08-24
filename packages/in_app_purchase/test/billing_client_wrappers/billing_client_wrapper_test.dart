@@ -149,19 +149,19 @@ void main() {
         value: buildBillingResultMap(expectedBillingResult),
       );
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
-      final String accountId = "hashedAccountId";
+      final String obfuscatedAccountId = "hashedAccountId";
 
       expect(
           await billingClient.launchBillingFlow(
-              sku: skuDetails.sku, accountId: accountId),
+              sku: skuDetails.sku, obfuscatedAccountId: obfuscatedAccountId),
           equals(expectedBillingResult));
       Map<dynamic, dynamic> arguments =
           stubPlatform.previousCallMatching(launchMethodName).arguments;
       expect(arguments['sku'], equals(skuDetails.sku));
-      expect(arguments['accountId'], equals(accountId));
+      expect(arguments['obfuscatedAccountId'], equals(obfuscatedAccountId));
     });
 
-    test('handles null accountId', () async {
+    test('handles null obfuscatedAccountId', () async {
       const String debugMessage = 'dummy message';
       final BillingResponse responseCode = BillingResponse.ok;
       final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
@@ -177,7 +177,7 @@ void main() {
       Map<dynamic, dynamic> arguments =
           stubPlatform.previousCallMatching(launchMethodName).arguments;
       expect(arguments['sku'], equals(skuDetails.sku));
-      expect(arguments['accountId'], isNull);
+      expect(arguments['obfuscatedAccountId'], isNull);
     });
   });
 

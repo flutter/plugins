@@ -147,9 +147,9 @@ class BillingClient {
   /// Attempt to launch the Play Billing Flow for a given [skuDetails].
   ///
   /// The [skuDetails] needs to have already been fetched in a [querySkuDetails]
-  /// call. The [accountId] is an optional hashed string associated with the user
+  /// call. The [obfuscatedAccountId] is an optional hashed string associated with the user
   /// that's unique to your app. It's used by Google to detect unusual behavior.
-  /// Do not pass in a cleartext [accountId], use your developer ID, or use the
+  /// Do not pass in a cleartext [obfuscatedAccountId], use your developer ID, or use the
   /// user's Google ID for this field.
   ///
   /// Calling this attemps to show the Google Play purchase UI. The user is free
@@ -166,13 +166,13 @@ class BillingClient {
   /// instance by [setting the given
   /// skuDetails](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setskudetails)
   /// and [the given
-  /// accountId](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setAccountId(java.lang.String)).
+  /// obfuscatedAccountId](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setObfuscatedAccountId(java.lang.String)).
   Future<BillingResultWrapper> launchBillingFlow(
-      {@required String sku, String accountId}) async {
+      {@required String sku, String obfuscatedAccountId}) async {
     assert(sku != null);
     final Map<String, dynamic> arguments = <String, dynamic>{
       'sku': sku,
-      'accountId': accountId,
+      'obfuscatedAccountId': obfuscatedAccountId,
     };
     return BillingResultWrapper.fromJson(
         await channel.invokeMapMethod<String, dynamic>(

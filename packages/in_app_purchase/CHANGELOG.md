@@ -1,3 +1,7 @@
+## 0.3.4+5
+
+* Adjust applicationUserName to pass through as obfuscatedAccountId to match updated google play API
+
 ## 0.3.4+4
 
 * Update package:e2e -> package:integration_test

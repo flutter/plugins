@@ -241,7 +241,7 @@ void main() {
         'BillingClient#consumeAsync(String, ConsumeResponseListener)';
     test('buy non consumable, serializes and deserializes data', () async {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
-      final String accountId = "hashedAccountId";
+      final String obfuscatedAccountId = "hashedAccountId";
       const String debugMessage = 'dummy message';
       final BillingResponse sentCode = BillingResponse.ok;
       final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
@@ -285,7 +285,7 @@ void main() {
       }, onDone: () {});
       final PurchaseParam purchaseParam = PurchaseParam(
           productDetails: ProductDetails.fromSkuDetails(skuDetails),
-          applicationUserName: accountId);
+          applicationUserName: obfuscatedAccountId);
       final bool launchResult = await GooglePlayConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
 
@@ -298,7 +298,7 @@ void main() {
 
     test('handles an error with an empty purchases list', () async {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
-      final String accountId = "hashedAccountId";
+      final String obfuscatedAccountId = "hashedAccountId";
       const String debugMessage = 'dummy message';
       final BillingResponse sentCode = BillingResponse.error;
       final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
@@ -328,7 +328,7 @@ void main() {
       }, onDone: () {});
       final PurchaseParam purchaseParam = PurchaseParam(
           productDetails: ProductDetails.fromSkuDetails(skuDetails),
-          applicationUserName: accountId);
+          applicationUserName: obfuscatedAccountId);
       await GooglePlayConnection.instance
           .buyNonConsumable(purchaseParam: purchaseParam);
       PurchaseDetails result = await completer.future;
@@ -342,7 +342,7 @@ void main() {
     test('buy consumable with auto consume, serializes and deserializes data',
         () async {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
-      final String accountId = "hashedAccountId";
+      final String obfuscatedAccountId = "hashedAccountId";
       const String debugMessage = 'dummy message';
       final BillingResponse sentCode = BillingResponse.ok;
       final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
@@ -400,7 +400,7 @@ void main() {
       }, onDone: () {});
       final PurchaseParam purchaseParam = PurchaseParam(
           productDetails: ProductDetails.fromSkuDetails(skuDetails),
-          applicationUserName: accountId);
+          applicationUserName: obfuscatedAccountId);
       final bool launchResult = await GooglePlayConnection.instance
           .buyConsumable(purchaseParam: purchaseParam);
 
@@ -452,7 +452,7 @@ void main() {
 
     test('adds consumption failures to PurchaseDetails objects', () async {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
-      final String accountId = "hashedAccountId";
+      final String obfuscatedAccountId = "hashedAccountId";
       const String debugMessage = 'dummy message';
       final BillingResponse sentCode = BillingResponse.ok;
       final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
@@ -509,7 +509,7 @@ void main() {
       }, onDone: () {});
       final PurchaseParam purchaseParam = PurchaseParam(
           productDetails: ProductDetails.fromSkuDetails(skuDetails),
-          applicationUserName: accountId);
+          applicationUserName: obfuscatedAccountId);
       await GooglePlayConnection.instance
           .buyConsumable(purchaseParam: purchaseParam);
 
@@ -526,7 +526,7 @@ void main() {
         'buy consumable without auto consume, consume api should not receive calls',
         () async {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
-      final String accountId = "hashedAccountId";
+      final String obfuscatedAccountId = "hashedAccountId";
       const String debugMessage = 'dummy message';
       final BillingResponse sentCode = BillingResponse.developerError;
       final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
@@ -581,7 +581,7 @@ void main() {
       }, onDone: () {});
       final PurchaseParam purchaseParam = PurchaseParam(
           productDetails: ProductDetails.fromSkuDetails(skuDetails),
-          applicationUserName: accountId);
+          applicationUserName: obfuscatedAccountId);
       await GooglePlayConnection.instance
           .buyConsumable(purchaseParam: purchaseParam, autoConsume: false);
       expect(null, await consumeCompleter.future);

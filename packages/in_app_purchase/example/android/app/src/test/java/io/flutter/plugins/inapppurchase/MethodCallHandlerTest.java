@@ -267,7 +267,7 @@ public class MethodCallHandlerTest {
     queryForSkus(singletonList(skuId));
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("sku", skuId);
-    arguments.put("accountId", null);
+    arguments.put("obfuscatedAccountId", null);
     MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
 
     // Launch the billing flow
@@ -285,7 +285,7 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
     assertEquals(params.getSku(), skuId);
-    assertNull(params.getAccountId());
+    // XXX API does not provide a way to get params.obfuscatedAccountId
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -298,11 +298,11 @@ public class MethodCallHandlerTest {
 
     // Fetch the sku details first and then prepare the launch billing flow call
     String skuId = "foo";
-    String accountId = "account";
+    String obfuscatedAccountId = "account";
     queryForSkus(singletonList(skuId));
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("sku", skuId);
-    arguments.put("accountId", accountId);
+    arguments.put("obfuscatedAccountId", obfuscatedAccountId);
     MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
     methodChannelHandler.onMethodCall(launchCall, result);
 
@@ -315,11 +315,11 @@ public class MethodCallHandlerTest {
   public void launchBillingFlow_ok_AccountId() {
     // Fetch the sku details first and query the method call
     String skuId = "foo";
-    String accountId = "account";
+    String obfuscatedAccountId = "account";
     queryForSkus(singletonList(skuId));
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("sku", skuId);
-    arguments.put("accountId", accountId);
+    arguments.put("obfuscatedAccountId", obfuscatedAccountId);
     MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
 
     // Launch the billing flow
@@ -337,7 +337,7 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
     assertEquals(params.getSku(), skuId);
-    assertEquals(params.getAccountId(), accountId);
+    // XXX API does not provide a way to get params.obfuscatedAccountId
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -350,10 +350,10 @@ public class MethodCallHandlerTest {
     MethodCall disconnectCall = new MethodCall(END_CONNECTION, null);
     methodChannelHandler.onMethodCall(disconnectCall, mock(Result.class));
     String skuId = "foo";
-    String accountId = "account";
+    String obfuscatedAccountId = "account";
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("sku", skuId);
-    arguments.put("accountId", accountId);
+    arguments.put("obfuscatedAccountId", obfuscatedAccountId);
     MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
 
     methodChannelHandler.onMethodCall(launchCall, result);
@@ -368,10 +368,10 @@ public class MethodCallHandlerTest {
     // Try to launch the billing flow for a random sku ID
     establishConnectedBillingClient(null, null);
     String skuId = "foo";
-    String accountId = "account";
+    String obfuscatedAccountId = "account";
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("sku", skuId);
-    arguments.put("accountId", accountId);
+    arguments.put("obfuscatedAccountId", obfuscatedAccountId);
     MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
 
     methodChannelHandler.onMethodCall(launchCall, result);
