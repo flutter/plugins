@@ -37,7 +37,8 @@ void main() {
     expect(plugin.init(hostedDomain: ''), throwsAssertionError);
   });
 
-  testWidgets('Init doesn\'t accept spaces in scopes', (WidgetTester tester) async {
+  testWidgets('Init doesn\'t accept spaces in scopes',
+      (WidgetTester tester) async {
     expect(
         plugin.init(
           hostedDomain: '',

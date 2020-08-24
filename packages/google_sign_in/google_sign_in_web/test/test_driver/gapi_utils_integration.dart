@@ -28,17 +28,20 @@ void main() {
       expect(gapiUserToPluginUserData(null), isNull);
     });
 
-    testWidgets('not signed-in user -> null response', (WidgetTester tester) async {
+    testWidgets('not signed-in user -> null response',
+        (WidgetTester tester) async {
       when(mockUser.isSignedIn()).thenReturn(false);
       expect(gapiUserToPluginUserData(mockUser), isNull);
     });
 
-    testWidgets('signed-in, but null profile user -> null response', (WidgetTester tester) async {
+    testWidgets('signed-in, but null profile user -> null response',
+        (WidgetTester tester) async {
       when(mockUser.isSignedIn()).thenReturn(true);
       expect(gapiUserToPluginUserData(mockUser), isNull);
     });
 
-    testWidgets('signed-in, null userId in profile user -> null response', (WidgetTester tester) async {
+    testWidgets('signed-in, null userId in profile user -> null response',
+        (WidgetTester tester) async {
       when(mockUser.isSignedIn()).thenReturn(true);
       when(mockUser.getBasicProfile()).thenReturn(MockBasicProfile());
       expect(gapiUserToPluginUserData(mockUser), isNull);
