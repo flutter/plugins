@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@TestOn('browser')
-
 import 'dart:html' as html;
+
+import 'package:integration_test/integration_test.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
@@ -13,10 +13,12 @@ import 'gapi_mocks/gapi_mocks.dart' as gapi_mocks;
 import 'src/test_utils.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   gapiUrl = toBase64Url(gapi_mocks.auth2InitSuccess(GoogleSignInUserData()));
 
-  test('Plugin is initialized after GAPI fully loads and init is called',
-      () async {
+  testWidgets('Plugin is initialized after GAPI fully loads and init is called',
+      (WidgetTester tester) async {
     expect(
       html.querySelector('script[src^="data:"]'),
       isNull,

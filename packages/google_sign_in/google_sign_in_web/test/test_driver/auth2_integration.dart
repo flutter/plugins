@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@TestOn('browser')
+import 'package:integration_test/integration_test.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
@@ -11,6 +11,8 @@ import 'gapi_mocks/gapi_mocks.dart' as gapi_mocks;
 import 'src/test_utils.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   GoogleSignInTokenData expectedTokenData =
       GoogleSignInTokenData(idToken: '70k3n', accessToken: 'access_70k3n');
 
@@ -31,11 +33,11 @@ void main() {
     plugin = GoogleSignInPlugin();
   });
 
-  test('Init requires clientId', () async {
+  testWidgets('Init requires clientId', (WidgetTester tester) async {
     expect(plugin.init(hostedDomain: ''), throwsAssertionError);
   });
 
-  test('Init doesn\'t accept spaces in scopes', () async {
+  testWidgets('Init doesn\'t accept spaces in scopes', (WidgetTester tester) async {
     expect(
         plugin.init(
           hostedDomain: '',
@@ -55,26 +57,26 @@ void main() {
       await plugin.initialized;
     });
 
-    test('signInSilently', () async {
+    testWidgets('signInSilently', (WidgetTester tester) async {
       GoogleSignInUserData actualUser = await plugin.signInSilently();
 
       expect(actualUser, expectedUserData);
     });
 
-    test('signIn', () async {
+    testWidgets('signIn', (WidgetTester tester) async {
       GoogleSignInUserData actualUser = await plugin.signIn();
 
       expect(actualUser, expectedUserData);
     });
 
-    test('getTokens', () async {
+    testWidgets('getTokens', (WidgetTester tester) async {
       GoogleSignInTokenData actualToken =
           await plugin.getTokens(email: expectedUserData.email);
 
       expect(actualToken, expectedTokenData);
     });
 
-    test('requestScopes', () async {
+    testWidgets('requestScopes', (WidgetTester tester) async {
       bool scopeGranted = await plugin.requestScopes(['newScope']);
 
       expect(scopeGranted, isTrue);

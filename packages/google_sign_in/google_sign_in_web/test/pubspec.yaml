@@ -16,8 +16,9 @@ dev_dependencies:
     sdk: flutter
   http: ^0.12.2
   mockito: ^4.1.1
-  google_sign_in_web:
-    path: ../
   integration_test:
     path: ../../../integration_test
 
+dependency_overrides:
+  google_sign_in_web:
+    path: ../
