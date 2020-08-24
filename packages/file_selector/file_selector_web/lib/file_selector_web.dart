@@ -6,7 +6,7 @@ import 'package:file_selector_platform_interface/file_selector_platform_interfac
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 
-final String _kFileSelectorInputsDomId = '__file_selector_web-file-input';
+final String _kFileSelectorInputsDomId = '__file_selector_web_file_input';
 
 /// The web implementation of [FileSelectorPlatform].
 ///
