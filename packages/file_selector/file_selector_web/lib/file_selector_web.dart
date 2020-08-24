@@ -48,8 +48,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   @visibleForTesting
   FileUploadInputElement createFileInputElement(String accepted, bool multiple) {
     if (_hasTestOverrides && _overrides.createFileInputElement != null) {
-      print ("createFileInputElement overridden");
-      return _overrides.createFileInputElement(accepted);
+      return _overrides.createFileInputElement(accepted, multiple);
     }
     
     final FileUploadInputElement element = FileUploadInputElement();
@@ -71,7 +70,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
 
   List<XFile> _getXFilesFromFiles (List<File> files) {
     List<XFile> xFiles = List<XFile>();
-
+    
     Duration timeZoneOffset = DateTime.now().timeZoneOffset;
 
     for (File file in files) {
@@ -90,7 +89,6 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   @visibleForTesting
   List<File> getFilesFromInputElement(InputElement element) {
     if(_hasTestOverrides && _overrides.getFilesFromInputElement != null) {
-      print ("getFilesFromInputElement overridden");
       return _overrides.getFilesFromInputElement(element);
     }
 
@@ -102,7 +100,6 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   @visibleForTesting
   Future<List<XFile>> getFilesWhenReady(InputElement element)  {
     if(_hasTestOverrides && _overrides.getFilesWhenReady != null) {
-      print ("getFilesWhenReady overridden");
       return _overrides.getFilesWhenReady(element);
     }
 
@@ -114,9 +111,9 @@ class FileSelectorPlugin extends FileSelectorPlatform {
       final List<File> files = getFilesFromInputElement(element);
 
       // Create XFile from dart:html Files
-      final returnPaths = _getXFilesFromFiles(files);
+      final xFiles = _getXFilesFromFiles(files);
 
-      _completer.complete(returnPaths);
+      _completer.complete(xFiles);
     });
 
     element.onError.first.then((event) {
@@ -191,7 +188,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
 @visibleForTesting
 class FileSelectorPluginTestOverrides {
   /// For overriding the creation of the file input element.
-  Element Function(String accepted) createFileInputElement;
+  Element Function(String accepted, bool multiple) createFileInputElement;
 
   /// For overriding retrieving a file from the input element.
   List<File> Function(InputElement input) getFilesFromInputElement;
