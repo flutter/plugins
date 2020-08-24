@@ -106,7 +106,17 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       case "startImageStream":
         {
           try {
-            camera.startPreviewWithImageStream(imageStreamChannel);
+            camera.startPreviewWithImageStream(imageStreamChannel, false);
+            result.success(null);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "startImageStreamWithTorch":
+        {
+          try {
+            camera.startPreviewWithImageStream(imageStreamChannel, true);
             result.success(null);
           } catch (Exception e) {
             handleException(e, result);

@@ -414,6 +414,55 @@ class CameraController extends ValueNotifier<CameraValue> {
     );
   }
 
+  /// Start streaming images from platform camera with torch on.
+  ///
+  /// Settings for capturing images on iOS and Android is set to always use the
+  /// latest image available from the camera and will drop all other images.
+  ///
+  /// When running continuously with [CameraPreview] widget, this function runs
+  /// best with [ResolutionPreset.low]. Running on [ResolutionPreset.high] can
+  /// have significant frame rate drops for [CameraPreview] on lower end
+  /// devices.
+  ///
+  /// Throws a [CameraException] if image streaming or video recording has
+  /// already started.
+  // TODO(bmparr): Add settings for resolution and fps.
+  Future<void> startImageStreamWithTorch(onLatestImageAvailable onAvailable) async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'startImageStream was called on uninitialized CameraController.',
+      );
+    }
+    if (value.isRecordingVideo) {
+      throw CameraException(
+        'A video recording is already started.',
+        'startImageStream was called while a video is being recorded.',
+      );
+    }
+    if (value.isStreamingImages) {
+      throw CameraException(
+        'A camera has started streaming images.',
+        'startImageStream was called while a camera was streaming images.',
+      );
+    }
+
+    try {
+      await _channel.invokeMethod<void>('startImageStreamWithTorch');
+      value = value.copyWith(isStreamingImages: true);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+    const EventChannel cameraEventChannel =
+    EventChannel('plugins.flutter.io/camera/imageStream');
+    _imageStreamSubscription =
+        cameraEventChannel.receiveBroadcastStream().listen(
+              (dynamic imageData) {
+            onAvailable(CameraImage._fromPlatformData(imageData));
+          },
+        );
+  }
+
   /// Stop streaming images from platform camera.
   ///
   /// Throws a [CameraException] if image streaming was not started or video

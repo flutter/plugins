@@ -110,6 +110,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               children: <Widget>[
                 _cameraTogglesRowWidget(),
                 _thumbnailWidget(),
+                FlatButton(
+                  onPressed: () => controller.startImageStreamWithTorch((image) => print(imagePath)),
+                  child: Text('Stream with Torch'),
+                )
               ],
             ),
           ),
