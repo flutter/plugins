@@ -3,6 +3,10 @@
 * Add an `ignoredPackages` parameter to specify package names that should not be used to resolve the intent.
 * Add a `showChooser` method to force the default selection dialog to be displayed and allow a user to select an application from the list of available ones.
 
+## 0.3.7+3
+
+* Update the `platform` package dependency to resolve the conflict with the latest flutter.
+
 ## 0.3.7+2
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).

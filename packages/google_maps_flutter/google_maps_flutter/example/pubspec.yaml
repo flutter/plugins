@@ -16,8 +16,8 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   test: ^1.6.0
-  e2e:
-    path: ../../../e2e
+  integration_test:
+    path: ../../../integration_test
   pedantic: ^1.8.0
 
 # For information on the generic Dart part of this file, see the
