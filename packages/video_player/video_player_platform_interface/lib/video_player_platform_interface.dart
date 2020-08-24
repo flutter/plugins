@@ -115,6 +115,11 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
 
+  /// Sets optional settings for android video player
+  Future<void> setAndroidOptions(AndroidVideoPlayerOptions androidOptions) {
+    throw UnimplementedError('setAndroidOptions() has not been implemented.');
+  }
+
   // This method makes sure that VideoPlayer isn't implemented with `implements`.
   //
   // See class doc for more details on why implementing this class is forbidden.
@@ -343,6 +348,28 @@ class VideoPlayerOptions {
   /// The default value is false
   final bool mixWithOthers;
 
+  /// set addition optional player setting for android platform
+  final AndroidVideoPlayerOptions androidOptions;
+
   /// set additional optional player settings
-  VideoPlayerOptions({this.mixWithOthers = false});
+  VideoPlayerOptions({
+    this.mixWithOthers = false,
+    this.androidOptions = const AndroidVideoPlayerOptions(),
+  });
+}
+
+/// set addition optional player setting for android platform
+class AndroidVideoPlayerOptions {
+  /// The default value is false
+  /// Some MP4/FMP4 files contain edit lists that rewrite the media timeline by
+  /// skipping, moving or repeating lists of samples. ExoPlayer has partial
+  /// support for applying edit lists.
+  /// If you are seeing that part of the media is unexpectedly missing or
+  /// repeated, try setting this to true
+  final bool mp4ExtractorSkipEditLists;
+
+  /// optional settings for android video player
+  const AndroidVideoPlayerOptions({
+    this.mp4ExtractorSkipEditLists = false,
+  });
 }

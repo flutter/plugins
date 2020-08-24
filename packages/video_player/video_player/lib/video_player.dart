@@ -6,20 +6,26 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
-export 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
 
 import 'src/closed_caption_file.dart';
+
+export 'package:video_player_platform_interface/video_player_platform_interface.dart'
+    show
+        DurationRange,
+        DataSourceType,
+        VideoFormat,
+        VideoPlayerOptions,
+        AndroidVideoPlayerOptions;
+
 export 'src/closed_caption_file.dart';
 
 final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
-  // This will clear all open videos on the platform when a full restart is
-  // performed.
+// This will clear all open videos on the platform when a full restart is
+// performed.
   ..init();
 
 /// The duration, current position, buffering state, error state and settings
@@ -270,6 +276,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (videoPlayerOptions?.mixWithOthers != null) {
       await _videoPlayerPlatform
           .setMixWithOthers(videoPlayerOptions.mixWithOthers);
+    }
+    if (videoPlayerOptions?.androidOptions != null && Platform.isAndroid) {
+      await _videoPlayerPlatform
+          .setAndroidOptions(videoPlayerOptions.androidOptions);
     }
 
     _textureId = await _videoPlayerPlatform.create(dataSourceDescription);

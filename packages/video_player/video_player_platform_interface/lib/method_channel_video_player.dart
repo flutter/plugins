@@ -132,6 +132,14 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     );
   }
 
+  /// Sets optional settings for android video player
+  Future<void> setAndroidOptions(AndroidVideoPlayerOptions androidOptions) {
+    return _api.setAndroidOptions(
+      AndroidOptionsMessage()
+        ..mp4ExtractorSkipEditLists = androidOptions.mp4ExtractorSkipEditLists,
+    );
+  }
+
   EventChannel _eventChannelFor(int textureId) {
     return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
   }
