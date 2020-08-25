@@ -60,7 +60,7 @@ class _SaveTestState extends State<SaveTest> {
     if (_nameController.text == '') {
       new_file = XFile.fromData(data, type: type);
     } else {
-      new_file = XFile.fromData(data, type: type, name: _nameController.text);
+      new_file = XFile.fromData(data, type: type, name: _nameController.text + '.txt');
     }
 
     new_file.saveTo(path);
