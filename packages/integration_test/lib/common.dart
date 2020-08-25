@@ -53,7 +53,7 @@ class Response {
     }
   }
 
-  /// Method for formating the test failures' details.
+  /// Method for formatting the test failures' details.
   String formatFailures(List<Failure> failureDetails) {
     if (failureDetails.isEmpty) {
       return '';
