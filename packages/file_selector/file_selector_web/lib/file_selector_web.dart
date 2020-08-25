@@ -35,10 +35,15 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     List<String> allExtensions = List();
     for (XTypeGroup group in acceptedTypes ?? []) {
       for (XType type in group.fileTypes ?? []) {
-        if (type.extension == null) {
-          continue;
+        if (type.extension != null) {
+          String extension = type.extension;
+          if (extension[0] != '.') {
+            extension = '.' + extension;
+          }
+          allExtensions.add(extension);
+        } else if (type.mime != null) {
+          allExtensions.add(type.mime);
         }
-        allExtensions.add('.' + type.extension);
       }
     }
     return allExtensions?.where((e) => e.isNotEmpty)?.join(',') ?? '';
