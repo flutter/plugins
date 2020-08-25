@@ -1,7 +1,11 @@
-## 0.10.12+1
+## 0.10.13
 
 * `VideoPlayerOptions` add `AndroidVideoPlayerOptions` to add addition optional player setting for android platform.
 * Android: set `AndroidVideoPlayerOptions.mp4ExtractorSkipEditLists` to `true` to fix the issue: part of the media is unexpectedly missing or repeated.
+
+## 0.10.12+1
+
+* Depend on the version of `video_player_platform_interface` that contains the new `VideoPlayerOptions` class.
 
 ## 0.10.12
 

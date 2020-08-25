@@ -5,6 +5,7 @@ description: Flutter plugin for displaying inline video with other Flutter
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
 version: 0.10.13
+
 homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player
 
 flutter:
@@ -19,8 +20,8 @@ flutter:
         default_package: video_player_web
 
 dependencies:
-  meta: "^1.0.5"
-  video_player_platform_interface:
+  meta: ^1.0.5
+  video_player_platform_interface: 
     path: ../video_player_platform_interface
   # The design on https://flutter.dev/go/federated-plugins was to leave
   # this constraint as "any". We cannot do it right now as it fails pub publish
