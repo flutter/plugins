@@ -19,7 +19,8 @@ import 'package:path/path.dart' as path;
 String testOutputsDirectory =
     Platform.environment['FLUTTER_TEST_OUTPUTS_DIR'] ?? 'build';
 
-/// The callback type to handle [integration_test.Response.data] after the test succcess.
+/// The callback type to handle [integration_test.Response.data] after the test
+/// succeeds.
 typedef ResponseDataCallback = FutureOr<void> Function(Map<String, dynamic>);
 
 /// Writes a json-serializable json data to to
