@@ -59,7 +59,7 @@ class XFile extends XFileBase {
         _overrides = overrides,
         super('') {
     Blob blob;
-    if (type == null) {
+    if (type.mime == null) {
       blob = Blob([bytes]);
     } else {
       blob = Blob([bytes], type.mime);
@@ -117,7 +117,17 @@ class XFile extends XFileBase {
     }
 
     final element = AnchorElement(href: href);
-    element.download = suggestedName;
+
+    if (suggestedName == null) {
+      element.download = 'download';
+    } else {
+      element.download = suggestedName;
+    }
+
+    if (type.extension != null) {
+      element.download += '.' + type.extension;
+    }
+
     return element;
   }
 

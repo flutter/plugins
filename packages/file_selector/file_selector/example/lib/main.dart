@@ -55,12 +55,12 @@ class _SaveTestState extends State<SaveTest> {
     data = Uint8List.fromList(_fileController.text.codeUnits);
 
     XFile new_file;
-    XType type = XType(extension: '.txt');
+    XType type = XType(extension: '.txt', mime: 'plain/text');
 
     if (_nameController.text == '') {
       new_file = XFile.fromData(data, type: type);
     } else {
-      new_file = XFile.fromData(data, type: type, name: _nameController.text + '.txt');
+      new_file = XFile.fromData(data, type: type, name: _nameController.text);
     }
 
     new_file.saveTo(path);
