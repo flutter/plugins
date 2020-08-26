@@ -60,7 +60,7 @@ void main() {
 
   test('sharing null file fails', () {
     expect(
-      () => Share.shareFile(null),
+      () => Share.shareFiles([null]),
       throwsA(const TypeMatcher<AssertionError>()),
     );
     verifyZeroInteractions(mockChannel);
@@ -68,7 +68,7 @@ void main() {
 
   test('sharing empty file fails', () {
     expect(
-      () => Share.shareFile(null),
+      () => Share.shareFiles(['']),
       throwsA(const TypeMatcher<AssertionError>()),
     );
     verifyZeroInteractions(mockChannel);
@@ -79,7 +79,7 @@ void main() {
     final File file = File(path);
     try {
       file.createSync();
-      await Share.shareFile(path);
+      await Share.shareFiles([path]);
       verify(mockChannel.invokeMethod('shareFiles', <String, dynamic>{
         'paths': [path],
         'mimeTypes': ['image/png'],
@@ -94,7 +94,7 @@ void main() {
     final File file = File(path);
     try {
       file.createSync();
-      await Share.shareFile(path, mimeType: '*/*');
+      await Share.shareFiles([path], mimeTypes: ['*/*']);
       verify(mockChannel.invokeMethod('shareFiles', <String, dynamic>{
         'paths': [file.path],
         'mimeTypes': ['*/*'],

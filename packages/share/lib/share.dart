@@ -74,6 +74,7 @@ class Share {
   }) {
     assert(paths != null);
     assert(paths.isNotEmpty);
+    assert(paths.every((element) => element != null && element.isNotEmpty));
     final Map<String, dynamic> params = <String, dynamic>{
       'paths': paths,
       'mimeTypes': mimeTypes ??
