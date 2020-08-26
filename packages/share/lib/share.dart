@@ -31,8 +31,7 @@ class Share {
   ///
   /// May throw [PlatformException] or [FormatException]
   /// from [MethodChannel].
-  static Future<void> share(
-    String text, {
+  static Future<void> share(String text, {
     String subject,
     Rect sharePositionOrigin,
   }) {
@@ -65,8 +64,7 @@ class Share {
   ///
   /// May throw [PlatformException] or [FormatException]
   /// from [MethodChannel].
-  static Future<void> shareFiles(
-    List<String> paths, {
+  static Future<void> shareFiles(List<String> paths, {
     List<String> mimeTypes,
     String subject,
     String text,
