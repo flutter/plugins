@@ -1,3 +1,11 @@
+## 0.6.7+7
+
+* Updating documentation to use isEmpty check.
+
+## 0.6.7+6
+
+* Update package:e2e -> package:integration_test
+
 ## 0.6.7+5
 
 * Update package:e2e reference to use the local version in the flutter/plugins
