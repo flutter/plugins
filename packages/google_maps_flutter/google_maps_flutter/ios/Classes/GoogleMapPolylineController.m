@@ -125,7 +125,7 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
     FLTGoogleMapPolylineController* controller =
         [[FLTGoogleMapPolylineController alloc] initPolylineWithPath:path
                                                           polylineId:polylineId
-                                                            geodesic:geodisc.boolValue
+                                                            geodesic:geodesic.boolValue
                                                              mapView:_mapView];
     InterpretPolylineOptions(polyline, controller, _registrar);
     _polylineIdToController[polylineId] = controller;
