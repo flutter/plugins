@@ -1,3 +1,7 @@
+## 0.3.4+4
+
+* Added necessary README docs for getting started with Android.
+
 ## 0.3.4+3
 
 * Fixed typo 'manuelly' for 'manually'.
