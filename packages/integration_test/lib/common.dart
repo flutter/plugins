@@ -78,7 +78,7 @@ class Response {
     }
 
     _failureDetails.forEach((Failure f) {
-      list.add(f.toString());
+      list.add(f.toJson());
     });
 
     return list;
@@ -107,13 +107,15 @@ class Failure {
   Failure(this.methodName, this.details);
 
   /// Serializes the object to JSON.
-  @override
-  String toString() {
+  String toJson() {
     return json.encode(<String, String>{
       'methodName': methodName,
       'details': details,
     });
   }
+
+  @override
+  String toString() => toJson();
 
   /// Decode a JSON string to create a Failure object.
   static Failure fromJsonString(String jsonString) {
