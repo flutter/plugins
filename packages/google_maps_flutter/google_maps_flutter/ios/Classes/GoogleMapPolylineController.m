@@ -11,7 +11,7 @@
 }
 - (instancetype)initPolylineWithPath:(GMSMutablePath*)path
                           polylineId:(NSString*)polylineId
-                           geodesic:(BOOL)geodesic
+                            geodesic:(BOOL)geodesic
                              mapView:(GMSMapView*)mapView {
   self = [super init];
   if (self) {
@@ -125,7 +125,7 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
     FLTGoogleMapPolylineController* controller =
         [[FLTGoogleMapPolylineController alloc] initPolylineWithPath:path
                                                           polylineId:polylineId
-                                                             geodesic:geodisc.boolValue
+                                                            geodesic:geodisc.boolValue
                                                              mapView:_mapView];
     InterpretPolylineOptions(polyline, controller, _registrar);
     _polylineIdToController[polylineId] = controller;
