@@ -1,4 +1,4 @@
-## 0.5.30
+## 0.5.31
 
 * Geodesic Polyline support for iOS
 
