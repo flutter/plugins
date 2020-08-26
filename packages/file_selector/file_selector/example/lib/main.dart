@@ -55,12 +55,11 @@ class _SaveTestState extends State<SaveTest> {
     data = Uint8List.fromList(_fileController.text.codeUnits);
 
     XFile new_file;
-    XType type = XType(extension: '.txt', mime: 'plain/text');
 
     if (_nameController.text == '') {
-      new_file = XFile.fromData(data, type: type);
+      new_file = XFile.fromData(data, mimeType: 'text/plain');
     } else {
-      new_file = XFile.fromData(data, type: type, name: _nameController.text);
+      new_file = XFile.fromData(data, mimeType: 'text/plain', name: _nameController.text);
     }
 
     new_file.saveTo(path);
@@ -128,9 +127,8 @@ class _LoadTestState extends State<LoadTest> {
   final TextEditingController _extensionController = TextEditingController();
 
   void _onLoadImageFile() async {
-    XType jpg = XType(extension: '.jpg');
-    XType png = XType(extension: '.png');
-    XTypeGroup typeGroup = XTypeGroup(label: 'images', fileTypes: [ jpg, png ]);
+
+    XTypeGroup typeGroup = XTypeGroup(label: 'images', extensions: [ 'jpg', 'png' ]);
 
     XFile file = await loadFile(acceptedTypeGroups: [ typeGroup ]);
 
@@ -145,9 +143,7 @@ class _LoadTestState extends State<LoadTest> {
   }
 
   void _onLoadTextFile() async {
-    XType txt = XType(extension: '.txt');
-    XType json = XType(extension: '.json');
-    XTypeGroup typeGroup = XTypeGroup(label: 'images', fileTypes: [ txt, json ]);
+    XTypeGroup typeGroup = XTypeGroup(label: 'images', extensions: [ 'txt', 'json' ]);
 
     XFile file = await loadFile(acceptedTypeGroups: [typeGroup]);
 

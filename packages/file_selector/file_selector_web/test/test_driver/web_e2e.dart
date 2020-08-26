@@ -19,11 +19,16 @@ import 'dart:developer';
 final String domElementId = '__file_selector_web_file_input';
 final String xFileDomElementId = '__x_file_dom_element';
 
-final textGroup = XTypeGroup(label: 'test',
-    fileTypes: [
-      XType(extension: 'json', mime: 'application/json'),
-      XType(extension: 'txt', mime: 'text/plain'),
-    ]);
+final textGroup = XTypeGroup(
+  label: 'Text Files',
+  extensions: ['txt', 'json'],
+  mimeTypes: ['plain/text', 'application/json'],
+);
+
+final badGroup = XTypeGroup(
+  label: 'Non-Web Group',
+  macUTIs: ['fake-uti'],
+);
 
 final String expectedStringContents = 'Hello, world!';
 final Uint8List bytes = utf8.encode(expectedStringContents);
@@ -68,7 +73,7 @@ void main() {
 
       expect(result, isNotNull);
       expect(result.getAttribute('type'), 'file');
-      expect(result.getAttribute('accept'), '.json,.txt');
+      expect(result.getAttribute('accept'), 'plain/text,application/json,.txt,.json');
     });
 
     testWidgets('input element is clicked', (WidgetTester tester) async {
@@ -119,6 +124,7 @@ void main() {
       expect(loadedFile.name, textFile.name);
     });
   });
+
   
   
   group('loadFiles(..)', () {
@@ -141,7 +147,7 @@ void main() {
 
       expect(result, isNotNull);
       expect(result.getAttribute('type'), 'file');
-      expect(result.getAttribute('accept'), '.json,.txt');
+      expect(result.getAttribute('accept'), 'plain/text,application/json,.txt,.json');
       expect(result.multiple, true);
     });
 

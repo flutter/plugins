@@ -8,7 +8,7 @@ import 'dart:typed_data';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 export 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
-  show XFile, XTypeGroup, XType;
+  show XFile, XTypeGroup;
 
 /// NEW API
 
