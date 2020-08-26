@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import '../x_type/x_type.dart';
+import '../x_type_group/x_type_group.dart';
 
 /// The interface for a XFile.
 ///
@@ -39,6 +39,11 @@ abstract class XFileBase {
     throw UnimplementedError('.name has not been implemented.');
   }
 
+  /// For web, it may be necessary for a file to know its MIME type.
+  String get mimeType {
+    throw UnimplementedError('.mimeType has not been implemented.');
+  }
+
   /// Get the length of the file. Returns a `Future<int>` that completes with the length in bytes.
   Future<int> length() {
     throw UnimplementedError('.length() has not been implemented.');
@@ -68,6 +73,11 @@ abstract class XFileBase {
   ///
   /// In order to make sure that system resources are freed, the stream must be read to completion or the subscription on the stream must be cancelled.
   Stream<Uint8List> openRead([int start, int end]) {
+    throw UnimplementedError('openRead() has not been implemented.');
+  }
+
+  /// Get the last-modified time for the XFile
+  Future<DateTime> lastModified() {
     throw UnimplementedError('openRead() has not been implemented.');
   }
 }

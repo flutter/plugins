@@ -29,24 +29,35 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   static void registerWith(Registrar registrar) {
     FileSelectorPlatform.instance = FileSelectorPlugin();
   }
+
+  void _verifyXTypeGroup(XTypeGroup group) {
+    if (group.extensions == null && group.mimeTypes == null && group.webWildCards == null) {
+      StateError("This XTypeGroup does not have types supported by the web implementation of loadFile.");
+    }
+  }
   
   /// Convert list of filter groups to a comma-separated string
   String _getStringFromFilterGroup (List<XTypeGroup> acceptedTypes) {
-    List<String> allExtensions = List();
+    List<String> allTypes = List();
     for (XTypeGroup group in acceptedTypes ?? []) {
-      for (XType type in group.fileTypes ?? []) {
-        if (type.extension != null) {
-          String extension = type.extension;
-          if (extension[0] != '.') {
-            extension = '.' + extension;
-          }
-          allExtensions.add(extension);
-        } else if (type.mime != null) {
-          allExtensions.add(type.mime);
+      _verifyXTypeGroup(group);
+
+      for (String mimeType in group.mimeTypes ?? []) {
+        allTypes.add(mimeType);
+      }
+      for (String extension in group.extensions ?? []) {   
+        String ext = extension;
+        if (ext.isNotEmpty && [0] != '.') {
+          ext = '.' + ext;
         }
+        
+        allTypes.add(ext);
+      }
+      for (String webWildCard in group.webWildCards ?? []) {
+        allTypes.add(webWildCard);
       }
     }
-    return allExtensions?.where((e) => e.isNotEmpty)?.join(',') ?? '';
+    return allTypes?.where((e) => e.isNotEmpty)?.join(',') ?? '';
   }
 
   /// Creates a file input element with only the accept attribute

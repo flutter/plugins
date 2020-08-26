@@ -7,19 +7,17 @@ import 'dart:html';
 
 import './base.dart';
 
-import '../x_type/x_type.dart';
-
 /// A XFile that works on web.
 ///
 /// It wraps the bytes of a selected file.
 class XFile extends XFileBase {
   String path;
-  final XType type;
 
+  final String mimeType;
   final Uint8List _data;
   final int _length;
   final String name;
-  final DateTime lastModified;
+  final DateTime _lastModified;
   Element _target;
 
   final XFileTestOverrides _overrides;
@@ -35,34 +33,36 @@ class XFile extends XFileBase {
   /// access to it while we create the ObjectUrl.
   XFile(
       this.path, {
-        this.type,
+        this.mimeType,
         this.name,
         int length,
         Uint8List bytes,
-        this.lastModified,
+        DateTime lastModified,
         @visibleForTesting XFileTestOverrides overrides,
       })  : _data = bytes,
         _length = length,
         _overrides = overrides,
+        _lastModified = lastModified,
         super(path);
 
   /// Construct an XFile from its data
   XFile.fromData(
       Uint8List bytes, {
-        this.type,
+        this.mimeType,
         this.name,
         int length,
-        this.lastModified,
+        DateTime lastModified,
         @visibleForTesting XFileTestOverrides overrides,
       })  : _data = bytes,
         _length = length,
         _overrides = overrides,
+        _lastModified = lastModified,
         super('') {
     Blob blob;
-    if (type.mime == null) {
+    if (mimeType == null) {
       blob = Blob([bytes]);
     } else {
-      blob = Blob([bytes], type.mime);
+      blob = Blob([bytes], mimeType);
     }
     this.path = Url.createObjectUrl(blob);
   }
@@ -122,10 +122,6 @@ class XFile extends XFileBase {
       element.download = 'download';
     } else {
       element.download = suggestedName;
-    }
-
-    if (type.extension != null) {
-      element.download += '.' + type.extension;
     }
 
     return element;
