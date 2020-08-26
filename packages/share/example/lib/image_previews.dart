@@ -3,10 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+/// Widget for displaying a preview of images
 class ImagePreviews extends StatelessWidget {
+  /// The image paths of the displayed images
   final List<String> imagePaths;
+
+  /// Callback when an image should be removed
   final Function(int) onDelete;
 
+  /// Creates a widget for preview of images. [imagePaths] can not be empty
+  /// and all contained paths need to be non empty.
   const ImagePreviews(this.imagePaths, {Key key, this.onDelete})
       : super(key: key);
 
