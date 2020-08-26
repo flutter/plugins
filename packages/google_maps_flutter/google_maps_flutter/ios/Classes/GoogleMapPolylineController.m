@@ -121,7 +121,7 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   for (NSDictionary* polyline in polylinesToAdd) {
     GMSMutablePath* path = [FLTPolylinesController getPath:polyline];
     NSString* polylineId = [FLTPolylinesController getPolylineId:polyline];
-    NSNumber* geodisc = [FLTPolylinesController isGeodesic:polyline];
+    NSNumber* geodesic = [FLTPolylinesController isGeodesic:polyline];
     FLTGoogleMapPolylineController* controller =
         [[FLTGoogleMapPolylineController alloc] initPolylineWithPath:path
                                                           polylineId:polylineId
