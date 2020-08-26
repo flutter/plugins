@@ -19,6 +19,7 @@ class _ApiLogger implements VideoPlayerApiTest {
   PositionMessage positionMessage;
   LoopingMessage loopingMessage;
   VolumeMessage volumeMessage;
+  MixWithOthersMessage mixWithOthersMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
@@ -48,6 +49,12 @@ class _ApiLogger implements VideoPlayerApiTest {
   void play(TextureMessage arg) {
     log.add('play');
     textureMessage = arg;
+  }
+
+  @override
+  void setMixWithOthers(MixWithOthersMessage arg) {
+    log.add('setMixWithOthers');
+    mixWithOthersMessage = arg;
   }
 
   @override
@@ -177,6 +184,16 @@ void main() {
       await player.pause(1);
       expect(log.log.last, 'pause');
       expect(log.textureMessage.textureId, 1);
+    });
+
+    test('setMixWithOthers', () async {
+      await player.setMixWithOthers(true);
+      expect(log.log.last, 'setMixWithOthers');
+      expect(log.mixWithOthersMessage.mixWithOthers, true);
+
+      await player.setMixWithOthers(false);
+      expect(log.log.last, 'setMixWithOthers');
+      expect(log.mixWithOthersMessage.mixWithOthers, false);
     });
 
     test('setVolume', () async {
