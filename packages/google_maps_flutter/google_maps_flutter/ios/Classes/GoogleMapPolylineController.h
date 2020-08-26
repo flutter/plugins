@@ -20,6 +20,7 @@
 @property(atomic, readonly) NSString* polylineId;
 - (instancetype)initPolylineWithPath:(GMSMutablePath*)path
                           polylineId:(NSString*)polylineId
+                            geodesic:(BOOL)geodesic
                              mapView:(GMSMapView*)mapView;
 - (void)removePolyline;
 @end
