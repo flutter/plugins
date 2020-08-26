@@ -93,21 +93,12 @@ class DemoAppState extends State<DemoApp> {
                               final RenderBox box = context.findRenderObject();
 
                               if (imagePaths.isNotEmpty) {
-                                if (imagePaths.length == 1) {
-                                  await Share.shareFile('',
-                                      text: text,
-                                      subject: subject,
-                                      sharePositionOrigin:
-                                          box.localToGlobal(Offset.zero) &
-                                              box.size);
-                                } else {
-                                  await Share.shareFiles(imagePaths,
-                                      text: text,
-                                      subject: subject,
-                                      sharePositionOrigin:
-                                          box.localToGlobal(Offset.zero) &
-                                              box.size);
-                                }
+                                await Share.shareFiles(imagePaths,
+                                    text: text,
+                                    subject: subject,
+                                    sharePositionOrigin:
+                                        box.localToGlobal(Offset.zero) &
+                                            box.size);
                               } else {
                                 await Share.share(text,
                                     subject: subject,

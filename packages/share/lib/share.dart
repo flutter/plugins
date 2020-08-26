@@ -53,36 +53,6 @@ class Share {
     return channel.invokeMethod<void>('share', params);
   }
 
-  /// Summons the platform's share sheet to share a single file.
-  ///
-  /// Wraps the platform's native share dialog. Can share a file.
-  /// It uses the `ACTION_SEND` Intent on Android and `UIActivityViewController`
-  /// on iOS.
-  ///
-  /// The optional `sharePositionOrigin` parameter can be used to specify a global
-  /// origin rect for the share sheet to popover from on iPads. It has no effect
-  /// on non-iPads.
-  ///
-  /// May throw [PlatformException] or [FormatException]
-  /// from [MethodChannel].
-  static Future<void> shareFile(
-    String path, {
-    String mimeType,
-    String subject,
-    String text,
-    Rect sharePositionOrigin,
-  }) {
-    assert(path != null);
-
-    return shareFiles(
-      <String>[path],
-      mimeTypes: <String>[mimeType ?? _mimeTypeForPath(path)],
-      subject: subject,
-      text: text,
-      sharePositionOrigin: sharePositionOrigin,
-    );
-  }
-
   /// Summons the platform's share sheet to share multiple files.
   ///
   /// Wraps the platform's native share dialog. Can share a file.
