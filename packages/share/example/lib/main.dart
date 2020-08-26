@@ -4,11 +4,11 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share/share.dart';
+
+import 'image_previews.dart';
 
 void main() {
   runApp(DemoApp());
@@ -59,7 +59,7 @@ class DemoAppState extends State<DemoApp> {
                     }),
                   ),
                   const Padding(padding: EdgeInsets.only(top: 12.0)),
-                  _buildImagePreviews(),
+                  ImagePreviews(imagePaths, onDelete: _onDeleteImage),
                   ListTile(
                     leading: Icon(Icons.add),
                     title: Text("Add image"),
@@ -80,34 +80,8 @@ class DemoAppState extends State<DemoApp> {
                     builder: (BuildContext context) {
                       return RaisedButton(
                         child: const Text('Share'),
-                        onPressed: text.isEmpty
-                            ? null
-                            : () async {
-                                // A builder is used to retrieve the context immediately
-                                // surrounding the RaisedButton.
-                                //
-                                // The context's `findRenderObject` returns the first
-                                // RenderObject in its descendent tree when it's not
-                                // a RenderObjectWidget. The RaisedButton's RenderObject
-                                // has its position and size after it's built.
-                                final RenderBox box =
-                                    context.findRenderObject();
-
-                                if (imagePaths.isNotEmpty) {
-                                  await Share.shareFiles(imagePaths,
-                                      text: text,
-                                      subject: subject,
-                                      sharePositionOrigin:
-                                          box.localToGlobal(Offset.zero) &
-                                              box.size);
-                                } else {
-                                  await Share.share(text,
-                                      subject: subject,
-                                      sharePositionOrigin:
-                                          box.localToGlobal(Offset.zero) &
-                                              box.size);
-                                }
-                              },
+                        onPressed:
+                            text.isEmpty ? null : () => _onShare(context),
                       );
                     },
                   ),
@@ -118,50 +92,31 @@ class DemoAppState extends State<DemoApp> {
     );
   }
 
-  Widget _buildImagePreviews() {
-    if (imagePaths.isEmpty) return Container();
-
-    List<Widget> imageWidgets = [];
-    for (int i = 0; i < imagePaths.length; i++) {
-      imageWidgets.add(_buildImagePreview(i));
-    }
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(children: imageWidgets),
-    );
+  _onDeleteImage(int position) {
+    setState(() {
+      imagePaths.removeAt(position);
+    });
   }
 
-  Widget _buildImagePreview(int position) {
-    File imageFile = File(imagePaths[position]);
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Stack(
-        children: <Widget>[
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: 200,
-              maxHeight: 200,
-            ),
-            child: Image.file(imageFile),
-          ),
-          Positioned(
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: FloatingActionButton(
-                backgroundColor: Colors.red,
-                child: Icon(Icons.delete),
-                onPressed: () {
-                  setState(() {
-                    imagePaths.removeAt(position);
-                  });
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  _onShare(BuildContext context) async {
+    // A builder is used to retrieve the context immediately
+    // surrounding the RaisedButton.
+    //
+    // The context's `findRenderObject` returns the first
+    // RenderObject in its descendent tree when it's not
+    // a RenderObjectWidget. The RaisedButton's RenderObject
+    // has its position and size after it's built.
+    final RenderBox box = context.findRenderObject();
+
+    if (imagePaths.isNotEmpty) {
+      await Share.shareFiles(imagePaths,
+          text: text,
+          subject: subject,
+          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+    } else {
+      await Share.share(text,
+          subject: subject,
+          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+    }
   }
 }
