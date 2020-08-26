@@ -1,4 +1,4 @@
-## Unpublished
+## 0.8.1
 
 * Show stack trace of widget test errors on the platform side
 
