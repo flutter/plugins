@@ -29,9 +29,9 @@ class Share {
   private Activity activity;
 
   /**
-   * Constructs a Share object. The {@code context} and {@code activity} are used to start the
-   * share intent. The {@code activity} might be null when constructing the {@link Share} object
-   * and set to non-null when an activity is available using {@link #setActivity(Activity)}.
+   * Constructs a Share object. The {@code context} and {@code activity} are used to start the share
+   * intent. The {@code activity} might be null when constructing the {@link Share} object and set
+   * to non-null when an activity is available using {@link #setActivity(Activity)}.
    */
   Share(Context context, Activity activity) {
     this.context = context;
@@ -95,10 +95,11 @@ class Share {
     for (ResolveInfo resolveInfo : resInfoList) {
       String packageName = resolveInfo.activityInfo.packageName;
       for (Uri fileUri : fileUris) {
-        getContext().grantUriPermission(
-            packageName,
-            fileUri,
-            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        getContext()
+            .grantUriPermission(
+                packageName,
+                fileUri,
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
       }
     }
 

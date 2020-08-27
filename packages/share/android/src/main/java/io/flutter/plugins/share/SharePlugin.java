@@ -6,7 +6,6 @@ package io.flutter.plugins.share;
 
 import android.app.Activity;
 import android.content.Context;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -29,7 +28,7 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    setUpChannel(binding.getApplicationContext(),null, binding.getBinaryMessenger());
+    setUpChannel(binding.getApplicationContext(), null, binding.getBinaryMessenger());
   }
 
   @Override
