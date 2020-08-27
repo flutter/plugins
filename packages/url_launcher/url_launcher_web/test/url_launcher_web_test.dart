@@ -68,7 +68,6 @@ void main() {
               enableDomStorage: null,
               enableJavaScript: null,
               headers: null,
-              windowName: "_blank",
             ),
             completion(isTrue));
       });
@@ -83,7 +82,6 @@ void main() {
               enableDomStorage: null,
               enableJavaScript: null,
               headers: null,
-              windowName: "_blank",
             ),
             completion(isTrue));
       });
@@ -98,7 +96,6 @@ void main() {
               enableDomStorage: null,
               enableJavaScript: null,
               headers: null,
-              windowName: "_blank",
             ),
             completion(isTrue));
       });
@@ -113,7 +110,6 @@ void main() {
               enableDomStorage: null,
               enableJavaScript: null,
               headers: null,
-              windowName: "_blank",
             ),
             completion(isTrue));
       });
@@ -125,7 +121,6 @@ void main() {
 
         verify(mockWindow.open('http://www.google.com', ''));
       });
-
       test('https urls should be launched in a new window', () {
         plugin.openNewWindow('https://www.google.com');
 
@@ -148,6 +143,20 @@ void main() {
         plugin.openNewWindow('sms:+19725551212?body=hello%20there');
 
         verify(mockWindow.open('sms:+19725551212?body=hello%20there', ''));
+      });
+
+      test('setting webOnlyLinkTarget as _self opens the url in the same tab',
+          () {
+        plugin.openNewWindow("https://www.google.com",
+            webOnlyLinkTarget: "_self");
+        verify(mockWindow.open('https://www.google.com', '_self'));
+      });
+
+      test('setting webOnlyLinkTarget as _blank opens the url in a new tab',
+          () {
+        plugin.openNewWindow("https://www.google.com",
+            webOnlyLinkTarget: "_blank");
+        verify(mockWindow.open('https://www.google.com', '_blank'));
       });
 
       group('Safari', () {
