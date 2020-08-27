@@ -94,10 +94,12 @@ class Share {
             .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY);
     for (ResolveInfo resolveInfo : resInfoList) {
       String packageName = resolveInfo.activityInfo.packageName;
-      activity.grantUriPermission(
-          packageName,
-          fileUris.get(0),
-          Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+      for (Uri fileUri : fileUris) {
+        activity.grantUriPermission(
+            packageName,
+            fileUri,
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+      }
     }
 
     startActivity(chooserIntent);
