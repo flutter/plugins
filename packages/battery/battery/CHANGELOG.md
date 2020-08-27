@@ -1,3 +1,7 @@
+## 1.0.4+1
+
+* Moved everything from battery to battery/battery
+
 ## 1.0.4
 
 * Updated README.md.
