@@ -72,7 +72,10 @@ class Share {
     ArrayList<Uri> fileUris = getUrisForPaths(paths);
 
     Intent shareIntent = new Intent();
-    if (fileUris.size() == 1) {
+    if (fileUris.isEmpty()) {
+      share(text, subject);
+      return;
+    } else if (fileUris.size() == 1) {
       shareIntent.setAction(Intent.ACTION_SEND);
       shareIntent.putExtra(Intent.EXTRA_STREAM, fileUris.get(0));
       shareIntent.setType(
