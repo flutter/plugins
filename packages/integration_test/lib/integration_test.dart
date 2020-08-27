@@ -219,15 +219,15 @@ class IntegrationTestWidgetsFlutterBinding
     await _vmService.setVMTimelineFlags(streams);
   }
 
-  /// Runs [action] and outputs a [vm.Timeline] trace for it.
+  /// Runs [action] and returns a [vm.Timeline] trace for it.
   ///
   /// Waits for the `Future` returned by [action] to complete prior to stopping
   /// the trace.
   ///
-  /// `streams` limits the recorded timeline event streams to only the ones
-  /// listed. By default, all streams are recorded.
+  /// The `streams` parameter limits the recorded timeline event streams to only
+  /// the ones listed. By default, all streams are recorded.
   /// See `timeline_streams` in
-  /// https://github.com/dart-lang/sdk/blob/master/runtime/vm/timeline.cc
+  /// [Dart-SDK/runtime/vm/timeline.cc](https://github.com/dart-lang/sdk/blob/master/runtime/vm/timeline.cc)
   ///
   /// If [retainPriorEvents] is true, retains events recorded prior to calling
   /// [action]. Otherwise, prior events are cleared before calling [action]. By
@@ -253,8 +253,16 @@ class IntegrationTestWidgetsFlutterBinding
     );
   }
 
-  /// This is a convience wrap of [traceTimeline] and send the result back to
-  /// the host.
+  /// This is a convenience wrap of [traceTimeline] and send the result back to
+  /// the host for the [flutter_driver] style tests.
+  ///
+  /// This records the timeline during `action` and adds the result to
+  /// [reportData] with `reportKey`.
+  ///
+  /// For tests with multiple calls of this method, `reportKey` needs to be a
+  /// unique key, otherwise the later result will override earlier one.
+  ///
+  /// `streams` and `retainPriorEvents` are passed as-is to [traceTimeline].
   Future<void> traceAction(
     Future<dynamic> action(), {
     List<String> streams = const <String>['all'],

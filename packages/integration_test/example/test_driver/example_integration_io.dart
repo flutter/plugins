@@ -20,6 +20,9 @@ void main() {
     // Build our app and trigger a frame.
     app.main();
 
+    // Trace the timeline of the following operation. The timeline result will
+    // be written to `build/integration_response_data.json` with the key
+    // `timeline`.
     await binding.traceAction(() async {
       // Trigger a frame.
       await tester.pumpAndSettle();
