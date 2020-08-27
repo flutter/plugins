@@ -103,6 +103,13 @@ void main() {
       ]);
     });
 
+    test('signIn canceled returns a null user', () async {
+      channel.setMockMethodCallHandler((MethodCall methodCall) {
+        throw PlatformException(code: GoogleSignIn.kSignInCanceledError);
+      });
+      expect(await googleSignIn.signIn(), isNull); // should not throw
+    });
+
     test('disconnect; null response', () async {
       await googleSignIn.disconnect();
       expect(googleSignIn.currentUser, isNull);
@@ -307,7 +314,7 @@ void main() {
         throw "I am an error";
       });
       expect(googleSignIn.signInSilently(suppressErrors: false),
-          throwsA(isInstanceOf<PlatformException>()));
+          throwsA(isA<PlatformException>()));
     });
 
     test('can sign in after init failed before', () async {
@@ -321,8 +328,8 @@ void main() {
         }
         return Future<dynamic>.value(responses[methodCall.method]);
       });
-      expect(googleSignIn.signIn(), throwsA(isInstanceOf<PlatformException>()));
-      expect(await googleSignIn.signIn(), isNotNull);
+      expect(googleSignIn.signIn(), throwsA(isA<PlatformException>()));
+      expect(await googleSignIn.signIn(), isA<GoogleSignInAccount>());
     });
 
     test('created with standard factory uses correct options', () async {
