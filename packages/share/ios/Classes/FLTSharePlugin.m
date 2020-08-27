@@ -143,7 +143,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
       for (NSString *path in paths) {
         if (path.length == 0) {
           result([FlutterError errorWithCode:@"error"
-                                     message:@"Non-empty paths expected"
+                                     message:@"Each path must not be empty"
                                      details:nil]);
           return;
         }
