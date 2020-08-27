@@ -29,7 +29,7 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    setUpChannel(binding.getApplicationContext(), binding.getBinaryMessenger());
+    setUpChannel(binding.getApplicationContext(),null, binding.getBinaryMessenger());
   }
 
   @Override
