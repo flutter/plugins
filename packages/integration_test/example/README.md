@@ -1,6 +1,6 @@
-# e2e_example
+# integration_test_example
 
-Demonstrates how to use the e2e plugin.
+Demonstrates how to use the `package:integration_test`.
 
 ## Getting Started
 
