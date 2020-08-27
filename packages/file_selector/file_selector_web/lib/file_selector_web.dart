@@ -12,6 +12,44 @@ final String _kFileSelectorInputsDomId = '__file_selector_web_file_input';
 ///
 /// This class implements the `package:file_selector` functionality for the web.
 class FileSelectorPlugin extends FileSelectorPlatform {
+  
+  /// Open file dialog for loading files and return a XFile
+  @override
+  Future<XFile> loadFile({
+    List<XTypeGroup> acceptedTypeGroups,
+    String initialDirectory,
+    String confirmButtonText,
+  }) {
+    Completer<XFile> _completer = Completer();
+    _loadFileHelper(false, acceptedTypeGroups).then((list) {
+      _completer.complete(list.first);
+    })
+        .catchError((err) {
+      _completer.completeError(err);
+    });
+
+    return _completer.future;
+  }
+
+  /// Open file dialog for loading files and return a XFile
+  @override
+  Future<List<XFile>> loadFiles({
+    List<XTypeGroup> acceptedTypeGroups,
+    String initialDirectory,
+    String confirmButtonText,
+  }) {
+    return _loadFileHelper(true, acceptedTypeGroups);
+  }
+
+  @override
+  Future<String> getSavePath({
+    List<XTypeGroup> acceptedTypeGroups,
+    String initialDirectory,
+    String suggestedName,
+    String confirmButtonText,
+  }) => Future.value();
+  
+  
   Element _target;
   final FileSelectorPluginTestOverrides _overrides;
   bool get _hasTestOverrides => _overrides != null;
@@ -166,38 +204,6 @@ class FileSelectorPlugin extends FileSelectorPlatform {
 
     return getFilesWhenReady(element);
   }
-  
-  /// Open file dialog for loading files and return a XFile
-  @override
-  Future<XFile> loadFile({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-  }) {
-    Completer<XFile> _completer = Completer();
-    _loadFileHelper(false, acceptedTypeGroups).then((list) {
-        _completer.complete(list.first);
-      })
-      .catchError((err) {
-        _completer.completeError(err);
-      });
-    
-    return _completer.future;
-  }
-
-  /// Open file dialog for loading files and return a XFile
-  @override
-  Future<List<XFile>> loadFiles({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-  }) {
-    return _loadFileHelper(true, acceptedTypeGroups);
-  }
-  
-  @override
-  Future<String> getSavePath({
-    String initialDirectory,
-    String suggestedName,
-  }) => Future.value();
 }
 
 /// Overrides some functions to allow testing

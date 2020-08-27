@@ -16,22 +16,26 @@ export 'package:file_selector_platform_interface/file_selector_platform_interfac
 Future<XFile> loadFile({
   List<XTypeGroup> acceptedTypeGroups,
   String initialDirectory,
+  String confirmButtonText,
 }) {
-  return FileSelectorPlatform.instance.loadFile(acceptedTypeGroups: acceptedTypeGroups, initialDirectory: initialDirectory);
+  return FileSelectorPlatform.instance.loadFile(acceptedTypeGroups: acceptedTypeGroups, initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);
 }
 
 /// Open file dialog for loading files and return a list of file paths
 Future<List<XFile>> loadFiles({
   List<XTypeGroup> acceptedTypeGroups,
   String initialDirectory,
+  String confirmButtonText,
 }) {
-  return FileSelectorPlatform.instance.loadFiles(acceptedTypeGroups: acceptedTypeGroups, initialDirectory: initialDirectory);
+  return FileSelectorPlatform.instance.loadFiles(acceptedTypeGroups: acceptedTypeGroups, initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);
 }
 
 /// Saves File to user's file system
 Future<String> getSavePath({
+  List<XTypeGroup> acceptedTypeGroups,
   String initialDirectory,
   String suggestedName,
+  String confirmButtonText,
 }) async {
-  return FileSelectorPlatform.instance.getSavePath(initialDirectory: initialDirectory, suggestedName: suggestedName);
+  return FileSelectorPlatform.instance.getSavePath(acceptedTypeGroups: acceptedTypeGroups, initialDirectory: initialDirectory, suggestedName: suggestedName, confirmButtonText: confirmButtonText);
 }
