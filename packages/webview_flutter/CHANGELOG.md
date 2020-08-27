@@ -1,6 +1,11 @@
-## 0.3.23
+## 0.3.22+3
 
 * Added support for progress tracking.
+
+## 0.3.22+2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
 
 ## 0.3.22+1
 

@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   dynamic _pickImageError;
   bool isVideo = false;
   VideoPlayerController _controller;
+  VideoPlayerController _toBeDisposed;
   String _retrieveDataError;
 
   final ImagePicker _picker = ImagePicker();
@@ -52,8 +53,18 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _playVideo(PickedFile file) async {
     if (file != null && mounted) {
       await _disposeVideoController();
-      _controller = VideoPlayerController.file(File(file.path));
-      await _controller.setVolume(1.0);
+      if (kIsWeb) {
+        _controller = VideoPlayerController.network(file.path);
+        // In web, most browsers won't honor a programmatic call to .play
+        // if the video has a sound track (and is not muted).
+        // Mute the video so it auto-plays in web!
+        // This is not needed if the call to .play is the result of user
+        // interaction (clicking on a "play" button, for example).
+        await _controller.setVolume(0.0);
+      } else {
+        _controller = VideoPlayerController.file(File(file.path));
+        await _controller.setVolume(1.0);
+      }
       await _controller.initialize();
       await _controller.setLooping(true);
       await _controller.play();
@@ -110,10 +121,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _disposeVideoController() async {
-    if (_controller != null) {
-      await _controller.dispose();
-      _controller = null;
+    if (_toBeDisposed != null) {
+      await _toBeDisposed.dispose();
     }
+    _toBeDisposed = _controller;
+    _controller = null;
   }
 
   Widget _previewVideo() {
@@ -139,7 +151,13 @@ class _MyHomePageState extends State<MyHomePage> {
       return retrieveError;
     }
     if (_imageFile != null) {
-      return Image.file(File(_imageFile.path));
+      if (kIsWeb) {
+        // Why network?
+        // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
+        return Image.network(_imageFile.path);
+      } else {
+        return Image.file(File(_imageFile.path));
+      }
     } else if (_pickImageError != null) {
       return Text(
         'Pick image error: $_pickImageError',
@@ -180,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: defaultTargetPlatform == TargetPlatform.android
+        child: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
             ? FutureBuilder<void>(
                 future: retrieveLostData(),
                 builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
