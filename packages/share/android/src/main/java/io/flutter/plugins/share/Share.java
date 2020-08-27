@@ -89,13 +89,13 @@ class Share {
     Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
 
     List<ResolveInfo> resInfoList =
-        activity
+        getContext()
             .getPackageManager()
             .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY);
     for (ResolveInfo resolveInfo : resInfoList) {
       String packageName = resolveInfo.activityInfo.packageName;
       for (Uri fileUri : fileUris) {
-        activity.grantUriPermission(
+        getContext().grantUriPermission(
             packageName,
             fileUri,
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -126,7 +126,7 @@ class Share {
 
       uris.add(
           FileProvider.getUriForFile(
-              activity, activity.getPackageName() + ".flutter.share_provider", file));
+              getContext(), getContext().getPackageName() + ".flutter.share_provider", file));
     }
     return uris;
   }
@@ -197,7 +197,18 @@ class Share {
 
   @NonNull
   private File getExternalShareFolder() {
-    return new File(activity.getExternalCacheDir(), "share");
+    return new File(getContext().getExternalCacheDir(), "share");
+  }
+
+  private Context getContext() {
+    if (activity != null) {
+      return activity;
+    }
+    if (context != null) {
+      return context;
+    }
+
+    throw new IllegalStateException("Both context and activity are null");
   }
 
   private static void copy(File src, File dst) throws IOException {
