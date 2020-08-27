@@ -1,3 +1,7 @@
+## 0.8.1
+
+* Show stack trace of widget test errors on the platform side
+
 ## 0.8.0
 
 * Rename plugin to integration_test.
