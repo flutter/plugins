@@ -13,6 +13,8 @@ import 'package:flutter/widgets.dart';
 import 'common.dart';
 import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
 
+const String _success = 'success';
+
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
 class IntegrationTestWidgetsFlutterBinding
@@ -33,7 +35,14 @@ class IntegrationTestWidgetsFlutterBinding
         }
         await _channel.invokeMethod<void>(
           'allTestsFinished',
-          <String, dynamic>{'results': results},
+          <String, dynamic>{
+            'results': results.map((name, result) {
+              if (result is Failure) {
+                return MapEntry(name, result.details);
+              }
+              return MapEntry(name, result);
+            })
+          },
         );
       } on MissingPluginException {
         print('Warning: integration_test test plugin was not detected.');
@@ -46,8 +55,7 @@ class IntegrationTestWidgetsFlutterBinding
     final TestExceptionReporter oldTestExceptionReporter = reportTestException;
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
-      results[testDescription] = 'failed';
-      _failureMethodsDetails.add(Failure(testDescription, details.toString()));
+      results[testDescription] = Failure(testDescription, details.toString());
       if (!_allTestsPassed.isCompleted) {
         _allTestsPassed.complete(false);
       }
@@ -95,17 +103,11 @@ class IntegrationTestWidgetsFlutterBinding
 
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
-  /// Stores failure details.
-  ///
-  /// Failed test method's names used as key.
-  final List<Failure> _failureMethodsDetails = List<Failure>();
-
   /// Similar to [WidgetsFlutterBinding.ensureInitialized].
   ///
   /// Returns an instance of the [IntegrationTestWidgetsFlutterBinding], creating and
   /// initializing it if necessary.
   static WidgetsBinding ensureInitialized() {
-    print('TESTING123 ensuring init');
     if (WidgetsBinding.instance == null) {
       IntegrationTestWidgetsFlutterBinding();
     }
@@ -118,10 +120,12 @@ class IntegrationTestWidgetsFlutterBinding
 
   /// Test results that will be populated after the tests have completed.
   ///
-  /// Keys are the test descriptions, and values are either `success` or
-  /// `failed`.
+  /// Keys are the test descriptions, and values are either [_success] or
+  /// a [Failure].
   @visibleForTesting
-  Map<String, String> results = <String, String>{};
+  Map<String, Object> results = <String, Object>{};
+
+  List<Failure> get _failures => results.values.whereType<Failure>().toList();
 
   /// The extra data for the reported result.
   ///
@@ -143,7 +147,7 @@ class IntegrationTestWidgetsFlutterBinding
           'message': allTestsPassed
               ? Response.allTestsPassed(data: reportData).toJson()
               : Response.someTestsFailed(
-                  _failureMethodsDetails,
+                  _failures,
                   data: reportData,
                 ).toJson(),
         };
@@ -185,6 +189,6 @@ class IntegrationTestWidgetsFlutterBinding
       description: description,
       timeout: timeout,
     );
-    results[description] ??= 'success';
+    results[description] ??= _success;
   }
 }

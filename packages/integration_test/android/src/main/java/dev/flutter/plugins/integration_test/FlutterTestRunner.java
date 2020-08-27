@@ -77,7 +77,7 @@ public class FlutterTestRunner extends Runner {
       Description d = Description.createTestDescription(testClass, name);
       notifier.fireTestStarted(d);
       String outcome = results.get(name);
-      if (outcome.equals("failed")) {
+      if (!outcome.equals("success")) {
         Exception dummyException = new Exception(outcome);
         notifier.fireTestFailure(new Failure(d, dummyException));
       }
