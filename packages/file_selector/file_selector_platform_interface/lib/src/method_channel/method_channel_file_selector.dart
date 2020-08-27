@@ -18,6 +18,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
   Future<XFile> loadFile({
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
+    String confirmButtonText,
   }) {
     return _channel.invokeMethod<XFile>(
       'loadFile',
@@ -33,6 +34,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
   Future<List<XFile>> loadFiles({
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
+    String confirmButtonText,
   }) {
     return _channel.invokeMethod<List<XFile>>(
       'loadFiles',
@@ -46,14 +48,17 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
   /// Saves the file to user's Disk
   @override
   Future<String> getSavePath({
+    List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
     String suggestedName,
+    String confirmButtonText,
   }) async {
     return _channel.invokeMethod(
       'saveFile',
       <String, Object> {
         'initialDirectory': initialDirectory,
         'suggestedName': suggestedName,
+
       },
     );
   }

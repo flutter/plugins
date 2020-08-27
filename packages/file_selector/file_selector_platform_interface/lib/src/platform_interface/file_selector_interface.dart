@@ -44,6 +44,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   Future<XFile> loadFile({
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
+    String confirmButtonText,
   }) {
     throw UnimplementedError('loadFile() has not been implemented.');
   }
@@ -52,14 +53,17 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   Future<List<XFile>> loadFiles({
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
+    String confirmButtonText,
   }) {
     throw UnimplementedError('loadFile() has not been implemented.');
   }
 
   /// Open file dialog for saving files and return a file path at which to save
   Future<String> getSavePath({
+    List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
     String suggestedName,
+    String confirmButtonText,
   }) {
     throw UnimplementedError('saveFile() has not been implemented.');
   }

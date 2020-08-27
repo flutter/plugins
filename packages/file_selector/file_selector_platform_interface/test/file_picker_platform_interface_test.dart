@@ -7,41 +7,39 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'package:file_picker_platform_interface/file_selector_platform_interface.dart';
-import 'package:file_picker_platform_interface/src/method_channel/method_channel_file_selector.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:file_selector_platform_interface/src/method_channel/method_channel_file_selector.dart';
 
 void main() {
-  group('$FilePickerPlatform', () {
-    test('$MethodChannelFilePicker() is the default instance', () {
-      expect(FilePickerPlatform.instance,
-          isInstanceOf<MethodChannelFilePicker>());
+  group('$FileSelectorPlatform', () {
+    test('$MethodChannelFileSelector() is the default instance', () {
+      expect(FileSelectorPlatform.instance,
+          isInstanceOf<MethodChannelFileSelector>());
     });
 
     test('Cannot be implemented with `implements`', () {
       expect(() {
-        FilePickerPlatform.instance = ImplementsFilePickerPlatform();
+        FileSelectorPlatform.instance = ImplementsFileSelectorPlatform();
       }, throwsA(isInstanceOf<AssertionError>()));
     });
 
     test('Can be mocked with `implements`', () {
-      final FilePickerPlatformMock mock = FilePickerPlatformMock();
-      FilePickerPlatform.instance = mock;
+      final FileSelectorPlatformMock mock = FileSelectorPlatformMock();
+      FileSelectorPlatform.instance = mock;
     });
 
     test('Can be extended', () {
-      FilePickerPlatform.instance = ExtendsFilePickerPlatform();
+      FileSelectorPlatform.instance = ExtendsFileSelectorPlatform();
     });
   });
-
-
 }
 
 
-class FilePickerPlatformMock extends Mock
+class FileSelectorPlatformMock extends Mock
     with MockPlatformInterfaceMixin
-    implements FilePickerPlatform {}
+    implements FileSelectorPlatform {}
 
-class ImplementsFilePickerPlatform extends Mock
-    implements FilePickerPlatform {}
+class ImplementsFileSelectorPlatform extends Mock
+    implements FileSelectorPlatform {}
 
-class ExtendsFilePickerPlatform extends FilePickerPlatform {}
+class ExtendsFileSelectorPlatform extends FileSelectorPlatform {}
