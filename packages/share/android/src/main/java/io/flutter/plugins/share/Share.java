@@ -5,6 +5,7 @@
 package io.flutter.plugins.share;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -24,14 +25,16 @@ import java.util.List;
 /** Handles share intent. */
 class Share {
 
+  private Context context;
   private Activity activity;
 
   /**
-   * Constructs a Share object. The {@code activity} is used to start the share intent. It might be
-   * null when constructing the {@link Share} object and set to non-null when an activity is
-   * available using {@link #setActivity(Activity)}.
+   * Constructs a Share object. The {@code context} and {@code activity} are used to start the
+   * share intent. The {@code activity} might be null when constructing the {@link Share} object
+   * and set to non-null when an activity is available using {@link #setActivity(Activity)}.
    */
-  Share(Activity activity) {
+  Share(Context context, Activity activity) {
+    this.context = context;
     this.activity = activity;
   }
 
@@ -54,12 +57,7 @@ class Share {
     shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
     shareIntent.setType("text/plain");
     Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
-    if (activity != null) {
-      activity.startActivity(chooserIntent);
-    } else {
-      chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      activity.startActivity(chooserIntent);
-    }
+    startActivity(chooserIntent);
   }
 
   void shareFiles(List<String> paths, List<String> mimeTypes, String text, String subject)
@@ -102,11 +100,17 @@ class Share {
           Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 
+    startActivity(chooserIntent);
+  }
+
+  private void startActivity(Intent intent) {
     if (activity != null) {
-      activity.startActivity(chooserIntent);
+      activity.startActivity(intent);
+    } else if (context != null) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      context.startActivity(intent);
     } else {
-      chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      activity.startActivity(chooserIntent);
+      throw new IllegalStateException("Both context and activity are null");
     }
   }
 
