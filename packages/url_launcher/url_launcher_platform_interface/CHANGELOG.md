@@ -1,6 +1,6 @@
 ## 1.0.8
 
-* Added windowName web only parameter
+* Added webOnlyWindowName parameter
 
 ## 1.0.7
 

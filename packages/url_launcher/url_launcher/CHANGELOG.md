@@ -1,5 +1,6 @@
 ## 5.5.1
-* Added windowName web only parameter
+
+* Added webOnlyWindowName web only parameter
 
 ## 5.5.0
 
