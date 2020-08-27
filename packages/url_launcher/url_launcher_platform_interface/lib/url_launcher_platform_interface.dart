@@ -54,7 +54,7 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
       @required bool enableDomStorage,
       @required bool universalLinksOnly,
       @required Map<String, String> headers,
-      @required String windowName}) {
+      String webOnlyLinkTarget}) {
     throw UnimplementedError('launch() has not been implemented.');
   }
 

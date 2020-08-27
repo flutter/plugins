@@ -34,20 +34,25 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
   }
 
-  String _getUrlScheme(String url) => Uri.tryParse(url)?.scheme;
+  String _getUrlScheme(String url) =>
+      Uri
+          .tryParse(url)
+          ?.scheme;
 
   bool _isSafariTargetTopScheme(String url) =>
       _safariTargetTopSchemes.contains(_getUrlScheme(url));
 
-  /// Opens the given [url] in the specified [windowName].
+  /// Opens the given [url] in the specified [webOnlyLinkTarget].
   ///
   /// Returns the newly created window.
   @visibleForTesting
-  html.WindowBase openNewWindow(String url, {windowName = ""}) {
+  html.WindowBase openNewWindow(String url,{webOnlyLinkTarget} ) {
     // We need to open mailto, tel and sms urls on the _top window context on safari browsers.
     // See https://github.com/flutter/flutter/issues/51461 for reference.
     final target =
-        browser.isSafari && _isSafariTargetTopScheme(url) ? '_top' : windowName;
+    browser.isSafari && _isSafariTargetTopScheme(url)
+        ? '_top'
+        : webOnlyLinkTarget ?? "";
     return _window.open(url, target);
   }
 
@@ -57,17 +62,16 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   }
 
   @override
-  Future<bool> launch(
-    String url, {
+  Future<bool> launch(String url, {
     @required bool useSafariVC,
     @required bool useWebView,
     @required bool enableJavaScript,
     @required bool enableDomStorage,
     @required bool universalLinksOnly,
     @required Map<String, String> headers,
-    @required String windowName,
+    String webOnlyLinkTarget,
   }) {
     return Future<bool>.value(
-        openNewWindow(url, windowName: windowName) != null);
+        openNewWindow(url,webOnlyLinkTarget: webOnlyLinkTarget) != null);
   }
 }

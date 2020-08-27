@@ -70,7 +70,6 @@ void main() {
         enableDomStorage: false,
         universalLinksOnly: false,
         headers: const <String, String>{},
-        windowName: '_blank',
       );
       expect(
         log,
@@ -83,7 +82,6 @@ void main() {
             'enableDomStorage': false,
             'universalLinksOnly': false,
             'headers': <String, String>{},
-            'windowName': '_blank',
           })
         ],
       );
@@ -98,7 +96,6 @@ void main() {
         enableDomStorage: false,
         universalLinksOnly: false,
         headers: const <String, String>{'key': 'value'},
-        windowName: '_blank',
       );
       expect(
         log,
@@ -111,7 +108,6 @@ void main() {
             'enableDomStorage': false,
             'universalLinksOnly': false,
             'headers': <String, String>{'key': 'value'},
-            'windowName': '_blank',
           })
         ],
       );
@@ -126,7 +122,6 @@ void main() {
         enableDomStorage: false,
         universalLinksOnly: false,
         headers: const <String, String>{},
-        windowName: "_blank",
       );
       expect(
         log,
@@ -139,7 +134,6 @@ void main() {
             'enableDomStorage': false,
             'universalLinksOnly': false,
             'headers': <String, String>{},
-            'windowName': '_blank',
           })
         ],
       );
@@ -154,7 +148,6 @@ void main() {
         enableDomStorage: false,
         universalLinksOnly: true,
         headers: const <String, String>{},
-        windowName: "_blank",
       );
       expect(
         log,
@@ -167,7 +160,6 @@ void main() {
             'enableDomStorage': false,
             'universalLinksOnly': true,
             'headers': <String, String>{},
-            'windowName': '_blank',
           })
         ],
       );
@@ -182,7 +174,6 @@ void main() {
         enableDomStorage: false,
         universalLinksOnly: false,
         headers: const <String, String>{},
-        windowName: '_blank',
       );
       expect(
         log,
@@ -195,7 +186,6 @@ void main() {
             'enableDomStorage': false,
             'universalLinksOnly': false,
             'headers': <String, String>{},
-            'windowName': '_blank',
           })
         ],
       );
@@ -210,7 +200,6 @@ void main() {
         enableDomStorage: false,
         universalLinksOnly: false,
         headers: const <String, String>{},
-        windowName: '_blank',
       );
       expect(
         log,
@@ -223,7 +212,6 @@ void main() {
             'enableDomStorage': false,
             'universalLinksOnly': false,
             'headers': <String, String>{},
-            'windowName': '_blank',
           })
         ],
       );
@@ -238,7 +226,6 @@ void main() {
         enableDomStorage: true,
         universalLinksOnly: false,
         headers: const <String, String>{},
-        windowName: '_blank',
       );
       expect(
         log,
@@ -251,7 +238,6 @@ void main() {
             'enableDomStorage': true,
             'universalLinksOnly': false,
             'headers': <String, String>{},
-            'windowName': '_blank',
           })
         ],
       );
@@ -266,7 +252,6 @@ void main() {
         enableDomStorage: false,
         universalLinksOnly: false,
         headers: const <String, String>{},
-        windowName: '_blank',
       );
       expect(
         log,
@@ -279,7 +264,6 @@ void main() {
             'enableDomStorage': false,
             'universalLinksOnly': false,
             'headers': <String, String>{},
-            'windowName': '_blank',
           })
         ],
       );

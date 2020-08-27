@@ -24,7 +24,6 @@ void main() {
       enableJavaScript: false,
       universalLinksOnly: false,
       headers: defaultHeaders,
-      windowName: "_blank",
     ));
 
     Finder browserlaunchBtn =
@@ -41,7 +40,6 @@ void main() {
         enableJavaScript: false,
         universalLinksOnly: false,
         headers: defaultHeaders,
-        windowName: "_blank",
       ),
     ).called(1);
   });
