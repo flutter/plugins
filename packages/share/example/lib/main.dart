@@ -80,8 +80,9 @@ class DemoAppState extends State<DemoApp> {
                     builder: (BuildContext context) {
                       return RaisedButton(
                         child: const Text('Share'),
-                        onPressed:
-                            text.isEmpty ? null : () => _onShare(context),
+                        onPressed: text.isEmpty && imagePaths.isEmpty
+                            ? null
+                            : () => _onShare(context),
                       );
                     },
                   ),
