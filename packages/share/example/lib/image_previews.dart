@@ -18,7 +18,9 @@ class ImagePreviews extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imagePaths.isEmpty) return Container();
+    if (imagePaths.isEmpty) {
+      return Container();
+    }
 
     List<Widget> imageWidgets = [];
     for (int i = 0; i < imagePaths.length; i++) {

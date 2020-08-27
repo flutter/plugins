@@ -52,17 +52,17 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
 - (id)activityViewController:(UIActivityViewController *)activityViewController
          itemForActivityType:(UIActivityType)activityType {
-  if (_path != nil && _mimeType != nil) {
-    if ([_mimeType hasPrefix:@"image/"]) {
-      UIImage *image = [UIImage imageWithContentsOfFile:_path];
-      return image;
-    } else {
-      NSURL *url = [NSURL fileURLWithPath:_path];
-      return url;
-    }
+  if (!_path || !_mimeType) {
+    return _text;
   }
 
-  return _text;
+  if ([_mimeType hasPrefix:@"image/"]) {
+    UIImage *image = [UIImage imageWithContentsOfFile:_path];
+    return image;
+  } else {
+    NSURL *url = [NSURL fileURLWithPath:_path];
+    return url;
+  }
 }
 
 - (NSString *)activityViewController:(UIActivityViewController *)activityViewController
@@ -73,11 +73,12 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 - (UIImage *)activityViewController:(UIActivityViewController *)activityViewController
       thumbnailImageForActivityType:(UIActivityType)activityType
                       suggestedSize:(CGSize)suggestedSize {
-  if (_path != nil && _mimeType != nil && [_mimeType hasPrefix:@"image/"]) {
-    UIImage *image = [UIImage imageWithContentsOfFile:_path];
-    return [self imageWithImage:image scaledToSize:suggestedSize];
+  if (!_path || !_mimeType || ![_mimeType hasPrefix:@"image/"]) {
+    return nil;
   }
-  return nil;
+
+  UIImage *image = [UIImage imageWithContentsOfFile:_path];
+  return [self imageWithImage:image scaledToSize:suggestedSize];
 }
 
 - (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize {
@@ -105,7 +106,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
     NSNumber *originHeight = arguments[@"originHeight"];
 
     CGRect originRect = CGRectZero;
-    if (originX != nil && originY != nil && originWidth != nil && originHeight != nil) {
+    if (originX && originY && originWidth && originHeight) {
       originRect = CGRectMake([originX doubleValue], [originY doubleValue],
                               [originWidth doubleValue], [originHeight doubleValue]);
     }
@@ -189,7 +190,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
           atSource:(CGRect)origin {
   NSMutableArray *items = [[NSMutableArray alloc] init];
 
-  if (text != nil || subject != nil) {
+  if (text || subject) {
     [items addObject:[[ShareData alloc] initWithSubject:subject text:text]];
   }
 

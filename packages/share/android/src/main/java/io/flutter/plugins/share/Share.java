@@ -155,7 +155,9 @@ class Share {
 
   @NonNull
   private String getMimeTypeBase(String mimeType) {
-    if (mimeType == null || !mimeType.contains("/")) return "*";
+    if (mimeType == null || !mimeType.contains("/")) {
+      return "*";
+    }
 
     return mimeType.substring(0, mimeType.indexOf("/"));
   }
