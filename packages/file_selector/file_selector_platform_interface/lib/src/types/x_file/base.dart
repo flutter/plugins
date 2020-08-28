@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import '../x_type_group/x_type_group.dart';
+
 
 /// The interface for a XFile.
 ///

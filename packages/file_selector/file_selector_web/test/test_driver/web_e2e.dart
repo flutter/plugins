@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:e2e/e2e.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-
 
 import 'dart:convert';
 import 'dart:typed_data';
@@ -11,10 +9,6 @@ import 'dart:html';
 
 import 'package:file_selector_web/file_selector_web.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
-
-import 'package:platform_detect/test_utils.dart' as platform;
-
-import 'dart:developer';
 
 final String domElementId = '__file_selector_web_file_input';
 final String xFileDomElementId = '__x_file_dom_element';
@@ -46,14 +40,14 @@ void main() {
 
   FileSelectorPlugin plugin;
 
-  testWidgets('Create a DOM container', (WidgetTester tester) {
-    plugin = FileSelectorPlugin();
-
-    final result = querySelector('#${domElementId}');
-    expect(result, isNotNull);
-  });
-
   group('loadFile(..)', () {
+    testWidgets('creates a DOM container', (WidgetTester tester) async {
+      plugin = FileSelectorPlugin();
+
+      final result = querySelector('#${domElementId}');
+      expect(result, isNotNull);
+    });
+
     testWidgets('creates correct input element', (WidgetTester tester) async {
       final overrides = FileSelectorPluginTestOverrides(
         getFilesWhenReady: (_) => Future.value([ XFile('path') ]),
@@ -91,7 +85,7 @@ void main() {
       bool clicked = false;
       mockInput.onClick.listen((event) => clicked = true);
 
-      final file = await plugin.loadFile(acceptedTypeGroups: [ textGroup ]);
+      await plugin.loadFile(acceptedTypeGroups: [ textGroup ]);
 
       expect(clicked, true);
     });
@@ -168,7 +162,7 @@ void main() {
       bool clicked = false;
       mockInput.onClick.listen((event) => clicked = true);
 
-      final file = await plugin.loadFiles(acceptedTypeGroups: [ textGroup ]);
+      await plugin.loadFiles(acceptedTypeGroups: [ textGroup ]);
 
       expect(clicked, true);
     });
