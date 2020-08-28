@@ -222,6 +222,7 @@ class FileSelectorPluginTestOverrides {
   /// For overriding waiting for the files to be ready. Useful for testing so we do not hang here.
   Future<List<XFile>> Function(InputElement input) getFilesWhenReady;
 
+  /// Constructor for test override class
   FileSelectorPluginTestOverrides(
       {this.createFileInputElement,
       this.getFilesFromInputElement,

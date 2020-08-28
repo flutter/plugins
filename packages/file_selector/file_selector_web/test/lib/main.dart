@@ -8,11 +8,13 @@ void main() {
   runApp(MyApp());
 }
 
+/// An app that runs the tests
 class MyApp extends StatefulWidget {
   @override
   MyAppState createState() => MyAppState();
 }
 
+/// State for MyApp
 class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
