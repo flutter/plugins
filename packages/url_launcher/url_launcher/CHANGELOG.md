@@ -1,3 +1,7 @@
+## 5.5.1
+
+* Added webOnlyWindowName parameter to launch()
+
 ## 5.5.0
 
 * Support Linux by default.
