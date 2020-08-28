@@ -61,12 +61,7 @@ class XFile extends XFileBase {
         _lastModified = lastModified,
         super(path) {
     if (path == null) {
-      Blob blob;
-      if (mimeType == null) {
-        blob = Blob([bytes]);
-      } else {
-        blob = Blob([bytes], mimeType);
-      }
+      final blob = (mimeType == null) ? Blob([bytes]) : Blob([bytes], mimeType);
       this.path = Url.createObjectUrl(blob);
     }
   }
