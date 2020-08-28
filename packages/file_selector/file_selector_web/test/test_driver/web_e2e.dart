@@ -36,7 +36,8 @@ final File textFile2 = File([bytes2], 'test2.txt');
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized() as E2EWidgetsFlutterBinding;
 
-  print("Note that the following message can be ignored in the test output:\n'File chooser dialog can only be shown with a user activation'");
+  print(
+      "Note that the following message can be ignored in the test output:\n'File chooser dialog can only be shown with a user activation'");
 
   FileSelectorPlugin plugin;
 
@@ -50,7 +51,7 @@ void main() {
 
     testWidgets('creates correct input element', (WidgetTester tester) async {
       final overrides = FileSelectorPluginTestOverrides(
-        getFilesWhenReady: (_) => Future.value([ XFile('path') ]),
+        getFilesWhenReady: (_) => Future.value([XFile('path')]),
       );
 
       plugin = FileSelectorPlugin(
@@ -59,25 +60,28 @@ void main() {
 
       final container = querySelector('#${domElementId}');
 
-      final file = await plugin.loadFile(acceptedTypeGroups: [ textGroup ]);
+      final file = await plugin.loadFile(acceptedTypeGroups: [textGroup]);
 
       expect(file, isNotNull);
 
-      final result = container?.children?.firstWhere((element) => element.tagName == 'INPUT', orElse: () => null);
+      final result = container?.children?.firstWhere(
+          (element) => element.tagName == 'INPUT',
+          orElse: () => null);
 
       expect(result, isNotNull);
       expect(result.getAttribute('type'), 'file');
-      expect(result.getAttribute('accept'), 'plain/text,application/json,.txt,.json');
+      expect(result.getAttribute('accept'),
+          'plain/text,application/json,.txt,.json');
     });
 
     testWidgets('input element is clicked', (WidgetTester tester) async {
       final mockInput = FileUploadInputElement();
 
       final overrides = FileSelectorPluginTestOverrides(
-        getFilesWhenReady: (_) => Future.value([ XFile('path') ]),
+        getFilesWhenReady: (_) => Future.value([XFile('path')]),
         createFileInputElement: (_, __) => mockInput,
       );
-      
+
       plugin = FileSelectorPlugin(
         overrides: overrides,
       );
@@ -85,7 +89,7 @@ void main() {
       bool clicked = false;
       mockInput.onClick.listen((event) => clicked = true);
 
-      await plugin.loadFile(acceptedTypeGroups: [ textGroup ]);
+      await plugin.loadFile(acceptedTypeGroups: [textGroup]);
 
       expect(clicked, true);
     });
@@ -119,12 +123,10 @@ void main() {
     });
   });
 
-  
-  
   group('loadFiles(..)', () {
     testWidgets('creates correct input element', (WidgetTester tester) async {
       final overrides = FileSelectorPluginTestOverrides(
-        getFilesWhenReady: (_) => Future.value([ XFile('path'), XFile('path2') ]),
+        getFilesWhenReady: (_) => Future.value([XFile('path'), XFile('path2')]),
       );
 
       plugin = FileSelectorPlugin(
@@ -133,15 +135,18 @@ void main() {
 
       final container = querySelector('#${domElementId}');
 
-      final files = await plugin.loadFiles(acceptedTypeGroups: [ textGroup ]);
+      final files = await plugin.loadFiles(acceptedTypeGroups: [textGroup]);
 
       expect(files, isNotNull);
 
-      final FileUploadInputElement result = container?.children?.firstWhere((element) => element.tagName == 'INPUT', orElse: () => null);
+      final FileUploadInputElement result = container?.children?.firstWhere(
+          (element) => element.tagName == 'INPUT',
+          orElse: () => null);
 
       expect(result, isNotNull);
       expect(result.getAttribute('type'), 'file');
-      expect(result.getAttribute('accept'), 'plain/text,application/json,.txt,.json');
+      expect(result.getAttribute('accept'),
+          'plain/text,application/json,.txt,.json');
       expect(result.multiple, true);
     });
 
@@ -149,11 +154,9 @@ void main() {
       final mockInput = FileUploadInputElement();
 
       final overrides = FileSelectorPluginTestOverrides(
-        getFilesWhenReady: (_) => Future.value([ XFile('path') ]),
+        getFilesWhenReady: (_) => Future.value([XFile('path')]),
         createFileInputElement: (_, __) => mockInput,
       );
-
-
 
       plugin = FileSelectorPlugin(
         overrides: overrides,
@@ -162,7 +165,7 @@ void main() {
       bool clicked = false;
       mockInput.onClick.listen((event) => clicked = true);
 
-      await plugin.loadFiles(acceptedTypeGroups: [ textGroup ]);
+      await plugin.loadFiles(acceptedTypeGroups: [textGroup]);
 
       expect(clicked, true);
     });
@@ -196,7 +199,7 @@ void main() {
       final contents = await loadedFile1.readAsString();
       expect(contents, expectedStringContents);
       expect(loadedFile1.name, textFile.name);
-      
+
       final contents2 = await loadedFile2.readAsString();
       expect(contents2, expectedStringContents2);
       expect(loadedFile2.name, textFile2.name);
@@ -212,45 +215,47 @@ void main() {
   group('XFile saveTo(..)', () {
     testWidgets('creates a DOM container', (WidgetTester tester) async {
       XFile file = XFile.fromData(bytes);
-      
+
       await file.saveTo('');
 
       final container = querySelector('#${xFileDomElementId}');
-      
+
       expect(container, isNotNull);
     });
-    
+
     testWidgets('create anchor element', (WidgetTester tester) async {
       XFile file = XFile.fromData(bytes, name: textFile.name);
-      
+
       await file.saveTo('path');
 
       final container = querySelector('#${xFileDomElementId}');
-      final AnchorElement element = container?.children?.firstWhere((element) => element.tagName == 'A', orElse: () => null);
-      
+      final AnchorElement element = container?.children
+          ?.firstWhere((element) => element.tagName == 'A', orElse: () => null);
+
       expect(element, isNotNull);
       expect(element.href, file.path);
       expect(element.download, file.name);
     });
-    
+
     testWidgets('anchor element is clicked', (WidgetTester tester) async {
       final mockAnchor = AnchorElement();
-      
+
       XFileTestOverrides overrides = XFileTestOverrides(
-        createAnchorElement: (_,__) => mockAnchor,
+        createAnchorElement: (_, __) => mockAnchor,
       );
-      
-      XFile file = XFile.fromData(bytes, name: textFile.name, overrides: overrides);
-      
+
+      XFile file =
+          XFile.fromData(bytes, name: textFile.name, overrides: overrides);
+
       bool clicked = false;
       mockAnchor.onClick.listen((event) => clicked = true);
-      
+
       await file.saveTo('path');
-      
+
       expect(clicked, true);
     });
   });
 
-  print("Note that the following message can be ignored in the test output:\n'File chooser dialog can only be shown with a user activation'");
-
+  print(
+      "Note that the following message can be ignored in the test output:\n'File chooser dialog can only be shown with a user activation'");
 }

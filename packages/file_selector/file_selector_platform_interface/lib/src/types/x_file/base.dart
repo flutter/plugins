@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-
 /// The interface for a XFile.
 ///
 /// A XFile is a container that wraps the path of a selected

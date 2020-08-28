@@ -24,13 +24,12 @@ class XTypeGroup {
     this.macUTIs,
     this.webWildCards,
   }) {
-    if (
-      this.extensions == null &&
-      this.mimeTypes == null &&
-      this.macUTIs == null &&
-      this.webWildCards == null
-    ) {
-      throw ArgumentError("At least one type must be provided for an XTypeGroup.");
+    if (this.extensions == null &&
+        this.mimeTypes == null &&
+        this.macUTIs == null &&
+        this.webWildCards == null) {
+      throw ArgumentError(
+          "At least one type must be provided for an XTypeGroup.");
     }
   }
 
@@ -49,4 +48,3 @@ class XTypeGroup {
   /// The web wild cards for this group (ex: image/*, video/*)
   final List<String> webWildCards;
 }
-
