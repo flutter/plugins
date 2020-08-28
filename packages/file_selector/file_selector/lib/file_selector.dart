@@ -3,14 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 export 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
   show XFile, XTypeGroup;
-
-/// NEW API
 
 /// Open file dialog for loading files and return a file path
 Future<XFile> loadFile({

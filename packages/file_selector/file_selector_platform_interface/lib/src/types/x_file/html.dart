@@ -52,22 +52,31 @@ class XFile extends XFileBase {
         this.name,
         int length,
         DateTime lastModified,
+        this.path,
         @visibleForTesting XFileTestOverrides overrides,
       })  : _data = bytes,
         _length = length,
         _overrides = overrides,
         _lastModified = lastModified,
-        super('') {
-    Blob blob;
-    if (mimeType == null) {
-      blob = Blob([bytes]);
-    } else {
-      blob = Blob([bytes], mimeType);
+        super(path) {
+    if (path == null) {
+      Blob blob;
+      if (mimeType == null) {
+        blob = Blob([bytes]);
+      } else {
+        blob = Blob([bytes], mimeType);
+      }
+      this.path = Url.createObjectUrl(blob);
     }
-    this.path = Url.createObjectUrl(blob);
   }
 
-
+  @override
+  Future<DateTime> lastModified() async {
+    if (_lastModified != null) {
+      return Future.value(_lastModified);
+    }
+    return null;
+  }
 
   Future<Uint8List> get _bytes async {
     if (_data != null) {

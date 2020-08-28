@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // TODO: should we be using this package or just extracting the important conversion data from it?
-import 'package:mime_type/mime_type.dart';
 
 /// A set of allowed XTypes
 class XTypeGroup {

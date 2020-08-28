@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: 'File Selector Demo Home Page'),
       routes: {
-        '/save' : (context) => SaveTest(title: "Save Example"),
-        '/load' : (context) => LoadTest(title: "Load Example"),
+        '/save' : (context) => SaveTest(),
+        '/load' : (context) => LoadTest(),
       },
     );
   }
@@ -28,10 +28,8 @@ class MyApp extends StatelessWidget {
 
 /// Page for showing an example of saving with file_selector
 class SaveTest extends StatefulWidget {
-  SaveTest({Key key, this.title}) : super(key: key);
-
-  /// Title of Home Page
-  final String title;
+  /// Constructor for the SaveTest page
+  SaveTest({Key key}) : super(key: key);
 
   @override
   _SaveTestState createState() => _SaveTestState();
@@ -40,7 +38,6 @@ class SaveTest extends StatefulWidget {
 class _SaveTestState extends State<SaveTest> {
   final TextEditingController _fileController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _extensionController = TextEditingController();
 
   @override
   void dispose() {
@@ -70,7 +67,7 @@ class _SaveTestState extends State<SaveTest> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Save Example"),
       ),
       body: Center(
         child: Column(
@@ -113,19 +110,13 @@ class _SaveTestState extends State<SaveTest> {
 /// Screen that shows an example of loadFile(s)
 class LoadTest extends StatefulWidget {
   /// Default constructor
-  LoadTest({Key key, this.title}) : super(key: key);
-
-  /// Title of Home Page
-  final String title;
-
+  LoadTest({Key key}) : super(key: key);
 
   @override
   _LoadTestState createState() => _LoadTestState();
 }
 
 class _LoadTestState extends State<LoadTest> {
-  final TextEditingController _extensionController = TextEditingController();
-
   void _onLoadImageFile() async {
 
     XTypeGroup typeGroup = XTypeGroup(label: 'images', extensions: [ 'jpg', 'png' ]);
@@ -159,7 +150,7 @@ class _LoadTestState extends State<LoadTest> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Load Example"),
       ),
       body: Center(
         child: Column(

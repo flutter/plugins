@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:html';
-import 'dart:typed_data';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -85,7 +84,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
       }
       for (String extension in group.extensions ?? []) {   
         String ext = extension;
-        if (ext.isNotEmpty && [0] != '.') {
+        if (ext.isNotEmpty && ext[0] != '.') {
           ext = '.' + ext;
         }
         
@@ -133,7 +132,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
       int length = file.size;
       DateTime modified = file.lastModifiedDate.add(timeZoneOffset);
 
-      xFiles.add(XFile(url, name: name, lastModified: modified));
+      xFiles.add(XFile(url, name: name, lastModified: modified, length: length));
     }
 
     return xFiles;

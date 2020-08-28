@@ -4,8 +4,6 @@ import 'dart:typed_data';
 
 import './base.dart';
 
-import '../types.dart';
-
 /// A XFile backed by a dart:io File.
 class XFile extends XFileBase {
   final File _file;
@@ -30,12 +28,13 @@ class XFile extends XFileBase {
         super(path);
 
   /// Construct an XFile from its data
-  XFile.fromData(Uint8List bytes, {
-      this.mimeType,
-      String path,
-      String name,
-      int length,
-      DateTime lastModified,
+  XFile.fromData(
+      Uint8List bytes, {
+        this.mimeType,
+        String path,
+        String name,
+        int length,
+        DateTime lastModified,
     }): _bytes = bytes,
         _file = File(path),
         _length = length,
