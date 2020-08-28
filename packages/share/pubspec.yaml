@@ -5,7 +5,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/share
 # 0.6.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.6.4+4
+version: 0.6.4+5
 
 flutter:
   plugin:
@@ -26,8 +26,8 @@ dev_dependencies:
   mockito: ^3.0.0
   flutter_test:
     sdk: flutter
-  e2e:
-    path: ../e2e
+  integration_test:
+    path: ../integration_test
   pedantic: ^1.8.0
 
 environment:

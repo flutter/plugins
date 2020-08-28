@@ -167,8 +167,10 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private void handleException(Exception exception, Result result) {
     if (exception instanceof CameraAccessException) {
       result.error("CameraAccess", exception.getMessage(), null);
+      return;
     }
 
+    // CameraAccessException can not be cast to a RuntimeException.
     throw (RuntimeException) exception;
   }
 }

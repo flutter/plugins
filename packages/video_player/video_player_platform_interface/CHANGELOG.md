@@ -1,3 +1,11 @@
+## 2.1.1
+
+* Fix mixWithOthers test channel.
+
+## 2.1.0
+
+* Add VideoPlayerOptions with audo mix mode
+
 ## 2.0.2
 
 * Migrated tests to use pigeon correctly.
