@@ -46,19 +46,14 @@ class _SaveTestState extends State<SaveTest> {
   }
 
   void _saveFile() async {
-    String path = await getSavePath();
+    final path = await getSavePath();
 
-    Uint8List data;
-    data = Uint8List.fromList(_fileController.text.codeUnits);
+    final data = Uint8List.fromList(_fileController.text.codeUnits);
 
-    XFile new_file;
-
-    if (_nameController.text == '') {
-      new_file = XFile.fromData(data, mimeType: 'text/plain');
-    } else {
-      new_file = XFile.fromData(data,
-          mimeType: 'text/plain', name: _nameController.text);
-    }
+    final new_file = (_nameController.text == '')
+        ? XFile.fromData(data, mimeType: 'text/plain')
+        : XFile.fromData(data,
+            mimeType: 'text/plain', name: _nameController.text);
 
     new_file.saveTo(path);
   }
@@ -118,10 +113,9 @@ class LoadTest extends StatefulWidget {
 
 class _LoadTestState extends State<LoadTest> {
   void _onLoadImageFile() async {
-    XTypeGroup typeGroup =
-        XTypeGroup(label: 'images', extensions: ['jpg', 'png']);
+    final typeGroup = XTypeGroup(label: 'images', extensions: ['jpg', 'png']);
 
-    XFile file = await loadFile(acceptedTypeGroups: [typeGroup]);
+    final file = await loadFile(acceptedTypeGroups: [typeGroup]);
 
     await showDialog(
         context: context,
@@ -131,10 +125,9 @@ class _LoadTestState extends State<LoadTest> {
   }
 
   void _onLoadTextFile() async {
-    XTypeGroup typeGroup =
-        XTypeGroup(label: 'images', extensions: ['txt', 'json']);
+    final typeGroup = XTypeGroup(label: 'images', extensions: ['txt', 'json']);
 
-    XFile file = await loadFile(acceptedTypeGroups: [typeGroup]);
+    final file = await loadFile(acceptedTypeGroups: [typeGroup]);
 
     await showDialog(
         context: context,

@@ -9,14 +9,13 @@ import 'package:file_selector/file_selector.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 void main() {
-  final MockFileSelector mock = MockFileSelector();
+  final mock = MockFileSelector();
   FileSelectorPlatform.instance = mock;
 
   test('getSavePath', () async {
-    String expectedPath = '/example/path';
+    final expectedPath = '/example/path';
 
-    XTypeGroup typeGroup =
-        XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
+    final typeGroup = XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
 
     when(mock.getSavePath(
       acceptedTypeGroups: [typeGroup],
@@ -25,7 +24,7 @@ void main() {
       confirmButtonText: 'save',
     )).thenAnswer((_) => Future.value(expectedPath));
 
-    String result = await getSavePath(
+    final result = await getSavePath(
         acceptedTypeGroups: [typeGroup],
         initialDirectory: 'dir',
         suggestedName: 'name',
@@ -35,10 +34,9 @@ void main() {
   });
 
   test('loadFile', () async {
-    XFile file = XFile('path');
+    final file = XFile('path');
 
-    XTypeGroup typeGroup =
-        XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
+    final typeGroup = XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
 
     when(mock.loadFile(
       acceptedTypeGroups: [typeGroup],
@@ -46,7 +44,7 @@ void main() {
       confirmButtonText: 'load',
     )).thenAnswer((_) => Future.value(file));
 
-    XFile result = await loadFile(
+    final result = await loadFile(
         acceptedTypeGroups: [typeGroup],
         initialDirectory: 'dir',
         confirmButtonText: 'load');
@@ -55,10 +53,9 @@ void main() {
   });
 
   test('loadFiles', () async {
-    XFile file = XFile('path');
+    final file = XFile('path');
 
-    XTypeGroup typeGroup =
-        XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
+    final typeGroup = XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
 
     when(mock.loadFiles(
       acceptedTypeGroups: [typeGroup],
@@ -66,7 +63,7 @@ void main() {
       confirmButtonText: 'load',
     )).thenAnswer((_) => Future.value([file]));
 
-    List<XFile> result = await loadFiles(
+    final result = await loadFiles(
         acceptedTypeGroups: [typeGroup],
         initialDirectory: 'dir',
         confirmButtonText: 'load');

@@ -43,7 +43,8 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     String initialDirectory,
     String suggestedName,
     String confirmButtonText,
-  }) async => null;
+  }) async =>
+      null;
 
   /// Load Helper
   Future<List<XFile>> _loadFileHelper(
@@ -126,7 +127,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   List<XFile> _getXFilesFromFiles(List<File> files) {
     List<XFile> xFiles = List<XFile>();
 
-    Duration timeZoneOffset = DateTime.now().timeZoneOffset;
+    final timeZoneOffset = DateTime.now().timeZoneOffset;
 
     for (File file in files) {
       String url = Url.createObjectUrl(file);
