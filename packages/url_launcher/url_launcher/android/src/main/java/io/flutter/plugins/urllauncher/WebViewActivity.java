@@ -70,9 +70,6 @@ public class WebViewActivity extends Activity {
     public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
       final WebView newWebView = createNewWebView(false);
 
-      webViewContainer.addView(newWebView);
-      webViewContainer.removeView(view);
-
       final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
       transport.setWebView(newWebView);
       resultMsg.sendToTarget();
