@@ -74,7 +74,7 @@ NS_INLINE UIApplicationShortcutItem *_deserializeShortcutItem(NSDictionary *seri
           : [UIApplicationShortcutIcon iconWithTemplateImageName:serialized[@"icon"]];
 
   return [[UIApplicationShortcutItem alloc] initWithType:serialized[@"type"]
-                                          localizedTitle:serialized[@"localizedTitle"]
+                                          localizedTitle:NSLocalizedString(serialized[@"localizedTitle"], nil)
                                        localizedSubtitle:nil
                                                     icon:icon
                                                 userInfo:nil];
