@@ -156,8 +156,8 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
   /// Taking a screenshot.
   ///
   /// Called by test methods. Implementation differs for each platform.
-  Future<void> takeScreenshot(String screenshot_name) async {
-    await callbackManager.takeScreenshot(screenshot_name);
+  Future<void> takeScreenshot(String screenshotName) async {
+    await callbackManager.takeScreenshot(screenshotName);
   }
 
   /// The callback function to response the driver side input.

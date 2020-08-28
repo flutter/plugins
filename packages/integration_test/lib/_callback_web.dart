@@ -13,8 +13,7 @@ import 'common.dart';
 /// See also:
 ///
 ///  * [_callback_io.dart], which has the dart:io implementation
-CallbackManager get callbackManager =>
-    _singletonWebDriverCommandManager;
+CallbackManager get callbackManager => _singletonWebDriverCommandManager;
 
 /// WebDriverCommandManager singleton.
 final WebCallbackManager _singletonWebDriverCommandManager =
@@ -30,41 +29,41 @@ final WebCallbackManager _singletonWebDriverCommandManager =
 ///
 /// See: https://www.w3.org/TR/webdriver/
 class WebCallbackManager extends CallbackManager {
-  /// Tests will put the action requests from WebDriver to this pipe.
-  Completer<WebDriverAction> webDriverActionPipe = Completer<WebDriverAction>();
+  /// App side tests will put the action requests from WebDriver to this pipe.
+  Completer<WebDriverAction> _webDriverActionPipe = Completer<WebDriverAction>();
 
   /// Updated when WebDriver completes the request by the test method.
   ///
   /// For example, a test method will ask for a screenshot by calling
-  /// `takeScreenshot`. When this screenshot is taken [driverActionComplete]
+  /// `takeScreenshot`. When this screenshot is taken [_driverActionComplete]
   /// will complete.
-  Completer<bool> driverActionComplete = Completer<bool>();
+  Completer<bool> _driverActionComplete = Completer<bool>();
 
   /// Takes screenshot using WebDriver screenshot command.
   ///
   /// Only works on Web when tests are run via `flutter driver` command.
   ///
-  /// See: https://www.w3.org/TR/webdriver/#screen-capture
+  /// See: https://www.w3.org/TR/webdriver/#screen-capture.
   @override
-  Future<void> takeScreenshot(String screenshot_name) async {
-    await _webDriverCommand(WebDriverAction.screenshot(screenshot_name));
+  Future<void> takeScreenshot(String screenshotName) async {
+    await _sendWebDriverCommand(WebDriverAction.screenshot(screenshotName));
   }
 
-  Future<void> _webDriverCommand(WebDriverAction command) async {
+  Future<void> _sendWebDriverCommand(WebDriverAction command) async {
     try {
-      webDriverActionPipe.complete(Future.value(command));
-      try {
-        final bool awaitCommand = await driverActionComplete.future;
-        if (!awaitCommand) {
-          throw Exception('Web Driver Command failed: ${command.type}');
-        }
-      } catch (e) {
+      _webDriverActionPipe.complete(Future.value(command));
+      final bool awaitCommand = await _driverActionComplete.future;
+      if (!awaitCommand) {
         throw Exception(
-            'Web Driver Command failed: ${command.type} with ' 'exception $e');
+            'Web Driver Command ${command.type} failed while waiting for '
+            'driver side');
       }
+    } catch (exception) {
+      throw Exception('Web Driver Command failed: ${command.type} with '
+          'exception $exception');
     } finally {
-      // Reset the completer and release the lock.
-      driverActionComplete = Completer<bool>();
+      // Reset the completer.
+      _driverActionComplete = Completer<bool>();
     }
   }
 
@@ -102,7 +101,7 @@ class WebCallbackManager extends CallbackManager {
     // If Test status is `wait_on_webdriver_command` send the first
     // command in the `commandPipe` to the tests.
     if (extraMessage == '${TestStatus.waitOnWebdriverCommand}') {
-      final WebDriverAction action = await webDriverActionPipe.future;
+      final WebDriverAction action = await _webDriverActionPipe.future;
       switch (action.type) {
         case WebDriverActionType.screenshot:
           final Map<String, dynamic> data = Map.from(action.values);
@@ -131,8 +130,8 @@ class WebCallbackManager extends CallbackManager {
       response = <String, String>{
         'message': Response.webDriverCommand(data: data).toJson(),
       };
-      driverActionComplete.complete(Future.value(true));
-      webDriverActionPipe = Completer<WebDriverAction>();
+      _driverActionComplete.complete(Future.value(true));
+      _webDriverActionPipe = Completer<WebDriverAction>();
     } else {
       throw UnimplementedError('$extraMessage is not implemented');
     }
@@ -161,13 +160,13 @@ class WebCallbackManager extends CallbackManager {
 
   @override
   void cleanup() {
-    if (!webDriverActionPipe.isCompleted) {
-      webDriverActionPipe
+    if (!_webDriverActionPipe.isCompleted) {
+      _webDriverActionPipe
           .complete(Future<WebDriverAction>.value(WebDriverAction.noop()));
     }
 
-    if (!driverActionComplete.isCompleted) {
-      driverActionComplete.complete(Future<bool>.value(false));
+    if (!_driverActionComplete.isCompleted) {
+      _driverActionComplete.complete(Future<bool>.value(false));
     }
   }
 }
