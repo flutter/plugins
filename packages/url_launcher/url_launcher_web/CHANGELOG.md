@@ -1,3 +1,7 @@
+# 0.1.3
+
+- Added webOnlyWindowName parameter to launch()
+
 # 0.1.2+1
 
 - Update docs
