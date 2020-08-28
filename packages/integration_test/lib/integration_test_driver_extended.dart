@@ -5,7 +5,7 @@ import 'common.dart';
 
 import 'package:flutter_driver/flutter_driver.dart';
 
-/// Example Integration Test which can also run WebDriver action depending on
+/// Example Integration Test which can also run WebDriver command depending on
 /// the requests coming from the test methods.
 Future<void> integrationDriver() async {
   final FlutterDriver driver = await FlutterDriver.connect();
@@ -17,13 +17,13 @@ Future<void> integrationDriver() async {
 
   Response response = Response.fromJson(jsonResponse);
 
-  // Until `integration_test` returns a [WebDriverActionType.noop], keep
-  // executing WebDriver actions.
+  // Until `integration_test` returns a [WebDriverCommandType.noop], keep
+  // executing WebDriver commands.
   while (response.data != null &&
-      response.data['web_driver_action'] != null &&
-      response.data['web_driver_action'] != '${WebDriverActionType.noop}') {
-    final String webDriverCommand = response.data['web_driver_action'];
-    if (webDriverCommand == '${WebDriverActionType.screenshot}') {
+      response.data['web_driver_command'] != null &&
+      response.data['web_driver_command'] != '${WebDriverCommandType.noop}') {
+    final String webDriverCommand = response.data['web_driver_command'];
+    if (webDriverCommand == '${WebDriverCommandType.screenshot}') {
       // Use `driver.screenshot()` method to get a screenshot of the web page.
       final List<int> screenshotImage = await driver.screenshot();
       final String screenshotName = response.data['screenshot_name'];
@@ -39,7 +39,7 @@ Future<void> integrationDriver() async {
           timeout: const Duration(seconds: 10));
 
       response = Response.fromJson(jsonResponse);
-    } else if (webDriverCommand == '${WebDriverActionType.ack}') {
+    } else if (webDriverCommand == '${WebDriverCommandType.ack}') {
       // Previous command completed ask for a new one.
       jsonResponse = await driver.requestData(
           '${TestStatus.waitOnWebdriverCommand}',
@@ -53,8 +53,8 @@ Future<void> integrationDriver() async {
 
   // If No-op command is sent, ask for the result of all tests.
   if (response.data != null &&
-      response.data['web_driver_action'] != null &&
-      response.data['web_driver_action'] == '${WebDriverActionType.noop}') {
+      response.data['web_driver_command'] != null &&
+      response.data['web_driver_command'] == '${WebDriverCommandType.noop}') {
     jsonResponse =
         await driver.requestData(null, timeout: const Duration(minutes: 1));
 

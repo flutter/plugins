@@ -138,28 +138,28 @@ class Failure {
   }
 }
 
-/// Integration web tests can execute WebDriver actions such as screenshots.
+/// Integration web tests can execute WebDriver commands such as screenshots.
 ///
 /// These test will use [TestStatus] to notify `integration_test` of their
 /// state.
 enum TestStatus {
-  /// Test is waiting for executing WebDriver actions.
+  /// Test is waiting for executing WebDriver commands.
   waitOnWebdriverCommand,
 
-  /// Test executed the previously requested action.
+  /// Test executed the previously requested commands.
   webdriverCommandComplete,
 }
 
-/// Types of different WebDriver actions that can be used in web integration
+/// Types of different WebDriver commands that can be used in web integration
 /// tests.
 ///
-/// These actions are either commands that WebDriver can execute or used
+/// These commands are either commands that WebDriver can execute or used
 /// for the communication between `integration_test` and the driver test.
-enum WebDriverActionType {
+enum WebDriverCommandType {
   /// Acknowlegement for the previously sent message.
   ack,
 
-  /// No further WebDriver Action is necessary.
+  /// No further WebDriver commands is requested by the app-side tests.
   noop,
 
   /// Asking WebDriver to take a screenshot of the Web page.
@@ -171,35 +171,34 @@ enum WebDriverActionType {
 /// Only works on Web when tests are run via `flutter driver` command.
 ///
 /// See: https://www.w3.org/TR/webdriver/
-class WebDriverAction {
-  /// Type of the [WebDriverAction].
+class WebDriverCommand {
+  /// Type of the [WebDriverCommand].
   ///
-  /// Currently the only action that triggers a WebDriver API command is
-  /// `screenshot`.
+  /// Currently the only command that triggers a WebDriver API is `screenshot`.
   ///
-  /// There are also `ack` and `noop` actions defined to manage the handshake
+  /// There are also `ack` and `noop` commands defined to manage the handshake
   /// during the communication.
-  final WebDriverActionType type;
+  final WebDriverCommandType type;
 
-  /// Used for adding extra values to the actions such as file name for
+  /// Used for adding extra values to the commands such as file name for
   /// `screenshot`.
   final Map<String, dynamic> values;
 
-  /// Constructor for [WebDriverActionType.noop] action.
-  WebDriverAction.noop()
-      : this.type = WebDriverActionType.noop,
+  /// Constructor for [WebDriverCommandType.noop] command.
+  WebDriverCommand.noop()
+      : this.type = WebDriverCommandType.noop,
         this.values = Map();
 
-  /// Constructor for [WebDriverActionTypes.noop] screenshot.
-  WebDriverAction.screenshot(String screenshot_name)
-      : this.type = WebDriverActionType.screenshot,
+  /// Constructor for [WebDriverCommandType.noop] screenshot.
+  WebDriverCommand.screenshot(String screenshot_name)
+      : this.type = WebDriverCommandType.screenshot,
         this.values = {'screenshot_name': screenshot_name};
 
-  /// Util method for converting [WebDriverActionTypes] to a map entry.
+  /// Util method for converting [WebDriverCommandType] to a map entry.
   ///
   /// Used for converting messages to json format.
-  static Map<String, dynamic> typeToMap(WebDriverActionType type) => {
-        'web_driver_action': '${type}',
+  static Map<String, dynamic> typeToMap(WebDriverCommandType type) => {
+        'web_driver_command': '${type}',
       };
 }
 

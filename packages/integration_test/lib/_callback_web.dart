@@ -22,22 +22,23 @@ final WebCallbackManager _singletonWebDriverCommandManager =
 /// Manages communication between `integration_tests` and the `driver_tests`.
 ///
 /// Along with responding to callbacks from the driver side this calls enables
-/// usage of Web Driver commands by sending [WebDriverAction]s to driver side.
+/// usage of Web Driver commands by sending [WebDriverCommand]s to driver side.
 ///
-/// Tests can execute an Web Driver actions such as `screenshot` using browsers'
+/// Tests can execute an Web Driver commands such as `screenshot` using browsers'
 /// WebDriver APIs.
 ///
 /// See: https://www.w3.org/TR/webdriver/
 class WebCallbackManager extends CallbackManager {
-  /// App side tests will put the action requests from WebDriver to this pipe.
-  Completer<WebDriverAction> _webDriverActionPipe = Completer<WebDriverAction>();
+  /// App side tests will put the command requests from WebDriver to this pipe.
+  Completer<WebDriverCommand> _webDriverCommandPipe =
+      Completer<WebDriverCommand>();
 
   /// Updated when WebDriver completes the request by the test method.
   ///
   /// For example, a test method will ask for a screenshot by calling
-  /// `takeScreenshot`. When this screenshot is taken [_driverActionComplete]
+  /// `takeScreenshot`. When this screenshot is taken [_driverCommandComplete]
   /// will complete.
-  Completer<bool> _driverActionComplete = Completer<bool>();
+  Completer<bool> _driverCommandComplete = Completer<bool>();
 
   /// Takes screenshot using WebDriver screenshot command.
   ///
@@ -46,13 +47,13 @@ class WebCallbackManager extends CallbackManager {
   /// See: https://www.w3.org/TR/webdriver/#screen-capture.
   @override
   Future<void> takeScreenshot(String screenshotName) async {
-    await _sendWebDriverCommand(WebDriverAction.screenshot(screenshotName));
+    await _sendWebDriverCommand(WebDriverCommand.screenshot(screenshotName));
   }
 
-  Future<void> _sendWebDriverCommand(WebDriverAction command) async {
+  Future<void> _sendWebDriverCommand(WebDriverCommand command) async {
     try {
-      _webDriverActionPipe.complete(Future.value(command));
-      final bool awaitCommand = await _driverActionComplete.future;
+      _webDriverCommandPipe.complete(Future.value(command));
+      final bool awaitCommand = await _driverCommandComplete.future;
       if (!awaitCommand) {
         throw Exception(
             'Web Driver Command ${command.type} failed while waiting for '
@@ -63,13 +64,13 @@ class WebCallbackManager extends CallbackManager {
           'exception $exception');
     } finally {
       // Reset the completer.
-      _driverActionComplete = Completer<bool>();
+      _driverCommandComplete = Completer<bool>();
     }
   }
 
   /// The callback function to response the driver side input.
   ///
-  /// Provides a handshake mechanism for executing [WebDriverAction]s on the
+  /// Provides a handshake mechanism for executing [WebDriverCommand]s on the
   /// driver side.
   @override
   Future<Map<String, dynamic>> callback(
@@ -101,37 +102,37 @@ class WebCallbackManager extends CallbackManager {
     // If Test status is `wait_on_webdriver_command` send the first
     // command in the `commandPipe` to the tests.
     if (extraMessage == '${TestStatus.waitOnWebdriverCommand}') {
-      final WebDriverAction action = await _webDriverActionPipe.future;
-      switch (action.type) {
-        case WebDriverActionType.screenshot:
-          final Map<String, dynamic> data = Map.from(action.values);
+      final WebDriverCommand command = await _webDriverCommandPipe.future;
+      switch (command.type) {
+        case WebDriverCommandType.screenshot:
+          final Map<String, dynamic> data = Map.from(command.values);
           data.addAll(
-              WebDriverAction.typeToMap(WebDriverActionType.screenshot));
+              WebDriverCommand.typeToMap(WebDriverCommandType.screenshot));
           response = <String, String>{
             'message': Response.webDriverCommand(data: data).toJson(),
           };
           break;
-        case WebDriverActionType.noop:
+        case WebDriverCommandType.noop:
           final Map<String, dynamic> data = Map();
-          data.addAll(WebDriverAction.typeToMap(WebDriverActionType.noop));
+          data.addAll(WebDriverCommand.typeToMap(WebDriverCommandType.noop));
           response = <String, String>{
             'message': Response.webDriverCommand(data: data).toJson(),
           };
           break;
         default:
-          throw UnimplementedError('${action.type} is not implemented');
+          throw UnimplementedError('${command.type} is not implemented');
       }
     }
     // Tests will send `webdriver_command_complete` status after
-    // WebDriver completes an action.
+    // WebDriver completes an command.
     else if (extraMessage == '${TestStatus.webdriverCommandComplete}') {
       final Map<String, dynamic> data = Map();
-      data.addAll(WebDriverAction.typeToMap(WebDriverActionType.ack));
+      data.addAll(WebDriverCommand.typeToMap(WebDriverCommandType.ack));
       response = <String, String>{
         'message': Response.webDriverCommand(data: data).toJson(),
       };
-      _driverActionComplete.complete(Future.value(true));
-      _webDriverActionPipe = Completer<WebDriverAction>();
+      _driverCommandComplete.complete(Future.value(true));
+      _webDriverCommandPipe = Completer<WebDriverCommand>();
     } else {
       throw UnimplementedError('$extraMessage is not implemented');
     }
@@ -160,13 +161,13 @@ class WebCallbackManager extends CallbackManager {
 
   @override
   void cleanup() {
-    if (!_webDriverActionPipe.isCompleted) {
-      _webDriverActionPipe
-          .complete(Future<WebDriverAction>.value(WebDriverAction.noop()));
+    if (!_webDriverCommandPipe.isCompleted) {
+      _webDriverCommandPipe
+          .complete(Future<WebDriverCommand>.value(WebDriverCommand.noop()));
     }
 
-    if (!_driverActionComplete.isCompleted) {
-      _driverActionComplete.complete(Future<bool>.value(false));
+    if (!_driverCommandComplete.isCompleted) {
+      _driverCommandComplete.complete(Future<bool>.value(false));
     }
   }
 }
