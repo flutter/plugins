@@ -23,15 +23,8 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
     String confirmButtonText,
-  }) {
-    Completer<XFile> _completer = Completer();
-    _loadFileHelper(false, acceptedTypeGroups).then((list) {
-      _completer.complete(list.first);
-    }).catchError((err) {
-      _completer.completeError(err);
-    });
-
-    return _completer.future;
+  }) async {
+    return (await _loadFileHelper(false, acceptedTypeGroups)).first;
   }
 
   /// Open file dialog for loading files and return a XFile
@@ -40,7 +33,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
     String confirmButtonText,
-  }) {
+  }) async {
     return _loadFileHelper(true, acceptedTypeGroups);
   }
 
@@ -50,8 +43,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     String initialDirectory,
     String suggestedName,
     String confirmButtonText,
-  }) =>
-      Future.value();
+  }) async => null;
 
   /// Load Helper
   Future<List<XFile>> _loadFileHelper(

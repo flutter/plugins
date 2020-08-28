@@ -17,14 +17,15 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
     String confirmButtonText,
-  }) {
-    return _channel.invokeMethod<XFile>(
+  }) async {
+    String path = await _channel.invokeMethod<String>(
       'loadFile',
       <String, Object>{
         'acceptedTypes': acceptedTypeGroups,
         'initialDirectory': initialDirectory,
       },
     );
+    return XFile(path);
   }
 
   /// Load multiple files from user's computer and return it as an XFile
@@ -33,14 +34,19 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
     String confirmButtonText,
-  }) {
-    return _channel.invokeMethod<List<XFile>>(
+  }) async {
+    final pathList = await _channel.invokeMethod<List<String>>(
       'loadFiles',
       <String, Object>{
         'acceptedTypes': acceptedTypeGroups,
         'initialDirectory': initialDirectory,
       },
     );
+    List<XFile> fileList = List();
+    for (String path in pathList) {
+      fileList.add(XFile(path));
+    }
+    return fileList;
   }
 
   /// Saves the file to user's Disk
@@ -51,7 +57,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     String suggestedName,
     String confirmButtonText,
   }) async {
-    return _channel.invokeMethod(
+    return _channel.invokeMethod<String>(
       'saveFile',
       <String, Object>{
         'initialDirectory': initialDirectory,
