@@ -26,7 +26,7 @@
       NSLog(@"%@ passed.", test);
       [passedTests addObject:test];
     } else {
-      NSLog(@"%@ failed.", test);
+      NSLog(@"%@ failed: %@", test, result);
       [failedTests addObject:test];
     }
   }

@@ -1,3 +1,7 @@
+## 0.3.4+5
+
+* Added necessary README docs for getting started with Android.
+
 ## 0.3.4+4
 
 * Update package:e2e -> package:integration_test

@@ -93,7 +93,7 @@ task:
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - else
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        -   ./script/incremental_build.sh firebase-test-lab
+        -   ./script/incremental_build.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
