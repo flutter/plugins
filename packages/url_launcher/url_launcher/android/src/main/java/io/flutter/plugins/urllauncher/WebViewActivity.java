@@ -7,13 +7,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.provider.Browser;
 import android.view.KeyEvent;
+import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import io.flutter.Log;
 
 /*  Launches WebView activity */
 public class WebViewActivity extends Activity {
@@ -40,6 +47,7 @@ public class WebViewActivity extends Activity {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+          Log.d("TAGG", "HELLO" + url);
           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             view.loadUrl(url);
             return false;
@@ -49,6 +57,7 @@ public class WebViewActivity extends Activity {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+          Log.d("TAGG", "HELLO" + request.getUrl());
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             view.loadUrl(request.getUrl().toString());
           }
@@ -56,15 +65,45 @@ public class WebViewActivity extends Activity {
         }
       };
 
+  private final WebChromeClient webChromeClient = new WebChromeClient() {
+    @Override
+    public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+      final WebView newWebView = createNewWebView(false);
+
+      webViewContainer.addView(newWebView);
+      webViewContainer.removeView(view);
+
+      final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+      transport.setWebView(newWebView);
+      resultMsg.sendToTarget();
+
+      return true;
+    }
+  };
+
   private WebView webview;
+
+  private FrameLayout webViewContainer;
 
   private IntentFilter closeIntentFilter = new IntentFilter(ACTION_CLOSE);
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    webview = new WebView(this);
-    setContentView(webview);
+    webViewContainer = new FrameLayout(this);
+    setContentView(webViewContainer);
+
+    webview = createNewWebView(true);
+    webViewContainer.addView(webview);
+
+    // Register receiver that may finish this Activity.
+    registerReceiver(broadcastReceiver, closeIntentFilter);
+  }
+
+  private WebView createNewWebView(boolean loadUrl) {
+    final WebView newWebView = new WebView(this);
+    newWebView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
     // Get the Intent that started this activity and extract the string
     final Intent intent = getIntent();
     final String url = intent.getStringExtra(URL_EXTRA);
@@ -73,16 +112,17 @@ public class WebViewActivity extends Activity {
     final Bundle headersBundle = intent.getBundleExtra(Browser.EXTRA_HEADERS);
 
     final Map<String, String> headersMap = extractHeaders(headersBundle);
-    webview.loadUrl(url, headersMap);
+    if (loadUrl) newWebView.loadUrl(url, headersMap);
 
-    webview.getSettings().setJavaScriptEnabled(enableJavaScript);
-    webview.getSettings().setDomStorageEnabled(enableDomStorage);
+    newWebView.getSettings().setJavaScriptEnabled(enableJavaScript);
+    newWebView.getSettings().setDomStorageEnabled(enableDomStorage);
+    newWebView.getSettings().setSupportMultipleWindows(true);
 
     // Open new urls inside the webview itself.
-    webview.setWebViewClient(webViewClient);
+    newWebView.setWebViewClient(webViewClient);
+    newWebView.setWebChromeClient(webChromeClient);
 
-    // Register receiver that may finish this Activity.
-    registerReceiver(broadcastReceiver, closeIntentFilter);
+    return newWebView;
   }
 
   private Map<String, String> extractHeaders(Bundle headersBundle) {
