@@ -17,7 +17,7 @@ final IOCallbackManager _singletonCallbackManager = IOCallbackManager();
 /// Manages communication between `integration_tests` and the `driver_tests`.
 ///
 /// This is the dart:io implementation.
-class IOCallbackManager extends CallbackManager {
+class IOCallbackManager implements CallbackManager {
   @override
   Future<Map<String, dynamic>> callback(
       Map<String, String> params, IntegrationTestResults testRunner) async {

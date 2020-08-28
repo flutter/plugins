@@ -28,7 +28,7 @@ final WebCallbackManager _singletonWebDriverCommandManager =
 /// WebDriver APIs.
 ///
 /// See: https://www.w3.org/TR/webdriver/
-class WebCallbackManager extends CallbackManager {
+class WebCallbackManager implements CallbackManager {
   /// App side tests will put the command requests from WebDriver to this pipe.
   Completer<WebDriverCommand> _webDriverCommandPipe =
       Completer<WebDriverCommand>();
