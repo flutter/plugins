@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:file_selector_platform_interface/src/web_helpers/web_helpers.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 
@@ -11,6 +12,11 @@ final String _kFileSelectorInputsDomId = '__file_selector_web_file_input';
 ///
 /// This class implements the `package:file_selector` functionality for the web.
 class FileSelectorPlugin extends FileSelectorPlatform {
+  Element _target;
+  final FileSelectorPluginTestOverrides _overrides;
+
+  bool get _hasTestOverrides => _overrides != null;
+
   /// Open file dialog for loading files and return a XFile
   @override
   Future<XFile> loadFile({
@@ -47,9 +53,19 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   }) =>
       Future.value();
 
-  Element _target;
-  final FileSelectorPluginTestOverrides _overrides;
-  bool get _hasTestOverrides => _overrides != null;
+  /// Load Helper
+  Future<List<XFile>> _loadFileHelper(
+      bool multiple, List<XTypeGroup> acceptedTypes) {
+    final acceptedTypeString = _getStringFromFilterGroup(acceptedTypes);
+
+    final FileUploadInputElement element =
+        createFileInputElement(acceptedTypeString, multiple);
+
+    _target.children.clear();
+    addElementToContainerAndClick(_target, element);
+
+    return getFilesWhenReady(element);
+  }
 
   /// Default constructor, initializes _target to a DOM element that we can use
   /// to host HTML elements.
@@ -57,7 +73,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   FileSelectorPlugin({
     @visibleForTesting FileSelectorPluginTestOverrides overrides,
   }) : _overrides = overrides {
-    _target = _ensureInitialized(_kFileSelectorInputsDomId);
+    _target = ensureInitialized(_kFileSelectorInputsDomId);
   }
 
   /// Registers this class as the default instance of [FileSelectorPlatform].
@@ -74,7 +90,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     }
   }
 
-  /// Convert list of filter groups to a comma-separated string
+  /// Convert list of XTypeGroups to a comma-separated string
   String _getStringFromFilterGroup(List<XTypeGroup> acceptedTypes) {
     List<String> allTypes = List();
     for (XTypeGroup group in acceptedTypes ?? []) {
@@ -113,14 +129,6 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     element.multiple = multiple;
 
     return element;
-  }
-
-  void _addElementToDomAndClick(Element element) {
-    // Add the file input element and click it
-    // All previous elements will be removed before adding the new one
-    _target.children.clear();
-    _target.children.add(element);
-    element.click();
   }
 
   List<XFile> _getXFilesFromFiles(List<File> files) {
@@ -179,34 +187,6 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     });
 
     return _completer.future;
-  }
-
-  /// Initializes a DOM container where we can host elements.
-  Element _ensureInitialized(String id) {
-    var target = querySelector('#${id}');
-    if (target == null) {
-      final Element targetElement = Element.tag('flt-file-picker-inputs')
-        ..id = id;
-
-      querySelector('body').children.add(targetElement);
-      target = targetElement;
-    }
-    return target;
-  }
-
-  /// NEW API
-
-  /// Load Helper
-  Future<List<XFile>> _loadFileHelper(
-      bool multiple, List<XTypeGroup> acceptedTypes) {
-    final acceptedTypeString = _getStringFromFilterGroup(acceptedTypes);
-
-    final FileUploadInputElement element =
-        createFileInputElement(acceptedTypeString, multiple);
-
-    _addElementToDomAndClick(element);
-
-    return getFilesWhenReady(element);
   }
 }
 

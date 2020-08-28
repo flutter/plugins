@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http show readBytes;
 import 'package:meta/meta.dart';
 import 'dart:html';
 
+import '../../web_helpers/web_helpers.dart';
 import './base.dart';
 
 /// A XFile that works on web.
@@ -110,50 +111,18 @@ class XFile extends XFileBase {
   /// For the web implementation, the path variable is ignored.
   void saveTo(String path) async {
     // Create a DOM container where we can host the anchor.
-    _target = _ensureInitialized('__x_file_dom_element');
+    _target = ensureInitialized('__x_file_dom_element');
 
     // Create an <a> tag with the appropriate download attributes and click it
-    final AnchorElement element = createAnchorElement(this.path, this.name);
+    // May be overridden with XFileTestOverrides
+    final AnchorElement element =
+        (_hasTestOverrides && _overrides.createAnchorElement != null)
+            ? _overrides.createAnchorElement(this.path, this.name)
+            : createAnchorElement(this.path, this.name);
 
-    _addElementToDomAndClick(element);
-  }
-
-  /// Create anchor element with download attribute
-  @visibleForTesting
-  AnchorElement createAnchorElement(String href, String suggestedName) {
-    if (_hasTestOverrides && _overrides.createAnchorElement != null) {
-      return _overrides.createAnchorElement(href, suggestedName);
-    }
-
-    final element = AnchorElement(href: href);
-
-    if (suggestedName == null) {
-      element.download = 'download';
-    } else {
-      element.download = suggestedName;
-    }
-
-    return element;
-  }
-
-  void _addElementToDomAndClick(Element element) {
-    // Add the file input element and click it
-    // All previous elements will be removed before adding the new one
+    // Clear the children in our container so we can add an element to click
     _target.children.clear();
-    _target.children.add(element);
-    element.click();
-  }
-
-  /// Initializes a DOM container where we can host elements.
-  Element _ensureInitialized(String id) {
-    var target = querySelector('#${id}');
-    if (target == null) {
-      final Element targetElement = Element.tag('flt-x-file')..id = id;
-
-      querySelector('body').children.add(targetElement);
-      target = targetElement;
-    }
-    return target;
+    addElementToContainerAndClick(_target, element);
   }
 }
 
