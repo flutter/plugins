@@ -7,9 +7,9 @@ import 'dart:async';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'method_channel/method_channel_battery.dart';
-import 'enums/batteryState.dart';
+import 'enums/battery_state.dart';
 
-export 'enums/batteryState.dart';
+export 'enums/battery_state.dart';
 
 /// The interface that implementations of battery must implement.
 ///
