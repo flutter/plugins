@@ -16,35 +16,36 @@ class XFile extends XFileBase {
   /// `path` of the file doesn't match what the user sees when selecting it
   /// (like in web)
   XFile(
-      String path, {
-        String mimeType,
-        String name,
-        int length,
-        Uint8List bytes,
-        DateTime lastModified,
-        @visibleForTesting XFileTestOverrides overrides,
-      }) : super(path) {
+    String path, {
+    String mimeType,
+    String name,
+    int length,
+    Uint8List bytes,
+    DateTime lastModified,
+    @visibleForTesting XFileTestOverrides overrides,
+  }) : super(path) {
     throw UnimplementedError(
         'XFile is not available in your current platform.');
   }
 
   /// Construct a XFile object from its data
   XFile.fromData(
-      Uint8List bytes, {
-        String mimeType,
-        String name,
-        int length,
-        DateTime lastModified,
-        String path,
-        @visibleForTesting XFileTestOverrides overrides,
-      }) : super(path) {
+    Uint8List bytes, {
+    String mimeType,
+    String name,
+    int length,
+    DateTime lastModified,
+    String path,
+    @visibleForTesting XFileTestOverrides overrides,
+  }) : super(path) {
     throw UnimplementedError(
         'XFile is not available in your current platform.');
   }
 }
 
 /// Overrides some functions of XFile for testing purposes
-@visibleForTesting class XFileTestOverrides {
+@visibleForTesting
+class XFileTestOverrides {
   /// For overriding the creation of the file input element.
   dynamic Function(String href, String suggestedName) createAnchorElement;
 

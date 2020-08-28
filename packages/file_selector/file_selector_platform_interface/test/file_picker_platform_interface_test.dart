@@ -33,7 +33,6 @@ void main() {
   });
 }
 
-
 class FileSelectorPlatformMock extends Mock
     with MockPlatformInterfaceMixin
     implements FileSelectorPlatform {}

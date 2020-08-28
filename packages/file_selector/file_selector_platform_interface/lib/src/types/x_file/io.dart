@@ -16,26 +16,25 @@ class XFile extends XFileBase {
   /// Construct a XFile object backed by a dart:io File.
   XFile(
     String path, {
-      this.mimeType,
-      String name,
-      int length,
-      Uint8List bytes,
-      DateTime lastModified,
-    })
-      : _file = File(path),
+    this.mimeType,
+    String name,
+    int length,
+    Uint8List bytes,
+    DateTime lastModified,
+  })  : _file = File(path),
         _bytes = null,
         _lastModified = lastModified,
         super(path);
 
   /// Construct an XFile from its data
   XFile.fromData(
-      Uint8List bytes, {
-        this.mimeType,
-        String path,
-        String name,
-        int length,
-        DateTime lastModified,
-    }): _bytes = bytes,
+    Uint8List bytes, {
+    this.mimeType,
+    String path,
+    String name,
+    int length,
+    DateTime lastModified,
+  })  : _bytes = bytes,
         _file = File(path),
         _length = length,
         _lastModified = lastModified,

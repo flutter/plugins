@@ -20,7 +20,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
   }) {
     return _channel.invokeMethod<XFile>(
       'loadFile',
-      <String, Object> {
+      <String, Object>{
         'acceptedTypes': acceptedTypeGroups,
         'initialDirectory': initialDirectory,
       },
@@ -36,7 +36,7 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
   }) {
     return _channel.invokeMethod<List<XFile>>(
       'loadFiles',
-      <String, Object> {
+      <String, Object>{
         'acceptedTypes': acceptedTypeGroups,
         'initialDirectory': initialDirectory,
       },
@@ -53,10 +53,9 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
   }) async {
     return _channel.invokeMethod(
       'saveFile',
-      <String, Object> {
+      <String, Object>{
         'initialDirectory': initialDirectory,
         'suggestedName': suggestedName,
-
       },
     );
   }

@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: 'File Selector Demo Home Page'),
       routes: {
-        '/save' : (context) => SaveTest(),
-        '/load' : (context) => LoadTest(),
+        '/save': (context) => SaveTest(),
+        '/load': (context) => LoadTest(),
       },
     );
   }
@@ -56,7 +56,8 @@ class _SaveTestState extends State<SaveTest> {
     if (_nameController.text == '') {
       new_file = XFile.fromData(data, mimeType: 'text/plain');
     } else {
-      new_file = XFile.fromData(data, mimeType: 'text/plain', name: _nameController.text);
+      new_file = XFile.fromData(data,
+          mimeType: 'text/plain', name: _nameController.text);
     }
 
     new_file.saveTo(path);
@@ -64,7 +65,6 @@ class _SaveTestState extends State<SaveTest> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Save Example"),
@@ -98,7 +98,7 @@ class _SaveTestState extends State<SaveTest> {
             SizedBox(height: 10),
             RaisedButton(
               child: Text('Press to save a text file'),
-              onPressed: () => { _saveFile() },
+              onPressed: () => {_saveFile()},
             ),
           ],
         ),
@@ -118,23 +118,21 @@ class LoadTest extends StatefulWidget {
 
 class _LoadTestState extends State<LoadTest> {
   void _onLoadImageFile() async {
+    XTypeGroup typeGroup =
+        XTypeGroup(label: 'images', extensions: ['jpg', 'png']);
 
-    XTypeGroup typeGroup = XTypeGroup(label: 'images', extensions: [ 'jpg', 'png' ]);
-
-    XFile file = await loadFile(acceptedTypeGroups: [ typeGroup ]);
+    XFile file = await loadFile(acceptedTypeGroups: [typeGroup]);
 
     await showDialog(
-      context: context,
-      builder: (context) {
-        return ImageDisplay(file: file);
-      }
-    );
-
-
+        context: context,
+        builder: (context) {
+          return ImageDisplay(file: file);
+        });
   }
 
   void _onLoadTextFile() async {
-    XTypeGroup typeGroup = XTypeGroup(label: 'images', extensions: [ 'txt', 'json' ]);
+    XTypeGroup typeGroup =
+        XTypeGroup(label: 'images', extensions: ['txt', 'json']);
 
     XFile file = await loadFile(acceptedTypeGroups: [typeGroup]);
 
@@ -142,8 +140,7 @@ class _LoadTestState extends State<LoadTest> {
         context: context,
         builder: (context) {
           return TextDisplay(file: file);
-        }
-    );
+        });
   }
 
   @override
@@ -204,7 +201,8 @@ class _TextDisplayState extends State<TextDisplay> {
       content: Scrollbar(
         child: SingleChildScrollView(
           child: Text(
-            fileContents ?? 'Loading file contents...\nThis may take a while if your file is large.',
+            fileContents ??
+                'Loading file contents...\nThis may take a while if your file is large.',
           ),
         ),
       ),
@@ -233,7 +231,6 @@ class ImageDisplay extends StatefulWidget {
 }
 
 class _ImageDisplayState extends State<ImageDisplay> {
-
   @override
   void initState() {
     super.initState();
@@ -244,7 +241,6 @@ class _ImageDisplayState extends State<ImageDisplay> {
     return AlertDialog(
       title: Text(widget.file.name),
       content: Image.network(widget.file.path),
-
       actions: [
         FlatButton(
           child: const Text('Close'),
@@ -257,11 +253,8 @@ class _ImageDisplayState extends State<ImageDisplay> {
   }
 }
 
-
-
 /// Home Page of the application
 class MyHomePage extends StatefulWidget {
-  
   /// Constructor for MyHomePage
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -274,7 +267,6 @@ class MyHomePage extends StatefulWidget {
 
 /// State of Home Page
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -299,5 +291,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
 }

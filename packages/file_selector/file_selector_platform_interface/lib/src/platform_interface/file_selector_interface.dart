@@ -9,9 +9,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../method_channel/method_channel_file_selector.dart';
 
-
-
-
 /// The interface that implementations of file_picker must implement.
 ///
 /// Platform implementations should extend this class rather than implement it as `file_picker`

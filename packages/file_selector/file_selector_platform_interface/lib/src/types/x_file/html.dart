@@ -32,14 +32,14 @@ class XFile extends XFileBase {
   /// `name` needs to be passed from the outside, since we only have
   /// access to it while we create the ObjectUrl.
   XFile(
-      this.path, {
-        this.mimeType,
-        this.name,
-        int length,
-        Uint8List bytes,
-        DateTime lastModified,
-        @visibleForTesting XFileTestOverrides overrides,
-      })  : _data = bytes,
+    this.path, {
+    this.mimeType,
+    this.name,
+    int length,
+    Uint8List bytes,
+    DateTime lastModified,
+    @visibleForTesting XFileTestOverrides overrides,
+  })  : _data = bytes,
         _length = length,
         _overrides = overrides,
         _lastModified = lastModified,
@@ -47,14 +47,14 @@ class XFile extends XFileBase {
 
   /// Construct an XFile from its data
   XFile.fromData(
-      Uint8List bytes, {
-        this.mimeType,
-        this.name,
-        int length,
-        DateTime lastModified,
-        this.path,
-        @visibleForTesting XFileTestOverrides overrides,
-      })  : _data = bytes,
+    Uint8List bytes, {
+    this.mimeType,
+    this.name,
+    int length,
+    DateTime lastModified,
+    this.path,
+    @visibleForTesting XFileTestOverrides overrides,
+  })  : _data = bytes,
         _length = length,
         _overrides = overrides,
         _lastModified = lastModified,
@@ -148,8 +148,7 @@ class XFile extends XFileBase {
   Element _ensureInitialized(String id) {
     var target = querySelector('#${id}');
     if (target == null) {
-      final Element targetElement =
-      Element.tag('flt-x-file')..id = id;
+      final Element targetElement = Element.tag('flt-x-file')..id = id;
 
       querySelector('body').children.add(targetElement);
       target = targetElement;
@@ -157,7 +156,6 @@ class XFile extends XFileBase {
     return target;
   }
 }
-
 
 /// Overrides some functions to allow testing
 @visibleForTesting

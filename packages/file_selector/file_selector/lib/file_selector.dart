@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 export 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
-  show XFile, XTypeGroup;
+    show XFile, XTypeGroup;
 
 /// Open file dialog for loading files and return a file path
 Future<XFile> loadFile({
@@ -15,7 +15,10 @@ Future<XFile> loadFile({
   String initialDirectory,
   String confirmButtonText,
 }) {
-  return FileSelectorPlatform.instance.loadFile(acceptedTypeGroups: acceptedTypeGroups, initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);
+  return FileSelectorPlatform.instance.loadFile(
+      acceptedTypeGroups: acceptedTypeGroups,
+      initialDirectory: initialDirectory,
+      confirmButtonText: confirmButtonText);
 }
 
 /// Open file dialog for loading files and return a list of file paths
@@ -24,7 +27,10 @@ Future<List<XFile>> loadFiles({
   String initialDirectory,
   String confirmButtonText,
 }) {
-  return FileSelectorPlatform.instance.loadFiles(acceptedTypeGroups: acceptedTypeGroups, initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);
+  return FileSelectorPlatform.instance.loadFiles(
+      acceptedTypeGroups: acceptedTypeGroups,
+      initialDirectory: initialDirectory,
+      confirmButtonText: confirmButtonText);
 }
 
 /// Saves File to user's file system
@@ -34,5 +40,9 @@ Future<String> getSavePath({
   String suggestedName,
   String confirmButtonText,
 }) async {
-  return FileSelectorPlatform.instance.getSavePath(acceptedTypeGroups: acceptedTypeGroups, initialDirectory: initialDirectory, suggestedName: suggestedName, confirmButtonText: confirmButtonText);
+  return FileSelectorPlatform.instance.getSavePath(
+      acceptedTypeGroups: acceptedTypeGroups,
+      initialDirectory: initialDirectory,
+      suggestedName: suggestedName,
+      confirmButtonText: confirmButtonText);
 }

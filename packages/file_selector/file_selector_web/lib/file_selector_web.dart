@@ -11,7 +11,6 @@ final String _kFileSelectorInputsDomId = '__file_selector_web_file_input';
 ///
 /// This class implements the `package:file_selector` functionality for the web.
 class FileSelectorPlugin extends FileSelectorPlatform {
-  
   /// Open file dialog for loading files and return a XFile
   @override
   Future<XFile> loadFile({
@@ -22,8 +21,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     Completer<XFile> _completer = Completer();
     _loadFileHelper(false, acceptedTypeGroups).then((list) {
       _completer.complete(list.first);
-    })
-        .catchError((err) {
+    }).catchError((err) {
       _completer.completeError(err);
     });
 
@@ -46,14 +44,14 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     String initialDirectory,
     String suggestedName,
     String confirmButtonText,
-  }) => Future.value();
-  
-  
+  }) =>
+      Future.value();
+
   Element _target;
   final FileSelectorPluginTestOverrides _overrides;
   bool get _hasTestOverrides => _overrides != null;
 
-  /// Default constructor, initializes _target to a DOM element that we can use 
+  /// Default constructor, initializes _target to a DOM element that we can use
   /// to host HTML elements.
   /// overrides parameter allows for testing to override functions
   FileSelectorPlugin({
@@ -68,13 +66,16 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   }
 
   void _verifyXTypeGroup(XTypeGroup group) {
-    if (group.extensions == null && group.mimeTypes == null && group.webWildCards == null) {
-      StateError("This XTypeGroup does not have types supported by the web implementation of loadFile.");
+    if (group.extensions == null &&
+        group.mimeTypes == null &&
+        group.webWildCards == null) {
+      StateError(
+          "This XTypeGroup does not have types supported by the web implementation of loadFile.");
     }
   }
-  
+
   /// Convert list of filter groups to a comma-separated string
-  String _getStringFromFilterGroup (List<XTypeGroup> acceptedTypes) {
+  String _getStringFromFilterGroup(List<XTypeGroup> acceptedTypes) {
     List<String> allTypes = List();
     for (XTypeGroup group in acceptedTypes ?? []) {
       _verifyXTypeGroup(group);
@@ -82,12 +83,12 @@ class FileSelectorPlugin extends FileSelectorPlatform {
       for (String mimeType in group.mimeTypes ?? []) {
         allTypes.add(mimeType);
       }
-      for (String extension in group.extensions ?? []) {   
+      for (String extension in group.extensions ?? []) {
         String ext = extension;
         if (ext.isNotEmpty && ext[0] != '.') {
           ext = '.' + ext;
         }
-        
+
         allTypes.add(ext);
       }
       for (String webWildCard in group.webWildCards ?? []) {
@@ -99,11 +100,12 @@ class FileSelectorPlugin extends FileSelectorPlatform {
 
   /// Creates a file input element with only the accept attribute
   @visibleForTesting
-  FileUploadInputElement createFileInputElement(String accepted, bool multiple) {
+  FileUploadInputElement createFileInputElement(
+      String accepted, bool multiple) {
     if (_hasTestOverrides && _overrides.createFileInputElement != null) {
       return _overrides.createFileInputElement(accepted, multiple);
     }
-    
+
     final FileUploadInputElement element = FileUploadInputElement();
     if (accepted.isNotEmpty) {
       element.accept = accepted;
@@ -121,9 +123,9 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     element.click();
   }
 
-  List<XFile> _getXFilesFromFiles (List<File> files) {
+  List<XFile> _getXFilesFromFiles(List<File> files) {
     List<XFile> xFiles = List<XFile>();
-    
+
     Duration timeZoneOffset = DateTime.now().timeZoneOffset;
 
     for (File file in files) {
@@ -132,7 +134,8 @@ class FileSelectorPlugin extends FileSelectorPlatform {
       int length = file.size;
       DateTime modified = file.lastModifiedDate.add(timeZoneOffset);
 
-      xFiles.add(XFile(url, name: name, lastModified: modified, length: length));
+      xFiles
+          .add(XFile(url, name: name, lastModified: modified, length: length));
     }
 
     return xFiles;
@@ -141,18 +144,18 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   /// Getter for retrieving files from an input element
   @visibleForTesting
   List<File> getFilesFromInputElement(InputElement element) {
-    if(_hasTestOverrides && _overrides.getFilesFromInputElement != null) {
+    if (_hasTestOverrides && _overrides.getFilesFromInputElement != null) {
       return _overrides.getFilesFromInputElement(element);
     }
 
     return element?.files ?? [];
   }
-  
+
   /// Listen for file input element to change and retrieve files when
   /// this happens.
   @visibleForTesting
-  Future<List<XFile>> getFilesWhenReady(InputElement element)  {
-    if(_hasTestOverrides && _overrides.getFilesWhenReady != null) {
+  Future<List<XFile>> getFilesWhenReady(InputElement element) {
+    if (_hasTestOverrides && _overrides.getFilesWhenReady != null) {
       return _overrides.getFilesWhenReady(element);
     }
 
@@ -182,22 +185,24 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   Element _ensureInitialized(String id) {
     var target = querySelector('#${id}');
     if (target == null) {
-      final Element targetElement =
-      Element.tag('flt-file-picker-inputs')..id = id;
+      final Element targetElement = Element.tag('flt-file-picker-inputs')
+        ..id = id;
 
       querySelector('body').children.add(targetElement);
       target = targetElement;
     }
     return target;
   }
-  
-  /// NEW API
-  
-  /// Load Helper
-  Future<List<XFile>> _loadFileHelper (bool multiple, List<XTypeGroup> acceptedTypes) {
-    final  acceptedTypeString = _getStringFromFilterGroup(acceptedTypes);
 
-    final FileUploadInputElement element = createFileInputElement(acceptedTypeString, multiple);
+  /// NEW API
+
+  /// Load Helper
+  Future<List<XFile>> _loadFileHelper(
+      bool multiple, List<XTypeGroup> acceptedTypes) {
+    final acceptedTypeString = _getStringFromFilterGroup(acceptedTypes);
+
+    final FileUploadInputElement element =
+        createFileInputElement(acceptedTypeString, multiple);
 
     _addElementToDomAndClick(element);
 
@@ -217,5 +222,8 @@ class FileSelectorPluginTestOverrides {
   /// For overriding waiting for the files to be ready. Useful for testing so we do not hang here.
   Future<List<XFile>> Function(InputElement input) getFilesWhenReady;
 
-  FileSelectorPluginTestOverrides({this.createFileInputElement, this.getFilesFromInputElement, this.getFilesWhenReady});
+  FileSelectorPluginTestOverrides(
+      {this.createFileInputElement,
+      this.getFilesFromInputElement,
+      this.getFilesWhenReady});
 }
