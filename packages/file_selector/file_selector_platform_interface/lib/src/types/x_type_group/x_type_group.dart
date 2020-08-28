@@ -23,15 +23,12 @@ class XTypeGroup {
     this.mimeTypes,
     this.macUTIs,
     this.webWildCards,
-  }) {
-    if (this.extensions == null &&
-        this.mimeTypes == null &&
-        this.macUTIs == null &&
-        this.webWildCards == null) {
-      throw ArgumentError(
-          "At least one type must be provided for an XTypeGroup.");
-    }
-  }
+  }) : assert(
+            !(extensions == null &&
+                mimeTypes == null &&
+                macUTIs == null &&
+                webWildCards == null),
+            "At least one type must be provided for an XTypeGroup.");
 
   /// The 'name' or reference to this group of types
   final String label;
