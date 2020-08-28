@@ -8,25 +8,28 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'common.dart';
 
-/// Manager for sending [WebDriverAction]s to driver side.
+/// The dart:html implementation of [CallbackManager].
 ///
-/// See: [WebDriverCommandManager].
-DriverCommandManager get driverCommandManager =>
+/// See also:
+///
+///  * [_callback_io.dart], which has the dart:io implementation
+CallbackManager get callbackManager =>
     _singletonWebDriverCommandManager;
 
 /// WebDriverCommandManager singleton.
-final WebDriverCommandManager _singletonWebDriverCommandManager =
-    WebDriverCommandManager();
+final WebCallbackManager _singletonWebDriverCommandManager =
+    WebCallbackManager();
 
-/// Enables Web Driver commands for `integration_tests`.
-///
 /// Manages communication between `integration_tests` and the `driver_tests`.
+///
+/// Along with responding to callbacks from the driver side this calls enables
+/// usage of Web Driver commands by sending [WebDriverAction]s to driver side.
 ///
 /// Tests can execute an Web Driver actions such as `screenshot` using browsers'
 /// WebDriver APIs.
 ///
 /// See: https://www.w3.org/TR/webdriver/
-class WebDriverCommandManager extends DriverCommandManager {
+class WebCallbackManager extends CallbackManager {
   /// Tests will put the action requests from WebDriver to this pipe.
   Completer<WebDriverAction> webDriverActionPipe = Completer<WebDriverAction>();
 
@@ -42,6 +45,7 @@ class WebDriverCommandManager extends DriverCommandManager {
   /// Only works on Web when tests are run via `flutter driver` command.
   ///
   /// See: https://www.w3.org/TR/webdriver/#screen-capture
+  @override
   Future<void> takeScreenshot(String screenshot_name) async {
     await _webDriverCommand(WebDriverAction.screenshot(screenshot_name));
   }
@@ -68,7 +72,8 @@ class WebDriverCommandManager extends DriverCommandManager {
   ///
   /// Provides a handshake mechanism for executing [WebDriverAction]s on the
   /// driver side.
-  Future<Map<String, dynamic>> callbackWithDriverCommands(
+  @override
+  Future<Map<String, dynamic>> callback(
       Map<String, String> params, IntegrationTestResults testRunner) async {
     final String command = params['command'];
     Map<String, String> response;
@@ -99,17 +104,17 @@ class WebDriverCommandManager extends DriverCommandManager {
     if (extraMessage == '${TestStatus.waitOnWebdriverCommand}') {
       final WebDriverAction action = await webDriverActionPipe.future;
       switch (action.type) {
-        case WebDriverActionTypes.screenshot:
+        case WebDriverActionType.screenshot:
           final Map<String, dynamic> data = Map.from(action.values);
           data.addAll(
-              WebDriverAction.typeToMap(WebDriverActionTypes.screenshot));
+              WebDriverAction.typeToMap(WebDriverActionType.screenshot));
           response = <String, String>{
             'message': Response.webDriverCommand(data: data).toJson(),
           };
           break;
-        case WebDriverActionTypes.noop:
+        case WebDriverActionType.noop:
           final Map<String, dynamic> data = Map();
-          data.addAll(WebDriverAction.typeToMap(WebDriverActionTypes.noop));
+          data.addAll(WebDriverAction.typeToMap(WebDriverActionType.noop));
           response = <String, String>{
             'message': Response.webDriverCommand(data: data).toJson(),
           };
@@ -122,7 +127,7 @@ class WebDriverCommandManager extends DriverCommandManager {
     // WebDriver completes an action.
     else if (extraMessage == '${TestStatus.webdriverCommandComplete}') {
       final Map<String, dynamic> data = Map();
-      data.addAll(WebDriverAction.typeToMap(WebDriverActionTypes.ack));
+      data.addAll(WebDriverAction.typeToMap(WebDriverActionType.ack));
       response = <String, String>{
         'message': Response.webDriverCommand(data: data).toJson(),
       };

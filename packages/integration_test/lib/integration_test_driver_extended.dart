@@ -17,13 +17,13 @@ Future<void> integrationDriver() async {
 
   Response response = Response.fromJson(jsonResponse);
 
-  // Until `integration_test` returns a [WebDriverActionTypes.noop], keep
+  // Until `integration_test` returns a [WebDriverActionType.noop], keep
   // executing WebDriver actions.
   while (response.data != null &&
       response.data['web_driver_action'] != null &&
-      response.data['web_driver_action'] != '${WebDriverActionTypes.noop}') {
+      response.data['web_driver_action'] != '${WebDriverActionType.noop}') {
     final String webDriverCommand = response.data['web_driver_action'];
-    if (webDriverCommand == '${WebDriverActionTypes.screenshot}') {
+    if (webDriverCommand == '${WebDriverActionType.screenshot}') {
       // Use `driver.screenshot()` method to get a screenshot of the web page.
       final List<int> screenshotImage = await driver.screenshot();
       final String screenshotName = response.data['screenshot_name'];
@@ -39,7 +39,7 @@ Future<void> integrationDriver() async {
           timeout: const Duration(seconds: 10));
 
       response = Response.fromJson(jsonResponse);
-    } else if (webDriverCommand == '${WebDriverActionTypes.ack}') {
+    } else if (webDriverCommand == '${WebDriverActionType.ack}') {
       // Previous command completed ask for a new one.
       jsonResponse = await driver.requestData(
           '${TestStatus.waitOnWebdriverCommand}',
@@ -54,7 +54,7 @@ Future<void> integrationDriver() async {
   // If No-op command is sent, ask for the result of all tests.
   if (response.data != null &&
       response.data['web_driver_action'] != null &&
-      response.data['web_driver_action'] == '${WebDriverActionTypes.noop}') {
+      response.data['web_driver_action'] == '${WebDriverActionType.noop}') {
     jsonResponse =
         await driver.requestData(null, timeout: const Duration(minutes: 1));
 

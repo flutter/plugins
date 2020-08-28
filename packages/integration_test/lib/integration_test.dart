@@ -15,8 +15,8 @@ import 'package:vm_service/vm_service_io.dart' as vm_io;
 
 import 'common.dart';
 import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
-import '_driver_commands_io.dart'
-    if (dart.library.html) '_driver_commands_web.dart' as driver_actions;
+import '_callback_io.dart' if (dart.library.html) '_callback_web.dart'
+    as driver_actions;
 
 const String _success = 'success';
 
@@ -37,8 +37,8 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
           if (!_allTestsPassed.isCompleted) {
             _allTestsPassed.complete(true);
           }
-          driverCommandManager.cleanup();
         }
+        callbackManager.cleanup();
         await _channel.invokeMethod<void>(
           'allTestsFinished',
           <String, dynamic>{
@@ -112,8 +112,7 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
   final Completer<bool> _allTestsPassed = Completer<bool>();
 
   @override
-  List<Failure> get failureMethodsDetails => _failureMethodsDetails;
-  List<Failure> _failureMethodsDetails = List<Failure>();
+  List<Failure> get failureMethodsDetails => _failures;
 
   /// Similar to [WidgetsFlutterBinding.ensureInitialized].
   ///
@@ -150,57 +149,22 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
   Map<String, dynamic> _reportData;
   set reportData(Map<String, dynamic> data) => this._reportData = data;
 
-  /// Manages commands send to driver side.
-  ///
-  /// Only works on Web when tests are run via `flutter driver` command.
-  /// See [WebDriverCommandManager].
-  final DriverCommandManager driverCommandManager =
-      driver_actions.driverCommandManager;
+  /// Manages callbacks received from driver side and commands send to driver
+  /// side.
+  final CallbackManager callbackManager = driver_actions.callbackManager;
 
   /// Taking a screenshot.
   ///
   /// Called by test methods. Implementation differs for each platform.
   Future<void> takeScreenshot(String screenshot_name) async {
-    if (kIsWeb) {
-      await driverCommandManager.takeScreenshot(screenshot_name);
-    } else {
-      throw UnimplementedError(
-          'Screenshots are not implemented on this platform');
-    }
+    await callbackManager.takeScreenshot(screenshot_name);
   }
 
   /// The callback function to response the driver side input.
   @visibleForTesting
   Future<Map<String, dynamic>> callback(Map<String, String> params) async {
-    if (kIsWeb) {
-      return await driverCommandManager.callbackWithDriverCommands(
-          params, this /* as IntegrationTestResults */);
-    } else {
-      final String command = params['command'];
-      Map<String, String> response;
-      switch (command) {
-        case 'request_data':
-          final bool allTestsPassed = await _allTestsPassed.future;
-          response = <String, String>{
-            'message': allTestsPassed
-                ? Response.allTestsPassed(data: reportData).toJson()
-              : Response.someTestsFailed(
-                  _failures,
-                  data: reportData,
-                ).toJson(),
-          };
-          break;
-        case 'get_health':
-          response = <String, String>{'status': 'ok'};
-          break;
-        default:
-          throw UnimplementedError('$command is not implemented');
-      }
-      return <String, dynamic>{
-        'isError': false,
-        'response': response,
-      };
-    }
+    return await callbackManager.callback(
+        params, this /* as IntegrationTestResults */);
   }
 
   // Emulates the Flutter driver extension, returning 'pass' or 'fail'.

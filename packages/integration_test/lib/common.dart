@@ -155,7 +155,7 @@ enum TestStatus {
 ///
 /// These actions are either commands that WebDriver can execute or used
 /// for the communication between `integration_test` and the driver test.
-enum WebDriverActionTypes {
+enum WebDriverActionType {
   /// Acknowlegement for the previously sent message.
   ack,
 
@@ -179,42 +179,45 @@ class WebDriverAction {
   ///
   /// There are also `ack` and `noop` actions defined to manage the handshake
   /// during the communication.
-  final WebDriverActionTypes type;
+  final WebDriverActionType type;
 
   /// Used for adding extra values to the actions such as file name for
   /// `screenshot`.
   final Map<String, dynamic> values;
 
-  /// Constructor for [WebDriverActionTypes.noop] action.
+  /// Constructor for [WebDriverActionType.noop] action.
   WebDriverAction.noop()
-      : this.type = WebDriverActionTypes.noop,
+      : this.type = WebDriverActionType.noop,
         this.values = Map();
 
   /// Constructor for [WebDriverActionTypes.noop] screenshot.
   WebDriverAction.screenshot(String screenshot_name)
-      : this.type = WebDriverActionTypes.screenshot,
+      : this.type = WebDriverActionType.screenshot,
         this.values = {'screenshot_name': screenshot_name};
 
   /// Util method for converting [WebDriverActionTypes] to a map entry.
   ///
   /// Used for converting messages to json format.
-  static Map<String, dynamic> typeToMap(WebDriverActionTypes type) => {
+  static Map<String, dynamic> typeToMap(WebDriverActionType type) => {
         'web_driver_action': '${type}',
       };
 }
 
-/// Template methods to implement for any class which manages communication
-/// between `integration_tests` and the `driver_tests`.
+/// Template methods each class that responses the driver side inputs must
+/// implement.
 ///
-/// See example [WebDriverCommandManager].
-abstract class DriverCommandManager {
-  /// The callback function to response the driver side input which can also
-  /// send WebDriver command requests such as `screenshot` to driver side.
-  Future<Map<String, dynamic>> callbackWithDriverCommands(
+/// Depending on the platform the communication between `integration_tests` and
+/// the `driver_tests` can be different.
+///
+/// For the web implementation [WebCallbackManager].
+/// For the io implementation [IOCallbackManager].
+abstract class CallbackManager {
+  /// The callback function to response the driver side input.
+  Future<Map<String, dynamic>> callback(
       Map<String, String> params, IntegrationTestResults testRunner);
 
-  /// Request to take a screenshot of the application from the driver side.
-  void takeScreenshot(String screenshot);
+  /// Request to take a screenshot of the application.
+  Future<void> takeScreenshot(String screenshot);
 
   /// Cleanup and completers or locks used during the communication.
   void cleanup();
@@ -226,7 +229,7 @@ abstract class DriverCommandManager {
 ///
 /// Any class which needs to access the test results but do not want to create
 /// a cyclic dependency [IntegrationTestWidgetsFlutterBinding]s can use this
-/// interface. Example [WebDriverCommandManager].
+/// interface. Example [CallbackManager].
 abstract class IntegrationTestResults {
   /// Stores failure details.
   ///
