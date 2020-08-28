@@ -1,3 +1,16 @@
+## 0.5.10
+
+* Update package:e2e -> package:integration_test
+
+## 0.5.9
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.5.8
+
+* Support Linux by default.
+
 ## 0.5.7+3
 
 * Post-v2 Android embedding cleanup.

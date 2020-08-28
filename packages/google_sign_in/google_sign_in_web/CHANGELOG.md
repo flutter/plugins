@@ -1,3 +1,8 @@
+## 0.9.1+2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.9.1+1
 
 * Remove Android folder from `google_sign_in_web`.

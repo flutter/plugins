@@ -1,6 +1,18 @@
-## 0.10.12
+## 0.10.12+3
 
 * iOS: Update texture on `seekTo`.
+
+## 0.10.12+2
+
+* Fix `setMixWithOthers` test.
+
+## 0.10.12+1
+
+* Depend on the version of `video_player_platform_interface` that contains the new `VideoPlayerOptions` class.
+
+## 0.10.12
+
+* Introduce VideoPlayerOptions to set the audio mix mode.
 
 ## 0.10.11+2
 
