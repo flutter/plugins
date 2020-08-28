@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.ProxyInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -73,6 +74,30 @@ class Connectivity {
               (i_ip & 0xff), (i_ip >> 8 & 0xff), (i_ip >> 16 & 0xff), (i_ip >> 24 & 0xff));
 
     return ip;
+  }
+
+  String getProxyHost() {
+    ProxyInfo pi = connectivityManager.getDefaultProxy();
+    if (pi == null) {
+      return null;
+    }
+    return pi.getHost();
+  }
+
+  int getProxyPort() {
+    ProxyInfo pi = connectivityManager.getDefaultProxy();
+    if (pi == null) {
+      return 0;
+    }
+    return pi.getPort();
+  }
+
+  String[] getProxyExclusionList() {
+    ProxyInfo pi = connectivityManager.getDefaultProxy();
+    if (pi == null) {
+      return null;
+    }
+    return pi.getExclusionList();
   }
 
   private WifiInfo getWifiInfo() {

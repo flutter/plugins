@@ -6,6 +6,8 @@ package io.flutter.plugins.connectivity;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The handler receives {@link MethodCall}s from the UIThread, gets the related information from
@@ -39,6 +41,16 @@ class ConnectivityMethodChannelHandler implements MethodChannel.MethodCallHandle
         break;
       case "wifiIPAddress":
         result.success(connectivity.getWifiIPAddress());
+        break;
+      case "proxyHost":
+        result.success(connectivity.getProxyHost());
+        break;
+      case "proxyPort":
+        result.success(connectivity.getProxyPort());
+        break;
+      case "proxyExclusionList":
+        List<String> list = Arrays.asList(connectivity.getProxyExclusionList());
+        result.success(list);
         break;
       default:
         result.notImplemented();

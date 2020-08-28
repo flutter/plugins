@@ -12,6 +12,9 @@ const ConnectivityResult kCheckConnectivityResult = ConnectivityResult.wifi;
 const String kWifiNameResult = '1337wifi';
 const String kWifiBSSIDResult = 'c0:ff:33:c0:d3:55';
 const String kWifiIpAddressResult = '127.0.0.1';
+const String kProxyHostResult = '10.0.2.2';
+const int kProxyPortResult = 8888;
+const List kProxyExclusionListResult = ['localhost'];
 const LocationAuthorizationStatus kRequestLocationResult =
     LocationAuthorizationStatus.authorizedAlways;
 const LocationAuthorizationStatus kGetLocationResult =
@@ -47,6 +50,21 @@ void main() {
       expect(result, kWifiIpAddressResult);
     });
 
+    test('getProxyHost', () async {
+      String result = await connectivity.getProxyHost();
+      expect(result, kProxyHostResult);
+    });
+
+    test('getProxyPort', () async {
+      int result = await connectivity.getProxyPort();
+      expect(result, kProxyPortResult);
+    });
+
+    test('getProxyExclusionList', () async {
+      List result = await connectivity.getProxyExclusionList();
+      expect(result, kProxyExclusionListResult);
+    });
+
     test('requestLocationServiceAuthorization', () async {
       LocationAuthorizationStatus result =
           await connectivity.requestLocationServiceAuthorization();
@@ -78,6 +96,18 @@ class MockConnectivityPlatform extends Mock
 
   Future<String> getWifiIP() async {
     return kWifiIpAddressResult;
+  }
+
+  Future<String> getProxyHost() async {
+    return kProxyHostResult;
+  }
+
+  Future<int> getProxyPort() async {
+    return kProxyPortResult;
+  }
+
+  Future<List> getProxyExclusionList() async {
+    return kProxyExclusionListResult;
   }
 
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({

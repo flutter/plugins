@@ -1,3 +1,7 @@
+## 0.4.10
+
+* Add getting system proxy settings.
+
 ## 0.4.9+2
 
 * Update package:e2e to use package:integration_test

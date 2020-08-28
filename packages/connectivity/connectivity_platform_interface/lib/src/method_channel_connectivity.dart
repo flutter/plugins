@@ -64,6 +64,21 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
   }
 
   @override
+  Future<String> getProxyHost() {
+    return methodChannel.invokeMethod<String>('proxyHost');
+  }
+
+  @override
+  Future<int> getProxyPort() {
+    return methodChannel.invokeMethod<int>('proxyPort');
+  }
+
+  @override
+  Future<List> getProxyExclusionList() {
+    return methodChannel.invokeMethod<List>('proxyExclusionList');
+  }
+
+  @override
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
     bool requestAlwaysLocationUsage = false,
   }) {

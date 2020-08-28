@@ -1,3 +1,7 @@
+## 1.0.7
+
+* Add proxy settings methods.
+
 ## 1.0.6
 
 * Update lower bound of dart dependency to 2.1.0.

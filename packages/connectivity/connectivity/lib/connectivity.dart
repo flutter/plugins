@@ -72,6 +72,21 @@ class Connectivity {
     return _platform.getWifiIP();
   }
 
+  /// Obtains the current system proxy host
+  Future<String> getProxyHost() {
+    return _platform.getProxyHost();
+  }
+
+  /// Obtains the current system proxy port
+  Future<int> getProxyPort() {
+    return _platform.getProxyPort();
+  }
+
+  /// Obtains the current system proxy exclusion list
+  Future<List> getProxyExclusionList() {
+    return _platform.getProxyExclusionList();
+  }
+
   /// Request to authorize the location service (Only on iOS).
   ///
   /// This method will throw a [PlatformException] on Android.

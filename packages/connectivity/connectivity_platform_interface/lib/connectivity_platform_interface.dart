@@ -64,6 +64,21 @@ abstract class ConnectivityPlatform extends PlatformInterface {
     throw UnimplementedError('getWifiIP() has not been implemented.');
   }
 
+  /// Obtains the current system proxy host
+  Future<String> getProxyHost() {
+    throw UnimplementedError('getProxyHost() has not been implemented.');
+  }
+
+  /// Obtains the current system proxy port
+  Future<int> getProxyPort() {
+    throw UnimplementedError('getProxyPort() has not been implemented.');
+  }
+
+  /// Obtains the current system proxy exclusion list
+  Future<List> getProxyExclusionList() {
+    throw UnimplementedError('getProxyExclusionList() has not been implemented.');
+  }
+
   /// Request to authorize the location service (Only on iOS).
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false}) {
