@@ -3,6 +3,7 @@ import 'dart:html';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_platform_interface/src/web_helpers/web_helpers.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 
@@ -174,9 +175,10 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     });
 
     element.onError.first.then((event) {
-      if (!_completer.isCompleted) {
-        _completer.completeError(event);
-      }
+      throw PlatformException(
+          code: 'file_input',
+          message: "Input element failed on event with target: " +
+              event?.target?.toString());
     });
 
     return _completer.future;
