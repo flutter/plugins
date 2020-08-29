@@ -13,6 +13,7 @@
 - (void)setStrokeWidth:(CGFloat)width;
 - (void)setPoints:(NSArray<CLLocation*>*)points;
 - (void)setZIndex:(int)zIndex;
+- (void)setGeoDesic:(BOOL)isGeodesic;
 @end
 
 // Defines polyline controllable by Flutter.
@@ -20,7 +21,6 @@
 @property(atomic, readonly) NSString* polylineId;
 - (instancetype)initPolylineWithPath:(GMSMutablePath*)path
                           polylineId:(NSString*)polylineId
-                            geodesic:(BOOL)geodesic
                              mapView:(GMSMapView*)mapView;
 - (void)removePolyline;
 @end

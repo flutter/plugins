@@ -11,12 +11,10 @@
 }
 - (instancetype)initPolylineWithPath:(GMSMutablePath*)path
                           polylineId:(NSString*)polylineId
-                            geodesic:(BOOL)geodesic
                              mapView:(GMSMapView*)mapView {
   self = [super init];
   if (self) {
     _polyline = [GMSPolyline polylineWithPath:path];
-    _polyline.geodesic = geodesic;
     _mapView = mapView;
     _polylineId = polylineId;
     _polyline.userData = @[ polylineId ];
@@ -53,6 +51,10 @@
 }
 - (void)setStrokeWidth:(CGFloat)width {
   _polyline.strokeWidth = width;
+}
+
+- (void)setGeoDesic:(BOOL)isGeodesic {
+  _polyline.geodesic = isGeodesic;
 }
 @end
 
@@ -97,6 +99,11 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   if (strokeWidth != nil) {
     [sink setStrokeWidth:ToInt(strokeWidth)];
   }
+
+  NSNumber* geoDesic = data[@"geodesic"];
+  if (geoDesic != nil) {
+    [sink setGeoDesic:geoDesic.boolValue];
+  }
 }
 
 @implementation FLTPolylinesController {
@@ -121,11 +128,9 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   for (NSDictionary* polyline in polylinesToAdd) {
     GMSMutablePath* path = [FLTPolylinesController getPath:polyline];
     NSString* polylineId = [FLTPolylinesController getPolylineId:polyline];
-    NSNumber* geodesic = [FLTPolylinesController isGeodesic:polyline];
     FLTGoogleMapPolylineController* controller =
         [[FLTGoogleMapPolylineController alloc] initPolylineWithPath:path
                                                           polylineId:polylineId
-                                                            geodesic:geodesic.boolValue
                                                              mapView:_mapView];
     InterpretPolylineOptions(polyline, controller, _registrar);
     _polylineIdToController[polylineId] = controller;
@@ -182,9 +187,4 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
 + (NSString*)getPolylineId:(NSDictionary*)polyline {
   return polyline[@"polylineId"];
 }
-
-+ (NSNumber*)isGeodesic:(NSDictionary*)polyline {
-  return polyline[@"geodesic"];
-}
-
 @end
