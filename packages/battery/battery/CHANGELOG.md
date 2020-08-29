@@ -1,4 +1,4 @@
-## 1.0.4+2
+## 1.0.5
 
 * Ported to use platform interface.
 
