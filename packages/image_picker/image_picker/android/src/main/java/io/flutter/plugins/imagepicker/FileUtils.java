@@ -72,7 +72,7 @@ class FileUtils {
 
     try {
       String mimeType = context.getContentResolver().getType(uriImage);
-      if(mimeType != null && mimeType.lastIndexOf("/") != -1) {
+      if (mimeType != null && mimeType.lastIndexOf("/") != -1) {
         extension = mimeType.substring(mimeType.lastIndexOf("/") + 1);
       }
     } catch (Exception e) {
