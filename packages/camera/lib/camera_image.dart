@@ -67,7 +67,7 @@ enum ImageFormatGroup {
   /// 32-big RGB image encoded into JPEG bytes.
   ///
   /// On Android, this is `android.graphics.ImageFormat.JPEG`. See
-  /// https://developer.android.com/reference/android/graphics/ImageFormat#FLEX_RGBA_8888
+  /// https://developer.android.com/reference/android/graphics/ImageFormat#JPEG
   ///
   jpeg
 }
@@ -91,11 +91,13 @@ class ImageFormat {
 
 ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
   if (defaultTargetPlatform == TargetPlatform.android) {
-    // android.graphics.ImageFormat.YUV_420_888
-    if (rawFormat == 256) {
-      return ImageFormatGroup.jpeg;
-    } else if (rawFormat == 42) {
-      return ImageFormatGroup.bgra8888;
+    switch (rawFormat) {
+      // android.graphics.ImageFormat.JPEG
+      case 256:
+        return ImageFormatGroup.jpeg;
+      // android.graphics.ImageFormat.YUV_420_888
+      case 42:
+        return ImageFormatGroup.yuv420;
     }
   }
 
