@@ -67,13 +67,13 @@ class FileUtils {
   }
 
   /** @return extension of image with dot, or default .jpg if it none. */
-  private static String getImageExtension(Uri uriImage) {
+  private static String getImageExtension(Uri uriImage, Context context) {
     String extension = null;
 
     try {
-      String imagePath = uriImage.getPath();
-      if (imagePath != null && imagePath.lastIndexOf(".") != -1) {
-        extension = imagePath.substring(imagePath.lastIndexOf(".") + 1);
+      String mimeType = context.getContentResolver().getType(uriImage);
+      if(mimeType != null && mimeType.lastIndexOf("/") != -1) {
+        extension = mimeType.substring(mimeType.lastIndexOf("/") + 1);
       }
     } catch (Exception e) {
       extension = null;
