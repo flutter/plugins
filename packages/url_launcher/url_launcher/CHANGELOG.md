@@ -1,4 +1,4 @@
-## 5.5.1+1
+## 5.5.2
 
 * Depend explicitly on the `platform_interface` package that adds the `webOnlyWindowName` parameter.
 
