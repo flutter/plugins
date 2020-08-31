@@ -30,11 +30,6 @@ public class GoogleMapControllerTest {
   @Mock GoogleMap mockGoogleMap;
   @Mock LifecycleOwner lifecycleOwner;
 
-  @BeforeClass()
-  public static void BeforeClass() {
-    FlutterMain.setIsRunningInRobolectricTest(true);
-  }
-
   @Before
   public void before() {
     MockitoAnnotations.initMocks(this);
