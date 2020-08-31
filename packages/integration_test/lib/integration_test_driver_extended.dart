@@ -13,9 +13,10 @@ Future<void> integrationDriver(
     driver = await FlutterDriver.connect();
   }
   // Test states that it's waiting on web driver commands.
-  String jsonResponse = await driver.requestData(
-      '${TestStatus.waitOnWebdriverCommand}',
-      timeout: const Duration(seconds: 10));
+  // [DriverTestMessage] is converted to string since json format causes an
+  // error if it's used as a message for requestData.
+  String jsonResponse =
+      await driver.requestData(DriverTestMessage.pending().toString());
 
   Response response = Response.fromJson(jsonResponse);
 
@@ -34,18 +35,17 @@ Future<void> integrationDriver(
           await onScreenshot(screenshotName, screenshotImage);
       if (screenshotSuccess) {
         jsonResponse =
-            await driver.requestData('${TestStatus.webdriverCommandComplete}');
+            await driver.requestData(DriverTestMessage.complete().toString());
       } else {
         jsonResponse =
-            await driver.requestData('${TestStatus.webdriverCommandComplete}');
+            await driver.requestData(DriverTestMessage.error().toString());
       }
 
       response = Response.fromJson(jsonResponse);
     } else if (webDriverCommand == '${WebDriverCommandType.ack}') {
       // Previous command completed ask for a new one.
-      jsonResponse = await driver.requestData(
-          '${TestStatus.waitOnWebdriverCommand}',
-          timeout: const Duration(seconds: 10));
+      jsonResponse =
+          await driver.requestData(DriverTestMessage.pending().toString());
 
       response = Response.fromJson(jsonResponse);
     } else {
@@ -57,8 +57,7 @@ Future<void> integrationDriver(
   if (response.data != null &&
       response.data['web_driver_command'] != null &&
       response.data['web_driver_command'] == '${WebDriverCommandType.noop}') {
-    jsonResponse =
-        await driver.requestData(null, timeout: const Duration(minutes: 1));
+    jsonResponse = await driver.requestData(null);
 
     response = Response.fromJson(jsonResponse);
     print('result $jsonResponse');

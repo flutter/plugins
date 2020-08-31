@@ -9,9 +9,6 @@ Future<void> main() async {
   await integrationDriver(
     driver: driver,
     onScreenshot: (String screenshotName, List<int> screenshotBytes) async {
-      if(screenshotName == 'platform_name_2') {
-        return false;
-      }
       // The screenshot is saved as png. Later it can be used for golden testing
       // with library of choice, such as skia_client.dart.
       final String screenshotPath =

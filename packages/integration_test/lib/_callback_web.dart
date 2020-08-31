@@ -97,11 +97,13 @@ class WebCallbackManager implements CallbackManager {
 
   Future<Map<String, dynamic>> _requestDataWithMessage(
       String extraMessage, IntegrationTestResults testRunner) async {
-    // Test status is added as an exta message.
     Map<String, String> response;
-    // If Test status is `wait_on_webdriver_command` send the first
-    // command in the `commandPipe` to the tests.
-    if (extraMessage == '${TestStatus.waitOnWebdriverCommand}') {
+    // Driver side tests' status is added as an extra message.
+    final DriverTestMessage message =
+        DriverTestMessage.fromString(extraMessage);
+    // If driver side tests are pending send the first command in the
+    // `commandPipe` to the tests.
+    if (message.isPending) {
       final WebDriverCommand command = await _webDriverCommandPipe.future;
       switch (command.type) {
         case WebDriverCommandType.screenshot:
@@ -122,19 +124,14 @@ class WebCallbackManager implements CallbackManager {
         default:
           throw UnimplementedError('${command.type} is not implemented');
       }
-    }
-    // Tests will send `webdriver_command_complete` status after
-    // WebDriver completes an command.
-    else if (extraMessage == '${TestStatus.webdriverCommandComplete}') {
+    } else {
       final Map<String, dynamic> data = Map();
       data.addAll(WebDriverCommand.typeToMap(WebDriverCommandType.ack));
       response = <String, String>{
         'message': Response.webDriverCommand(data: data).toJson(),
       };
-      _driverCommandComplete.complete(Future.value(true));
+      _driverCommandComplete.complete(Future.value(message.isSuccess));
       _webDriverCommandPipe = Completer<WebDriverCommand>();
-    } else {
-      throw UnimplementedError('$extraMessage is not implemented');
     }
     return <String, dynamic>{
       'isError': false,

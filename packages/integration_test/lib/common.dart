@@ -138,16 +138,74 @@ class Failure {
   }
 }
 
-/// Integration web tests can execute WebDriver commands such as screenshots.
+/// Message used to communicate between app side tests and driver tests.
 ///
-/// These test will use [TestStatus] to notify `integration_test` of their
-/// state.
-enum TestStatus {
-  /// Test is waiting for executing WebDriver commands.
-  waitOnWebdriverCommand,
+/// Not all `integration_tests` use this message. They are only used when app
+/// side tests are sending [WebDriverCommand]s to the driver side.
+///
+/// These messages are used for the handshake since they carry information on
+/// the driver side test such as: status pending or tests failed.
+class DriverTestMessage {
+  final bool _isSuccess;
+  final bool _isPending;
 
-  /// Test executed the previously requested commands.
-  webdriverCommandComplete,
+  /// When tests are failed on the driver side.
+  DriverTestMessage.error()
+      : _isSuccess = false,
+        _isPending = false;
+
+  /// When driver side is waiting on [WebDriverCommand]s to be sent from the
+  /// app side.
+  DriverTestMessage.pending()
+      : _isSuccess = false,
+        _isPending = true;
+
+  /// When driver side successfully completed executing the [WebDriverCommand].
+  DriverTestMessage.complete()
+      : _isSuccess = true,
+        _isPending = false;
+
+  // /// Status of this message.
+  // ///
+  // /// The status will be use to notify `integration_test` of driver side's
+  // /// state.
+  // String get status => _status;
+
+  /// Has the command completed successfully by the driver.
+  bool get isSuccess => _isSuccess;
+
+  /// Is the driver waiting for a command.
+  bool get isPending => _isPending;
+
+  /// Depending on the values of [isPending] and [isSuccess], returns a string
+  /// to represent the [DriverTestMessage].
+  ///
+  /// Used as an alternative method to converting the object to json since
+  /// [RequestData] is only accepting string as `message`.
+  @override
+  String toString() {
+    if (isPending) {
+      return 'pending';
+    } else if (isSuccess) {
+      return 'complete';
+    } else {
+      return 'error';
+    }
+  }
+
+  /// Return a DriverTestMessage depending on `status`.
+  static DriverTestMessage fromString(String status) {
+    switch (status) {
+      case 'error':
+        return DriverTestMessage.error();
+      case 'pending':
+        return DriverTestMessage.pending();
+      case 'complete':
+        return DriverTestMessage.complete();
+      default:
+        throw StateError('This type of status does not exist: $status');
+    }
+  }
 }
 
 /// Types of different WebDriver commands that can be used in web integration
