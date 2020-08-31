@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 const String _flutterBin = 'flutter';
 const String _integrationResultsPrefix =
     'IntegrationTestWidgetsFlutterBinding test results:';
+const String _failureExcerpt = 'Expected: <false>\\n  Actual: <true>';
 
 void main() async {
   group('Integration binding result', () {
@@ -27,24 +28,20 @@ void main() async {
       final Map<String, dynamic> results =
           await _runTest('test/data/fail_test_script.dart');
 
+      expect(results, hasLength(2));
       expect(
-          results,
-          equals({
-            'failing test 1': 'failed',
-            'failing test 2': 'failed',
-          }));
+          results, containsPair('failing test 1', contains(_failureExcerpt)));
+      expect(
+          results, containsPair('failing test 2', contains(_failureExcerpt)));
     });
 
     test('when one test passes, then another fails', () async {
       final Map<String, dynamic> results =
           await _runTest('test/data/pass_then_fail_test_script.dart');
 
-      expect(
-          results,
-          equals({
-            'passing test': 'success',
-            'failing test': 'failed',
-          }));
+      expect(results, hasLength(2));
+      expect(results, containsPair('passing test', equals('success')));
+      expect(results, containsPair('failing test', contains(_failureExcerpt)));
     });
   });
 }
