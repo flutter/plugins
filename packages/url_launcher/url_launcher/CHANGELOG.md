@@ -1,3 +1,7 @@
+## 5.5.2
+
+* Depend explicitly on the `platform_interface` package that adds the `webOnlyWindowName` parameter.
+
 ## 5.5.1
 
 * Added webOnlyWindowName parameter to launch()
