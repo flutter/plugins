@@ -1,3 +1,7 @@
+# 0.1.3+1
+
+- Depend explicitly on the `platform_interface` package that adds the `webOnlyWindowName` parameter.
+
 # 0.1.3
 
 - Added webOnlyWindowName parameter to launch()
