@@ -22,7 +22,8 @@ void main() {
     // Trigger a frame.
     await tester.pumpAndSettle();
 
-    // TODO: Add screenshot capability for mobile platforms.
+    // TODO: https://github.com/flutter/flutter/issues/51890
+    // Add screenshot capability for mobile platforms.
 
     // Verify that platform version is retrieved.
     expect(
