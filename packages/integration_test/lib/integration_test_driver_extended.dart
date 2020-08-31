@@ -7,9 +7,11 @@ import 'package:flutter_driver/flutter_driver.dart';
 
 /// Example Integration Test which can also run WebDriver command depending on
 /// the requests coming from the test methods.
-Future<void> integrationDriver() async {
-  final FlutterDriver driver = await FlutterDriver.connect();
-
+Future<void> integrationDriver(
+    {FlutterDriver driver, Function onScreenshot}) async {
+  if (driver == null) {
+    driver = await FlutterDriver.connect();
+  }
   // Test states that it's waiting on web driver commands.
   String jsonResponse = await driver.requestData(
       '${TestStatus.waitOnWebdriverCommand}',
@@ -28,15 +30,15 @@ Future<void> integrationDriver() async {
       final List<int> screenshotImage = await driver.screenshot();
       final String screenshotName = response.data['screenshot_name'];
 
-      // The screenshot is saved as png. Later it can be used for golden testing
-      // with library of choice, such as skia_client.dart.
-      final String screenshotPath =
-          await _saveScreenshot(screenshotImage, screenshotName);
-      print('INFO: screenshot recorded $screenshotPath');
-
-      jsonResponse = await driver.requestData(
-          '${TestStatus.webdriverCommandComplete}',
-          timeout: const Duration(seconds: 10));
+      final bool screenshotSuccess =
+          await onScreenshot(screenshotName, screenshotImage);
+      if (screenshotSuccess) {
+        jsonResponse =
+            await driver.requestData('${TestStatus.webdriverCommandComplete}');
+      } else {
+        jsonResponse =
+            await driver.requestData('${TestStatus.webdriverCommandComplete}');
+      }
 
       response = Response.fromJson(jsonResponse);
     } else if (webDriverCommand == '${WebDriverCommandType.ack}') {
@@ -71,14 +73,4 @@ Future<void> integrationDriver() async {
     print('Failure Details:\n${response.formattedFailureDetails}');
     exit(1);
   }
-}
-
-/// Example method for saving the screenshot taken by the Webdriver to a `png`
-/// file.
-Future<String> _saveScreenshot(List<int> screenshot, String path) async {
-  final File file = File('$path.png');
-  if (!file.existsSync()) {
-    await file.writeAsBytes(screenshot);
-  }
-  return '$path.png';
 }
