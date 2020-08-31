@@ -15,13 +15,15 @@ import 'package:vm_service/vm_service_io.dart' as vm_io;
 
 import 'common.dart';
 import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
+import '_callback_io.dart' if (dart.library.html) '_callback_web.dart'
+    as driver_actions;
 
 const String _success = 'success';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
-class IntegrationTestWidgetsFlutterBinding
-    extends LiveTestWidgetsFlutterBinding {
+class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
+    implements IntegrationTestResults {
   /// Sets up a listener to report that the tests are finished when everything is
   /// torn down.
   IntegrationTestWidgetsFlutterBinding() {
@@ -36,6 +38,7 @@ class IntegrationTestWidgetsFlutterBinding
             _allTestsPassed.complete(true);
           }
         }
+        callbackManager.cleanup();
         await _channel.invokeMethod<void>(
           'allTestsFinished',
           <String, dynamic>{
@@ -104,7 +107,12 @@ class IntegrationTestWidgetsFlutterBinding
     );
   }
 
+  @override
+  Completer<bool> get allTestsPassed => _allTestsPassed;
   final Completer<bool> _allTestsPassed = Completer<bool>();
+
+  @override
+  List<Failure> get failureMethodsDetails => _failures;
 
   /// Similar to [WidgetsFlutterBinding.ensureInitialized].
   ///
@@ -136,35 +144,27 @@ class IntegrationTestWidgetsFlutterBinding
   /// If it's `null`, no extra data is attached to the result.
   ///
   /// The default value is `null`.
-  Map<String, dynamic> reportData;
+  @override
+  Map<String, dynamic> get reportData => _reportData;
+  Map<String, dynamic> _reportData;
+  set reportData(Map<String, dynamic> data) => this._reportData = data;
 
-  /// the callback function to response the driver side input.
+  /// Manages callbacks received from driver side and commands send to driver
+  /// side.
+  final CallbackManager callbackManager = driver_actions.callbackManager;
+
+  /// Taking a screenshot.
+  ///
+  /// Called by test methods. Implementation differs for each platform.
+  Future<void> takeScreenshot(String screenshotName) async {
+    await callbackManager.takeScreenshot(screenshotName);
+  }
+
+  /// The callback function to response the driver side input.
   @visibleForTesting
   Future<Map<String, dynamic>> callback(Map<String, String> params) async {
-    final String command = params['command'];
-    Map<String, String> response;
-    switch (command) {
-      case 'request_data':
-        final bool allTestsPassed = await _allTestsPassed.future;
-        response = <String, String>{
-          'message': allTestsPassed
-              ? Response.allTestsPassed(data: reportData).toJson()
-              : Response.someTestsFailed(
-                  _failures,
-                  data: reportData,
-                ).toJson(),
-        };
-        break;
-      case 'get_health':
-        response = <String, String>{'status': 'ok'};
-        break;
-      default:
-        throw UnimplementedError('$command is not implemented');
-    }
-    return <String, dynamic>{
-      'isError': false,
-      'response': response,
-    };
+    return await callbackManager.callback(
+        params, this /* as IntegrationTestResults */);
   }
 
   // Emulates the Flutter driver extension, returning 'pass' or 'fail'.
