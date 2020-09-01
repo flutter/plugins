@@ -10,7 +10,7 @@
 
 import 'package:integration_test/integration_test.dart';
 
-import 'extended_test_io.dart' if (dart.library.html) 'extended_test_web.dart'
+import '_extended_test_io.dart' if (dart.library.html) '_extended_test_web.dart'
     as tests;
 
 void main() {
