@@ -7,9 +7,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences_windows: ^0.0.1
 
-  shared_preferences:
-    path: ../../shared_preferences
+dependency_overrides:
   shared_preferences_windows:
     path: ../
 

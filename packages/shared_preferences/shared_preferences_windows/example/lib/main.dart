@@ -7,7 +7,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,15 +31,15 @@ class SharedPreferencesDemo extends StatefulWidget {
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final prefs = SharedPreferencesWindows.instance;
   Future<int> _counter;
 
   Future<void> _incrementCounter() async {
-    final SharedPreferences prefs = await _prefs;
-    final int counter = (prefs.getInt('counter') ?? 0) + 1;
+    final values = await prefs.getAll();
+    final int counter = (values['counter'] as int ?? 0) + 1;
 
     setState(() {
-      _counter = prefs.setInt("counter", counter).then((bool success) {
+      _counter = prefs.setValue(null, "counter", counter).then((bool success) {
         return counter;
       });
     });
@@ -48,8 +48,8 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   @override
   void initState() {
     super.initState();
-    _counter = _prefs.then((SharedPreferences prefs) {
-      return (prefs.getInt('counter') ?? 0);
+    _counter = prefs.getAll().then((Map<String, Object> values) {
+      return (values['counter'] ?? 0);
     });
   }
 
