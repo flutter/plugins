@@ -51,7 +51,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
     String initialDirectory,
     String confirmButtonText,
   }) {
-    throw UnimplementedError('loadFile() has not been implemented.');
+    throw UnimplementedError('loadFiles() has not been implemented.');
   }
 
   /// Open file dialog for saving files and return a file path at which to save
@@ -61,6 +61,6 @@ abstract class FileSelectorPlatform extends PlatformInterface {
     String suggestedName,
     String confirmButtonText,
   }) {
-    throw UnimplementedError('saveFile() has not been implemented.');
+    throw UnimplementedError('getSavePath() has not been implemented.');
   }
 }

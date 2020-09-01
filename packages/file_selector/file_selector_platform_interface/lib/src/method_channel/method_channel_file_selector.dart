@@ -4,7 +4,6 @@
 
 import 'package:flutter/services.dart';
 
-import '../platform_interface/file_selector_interface.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/file_picker');
@@ -19,10 +18,11 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     String confirmButtonText,
   }) async {
     String path = await _channel.invokeMethod<String>(
-      'loadFile',
+      'loadFiles',
       <String, Object>{
         'acceptedTypes': acceptedTypeGroups,
         'initialDirectory': initialDirectory,
+        'multiple': false,
       },
     );
     return XFile(path);
@@ -40,13 +40,10 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
       <String, Object>{
         'acceptedTypes': acceptedTypeGroups,
         'initialDirectory': initialDirectory,
+        'multiple': true,
       },
     );
-    List<XFile> fileList = List();
-    for (String path in pathList) {
-      fileList.add(XFile(path));
-    }
-    return fileList;
+    return pathList.map((path) => XFile(path)).toList();
   }
 
   /// Saves the file to user's Disk
