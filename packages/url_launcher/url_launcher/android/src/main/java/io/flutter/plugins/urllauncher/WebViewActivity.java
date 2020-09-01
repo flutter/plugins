@@ -7,11 +7,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.provider.Browser;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +45,7 @@ public class WebViewActivity extends Activity {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+          Log.v("view ", "shouldOverrideUrlLoading");
           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             view.loadUrl(url);
             return false;
@@ -49,6 +55,7 @@ public class WebViewActivity extends Activity {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+          Log.v("view ", "shouldOverrideUrlLoading");
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             view.loadUrl(request.getUrl().toString());
           }
@@ -56,7 +63,22 @@ public class WebViewActivity extends Activity {
         }
       };
 
+  private final WebChromeClient webChromeClient = new WebChromeClient() {
+    @Override
+    public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+      Log.v("onCreateWindow", "onCreateWindow");
+      filterWebView = new UrlFilterWebView(view.getContext(), view);
+      final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+      transport.setWebView(filterWebView);
+      resultMsg.sendToTarget();
+      return true;
+    }
+  };
+
   private WebView webview;
+
+  // A temporary web view to filter urls.
+  private UrlFilterWebView filterWebView;
 
   private IntentFilter closeIntentFilter = new IntentFilter(ACTION_CLOSE);
 
@@ -77,6 +99,8 @@ public class WebViewActivity extends Activity {
 
     webview.getSettings().setJavaScriptEnabled(enableJavaScript);
     webview.getSettings().setDomStorageEnabled(enableDomStorage);
+//    webview.getSettings().setSupportMultipleWindows(true);
+    webview.setWebChromeClient(webChromeClient);
 
     // Open new urls inside the webview itself.
     webview.setWebViewClient(webViewClient);
@@ -97,6 +121,10 @@ public class WebViewActivity extends Activity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    if (filterWebView != null) {
+      filterWebView.destroy();
+      filterWebView = null;
+    }
     unregisterReceiver(broadcastReceiver);
   }
 
