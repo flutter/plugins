@@ -1,7 +1,3 @@
-## 0.5.11
-
-* Adds support for Windows.
-
 ## 0.5.10
 
 * Update package:e2e -> package:integration_test
