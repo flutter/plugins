@@ -1,6 +1,37 @@
-## 0.5.7
+## 0.5.11
 
 * Adds support for Windows.
+
+## 0.5.10
+
+* Update package:e2e -> package:integration_test
+
+## 0.5.9
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.5.8
+
+* Support Linux by default.
+
+## 0.5.7+3
+
+* Post-v2 Android embedding cleanup.
+
+## 0.5.7+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.5.7+1
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.5.7
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.5.6+3
 

@@ -73,6 +73,7 @@
       updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
         [weakSelf updatedDownloads:downloads];
       }];
+  [_paymentQueueHandler startObservingPaymentQueue];
   _callbackChannel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_callback"
                                   binaryMessenger:[registrar messenger]];
@@ -82,6 +83,8 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"-[SKPaymentQueue canMakePayments:]" isEqualToString:call.method]) {
     [self canMakePayments:result];
+  } else if ([@"-[SKPaymentQueue transactions]" isEqualToString:call.method]) {
+    [self getPendingTransactions:result];
   } else if ([@"-[InAppPurchasePlugin startProductRequest:result:]" isEqualToString:call.method]) {
     [self handleProductRequestMethodCall:call result:result];
   } else if ([@"-[InAppPurchasePlugin addPayment:result:]" isEqualToString:call.method]) {
@@ -101,6 +104,16 @@
 
 - (void)canMakePayments:(FlutterResult)result {
   result([NSNumber numberWithBool:[SKPaymentQueue canMakePayments]]);
+}
+
+- (void)getPendingTransactions:(FlutterResult)result {
+  NSArray<SKPaymentTransaction *> *transactions =
+      [self.paymentQueueHandler getUnfinishedTransactions];
+  NSMutableArray *transactionMaps = [[NSMutableArray alloc] init];
+  for (SKPaymentTransaction *transaction in transactions) {
+    [transactionMaps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]];
+  }
+  result(transactionMaps);
 }
 
 - (void)handleProductRequestMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -151,25 +164,36 @@
   // When a product is already fetched, we create a payment object with
   // the product to process the payment.
   SKProduct *product = [self getProduct:productID];
-  if (product) {
-    SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
-    payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
-    NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
-    payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
-    if (@available(iOS 8.3, *)) {
-      payment.simulatesAskToBuyInSandbox =
-          [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
-    }
-    [self.paymentQueueHandler addPayment:payment];
-    result(nil);
+  if (!product) {
+    result([FlutterError
+        errorWithCode:@"storekit_invalid_payment_object"
+              message:
+                  @"You have requested a payment for an invalid product. Either the "
+                  @"`productIdentifier` of the payment is not valid or the product has not been "
+                  @"fetched before adding the payment to the payment queue."
+              details:call.arguments]);
     return;
   }
-  result([FlutterError
-      errorWithCode:@"storekit_invalid_payment_object"
-            message:@"You have requested a payment for an invalid product. Either the "
-                    @"`productIdentifier` of the payment is not valid or the product has not been "
-                    @"fetched before adding the payment to the payment queue."
-            details:call.arguments]);
+  SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
+  payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
+  NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
+  payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
+  if (@available(iOS 8.3, *)) {
+    payment.simulatesAskToBuyInSandbox =
+        [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
+  }
+
+  if (![self.paymentQueueHandler addPayment:payment]) {
+    result([FlutterError
+        errorWithCode:@"storekit_duplicate_product_object"
+              message:@"There is a pending transaction for the same product identifier. Please "
+                      @"either wait for it to be finished or finish it manually using "
+                      @"`completePurchase` to avoid edge cases."
+
+              details:call.arguments]);
+    return;
+  }
+  result(nil);
 }
 
 - (void)finishTransaction:(FlutterMethodCall *)call result:(FlutterResult)result {

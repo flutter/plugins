@@ -7,6 +7,13 @@ This plugin works for iOS and Android.
 > Note that on Android, this does not guarantee connection to Internet. For instance,
 the app might have wifi access but it might be a VPN or a hotel WiFi with no access.
 
+**Please set your constraint to `connectivity: '>=0.4.y+x <2.0.0'`**
+
+## Backward compatible 1.0.0 version is coming
+The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.4.y+z`.
+Please use `connectivity: '>=0.4.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
+For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+
 ## Usage
 
 Sample usage to check current status:

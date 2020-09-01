@@ -25,6 +25,10 @@ void main() {
 
     setUp(() async {
       PathProviderPlatform.instance = MockPathProviderPlatform();
+      // This is required because we manually register the Linux path provider when on the Linux platform.
+      // Will be removed when automatic registration of dart plugins is implemented.
+      // See this issue https://github.com/flutter/flutter/issues/52267 for details
+      disablePathProviderPlatformOverride = true;
     });
 
     test('getTemporaryDirectory', () async {
