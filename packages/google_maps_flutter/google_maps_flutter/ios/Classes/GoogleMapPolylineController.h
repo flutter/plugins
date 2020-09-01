@@ -13,7 +13,7 @@
 - (void)setStrokeWidth:(CGFloat)width;
 - (void)setPoints:(NSArray<CLLocation*>*)points;
 - (void)setZIndex:(int)zIndex;
-- (void)setGeoDesic:(BOOL)isGeodesic;
+- (void)setGeodesic:(BOOL)isGeodesic;
 @end
 
 // Defines polyline controllable by Flutter.
