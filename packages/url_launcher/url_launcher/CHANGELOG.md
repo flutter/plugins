@@ -1,3 +1,7 @@
+## 5.5.1
+
+* Adds `newTask` on Android to launch urls into a new task context.
+
 ## 5.5.0
 
 * Support Linux by default.

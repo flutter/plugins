@@ -1,3 +1,7 @@
+# 2.0.0
+
+- Adds `newTask` flag to start urls into a new window/tab. This is a breaking change, as now by default urls will launch into the current (self) window.
+
 # 0.1.2+1
 
 - Update docs
