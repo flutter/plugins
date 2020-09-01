@@ -7,12 +7,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
   Directory testDir;
 
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
     final Directory extDir = await getTemporaryDirectory();

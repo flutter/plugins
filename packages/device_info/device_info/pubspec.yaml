@@ -1,0 +1,32 @@
+name: device_info
+description: Flutter plugin providing detailed information about the device
+  (make, model, etc.), and Android or iOS version the app is running on.
+homepage: https://github.com/flutter/plugins/tree/master/packages/device_info
+# 0.4.y+z is compatible with 1.0.0, if you land a breaking change bump
+# the version to 2.0.0.
+# See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+version: 0.4.2+7
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: io.flutter.plugins.deviceinfo
+        pluginClass: DeviceInfoPlugin
+      ios:
+        pluginClass: FLTDeviceInfoPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
+  device_info_platform_interface: ^1.0.0
+
+dev_dependencies:
+  test: ^1.3.0
+  flutter_test:
+    sdk: flutter
+  pedantic: ^1.8.0
+
+environment:
+  sdk: ">=2.1.0<3.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"

@@ -7,7 +7,7 @@ task:
     cpu: 8
     memory: 16G
   env:
-    E2E_PATH: "./packages/e2e"
+    INTEGRATION_TEST_PATH: "./packages/integration_test"
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -47,9 +47,9 @@ task:
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh apk
-    - name: e2e_web_smoke_test
-      # Tests e2e example test in web.
-      only_if: "changesInclude('.cirrus.yml', 'packages/e2e/**') || $CIRRUS_PR == ''"
+    - name: integration_web_smoke_test
+      # Tests integration example test in web.
+      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
       install_script:
         - flutter config --enable-web
         - git clone https://github.com/flutter/web_installers.git
@@ -58,13 +58,15 @@ task:
         - dart lib/web_driver_installer.dart chromedriver --install-only
         - ./chromedriver/chromedriver --port=4444 &
       test_script:
-        - cd $E2E_PATH/example/
-        - flutter drive -v --target=test_driver/example_e2e.dart -d web-server --release --browser-name=chrome
+        - cd $INTEGRATION_TEST_PATH/example/
+        - flutter drive -v --target=test_driver/example_integration.dart -d web-server --release --browser-name=chrome
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -91,7 +93,7 @@ task:
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - else
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        -   ./script/incremental_build.sh firebase-test-lab
+        -   ./script/incremental_build.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
@@ -105,7 +107,7 @@ task:
     cpu: 8
     memory: 16G
   env:
-    E2E_PATH: "./packages/e2e"
+    INTEGRATION_TEST_PATH: "./packages/integration_test"
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -157,7 +159,7 @@ task:
         - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
         # Skip the dummy podspecs used to placate the tool.
         - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
-        - ./script/incremental_build.sh podspecs --no-analyze camera --ignore-warnings camera
+        - ./script/incremental_build.sh podspecs
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin

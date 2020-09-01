@@ -15,7 +15,8 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  e2e: "^0.2.0"
+  integration_test:
+    path: ../../integration_test
   pedantic: ^1.8.0
 
 flutter:
