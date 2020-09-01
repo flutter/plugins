@@ -71,7 +71,7 @@ void main() {
       expect(result, isNotNull);
       expect(result.getAttribute('type'), 'file');
       expect(result.getAttribute('accept'),
-          'plain/text,application/json,.txt,.json');
+          '.txt,.json,plain/text,application/json');
     });
 
     testWidgets('input element is clicked', (WidgetTester tester) async {
@@ -143,10 +143,12 @@ void main() {
           (element) => element.tagName == 'INPUT',
           orElse: () => null);
 
+      print (result.getAttribute('accept'));
+
       expect(result, isNotNull);
       expect(result.getAttribute('type'), 'file');
       expect(result.getAttribute('accept'),
-          'plain/text,application/json,.txt,.json');
+          '.txt,.json,plain/text,application/json');
       expect(result.multiple, true);
     });
 

@@ -75,35 +75,21 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     FileSelectorPlatform.instance = FileSelectorPlugin();
   }
 
-  void _verifyXTypeGroup(XTypeGroup group) {
-    if (group.extensions == null &&
-        group.mimeTypes == null &&
-        group.webWildCards == null) {
-      StateError(
-          "This XTypeGroup does not have types supported by the web implementation of loadFile.");
-    }
-  }
-
   /// Convert list of XTypeGroups to a comma-separated string
   String _getStringFromFilterGroup(List<XTypeGroup> acceptedTypes) {
     List<String> allTypes = List();
+
     for (XTypeGroup group in acceptedTypes ?? []) {
-      _verifyXTypeGroup(group);
+      assert(
+          !((group.extensions == null || group.extensions.isEmpty) &&
+              (group.mimeTypes == null || group.mimeTypes.isEmpty) &&
+              (group.webWildCards == null || group.webWildCards.isEmpty)),
+          'At least one of extensions / mimeTypes / webWildCards is required for web.');
 
-      for (String mimeType in group.mimeTypes ?? []) {
-        allTypes.add(mimeType);
-      }
-      for (String extension in group.extensions ?? []) {
-        String ext = extension;
-        if (ext.isNotEmpty && ext[0] != '.') {
-          ext = '.' + ext;
-        }
-
-        allTypes.add(ext);
-      }
-      for (String webWildCard in group.webWildCards ?? []) {
-        allTypes.add(webWildCard);
-      }
+      allTypes.addAll(group.extensions
+          .map((ext) => ext.isNotEmpty && ext[0] != '.' ? '.' + ext : ext));
+      allTypes.addAll(group.mimeTypes ?? []);
+      allTypes.addAll(group.webWildCards ?? []);
     }
     return allTypes?.where((e) => e.isNotEmpty)?.join(',') ?? '';
   }
@@ -175,10 +161,9 @@ class FileSelectorPlugin extends FileSelectorPlatform {
     });
 
     element.onError.first.then((event) {
-      throw PlatformException(
-          code: 'file_input',
-          message: "Input element failed on event with target: " +
-              event?.target?.toString());
+      ErrorEvent error = event;
+      _completer.completeError(
+          PlatformException(code: error.type, message: error.message));
     });
 
     return _completer.future;
