@@ -134,6 +134,7 @@ abstract class VideoPlayerApiTest {
   PositionMessage position(TextureMessage arg);
   void seekTo(PositionMessage arg);
   void pause(TextureMessage arg);
+  void setMixWithOthers(MixWithOthersMessage arg);
 }
 
 void VideoPlayerApiTestSetup(VideoPlayerApiTest api) {
@@ -222,6 +223,18 @@ void VideoPlayerApiTestSetup(VideoPlayerApiTest api) {
       final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
       final TextureMessage input = TextureMessage._fromMap(mapMessage);
       api.pause(input);
+      return {};
+    });
+  }
+  {
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.VideoPlayerApi.setMixWithOthers',
+        StandardMessageCodec());
+    channel.setMockMessageHandler((dynamic message) async {
+      final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
+      final MixWithOthersMessage input =
+          MixWithOthersMessage._fromMap(mapMessage);
+      api.setMixWithOthers(input);
       return {};
     });
   }

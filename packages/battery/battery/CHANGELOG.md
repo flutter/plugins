@@ -1,3 +1,11 @@
+## 1.0.4+1
+
+* Moved everything from battery to battery/battery
+
+## 1.0.4
+
+* Updated README.md.
+
 ## 1.0.3
 
 * Update package:e2e to use package:integration_test

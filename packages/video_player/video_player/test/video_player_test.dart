@@ -579,11 +579,11 @@ void main() {
     expect(colors.backgroundColor, backgroundColor);
   });
 
-  test('setMixWithOthers', () {
+  test('setMixWithOthers', () async {
     final VideoPlayerController controller = VideoPlayerController.file(
         File(''),
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
-    controller.initialize();
+    await controller.initialize();
     expect(controller.videoPlayerOptions.mixWithOthers, true);
   });
 }
@@ -655,6 +655,11 @@ class FakeVideoPlayerPlatform extends VideoPlayerApiTest {
   @override
   void setVolume(VolumeMessage arg) {
     calls.add('setVolume');
+  }
+
+  @override
+  void setMixWithOthers(MixWithOthersMessage arg) {
+    calls.add('setMixWithOthers');
   }
 }
 

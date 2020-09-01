@@ -1,6 +1,10 @@
-## 1.0.8
+## 1.0.9
 
 * Adds `newTask` parameter to launch a url into a new task context.
+
+## 1.0.8
+
+* Added webOnlyWindowName parameter
 
 ## 1.0.7
 
