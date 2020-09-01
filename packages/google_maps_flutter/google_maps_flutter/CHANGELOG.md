@@ -1,3 +1,7 @@
+## 0.5.31
+
+* Geodesic Polyline support for iOS
+
 ## 0.5.30
 
 * Add a `dispose` method to the controller to let the native side know that we're done with said controller.
