@@ -18,6 +18,7 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  e2e: ^0.6.1
+  integration_test:
+    path: ../../../integration_test
   http: ^0.12.2
   mockito: ^4.1.1
