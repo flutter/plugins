@@ -12,13 +12,13 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/file_picker');
 class MethodChannelFileSelector extends FileSelectorPlatform {
   /// Load a file from user's computer and return it as an XFile
   @override
-  Future<XFile> loadFile({
+  Future<XFile> openFile({
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
     String confirmButtonText,
   }) async {
     String path = await _channel.invokeMethod<String>(
-      'loadFiles',
+      'openFiles',
       <String, Object>{
         'acceptedTypes': acceptedTypeGroups,
         'initialDirectory': initialDirectory,
@@ -30,13 +30,13 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
 
   /// Load multiple files from user's computer and return it as an XFile
   @override
-  Future<List<XFile>> loadFiles({
+  Future<List<XFile>> openFiles({
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
     String confirmButtonText,
   }) async {
     final pathList = await _channel.invokeMethod<List<String>>(
-      'loadFiles',
+      'openFiles',
       <String, Object>{
         'acceptedTypes': acceptedTypeGroups,
         'initialDirectory': initialDirectory,

@@ -20,22 +20,22 @@ class FileSelectorPlugin extends FileSelectorPlatform {
 
   /// Open file dialog for loading files and return a XFile
   @override
-  Future<XFile> loadFile({
+  Future<XFile> openFile({
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
     String confirmButtonText,
   }) async {
-    return (await _loadFileHelper(false, acceptedTypeGroups)).first;
+    return (await _openFileHelper(false, acceptedTypeGroups)).first;
   }
 
   /// Open file dialog for loading files and return a XFile
   @override
-  Future<List<XFile>> loadFiles({
+  Future<List<XFile>> openFiles({
     List<XTypeGroup> acceptedTypeGroups,
     String initialDirectory,
     String confirmButtonText,
   }) async {
-    return _loadFileHelper(true, acceptedTypeGroups);
+    return _openFileHelper(true, acceptedTypeGroups);
   }
 
   @override
@@ -48,7 +48,7 @@ class FileSelectorPlugin extends FileSelectorPlatform {
       null;
 
   /// Load Helper
-  Future<List<XFile>> _loadFileHelper(
+  Future<List<XFile>> _openFileHelper(
       bool multiple, List<XTypeGroup> acceptedTypes) {
     final acceptedTypeString = _getStringFromFilterGroup(acceptedTypes);
 

@@ -33,18 +33,18 @@ void main() {
     expect(result, expectedPath);
   });
 
-  test('loadFile', () async {
+  test('openFile', () async {
     final file = XFile('path');
 
     final typeGroup = XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
 
-    when(mock.loadFile(
+    when(mock.openFile(
       acceptedTypeGroups: [typeGroup],
       initialDirectory: 'dir',
       confirmButtonText: 'load',
     )).thenAnswer((_) => Future.value(file));
 
-    final result = await loadFile(
+    final result = await openFile(
         acceptedTypeGroups: [typeGroup],
         initialDirectory: 'dir',
         confirmButtonText: 'load');
@@ -52,18 +52,18 @@ void main() {
     expect(result, isNotNull);
   });
 
-  test('loadFiles', () async {
+  test('openFiles', () async {
     final file = XFile('path');
 
     final typeGroup = XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
 
-    when(mock.loadFiles(
+    when(mock.openFiles(
       acceptedTypeGroups: [typeGroup],
       initialDirectory: 'dir',
       confirmButtonText: 'load',
     )).thenAnswer((_) => Future.value([file]));
 
-    final result = await loadFiles(
+    final result = await openFiles(
         acceptedTypeGroups: [typeGroup],
         initialDirectory: 'dir',
         confirmButtonText: 'load');

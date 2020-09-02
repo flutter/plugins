@@ -41,7 +41,7 @@ void main() {
 
   FileSelectorPlugin plugin;
 
-  group('loadFile(..)', () {
+  group('openFile(..)', () {
     testWidgets('creates a DOM container', (WidgetTester tester) async {
       plugin = FileSelectorPlugin();
 
@@ -60,7 +60,7 @@ void main() {
 
       final container = querySelector('#${domElementId}');
 
-      final file = await plugin.loadFile(acceptedTypeGroups: [textGroup]);
+      final file = await plugin.openFile(acceptedTypeGroups: [textGroup]);
 
       expect(file, isNotNull);
 
@@ -89,7 +89,7 @@ void main() {
       bool clicked = false;
       mockInput.onClick.listen((event) => clicked = true);
 
-      await plugin.loadFile(acceptedTypeGroups: [textGroup]);
+      await plugin.openFile(acceptedTypeGroups: [textGroup]);
 
       expect(clicked, true);
     });
@@ -107,7 +107,7 @@ void main() {
       );
 
       // Call load file
-      final file = plugin.loadFile();
+      final file = plugin.openFile();
 
       // Mock selection of a file
       mockInput.dispatchEvent(Event('change'));
@@ -123,7 +123,7 @@ void main() {
     });
   });
 
-  group('loadFiles(..)', () {
+  group('openFiles(..)', () {
     testWidgets('creates correct input element', (WidgetTester tester) async {
       final overrides = FileSelectorPluginTestOverrides(
         getFilesWhenReady: (_) => Future.value([XFile('path'), XFile('path2')]),
@@ -135,7 +135,7 @@ void main() {
 
       final container = querySelector('#${domElementId}');
 
-      final files = await plugin.loadFiles(acceptedTypeGroups: [textGroup]);
+      final files = await plugin.openFiles(acceptedTypeGroups: [textGroup]);
 
       expect(files, isNotNull);
 
@@ -167,7 +167,7 @@ void main() {
       bool clicked = false;
       mockInput.onClick.listen((event) => clicked = true);
 
-      await plugin.loadFiles(acceptedTypeGroups: [textGroup]);
+      await plugin.openFiles(acceptedTypeGroups: [textGroup]);
 
       expect(clicked, true);
     });
@@ -185,7 +185,7 @@ void main() {
       );
 
       // Call load file
-      final files = plugin.loadFiles();
+      final files = plugin.openFiles();
 
       // Mock selection of files
       mockInput.dispatchEvent(Event('change'));

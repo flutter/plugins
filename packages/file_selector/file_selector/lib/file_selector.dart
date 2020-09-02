@@ -10,24 +10,24 @@ export 'package:file_selector_platform_interface/file_selector_platform_interfac
     show XFile, XTypeGroup;
 
 /// Open file dialog for loading files and return a file path
-Future<XFile> loadFile({
+Future<XFile> openFile({
   List<XTypeGroup> acceptedTypeGroups,
   String initialDirectory,
   String confirmButtonText,
 }) {
-  return FileSelectorPlatform.instance.loadFile(
+  return FileSelectorPlatform.instance.openFile(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
       confirmButtonText: confirmButtonText);
 }
 
 /// Open file dialog for loading files and return a list of file paths
-Future<List<XFile>> loadFiles({
+Future<List<XFile>> openFiles({
   List<XTypeGroup> acceptedTypeGroups,
   String initialDirectory,
   String confirmButtonText,
 }) {
-  return FileSelectorPlatform.instance.loadFiles(
+  return FileSelectorPlatform.instance.openFiles(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
       confirmButtonText: confirmButtonText);

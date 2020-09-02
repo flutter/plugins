@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(title: 'File Selector Demo Home Page'),
       routes: {
         '/save': (context) => SaveTest(),
-        '/load': (context) => LoadTest(),
+        '/open': (context) => OpenTest(),
       },
     );
   }
@@ -102,20 +102,20 @@ class _SaveTestState extends State<SaveTest> {
   }
 }
 
-/// Screen that shows an example of loadFile(s)
-class LoadTest extends StatefulWidget {
+/// Screen that shows an example of openFile(s)
+class OpenTest extends StatefulWidget {
   /// Default constructor
-  LoadTest({Key key}) : super(key: key);
+  OpenTest({Key key}) : super(key: key);
 
   @override
-  _LoadTestState createState() => _LoadTestState();
+  _OpenTestState createState() => _OpenTestState();
 }
 
-class _LoadTestState extends State<LoadTest> {
-  void _onLoadImageFile() async {
+class _OpenTestState extends State<OpenTest> {
+  void _onOpenImageFile() async {
     final typeGroup = XTypeGroup(label: 'images', extensions: ['jpg', 'png']);
 
-    final file = await loadFile(acceptedTypeGroups: [typeGroup]);
+    final file = await openFile(acceptedTypeGroups: [typeGroup]);
 
     await showDialog(
         context: context,
@@ -124,10 +124,10 @@ class _LoadTestState extends State<LoadTest> {
         });
   }
 
-  void _onLoadTextFile() async {
+  void _onOpenTextFile() async {
     final typeGroup = XTypeGroup(label: 'images', extensions: ['txt', 'json']);
 
-    final file = await loadFile(acceptedTypeGroups: [typeGroup]);
+    final file = await openFile(acceptedTypeGroups: [typeGroup]);
 
     await showDialog(
         context: context,
@@ -140,19 +140,19 @@ class _LoadTestState extends State<LoadTest> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Load Example"),
+        title: Text("Open Example"),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             RaisedButton(
-              child: Text('Press to load an image file(png, jpg)'),
-              onPressed: () => _onLoadImageFile(),
+              child: Text('Press to open an image file(png, jpg)'),
+              onPressed: () => _onOpenImageFile(),
             ),
             RaisedButton(
-              child: Text('Press to load a text file (json, txt)'),
-              onPressed: () => _onLoadTextFile(),
+              child: Text('Press to open a text file (json, txt)'),
+              onPressed: () => _onOpenTextFile(),
             ),
           ],
         ),
@@ -195,7 +195,7 @@ class _TextDisplayState extends State<TextDisplay> {
         child: SingleChildScrollView(
           child: Text(
             fileContents ??
-                'Loading file contents...\nThis may take a while if your file is large.',
+                'Opening file contents...\nThis may take a while if your file is large.',
           ),
         ),
       ),
@@ -276,8 +276,8 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => Navigator.pushNamed(context, '/save'),
             ),
             RaisedButton(
-              child: Text('Press to try loading a file'),
-              onPressed: () => Navigator.pushNamed(context, '/load'),
+              child: Text('Press to try opening a file'),
+              onPressed: () => Navigator.pushNamed(context, '/open'),
             ),
           ],
         ),
