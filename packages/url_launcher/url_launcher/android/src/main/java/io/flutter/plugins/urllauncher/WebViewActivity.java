@@ -16,7 +16,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
-import androidx.webkit.WebViewClientCompat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,6 +64,47 @@ public class WebViewActivity extends Activity {
 
   private IntentFilter closeIntentFilter = new IntentFilter(ACTION_CLOSE);
 
+  private class FlutterWebChromeClient extends WebChromeClient {
+    @Override
+    public boolean onCreateWindow(
+        final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+      final WebViewClient webViewClient =
+          new WebViewClient() {
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public boolean shouldOverrideUrlLoading(
+                @NonNull WebView view, @NonNull WebResourceRequest request) {
+              final String url = request.getUrl().toString();
+              if (isSecure(url)) {
+                webview.loadUrl(url);
+              }
+              return true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+              if (isSecure(url)) {
+                webview.loadUrl(url);
+              }
+              return true;
+            }
+          };
+
+      final WebView newWebView = new WebView(webview.getContext());
+      newWebView.setWebViewClient(webViewClient);
+
+      final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+      transport.setWebView(newWebView);
+      resultMsg.sendToTarget();
+
+      return true;
+    }
+    // Verifies that a url opened by `Window.open` has a secure url.
+    private boolean isSecure(String url) {
+      return url.startsWith("https://") || url.startsWith("http://");
+    }
+  }
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -87,7 +127,7 @@ public class WebViewActivity extends Activity {
     // Open new urls inside the webview itself.
     webview.setWebViewClient(webViewClient);
     // Internal Bug: b/159892679
-    webview.setWebChromeClient(createWebChromeClient());
+    webview.setWebChromeClient(new FlutterWebChromeClient());
 
     // Register receiver that may finish this Activity.
     registerReceiver(broadcastReceiver, closeIntentFilter);
@@ -133,68 +173,5 @@ public class WebViewActivity extends Activity {
         .putExtra(ENABLE_JS_EXTRA, enableJavaScript)
         .putExtra(ENABLE_DOM_EXTRA, enableDomStorage)
         .putExtra(Browser.EXTRA_HEADERS, headersBundle);
-  }
-
-  // Verifies that a url opened by `Window.open` has a secure url.
-  private boolean validNewWindowUrl(String url) {
-    return url.startsWith("https://") || url.startsWith("http://");
-  }
-
-  // Internal Bug: b/159892679
-  private WebChromeClient createWebChromeClient() {
-    return new WebChromeClient() {
-      @Override
-      public boolean onCreateWindow(
-          final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-        final WebViewClient webViewClient;
-        // This attempts to avoid using WebViewClientCompat due to bug
-        // https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
-        // https://github.com/flutter/flutter/issues/29446.
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          webViewClient =
-              new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                  final String url = request.getUrl().toString();
-                  if (validNewWindowUrl(url)) {
-                    webview.loadUrl(url);
-                  }
-                  return true;
-                }
-              };
-        } else {
-          webViewClient =
-              new WebViewClientCompat() {
-                @TargetApi(Build.VERSION_CODES.N)
-                @Override
-                public boolean shouldOverrideUrlLoading(
-                    @NonNull WebView view, @NonNull WebResourceRequest request) {
-                  final String url = request.getUrl().toString();
-                  if (validNewWindowUrl(url)) {
-                    webview.loadUrl(url);
-                  }
-                  return true;
-                }
-
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                  if (validNewWindowUrl(url)) {
-                    webview.loadUrl(url);
-                  }
-                  return true;
-                }
-              };
-        }
-
-        final WebView newWebView = new WebView(view.getContext());
-        newWebView.setWebViewClient(webViewClient);
-
-        final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-        transport.setWebView(newWebView);
-        resultMsg.sendToTarget();
-
-        return true;
-      }
-    };
   }
 }

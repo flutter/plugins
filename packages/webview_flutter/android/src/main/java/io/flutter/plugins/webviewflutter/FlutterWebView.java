@@ -17,7 +17,6 @@ import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
-import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -34,6 +33,47 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+
+  private class FlutterWebChromeClient extends WebChromeClient {
+    @Override
+    public boolean onCreateWindow(
+        final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+      final WebViewClient webViewClient =
+          new WebViewClient() {
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public boolean shouldOverrideUrlLoading(
+                @NonNull WebView view, @NonNull WebResourceRequest request) {
+              final String url = request.getUrl().toString();
+              if (isSecure(url)) {
+                flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, request);
+              }
+              return true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+              if (isSecure(url)) {
+                flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, url);
+              }
+              return true;
+            }
+          };
+
+      final WebView newWebView = new WebView(view.getContext());
+      newWebView.setWebViewClient(webViewClient);
+
+      final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+      transport.setWebView(newWebView);
+      resultMsg.sendToTarget();
+
+      return true;
+    }
+    // Verifies that a url opened by `Window.open` has a secure url.
+    private boolean isSecure(String url) {
+      return url.startsWith("https://") || url.startsWith("http://");
+    }
+  }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @SuppressWarnings("unchecked")
@@ -57,7 +97,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
     webView.getSettings().setSupportMultipleWindows(true);
     // Internal Bug: b/159892679
-    webView.setWebChromeClient(createWebChromeClient());
+    webView.setWebChromeClient(new FlutterWebChromeClient());
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
@@ -361,71 +401,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void updateUserAgent(String userAgent) {
     webView.getSettings().setUserAgentString(userAgent);
-  }
-
-  // Verifies that a url opened by `Window.open` has a secure url.
-  private boolean validNewWindowUrl(String url) {
-    return url.startsWith("https://") || url.startsWith("http://");
-  }
-
-  // Internal Bug: b/159892679
-  private WebChromeClient createWebChromeClient() {
-    return new WebChromeClient() {
-      @Override
-      public boolean onCreateWindow(
-          final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-        final WebViewClient webViewClient;
-        // This attempts to avoid using WebViewClientCompat due to bug
-        // https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
-        // https://github.com/flutter/flutter/issues/29446.
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          webViewClient =
-              new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                  final String url = request.getUrl().toString();
-                  if (validNewWindowUrl(url)) {
-                    flutterWebViewClient.shouldOverrideUrlLoading(
-                        FlutterWebView.this.webView, request);
-                  }
-                  return true;
-                }
-              };
-        } else {
-          webViewClient =
-              new WebViewClientCompat() {
-                @TargetApi(Build.VERSION_CODES.N)
-                @Override
-                public boolean shouldOverrideUrlLoading(
-                    @NonNull WebView view, @NonNull WebResourceRequest request) {
-                  final String url = request.getUrl().toString();
-                  if (validNewWindowUrl(url)) {
-                    flutterWebViewClient.shouldOverrideUrlLoading(
-                        FlutterWebView.this.webView, request);
-                  }
-                  return true;
-                }
-
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                  if (validNewWindowUrl(url)) {
-                    flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, url);
-                  }
-                  return true;
-                }
-              };
-        }
-
-        final WebView newWebView = new WebView(view.getContext());
-        newWebView.setWebViewClient(webViewClient);
-
-        final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-        transport.setWebView(newWebView);
-        resultMsg.sendToTarget();
-
-        return true;
-      }
-    };
   }
 
   @Override
