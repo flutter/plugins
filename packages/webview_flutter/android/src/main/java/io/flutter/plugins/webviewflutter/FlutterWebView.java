@@ -4,27 +4,21 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import io.flutter.Log;
-import io.flutter.plugin.common.BinaryMessenger;
-
 import androidx.annotation.NonNull;
 import androidx.webkit.WebViewClientCompat;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -378,42 +372,48 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private WebChromeClient createWebChromeClient() {
     return new WebChromeClient() {
       @Override
-      public boolean onCreateWindow(final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+      public boolean onCreateWindow(
+          final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
         final WebViewClient webViewClient;
         // This attempts to avoid using WebViewClientCompat due to bug
         // https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
         // https://github.com/flutter/flutter/issues/29446.
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          webViewClient = new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-              final String url = request.getUrl().toString();
-              if (validNewWindowUrl(url)) {
-                flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, request);
-              }
-              return true;
-            }
-          };
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          webViewClient =
+              new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                  final String url = request.getUrl().toString();
+                  if (validNewWindowUrl(url)) {
+                    flutterWebViewClient.shouldOverrideUrlLoading(
+                        FlutterWebView.this.webView, request);
+                  }
+                  return true;
+                }
+              };
         } else {
-          webViewClient = new WebViewClientCompat() {
-            @TargetApi(Build.VERSION_CODES.N)
-            @Override
-            public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull  WebResourceRequest request) {
-              final String url = request.getUrl().toString();
-              if (validNewWindowUrl(url)) {
-                flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, request);
-              }
-              return true;
-            }
+          webViewClient =
+              new WebViewClientCompat() {
+                @TargetApi(Build.VERSION_CODES.N)
+                @Override
+                public boolean shouldOverrideUrlLoading(
+                    @NonNull WebView view, @NonNull WebResourceRequest request) {
+                  final String url = request.getUrl().toString();
+                  if (validNewWindowUrl(url)) {
+                    flutterWebViewClient.shouldOverrideUrlLoading(
+                        FlutterWebView.this.webView, request);
+                  }
+                  return true;
+                }
 
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-              if (validNewWindowUrl(url)) {
-                flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, url);
-              }
-              return true;
-            }
-          };
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                  if (validNewWindowUrl(url)) {
+                    flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, url);
+                  }
+                  return true;
+                }
+              };
         }
 
         final WebView newWebView = new WebView(view.getContext());

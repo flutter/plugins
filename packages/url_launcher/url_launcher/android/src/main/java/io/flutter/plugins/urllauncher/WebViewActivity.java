@@ -15,10 +15,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
 import androidx.annotation.NonNull;
 import androidx.webkit.WebViewClientCompat;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -146,42 +144,46 @@ public class WebViewActivity extends Activity {
   private WebChromeClient createWebChromeClient() {
     return new WebChromeClient() {
       @Override
-      public boolean onCreateWindow(final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+      public boolean onCreateWindow(
+          final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
         final WebViewClient webViewClient;
         // This attempts to avoid using WebViewClientCompat due to bug
         // https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
         // https://github.com/flutter/flutter/issues/29446.
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          webViewClient = new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-              final String url = request.getUrl().toString();
-              if (validNewWindowUrl(url)) {
-                webview.loadUrl(url);
-              }
-              return true;
-            }
-          };
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          webViewClient =
+              new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                  final String url = request.getUrl().toString();
+                  if (validNewWindowUrl(url)) {
+                    webview.loadUrl(url);
+                  }
+                  return true;
+                }
+              };
         } else {
-          webViewClient = new WebViewClientCompat() {
-            @TargetApi(Build.VERSION_CODES.N)
-            @Override
-            public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull  WebResourceRequest request) {
-              final String url = request.getUrl().toString();
-              if (validNewWindowUrl(url)) {
-                webview.loadUrl(url);
-              }
-              return true;
-            }
+          webViewClient =
+              new WebViewClientCompat() {
+                @TargetApi(Build.VERSION_CODES.N)
+                @Override
+                public boolean shouldOverrideUrlLoading(
+                    @NonNull WebView view, @NonNull WebResourceRequest request) {
+                  final String url = request.getUrl().toString();
+                  if (validNewWindowUrl(url)) {
+                    webview.loadUrl(url);
+                  }
+                  return true;
+                }
 
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-              if (validNewWindowUrl(url)) {
-                webview.loadUrl(url);
-              }
-              return true;
-            }
-          };
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                  if (validNewWindowUrl(url)) {
+                    webview.loadUrl(url);
+                  }
+                  return true;
+                }
+              };
         }
 
         final WebView newWebView = new WebView(view.getContext());
