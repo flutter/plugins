@@ -122,11 +122,12 @@ public class WebViewActivity extends Activity {
 
     webview.getSettings().setJavaScriptEnabled(enableJavaScript);
     webview.getSettings().setDomStorageEnabled(enableDomStorage);
-    webview.getSettings().setSupportMultipleWindows(true);
 
     // Open new urls inside the webview itself.
     webview.setWebViewClient(webViewClient);
-    // Internal Bug: b/159892679
+
+    // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
+    webview.getSettings().setSupportMultipleWindows(true);
     webview.setWebChromeClient(new FlutterWebChromeClient());
 
     // Register receiver that may finish this Activity.
