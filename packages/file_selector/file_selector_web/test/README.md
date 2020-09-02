@@ -11,7 +11,4 @@ Make sure you have updated to the latest Flutter master.
 
 4. Change into the `test` directory of your clone.
 
-5. Run tests: `flutter drive -d web-server --release --browser-name=chrome --target=test_driver/TEST_NAME_e2e.dart`, or (in Linux):
-
-    * Single: `./run_test test_driver/TEST_NAME_e2e.dart`
-    * All: `./run_test`
+5. Run tests: `flutter drive -d web-server --release --browser-name=chrome --target=test_driver/TEST_NAME_integration.dart`.
