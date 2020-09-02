@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Added webOnlyWindowName parameter
+
 ## 1.0.7
 
 * Update lower bound of dart dependency to 2.1.0.
