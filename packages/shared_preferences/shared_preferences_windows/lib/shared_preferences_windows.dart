@@ -55,6 +55,10 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
     String appName = path.basenameWithoutExtension(appPath);
     String localDataPath = win32Wrapper.getLocalDataPath();
     // Append app-specific identifiers.
+    // ####################
+    // # DO NOT LAND! path_provider should be landed and published first, and
+    // # this plugin should use path_provider_windows, as with Linux.
+    // ####################
     _localDataFilePath =
         path.join(localDataPath, fileDirectory, '$appName.json');
     return _localDataFilePath;
