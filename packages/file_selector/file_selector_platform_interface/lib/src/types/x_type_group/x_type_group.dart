@@ -24,10 +24,10 @@ class XTypeGroup {
     this.macUTIs,
     this.webWildCards,
   }) : assert(
-            !(extensions == null &&
-                mimeTypes == null &&
-                macUTIs == null &&
-                webWildCards == null),
+            !((extensions == null || extensions.isEmpty) &&
+                (mimeTypes == null || mimeTypes.isEmpty) &&
+                (macUTIs == null || macUTIs.isEmpty) &&
+                (webWildCards == null || webWildCards.isEmpty)),
             "At least one type must be provided for an XTypeGroup.");
 
   /// The 'name' or reference to this group of types

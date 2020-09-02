@@ -143,7 +143,7 @@ void main() {
           (element) => element.tagName == 'INPUT',
           orElse: () => null);
 
-      print (result.getAttribute('accept'));
+      print(result.getAttribute('accept'));
 
       expect(result, isNotNull);
       expect(result.getAttribute('type'), 'file');
