@@ -64,6 +64,7 @@ public class WebViewActivity extends Activity {
 
   private IntentFilter closeIntentFilter = new IntentFilter(ACTION_CLOSE);
 
+  // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
     @Override
     public boolean onCreateWindow(
@@ -99,7 +100,7 @@ public class WebViewActivity extends Activity {
 
       return true;
     }
-    // Verifies that a url opened by `Window.open` has a secure url.
+
     private boolean isSecure(String url) {
       return url.startsWith("https://") || url.startsWith("http://");
     }

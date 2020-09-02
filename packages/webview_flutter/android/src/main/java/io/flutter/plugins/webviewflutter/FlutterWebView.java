@@ -34,6 +34,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
 
+  // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
     @Override
     public boolean onCreateWindow(
@@ -69,7 +70,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
       return true;
     }
-    // Verifies that a url opened by `Window.open` has a secure url.
+
     private boolean isSecure(String url) {
       return url.startsWith("https://") || url.startsWith("http://");
     }
