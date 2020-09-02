@@ -85,6 +85,11 @@ void main() {
 class MockWin32Wrapper extends Win32Wrapper {
   @override
   String getLocalDataPath() {
-    return fs.directory('\\test').path;
+    return fs.directory('\\data').path;
+  }
+
+  @override
+  String getModuleFileName() {
+    return 'test';
   }
 }
