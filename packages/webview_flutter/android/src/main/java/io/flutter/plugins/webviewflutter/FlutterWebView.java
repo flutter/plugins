@@ -4,15 +4,27 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Message;
+import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
+import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import io.flutter.Log;
 import io.flutter.plugin.common.BinaryMessenger;
+
+import androidx.annotation.NonNull;
+import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -49,6 +61,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
     webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+    webView.getSettings().setSupportMultipleWindows(true);
+    // Internal Bug: b/159892679
+    webView.setWebChromeClient(createWebChromeClient());
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
@@ -352,6 +367,62 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void updateUserAgent(String userAgent) {
     webView.getSettings().setUserAgentString(userAgent);
+  }
+
+  // Verifies that a url opened by `Window.open` has a secure url.
+  private boolean validNewWindowUrl(String url) {
+    return url.startsWith("https://") || url.startsWith("http://");
+  }
+
+  // Internal Bug: b/159892679
+  private WebChromeClient createWebChromeClient() {
+    return new WebChromeClient() {
+      @Override
+      public boolean onCreateWindow(final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+        WebViewClient webViewClient;
+        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          webViewClient = new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+              final String url = request.getUrl().toString();
+              if (validNewWindowUrl(url)) {
+                flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, request);
+              }
+              return true;
+            }
+          };
+        } else {
+          webViewClient = new WebViewClientCompat() {
+            @TargetApi(Build.VERSION_CODES.N)
+            @Override
+            public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull  WebResourceRequest request) {
+              final String url = request.getUrl().toString();
+              if (validNewWindowUrl(url)) {
+                flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, request);
+              }
+              return true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+              if (validNewWindowUrl(url)) {
+                flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, url);
+              }
+              return true;
+            }
+          };
+        }
+
+        final WebView newWebView = new WebView(view.getContext());
+        newWebView.setWebViewClient(webViewClient);
+
+        final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+        transport.setWebView(newWebView);
+        resultMsg.sendToTarget();
+
+        return true;
+      }
+    };
   }
 
   @Override
