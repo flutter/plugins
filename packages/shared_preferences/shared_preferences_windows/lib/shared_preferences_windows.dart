@@ -29,6 +29,9 @@ class Win32Wrapper {
 ///
 /// This class implements the `package:shared_preferences` functionality for Windows.
 class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
+  /// The default instance of [SharedPreferencesWindows] to use.
+  static SharedPreferencesWindows instance = SharedPreferencesWindows();
+
   /// The name of the parent directory for [fileName].
   final String fileDirectory = 'Flutter';
 

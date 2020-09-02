@@ -4,13 +4,13 @@
 
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 import 'package:e2e/e2e.dart';
 
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
 
-  group('$SharedPreferences', () {
+  group('SharedPreferencesWindows', () {
     const Map<String, dynamic> kTestValues = <String, dynamic>{
       'flutter.String': 'hello world',
       'flutter.bool': true,
@@ -27,10 +27,10 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    SharedPreferences preferences;
+    SharedPreferencesWindows preferences;
 
     setUp(() async {
-      preferences = await SharedPreferences.getInstance();
+      preferences = SharedPreferencesWindows.instance;
     });
 
     tearDown(() {
@@ -38,56 +38,55 @@ void main() {
     });
 
     test('reading', () async {
-      expect(preferences.get('String'), isNull);
-      expect(preferences.get('bool'), isNull);
-      expect(preferences.get('int'), isNull);
-      expect(preferences.get('double'), isNull);
-      expect(preferences.get('List'), isNull);
-      expect(preferences.getString('String'), isNull);
-      expect(preferences.getBool('bool'), isNull);
-      expect(preferences.getInt('int'), isNull);
-      expect(preferences.getDouble('double'), isNull);
-      expect(preferences.getStringList('List'), isNull);
+      final Map<String, Object> values = await preferences.getAll();
+      expect(values['String'], isNull);
+      expect(values['bool'], isNull);
+      expect(values['int'], isNull);
+      expect(values['double'], isNull);
+      expect(values['List'], isNull);
     });
 
     test('writing', () async {
       await Future.wait(<Future<bool>>[
-        preferences.setString('String', kTestValues2['flutter.String']),
-        preferences.setBool('bool', kTestValues2['flutter.bool']),
-        preferences.setInt('int', kTestValues2['flutter.int']),
-        preferences.setDouble('double', kTestValues2['flutter.double']),
-        preferences.setStringList('List', kTestValues2['flutter.List'])
+        preferences.setValue('String', 'String', kTestValues2['flutter.String']),
+        preferences.setValue('Bool', 'bool', kTestValues2['flutter.bool']),
+        preferences.setValue('Int', 'int', kTestValues2['flutter.int']),
+        preferences.setValue('Double', 'double', kTestValues2['flutter.double']),
+        preferences.setValue('StringList', 'List', kTestValues2['flutter.List'])
       ]);
-      expect(preferences.getString('String'), kTestValues2['flutter.String']);
-      expect(preferences.getBool('bool'), kTestValues2['flutter.bool']);
-      expect(preferences.getInt('int'), kTestValues2['flutter.int']);
-      expect(preferences.getDouble('double'), kTestValues2['flutter.double']);
-      expect(preferences.getStringList('List'), kTestValues2['flutter.List']);
+      final Map<String, Object> values = await preferences.getAll();
+      expect(values['String'], kTestValues2['flutter.String']);
+      expect(values['bool'], kTestValues2['flutter.bool']);
+      expect(values['int'], kTestValues2['flutter.int']);
+      expect(values['double'], kTestValues2['flutter.double']);
+      expect(values['List'], kTestValues2['flutter.List']);
     });
 
     test('removing', () async {
       const String key = 'testKey';
-      await preferences.setString(key, kTestValues['flutter.String']);
-      await preferences.setBool(key, kTestValues['flutter.bool']);
-      await preferences.setInt(key, kTestValues['flutter.int']);
-      await preferences.setDouble(key, kTestValues['flutter.double']);
-      await preferences.setStringList(key, kTestValues['flutter.List']);
+      await preferences.setValue('String', key, kTestValues['flutter.String']);
+      await preferences.setValue('Bool', key, kTestValues['flutter.bool']);
+      await preferences.setValue('Int', key, kTestValues['flutter.int']);
+      await preferences.setValue('Double', key, kTestValues['flutter.double']);
+      await preferences.setValue('StringList', key, kTestValues['flutter.List']);
       await preferences.remove(key);
-      expect(preferences.get('testKey'), isNull);
+      final Map<String, Object> values = await preferences.getAll();
+      expect(values[key], isNull);
     });
 
     test('clearing', () async {
-      await preferences.setString('String', kTestValues['flutter.String']);
-      await preferences.setBool('bool', kTestValues['flutter.bool']);
-      await preferences.setInt('int', kTestValues['flutter.int']);
-      await preferences.setDouble('double', kTestValues['flutter.double']);
-      await preferences.setStringList('List', kTestValues['flutter.List']);
+      await preferences.setValue('String', 'String', kTestValues['flutter.String']);
+      await preferences.setValue('Bool', 'bool', kTestValues['flutter.bool']);
+      await preferences.setValue('Int', 'int', kTestValues['flutter.int']);
+      await preferences.setValue('Double', 'double', kTestValues['flutter.double']);
+      await preferences.setValue('StringList', 'List', kTestValues['flutter.List']);
       await preferences.clear();
-      expect(preferences.getString('String'), null);
-      expect(preferences.getBool('bool'), null);
-      expect(preferences.getInt('int'), null);
-      expect(preferences.getDouble('double'), null);
-      expect(preferences.getStringList('List'), null);
+      final Map<String, Object> values = await preferences.getAll();
+      expect(values['String'], null);
+      expect(values['bool'], null);
+      expect(values['int'], null);
+      expect(values['double'], null);
+      expect(values['List'], null);
     });
   });
 }
