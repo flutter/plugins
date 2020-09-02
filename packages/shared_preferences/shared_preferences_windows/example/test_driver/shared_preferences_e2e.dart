@@ -48,10 +48,12 @@ void main() {
 
     test('writing', () async {
       await Future.wait(<Future<bool>>[
-        preferences.setValue('String', 'String', kTestValues2['flutter.String']),
+        preferences.setValue(
+            'String', 'String', kTestValues2['flutter.String']),
         preferences.setValue('Bool', 'bool', kTestValues2['flutter.bool']),
         preferences.setValue('Int', 'int', kTestValues2['flutter.int']),
-        preferences.setValue('Double', 'double', kTestValues2['flutter.double']),
+        preferences.setValue(
+            'Double', 'double', kTestValues2['flutter.double']),
         preferences.setValue('StringList', 'List', kTestValues2['flutter.List'])
       ]);
       final Map<String, Object> values = await preferences.getAll();
@@ -68,18 +70,22 @@ void main() {
       await preferences.setValue('Bool', key, kTestValues['flutter.bool']);
       await preferences.setValue('Int', key, kTestValues['flutter.int']);
       await preferences.setValue('Double', key, kTestValues['flutter.double']);
-      await preferences.setValue('StringList', key, kTestValues['flutter.List']);
+      await preferences.setValue(
+          'StringList', key, kTestValues['flutter.List']);
       await preferences.remove(key);
       final Map<String, Object> values = await preferences.getAll();
       expect(values[key], isNull);
     });
 
     test('clearing', () async {
-      await preferences.setValue('String', 'String', kTestValues['flutter.String']);
+      await preferences.setValue(
+          'String', 'String', kTestValues['flutter.String']);
       await preferences.setValue('Bool', 'bool', kTestValues['flutter.bool']);
       await preferences.setValue('Int', 'int', kTestValues['flutter.int']);
-      await preferences.setValue('Double', 'double', kTestValues['flutter.double']);
-      await preferences.setValue('StringList', 'List', kTestValues['flutter.List']);
+      await preferences.setValue(
+          'Double', 'double', kTestValues['flutter.double']);
+      await preferences.setValue(
+          'StringList', 'List', kTestValues['flutter.List']);
       await preferences.clear();
       final Map<String, Object> values = await preferences.getAll();
       expect(values['String'], null);
