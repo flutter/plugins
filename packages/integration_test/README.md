@@ -75,15 +75,13 @@ Make sure you have [enabled web support](https://flutter.dev/docs/get-started/we
 then [download and run](https://flutter.dev/docs/cookbook/testing/integration/introduction#6b-web)
 the web driver in another process.
 
-Use following command to execute the tests, passing either `--release` or
-`--profile` as debug mode is not supported.
+Use following command to execute the tests:
 
 ```sh
 flutter drive \
   --driver=test_driver/integration_test_driver.dart \
   --target=integration_test/foo_test.dart \
-  -d web-server \
-  --release
+  -d web-server
 ```
 
 ## Android Device Testing

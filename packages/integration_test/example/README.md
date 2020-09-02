@@ -18,6 +18,5 @@ Web:
 flutter drive \
   --driver=test_driver/integration_test_driver.dart \
   --target=integration_test/example_test.dart \
-  -d web-server \
-  --release
+  -d web-server
 ```
