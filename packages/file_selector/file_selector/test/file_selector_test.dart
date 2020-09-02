@@ -33,6 +33,20 @@ void main() {
     expect(result, expectedPath);
   });
 
+  test('getDirectoryPath', () async {
+    final expectedPath = '/example/path';
+
+    when(mock.getDirectoryPath(
+      initialDirectory: 'dir',
+      confirmButtonText: 'save',
+    )).thenAnswer((_) => Future.value(expectedPath));
+
+    final result = await getDirectoryPath(
+        initialDirectory: 'dir', confirmButtonText: 'save');
+
+    expect(result, expectedPath);
+  });
+
   test('openFile', () async {
     final file = XFile('path');
 

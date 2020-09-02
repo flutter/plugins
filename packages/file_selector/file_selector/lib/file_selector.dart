@@ -46,3 +46,12 @@ Future<String> getSavePath({
       suggestedName: suggestedName,
       confirmButtonText: confirmButtonText);
 }
+
+/// Gets a directory path from a user's file system
+Future<String> getDirectoryPath({
+  String initialDirectory,
+  String confirmButtonText,
+}) async {
+  return FileSelectorPlatform.instance.getDirectoryPath(
+      initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);
+}

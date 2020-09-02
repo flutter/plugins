@@ -214,6 +214,12 @@ void main() {
     expect(path, completes);
   });
 
+  testWidgets('getDirectoryPath completes', (WidgetTester tester) async {
+    plugin = FileSelectorPlugin();
+    final path = plugin.getDirectoryPath();
+    expect(path, completes);
+  });
+
   group('XFile saveTo(..)', () {
     testWidgets('creates a DOM container', (WidgetTester tester) async {
       XFile file = XFile.fromData(bytes);

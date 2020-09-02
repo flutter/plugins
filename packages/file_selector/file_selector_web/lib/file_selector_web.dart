@@ -47,6 +47,13 @@ class FileSelectorPlugin extends FileSelectorPlatform {
   }) async =>
       null;
 
+  @override
+  Future<String> getDirectoryPath({
+    String initialDirectory,
+    String confirmButtonText,
+  }) async =>
+      null;
+
   /// Load Helper
   Future<List<XFile>> _openFileHelper(
       bool multiple, List<XTypeGroup> acceptedTypes) {
