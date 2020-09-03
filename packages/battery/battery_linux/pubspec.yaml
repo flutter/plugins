@@ -1,0 +1,27 @@
+name: battery_linux
+description: linux implementation of the battery plugin
+version: 1.0.0
+homepage: https://github.com/flutter/plugins/tree/master/packages/battery/battery_linux
+
+flutter:
+  plugin:
+    platforms:
+      linux:
+        dartPluginClass: BatteryLinux
+        pluginClass: none
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.12.8 <2.0.0"
+
+dependencies:
+  battery_platform_interface: ^1.0.0
+  test: ^1.3.0
+  mockito: ^4.1.1
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  pedantic: ^1.8.0
