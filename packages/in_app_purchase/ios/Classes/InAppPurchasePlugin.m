@@ -183,12 +183,14 @@
         [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
   }
     
-  @try {
-    [self.paymentQueueHandler addPayment:payment];
-  } @catch (NSException *e) {
-    result([FlutterError errorWithCode:@"storekit_add_payment_exception"
-                               message:e.name
-                               details:e.description]);
+  if (![self.paymentQueueHandler addPayment:payment]) {
+    result([FlutterError
+        errorWithCode:@"storekit_duplicate_product_object"
+              message:@"There is a pending transaction for the same product identifier. Please "
+                      @"either wait for it to be finished or finish it manually using "
+                      @"`completePurchase` to avoid edge cases."
+
+              details:call.arguments]);
     return;
   }
   result(nil);
