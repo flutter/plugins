@@ -205,11 +205,11 @@
   }
   NSString *transactionIdentifier = call.arguments;
 
-  NSArray<SKPaymentTransaction *>* pendingTransactions =
+  NSArray<SKPaymentTransaction *> *pendingTransactions =
       [self.paymentQueueHandler getUnfinishedTransactions];
 
   for (SKPaymentTransaction *transaction in pendingTransactions) {
-    if([transaction.transactionIdentifier isEqualToString:transactionIdentifier]) {
+    if ([transaction.transactionIdentifier isEqualToString:transactionIdentifier]) {
       @try {
         [self.paymentQueueHandler finishTransaction:transaction];
       } @catch (NSException *e) {
