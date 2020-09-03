@@ -182,7 +182,7 @@
     payment.simulatesAskToBuyInSandbox =
         [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
   }
-    
+
   if (![self.paymentQueueHandler addPayment:payment]) {
     result([FlutterError
         errorWithCode:@"storekit_duplicate_product_object"
@@ -204,10 +204,11 @@
     return;
   }
   NSString *transactionIdentifier = call.arguments;
-  
-  NSArray<SKPaymentTransaction *>* pendingTransactions = [self.paymentQueueHandler getUnfinishedTransactions];
-  
-  for(SKPaymentTransaction *transaction in pendingTransactions) {
+
+  NSArray<SKPaymentTransaction *>* pendingTransactions =
+      [self.paymentQueueHandler getUnfinishedTransactions];
+
+  for (SKPaymentTransaction *transaction in pendingTransactions) {
     if([transaction.transactionIdentifier isEqualToString:transactionIdentifier]) {
       @try {
         [self.paymentQueueHandler finishTransaction:transaction];
@@ -219,7 +220,7 @@
       }
     }
   }
-  
+
   result(nil);
 }
 

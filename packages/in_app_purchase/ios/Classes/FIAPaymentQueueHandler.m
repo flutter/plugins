@@ -85,7 +85,7 @@
 // Sent when an error is encountered while adding transactions from the user's purchase history back
 // to the queue.
 - (void)paymentQueue:(SKPaymentQueue *)queue
-    restoreCompletedTransactionsFailedWithError :(NSError *)error {
+    restoreCompletedTransactionsFailedWithError:(NSError *)error {
   self.restoreTransactionFailed(error);
 }
 
