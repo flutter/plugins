@@ -48,6 +48,12 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return channel.invokeMethod<void>('map#waitForMap');
   }
 
+  /// Dispose of the native resources.
+  @override
+  void dispose({int mapId}) {
+    // Noop!
+  }
+
   // The controller we need to broadcast the different events coming
   // from handleMethodCall.
   //

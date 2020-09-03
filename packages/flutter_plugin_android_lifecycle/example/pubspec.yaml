@@ -8,8 +8,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  e2e:
-    path: ../../e2e
+  integration_test:
+    path: ../../integration_test
 
 dev_dependencies:
   flutter_test:
