@@ -5,11 +5,16 @@
 import 'package:flutter/services.dart';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:meta/meta.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/file_picker');
 
 /// An implementation of [FileSelectorPlatform] that uses method channels.
 class MethodChannelFileSelector extends FileSelectorPlatform {
+  /// The MethodChannel that is being used by this implementation of the plugin.
+  @visibleForTesting
+  MethodChannel get channel => _channel;
+
   /// Load a file from user's computer and return it as an XFile
   @override
   Future<XFile> openFile({
@@ -17,15 +22,17 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     String initialDirectory,
     String confirmButtonText,
   }) async {
-    String path = await _channel.invokeMethod<String>(
-      'openFiles',
-      <String, Object>{
-        'acceptedTypes': acceptedTypeGroups,
+    final List<String> path = await _channel.invokeListMethod<String>(
+      'openFile',
+      <String, dynamic>{
+        'acceptedTypeGroups':
+            acceptedTypeGroups?.map((group) => group.toJSON())?.toList(),
         'initialDirectory': initialDirectory,
+        'confirmButtonText': confirmButtonText,
         'multiple': false,
       },
     );
-    return XFile(path);
+    return path == null ? null : XFile(path?.first);
   }
 
   /// Load multiple files from user's computer and return it as an XFile
@@ -35,18 +42,20 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     String initialDirectory,
     String confirmButtonText,
   }) async {
-    final pathList = await _channel.invokeMethod<List<String>>(
-      'openFiles',
-      <String, Object>{
-        'acceptedTypes': acceptedTypeGroups,
+    final List<String> pathList = await _channel.invokeListMethod<String>(
+      'openFile',
+      <String, dynamic>{
+        'acceptedTypeGroups':
+            acceptedTypeGroups?.map((group) => group.toJSON())?.toList(),
         'initialDirectory': initialDirectory,
+        'confirmButtonText': confirmButtonText,
         'multiple': true,
       },
     );
-    return pathList.map((path) => XFile(path)).toList();
+    return pathList?.map((path) => XFile(path))?.toList() ?? [];
   }
 
-  /// Saves the file to user's Disk
+  /// Gets the path from a save dialog
   @override
   Future<String> getSavePath({
     List<XTypeGroup> acceptedTypeGroups,
@@ -55,10 +64,28 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     String confirmButtonText,
   }) async {
     return _channel.invokeMethod<String>(
-      'saveFile',
-      <String, Object>{
+      'getSavePath',
+      <String, dynamic>{
+        'acceptedTypeGroups':
+            acceptedTypeGroups?.map((group) => group.toJSON())?.toList(),
         'initialDirectory': initialDirectory,
         'suggestedName': suggestedName,
+        'confirmButtonText': confirmButtonText,
+      },
+    );
+  }
+
+  /// Gets a directory path from a dialog
+  @override
+  Future<String> getDirectoryPath({
+    String initialDirectory,
+    String confirmButtonText,
+  }) async {
+    return _channel.invokeMethod<String>(
+      'getDirectoryPath',
+      <String, dynamic>{
+        'initialDirectory': initialDirectory,
+        'confirmButtonText': confirmButtonText,
       },
     );
   }

@@ -42,4 +42,15 @@ class XTypeGroup {
 
   /// The web wild cards for this group (ex: image/*, video/*)
   final List<String> webWildCards;
+
+  /// Converts this object into a JSON formatted object
+  Map<String, dynamic> toJSON() {
+    return <String, dynamic>{
+      'label': label,
+      'extensions': extensions,
+      'mimeTypes': mimeTypes,
+      'macUTIs': macUTIs,
+      'webWildCards': webWildCards,
+    };
+  }
 }
