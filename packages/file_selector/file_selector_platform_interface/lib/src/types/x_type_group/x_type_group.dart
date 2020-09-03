@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO: should we be using this package or just extracting the important conversion data from it?
-
 /// A set of allowed XTypes
 class XTypeGroup {
   /// Creates a new group with the given label and file extensions.
