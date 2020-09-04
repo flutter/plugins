@@ -9,21 +9,7 @@ import 'package:file/local.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
-
-import 'src/win32.dart' as win32;
-
-/// Wrapper to the win32 ffi functions for testing.
-class Win32Wrapper {
-  /// Calls the win32 function for [getLocalDataPath].
-  String getLocalDataPath() {
-    return win32.getLocalDataPath();
-  }
-
-  /// Calls the win32 function for [getModuleFileName].
-  String getModuleFileName() {
-    return win32.getModuleFileName();
-  }
-}
+import 'package:path_provider_windows/path_provider_windows.dart';
 
 /// The Windows implementation of [SharedPreferencesStorePlatform].
 ///
@@ -32,46 +18,39 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   /// The default instance of [SharedPreferencesWindows] to use.
   static SharedPreferencesWindows instance = SharedPreferencesWindows();
 
-  /// The name of the parent directory for [fileName].
-  final String fileDirectory = 'Flutter';
-
   /// File system used to store to disk. Exposed for testing only.
   @visibleForTesting
   FileSystem fs = LocalFileSystem();
 
-  /// Wrapper for win32 ffi calls.
+  /// The path_provider_windows instance used to find the support directory.
+  ///
+  /// DO NOT LAND: See what the testing solution is for path_provider to see if
+  /// exposing this is actually necessary.
   @visibleForTesting
-  Win32Wrapper win32Wrapper = Win32Wrapper();
+  PathProviderWindows pathProvider = PathProviderWindows();
 
-  String _localDataFilePath;
+  /// Local copy of preferences
+  Map<String, Object> _cachedPreferences;
 
-  /// The path to the file in disk were the preferences are stored.
-  @visibleForTesting
-  String get getLocalDataFilePath {
-    if (_localDataFilePath != null) {
-      return _localDataFilePath;
+  /// Cached file for storing preferences.
+  File _localDataFilePath;
+
+  /// Gets the file where the preferences are stored.
+  Future<File> _getLocalDataFile() async {
+    if (_localDataFilePath == null) {
+      final directory = await pathProvider.getApplicationSupportPath();
+      _localDataFilePath =
+          fs.file(path.join(directory, 'shared_preferences.json'));
     }
-    String appPath = win32Wrapper.getModuleFileName();
-    String appName = path.basenameWithoutExtension(appPath);
-    String localDataPath = win32Wrapper.getLocalDataPath();
-    // Append app-specific identifiers.
-    // ####################
-    // # DO NOT LAND! path_provider should be landed and published first, and
-    // # this plugin should use path_provider_windows, as with Linux.
-    // ####################
-    _localDataFilePath =
-        path.join(localDataPath, fileDirectory, '$appName.json');
     return _localDataFilePath;
   }
 
-  Map<String, Object> _cachedPreferences;
-
-  /// The in-memory representation of the map saved to a file in disk;
-  @visibleForTesting
-  Map<String, Object> get getCachedPreferences {
+  /// Gets the preferences from the stored file. Once read, the preferences are
+  /// maintained in memory.
+  Future<Map<String, Object>> _readPreferences() async {
     if (_cachedPreferences == null) {
       _cachedPreferences = {};
-      File localDataFile = fs.file(getLocalDataFilePath);
+      File localDataFile = await _getLocalDataFile();
       if (localDataFile.existsSync()) {
         String stringMap = localDataFile.readAsStringSync();
         if (stringMap.isNotEmpty) {
@@ -84,13 +63,13 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
 
   /// Writes the cached preferences to disk. Returns [true] if the operation
   /// succeeded.
-  bool _writePreferencesToFile() {
+  Future<bool> _writePreferences(Map<String, Object> preferences) async {
     try {
-      File localDataFile = fs.file(getLocalDataFilePath);
+      File localDataFile = await _getLocalDataFile();
       if (!localDataFile.existsSync()) {
         localDataFile.createSync(recursive: true);
       }
-      String stringMap = json.encode(getCachedPreferences);
+      String stringMap = json.encode(preferences);
       localDataFile.writeAsStringSync(stringMap);
     } catch (e) {
       print("Error saving preferences to disk: $e");
@@ -101,24 +80,27 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
 
   @override
   Future<bool> clear() async {
-    getCachedPreferences.clear();
-    return _writePreferencesToFile();
+    var preferences = await _readPreferences();
+    preferences.clear();
+    return _writePreferences(preferences);
   }
 
   @override
   Future<Map<String, Object>> getAll() async {
-    return getCachedPreferences;
+    return _readPreferences();
   }
 
   @override
   Future<bool> remove(String key) async {
-    getCachedPreferences.remove(key);
-    return _writePreferencesToFile();
+    var preferences = await _readPreferences();
+    preferences.remove(key);
+    return _writePreferences(preferences);
   }
 
   @override
   Future<bool> setValue(String valueType, String key, Object value) async {
-    getCachedPreferences[key] = value;
-    return _writePreferencesToFile();
+    var preferences = await _readPreferences();
+    preferences[key] = value;
+    return _writePreferences(preferences);
   }
 }

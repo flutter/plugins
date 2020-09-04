@@ -1,95 +1,107 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
-MemoryFileSystem fs = MemoryFileSystem.test();
-
 void main() {
-  const String kTestKey = 'testKey';
-  const String kTestValue = 'testValue';
-
-  SharedPreferencesWindows sharedPreferences;
+  MemoryFileSystem fileSystem;
+  PathProviderWindows pathProvider;
 
   setUp(() {
-    sharedPreferences = SharedPreferencesWindows();
-    sharedPreferences.win32Wrapper = MockWin32Wrapper();
-    sharedPreferences.fs = fs;
+    fileSystem = MemoryFileSystem.test();
+    pathProvider = FakePathProviderWindows();
   });
 
-  tearDown(() {
-    fs.file(sharedPreferences.getLocalDataFilePath)
-      ..deleteSync(recursive: true);
-  });
+  tearDown(() {});
 
-  /// Writes the test file to disk and loads the contents to the
-  /// sharedPreferences cache.
-  void _writeTestFile() {
-    fs.file(sharedPreferences.getLocalDataFilePath)
+  Future<String> _getFilePath() async {
+    final directory = await pathProvider.getApplicationSupportPath();
+    return path.join(directory, 'shared_preferences.json');
+  }
+
+  _writeTestFile(String value) async {
+    fileSystem.file(await _getFilePath())
       ..createSync(recursive: true)
-      ..writeAsStringSync('''
-        {
-          "$kTestKey": "$kTestValue"
-        }
-      ''');
-    // Loads the file contents into the shared preferences store's cache.
-    sharedPreferences.getCachedPreferences;
+      ..writeAsStringSync(value);
   }
 
-  String _readTestFile() {
-    return fs.file(sharedPreferences.getLocalDataFilePath).readAsStringSync();
+  Future<String> _readTestFile() async {
+    return fileSystem.file(await _getFilePath()).readAsStringSync();
   }
 
-  group('shared preferences', () {
-    test('getAll', () async {
-      _writeTestFile();
+  SharedPreferencesWindows _getPreferences() {
+    var prefs = SharedPreferencesWindows();
+    prefs.fs = fileSystem;
+    prefs.pathProvider = pathProvider;
+    return prefs;
+  }
 
-      final Map<String, Object> allData = await sharedPreferences.getAll();
-      expect(allData, hasLength(1));
-      expect(allData[kTestKey], kTestValue);
-    });
+  test('getAll', () async {
+    await _writeTestFile('{"key1": "one", "key2": 2}');
+    var prefs = _getPreferences();
 
-    test('remove', () async {
-      _writeTestFile();
-      expect(sharedPreferences.getCachedPreferences[kTestKey], isNotNull);
-      expect(await sharedPreferences.remove(kTestKey), isTrue);
-      expect(sharedPreferences.getCachedPreferences.containsKey(kTestKey),
-          isFalse);
-      expect(_readTestFile(), '{}');
-    });
+    var values = await prefs.getAll();
+    expect(values, hasLength(2));
+    expect(values['key1'], 'one');
+    expect(values['key2'], 2);
+  });
 
-    test('setValue', () async {
-      _writeTestFile();
-      const String kNewKey = 'NewKey';
-      const String kNewValue = 'NewValue';
-      expect(sharedPreferences.getCachedPreferences[kNewKey], isNull);
-      expect(await sharedPreferences.setValue('String', kNewKey, kNewValue),
-          isTrue);
-      expect(sharedPreferences.getCachedPreferences[kNewKey], isNotNull);
-      expect(_readTestFile(),
-          '{"$kTestKey":"$kTestValue","$kNewKey":"$kNewValue"}');
-    });
+  test('remove', () async {
+    await _writeTestFile('{"key1":"one","key2":2}');
+    var prefs = _getPreferences();
 
-    test('clear', () async {
-      _writeTestFile();
-      expect(await sharedPreferences.clear(), isTrue);
-      expect(sharedPreferences.getCachedPreferences.isEmpty, isTrue);
-      expect(_readTestFile(), '{}');
-    });
+    await prefs.remove('key2');
+
+    expect(await _readTestFile(), '{"key1":"one"}');
+  });
+
+  test('setValue', () async {
+    await _writeTestFile('{}');
+    var prefs = _getPreferences();
+
+    await prefs.setValue('', 'key1', 'one');
+    await prefs.setValue('', 'key2', 2);
+
+    expect(await _readTestFile(), '{"key1":"one","key2":2}');
+  });
+
+  test('clear', () async {
+    await _writeTestFile('{"key1":"one","key2":2}');
+    var prefs = _getPreferences();
+
+    await prefs.clear();
+    expect(await _readTestFile(), '{}');
   });
 }
 
-class MockWin32Wrapper extends Win32Wrapper {
+/// Fake implementation of PathProviderWindows that returns hard-coded paths,
+/// allowing tests to run on any platform.
+///
+/// Note that this should only be used with an in-memory filesystem, as the
+/// path it returns is a root path that does not actually exist on Windows.
+class FakePathProviderWindows extends PathProviderPlatform
+    implements PathProviderWindows {
   @override
-  String getLocalDataPath() {
-    return fs.directory('\\data').path;
-  }
+  Future<String> getApplicationSupportPath() async => r'C:\appsupport';
 
   @override
-  String getModuleFileName() {
-    return 'test';
-  }
+  Future<String> getTemporaryPath() async => null;
+
+  @override
+  Future<String> getLibraryPath() async => null;
+
+  @override
+  Future<String> getApplicationDocumentsPath() async => null;
+
+  @override
+  Future<String> getDownloadsPath() async => null;
+
+  @override
+  Future<String> getPath(String folderID) async => null;
 }
