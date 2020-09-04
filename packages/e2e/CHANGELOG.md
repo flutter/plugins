@@ -1,3 +1,7 @@
+## 0.4.3
+
+* Uses CompletableFuture from android-retrofuture allow compatibility with API < 24.
+
 ## 0.4.2
 
 * Adds support for Android E2E tests that utilize other @Rule's, like GrantPermissionRule.

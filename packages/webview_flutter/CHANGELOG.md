@@ -1,6 +1,14 @@
-## 0.3.22
+## 0.3.22+2
 
 * Add support for `NavigationRequest.type`
+
+## 0.3.22+1
+
+* Update the `setAndGetScrollPosition` to use hard coded values and add a `pumpAndSettle` call.
+
+## 0.3.22
+
+* Add support for passing a failing url.
 
 ## 0.3.21
 

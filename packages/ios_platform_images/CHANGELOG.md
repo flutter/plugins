@@ -1,3 +1,7 @@
+## 0.1.2+1
+
+* Remove Android folder from `ios_platform_images`.
+
 ## 0.1.2
 
 * Fix crash when parameter extension is null.
