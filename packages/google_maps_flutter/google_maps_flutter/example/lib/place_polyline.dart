@@ -4,14 +4,13 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:io' show Platform;
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
-class PlacePolylinePage extends Page {
+class PlacePolylinePage extends GoogleMapExampleAppPage {
   PlacePolylinePage() : super(const Icon(Icons.linear_scale), 'Place polyline');
 
   @override
@@ -202,7 +201,9 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   @override
   Widget build(BuildContext context) {
-    final bool iOSorNotSelected = Platform.isIOS || (selectedPolyline == null);
+    final bool iOSorNotSelected =
+        (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) ||
+            (selectedPolyline == null);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

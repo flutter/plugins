@@ -5,14 +5,17 @@
 package io.flutter.plugins.shareexample;
 
 import android.os.Bundle;
+import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
 import io.flutter.app.FlutterActivity;
-import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.plugins.share.SharePlugin;
 
 public class EmbeddingV1Activity extends FlutterActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    GeneratedPluginRegistrant.registerWith(this);
+    IntegrationTestPlugin.registerWith(
+        registrarFor("dev.flutter.plugins.integration_test.IntegrationTestPlugin"));
+    SharePlugin.registerWith(registrarFor("io.flutter.plugins.share.SharePlugin"));
   }
 }
