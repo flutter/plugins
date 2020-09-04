@@ -1,3 +1,7 @@
+## 0.3.1+3
+
+* Android: Fixed bug due to code -3 (SERVICE_TIMEOUT) in `BillingResponse`
+
 ## 0.3.1+2
 
 * Fix potential casting crash on Android v1 embedding when registering life cycle callbacks.
