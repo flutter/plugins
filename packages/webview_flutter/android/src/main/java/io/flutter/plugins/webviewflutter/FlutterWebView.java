@@ -43,19 +43,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           new WebViewClient() {
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
-            public boolean shouldOverrideUrlLoading(
-                @NonNull WebView view, @NonNull WebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull WebResourceRequest request) {
               final String url = request.getUrl().toString();
-              if (isSecure(url)) {
-                flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, request);
+              if (isSecure(url) && !flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, request)) {
+                webView.loadUrl(url);
               }
               return true;
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-              if (isSecure(url)) {
-                flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, url);
+              if (isSecure(url) && !flutterWebViewClient.shouldOverrideUrlLoading(FlutterWebView.this.webView, url)) {
+                webView.loadUrl(url);
               }
               return true;
             }
