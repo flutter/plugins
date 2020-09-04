@@ -15,12 +15,8 @@ import 'package:path_provider_windows/folders.dart';
 /// This class implements the `package:path_provider` functionality for Windows
 class PathProviderWindows extends PathProviderPlatform {
   /// Path to the temporary directory on the device that is not backed up and is
-  /// suitable for storing caches of downloaded files.
-  ///
-  /// On Windows, this the path specified by the TMP environment variable, or
-  /// the TEMP environment variable, or the USERPROFILE environment variable,
-  /// or the Windows directory, in order of preference. Windows does not
-  /// guarantee that the path exists or is writeable to.
+  /// suitable for storing caches of downloaded files. This is typically the
+  /// same as the TMP environment variable.
   @override
   Future<String> getTemporaryPath() {
     final buffer = allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
