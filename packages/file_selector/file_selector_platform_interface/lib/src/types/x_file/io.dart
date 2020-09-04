@@ -35,7 +35,7 @@ class XFile extends XFileBase {
     int length,
     DateTime lastModified,
   })  : _bytes = bytes,
-        _file = File(path),
+        _file = File(path ?? ''),
         _length = length,
         _lastModified = lastModified,
         super(path) {
@@ -55,7 +55,7 @@ class XFile extends XFileBase {
   @override
   void saveTo(String path) async {
     File fileToSave = File(path);
-    await fileToSave.writeAsBytes(_bytes);
+    await fileToSave.writeAsBytes(_bytes ?? (await readAsBytes()));
     await fileToSave.create();
   }
 
