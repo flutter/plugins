@@ -24,22 +24,27 @@ class PathProviderWindows extends PathProviderPlatform {
   @override
   Future<String> getTemporaryPath() {
     final buffer = allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
-    final length = GetTempPath(MAX_PATH, buffer);
+    String path;
 
-    if (length == 0) {
-      final error = GetLastError();
-      free(buffer);
-      throw WindowsException(error);
-    } else {
-      var path = buffer.unpackString(length);
+    try {
+      final length = GetTempPath(MAX_PATH, buffer);
 
-      // GetTempPath adds a trailing backslash, but SHGetKnownFolderPath does not.
-      // Strip off trailing backslash for consistency with other methods here.
-      if (path[path.length - 1] == '\\') {
-        path = path.substring(0, path.length - 1);
+      if (length == 0) {
+        final error = GetLastError();
+        free(buffer);
+        throw WindowsException(error);
+      } else {
+        path = buffer.unpackString(length);
+
+        // GetTempPath adds a trailing backslash, but SHGetKnownFolderPath does not.
+        // Strip off trailing backslash for consistency with other methods here.
+        if (path[path.length - 1] == '\\') {
+          path = path.substring(0, path.length - 1);
+        }
       }
-      free(buffer);
       return Future.value(path);
+    } finally {
+      free(buffer);
     }
   }
 
@@ -70,24 +75,27 @@ class PathProviderWindows extends PathProviderPlatform {
   /// folderID is a GUID that represents a specific known folder ID, drawn from
   /// [WindowsKnownFolder].
   Future<String> getPath(String folderID) {
-    GUID knownFolderID = GUID.fromString(folderID);
-    Pointer<IntPtr> pathPtrPtr = allocate<IntPtr>();
+    final pathPtrPtr = allocate<IntPtr>();
+    Pointer<Utf16> pathPtr;
 
-    final hr = SHGetKnownFolderPath(
-        knownFolderID.addressOf, KF_FLAG_DEFAULT, NULL, pathPtrPtr);
+    try {
+      GUID knownFolderID = GUID.fromString(folderID);
 
-    if (FAILED(hr)) {
-      if (hr == E_INVALIDARG || hr == E_FAIL) {
-        throw WindowsException(hr);
+      final hr = SHGetKnownFolderPath(
+          knownFolderID.addressOf, KF_FLAG_DEFAULT, NULL, pathPtrPtr);
+
+      if (FAILED(hr)) {
+        if (hr == E_INVALIDARG || hr == E_FAIL) {
+          throw WindowsException(hr);
+        }
       }
+
+      pathPtr = Pointer<Utf16>.fromAddress(pathPtrPtr.value);
+      final path = pathPtr.unpackString(MAX_PATH);
+      return Future.value(path);
+    } finally {
+      CoTaskMemFree(pathPtr.cast());
+      free(pathPtrPtr);
     }
-
-    final pathPtr = Pointer<Utf16>.fromAddress(pathPtrPtr.value);
-    final path = pathPtr.unpackString(MAX_PATH);
-
-    CoTaskMemFree(pathPtr.cast());
-    free(pathPtrPtr);
-
-    return Future.value(path);
   }
 }
