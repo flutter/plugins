@@ -21,7 +21,8 @@ import 'package:file_selector_platform_interface/file_selector_platform_interfac
 //
 // https://github.com/flutter/flutter/issues/20907
 
-final path = './assets/hello.txt';
+final pathPrefix = './assets/';
+final path = pathPrefix + 'hello.txt';
 final String expectedStringContents = 'Hello, world!';
 final Uint8List bytes = utf8.encode(expectedStringContents);
 final File textFile = File(path);
@@ -29,22 +30,70 @@ final String textFilePath = textFile.path;
 
 void main() {
   group('Create with a path', () {
-    final pickedFile = XFile(textFilePath);
+    final file = XFile(textFilePath);
 
     test('Can be read as a string', () async {
-      expect(await pickedFile.readAsString(), equals(expectedStringContents));
+      expect(await file.readAsString(), equals(expectedStringContents));
     });
     test('Can be read as bytes', () async {
-      expect(await pickedFile.readAsBytes(), equals(bytes));
+      expect(await file.readAsBytes(), equals(bytes));
     });
 
     test('Can be read as a stream', () async {
-      expect(await pickedFile.openRead().first, equals(bytes));
+      expect(await file.openRead().first, equals(bytes));
     });
 
     test('Stream can be sliced', () async {
-      expect(
-          await pickedFile.openRead(2, 5).first, equals(bytes.sublist(2, 5)));
+      expect(await file.openRead(2, 5).first, equals(bytes.sublist(2, 5)));
+    });
+
+    test('saveTo(..) creates file', () async {
+      File removeBeforeTest = File(pathPrefix + 'newFilePath.txt');
+      if (removeBeforeTest.existsSync()) {
+        await removeBeforeTest.delete();
+      }
+
+      await file.saveTo(pathPrefix + 'newFilePath.txt');
+      File newFile = File(pathPrefix + 'newFilePath.txt');
+
+      expect(newFile.existsSync(), isTrue);
+      expect(newFile.readAsStringSync(), 'Hello, world!');
+
+      await newFile.delete();
+    });
+  });
+
+  group('Create with data', () {
+    final file = XFile.fromData(bytes);
+
+    test('Can be read as a string', () async {
+      expect(await file.readAsString(), equals(expectedStringContents));
+    });
+    test('Can be read as bytes', () async {
+      expect(await file.readAsBytes(), equals(bytes));
+    });
+
+    test('Can be read as a stream', () async {
+      expect(await file.openRead().first, equals(bytes));
+    });
+
+    test('Stream can be sliced', () async {
+      expect(await file.openRead(2, 5).first, equals(bytes.sublist(2, 5)));
+    });
+
+    test('Function saveTo(..) creates file', () async {
+      File removeBeforeTest = File(pathPrefix + 'newFileData.txt');
+      if (removeBeforeTest.existsSync()) {
+        await removeBeforeTest.delete();
+      }
+
+      await file.saveTo(pathPrefix + 'newFileData.txt');
+      File newFile = File(pathPrefix + 'newFileData.txt');
+
+      expect(newFile.existsSync(), isTrue);
+      expect(newFile.readAsStringSync(), 'Hello, world!');
+
+      await newFile.delete();
     });
   });
 }
