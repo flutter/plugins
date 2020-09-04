@@ -48,7 +48,8 @@ class BatteryLinux extends BatteryPlatform {
     File file = File("$_path/status");
     while (true) {
       await Future.delayed(Duration(seconds: 1));
-      yield _parseBatteryState((await file.readAsString()).toLowerCase().trim());
+      yield _parseBatteryState(
+          (await file.readAsString()).toLowerCase().trim());
     }
   }
 }
