@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:battery/battery.dart';
+import 'package:battery_linux/battery_linux.dart';
+import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MaterialApp(
+      home: MyApp(),
+    ),
+  );
 }
 
 /// Main app.
@@ -18,15 +23,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Battery _battery = Battery();
-  BatteryState _batteryState = BatteryState.full;
+  BatteryLinux _batteryLinux = BatteryLinux();
+
+  BatteryState _batteryState;
   StreamSubscription<BatteryState> _batteryStateSubscription;
 
   @override
   void initState() {
     super.initState();
     _batteryStateSubscription =
-        _battery.onBatteryStateChanged.listen((BatteryState state) {
+        _batteryLinux.onBatteryStateChanged().listen((BatteryState state) {
       setState(() {
         _batteryState = state;
       });
@@ -35,35 +41,33 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('State is : $_batteryState'),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.battery_unknown),
-          onPressed: () async {
-            final int batteryLevel = await _battery.batteryLevel;
-            // ignore: unawaited_futures
-            showDialog<void>(
-              context: context,
-              builder: (_) => AlertDialog(
-                content: Text('Battery: $batteryLevel%'),
-                actions: <Widget>[
-                  FlatButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  )
-                ],
-              ),
-            );
-          },
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Plugin example app'),
+      ),
+      body: Center(
+        child: Text('$_batteryState'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.battery_unknown),
+        onPressed: () async {
+          int batteryLevel = await _batteryLinux.batteryLevel();
+          // ignore: unawaited_futures
+          showDialog(
+            context: context,
+            child: AlertDialog(
+              content: Text('Battery: $batteryLevel%'),
+              actions: <Widget>[
+                FlatButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }
