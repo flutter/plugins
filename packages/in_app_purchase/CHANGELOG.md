@@ -1,3 +1,7 @@
+## 0.3.4+6
+
+* Android: Fixed bug due to code -3 (SERVICE_TIMEOUT) in `BillingResponse`
+
 ## 0.3.4+5
 
 * Added necessary README docs for getting started with Android.
