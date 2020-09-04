@@ -1,4 +1,4 @@
-## 0.3.1+3
+## 0.3.4+6
 
 * Android: Fixed bug due to code -3 (SERVICE_TIMEOUT) in `BillingResponse`
 
