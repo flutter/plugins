@@ -1,3 +1,16 @@
+## 0.6.5
+
+* Added support for sharing files
+
+## 0.6.4+5
+
+* Update package:e2e -> package:integration_test
+
+## 0.6.4+4
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.6.4+3
 
 * Post-v2 Android embedding cleanup.
