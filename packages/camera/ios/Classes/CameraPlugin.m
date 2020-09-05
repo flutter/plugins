@@ -348,7 +348,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
   if (!CMSampleBufferDataIsReady(sampleBuffer)) {
     _eventSink(@{
-      @"event" : @"error",
+      @"eventType" : @"error",
       @"errorDescription" : @"sample buffer is not ready. Skipping sample"
     });
     return;
@@ -415,7 +415,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if (_isRecording && !_isRecordingPaused) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
       _eventSink(@{
-        @"event" : @"error",
+        @"eventType" : @"error",
         @"errorDescription" : [NSString stringWithFormat:@"%@", _videoWriter.error]
       });
       return;
@@ -501,7 +501,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if (_videoWriter.status != AVAssetWriterStatusWriting) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
       _eventSink(@{
-        @"event" : @"error",
+        @"eventType" : @"error",
         @"errorDescription" : [NSString stringWithFormat:@"%@", _videoWriter.error]
       });
     }
@@ -510,7 +510,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if (_videoWriterInput.readyForMoreMediaData) {
     if (![_videoWriterInput appendSampleBuffer:sampleBuffer]) {
       _eventSink(@{
-        @"event" : @"error",
+        @"eventType" : @"error",
         @"errorDescription" :
             [NSString stringWithFormat:@"%@", @"Unable to write to video input"]
       });
@@ -522,7 +522,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if (_videoWriter.status != AVAssetWriterStatusWriting) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
       _eventSink(@{
-        @"event" : @"error",
+        @"eventType" : @"error",
         @"errorDescription" : [NSString stringWithFormat:@"%@", _videoWriter.error]
       });
     }
@@ -531,7 +531,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if (_audioWriterInput.readyForMoreMediaData) {
     if (![_audioWriterInput appendSampleBuffer:sampleBuffer]) {
       _eventSink(@{
-        @"event" : @"error",
+        @"eventType" : @"error",
         @"errorDescription" :
             [NSString stringWithFormat:@"%@", @"Unable to write to audio input"]
       });
@@ -581,7 +581,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result {
   if (!_isRecording) {
     if (![self setupWriterForPath:path]) {
-      _eventSink(@{@"event" : @"error", @"errorDescription" : @"Setup Writer Failed"});
+      _eventSink(@{@"eventType" : @"error", @"errorDescription" : @"Setup Writer Failed"});
       return;
     }
     _isRecording = YES;
@@ -592,7 +592,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     _audioIsDisconnected = NO;
     result(nil);
   } else {
-    _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
+    _eventSink(@{@"eventType" : @"error", @"errorDescription" : @"Video is already recording!"});
   }
 }
 
@@ -605,7 +605,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
           result(nil);
         } else {
           self->_eventSink(@{
-            @"event" : @"error",
+            @"eventType" : @"error",
             @"errorDescription" : @"AVAssetWriter could not finish writing!"
           });
         }
@@ -642,7 +642,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     _isStreamingImages = YES;
   } else {
     _eventSink(
-        @{@"event" : @"error", @"errorDescription" : @"Images from camera are already streaming!"});
+        @{@"eventType" : @"error", @"errorDescription" : @"Images from camera are already streaming!"});
   }
 }
 
@@ -652,7 +652,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     _imageStreamHandler = nil;
   } else {
     _eventSink(
-        @{@"event" : @"error", @"errorDescription" : @"Images from camera are not streaming!"});
+        @{@"eventType" : @"error", @"errorDescription" : @"Images from camera are not streaming!"});
   }
 }
 
@@ -672,7 +672,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                               error:&error];
   NSParameterAssert(_videoWriter);
   if (error) {
-    _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
+    _eventSink(@{@"eventType" : @"error", @"errorDescription" : error.description});
     return NO;
   }
   NSDictionary *videoSettings = [NSDictionary
@@ -726,7 +726,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice
                                                                            error:&error];
   if (error) {
-    _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
+    _eventSink(@{@"eventType" : @"error", @"errorDescription" : error.description});
   }
   // Setup the audio output.
   _audioOutput = [[AVCaptureAudioDataOutput alloc] init];
@@ -739,7 +739,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       _isAudioSetup = YES;
     } else {
       _eventSink(@{
-        @"event" : @"error",
+        @"eventType" : @"error",
         @"errorDescription" : @"Unable to add Audio input/output to session capture"
       });
       _isAudioSetup = NO;
