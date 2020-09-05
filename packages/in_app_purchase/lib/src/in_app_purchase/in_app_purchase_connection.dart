@@ -71,7 +71,7 @@ abstract class InAppPurchaseConnection {
 
   /// Enable the [InAppPurchaseConnection] to handle pending purchases.
   ///
-  /// Android Only: This method is required to be called when initialize the application.
+  /// This method is required to be called when initialize the application.
   /// It is to acknowledge your application has been updated to support pending purchases.
   /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
   /// for more details.
@@ -109,8 +109,7 @@ abstract class InAppPurchaseConnection {
   /// [PurchaseDetails.status] and update your UI accordingly. When the
   /// [PurchaseDetails.status] is [PurchaseStatus.purchased] or
   /// [PurchaseStatus.error], you should deliver the content or handle the
-  /// error. On iOS, you also need to call [completePurchase] to finish the
-  /// purchasing process.
+  /// error, then call [completePurchase] to finish the purchasing process.
   ///
   /// This method does return whether or not the purchase request was initially
   /// sent successfully.

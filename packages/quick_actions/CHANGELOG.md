@@ -1,8 +1,27 @@
+## 0.4.0+8
+
+* Update package:e2e -> package:integration_test
+
+## 0.4.0+7
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.0+6
+
+* Post-v2 Android embedding cleanup.
+
+## 0.4.0+5
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.4.0+4
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.
 * Clean up various Android workarounds no longer needed after framework v1.12.
 * Complete v2 embedding support.
+* Fix UIApplicationShortcutItem availability warnings.
+* Fix CocoaPods podspec lint warnings.
 
 ## 0.4.0+3
 

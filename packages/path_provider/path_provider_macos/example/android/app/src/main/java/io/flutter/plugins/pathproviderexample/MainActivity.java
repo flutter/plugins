@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.pathproviderexample;
 
-import dev.flutter.plugins.e2e.E2EPlugin;
+import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugins.pathprovider.PathProviderPlugin;
@@ -14,6 +14,6 @@ public class MainActivity extends FlutterActivity {
   @Override
   public void configureFlutterEngine(FlutterEngine flutterEngine) {
     flutterEngine.getPlugins().add(new PathProviderPlugin());
-    flutterEngine.getPlugins().add(new E2EPlugin());
+    flutterEngine.getPlugins().add(new IntegrationTestPlugin());
   }
 }

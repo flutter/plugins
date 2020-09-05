@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
@@ -55,6 +56,52 @@ void main() {
       'originWidth': 3.0,
       'originHeight': 4.0,
     }));
+  });
+
+  test('sharing null file fails', () {
+    expect(
+      () => Share.shareFiles([null]),
+      throwsA(const TypeMatcher<AssertionError>()),
+    );
+    verifyZeroInteractions(mockChannel);
+  });
+
+  test('sharing empty file fails', () {
+    expect(
+      () => Share.shareFiles(['']),
+      throwsA(const TypeMatcher<AssertionError>()),
+    );
+    verifyZeroInteractions(mockChannel);
+  });
+
+  test('sharing file sets correct mimeType', () async {
+    final String path = 'tempfile-83649a.png';
+    final File file = File(path);
+    try {
+      file.createSync();
+      await Share.shareFiles([path]);
+      verify(mockChannel.invokeMethod('shareFiles', <String, dynamic>{
+        'paths': [path],
+        'mimeTypes': ['image/png'],
+      }));
+    } finally {
+      file.deleteSync();
+    }
+  });
+
+  test('sharing file sets passed mimeType', () async {
+    final String path = 'tempfile-83649a.png';
+    final File file = File(path);
+    try {
+      file.createSync();
+      await Share.shareFiles([path], mimeTypes: ['*/*']);
+      verify(mockChannel.invokeMethod('shareFiles', <String, dynamic>{
+        'paths': [file.path],
+        'mimeTypes': ['*/*'],
+      }));
+    } finally {
+      file.deleteSync();
+    }
   });
 }
 
