@@ -641,8 +641,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
     _isStreamingImages = YES;
   } else {
-    _eventSink(
-        @{@"eventType" : @"error", @"errorDescription" : @"Images from camera are already streaming!"});
+    _eventSink(@{
+      @"eventType" : @"error",
+      @"errorDescription" : @"Images from camera are already streaming!"
+    });
   }
 }
 
@@ -651,8 +653,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     _isStreamingImages = NO;
     _imageStreamHandler = nil;
   } else {
-    _eventSink(
-        @{@"eventType" : @"error", @"errorDescription" : @"Images from camera are not streaming!"});
+    _eventSink(@{
+      @"eventType" : @"error",
+      @"errorDescription" : @"Images from camera are not streaming!"
+    });
   }
 }
 

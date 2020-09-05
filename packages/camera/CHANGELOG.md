@@ -1,3 +1,7 @@
+## 0.5.8+6
+
+* Fix get an error event type on iOS.
+
 ## 0.5.8+5
 
 * Fix compilation/availability issues on iOS.
