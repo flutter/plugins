@@ -42,7 +42,6 @@ T _$enumDecode<T>(
   return value ?? unknownValue;
 }
 
-
 const _$BillingResponseEnumMap = {
   BillingResponse.serviceTimeout: -3,
   BillingResponse.featureNotSupported: -2,
