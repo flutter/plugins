@@ -16,6 +16,7 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
 
   private Share share;
   private Gson gson = new Gson();
+  private ShareMap shareMap;
 
   MethodCallHandler(Share share) {
     this.share = share;
@@ -29,7 +30,7 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
         // Android does not support showing the share sheet at a particular point on screen.
         try {
           // Avoiding uses unchecked or unsafe Object Type Casting by converting Map to Object using Gson
-          ShareMap shareMap = gson.fromJson(toJson(call), ShareMap.class);
+          shareMap = getShareMap(call);
           share.share(shareMap.getText(), shareMap.getSubject());
           result.success(null);
         } catch (JsonSyntaxException e) {
@@ -42,12 +43,12 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
         // Android does not support showing the share sheet at a particular point on screen.
         try {
           // Avoiding uses unchecked or unsafe Object Type Casting by converting Map to Object using Gson
-          ShareFilesMap shareFilesMap = gson.fromJson(toJson(call), ShareFilesMap.class);
+          shareMap = getShareMap(call);
           share.shareFiles(
-                  shareFilesMap.getPaths(),
-                  shareFilesMap.getMimeTypes(),
-                  shareFilesMap.getText(),
-                  shareFilesMap.getSubject());
+                  shareMap.getPaths(),
+                  shareMap.getMimeTypes(),
+                  shareMap.getText(),
+                  shareMap.getSubject());
           result.success(null);
         } catch (IOException | JsonSyntaxException e) {
           result.error(e.getMessage(), null, null);
@@ -65,7 +66,8 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
     }
   }
 
-  private String toJson(MethodCall call) {
-    return gson.toJson(call.arguments);
+  private ShareMap getShareMap(MethodCall call){
+    String jsonData = gson.toJson(call.arguments);
+    return gson.fromJson(jsonData, ShareMap.class);
   }
 }
