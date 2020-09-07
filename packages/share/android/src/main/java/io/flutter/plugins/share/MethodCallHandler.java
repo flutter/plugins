@@ -16,7 +16,6 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
 
   private Share share;
   private Gson gson = new Gson();
-  private ShareMap shareMap;
 
   MethodCallHandler(Share share) {
     this.share = share;
@@ -24,6 +23,7 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+    ShareMap shareMap;
     switch (call.method) {
       case "share":
         expectMapArguments(call);
