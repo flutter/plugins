@@ -7,13 +7,15 @@ package io.flutter.plugins.share;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.*;
-import java.util.List;
 import java.util.Map;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /** Handles the method calls for the plugin. */
 class MethodCallHandler implements MethodChannel.MethodCallHandler {
 
   private Share share;
+  private Gson gson = new Gson();
 
   MethodCallHandler(Share share) {
     this.share = share;
@@ -25,21 +27,29 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
       case "share":
         expectMapArguments(call);
         // Android does not support showing the share sheet at a particular point on screen.
-        share.share((String) call.argument("text"), (String) call.argument("subject"));
-        result.success(null);
+        try {
+          // Avoiding uses unchecked or unsafe Object Type Casting by converting Map to Object using Gson
+          ShareMap shareMap = gson.fromJson(toJson(call), ShareMap.class);
+          share.share(shareMap.getText(), shareMap.getSubject());
+          result.success(null);
+        } catch (JsonSyntaxException e) {
+          result.error(e.getMessage(), null, null);
+        }
         break;
       case "shareFiles":
         expectMapArguments(call);
 
         // Android does not support showing the share sheet at a particular point on screen.
         try {
+          // Avoiding uses unchecked or unsafe Object Type Casting by converting Map to Object using Gson
+          ShareFilesMap shareFilesMap = gson.fromJson(toJson(call), ShareFilesMap.class);
           share.shareFiles(
-              (List<String>) call.argument("paths"),
-              (List<String>) call.argument("mimeTypes"),
-              (String) call.argument("text"),
-              (String) call.argument("subject"));
+                  shareFilesMap.getPaths(),
+                  shareFilesMap.getMimeTypes(),
+                  shareFilesMap.getText(),
+                  shareFilesMap.getSubject());
           result.success(null);
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException e) {
           result.error(e.getMessage(), null, null);
         }
         break;
@@ -53,5 +63,9 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
     if (!(call.arguments instanceof Map)) {
       throw new IllegalArgumentException("Map argument expected");
     }
+  }
+
+  private String toJson(MethodCall call) {
+    return gson.toJson(call.arguments);
   }
 }
