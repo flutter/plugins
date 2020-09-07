@@ -6,12 +6,10 @@ package io.flutter.plugins.share;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-
-import java.io.IOException;
-import java.util.Map;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.io.*;
+import java.util.Map;
 
 /** Handles the method calls for the plugin. */
 class MethodCallHandler implements MethodChannel.MethodCallHandler {
@@ -30,9 +28,8 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
       case "share":
         expectMapArguments(call);
         // Android does not support showing the share sheet at a particular point on screen.
+        // Avoiding uses unchecked or unsafe Casting by converting Map to Object using Gson.
         try {
-          // Avoiding uses unchecked or unsafe Object Type Casting by converting Map to Object using
-          // Gson
           shareMap = getShareMap(call);
           share.share(shareMap.getText(), shareMap.getSubject());
           result.success(null);
@@ -44,9 +41,8 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
         expectMapArguments(call);
 
         // Android does not support showing the share sheet at a particular point on screen.
+        // Avoiding uses unchecked or unsafe Casting by converting Map to Object using Gson.
         try {
-          // Avoiding uses unchecked or unsafe Object Type Casting by converting Map to Object using
-          // Gson
           shareMap = getShareMap(call);
           share.shareFiles(
               shareMap.getPaths(),
