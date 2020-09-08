@@ -28,33 +28,8 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
   /// torn down.
   IntegrationTestWidgetsFlutterBinding() {
     // TODO(jackson): Report test results as they arrive
-    tearDownAll(() async {
-      try {
-        // For web integration tests we are not using the
-        // `plugins.flutter.io/integration_test`. Mark the tests as complete
-        // before invoking the channel.
-        if (kIsWeb) {
-          if (!_allTestsPassed.isCompleted) {
-            _allTestsPassed.complete(true);
-          }
-        }
-        callbackManager.cleanup();
-        await _channel.invokeMethod<void>(
-          'allTestsFinished',
-          <String, dynamic>{
-            'results': results.map((name, result) {
-              if (result is Failure) {
-                return MapEntry(name, result.details);
-              }
-              return MapEntry(name, result);
-            })
-          },
-        );
-      } on MissingPluginException {
-        print('Warning: integration_test test plugin was not detected.');
-      }
-      if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
-    });
+    // ignore: deprecated_member_use_from_same_package
+    tearDownAll(onTestsFinished);
 
     // TODO(jackson): Report the results individually instead of all at once
     // See https://github.com/flutter/flutter/issues/38985
@@ -67,6 +42,39 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
       }
       oldTestExceptionReporter(details, testDescription);
     };
+  }
+
+  /// Executed when all tests are complete.
+  ///
+  /// For test execution strategies that integrate with platform-side tools,
+  /// this method is called when tests are completed to report the test results.
+  @Deprecated('This API is not stable.')
+  Future<void> onTestsFinished() async {
+    try {
+      // For web integration tests we are not using the
+      // `plugins.flutter.io/integration_test`. Mark the tests as complete
+      // before invoking the channel.
+      if (kIsWeb) {
+        if (!_allTestsPassed.isCompleted) {
+          _allTestsPassed.complete(true);
+        }
+      }
+      callbackManager.cleanup();
+      await _channel.invokeMethod<void>(
+        'allTestsFinished',
+        <String, dynamic>{
+          'results': results.map((name, result) {
+            if (result is Failure) {
+              return MapEntry(name, result.details);
+            }
+            return MapEntry(name, result);
+          })
+        },
+      );
+    } on MissingPluginException {
+      print('Warning: integration_test test plugin was not detected.');
+    }
+    if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
   }
 
   // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
