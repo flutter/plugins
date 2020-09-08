@@ -28,11 +28,11 @@ void main() {
     group('#openFile', () {
       test('passes the accepted type groups correctly', () async {
         final group = XTypeGroup(
-            label: 'text',
-            extensions: ['.txt'],
-            mimeTypes: ['text/plain'],
-            macUTIs: ['public.text'],
-            webWildCards: ['document/*']);
+          label: 'text',
+          extensions: ['.txt'],
+          mimeTypes: ['text/plain'],
+          macUTIs: ['public.text'],
+        );
 
         final groupTwo = XTypeGroup(
             label: 'image',
@@ -89,11 +89,11 @@ void main() {
     group('#openFiles', () {
       test('passes the accepted type groups correctly', () async {
         final group = XTypeGroup(
-            label: 'text',
-            extensions: ['.txt'],
-            mimeTypes: ['text/plain'],
-            macUTIs: ['public.text'],
-            webWildCards: ['document/*']);
+          label: 'text',
+          extensions: ['.txt'],
+          mimeTypes: ['text/plain'],
+          macUTIs: ['public.text'],
+        );
 
         final groupTwo = XTypeGroup(
             label: 'image',
@@ -151,11 +151,11 @@ void main() {
     group('#getSavePath', () {
       test('passes the accepted type groups correctly', () async {
         final group = XTypeGroup(
-            label: 'text',
-            extensions: ['.txt'],
-            mimeTypes: ['text/plain'],
-            macUTIs: ['public.text'],
-            webWildCards: ['document/*']);
+          label: 'text',
+          extensions: ['.txt'],
+          mimeTypes: ['text/plain'],
+          macUTIs: ['public.text'],
+        );
 
         final groupTwo = XTypeGroup(
             label: 'image',

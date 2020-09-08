@@ -16,8 +16,8 @@ import 'package:file_selector_platform_interface/file_selector_platform_interfac
 // to ./file_selector_platform_interface.
 //
 // This will cause our hello.txt file to be not be found. Please
-// execute this test with `flutter test` or change the path to
-// ./test/assets/hello.txt
+// execute this test with `flutter test` or change the path prefix
+// to ./test/assets/
 //
 // https://github.com/flutter/flutter/issues/20907
 
