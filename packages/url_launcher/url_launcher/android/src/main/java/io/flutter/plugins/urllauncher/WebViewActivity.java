@@ -1,6 +1,5 @@
 package io.flutter.plugins.urllauncher;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,6 +12,9 @@ import android.view.KeyEvent;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.annotation.RequiresApi;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +55,7 @@ public class WebViewActivity extends Activity {
           return super.shouldOverrideUrlLoading(view, url);
         }
 
-        @TargetApi(Build.VERSION_CODES.N)
+        @RequiresApi(Build.VERSION_CODES.N)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
