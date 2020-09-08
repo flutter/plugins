@@ -858,6 +858,27 @@ void main() {
     await controller.goBack();
     expect(controller.currentUrl(), completion('https://www.flutter.dev'));
   });
+
+  testWidgets('only open window for http/https', (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+          initialUrl: 'https://flutter.dev',
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    await controller.evaluateJavascript('window.open("go.com")');
+    expect(controller.currentUrl(), completion('https://www.flutter.dev/'));
+  }, skip: !Platform.isAndroid);
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.
