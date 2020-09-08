@@ -1,3 +1,7 @@
+## 5.5.3
+
+* Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android.
+
 ## 5.5.2
 
 * Depend explicitly on the `platform_interface` package that adds the `webOnlyWindowName` parameter.
