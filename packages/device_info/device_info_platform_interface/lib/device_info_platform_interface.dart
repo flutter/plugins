@@ -46,7 +46,7 @@ abstract class DeviceInfoPlatform extends PlatformInterface {
     throw UnimplementedError('androidInfo() has not been implemented.');
   }
 
-  /// Gets the iOS device information./
+  /// Gets the iOS device information.
   Future<IosDeviceInfo> iosInfo() {
     throw UnimplementedError('iosInfo() has not been implemented.');
   }
