@@ -12,9 +12,7 @@ import android.view.KeyEvent;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
 import androidx.annotation.RequiresApi;
-
 import java.util.HashMap;
 import java.util.Map;
 
