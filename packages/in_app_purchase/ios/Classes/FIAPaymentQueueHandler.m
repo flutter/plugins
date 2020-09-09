@@ -16,7 +16,7 @@
 @property(nullable, copy, nonatomic) UpdatedDownloads updatedDownloads;
 
 @property(strong, nonatomic)
-    NSMutableDictionary<NSString *, SKPaymentTransaction *> *transactionsSetter;
+    NSMutableDictionary<NSString *, NSMutableArray<SKPaymentTransaction *> *> *transactionsSetter;
 
 @end
 
@@ -81,7 +81,13 @@
       //    will become impossible for clients to finish deferred transactions when needed.
       // 2. Using product identifiers can help prevent clients from purchasing the same
       //    subscription more than once by accident.
-      self.transactionsSetter[transaction.payment.productIdentifier] = transaction;
+      NSMutableArray *transactionArray =
+          [self.transactionsSetter objectForKey:transaction.payment.productIdentifier];
+      if (transactionArray == nil) {
+        transactionArray = [NSMutableArray array];
+      }
+      [transactionArray addObject:transaction];
+      self.transactionsSetter[transaction.payment.productIdentifier] = transactionArray;
     }
   }
   // notify dart through callbacks.
@@ -92,7 +98,21 @@
 - (void)paymentQueue:(SKPaymentQueue *)queue
     removedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
   for (SKPaymentTransaction *transaction in transactions) {
-    [self.transactionsSetter removeObjectForKey:transaction.payment.productIdentifier];
+    NSString *productId = transaction.payment.productIdentifier;
+
+    if ([self.transactionsSetter objectForKey:productId] == nil) {
+      continue;
+    }
+
+    NSPredicate *predicate = [NSPredicate
+        predicateWithFormat:@"transactionIdentifier == %@", transaction.transactionIdentifier];
+    NSArray<SKPaymentTransaction *> *filteredTransactions =
+        [self.transactionsSetter[productId] filteredArrayUsingPredicate:predicate];
+    [self.transactionsSetter[productId] removeObjectsInArray:filteredTransactions];
+
+    if (!self.transactionsSetter[productId] || !self.transactionsSetter[productId].count) {
+      [self.transactionsSetter removeObjectForKey:productId];
+    }
   }
   self.transactionsRemoved(transactions);
 }
@@ -128,7 +148,7 @@
 
 #pragma mark - getter
 
-- (NSDictionary<NSString *, SKPaymentTransaction *> *)transactions {
+- (NSDictionary<NSString *, NSMutableArray<SKPaymentTransaction *> *> *)transactions {
   return [self.transactionsSetter copy];
 }
 

@@ -204,9 +204,8 @@
     return;
   }
   NSString *identifier = call.arguments;
-  SKPaymentTransaction *transaction =
-      [self.paymentQueueHandler.transactions objectForKey:identifier];
-  if (!transaction) {
+  NSMutableArray *transactions = [self.paymentQueueHandler.transactions objectForKey:identifier];
+  if (!transactions) {
     result([FlutterError
         errorWithCode:@"storekit_platform_invalid_transaction"
               message:[NSString
@@ -214,14 +213,16 @@
                                            @"exist. Note that if the transactionState is "
                                            @"purchasing, the transactionIdentifier will be "
                                            @"nil(null).",
-                                           transaction.transactionIdentifier]
+                                           identifier]
               details:call.arguments]);
     return;
   }
   @try {
+    for (SKPaymentTransaction *transaction in transactions) {
+      [self.paymentQueueHandler finishTransaction:transaction];
+    }
     // finish transaction will throw exception if the transaction type is purchasing. Notify dart
     // about this exception.
-    [self.paymentQueueHandler finishTransaction:transaction];
   } @catch (NSException *e) {
     result([FlutterError errorWithCode:@"storekit_finish_transaction_exception"
                                message:e.name
