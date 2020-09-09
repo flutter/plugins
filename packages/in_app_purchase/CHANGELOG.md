@@ -1,3 +1,7 @@
+## 0.3.4+6
+
+* iOS: Fix the bug that prevent restored subscription transactions from being completed
+
 ## 0.3.4+5
 
 * Added necessary README docs for getting started with Android.
