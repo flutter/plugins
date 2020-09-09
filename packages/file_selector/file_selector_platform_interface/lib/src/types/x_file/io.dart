@@ -93,14 +93,19 @@ class XFile extends XFileBase {
     return _file.readAsBytes();
   }
 
+  Stream<Uint8List> _getBytes(int start, int end) async* {
+    final bytes = _bytes;
+    yield bytes.sublist(start ?? 0, end ?? bytes.length);
+  }
+
   @override
-  Stream<Uint8List> openRead([int start, int end]) async* {
+  Stream<Uint8List> openRead([int start, int end]) {
     if (_bytes != null) {
-      final bytes = _bytes;
-      yield bytes.sublist(start ?? 0, end ?? bytes.length);
+      return _getBytes(start, end);
+    } else {
+      return _file
+          .openRead(start ?? 0, end)
+          .map((chunk) => Uint8List.fromList(chunk));
     }
-    yield* _file
-        .openRead(start ?? 0, end)
-        .map((chunk) => Uint8List.fromList(chunk));
   }
 }
