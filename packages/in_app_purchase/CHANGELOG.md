@@ -1,6 +1,14 @@
-## 0.3.4+4
+## 0.3.4+6
 
 * iOS: Fix the bug that prevent restored subscription transactions from being completed
+
+## 0.3.4+5
+
+* Added necessary README docs for getting started with Android.
+
+## 0.3.4+4
+
+* Update package:e2e -> package:integration_test
 
 ## 0.3.4+3
 

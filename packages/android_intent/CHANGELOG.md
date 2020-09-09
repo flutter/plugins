@@ -1,3 +1,7 @@
+## 0.3.7+3
+
+* Update the `platform` package dependency to resolve the conflict with the latest flutter.
+
 ## 0.3.7+2
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
