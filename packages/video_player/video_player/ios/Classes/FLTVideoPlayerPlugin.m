@@ -560,4 +560,15 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   [player pause];
 }
 
+- (void)setMixWithOthers:(FLTMixWithOthersMessage*)input
+                   error:(FlutterError* _Nullable __autoreleasing*)error {
+  if ([input.mixWithOthers boolValue]) {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+                                     withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                                           error:nil];
+  } else {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+  }
+}
+
 @end

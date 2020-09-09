@@ -10,8 +10,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:video_player_platform_interface/messages.dart';
+import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 class FakeController extends ValueNotifier<VideoPlayerValue>
     implements VideoPlayerController {
@@ -52,6 +52,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   Future<ClosedCaptionFile> get closedCaptionFile => _loadClosedCaption();
+
+  @override
+  VideoPlayerOptions get videoPlayerOptions => null;
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -517,6 +520,48 @@ void main() {
 
       expect(exactCopy.toString(), original.toString());
     });
+
+    group('aspectRatio', () {
+      test('640x480 -> 4:3', () {
+        final value = VideoPlayerValue(
+          size: Size(640, 480),
+          duration: Duration(seconds: 1),
+        );
+        expect(value.aspectRatio, 4 / 3);
+      });
+
+      test('null size -> 1.0', () {
+        final value = VideoPlayerValue(
+          size: null,
+          duration: Duration(seconds: 1),
+        );
+        expect(value.aspectRatio, 1.0);
+      });
+
+      test('height = 0 -> 1.0', () {
+        final value = VideoPlayerValue(
+          size: Size(640, 0),
+          duration: Duration(seconds: 1),
+        );
+        expect(value.aspectRatio, 1.0);
+      });
+
+      test('width = 0 -> 1.0', () {
+        final value = VideoPlayerValue(
+          size: Size(0, 480),
+          duration: Duration(seconds: 1),
+        );
+        expect(value.aspectRatio, 1.0);
+      });
+
+      test('negative aspect ratio -> 1.0', () {
+        final value = VideoPlayerValue(
+          size: Size(640, -480),
+          duration: Duration(seconds: 1),
+        );
+        expect(value.aspectRatio, 1.0);
+      });
+    });
   });
 
   test('VideoProgressColors', () {
@@ -532,6 +577,14 @@ void main() {
     expect(colors.playedColor, playedColor);
     expect(colors.bufferedColor, bufferedColor);
     expect(colors.backgroundColor, backgroundColor);
+  });
+
+  test('setMixWithOthers', () async {
+    final VideoPlayerController controller = VideoPlayerController.file(
+        File(''),
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
+    await controller.initialize();
+    expect(controller.videoPlayerOptions.mixWithOthers, true);
   });
 }
 
@@ -602,6 +655,11 @@ class FakeVideoPlayerPlatform extends VideoPlayerApiTest {
   @override
   void setVolume(VolumeMessage arg) {
     calls.add('setVolume');
+  }
+
+  @override
+  void setMixWithOthers(MixWithOthersMessage arg) {
+    calls.add('setMixWithOthers');
   }
 }
 

@@ -9,10 +9,8 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.test.core.app.ApplicationProvider;
 import com.google.android.gms.maps.GoogleMap;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.view.FlutterMain;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,11 +27,6 @@ public class GoogleMapControllerTest {
   @Mock BinaryMessenger mockMessenger;
   @Mock GoogleMap mockGoogleMap;
   @Mock LifecycleOwner lifecycleOwner;
-
-  @BeforeClass()
-  public static void BeforeClass() {
-    FlutterMain.setIsRunningInRobolectricTest(true);
-  }
 
   @Before
   public void before() {

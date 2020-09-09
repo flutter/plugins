@@ -1,7 +1,0 @@
-## 0.0.1+1
-
-* Remove Android folder from `e2e_macos`.
-
-## 0.0.1
-
-* Initial release

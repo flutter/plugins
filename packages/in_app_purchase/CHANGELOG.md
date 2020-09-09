@@ -1,3 +1,25 @@
+## 0.3.4+5
+
+* Added necessary README docs for getting started with Android.
+
+## 0.3.4+4
+
+* Update package:e2e -> package:integration_test
+
+## 0.3.4+3
+
+* Fixed typo 'manuelly' for 'manually'.
+
+## 0.3.4+2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.3.4+1
+
+* iOS: Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
+* iOS: Fix the app crashes  if `InAppPurchaseConnection.instance` is called in the `main()`.
+
 ## 0.3.4
 
 * Expose SKError code to client apps.
