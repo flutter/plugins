@@ -75,18 +75,13 @@ public class WebViewActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(
                 @NonNull WebView view, @NonNull WebResourceRequest request) {
-              final String url = request.getUrl().toString();
-              if (isSecure(url)) {
-                webview.loadUrl(url);
-              }
+              webview.loadUrl(request.getUrl().toString());
               return true;
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-              if (isSecure(url)) {
-                webview.loadUrl(url);
-              }
+              webview.loadUrl(url);
               return true;
             }
           };
@@ -99,10 +94,6 @@ public class WebViewActivity extends Activity {
       resultMsg.sendToTarget();
 
       return true;
-    }
-
-    private boolean isSecure(String url) {
-      return url.startsWith("https://") || url.startsWith("http://");
     }
   }
 

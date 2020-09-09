@@ -46,9 +46,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             public boolean shouldOverrideUrlLoading(
                 @NonNull WebView view, @NonNull WebResourceRequest request) {
               final String url = request.getUrl().toString();
-              if (isSecure(url)
-                  && !flutterWebViewClient.shouldOverrideUrlLoading(
-                      FlutterWebView.this.webView, request)) {
+              if (!flutterWebViewClient.shouldOverrideUrlLoading(
+                  FlutterWebView.this.webView, request)) {
                 webView.loadUrl(url);
               }
               return true;
@@ -56,9 +55,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-              if (isSecure(url)
-                  && !flutterWebViewClient.shouldOverrideUrlLoading(
-                      FlutterWebView.this.webView, url)) {
+              if (!flutterWebViewClient.shouldOverrideUrlLoading(
+                  FlutterWebView.this.webView, url)) {
                 webView.loadUrl(url);
               }
               return true;
@@ -73,10 +71,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       resultMsg.sendToTarget();
 
       return true;
-    }
-
-    private boolean isSecure(String url) {
-      return url.startsWith("https://") || url.startsWith("http://");
     }
   }
 

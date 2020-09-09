@@ -829,56 +829,39 @@ void main() {
     expect(currentUrl, 'about:blank');
   });
 
-  testWidgets('can open new window and go back', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    final Completer<void> pageLoaded = Completer<void>();
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-          javascriptMode: JavascriptMode.unrestricted,
-          onPageFinished: (String url) {
-            pageLoaded.complete();
-          },
-          initialUrl: 'https://flutter.dev',
+  testWidgets(
+    'can open new window and go back',
+    (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final Completer<void> pageLoaded = Completer<void>();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            onPageFinished: (String url) {
+              pageLoaded.complete();
+            },
+            initialUrl: 'https://flutter.dev',
+          ),
         ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    await controller
-        .evaluateJavascript('window.open("https://www.google.com")');
-    await pageLoaded.future;
-    expect(controller.currentUrl(), completion('https://www.google.com/'));
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      await controller
+          .evaluateJavascript('window.open("https://www.google.com")');
+      await pageLoaded.future;
+      expect(controller.currentUrl(), completion('https://www.google.com/'));
 
-    await controller.goBack();
-    expect(controller.currentUrl(), completion('https://www.flutter.dev'));
-  });
-
-  testWidgets('only open window for http/https', (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-          javascriptMode: JavascriptMode.unrestricted,
-          initialUrl: 'https://flutter.dev',
-        ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    await controller.evaluateJavascript('window.open("go.com")');
-    expect(controller.currentUrl(), completion('https://www.flutter.dev/'));
-  }, skip: !Platform.isAndroid);
+      await controller.goBack();
+      expect(controller.currentUrl(), completion('https://www.flutter.dev'));
+    },
+    skip: !Platform.isAndroid,
+  );
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.
