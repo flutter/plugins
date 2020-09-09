@@ -7,7 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:meta/meta.dart';
 
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/file_selector');
+const MethodChannel _channel =
+    MethodChannel('plugins.flutter.io/file_selector');
 
 /// An implementation of [FileSelectorPlatform] that uses method channels.
 class MethodChannelFileSelector extends FileSelectorPlatform {
