@@ -34,4 +34,4 @@ dependencies:
 Once you have the `url_launcher_web` dependency in your pubspec, you should
 be able to use `package:url_launcher` as normal.
 
-[1]: ../url_launcher/url_launcher
+[1]: ../url_launcher

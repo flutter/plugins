@@ -4,12 +4,12 @@
 
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:package_info/package_info.dart';
 import 'package:package_info_example/main.dart';
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('fromPlatform', (WidgetTester tester) async {
     final PackageInfo info = await PackageInfo.fromPlatform();

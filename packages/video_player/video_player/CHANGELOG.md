@@ -1,3 +1,19 @@
+## 0.10.12+2
+
+* Fix `setMixWithOthers` test.
+
+## 0.10.12+1
+
+* Depend on the version of `video_player_platform_interface` that contains the new `VideoPlayerOptions` class.
+
+## 0.10.12
+
+* Introduce VideoPlayerOptions to set the audio mix mode.
+
+## 0.10.11+2
+
+* Fix aspectRatio calculation when size.width or size.height are zero.
+
 ## 0.10.11+1
 
 * Post-v2 Android embedding cleanups.

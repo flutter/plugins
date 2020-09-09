@@ -5,7 +5,7 @@
 package io.flutter.plugins.videoplayerexample;
 
 import android.os.Bundle;
-import dev.flutter.plugins.e2e.E2EPlugin;
+import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.videoplayer.VideoPlayerPlugin;
 
@@ -13,7 +13,8 @@ public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    E2EPlugin.registerWith(registrarFor("dev.flutter.plugins.e2e.E2EPlugin"));
+    IntegrationTestPlugin.registerWith(
+        registrarFor("dev.flutter.plugins.integration_test.IntegrationTestPlugin"));
     VideoPlayerPlugin.registerWith(
         registrarFor("io.flutter.plugins.videoplayer.VideoPlayerPlugin"));
   }
