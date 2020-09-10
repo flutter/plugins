@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 #include "include/url_launcher_windows/url_launcher_plugin.h"
 
-#include <Windows.h>
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
+#include <windows.h>
 
 #include <memory>
 #include <sstream>
