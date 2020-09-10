@@ -35,7 +35,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<void> _launched;
-  String _phone = '';
 
   Future<void> _launchInBrowser(String url) async {
     if (await UrlLauncherPlatform.instance.canLaunch(url)) {
