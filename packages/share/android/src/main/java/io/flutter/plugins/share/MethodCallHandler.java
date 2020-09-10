@@ -4,12 +4,11 @@
 
 package io.flutter.plugins.share;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.io.*;
+import java.util.List;
+import java.util.Map;
 
 /** Handles the method calls for the plugin. */
 class MethodCallHandler implements MethodChannel.MethodCallHandler {
