@@ -1,3 +1,7 @@
+## 5.5.4
+
+* Handle WebView multi-window support.
+
 ## 5.5.3
 
 * Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android.
