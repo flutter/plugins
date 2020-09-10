@@ -43,7 +43,6 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
           text = call.argument("text");
           subject = call.argument("subject");
           share.shareFiles(paths, mimeTypes, text, subject);
-          share.shareFiles(paths, mimeTypes, text, subject);
           result.success(null);
         } catch (IOException e) {
           result.error(e.getMessage(), null, null);
