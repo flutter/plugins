@@ -39,6 +39,11 @@ import 'package:integration_test/integration_test_driver.dart';
 Future<void> main() => integrationDriver();
 ```
 
+You can also use different driver scripts to customize the behavior of the app
+under test. For example, `FlutterDriver` can also be parameterized with
+different [options](https://api.flutter.dev/flutter/flutter_driver/FlutterDriver/connect.html).
+See the [extended driver](https://github.com/flutter/plugins/tree/master/packages/integration_test/example/test_driver/integration_test_extended_driver.dart) for an example.
+
 ### Package Structure
 
 Your package should have a structure that looks like this:
@@ -61,7 +66,8 @@ test_driver/
 
 These tests can be launched with the `flutter drive` command.
 
-To run `integration_test/foo_test.dart`:
+To run the `integration_test/foo_test.dart` test with the
+`test_driver/integration_test_driver.dart` driver, use the following command:
 
 ```sh
 flutter drive \
