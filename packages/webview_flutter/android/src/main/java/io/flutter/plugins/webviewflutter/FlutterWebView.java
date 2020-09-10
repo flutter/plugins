@@ -308,7 +308,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
               flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
 
           webView.setWebViewClient(webViewClient);
-
           break;
         case "debuggingEnabled":
           final boolean debuggingEnabled = (boolean) settings.get(key);

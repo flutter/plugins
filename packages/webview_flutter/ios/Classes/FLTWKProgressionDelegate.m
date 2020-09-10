@@ -1,9 +1,6 @@
-//
-//  FLTWKProgressionDelegate.m
-//  webview_flutter
-//
-//  Created by Jérémie Vincke on 03/10/2019.
-//
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #import "FLTWKProgressionDelegate.h"
 

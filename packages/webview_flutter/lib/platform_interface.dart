@@ -30,6 +30,7 @@ abstract class WebViewPlatformCallbacksHandler {
   void onPageFinished(String url);
 
   /// Invoked by [WebViewPlatformController] when a page is loading.
+  /// /// Only works when [WebSettings.hasProgressTracking] is set to `true`.
   void onProgress(int progress);
 
   /// Report web resource loading error to the host application.
@@ -396,6 +397,7 @@ class WebSettings {
   final bool hasNavigationDelegate;
 
   /// Whether the [WebView] should track page loading progress.
+  /// See also: [WebViewPlatformCallbacksHandler.onProgress] to get the progress.
   final bool hasProgressTracking;
 
   /// Whether to enable the platform's webview content debugging tools.
