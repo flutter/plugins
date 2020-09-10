@@ -208,13 +208,11 @@
   queue.testState = SKPaymentTransactionStateDeferred;
   __block FIAPaymentQueueHandler *handler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
       transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-        XCTAssertEqual(handler.transactions.count, 1);
         XCTAssertEqual(transactions.count, 1);
         SKPaymentTransaction *transaction = transactions[0];
         [handler finishTransaction:transaction];
       }
       transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-        XCTAssertEqual(handler.transactions.count, 0);
         XCTAssertEqual(transactions.count, 1);
         [expectation fulfill];
       }
