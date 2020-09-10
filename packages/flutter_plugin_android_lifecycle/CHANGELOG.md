@@ -1,3 +1,7 @@
+## 1.0.9
+
+* Let the no-op plugin implement the `FlutterPlugin` interface.
+
 ## 1.0.8
 
 * Post-v2 Android embedding cleanup.

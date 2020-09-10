@@ -1,8 +1,12 @@
-## 0.3.4+6
+## 0.3.4+7
 
 * [iOS] Fixed: purchase dialog not showing always.
 * [iOS] Fixed: completing purchases could fail.
 * [iOS] Fixed: restorePurchases caused hang (call never returned).
+
+## 0.3.4+6
+
+* iOS: Fix the bug that prevent restored subscription transactions from being completed
 
 ## 0.3.4+5
 
