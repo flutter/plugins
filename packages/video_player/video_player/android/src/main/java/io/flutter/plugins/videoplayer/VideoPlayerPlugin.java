@@ -54,13 +54,14 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
+    /// getFlutterEngine() is deprecated
     this.flutterState =
         new FlutterState(
             binding.getApplicationContext(),
             binding.getBinaryMessenger(),
             FlutterMain::getLookupKeyForAsset,
             FlutterMain::getLookupKeyForAsset,
-            binding.getFlutterEngine().getRenderer());
+            binding.getTextureRegistry());
     flutterState.startListening(this, binding.getBinaryMessenger());
   }
 
