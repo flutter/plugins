@@ -66,6 +66,7 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+    /// getFlutterEngine() is deprecated
     maybeStartListening(
         binding.getActivity(),
         flutterPluginBinding.getBinaryMessenger(),
