@@ -14,10 +14,7 @@ NSString *const keyPath = @"estimatedProgress";
   self = [super init];
   if (self) {
     _methodChannel = channel;
-    [webView addObserver:self
-              forKeyPath:keyPath
-                 options:NSKeyValueObservingOptionNew
-                 context:nil];
+    [webView addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:nil];
   }
   return self;
 }
