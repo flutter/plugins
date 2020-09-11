@@ -134,7 +134,8 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       throw PlatformException(
         code: reason.error,
         message: 'Exception raised from GoogleAuth.signIn()',
-        details: 'google_sign_in',
+        details:
+            'https://developers.google.com/identity/sign-in/web/reference#error_codes_2',
       );
     }
   }
