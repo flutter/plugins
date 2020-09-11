@@ -310,8 +310,7 @@ public class AlarmService extends JobIntentService {
         String json = p.getString(key, null);
         if (json == null) {
           /// Unnecessary 'Integer.toString()' call
-          Log.e(
-                  TAG, "Data for alarm request code " + requestCode + " is invalid.");
+          Log.e(TAG, "Data for alarm request code " + requestCode + " is invalid.");
           continue;
         }
         try {
@@ -325,17 +324,17 @@ public class AlarmService extends JobIntentService {
           long intervalMillis = alarm.getLong("intervalMillis");
           long callbackHandle = alarm.getLong("callbackHandle");
           scheduleAlarm(
-                  context,
-                  requestCode,
-                  alarmClock,
-                  allowWhileIdle,
-                  repeating,
-                  exact,
-                  wakeup,
-                  startMillis,
-                  intervalMillis,
-                  false,
-                  callbackHandle);
+              context,
+              requestCode,
+              alarmClock,
+              allowWhileIdle,
+              repeating,
+              exact,
+              wakeup,
+              startMillis,
+              intervalMillis,
+              false,
+              callbackHandle);
         } catch (JSONException e) {
           Log.e(TAG, "Data for alarm request code " + requestCode + " is invalid: " + json);
         }
