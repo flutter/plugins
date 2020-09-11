@@ -81,7 +81,7 @@
                                         arguments:@{
                                           @"productIdentifier" : @"123",
                                           @"quantity" : @(1),
-                                          @"simulatesAskToBuyInSandBox" : @YES,
+                                          @"simulatesAskToBuyInSandbox" : @YES,
                                         }];
   SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
   queue.testState = SKPaymentTransactionStateFailed;
@@ -118,7 +118,7 @@
                                         arguments:@{
                                           @"productIdentifier" : @"123",
                                           @"quantity" : @(1),
-                                          @"simulatesAskToBuyInSandBox" : @YES,
+                                          @"simulatesAskToBuyInSandbox" : @YES,
                                         }];
   SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
   queue.testState = SKPaymentTransactionStatePurchased;
@@ -163,7 +163,7 @@
                                         arguments:@{
                                           @"productIdentifier" : @"123",
                                           @"quantity" : @(1),
-                                          @"simulatesAskToBuyInSandBox" : @YES,
+                                          @"simulatesAskToBuyInSandbox" : @YES,
                                         }];
   SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
   queue.testState = SKPaymentTransactionStatePurchased;

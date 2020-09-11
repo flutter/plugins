@@ -180,7 +180,7 @@
   payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
   if (@available(iOS 8.3, *)) {
     payment.simulatesAskToBuyInSandbox =
-        [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
+        [[paymentMap objectForKey:@"simulatesAskToBuyInSandbox"] boolValue];
   }
 
   if (![self.paymentQueueHandler addPayment:payment]) {
