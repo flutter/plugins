@@ -203,32 +203,24 @@
                                details:call.arguments]);
     return;
   }
-  NSString *identifier = call.arguments;
-  NSMutableArray *transactions = [self.paymentQueueHandler.transactions objectForKey:identifier];
-  if (!transactions) {
-    result([FlutterError
-        errorWithCode:@"storekit_platform_invalid_transaction"
-              message:[NSString
-                          stringWithFormat:@"The transaction with transactionIdentifer:%@ does not "
-                                           @"exist. Note that if the transactionState is "
-                                           @"purchasing, the transactionIdentifier will be "
-                                           @"nil(null).",
-                                           identifier]
-              details:call.arguments]);
-    return;
-  }
-  @try {
-    for (SKPaymentTransaction *transaction in transactions) {
-      [self.paymentQueueHandler finishTransaction:transaction];
+  NSString *transactionIdentifier = call.arguments;
+
+  NSArray<SKPaymentTransaction *> *pendingTransactions =
+      [self.paymentQueueHandler getUnfinishedTransactions];
+
+  for (SKPaymentTransaction *transaction in pendingTransactions) {
+    if ([transaction.transactionIdentifier isEqualToString:transactionIdentifier]) {
+      @try {
+        [self.paymentQueueHandler finishTransaction:transaction];
+      } @catch (NSException *e) {
+        result([FlutterError errorWithCode:@"storekit_finish_transaction_exception"
+                                   message:e.name
+                                   details:e.description]);
+        return;
+      }
     }
-    // finish transaction will throw exception if the transaction type is purchasing. Notify dart
-    // about this exception.
-  } @catch (NSException *e) {
-    result([FlutterError errorWithCode:@"storekit_finish_transaction_exception"
-                               message:e.name
-                               details:e.description]);
-    return;
   }
+
   result(nil);
 }
 
@@ -241,6 +233,7 @@
     return;
   }
   [self.paymentQueueHandler restoreTransactions:call.arguments];
+  result(nil);
 }
 
 - (void)retrieveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {
