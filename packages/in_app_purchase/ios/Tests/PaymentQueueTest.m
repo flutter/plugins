@@ -69,26 +69,6 @@
   XCTAssertEqual(tran.transactionIdentifier, @"fakeID");
 }
 
-- (void)testDuplicateTransactionsWillTriggerAnError {
-  SKPaymentQueueStub *queue = [[SKPaymentQueueStub alloc] init];
-  queue.testState = SKPaymentTransactionStatePurchased;
-  FIAPaymentQueueHandler *handler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
-      transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-      }
-      transactionRemoved:nil
-      restoreTransactionFailed:nil
-      restoreCompletedTransactionsFinished:nil
-      shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
-        return YES;
-      }
-      updatedDownloads:nil];
-  [queue addTransactionObserver:handler];
-  SKPayment *payment =
-      [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
-  XCTAssertTrue([handler addPayment:payment]);
-  XCTAssertFalse([handler addPayment:payment]);
-}
-
 - (void)testTransactionFailed {
   XCTestExpectation *expectation =
       [self expectationWithDescription:@"expect to get failed transcation."];
@@ -208,13 +188,11 @@
   queue.testState = SKPaymentTransactionStateDeferred;
   __block FIAPaymentQueueHandler *handler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
       transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-        XCTAssertEqual(handler.transactions.count, 1);
         XCTAssertEqual(transactions.count, 1);
         SKPaymentTransaction *transaction = transactions[0];
         [handler finishTransaction:transaction];
       }
       transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-        XCTAssertEqual(handler.transactions.count, 0);
         XCTAssertEqual(transactions.count, 1);
         [expectation fulfill];
       }

@@ -18,9 +18,6 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 
 @interface FIAPaymentQueueHandler : NSObject <SKPaymentTransactionObserver>
 
-// Unfinished transactions.
-@property(nonatomic, readonly) NSDictionary<NSString *, SKPaymentTransaction *> *transactions;
-
 - (instancetype)initWithQueue:(nonnull SKPaymentQueue *)queue
                      transactionsUpdated:(nullable TransactionsUpdated)transactionsUpdated
                       transactionRemoved:(nullable TransactionsRemoved)transactionsRemoved
