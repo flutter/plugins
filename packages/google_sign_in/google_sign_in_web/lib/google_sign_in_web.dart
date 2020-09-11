@@ -110,7 +110,8 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       isAuthInitialized.completeError(PlatformException(
         code: reason.error,
         message: reason.details,
-        details: 'google_sign_in',
+        details:
+            'https://developers.google.com/identity/sign-in/web/reference#error_codes',
       ));
     }));
 
