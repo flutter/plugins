@@ -1,3 +1,7 @@
+## 1.6.15
+
+* Removed pre-screening for platform when calling getDownloadsPath
+
 ## 1.6.14
 
 * Update package:e2e -> package:integration_test

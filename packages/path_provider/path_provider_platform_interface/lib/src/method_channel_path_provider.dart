@@ -78,9 +78,6 @@ class MethodChannelPathProvider extends PathProviderPlatform {
   }
 
   Future<String> getDownloadsPath() {
-    if (!_platform.isMacOS) {
-      throw UnsupportedError('Functionality only available on macOS');
-    }
     return methodChannel.invokeMethod<String>('getDownloadsDirectory');
   }
 }
