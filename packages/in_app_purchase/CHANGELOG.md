@@ -1,3 +1,7 @@
+## 0.3.4+7
+
+* iOS: Fix typo of the `simulatesAskToBuyInSandbox` key.
+
 ## 0.3.4+6
 
 * iOS: Fix the bug that prevent restored subscription transactions from being completed
