@@ -98,5 +98,17 @@ void main() {
 
       expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
     });
+
+    // https://github.com/flutter/flutter/issues/64938
+    testWidgets('markers with icon:null work', (WidgetTester tester) async {
+      final markers = {
+        Marker(markerId: MarkerId('1'), icon: null),
+      };
+
+      controller.addMarkers(markers);
+
+      expect(controller.markers.length, 1);
+      expect(controller.markers[MarkerId('1')].marker.icon, isNull);
+    });
   });
 }
