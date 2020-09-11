@@ -862,6 +862,50 @@ void main() {
     },
     skip: !Platform.isAndroid,
   );
+
+  testWidgets(
+    'javascript does not run in parent window',
+    (WidgetTester tester) async {
+      final String openWindowTest = '''
+        <!DOCTYPE html><html>
+        <head><title>Resize test</title>
+          <script>
+            setTimeout(function() {
+                window.open('javascript:var elem = document.createElement("p");elem.innerHTML = "<b>Executed JS in parent origin: "+window.location.origin+"</b>"; document.body.append(elem);alert("XSS in doc.domain: "+document.domain+", win.origin: "+window.location.origin)');
+            }, 0);
+          </script>
+        </head>
+        <body onload="onLoad();" bgColor="blue">
+        </body>
+        </html>
+      ''';
+      final String openWindowTestBase64 =
+          base64Encode(const Utf8Encoder().convert(openWindowTest));
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            initialUrl:
+                'data:text/html;charset=utf-8;base64,$openWindowTestBase64',
+          ),
+        ),
+      );
+
+      final WebViewController controller = await controllerCompleter.future;
+      final String result = await controller.evaluateJavascript(
+          'document.querySelector("p") && document.querySelector("p").textContent');
+      print(result);
+    },
+    skip: !Platform.isAndroid,
+  );
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.
