@@ -384,6 +384,7 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
 
   if (iconConfig != null) {
     if (iconConfig[0] == 'fromAssetImage') {
+      assert(iconConfig.length >= 2);
       // iconConfig[2] contains the DPIs of the screen, but that information is
       // already encoded in the iconConfig[1]
 
