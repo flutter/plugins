@@ -1,4 +1,7 @@
-// This is a basic Flutter widget test.
+// This is a Flutter widget test can take a screenshot.
+//
+// NOTE: Screenshots are only supported on Web for now. For Web, this needs to
+// be executed with the `test_driver/integration_test_extended_driver.dart`.
 //
 // To perform an interaction with a widget in your test, use the WidgetTester
 // utility that Flutter provides. For example, you can send tap and scroll
@@ -7,8 +10,8 @@
 
 import 'package:integration_test/integration_test.dart';
 
-import 'example_integration_io.dart'
-    if (dart.library.html) 'example_integration_web.dart' as tests;
+import '_extended_test_io.dart' if (dart.library.html) '_extended_test_web.dart'
+    as tests;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

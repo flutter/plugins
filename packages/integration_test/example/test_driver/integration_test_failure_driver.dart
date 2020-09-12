@@ -1,7 +1,5 @@
-import 'dart:async';
-
-import 'package:integration_test/common.dart' as common;
 import 'package:flutter_driver/flutter_driver.dart';
+import 'package:integration_test/common.dart' as common;
 import 'package:test/test.dart';
 
 Future<void> main() async {
