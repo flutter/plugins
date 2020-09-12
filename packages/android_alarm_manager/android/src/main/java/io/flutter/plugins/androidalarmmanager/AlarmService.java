@@ -75,7 +75,6 @@ public class AlarmService extends JobIntentService {
     synchronized (alarmQueue) {
       // Handle all the alarm events received before the Dart isolate was
       // initialized, then clear the queue.
-      /// 'while' loop replaceable with enhanced 'for'
       for (Intent intent : alarmQueue) {
         flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(intent, null);
       }
@@ -230,7 +229,6 @@ public class AlarmService extends JobIntentService {
   }
 
   private static String getPersistentAlarmKey(int requestCode) {
-    /// Unnecessary 'Integer.toString()' call
     return "android_alarm_manager/persistent_alarm_" + requestCode;
   }
 
@@ -280,7 +278,6 @@ public class AlarmService extends JobIntentService {
     SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
     synchronized (persistentAlarmsLock) {
       Set<String> persistentAlarms = p.getStringSet(PERSISTENT_ALARMS_SET_KEY, null);
-      /// 'Set' may not contain objects of type 'Integer'
       if ((persistentAlarms == null) || !persistentAlarms.contains(request)) {
         return;
       }
@@ -303,13 +300,11 @@ public class AlarmService extends JobIntentService {
         return;
       }
 
-      /// 'while' loop replaceable with enhanced 'for'
       for (String persistentAlarm : persistentAlarms) {
         int requestCode = Integer.parseInt(persistentAlarm);
         String key = getPersistentAlarmKey(requestCode);
         String json = p.getString(key, null);
         if (json == null) {
-          /// Unnecessary 'Integer.toString()' call
           Log.e(TAG, "Data for alarm request code " + requestCode + " is invalid.");
           continue;
         }

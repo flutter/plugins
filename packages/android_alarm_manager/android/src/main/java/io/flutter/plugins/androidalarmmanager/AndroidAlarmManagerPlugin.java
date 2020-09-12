@@ -107,7 +107,6 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
     String method = call.method;
     Object arguments = call.arguments;
     try {
-      /// 'if' statement replaceable with 'switch' statement
       switch (method) {
         case "AlarmService.start":
           // This message is sent when the Dart side of this plugin is told to initialize.
