@@ -894,7 +894,7 @@ void main() {
             },
             javascriptMode: JavascriptMode.unrestricted,
             initialUrl:
-                'data:text/html;charset=utf-8;base64,$openWindowTestBase64',
+                '<iframe src="data:text/html;charset=utf-8;base64,$openWindowTestBase64"</iframe>',
           ),
         ),
       );
@@ -902,7 +902,7 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       final String result = await controller.evaluateJavascript(
           'document.querySelector("p") && document.querySelector("p").textContent');
-      print(result);
+      expect(result, isEmpty);
     },
     skip: !Platform.isAndroid,
   );
