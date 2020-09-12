@@ -1,0 +1,5 @@
+def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
+
+project.getTasks().withType(JavaCompile){
+    options.compilerArgs.addAll(args)
+}
