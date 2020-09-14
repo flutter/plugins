@@ -21,14 +21,12 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    String text;
-    String subject;
     switch (call.method) {
       case "share":
         expectMapArguments(call);
         // Android does not support showing the share sheet at a particular point on screen.
-        text = call.argument("text");
-        subject = call.argument("subject");
+        String text = call.argument("text");
+        String subject = call.argument("subject");
         share.share(text, subject);
         result.success(null);
         break;
