@@ -1,3 +1,7 @@
+## 5.5.3+1
+
+* Update installation instructions for Android 11+
+
 ## 5.5.3
 
 * Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android.
