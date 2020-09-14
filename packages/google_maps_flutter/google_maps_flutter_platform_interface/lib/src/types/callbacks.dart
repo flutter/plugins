@@ -4,6 +4,14 @@
 
 import 'types.dart';
 
+/// Callback that receives updates to the camera move started.
+///
+/// This callback is triggered when the platform Google Map
+/// registers a camera start of movement.
+///
+/// This is used in [GoogleMap.onCameraMoveStartedWithGesture].
+typedef void CameraMoveStartCallback(bool isGesture);
+
 /// Callback that receives updates to the camera position.
 ///
 /// This callback is triggered when the platform Google Map

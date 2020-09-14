@@ -22,6 +22,10 @@ dev_dependencies:
   plugin_platform_interface: ^1.0.2
   mockito: ^4.1.1
 
+dependency_overrides:
+  google_maps_flutter_platform_interface:
+    path: ../google_maps_flutter_platform_interface
+
 flutter:
   plugin:
     platforms:
