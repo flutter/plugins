@@ -310,7 +310,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
     // The player has not yet initialized.
     if (height == CGSizeZero.height && width == CGSizeZero.width) {
-      return;
+      // 这里会导致 m4a 结尾的音频无法播放
+      // return;
     }
     // The player may be initialized but still needs to determine the duration.
     if ([self duration] == 0) {
