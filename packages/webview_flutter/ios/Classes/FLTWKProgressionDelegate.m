@@ -14,7 +14,10 @@ NSString *const FLTWKEstimatedProgressKeyPath = @"estimatedProgress";
   self = [super init];
   if (self) {
     _methodChannel = channel;
-    [webView addObserver:self forKeyPath:FLTWKEstimatedProgressKeyPath options:NSKeyValueObservingOptionNew context:nil];
+    [webView addObserver:self
+              forKeyPath:FLTWKEstimatedProgressKeyPath
+                 options:NSKeyValueObservingOptionNew
+                 context:nil];
   }
   return self;
 }
