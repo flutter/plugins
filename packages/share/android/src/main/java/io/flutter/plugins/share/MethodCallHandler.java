@@ -21,8 +21,8 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    String text, subject;
-    List<String> paths, mimeTypes;
+    String text;
+    String subject;
     switch (call.method) {
       case "share":
         expectMapArguments(call);
@@ -35,12 +35,12 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
       case "shareFiles":
         expectMapArguments(call);
 
+        List<String> paths = call.argument("paths");
+        List<String> mimeTypes = call.argument("mimeTypes");
+        text = call.argument("text");
+        subject = call.argument("subject");
         // Android does not support showing the share sheet at a particular point on screen.
         try {
-          paths = call.argument("paths");
-          mimeTypes = call.argument("mimeTypes");
-          text = call.argument("text");
-          subject = call.argument("subject");
           share.shareFiles(paths, mimeTypes, text, subject);
           result.success(null);
         } catch (IOException e) {
