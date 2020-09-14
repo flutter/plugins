@@ -4,7 +4,7 @@
 
 #import "FLTWKProgressionDelegate.h"
 
-NSString *const keyPath = @"estimatedProgress";
+NSString *const FLTWKEstimatedProgressKeyPath = @"estimatedProgress";
 
 @implementation FLTWKProgressionDelegate {
   FlutterMethodChannel *_methodChannel;
@@ -14,20 +14,20 @@ NSString *const keyPath = @"estimatedProgress";
   self = [super init];
   if (self) {
     _methodChannel = channel;
-    [webView addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:nil];
+    [webView addObserver:self forKeyPath:FLTWKEstimatedProgressKeyPath options:NSKeyValueObservingOptionNew context:nil];
   }
   return self;
 }
 
 - (void)stopObservingProgress:(WKWebView *)webView {
-  [webView removeObserver:self forKeyPath:keyPath];
+  [webView removeObserver:self forKeyPath:FLTWKEstimatedProgressKeyPath];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary<NSKeyValueChangeKey, id> *)change
                        context:(void *)context {
-  if ([keyPath isEqualToString:keyPath]) {
+  if ([keyPath isEqualToString:FLTWKEstimatedProgressKeyPath]) {
     NSNumber *newValue =
         change[NSKeyValueChangeNewKey] ?: 0;          // newValue is anywhere between 0.0 and 1.0
     int newValueAsInt = [newValue floatValue] * 100;  // Anywhere between 0 and 100
