@@ -17,7 +17,6 @@ import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -76,9 +75,8 @@ public class AlarmService extends JobIntentService {
     synchronized (alarmQueue) {
       // Handle all the alarm events received before the Dart isolate was
       // initialized, then clear the queue.
-      Iterator<Intent> i = alarmQueue.iterator();
-      while (i.hasNext()) {
-        flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(i.next(), null);
+      for (Intent intent : alarmQueue) {
+        flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(intent, null);
       }
       alarmQueue.clear();
     }
@@ -231,7 +229,7 @@ public class AlarmService extends JobIntentService {
   }
 
   private static String getPersistentAlarmKey(int requestCode) {
-    return "android_alarm_manager/persistent_alarm_" + Integer.toString(requestCode);
+    return "android_alarm_manager/persistent_alarm_" + requestCode;
   }
 
   private static void addPersistentAlarm(
@@ -276,13 +274,14 @@ public class AlarmService extends JobIntentService {
   }
 
   private static void clearPersistentAlarm(Context context, int requestCode) {
+    String request = String.valueOf(requestCode);
     SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
     synchronized (persistentAlarmsLock) {
       Set<String> persistentAlarms = p.getStringSet(PERSISTENT_ALARMS_SET_KEY, null);
-      if ((persistentAlarms == null) || !persistentAlarms.contains(requestCode)) {
+      if ((persistentAlarms == null) || !persistentAlarms.contains(request)) {
         return;
       }
-      persistentAlarms.remove(requestCode);
+      persistentAlarms.remove(request);
       String key = getPersistentAlarmKey(requestCode);
       p.edit().remove(key).putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms).apply();
 
@@ -301,14 +300,12 @@ public class AlarmService extends JobIntentService {
         return;
       }
 
-      Iterator<String> it = persistentAlarms.iterator();
-      while (it.hasNext()) {
-        int requestCode = Integer.parseInt(it.next());
+      for (String persistentAlarm : persistentAlarms) {
+        int requestCode = Integer.parseInt(persistentAlarm);
         String key = getPersistentAlarmKey(requestCode);
         String json = p.getString(key, null);
         if (json == null) {
-          Log.e(
-              TAG, "Data for alarm request code " + Integer.toString(requestCode) + " is invalid.");
+          Log.e(TAG, "Data for alarm request code " + requestCode + " is invalid.");
           continue;
         }
         try {
