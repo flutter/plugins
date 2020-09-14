@@ -77,7 +77,7 @@ Android system -- although very rarely -- sometimes kills the MainActivity after
 Future<void> retrieveLostData() async {
   final LostData response =
       await picker.getLostData();
-  if (response == null) {
+  if (response.isEmpty) {
     return;
   }
   if (response.file != null) {

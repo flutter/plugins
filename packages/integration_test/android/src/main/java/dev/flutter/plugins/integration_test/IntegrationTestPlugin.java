@@ -37,8 +37,8 @@ public class IntegrationTestPlugin implements MethodCallHandler, FlutterPlugin {
     onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
   }
 
-  private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
-    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/integration_test");
+  private void onAttachedToEngine(Context unusedApplicationContext, BinaryMessenger messenger) {
+    methodChannel = new MethodChannel(messenger, CHANNEL);
     methodChannel.setMethodCallHandler(this);
   }
 

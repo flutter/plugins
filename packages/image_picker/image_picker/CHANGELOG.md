@@ -1,3 +1,7 @@
+## 0.6.7+7
+
+* Updating documentation to use isEmpty check.
+
 ## 0.6.7+6
 
 * Update package:e2e -> package:integration_test
