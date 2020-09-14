@@ -1,3 +1,7 @@
+## 0.3.4+9
+
+* Update android compileSdkVersion to 29.
+
 ## 0.3.4+8
 
 * [iOS] Fixed: purchase dialog not showing always.

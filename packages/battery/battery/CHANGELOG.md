@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Update android compileSdkVersion to 29.
+
 ## 1.0.5
 
 * Ported to use platform interface.

@@ -1,3 +1,7 @@
+## 0.5.8+7
+
+* Update android compileSdkVersion to 29.
+
 ## 0.5.8+6
 
 * Avoiding uses or overrides a deprecated API in CameraPlugin.java.

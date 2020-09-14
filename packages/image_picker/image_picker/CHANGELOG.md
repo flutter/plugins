@@ -1,3 +1,7 @@
+## 0.6.7+9
+
+* Update android compileSdkVersion to 29.
+
 ## 0.6.7+8
 
 * Update documentation of getImage() about Android's disability to preference front/rear camera.

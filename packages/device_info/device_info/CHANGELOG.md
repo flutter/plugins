@@ -1,3 +1,7 @@
+## 0.4.2+8
+
+* Update android compileSdkVersion to 29.
+
 ## 0.4.2+7
 
 * Port device_info plugin to use platform interface.

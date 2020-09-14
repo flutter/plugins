@@ -1,3 +1,7 @@
+## 0.3.7+4
+
+* Update android compileSdkVersion to 29.
+
 ## 0.3.7+3
 
 * Update the `platform` package dependency to resolve the conflict with the latest flutter.

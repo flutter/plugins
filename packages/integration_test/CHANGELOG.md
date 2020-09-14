@@ -1,3 +1,7 @@
+## 0.9.0+1
+
+* Update android compileSdkVersion to 29.
+
 ## 0.9.0
 
 * Add screenshot capability to web tests.
