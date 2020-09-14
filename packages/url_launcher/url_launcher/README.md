@@ -4,6 +4,24 @@
 
 A Flutter plugin for launching a URL in the mobile platform. Supports iOS and Android.
 
+## Installation
+
+### Android
+
+#### API 30+
+If you're targeting API 30 or higher, your app cannot interact with, most external packages without explicitly requesting allowance.
+
+Add [queries](https://developer.android.com/reference/kotlin/android/content/pm/PackageManager#queryintentactivities) to your manifest file:
+```xml
+<queries>
+    <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https" />
+    </intent>
+</queries>
+```
+
 ## Usage
 To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
 
