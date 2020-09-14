@@ -107,37 +107,43 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
     String method = call.method;
     Object arguments = call.arguments;
     try {
-      if (method.equals("AlarmService.start")) {
-        // This message is sent when the Dart side of this plugin is told to initialize.
-        long callbackHandle = ((JSONArray) arguments).getLong(0);
-        // In response, this (native) side of the plugin needs to spin up a background
-        // Dart isolate by using the given callbackHandle, and then setup a background
-        // method channel to communicate with the new background isolate. Once completed,
-        // this onMethodCall() method will receive messages from both the primary and background
-        // method channels.
-        AlarmService.setCallbackDispatcher(context, callbackHandle);
-        AlarmService.startBackgroundIsolate(context, callbackHandle);
-        result.success(true);
-      } else if (method.equals("Alarm.periodic")) {
-        // This message indicates that the Flutter app would like to schedule a periodic
-        // task.
-        PeriodicRequest periodicRequest = PeriodicRequest.fromJson((JSONArray) arguments);
-        AlarmService.setPeriodic(context, periodicRequest);
-        result.success(true);
-      } else if (method.equals("Alarm.oneShotAt")) {
-        // This message indicates that the Flutter app would like to schedule a one-time
-        // task.
-        OneShotRequest oneShotRequest = OneShotRequest.fromJson((JSONArray) arguments);
-        AlarmService.setOneShot(context, oneShotRequest);
-        result.success(true);
-      } else if (method.equals("Alarm.cancel")) {
-        // This message indicates that the Flutter app would like to cancel a previously
-        // scheduled task.
-        int requestCode = ((JSONArray) arguments).getInt(0);
-        AlarmService.cancel(context, requestCode);
-        result.success(true);
-      } else {
-        result.notImplemented();
+      switch (method) {
+        case "AlarmService.start":
+          // This message is sent when the Dart side of this plugin is told to initialize.
+          long callbackHandle = ((JSONArray) arguments).getLong(0);
+          // In response, this (native) side of the plugin needs to spin up a background
+          // Dart isolate by using the given callbackHandle, and then setup a background
+          // method channel to communicate with the new background isolate. Once completed,
+          // this onMethodCall() method will receive messages from both the primary and background
+          // method channels.
+          AlarmService.setCallbackDispatcher(context, callbackHandle);
+          AlarmService.startBackgroundIsolate(context, callbackHandle);
+          result.success(true);
+          break;
+        case "Alarm.periodic":
+          // This message indicates that the Flutter app would like to schedule a periodic
+          // task.
+          PeriodicRequest periodicRequest = PeriodicRequest.fromJson((JSONArray) arguments);
+          AlarmService.setPeriodic(context, periodicRequest);
+          result.success(true);
+          break;
+        case "Alarm.oneShotAt":
+          // This message indicates that the Flutter app would like to schedule a one-time
+          // task.
+          OneShotRequest oneShotRequest = OneShotRequest.fromJson((JSONArray) arguments);
+          AlarmService.setOneShot(context, oneShotRequest);
+          result.success(true);
+          break;
+        case "Alarm.cancel":
+          // This message indicates that the Flutter app would like to cancel a previously
+          // scheduled task.
+          int requestCode = ((JSONArray) arguments).getInt(0);
+          AlarmService.cancel(context, requestCode);
+          result.success(true);
+          break;
+        default:
+          result.notImplemented();
+          break;
       }
     } catch (JSONException e) {
       result.error("error", "JSON error: " + e.getMessage(), null);
