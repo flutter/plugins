@@ -35,7 +35,7 @@ class MixWithOthersMessage {
   bool mixWithOthers;
 }
 
-@HostApi()
+@HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class VideoPlayerApi {
   void initialize();
   TextureMessage create(CreateMessage msg);
