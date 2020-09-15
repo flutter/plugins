@@ -16,8 +16,9 @@ import 'package:path_provider_windows/folders.dart';
 ///
 /// This class implements the `package:path_provider` functionality for Windows.
 class PathProviderWindows extends PathProviderPlatform {
+  /// This is typically the same as the TMP environment variable.
   @override
-  Future<String> getTemporaryPath() {
+  Future<String> getTemporaryPath() async {
     final buffer = allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
     String path;
 
@@ -37,6 +38,13 @@ class PathProviderWindows extends PathProviderPlatform {
           path = path.substring(0, path.length - 1);
         }
       }
+
+      // Ensure that the directory exists, since GetTempPath doesn't.
+      final directory = Directory(path);
+      if (!directory.existsSync()) {
+        await directory.create(recursive: true);
+      }
+
       return Future.value(path);
     } finally {
       free(buffer);
