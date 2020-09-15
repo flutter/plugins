@@ -1,6 +1,6 @@
 ## 1.0.5
 
-* Added `isGesture` on `mapStartMove` event
+* Add `isGesture` on `mapStartMove` event
 
 ## 1.0.4
 
