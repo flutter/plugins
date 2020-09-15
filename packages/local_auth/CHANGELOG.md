@@ -1,6 +1,8 @@
 ## 0.6.3+1
 
 * Add `authenticate` method that uses biometric authentication, but allows users to also use device authentication - pin, pattern, passcode.
+* Update package:e2e -> package:integration_test
+
 
 ## 0.6.3
 
