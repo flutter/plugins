@@ -1,6 +1,7 @@
 ## 1.6.15
 
 * Endorse Windows implementation.
+* Remove the need to call disablePathProviderPlatformOverride in tests
 
 ## 1.6.14
 

@@ -12,6 +12,7 @@ flutter:
 
 dependencies:
   path_provider_platform_interface: ^1.0.3
+  path: ^1.6.4
   flutter:
     sdk: flutter
   ffi: ^0.1.3
