@@ -23,6 +23,8 @@ void main() {
     final path = await pathProvider.getApplicationSupportPath();
     expect(path, contains(r'C:\'));
     expect(path, contains(r'AppData'));
+    // The last path component should be the executable name.
+    expect(path, endsWith(r'example'));
   }, skip: !Platform.isWindows);
 
   test('getApplicationDocumentsPath', () async {

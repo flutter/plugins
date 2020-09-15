@@ -54,10 +54,7 @@ class PathProviderWindows extends PathProviderPlatform {
   @override
   Future<String> getApplicationSupportPath() async {
     final appDataRoot = await getPath(WindowsKnownFolder.RoamingAppData);
-    // DO NOT LAND. Use GetModuleFileName here once it's available in win32.
-    final exePath = 'path/to/app.exe';
-    final directory = Directory(
-        path.join(appDataRoot, path.basenameWithoutExtension(exePath)));
+    final directory = Directory(path.join(appDataRoot, _getExeName()));
     // Ensure that the returned directory exists, since it will on other
     // platforms.
     if (!directory.existsSync()) {
@@ -99,6 +96,25 @@ class PathProviderWindows extends PathProviderPlatform {
     } finally {
       CoTaskMemFree(pathPtr.cast());
       free(pathPtrPtr);
+    }
+  }
+
+  /// Returns the name of the executable running this code, without the
+  /// extension.
+  String _getExeName() {
+    final buffer = allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
+    try {
+      final length = GetModuleFileName(0, buffer, MAX_PATH);
+      String exePath;
+      if (length == 0) {
+        final error = GetLastError();
+        throw WindowsException(error);
+      } else {
+        exePath = buffer.unpackString(length);
+      }
+      return path.basenameWithoutExtension(exePath);
+    } finally {
+      free(buffer);
     }
   }
 }
