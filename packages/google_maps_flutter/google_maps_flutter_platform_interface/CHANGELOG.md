@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Added `isGesture` on `mapStartMove` event
+
 ## 1.0.4
 
 * Add a `dispose` method to the interface, so implementations may cleanup resources acquired on `init`.
