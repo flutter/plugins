@@ -122,12 +122,6 @@ class GoogleMap extends StatefulWidget {
 
   /// Called when the camera starts moving.
   ///
-  /// This is called when onCameraMoveStarted is called expect that it has an argument
-  /// isGesture is true whenever the camera move was started by an user gesture
-  final CameraMoveStartCallback onCameraMoveStartedWithGesture;
-
-  /// Called when the camera starts moving.
-  ///
   /// This can be initiated by the following:
   /// 1. Non-gesture animation initiated in response to user actions.
   ///    For example: zoom buttons, my location button, or marker clicks.
