@@ -5,6 +5,8 @@ dependencies:
   flutter:
     sdk: flutter
   path_provider: any
+
+dependency_overrides:
   path_provider_windows:
     path: ../
 
