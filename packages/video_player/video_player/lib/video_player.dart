@@ -6,11 +6,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
     show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
 
@@ -37,6 +37,7 @@ class VideoPlayerValue {
     this.isLooping = false,
     this.isBuffering = false,
     this.volume = 1.0,
+    this.playbackSpeed = 1.0,
     this.errorDescription,
   });
 
@@ -76,6 +77,9 @@ class VideoPlayerValue {
 
   /// The current volume of the playback.
   final double volume;
+
+  /// The current speed of the playback.
+  final double playbackSpeed;
 
   /// A description of the error if present.
   ///
@@ -119,6 +123,7 @@ class VideoPlayerValue {
     bool isLooping,
     bool isBuffering,
     double volume,
+    double playbackSpeed,
     String errorDescription,
   }) {
     return VideoPlayerValue(
@@ -131,6 +136,7 @@ class VideoPlayerValue {
       isLooping: isLooping ?? this.isLooping,
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
+      playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       errorDescription: errorDescription ?? this.errorDescription,
     );
   }
@@ -145,8 +151,9 @@ class VideoPlayerValue {
         'buffered: [${buffered.join(', ')}], '
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
-        'isBuffering: $isBuffering'
+        'isBuffering: $isBuffering, '
         'volume: $volume, '
+        'playbackSpeed: $playbackSpeed, '
         'errorDescription: $errorDescription)';
   }
 }
@@ -290,6 +297,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           initializingCompleter.complete(null);
           _applyLooping();
           _applyVolume();
+          _applyPlaybackSpeed();
           _applyPlayPause();
           break;
         case VideoEventType.completed:
@@ -397,6 +405,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _updatePosition(newPosition);
         },
       );
+
+      // This ensures that the correct playback speed is always applied when
+      // playing back. This is necessary because we do not set playback speed
+      // when paused.
+      await _applyPlaybackSpeed();
     } else {
       _timer?.cancel();
       await _videoPlayerPlatform.pause(_textureId);
@@ -408,6 +421,22 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     await _videoPlayerPlatform.setVolume(_textureId, value.volume);
+  }
+
+  Future<void> _applyPlaybackSpeed() async {
+    if (!value.initialized || _isDisposed) {
+      return;
+    }
+
+    // Setting the playback speed on iOS will trigger the video to play. We
+    // prevent this from happening by not applying the playback speed until
+    // the video is manually played from Flutter.
+    if (!value.isPlaying) return;
+
+    await _videoPlayerPlatform.setPlaybackSpeed(
+      _textureId,
+      value.playbackSpeed,
+    );
   }
 
   /// The position in the current video.
@@ -443,6 +472,33 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<void> setVolume(double volume) async {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
+  }
+
+  /// Sets the playback speed of [this].
+  ///
+  /// [speed] indicates a speed value with different platforms accepting
+  /// different ranges for speed values (that must not be negative).
+  /// The values will be handled as follows:
+  /// * On web, no exceptions will be thrown, however, different browser
+  ///   implementations will e.g. mute audio.
+  ///   "Gecko mutes the sound outside the range `0.25` to `5.0`" (see https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/playbackRate).
+  /// * On iOS, you can sometimes not go above `2.0` playback speed on a video.
+  ///   An error will be thrown for if the option is unsupported. It is also
+  ///   possible that your specific video cannot be slowed down, in which case
+  ///   the plugin also reports errors.
+  /// * On Android, the handling is similar to web, where the plugin will not
+  ///   report any errors, however, you cannot expect support for all speed
+  ///   values (even though it should go way above `2.0`).
+  Future<void> setPlaybackSpeed(double speed) async {
+    if (speed < 0) {
+      throw ArgumentError.value(
+        speed,
+        'Negative playback speeds are generally unsupported.',
+      );
+    }
+
+    value = value.copyWith(playbackSpeed: speed);
+    await _applyPlaybackSpeed();
   }
 
   /// The closed caption based on the current [position] in the video.
