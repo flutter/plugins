@@ -1,3 +1,7 @@
+## 1.6.15
+
+* Endorse Windows implementation.
+
 ## 1.6.14
 
 * Update package:e2e -> package:integration_test
