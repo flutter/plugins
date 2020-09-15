@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
         title: const Text('Plugin example app'),
       ),
       body: Center(
-        child: Text('$_batteryState'),
+        child: Text('State : $_batteryState'),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.battery_unknown),

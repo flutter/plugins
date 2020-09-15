@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
 import 'dart:async';
 
 import 'package:battery_platform_interface/battery_platform_interface.dart';
+import 'package:dbus/dbus.dart';
 
 /// The linux implementation of [BatteryPlatform]
 ///
@@ -16,53 +16,53 @@ class BatteryLinux extends BatteryPlatform {
     BatteryPlatform.instance = BatteryLinux();
   }
 
-  /// Stores the path to battery info directory.
-  /// This can be BAT0 or BAT1.
-  String _path;
+  DBusClient _client;
+  DBusRemoteObject _object;
 
-  /// Gets the path of battery info directory.
-  Future<void> get _getBatteryPath async {
-    _path = "/sys/class/power_supply/";
-    Directory _directory = Directory("/sys/class/power_supply/BAT0");
-    if (await _directory.exists()) {
-      _path += "BAT0";
-    } else {
-      _path += "BAT1";
+  DBusRemoteObject get _getDbusObject {
+    if (_client == null) {
+      _client = DBusClient.system();
+      _object = DBusRemoteObject(
+        _client,
+        'org.freedesktop.UPower',
+        DBusObjectPath('/org/freedesktop/UPower/devices/DisplayDevice'),
+      );
     }
+    return _object;
   }
 
   @override
   Future<int> batteryLevel() async {
-    if (_path == null) {
-      await _getBatteryPath;
-    }
-    File file = File("$_path/capacity");
-    return int.parse(await file.readAsString());
+    DBusValue level = await _getDbusObject.getProperty(
+        'org.freedesktop.UPower.Device', 'Percentage');
+    return level.toNative().toInt();
   }
 
   @override
   Stream<BatteryState> onBatteryStateChanged() async* {
-    if (_path == null) {
-      await _getBatteryPath;
-    }
-    File file = File("$_path/status");
-    while (true) {
-      await Future.delayed(Duration(seconds: 1));
-      yield _parseBatteryState(
-          (await file.readAsString()).toLowerCase().trim());
+    DBusValue state = await _getDbusObject.getProperty(
+        'org.freedesktop.UPower.Device', 'State');
+    yield _parseBatteryState(state.toNative());
+    Stream<DBusPropertiesChangedSignal> stream =
+        _object.subscribePropertiesChanged();
+    await for (var signal in stream) {
+      state = signal.changedProperties['State'];
+      if (state != null) {
+        yield _parseBatteryState(state.toNative());
+      }
     }
   }
 }
 
 /// Method for parsing battery state.
-BatteryState _parseBatteryState(String state) {
+BatteryState _parseBatteryState(int state) {
   switch (state) {
-    case 'full':
-      return BatteryState.full;
-    case 'charging':
+    case 1:
       return BatteryState.charging;
-    case 'discharging':
+    case 2:
       return BatteryState.discharging;
+    case 4:
+      return BatteryState.full;
     default:
       throw ArgumentError('$state is not a valid BatteryState.');
   }
