@@ -49,7 +49,6 @@ class GoogleMap extends StatefulWidget {
     this.polygons,
     this.polylines,
     this.circles,
-    this.onCameraMoveStartedWithGesture,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
