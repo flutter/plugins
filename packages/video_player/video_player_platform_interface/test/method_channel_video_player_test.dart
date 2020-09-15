@@ -11,7 +11,7 @@ import 'package:video_player_platform_interface/messages.dart';
 import 'package:video_player_platform_interface/method_channel_video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-class _ApiLogger implements VideoPlayerApiTest {
+class _ApiLogger implements TestHostVideoPlayerApi {
   final List<String> log = [];
   TextureMessage textureMessage;
   CreateMessage createMessage;
@@ -122,7 +122,7 @@ void main() {
 
     setUp(() {
       log = _ApiLogger();
-      VideoPlayerApiTestSetup(log);
+      TestHostVideoPlayerApi.setup(log);
     });
 
     test('init', () async {
