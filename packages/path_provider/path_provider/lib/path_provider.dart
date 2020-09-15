@@ -27,8 +27,7 @@ PathProviderPlatform get _platform {
   if (_manualDartRegistrationNeeded) {
     // Only do the initial registration if it hasn't already been overridden
     // with a non-default instance.
-    if (!kIsWeb &&
-        PathProviderPlatform.instance is MethodChannelPathProvider) {
+    if (!kIsWeb && PathProviderPlatform.instance is MethodChannelPathProvider) {
       if (Platform.isLinux) {
         PathProviderPlatform.instance = PathProviderLinux();
       } else if (Platform.isWindows) {
