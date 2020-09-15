@@ -1,3 +1,19 @@
+# 0.1.3+2
+
+- Fix a typo in a test name and fix some style inconsistencies.
+
+# 0.1.3+1
+
+- Depend explicitly on the `platform_interface` package that adds the `webOnlyWindowName` parameter.
+
+# 0.1.3
+
+- Added webOnlyWindowName parameter to launch()
+
+# 0.1.2+1
+
+- Update docs
+
 # 0.1.2
 
 - Adds "tel" and "sms" support 
