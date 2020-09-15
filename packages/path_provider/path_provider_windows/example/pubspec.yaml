@@ -4,7 +4,7 @@ description: Demonstrates how to use the path_provider plugin.
 dependencies:
   flutter:
     sdk: flutter
-  path_provider: any
+  path_provider_windows: any
 
 dependency_overrides:
   path_provider_windows:

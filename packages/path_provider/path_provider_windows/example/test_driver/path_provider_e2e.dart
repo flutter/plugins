@@ -4,39 +4,41 @@
 
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:e2e/e2e.dart';
 
 void main() {
   E2EWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('getTemporaryDirectory', (WidgetTester tester) async {
-    final Directory result = await getTemporaryDirectory();
+    final PathProviderWindows provider = PathProviderWindows();
+    final String result = await provider.getTemporaryPath();
     _verifySampleFile(result, 'temporaryDirectory');
   });
 
   testWidgets('getApplicationDocumentsDirectory', (WidgetTester tester) async {
-    final Directory result = await getApplicationDocumentsDirectory();
+    final PathProviderWindows provider = PathProviderWindows();
+    final String result = await provider.getApplicationDocumentsPath();
     _verifySampleFile(result, 'applicationDocuments');
   });
 
   testWidgets('getApplicationSupportDirectory', (WidgetTester tester) async {
-    final Directory result = await getApplicationSupportDirectory();
+    final PathProviderWindows provider = PathProviderWindows();
+    final String result = await provider.getApplicationSupportPath();
     _verifySampleFile(result, 'applicationSupport');
   });
 
-  testWidgets('getLibraryDirectory', (WidgetTester tester) async {
-    if (!Platform.isWindows) {
-      return;
-    }
-    final Directory result = await getLibraryDirectory();
-    _verifySampleFile(result, 'library');
+  testWidgets('getDownloadsDirectory', (WidgetTester tester) async {
+    final PathProviderWindows provider = PathProviderWindows();
+    final String result = await provider.getDownloadsPath();
+    _verifySampleFile(result, 'downloads');
   });
 }
 
-/// Verify a file called [name] in [directory] by recreating it with test
+/// Verify a file called [name] in [directoryPath] by recreating it with test
 /// contents when necessary.
-void _verifySampleFile(Directory directory, String name) {
+void _verifySampleFile(String directoryPath, String name) {
+  final Directory directory = Directory(directoryPath);
   final File file = File('${directory.path}${Platform.pathSeparator}$name');
 
   if (file.existsSync()) {

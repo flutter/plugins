@@ -7,7 +7,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 
 void main() async {
   runApp(MyApp());
@@ -37,26 +37,27 @@ class _MyAppState extends State<MyApp> {
     String downloadsDirectory;
     String appSupportDirectory;
     String documentsDirectory;
+    final PathProviderWindows provider = PathProviderWindows();
 
     try {
-      tempDirectory = (await getTemporaryDirectory()).path;
+      tempDirectory = await provider.getTemporaryPath();
     } catch (exception) {
       tempDirectory = 'Failed to get temp directory: $exception';
     }
     try {
-      downloadsDirectory = (await getDownloadsDirectory()).path;
+      downloadsDirectory = await provider.getDownloadsPath();
     } catch (exception) {
       downloadsDirectory = 'Failed to get downloads directory: $exception';
     }
 
     try {
-      documentsDirectory = (await getApplicationDocumentsDirectory()).path;
+      documentsDirectory = await provider.getApplicationDocumentsPath();
     } catch (exception) {
       documentsDirectory = 'Failed to get documents directory: $exception';
     }
 
     try {
-      appSupportDirectory = (await getApplicationSupportDirectory()).path;
+      appSupportDirectory = await provider.getApplicationSupportPath();
     } catch (exception) {
       appSupportDirectory = 'Failed to get app support directory: $exception';
     }
