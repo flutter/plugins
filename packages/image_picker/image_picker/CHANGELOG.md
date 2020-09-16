@@ -1,6 +1,6 @@
-## 0.6.8
+## 0.6.7+8
 
-* Update documentation of getImage() about Android's disability to preference front/rear camera
+* Update documentation of getImage() about Android's disability to preference front/rear camera.
 
 ## 0.6.7+7
 
