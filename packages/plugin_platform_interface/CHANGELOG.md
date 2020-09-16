@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Fix a broken link to the federated-plugin documentation.
+
 ## 1.0.2
 
 * Make the pedantic dev_dependency explicit.
