@@ -1,3 +1,7 @@
+## 0.4.4
+
+* Added web implementation of package_info
+
 ## 0.4.3
 
 * Update package:e2e -> package:integration_test

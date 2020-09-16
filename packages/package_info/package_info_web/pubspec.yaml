@@ -1,0 +1,20 @@
+name: package_info_web
+version: 0.0.1
+
+flutter:
+  plugin:
+    platforms:
+      web:
+        pluginClass: PackageInfoPlugin
+        fileName: package_info_web.dart
+
+dependencies:
+  http: any
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.5.0 <2.0.0"
