@@ -23,9 +23,6 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   FileSystem fs = LocalFileSystem();
 
   /// The path_provider_windows instance used to find the support directory.
-  ///
-  /// DO NOT LAND: See what the testing solution is for path_provider to see if
-  /// exposing this is actually necessary.
   @visibleForTesting
   PathProviderWindows pathProvider = PathProviderWindows();
 
