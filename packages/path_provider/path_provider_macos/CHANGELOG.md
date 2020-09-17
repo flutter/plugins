@@ -1,3 +1,7 @@
+## 0.0.4+4
+
+* Remove no-op android folder in the example app.
+
 ## 0.0.4+3
 
 * Remove Android folder from `path_provider_macos`.
