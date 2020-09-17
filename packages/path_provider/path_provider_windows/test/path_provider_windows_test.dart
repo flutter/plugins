@@ -1,11 +1,11 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+@TestOn('windows')
 import 'dart:ffi';
-import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
+import 'package:test/test.dart';
 
 // A fake VersionInfoQuerier that just returns preset responses.
 class FakeVersionInfoQuerier implements VersionInfoQuerier {
@@ -20,7 +20,7 @@ void main() {
   test('getTemporaryPath', () async {
     final pathProvider = PathProviderWindows();
     expect(await pathProvider.getTemporaryPath(), contains(r'C:\'));
-  }, skip: !Platform.isWindows);
+  });
 
   test('getApplicationSupportPath with no version info', () async {
     final pathProvider = PathProviderWindows();
@@ -31,7 +31,7 @@ void main() {
     expect(path, contains(r'AppData'));
     // The last path component should be the executable name.
     expect(path, endsWith(r'flutter_tester'));
-  }, skip: !Platform.isWindows);
+  });
 
   test('getApplicationSupportPath with full version info', () async {
     final pathProvider = PathProviderWindows();
@@ -41,7 +41,7 @@ void main() {
     });
     final path = await pathProvider.getApplicationSupportPath();
     expect(path, endsWith(r'AppData\Roaming\A Company\Amazing App'));
-  }, skip: !Platform.isWindows);
+  });
 
   test('getApplicationSupportPath with missing company', () async {
     final pathProvider = PathProviderWindows();
@@ -50,7 +50,7 @@ void main() {
     });
     final path = await pathProvider.getApplicationSupportPath();
     expect(path, endsWith(r'AppData\Roaming\Amazing App'));
-  }, skip: !Platform.isWindows);
+  });
 
   test('getApplicationSupportPath with problematic values', () async {
     final pathProvider = PathProviderWindows();
@@ -64,7 +64,7 @@ void main() {
         endsWith(r'AppData\Roaming\'
             r'A _Bad_ Company_ Name\'
             r'A__Terrible__App__Name'));
-  }, skip: !Platform.isWindows);
+  });
 
   test('getApplicationSupportPath with a completely invalid company', () async {
     final pathProvider = PathProviderWindows();
@@ -74,19 +74,19 @@ void main() {
     });
     final path = await pathProvider.getApplicationSupportPath();
     expect(path, endsWith(r'AppData\Roaming\Amazing App'));
-  }, skip: !Platform.isWindows);
+  });
 
   test('getApplicationDocumentsPath', () async {
     final pathProvider = PathProviderWindows();
     final path = await pathProvider.getApplicationDocumentsPath();
     expect(path, contains(r'C:\'));
     expect(path, contains(r'Documents'));
-  }, skip: !Platform.isWindows);
+  });
 
   test('getDownloadsPath', () async {
     final pathProvider = PathProviderWindows();
     final path = await pathProvider.getDownloadsPath();
     expect(path, contains(r'C:\'));
     expect(path, contains(r'Downloads'));
-  }, skip: !Platform.isWindows);
+  });
 }
