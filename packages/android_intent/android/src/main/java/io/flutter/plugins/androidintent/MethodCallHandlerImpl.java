@@ -7,16 +7,19 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /** Forwards incoming {@link MethodCall}s to {@link IntentSender#send}. */
 public final class MethodCallHandlerImpl implements MethodCallHandler {
@@ -32,6 +35,118 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
    */
   MethodCallHandlerImpl(IntentSender sender) {
     this.sender = sender;
+  }
+
+  private static String convertAction(String action) {
+    if (action == null) {
+      return null;
+    }
+
+    switch (action) {
+      case "action_view":
+        return Intent.ACTION_VIEW;
+      case "action_voice":
+        return Intent.ACTION_VOICE_COMMAND;
+      case "settings":
+        return Settings.ACTION_SETTINGS;
+      case "action_location_source_settings":
+        return Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+      case "action_application_details_settings":
+        return Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
+      default:
+        return action;
+    }
+  }
+
+  private static Bundle convertArguments(Map<String, ?> arguments) {
+    Bundle bundle = new Bundle();
+    if (arguments == null) {
+      return bundle;
+    }
+    for (String key : arguments.keySet()) {
+      Object value = arguments.get(key);
+      ArrayList<String> stringArrayList = isStringArrayList(value);
+      ArrayList<Integer> integerArrayList = isIntegerArrayList(value);
+      if (value instanceof Integer) {
+        bundle.putInt(key, (Integer) value);
+      } else if (value instanceof String) {
+        bundle.putString(key, (String) value);
+      } else if (value instanceof Boolean) {
+        bundle.putBoolean(key, (Boolean) value);
+      } else if (value instanceof Double) {
+        bundle.putDouble(key, (Double) value);
+      } else if (value instanceof Long) {
+        bundle.putLong(key, (Long) value);
+      } else if (value instanceof byte[]) {
+        bundle.putByteArray(key, (byte[]) value);
+      } else if (value instanceof int[]) {
+        bundle.putIntArray(key, (int[]) value);
+      } else if (value instanceof long[]) {
+        bundle.putLongArray(key, (long[]) value);
+      } else if (value instanceof double[]) {
+        bundle.putDoubleArray(key, (double[]) value);
+      } else if (integerArrayList != null) {
+        bundle.putIntegerArrayList(key, integerArrayList);
+      } else if (stringArrayList != null) {
+        bundle.putStringArrayList(key, stringArrayList);
+      } else if (isStringKeyedMap(value) != null) {
+        bundle.putBundle(key, convertArguments((isStringKeyedMap(value))));
+      } else {
+        throw new UnsupportedOperationException("Unsupported type " + value);
+      }
+    }
+    return bundle;
+  }
+
+  private static ArrayList<Integer> isIntegerArrayList(Object value) {
+    ArrayList<Integer> integerArrayList = new ArrayList<>();
+    if (!(value instanceof ArrayList)) {
+      return null;
+    }
+    ArrayList<?> intList = (ArrayList<?>) value;
+    for (Object o : intList) {
+      if (!(o instanceof Integer)) {
+        return null;
+      } else {
+        integerArrayList.add((Integer) o);
+      }
+    }
+    return integerArrayList;
+  }
+
+  private static ArrayList<String> isStringArrayList(Object value) {
+    ArrayList<String> stringArrayList = new ArrayList<>();
+    if (!(value instanceof ArrayList)) {
+      return null;
+    }
+    ArrayList<?> stringList = (ArrayList<?>) value;
+    for (Object o : stringList) {
+      if (!(o instanceof String)) {
+        return null;
+      } else {
+        stringArrayList.add((String) o);
+      }
+    }
+    return stringArrayList;
+  }
+
+  private static Map<String, ?> isStringKeyedMap(Object value) {
+    Map<String, Object> stringMap = new HashMap<>();
+    if (!(value instanceof Map)) {
+      return null;
+    }
+    Map<?, ?> mapValue = (Map<?, ?>) value;
+    for (Object key : mapValue.keySet()) {
+      if (!(key instanceof String)) {
+        return null;
+      } else {
+        Object o = mapValue.get(key);
+        if (o != null) {
+          stringMap.put((String) key, o);
+        }
+      }
+    }
+    return stringMap;
   }
 
   /**
@@ -82,13 +197,13 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     Bundle arguments = convertArguments(stringMap);
     String packageName = call.argument("package");
     String component = call.argument("componentName");
-    ComponentName componentName =
-            (packageName != null
-                    && component != null
-                    && !TextUtils.isEmpty(packageName)
-                    && !TextUtils.isEmpty(component))
-                    ? new ComponentName(packageName, component)
-                    : null;
+    ComponentName componentName = null;
+    if (packageName != null
+        && component != null
+        && !TextUtils.isEmpty(packageName)
+        && !TextUtils.isEmpty(component)) {
+      componentName = new ComponentName(packageName, component);
+    }
     String type = call.argument("type");
 
     Intent intent =
@@ -104,115 +219,5 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     } else {
       result.notImplemented();
     }
-  }
-
-  private static String convertAction(String action) {
-    if (action == null) {
-      return null;
-    }
-
-    switch (action) {
-      case "action_view":
-        return Intent.ACTION_VIEW;
-      case "action_voice":
-        return Intent.ACTION_VOICE_COMMAND;
-      case "settings":
-        return Settings.ACTION_SETTINGS;
-      case "action_location_source_settings":
-        return Settings.ACTION_LOCATION_SOURCE_SETTINGS;
-      case "action_application_details_settings":
-        return Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
-      default:
-        return action;
-    }
-  }
-
-  private static Bundle convertArguments(Map<String, ?> arguments) {
-    Bundle bundle = new Bundle();
-    if (arguments == null) {
-      return bundle;
-    }
-    for (String key : arguments.keySet()) {
-      Object value = arguments.get(key);
-      if (value instanceof Integer) {
-        bundle.putInt(key, (Integer) value);
-      } else if (value instanceof String) {
-        bundle.putString(key, (String) value);
-      } else if (value instanceof Boolean) {
-        bundle.putBoolean(key, (Boolean) value);
-      } else if (value instanceof Double) {
-        bundle.putDouble(key, (Double) value);
-      } else if (value instanceof Long) {
-        bundle.putLong(key, (Long) value);
-      } else if (value instanceof byte[]) {
-        bundle.putByteArray(key, (byte[]) value);
-      } else if (value instanceof int[]) {
-        bundle.putIntArray(key, (int[]) value);
-      } else if (value instanceof long[]) {
-        bundle.putLongArray(key, (long[]) value);
-      } else if (value instanceof double[]) {
-        bundle.putDoubleArray(key, (double[]) value);
-      } else if (integers(value) != null) {
-        bundle.putIntegerArrayList(key, integers(value));
-      } else if (strings(value) != null) {
-        bundle.putStringArrayList(key, strings(value));
-      } else if (map(value) != null) {
-        bundle.putBundle(key, convertArguments((map(value))));
-      } else {
-        throw new UnsupportedOperationException("Unsupported type " + value);
-      }
-    }
-    return bundle;
-  }
-
-  private static ArrayList<Integer> integers(Object value) {
-    ArrayList<Integer> integerArrayList = new ArrayList<>();
-    if (!(value instanceof ArrayList)) {
-      return null;
-    }
-    ArrayList<?> intList = (ArrayList<?>) value;
-    for (Object o : intList) {
-      if (!(o instanceof Integer)) {
-        return null;
-      } else {
-        integerArrayList.add((Integer) o);
-      }
-    }
-    return integerArrayList;
-  }
-
-  private static ArrayList<String> strings(Object value) {
-    ArrayList<String> stringArrayList = new ArrayList<>();
-    if (!(value instanceof ArrayList)) {
-      return null;
-    }
-    ArrayList<?> stringList = (ArrayList<?>) value;
-    for (Object o : stringList) {
-      if (!(o instanceof String)) {
-        return null;
-      } else {
-        stringArrayList.add((String) o);
-      }
-    }
-    return stringArrayList;
-  }
-
-  private static Map<String, ?> map(Object value) {
-    Map<String, Object> stringMap = new HashMap<>();
-    if (!(value instanceof Map)) {
-      return null;
-    }
-    Map<?, ?> mapValue = (Map<?, ?>) value;
-    for (Object key : mapValue.keySet()) {
-      if (!(key instanceof String)) {
-        return null;
-      } else {
-        Object o = mapValue.get(key);
-        if (o != null) {
-          stringMap.put((String) key, o);
-        }
-      }
-    }
-    return stringMap;
   }
 }
