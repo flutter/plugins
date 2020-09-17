@@ -1,3 +1,7 @@
+## 0.3.7+4
+
+* Android Code Inspection and Clean up.
+
 ## 0.3.7+3
 
 * Update the `platform` package dependency to resolve the conflict with the latest flutter.
