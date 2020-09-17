@@ -7,15 +7,49 @@ import 'dart:io';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-import 'package:win32/win32.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:path_provider_windows/folders.dart';
+import 'package:win32/win32.dart';
+
+/// Wraps the Win32 VerQueryValue API call.
+///
+/// This class exists to allow injecting alternate metadata in tests without
+/// building multiple custom test binaries.
+@visibleForTesting
+class VersionInfoQuerier {
+  /// Returns the value for [key] in [versionInfo]s English strings section, or
+  /// null if there is no such entry, or if versionInfo is null.
+  getStringValue(Pointer<Uint8> versionInfo, key) {
+    if (versionInfo == null) {
+      return null;
+    }
+    final keyPath = TEXT('\\StringFileInfo\\040904e4\\$key');
+    final length = allocate<Uint32>();
+    final valueAddress = allocate<IntPtr>();
+    try {
+      if (VerQueryValue(versionInfo, keyPath, valueAddress, length) == 0) {
+        return null;
+      }
+      return Pointer<Utf16>.fromAddress(valueAddress.value)
+          .unpackString(length.value);
+    } finally {
+      free(keyPath);
+      free(length);
+      free(valueAddress);
+    }
+  }
+}
 
 /// The Windows implementation of [PathProviderPlatform]
 ///
 /// This class implements the `package:path_provider` functionality for Windows.
 class PathProviderWindows extends PathProviderPlatform {
+  /// The object to use for performing VerQueryValue calls.
+  @visibleForTesting
+  VersionInfoQuerier versionInfoQuerier = VersionInfoQuerier();
+
   /// This is typically the same as the TMP environment variable.
   @override
   Future<String> getTemporaryPath() async {
@@ -54,7 +88,8 @@ class PathProviderWindows extends PathProviderPlatform {
   @override
   Future<String> getApplicationSupportPath() async {
     final appDataRoot = await getPath(WindowsKnownFolder.RoamingAppData);
-    final directory = Directory(path.join(appDataRoot, _getExeName()));
+    final directory = Directory(
+        path.join(appDataRoot, _getApplicationSpecificSubdirectory()));
     // Ensure that the returned directory exists, since it will on other
     // platforms.
     if (!directory.existsSync()) {
@@ -99,22 +134,81 @@ class PathProviderWindows extends PathProviderPlatform {
     }
   }
 
-  /// Returns the name of the executable running this code, without the
-  /// extension.
-  String _getExeName() {
-    final buffer = allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
+  /// Returns the relative path string to append to the root directory returned
+  /// by Win32 APIs for application storage (such as RoamingAppDir) to get a
+  /// directory that is unique to the application.
+  ///
+  /// The convention is to use company-name\product-name\. This will use that if
+  /// possible, using the data in the VERSIONINFO resource, with the following
+  /// fallbacks:
+  /// - If the company name isn't there, that component will be dropped.
+  /// - If the product name isn't there, it will use the exe's filename (without
+  ///   extension).
+  String _getApplicationSpecificSubdirectory() {
+    String companyName;
+    String productName;
+
+    final Pointer<Utf16> moduleNameBuffer =
+        allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
+    final Pointer<Uint32> unused = allocate<Uint32>();
+    Pointer<Uint8> infoBuffer;
     try {
-      final length = GetModuleFileName(0, buffer, MAX_PATH);
-      String exePath;
-      if (length == 0) {
+      // Get the module name.
+      final moduleNameLength = GetModuleFileName(0, moduleNameBuffer, MAX_PATH);
+      if (moduleNameLength == 0) {
         final error = GetLastError();
         throw WindowsException(error);
-      } else {
-        exePath = buffer.unpackString(length);
       }
-      return path.basenameWithoutExtension(exePath);
+
+      // From that, load the VERSIONINFO resource
+      int infoSize = GetFileVersionInfoSize(moduleNameBuffer, unused);
+      if (infoSize != 0) {
+        infoBuffer = allocate<Uint8>(count: infoSize);
+        if (GetFileVersionInfo(moduleNameBuffer, 0, infoSize, infoBuffer) ==
+            0) {
+          free(infoBuffer);
+          infoBuffer = null;
+        }
+      }
+      companyName = _sanitizedDirectoryName(
+          versionInfoQuerier.getStringValue(infoBuffer, 'CompanyName'));
+      productName = _sanitizedDirectoryName(
+          versionInfoQuerier.getStringValue(infoBuffer, 'ProductName'));
+
+      // If there was no product name, use the executable name.
+      if (productName == null) {
+        productName = path.basenameWithoutExtension(
+            moduleNameBuffer.unpackString(moduleNameLength));
+      }
+
+      return companyName != null
+          ? path.join(companyName, productName)
+          : productName;
     } finally {
-      free(buffer);
+      free(moduleNameBuffer);
+      free(unused);
+      if (infoBuffer != null) {
+        free(infoBuffer);
+      }
     }
+  }
+
+  /// Makes [rawString] safe as a directory component. See
+  /// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
+  ///
+  /// If after sanitizing the string is empty, returns null.
+  String _sanitizedDirectoryName(String rawString) {
+    if (rawString == null) {
+      return null;
+    }
+    String sanitized = rawString
+        // Replace banned characters.
+        .replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')
+        // Remove trailing (and leading, which is not necessary, but won't hurt)
+        // whitespace.
+        .trim()
+        // Ensure that it does not end with a '.'.
+        .replaceAll(RegExp(r'[.]+$'), '');
+    return sanitized.isEmpty ? null : sanitized;
   }
 }

@@ -12,11 +12,12 @@ flutter:
 
 dependencies:
   path_provider_platform_interface: ^1.0.3
+  meta: ^1.0.5
   path: ^1.6.4
   flutter:
     sdk: flutter
   ffi: ^0.1.3
-  win32: ^1.7.0
+  win32: ^1.7.1
 
 dev_dependencies:
   flutter_test:
