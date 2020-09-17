@@ -34,6 +34,76 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     this.sender = sender;
   }
 
+  /**
+   * Registers this instance as a method call handler on the given {@code messenger}.
+   *
+   * <p>Stops any previously started and unstopped calls.
+   *
+   * <p>This should be cleaned with {@link #stopListening} once the messenger is disposed of.
+   */
+  void startListening(BinaryMessenger messenger) {
+    if (methodChannel != null) {
+      Log.wtf(TAG, "Setting a method call handler before the last was disposed.");
+      stopListening();
+    }
+
+    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/android_intent");
+    methodChannel.setMethodCallHandler(this);
+  }
+
+  /**
+   * Clears this instance from listening to method calls.
+   *
+   * <p>Does nothing is {@link #startListening} hasn't been called, or if we're already stopped.
+   */
+  void stopListening() {
+    if (methodChannel == null) {
+      Log.d(TAG, "Tried to stop listening when no methodChannel had been initialized.");
+      return;
+    }
+
+    methodChannel.setMethodCallHandler(null);
+    methodChannel = null;
+  }
+
+  /**
+   * Parses the incoming call and forwards it to the cached {@link IntentSender}.
+   *
+   * <p>Always calls {@code result#success}.
+   */
+  @Override
+  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+    String action = convertAction((String) call.argument("action"));
+    Integer flags = call.argument("flags");
+    String category = call.argument("category");
+    String stringData = call.argument("data");
+    Uri data = call.argument("data") != null ? Uri.parse(stringData) : null;
+    Map<String, ?> stringMap = call.argument("arguments");
+    Bundle arguments = convertArguments(stringMap);
+    String packageName = call.argument("package");
+    String component = call.argument("componentName");
+    ComponentName componentName =
+            (packageName != null && component != null && !TextUtils.isEmpty(packageName)
+                    && !TextUtils.isEmpty(component))
+                    ? new ComponentName(packageName, component)
+                    : null;
+    String type = call.argument("type");
+
+    Intent intent =
+            sender.buildIntent(
+                    action, flags, category, data, arguments, packageName, componentName, type);
+
+    if ("launch".equalsIgnoreCase(call.method)) {
+      sender.send(intent);
+
+      result.success(null);
+    } else if ("canResolveActivity".equalsIgnoreCase(call.method)) {
+      result.success(sender.canResolveActivity(intent));
+    } else {
+      result.notImplemented();
+    }
+  }
+
   private static String convertAction(String action) {
     if (action == null) {
       return null;
@@ -93,13 +163,13 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     return bundle;
   }
 
-  private static ArrayList<Integer> integers(Object value) {
+  private static ArrayList<Integer> integers(Object value){
     ArrayList<Integer> integerArrayList = new ArrayList<>();
     if (!(value instanceof ArrayList)) {
       return null;
     }
     ArrayList<?> intList = (ArrayList<?>) value;
-    for (Object o : intList) {
+    for(Object o : intList){
       if (!(o instanceof Integer)) {
         return null;
       } else {
@@ -109,13 +179,13 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     return integerArrayList;
   }
 
-  private static ArrayList<String> strings(Object value) {
+  private static ArrayList<String> strings(Object value){
     ArrayList<String> stringArrayList = new ArrayList<>();
     if (!(value instanceof ArrayList)) {
       return null;
     }
     ArrayList<?> stringList = (ArrayList<?>) value;
-    for (Object o : stringList) {
+    for(Object o : stringList){
       if (!(o instanceof String)) {
         return null;
       } else {
@@ -130,7 +200,7 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     if (!(value instanceof Map)) {
       return null;
     }
-    Map<?, ?> mapValue = (Map<?, ?>) value;
+    Map<?,?> mapValue = (Map<?,?>) value;
     for (Object key : mapValue.keySet()) {
       if (!(key instanceof String)) {
         return null;
@@ -142,77 +212,5 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
       }
     }
     return stringMap;
-  }
-
-  /**
-   * Registers this instance as a method call handler on the given {@code messenger}.
-   *
-   * <p>Stops any previously started and unstopped calls.
-   *
-   * <p>This should be cleaned with {@link #stopListening} once the messenger is disposed of.
-   */
-  void startListening(BinaryMessenger messenger) {
-    if (methodChannel != null) {
-      Log.wtf(TAG, "Setting a method call handler before the last was disposed.");
-      stopListening();
-    }
-
-    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/android_intent");
-    methodChannel.setMethodCallHandler(this);
-  }
-
-  /**
-   * Clears this instance from listening to method calls.
-   *
-   * <p>Does nothing is {@link #startListening} hasn't been called, or if we're already stopped.
-   */
-  void stopListening() {
-    if (methodChannel == null) {
-      Log.d(TAG, "Tried to stop listening when no methodChannel had been initialized.");
-      return;
-    }
-
-    methodChannel.setMethodCallHandler(null);
-    methodChannel = null;
-  }
-
-  /**
-   * Parses the incoming call and forwards it to the cached {@link IntentSender}.
-   *
-   * <p>Always calls {@code result#success}.
-   */
-  @Override
-  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    String action = convertAction((String) call.argument("action"));
-    Integer flags = call.argument("flags");
-    String category = call.argument("category");
-    String stringData = call.argument("data");
-    Uri data = call.argument("data") != null ? Uri.parse(stringData) : null;
-    Map<String, ?> stringMap = call.argument("arguments");
-    Bundle arguments = convertArguments(stringMap);
-    String packageName = call.argument("package");
-    String component = call.argument("componentName");
-    ComponentName componentName =
-        (packageName != null
-                && component != null
-                && !TextUtils.isEmpty(packageName)
-                && !TextUtils.isEmpty(component))
-            ? new ComponentName(packageName, component)
-            : null;
-    String type = call.argument("type");
-
-    Intent intent =
-        sender.buildIntent(
-            action, flags, category, data, arguments, packageName, componentName, type);
-
-    if ("launch".equalsIgnoreCase(call.method)) {
-      sender.send(intent);
-
-      result.success(null);
-    } else if ("canResolveActivity".equalsIgnoreCase(call.method)) {
-      result.success(sender.canResolveActivity(intent));
-    } else {
-      result.notImplemented();
-    }
   }
 }
