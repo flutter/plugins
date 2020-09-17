@@ -1,3 +1,7 @@
+## 0.6.6
+
+* Properly send GIF files as an animated GIF instead of the first frame in PNG
+
 ## 0.6.5
 
 * Added support for sharing files
