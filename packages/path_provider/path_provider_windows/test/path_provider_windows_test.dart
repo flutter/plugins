@@ -76,6 +76,17 @@ void main() {
     expect(path, endsWith(r'AppData\Roaming\Amazing App'));
   });
 
+  test('getApplicationSupportPath with very long app name', () async {
+    final pathProvider = PathProviderWindows();
+    final truncatedName = 'A' * 255;
+    pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
+      'CompanyName': 'A Company',
+      'ProductName': truncatedName * 2,
+    });
+    final path = await pathProvider.getApplicationSupportPath();
+    expect(path, endsWith('\\$truncatedName'));
+  });
+
   test('getApplicationDocumentsPath', () async {
     final pathProvider = PathProviderWindows();
     final path = await pathProvider.getApplicationDocumentsPath();

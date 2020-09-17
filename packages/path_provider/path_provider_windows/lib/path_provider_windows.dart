@@ -204,11 +204,14 @@ class PathProviderWindows extends PathProviderPlatform {
     String sanitized = rawString
         // Replace banned characters.
         .replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')
-        // Remove trailing (and leading, which is not necessary, but won't hurt)
-        // whitespace.
-        .trim()
+        // Remove trailing whitespace.
+        .trimRight()
         // Ensure that it does not end with a '.'.
         .replaceAll(RegExp(r'[.]+$'), '');
+    const maxComponentLength = 255;
+    if (sanitized.length > maxComponentLength) {
+      sanitized.substring(0, maxComponentLength);
+    }
     return sanitized.isEmpty ? null : sanitized;
   }
 }
