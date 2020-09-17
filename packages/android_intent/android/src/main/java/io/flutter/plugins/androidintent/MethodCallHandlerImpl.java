@@ -7,14 +7,11 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -35,6 +32,78 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
    */
   MethodCallHandlerImpl(IntentSender sender) {
     this.sender = sender;
+  }
+
+  /**
+   * Registers this instance as a method call handler on the given {@code messenger}.
+   *
+   * <p>Stops any previously started and unstopped calls.
+   *
+   * <p>This should be cleaned with {@link #stopListening} once the messenger is disposed of.
+   */
+  void startListening(BinaryMessenger messenger) {
+    if (methodChannel != null) {
+      Log.wtf(TAG, "Setting a method call handler before the last was disposed.");
+      stopListening();
+    }
+
+    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/android_intent");
+    methodChannel.setMethodCallHandler(this);
+  }
+
+  /**
+   * Clears this instance from listening to method calls.
+   *
+   * <p>Does nothing is {@link #startListening} hasn't been called, or if we're already stopped.
+   */
+  void stopListening() {
+    if (methodChannel == null) {
+      Log.d(TAG, "Tried to stop listening when no methodChannel had been initialized.");
+      return;
+    }
+
+    methodChannel.setMethodCallHandler(null);
+    methodChannel = null;
+  }
+
+  /**
+   * Parses the incoming call and forwards it to the cached {@link IntentSender}.
+   *
+   * <p>Always calls {@code result#success}.
+   */
+  @Override
+  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+    String action = convertAction((String) call.argument("action"));
+    Integer flags = call.argument("flags");
+    String category = call.argument("category");
+    String stringData = call.argument("data");
+    Uri data = call.argument("data") != null ? Uri.parse(stringData) : null;
+    Map<String, ?> stringMap = call.argument("arguments");
+    Bundle arguments = convertArguments(stringMap);
+    String packageName = call.argument("package");
+    String component = call.argument("componentName");
+    ComponentName componentName = null;
+    if (packageName != null
+            && component != null
+            && !TextUtils.isEmpty(packageName)
+            && !TextUtils.isEmpty(component)) {
+      componentName = new ComponentName(packageName, component);
+    }
+    String type = call.argument("type");
+
+    Intent intent =
+            sender.buildIntent(
+                    action, flags, category, data, arguments, packageName, componentName, type);
+
+    if ("launch".equalsIgnoreCase(call.method)) {
+      sender.send(intent);
+
+      result.success(null);
+    } else if ("canResolveActivity".equalsIgnoreCase(call.method)) {
+      result.success(sender.canResolveActivity(intent));
+    } else {
+      result.notImplemented();
+    }
   }
 
   private static String convertAction(String action) {
@@ -147,77 +216,5 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
       }
     }
     return stringMap;
-  }
-
-  /**
-   * Registers this instance as a method call handler on the given {@code messenger}.
-   *
-   * <p>Stops any previously started and unstopped calls.
-   *
-   * <p>This should be cleaned with {@link #stopListening} once the messenger is disposed of.
-   */
-  void startListening(BinaryMessenger messenger) {
-    if (methodChannel != null) {
-      Log.wtf(TAG, "Setting a method call handler before the last was disposed.");
-      stopListening();
-    }
-
-    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/android_intent");
-    methodChannel.setMethodCallHandler(this);
-  }
-
-  /**
-   * Clears this instance from listening to method calls.
-   *
-   * <p>Does nothing is {@link #startListening} hasn't been called, or if we're already stopped.
-   */
-  void stopListening() {
-    if (methodChannel == null) {
-      Log.d(TAG, "Tried to stop listening when no methodChannel had been initialized.");
-      return;
-    }
-
-    methodChannel.setMethodCallHandler(null);
-    methodChannel = null;
-  }
-
-  /**
-   * Parses the incoming call and forwards it to the cached {@link IntentSender}.
-   *
-   * <p>Always calls {@code result#success}.
-   */
-  @Override
-  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    String action = convertAction((String) call.argument("action"));
-    Integer flags = call.argument("flags");
-    String category = call.argument("category");
-    String stringData = call.argument("data");
-    Uri data = call.argument("data") != null ? Uri.parse(stringData) : null;
-    Map<String, ?> stringMap = call.argument("arguments");
-    Bundle arguments = convertArguments(stringMap);
-    String packageName = call.argument("package");
-    String component = call.argument("componentName");
-    ComponentName componentName = null;
-    if (packageName != null
-        && component != null
-        && !TextUtils.isEmpty(packageName)
-        && !TextUtils.isEmpty(component)) {
-      componentName = new ComponentName(packageName, component);
-    }
-    String type = call.argument("type");
-
-    Intent intent =
-        sender.buildIntent(
-            action, flags, category, data, arguments, packageName, componentName, type);
-
-    if ("launch".equalsIgnoreCase(call.method)) {
-      sender.send(intent);
-
-      result.success(null);
-    } else if ("canResolveActivity".equalsIgnoreCase(call.method)) {
-      result.success(sender.canResolveActivity(intent));
-    } else {
-      result.notImplemented();
-    }
   }
 }
