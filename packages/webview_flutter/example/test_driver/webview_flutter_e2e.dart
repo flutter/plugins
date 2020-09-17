@@ -870,9 +870,13 @@ void main() {
         <!DOCTYPE html><html>
         <head><title>Resize test</title>
           <script>
-            setTimeout(function() {
-                window.open('javascript:var elem = document.createElement("p");elem.innerHTML = "<b>Executed JS in parent origin: "+window.location.origin+"</b>"; document.body.append(elem);alert("XSS in doc.domain: "+document.domain+", win.origin: "+window.location.origin)');
-            }, 0);
+            function onLoad() {
+              window.open('javascript:
+                var elem = document.createElement("p");
+                elem.innerHTML = "<b>Executed JS in parent origin: " + window.location.origin + "</b>";
+                document.body.append(elem);
+                alert("XSS in doc.domain: " + document.domain + ", win.origin: " + window.location.origin)');
+            }
           </script>
         </head>
         <body onload="onLoad();" bgColor="blue">
@@ -902,6 +906,7 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       final String result = await controller.evaluateJavascript(
           'document.querySelector("p") && document.querySelector("p").textContent');
+
       expect(result, isEmpty);
     },
     skip: !Platform.isAndroid,
