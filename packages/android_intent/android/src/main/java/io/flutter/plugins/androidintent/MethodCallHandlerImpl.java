@@ -136,7 +136,7 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
       Object value = arguments.get(key);
       ArrayList<String> stringArrayList = isStringArrayList(value);
       ArrayList<Integer> integerArrayList = isIntegerArrayList(value);
-      Map<String,?> stringMap = isStringKeyedMap(value);
+      Map<String, ?> stringMap = isStringKeyedMap(value);
       if (value instanceof Integer) {
         bundle.putInt(key, (Integer) value);
       } else if (value instanceof String) {
