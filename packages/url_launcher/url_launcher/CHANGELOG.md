@@ -1,3 +1,7 @@
+## 5.6.1
+
+* Update android compileSdkVersion to 29.
+
 ## 5.6.0
 
 * Support Windows by default.

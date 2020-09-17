@@ -1,3 +1,7 @@
+## 0.4.2+5
+
+* Update android compileSdkVersion to 29.
+
 ## 0.4.2+4
 
 * Update package:e2e -> package:integration_test
