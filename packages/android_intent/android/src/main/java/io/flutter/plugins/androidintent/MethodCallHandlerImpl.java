@@ -9,14 +9,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Forwards incoming {@link MethodCall}s to {@link IntentSender#send}. */
 public final class MethodCallHandlerImpl implements MethodCallHandler {
@@ -84,16 +84,16 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     String component = call.argument("componentName");
     ComponentName componentName = null;
     if (packageName != null
-            && component != null
-            && !TextUtils.isEmpty(packageName)
-            && !TextUtils.isEmpty(component)) {
+        && component != null
+        && !TextUtils.isEmpty(packageName)
+        && !TextUtils.isEmpty(component)) {
       componentName = new ComponentName(packageName, component);
     }
     String type = call.argument("type");
 
     Intent intent =
-            sender.buildIntent(
-                    action, flags, category, data, arguments, packageName, componentName, type);
+        sender.buildIntent(
+            action, flags, category, data, arguments, packageName, componentName, type);
 
     if ("launch".equalsIgnoreCase(call.method)) {
       sender.send(intent);
@@ -136,6 +136,7 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
       Object value = arguments.get(key);
       ArrayList<String> stringArrayList = isStringArrayList(value);
       ArrayList<Integer> integerArrayList = isIntegerArrayList(value);
+      Map<String,?> stringMap = isStringKeyedMap(value);
       if (value instanceof Integer) {
         bundle.putInt(key, (Integer) value);
       } else if (value instanceof String) {
@@ -158,8 +159,8 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
         bundle.putIntegerArrayList(key, integerArrayList);
       } else if (stringArrayList != null) {
         bundle.putStringArrayList(key, stringArrayList);
-      } else if (isStringKeyedMap(value) != null) {
-        bundle.putBundle(key, convertArguments((isStringKeyedMap(value))));
+      } else if (stringMap != null) {
+        bundle.putBundle(key, convertArguments(stringMap));
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value);
       }
