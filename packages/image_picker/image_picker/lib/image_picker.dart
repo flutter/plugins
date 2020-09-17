@@ -88,7 +88,7 @@ class ImagePicker {
   /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
   /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
   /// Defaults to [CameraDevice.rear].
-  /// 
+  ///
   /// Note that Android has no documented parameter for an intent to specify if
   /// the front or rear camera should be opened, this function is not guaranteed
   /// to work on an Android device.
