@@ -1,3 +1,7 @@
+## 0.5.8+6
+
+* Avoiding uses or overrides a deprecated API in CameraPlugin.java.
+
 ## 0.5.8+5
 
 * Fix compilation/availability issues on iOS.
