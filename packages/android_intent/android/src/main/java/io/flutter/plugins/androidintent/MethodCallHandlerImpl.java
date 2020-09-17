@@ -83,7 +83,9 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     String packageName = call.argument("package");
     String component = call.argument("componentName");
     ComponentName componentName =
-            (packageName != null && component != null && !TextUtils.isEmpty(packageName)
+            (packageName != null
+                    && component != null
+                    && !TextUtils.isEmpty(packageName)
                     && !TextUtils.isEmpty(component))
                     ? new ComponentName(packageName, component)
                     : null;
