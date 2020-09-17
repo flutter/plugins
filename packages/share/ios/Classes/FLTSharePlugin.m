@@ -206,6 +206,10 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
         [mimeType.lowercaseString isEqualToString:@"image/png"]) {
       UIImage *image = [UIImage imageWithContentsOfFile:path];
       [items addObject:image];
+    } else if ([mimeType.lowercaseString isEqualToString:@"image/gif"]) {
+      // GIF Data should not be shared as image but a NSData object
+      NSData *imageData = [NSData dataWithContentsOfFile:path];
+      [items addObject:imageData];
     } else {
       [items addObject:[[ShareData alloc] initWithFile:path mimeType:mimeType]];
     }
