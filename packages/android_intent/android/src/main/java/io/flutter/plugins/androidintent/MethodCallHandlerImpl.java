@@ -165,13 +165,13 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     return bundle;
   }
 
-  private static ArrayList<Integer> integers(Object value){
+  private static ArrayList<Integer> integers(Object value) {
     ArrayList<Integer> integerArrayList = new ArrayList<>();
     if (!(value instanceof ArrayList)) {
       return null;
     }
     ArrayList<?> intList = (ArrayList<?>) value;
-    for(Object o : intList){
+    for (Object o : intList) {
       if (!(o instanceof Integer)) {
         return null;
       } else {
@@ -181,13 +181,13 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     return integerArrayList;
   }
 
-  private static ArrayList<String> strings(Object value){
+  private static ArrayList<String> strings(Object value) {
     ArrayList<String> stringArrayList = new ArrayList<>();
     if (!(value instanceof ArrayList)) {
       return null;
     }
     ArrayList<?> stringList = (ArrayList<?>) value;
-    for(Object o : stringList){
+    for (Object o : stringList) {
       if (!(o instanceof String)) {
         return null;
       } else {
@@ -202,7 +202,7 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     if (!(value instanceof Map)) {
       return null;
     }
-    Map<?,?> mapValue = (Map<?,?>) value;
+    Map<?, ?> mapValue = (Map<?, ?>) value;
     for (Object key : mapValue.keySet()) {
       if (!(key instanceof String)) {
         return null;
