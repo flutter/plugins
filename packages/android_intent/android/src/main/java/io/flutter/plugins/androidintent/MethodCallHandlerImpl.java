@@ -92,8 +92,8 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     String type = call.argument("type");
 
     Intent intent =
-            sender.buildIntent(
-                    action, flags, category, data, arguments, packageName, componentName, type);
+        sender.buildIntent(
+            action, flags, category, data, arguments, packageName, componentName, type);
 
     if ("launch".equalsIgnoreCase(call.method)) {
       sender.send(intent);
