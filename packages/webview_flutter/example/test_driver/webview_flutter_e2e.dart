@@ -870,6 +870,7 @@ void main() {
         <!DOCTYPE html><html>
         <head><title>Resize test</title>
           <script>
+            var iframeLoaded = false;
             function onLoad() {
               window.open('javascript:
                 var elem = document.createElement("p");
@@ -898,15 +899,15 @@ void main() {
             },
             javascriptMode: JavascriptMode.unrestricted,
             initialUrl:
-                '<iframe src="data:text/html;charset=utf-8;base64,$openWindowTestBase64"</iframe>',
+                '<iframe onload="iframeLoaded = true;" src="data:text/html;charset=utf-8;base64,$openWindowTestBase64"</iframe>',
           ),
         ),
       );
 
       final WebViewController controller = await controllerCompleter.future;
       final String result = await controller.evaluateJavascript(
-          'document.querySelector("p") && document.querySelector("p").textContent');
-
+        'iframeLoaded && document.querySelector("p") && document.querySelector("p").textContent',
+      );
       expect(result, isEmpty);
     },
     skip: !Platform.isAndroid,
