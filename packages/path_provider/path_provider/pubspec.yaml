@@ -24,7 +24,7 @@ dependencies:
   path_provider_platform_interface: ^1.0.1
   path_provider_macos: ^0.0.4
   path_provider_linux: ^0.0.1
-  path_provider_windows: ^0.0.1
+  path_provider_windows: ^0.0.2
 
 dev_dependencies:
   integration_test:
