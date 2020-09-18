@@ -40,15 +40,15 @@ public class ConnectivityPlugin implements FlutterPlugin {
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/connectivity");
     eventChannel = new EventChannel(messenger, "plugins.flutter.io/connectivity_status");
     ConnectivityManager connectivityManager =
-            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
     Connectivity connectivity = new Connectivity(connectivityManager, wifiManager);
 
     ConnectivityMethodChannelHandler methodChannelHandler =
-            new ConnectivityMethodChannelHandler(connectivity);
+        new ConnectivityMethodChannelHandler(connectivity);
     ConnectivityBroadcastReceiver receiver =
-            new ConnectivityBroadcastReceiver(context, connectivity);
+        new ConnectivityBroadcastReceiver(context, connectivity);
 
     methodChannel.setMethodCallHandler(methodChannelHandler);
     eventChannel.setStreamHandler(receiver);
