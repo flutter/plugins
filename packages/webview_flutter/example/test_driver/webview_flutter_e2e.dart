@@ -870,8 +870,8 @@ void main() {
         <!DOCTYPE html><html>
         <head><title>Resize test</title>
           <script>
-            var iframeLoaded = false;
             function onLoad() {
+              window["iframeLoaded"] = false;
               window.open('javascript:
                 var elem = document.createElement("p");
                 elem.innerHTML = "<b>Executed JS in parent origin: " + window.location.origin + "</b>";
@@ -881,6 +881,7 @@ void main() {
           </script>
         </head>
         <body onload="onLoad();" bgColor="blue">
+          <iframe onload="window.iframeLoaded = true;"></iframe>
         </body>
         </html>
       ''';
@@ -888,6 +889,7 @@ void main() {
           base64Encode(const Utf8Encoder().convert(openWindowTest));
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
+      final Completer<void> pageLoadCompleter = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
@@ -899,16 +901,23 @@ void main() {
             },
             javascriptMode: JavascriptMode.unrestricted,
             initialUrl:
-                '<iframe onload="iframeLoaded = true;" src="data:text/html;charset=utf-8;base64,$openWindowTestBase64"</iframe>',
+                'data:text/html;charset=utf-8;base64,$openWindowTestBase64',
+            onPageFinished: (String url) {
+              pageLoadCompleter.complete();
+            },
           ),
         ),
       );
 
       final WebViewController controller = await controllerCompleter.future;
-      final String result = await controller.evaluateJavascript(
-        'iframeLoaded && document.querySelector("p") && document.querySelector("p").textContent',
+      await pageLoadCompleter.future;
+
+      expect(controller.evaluateJavascript('iframeLoaded'), completion('true'));
+      expect(
+        controller.evaluateJavascript(
+            'document.querySelector("p") && document.querySelector("p").textContent'),
+        completion('null'),
       );
-      expect(result, isEmpty);
     },
     skip: !Platform.isAndroid,
   );
