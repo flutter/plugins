@@ -85,7 +85,7 @@ void main() {
     });
     final path = await pathProvider.getApplicationSupportPath();
     expect(path, endsWith('\\$truncatedName'));
-  });
+  }, skip: !Platform.isWindows);
 
   test('getApplicationDocumentsPath', () async {
     final pathProvider = PathProviderWindows();

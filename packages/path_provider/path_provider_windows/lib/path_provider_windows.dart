@@ -208,9 +208,9 @@ class PathProviderWindows extends PathProviderPlatform {
         .trimRight()
         // Ensure that it does not end with a '.'.
         .replaceAll(RegExp(r'[.]+$'), '');
-    const maxComponentLength = 255;
-    if (sanitized.length > maxComponentLength) {
-      sanitized.substring(0, maxComponentLength);
+    const kMaxComponentLength = 255;
+    if (sanitized.length > kMaxComponentLength) {
+      sanitized.substring(0, kMaxComponentLength);
     }
     return sanitized.isEmpty ? null : sanitized;
   }
