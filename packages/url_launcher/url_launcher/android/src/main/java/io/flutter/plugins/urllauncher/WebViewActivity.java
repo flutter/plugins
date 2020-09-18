@@ -12,6 +12,7 @@ import android.view.KeyEvent;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import androidx.annotation.RequiresApi;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,11 @@ public class WebViewActivity extends Activity {
   private final WebViewClient webViewClient =
       new WebViewClient() {
 
+        /*
+         * This method is deprecated in API 24. Still overridden to support
+         * earlier Android versions.
+         */
+        @SuppressWarnings("deprecation")
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -47,6 +53,7 @@ public class WebViewActivity extends Activity {
           return super.shouldOverrideUrlLoading(view, url);
         }
 
+        @RequiresApi(Build.VERSION_CODES.N)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
