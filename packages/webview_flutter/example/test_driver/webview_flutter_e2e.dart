@@ -866,22 +866,31 @@ void main() {
   testWidgets(
     'javascript does not run in parent window',
     (WidgetTester tester) async {
+      final String iframe = '''
+        <!DOCTYPE html>
+        <script>
+          window.onload = () => {
+            window.open(`javascript:
+              var elem = document.createElement("p");
+              elem.innerHTML = "<b>Executed JS in parent origin: " + window.location.origin + "</b>";
+              document.body.append(elem);
+            `);
+          };
+        </script>
+      ''';
+      final String iframeTestBase64 =
+          base64Encode(const Utf8Encoder().convert(iframe));
+
       final String openWindowTest = '''
-        <!DOCTYPE html><html>
-        <head><title>XSS test</title>
-          <script>
-            function onLoad() {
-              window["iframeLoaded"] = false;
-              window.open('javascript:
-                var elem = document.createElement("p");
-                elem.innerHTML = "<b>Executed JS in parent origin: " + window.location.origin + "</b>";
-                document.body.append(elem);
-                alert("XSS in doc.domain: " + document.domain + ", win.origin: " + window.location.origin)');
-            }
-          </script>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>XSS test</title>
         </head>
-        <body onload="onLoad();" bgColor="blue">
-          <iframe onload="window.iframeLoaded = true;"></iframe>
+        <body>
+          <iframe
+            onload="window.iframeLoaded = true;"
+            src="data:text/html;charset=utf-8;base64,$iframeTestBase64"></iframe>
         </body>
         </html>
       ''';
