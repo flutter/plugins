@@ -1,3 +1,7 @@
+## 1.6.16
+
+* Update Windows endorsement verison
+
 ## 1.6.15
 
 * Endorse Windows implementation.
