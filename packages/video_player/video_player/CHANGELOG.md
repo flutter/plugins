@@ -1,3 +1,8 @@
+## 0.10.12+3
+
+* Added isDurationIndefinite to support indefinite streams
+* Raised video_player_platform_interface in video_player to 2.1.1.
+
 ## 0.10.12+2
 
 * Fix `setMixWithOthers` test.
