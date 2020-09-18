@@ -742,12 +742,12 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
   Widget build(BuildContext context) {
     Widget progressIndicator;
     if (controller.value.initialized) {
-      final int duration = controller.value.duration?.inMilliseconds ?? 0;
-      final int position = controller.value.position?.inMilliseconds ?? 0;
+      final int duration = controller.value.duration.inMilliseconds;
+      final int position = controller.value.position.inMilliseconds;
 
       int maxBuffering = 0;
       for (DurationRange range in controller.value.buffered) {
-        final int end = range.end?.inMilliseconds ?? 0;
+        final int end = range.end.inMilliseconds;
         if (end > maxBuffering) {
           maxBuffering = end;
         }
