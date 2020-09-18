@@ -218,7 +218,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      'https://rtmp.api.rt.com/hls/rtdru.m3u8',
       closedCaptionFile: _loadCaptions(),
       videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
     );
@@ -253,7 +253,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                   VideoPlayer(_controller),
                   ClosedCaption(text: _controller.value.caption.text),
                   _PlayPauseOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller, allowScrubbing: true),
+                  VideoProgressIndicator(_controller, allowScrubbing: false),
                 ],
               ),
             ),
