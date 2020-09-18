@@ -303,7 +303,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (bool)isDurationIndefinite {
-    return CMTIME_IS_INDEFINITE([[_player currentItem] duration]);
+  return CMTIME_IS_INDEFINITE([[_player currentItem] duration]);
 }
 
 - (void)sendInitialized {
