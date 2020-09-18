@@ -87,6 +87,8 @@ void main() {
 /// path it returns is a root path that does not actually exist on Windows.
 class FakePathProviderWindows extends PathProviderPlatform
     implements PathProviderWindows {
+  VersionInfoQuerier versionInfoQuerier;
+
   @override
   Future<String> getApplicationSupportPath() async => r'C:\appsupport';
 
