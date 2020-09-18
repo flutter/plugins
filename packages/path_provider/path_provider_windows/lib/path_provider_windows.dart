@@ -91,10 +91,14 @@ class PathProviderWindows extends PathProviderPlatform {
     final appDataRoot = await getPath(WindowsKnownFolder.RoamingAppData);
     final directory = Directory(
         path.join(appDataRoot, _getApplicationSpecificSubdirectory()));
-    // Ensure that the returned directory exists, since it will on other
-    // platforms.
-    if (!directory.existsSync()) {
-      await directory.create(recursive: true);
+    // Ensure that the directory exists if possible, since it will on other
+    // platforms. If the name is longer than MAXPATH, creating will fail, so
+    // skip that step; it's up to the client to decide what to do with the path
+    // in that case (e.g., using a short path).
+    if (directory.path.length <= MAX_PATH) {
+      if (!directory.existsSync()) {
+        await directory.create(recursive: true);
+      }
     }
     return directory.path;
   }
@@ -211,7 +215,7 @@ class PathProviderWindows extends PathProviderPlatform {
         .replaceAll(RegExp(r'[.]+$'), '');
     const kMaxComponentLength = 255;
     if (sanitized.length > kMaxComponentLength) {
-      sanitized.substring(0, kMaxComponentLength);
+      sanitized = sanitized.substring(0, kMaxComponentLength);
     }
     return sanitized.isEmpty ? null : sanitized;
   }

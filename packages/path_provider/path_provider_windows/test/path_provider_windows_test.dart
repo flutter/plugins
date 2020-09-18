@@ -41,6 +41,7 @@ void main() {
     });
     final path = await pathProvider.getApplicationSupportPath();
     expect(path, endsWith(r'AppData\Roaming\A Company\Amazing App'));
+    expect(Directory(path).existsSync(), isTrue);
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with missing company', () async {
@@ -50,6 +51,7 @@ void main() {
     });
     final path = await pathProvider.getApplicationSupportPath();
     expect(path, endsWith(r'AppData\Roaming\Amazing App'));
+    expect(Directory(path).existsSync(), isTrue);
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with problematic values', () async {
@@ -64,6 +66,7 @@ void main() {
         endsWith(r'AppData\Roaming\'
             r'A _Bad_ Company_ Name\'
             r'A__Terrible__App__Name'));
+    expect(Directory(path).existsSync(), isTrue);
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with a completely invalid company', () async {
@@ -74,6 +77,7 @@ void main() {
     });
     final path = await pathProvider.getApplicationSupportPath();
     expect(path, endsWith(r'AppData\Roaming\Amazing App'));
+    expect(Directory(path).existsSync(), isTrue);
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with very long app name', () async {
@@ -85,6 +89,8 @@ void main() {
     });
     final path = await pathProvider.getApplicationSupportPath();
     expect(path, endsWith('\\$truncatedName'));
+    // The directory won't exist, since it's longer than MAXPATH, so don't check
+    // that here.
   }, skip: !Platform.isWindows);
 
   test('getApplicationDocumentsPath', () async {
