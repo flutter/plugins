@@ -40,7 +40,7 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   @Override
   public void onListen(Object arguments, EventChannel.EventSink events) {
     this.events = events;
-    if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       connectivity.getConnectivityManager().registerDefaultNetworkCallback(getNetworkCallback());
     } else {
       context.registerReceiver(this, new IntentFilter(CONNECTIVITY_ACTION));
@@ -49,7 +49,7 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
 
   @Override
   public void onCancel(Object arguments) {
-    if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       connectivity.getConnectivityManager().unregisterNetworkCallback(getNetworkCallback());
     } else {
       context.unregisterReceiver(this);
@@ -64,8 +64,8 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
-  ConnectivityManager.NetworkCallback getNetworkCallback(){
-    return new ConnectivityManager.NetworkCallback(){
+  ConnectivityManager.NetworkCallback getNetworkCallback() {
+    return new ConnectivityManager.NetworkCallback() {
       @Override
       public void onAvailable(Network network) {
         sendEvent();
@@ -78,13 +78,14 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
     };
   }
 
-  private void sendEvent(){
-    Runnable runnable = new Runnable() {
-      @Override
-      public void run() {
-        events.success(connectivity.getNetworkType());
-      }
-    };
+  private void sendEvent() {
+    Runnable runnable =
+        new Runnable() {
+          @Override
+          public void run() {
+            events.success(connectivity.getNetworkType());
+          }
+        };
     mainHandler.post(runnable);
   }
 }
