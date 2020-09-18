@@ -868,7 +868,7 @@ void main() {
     (WidgetTester tester) async {
       final String openWindowTest = '''
         <!DOCTYPE html><html>
-        <head><title>Resize test</title>
+        <head><title>XSS test</title>
           <script>
             function onLoad() {
               window["iframeLoaded"] = false;
