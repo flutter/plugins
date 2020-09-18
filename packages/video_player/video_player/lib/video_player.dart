@@ -742,27 +742,26 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
   Widget build(BuildContext context) {
     Widget progressIndicator;
     if (controller.value.initialized) {
-      final int duration = controller.value.duration.inMilliseconds;
-      final int position = controller.value.position.inMilliseconds;
+      final int duration = controller.value.duration?.inMilliseconds ?? 0;
+      final int position = controller.value.position?.inMilliseconds ?? 0;
 
       int maxBuffering = 0;
       for (DurationRange range in controller.value.buffered) {
-        final int end = range.end.inMilliseconds;
+        final int end = range.end?.inMilliseconds ?? 0;
         if (end > maxBuffering) {
           maxBuffering = end;
         }
       }
-
       progressIndicator = Stack(
         fit: StackFit.passthrough,
         children: <Widget>[
           LinearProgressIndicator(
-            value: maxBuffering / duration,
+            value: duration > 0 ? maxBuffering / duration : 0,
             valueColor: AlwaysStoppedAnimation<Color>(colors.bufferedColor),
             backgroundColor: colors.backgroundColor,
           ),
           LinearProgressIndicator(
-            value: position / duration,
+            value: duration > 0 ? position / duration : 0,
             valueColor: AlwaysStoppedAnimation<Color>(colors.playedColor),
             backgroundColor: Colors.transparent,
           ),
