@@ -1,3 +1,7 @@
+## 1.1.1
+
+* Update documentation of getImage() about Android's disability to preference front/rear camera.
+
 ## 1.1.0
 
 * Introduce PickedFile type for the new API.

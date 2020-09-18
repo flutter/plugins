@@ -132,7 +132,9 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///
   /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
   /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
-  /// Defaults to [CameraDevice.rear].
+  /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
+  /// the front or rear camera should be opened, this function is not guaranteed
+  /// to work on an Android device.
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
