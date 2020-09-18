@@ -25,7 +25,8 @@ class VersionInfoQuerier {
     if (versionInfo == null) {
       return null;
     }
-    final keyPath = TEXT('\\StringFileInfo\\040904e4\\$key');
+    const kEnglishCode = '040904e4';
+    final keyPath = TEXT('\\StringFileInfo\\$kEnglishCode\\$key');
     final length = allocate<Uint32>();
     final valueAddress = allocate<IntPtr>();
     try {
