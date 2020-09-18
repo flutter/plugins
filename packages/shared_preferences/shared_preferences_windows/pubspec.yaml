@@ -23,10 +23,7 @@ dependencies:
   meta: ^1.1.7
   path: ^1.6.4
   path_provider_platform_interface: ^1.0.3
-  path_provider_windows: ^0.0.1
-  # DO NOT LAND: Update the above to require the landed version of
-  # path_provider_windows once it's landed and published; this version doesn't
-  # use the desired path for application support.
+  path_provider_windows: ^0.0.2
 
 dev_dependencies:
   flutter_test:
