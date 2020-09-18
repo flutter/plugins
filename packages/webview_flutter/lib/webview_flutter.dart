@@ -70,6 +70,12 @@ enum NavigationDecision {
 /// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
 ///
 /// To use this, set [WebView.platform] to an instance of this class.
+///
+/// This implementation uses Hybrid Composition to render the [WebView] on
+/// Android. It solves multiple issues related to accessibility and interacting
+/// with the [WebView] at the cost of some performance on Android version below
+/// 10. See https://github.com/flutter/flutter/issues/61133 for more
+/// information.
 class SurfaceAndroidWebView extends AndroidWebView {
   @override
   Widget build({

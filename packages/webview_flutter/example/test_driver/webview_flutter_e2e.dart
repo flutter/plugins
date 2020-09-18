@@ -608,8 +608,15 @@ void main() {
     });
   });
 
-  group('Programmatic Scroll with hybrid view', () {
-    WebView.platform = SurfaceAndroidWebView();
+  group('$SurfaceAndroidWebView', () {
+    setUpAll(() {
+      WebView.platform = SurfaceAndroidWebView();
+    });
+
+    tearDownAll(() {
+      WebView.platform = null;
+    });
+
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
       final String scrollTestPage = '''
         <!DOCTYPE html>
@@ -676,8 +683,6 @@ void main() {
       scrollPosY = await controller.getScrollY();
       expect(X_SCROLL * 2, scrollPosX);
       expect(Y_SCROLL * 2, scrollPosY);
-
-      WebView.platform = null;
     });
   });
 
