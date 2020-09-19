@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Add missing `pluginClass: none` for compatibilty with stable channel.
+
 ## 0.0.2
 
 * README update for endorsement.
