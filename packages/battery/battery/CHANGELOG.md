@@ -1,3 +1,8 @@
+## 1.0.5+1
+
+* Android: Add BATTERY_STATUS_NOT_CHARGING status.
+* Android: Handle deprecation & unchecked warning as error.
+
 ## 1.0.5
 
 * Ported to use platform interface.

@@ -6,12 +6,9 @@ package io.flutter.plugins.battery;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
@@ -89,17 +86,13 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler, FlutterP
 
   private int getBatteryLevel() {
     int batteryLevel = -1;
-    if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      BatteryManager batteryManager =
-          (BatteryManager) applicationContext.getSystemService(applicationContext.BATTERY_SERVICE);
-      batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-    } else {
-      Intent intent =
-          new ContextWrapper(applicationContext)
-              .registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-      batteryLevel =
-          (intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) * 100)
-              / intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+    IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+    Intent batteryStatus = applicationContext.registerReceiver(null, intentFilter);
+
+    if (batteryStatus != null) {
+      int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+      int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+      batteryLevel = level * 100 / scale;
     }
 
     return batteryLevel;
@@ -119,6 +112,7 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler, FlutterP
             events.success("full");
             break;
           case BatteryManager.BATTERY_STATUS_DISCHARGING:
+          case BatteryManager.BATTERY_STATUS_NOT_CHARGING:
             events.success("discharging");
             break;
           default:
