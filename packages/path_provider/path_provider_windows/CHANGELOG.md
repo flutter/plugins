@@ -1,3 +1,9 @@
+## 0.0.4
+
+* Move the actual implementation behind a conditional import, exporting
+  a stub for platforms that don't support FFI. Fixes web builds in
+  projects with transitive dependencies on path_provider.
+
 ## 0.0.3
 
 * Add missing `pluginClass: none` for compatibilty with stable channel.
