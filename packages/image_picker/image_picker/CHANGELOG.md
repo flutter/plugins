@@ -1,4 +1,5 @@
 ## 0.6.7+10
+
 * Updated documentation with code that does not throw an error when image is not picked.
 
 ## 0.6.7+9
