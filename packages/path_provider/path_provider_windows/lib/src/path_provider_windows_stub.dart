@@ -26,5 +26,4 @@ class PathProviderWindows extends PathProviderPlatform {
 
 /// Stub to satisfy the analyzer, which doesn't seem to handle conditional
 /// exports correctly.
-class VersionInfoQuerier {
-}
+class VersionInfoQuerier {}
