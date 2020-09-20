@@ -4,8 +4,6 @@
 
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
-import '../path_provider_windows.dart';
-
 /// A stub implementation to satisfy compilation of multi-platform packages that
 /// depend on path_provider_windows. This should never actually be created.
 ///
