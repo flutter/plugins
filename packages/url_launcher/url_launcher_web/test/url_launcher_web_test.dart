@@ -145,17 +145,17 @@ void main() {
 
         verify(mockWindow.open('sms:+19725551212?body=hello%20there', ''));
       });
-      test('setting oOnlyLinkTarget as _self opens the url in the same tab',
+      test('setting webOnlyLinkTarget as _self opens the url in the same tab',
           () {
-        plugin.openNewWindow("https://www.google.com",
-            webOnlyWindowName: "_self");
+        plugin.openNewWindow('https://www.google.com',
+            webOnlyWindowName: '_self');
         verify(mockWindow.open('https://www.google.com', '_self'));
       });
 
       test('setting webOnlyLinkTarget as _blank opens the url in a new tab',
           () {
-        plugin.openNewWindow("https://www.google.com",
-            webOnlyWindowName: "_blank");
+        plugin.openNewWindow('https://www.google.com',
+            webOnlyWindowName: '_blank');
         verify(mockWindow.open('https://www.google.com', '_blank'));
       });
 
@@ -197,9 +197,9 @@ void main() {
         test(
             'mailto urls should use _blank if webOnlyWindowName is set as _blank',
             () {
-          plugin.openNewWindow("mailto:name@mydomain.com",
-              webOnlyWindowName: "_blank");
-          verify(mockWindow.open("mailto:name@mydomain.com", "_blank"));
+          plugin.openNewWindow('mailto:name@mydomain.com',
+              webOnlyWindowName: '_blank');
+          verify(mockWindow.open('mailto:name@mydomain.com', '_blank'));
         });
       });
     });

@@ -7,11 +7,12 @@ and native Android instrumentation testing.
 ## Usage
 
 Add a dependency on the `integration_test` and `flutter_test` package in the
-`dev_dependencies` section of pubspec.yaml. For plugins, do this in the
-pubspec.yaml of the example app.
+`dev_dependencies` section of `pubspec.yaml`. For plugins, do this in the
+`pubspec.yaml` of the example app.
 
-Invoke `IntegrationTestWidgetsFlutterBinding.ensureInitialized()` at the start
-of a test file, e.g.
+Create a `integration_test/` directory for your package. In this directory,
+create a `<name>_test.dart`, using the following as a starting point to make
+assertions.
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -19,66 +20,82 @@ import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   testWidgets("failing test example", (WidgetTester tester) async {
     expect(2 + 2, equals(5));
   });
 }
 ```
 
-## Test locations
+### Driver Entrypoint
 
-It is recommended to put integration_test tests in the `test/` folder of the app
-or package. For example apps, if the integration_test test references example
-app code, it should go in `example/test/`. It is also acceptable to put
-integration_test tests in `test_driver/` folder so that they're alongside the
-runner app (see below).
+An accompanying driver script will be needed that can be shared across all
+integration tests. Create a `integration_test_driver.dart` in the `test_driver/`
+directory with the following contents:
+
+```dart
+import 'package:integration_test/integration_test_driver.dart';
+
+Future<void> main() => integrationDriver();
+```
+
+You can also use different driver scripts to customize the behavior of the app
+under test. For example, `FlutterDriver` can also be parameterized with
+different [options](https://api.flutter.dev/flutter/flutter_driver/FlutterDriver/connect.html).
+See the [extended driver](https://github.com/flutter/plugins/tree/master/packages/integration_test/example/test_driver/integration_test_extended_driver.dart) for an example.
+
+### Package Structure
+
+Your package should have a structure that looks like this:
+
+```
+lib/
+  ...
+integration_test/
+  foo_test.dart
+  bar_test.dart
+test/
+  # Other unit tests go here.
+test_driver/
+  integration_test_driver.dart
+```
+
+[Example](https://github.com/flutter/plugins/tree/master/packages/integration_test/example)
 
 ## Using Flutter Driver to Run Tests
 
-`IntegrationTestWidgetsTestBinding` supports launching the on-device tests with
-`flutter drive`. Note that the tests don't use the `FlutterDriver` API, they
-use `testWidgets` instead.
+These tests can be launched with the `flutter drive` command.
 
-Put the a file named `<package_name>_integration_test.dart` in the app'
-`test_driver` directory:
-
-```dart
-import 'dart:async';
-
-import 'package:integration_test/integration_test_driver.dart';
-
-Future<void> main() async => integrationDriver();
-```
-
-To run a example app test with Flutter driver:
+To run the `integration_test/foo_test.dart` test with the
+`test_driver/integration_test_driver.dart` driver, use the following command:
 
 ```sh
-cd example
-flutter drive test/<package_name>_integration.dart
+flutter drive \
+  --driver=test_driver/integration_test_driver.dart \
+  --target=integration_test/foo_test.dart
 ```
 
-To test plugin APIs using Flutter driver:
+### Web
+
+Make sure you have [enabled web support](https://flutter.dev/docs/get-started/web#set-up)
+then [download and run](https://flutter.dev/docs/cookbook/testing/integration/introduction#6b-web)
+the web driver in another process.
+
+Use following command to execute the tests:
 
 ```sh
-cd example
-flutter drive --driver=test_driver/<package_name>_test.dart test/<package_name>_integration_test.dart
+flutter drive \
+  --driver=test_driver/integration_test_driver.dart \
+  --target=integration_test/foo_test.dart \
+  -d web-server
 ```
 
-You can run tests on web in release or profile mode.
-
-First you need to make sure you have downloaded the driver for the browser.
-
-```sh
-cd example
-flutter drive -v --target=test_driver/<package_name>dart -d web-server --release --browser-name=chrome
-```
-
-## Android device testing
+## Android Device Testing
 
 Create an instrumentation test file in your application's
 **android/app/src/androidTest/java/com/example/myapp/** directory (replacing
 com, example, and myapp with values from your app's package name). You can name
-this test file MainActivityTest.java or another name of your choice.
+this test file `MainActivityTest.java` or another name of your choice.
 
 ```java
 package com.example.myapp;
@@ -96,7 +113,7 @@ public class MainActivityTest {
 ```
 
 Update your application's **myapp/android/app/build.gradle** to make sure it
-uses androidx's version of AndroidJUnitRunner and has androidx libraries as a
+uses androidx's version of `AndroidJUnitRunner` and has androidx libraries as a
 dependency.
 
 ```gradle
@@ -160,7 +177,7 @@ You can pass additional parameters on the command line, such as the
 devices you want to test on. See
 [gcloud firebase test android run](https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run).
 
-## iOS device testing
+## iOS Device Testing
 
 You need to change `iOS/Podfile` to avoid test target statically linking to the plugins. One way is to
 link all of the plugins dynamically:
@@ -189,4 +206,4 @@ change the code. You can change `RunnerTests.m` to the name of your choice.
 INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
 ```
 
-Now you can start RunnerTests to kick out integration tests!
+Now you can start RunnerTests to kick-off integration tests!
