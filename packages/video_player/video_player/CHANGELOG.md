@@ -1,6 +1,10 @@
-## 0.10.12+3
+## 0.10.12+4
 
 * iOS: Update texture on `seekTo`.
+
+## 0.10.12+3
+
+* Avoiding uses or overrides a deprecated API in `VideoPlayerPlugin` class.
 
 ## 0.10.12+2
 

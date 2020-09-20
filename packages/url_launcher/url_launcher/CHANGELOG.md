@@ -1,3 +1,19 @@
+## 5.6.0
+
+* Support Windows by default.
+
+## 5.5.3
+
+* Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android.
+
+## 5.5.2
+
+* Depend explicitly on the `platform_interface` package that adds the `webOnlyWindowName` parameter.
+
+## 5.5.1
+
+* Added webOnlyWindowName parameter to launch()
+
 ## 5.5.0
 
 * Support Linux by default.

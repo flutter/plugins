@@ -60,7 +60,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
             binding.getBinaryMessenger(),
             FlutterMain::getLookupKeyForAsset,
             FlutterMain::getLookupKeyForAsset,
-            binding.getFlutterEngine().getRenderer());
+            binding.getTextureRegistry());
     flutterState.startListening(this, binding.getBinaryMessenger());
   }
 
