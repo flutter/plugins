@@ -1,3 +1,7 @@
+## 0.5.10+1
+
+* Check in linux/ directory for example/
+
 ## 0.5.10
 
 * Update package:e2e -> package:integration_test
