@@ -52,6 +52,10 @@
 - (void)setStrokeWidth:(CGFloat)width {
   _polyline.strokeWidth = width;
 }
+
+- (void)setGeodesic:(BOOL)isGeodesic {
+  _polyline.geodesic = isGeodesic;
+}
 @end
 
 static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:data]; }
@@ -94,6 +98,11 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   NSNumber* strokeWidth = data[@"width"];
   if (strokeWidth != nil) {
     [sink setStrokeWidth:ToInt(strokeWidth)];
+  }
+
+  NSNumber* geodesic = data[@"geodesic"];
+  if (geodesic != nil) {
+    [sink setGeodesic:geodesic.boolValue];
   }
 }
 

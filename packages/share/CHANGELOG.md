@@ -1,3 +1,11 @@
+## 0.6.5+1
+
+* Avoiding uses unchecked or unsafe Object Type Casting
+
+## 0.6.5
+
+* Added support for sharing files
+
 ## 0.6.4+5
 
 * Update package:e2e -> package:integration_test

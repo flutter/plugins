@@ -1,3 +1,12 @@
+## 1.6.16
+
+* Update Windows endorsement verison
+
+## 1.6.15
+
+* Endorse Windows implementation.
+* Remove the need to call disablePathProviderPlatformOverride in tests
+
 ## 1.6.14
 
 * Update package:e2e -> package:integration_test
