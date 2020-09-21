@@ -4,4 +4,9 @@
 
 import 'package:integration_test/integration_test_driver.dart';
 
-Future<void> main() async => integrationDriver();
+Future<void> main() async {
+  notTested();
+  return integrationDriver();
+}
+
+void notTested() => throw StateError('NOT TESTED');

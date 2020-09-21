@@ -65,6 +65,7 @@ void main() {
       });
 
       testWidgets('constructor creates widget', (WidgetTester tester) async {
+        expect(false, true);
         expect(controller.widget, isNotNull);
         expect(controller.widget.viewType, endsWith('$mapId'));
       });

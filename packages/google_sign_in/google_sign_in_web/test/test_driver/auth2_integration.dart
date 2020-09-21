@@ -35,6 +35,7 @@ void main() {
     });
 
     testWidgets('init throws PlatformException', (WidgetTester tester) async {
+      expect(false, true);
       await expectLater(
           plugin.init(
             hostedDomain: 'foo',
