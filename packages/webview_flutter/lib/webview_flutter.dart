@@ -6,14 +6,11 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'platform_interface.dart';
 import 'src/webview_android.dart';
 import 'src/webview_cupertino.dart';
-import 'src/webview_method_channel.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
@@ -65,66 +62,6 @@ enum NavigationDecision {
 
   /// Allow the navigation to take place.
   navigate,
-}
-
-/// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
-///
-/// To use this, set [WebView.platform] to an instance of this class.
-///
-/// This implementation uses hybrid composition to render the [WebView] on
-/// Android. It solves multiple issues related to accessibility and interaction
-/// with the [WebView] at the cost of some performance on Android versions below
-/// 10. See https://github.com/flutter/flutter/wiki/Hybrid-Composition for more
-/// information.
-class SurfaceAndroidWebView extends AndroidWebView {
-  @override
-  Widget build({
-    BuildContext context,
-    CreationParams creationParams,
-    WebViewPlatformCreatedCallback onWebViewPlatformCreated,
-    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
-    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
-  }) {
-    assert(webViewPlatformCallbacksHandler != null);
-    return PlatformViewLink(
-      viewType: 'plugins.flutter.io/webview',
-      surfaceFactory: (
-        BuildContext context,
-        PlatformViewController controller,
-      ) {
-        return AndroidViewSurface(
-          controller: controller,
-          gestureRecognizers: gestureRecognizers ??
-              const <Factory<OneSequenceGestureRecognizer>>{},
-          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-        );
-      },
-      onCreatePlatformView: (PlatformViewCreationParams params) {
-        return PlatformViewsService.initSurfaceAndroidView(
-          id: params.id,
-          viewType: 'plugins.flutter.io/webview',
-          // WebView content is not affected by the Android view's layout direction,
-          // we explicitly set it here so that the widget doesn't require an ambient
-          // directionality.
-          layoutDirection: TextDirection.rtl,
-          creationParams: MethodChannelWebViewPlatform.creationParamsToMap(
-            creationParams,
-          ),
-          creationParamsCodec: const StandardMessageCodec(),
-        )
-          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-          ..addOnPlatformViewCreatedListener((int id) {
-            if (onWebViewPlatformCreated == null) {
-              return;
-            }
-            onWebViewPlatformCreated(
-              MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler),
-            );
-          })
-          ..create();
-      },
-    );
-  }
 }
 
 /// Decides how to handle a specific navigation request.
@@ -508,7 +445,9 @@ WebSettings _clearUnchangedWebSettings(
 
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   final Set<String> channelNames = channels == null
-      ? <String>{}
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // ignore: prefer_collection_literals
+      ? Set<String>()
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;
 }

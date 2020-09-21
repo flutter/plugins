@@ -1,27 +1,3 @@
-## 0.3.24
-
-* Add support for building `WebView` widget with Android hybrid views. To use this feature, set
-  `WebView.platform` to an instance of `SurfaceAndroidWebView`. For example:
-
-```dart
-import 'dart:io';
-
-class WebViewExample extends StatefulWidget {
-  @override
-  void initState() {
-    super.initState();
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return WebView(
-      initialUrl: 'https://flutter.dev',
-    );
-  }
-}
-```
-
 ## 0.3.23
 
 * Handle WebView multi-window support.
