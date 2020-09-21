@@ -1,3 +1,7 @@
+## 2.1.5
+
+Add an interface to define Heatmap behaviour
+
 ## 2.1.4
 
 * Update to use the `verify` method introduced in plugin_platform_interface 2.1.0.
