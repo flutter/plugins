@@ -71,10 +71,10 @@ enum NavigationDecision {
 ///
 /// To use this, set [WebView.platform] to an instance of this class.
 ///
-/// This implementation uses Hybrid Composition to render the [WebView] on
+/// This implementation uses hybrid composition to render the [WebView] on
 /// Android. It solves multiple issues related to accessibility and interaction
 /// with the [WebView] at the cost of some performance on Android versions below
-/// 10. See https://github.com/flutter/flutter/issues/61133 for more
+/// 10. See https://github.com/flutter/flutter/wiki/Hybrid-Composition for more
 /// information.
 class SurfaceAndroidWebView extends AndroidWebView {
   @override
