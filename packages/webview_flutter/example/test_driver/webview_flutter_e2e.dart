@@ -684,7 +684,7 @@ void main() {
       expect(X_SCROLL * 2, scrollPosX);
       expect(Y_SCROLL * 2, scrollPosY);
     });
-  });
+  }, skip: !Platform.isAndroid);
 
   group('NavigationDelegate', () {
     final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
