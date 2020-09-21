@@ -1,7 +1,11 @@
-## 0.3.23
+## 0.3.24
 
 * Add support for building `WebView` widget with Android hybrid views. To use this feature, set
   `WebView.platform` to an instance of `SurfaceAndroidWebView`.
+
+## 0.3.23
+
+* Handle WebView multi-window support.
 
 ## 0.3.22+2
 

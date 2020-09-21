@@ -1,3 +1,7 @@
+## 5.7.0
+
+* Handle WebView multi-window support.
+
 ## 5.6.0
 
 * Support Windows by default.
