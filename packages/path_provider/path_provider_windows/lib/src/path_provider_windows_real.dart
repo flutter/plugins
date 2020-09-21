@@ -12,7 +12,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:win32/win32.dart';
 
-import 'folders.dart';
+export 'folders.dart';
 
 /// Wraps the Win32 VerQueryValue API call.
 ///
