@@ -14,6 +14,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "connectivity_macos"
   "connectivity_platform_interface"
   "connectivity_web"
+  "extension_google_sign_in_as_googleapis_auth"
   "flutter_plugin_android_lifecycle"
   "google_maps_flutter_platform_interface"
   "google_maps_flutter_web"

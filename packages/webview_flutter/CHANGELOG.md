@@ -1,3 +1,12 @@
+## 0.3.23
+
+* Handle WebView multi-window support.
+
+## 0.3.22+2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.3.22+1
 
 * Update the `setAndGetScrollPosition` to use hard coded values and add a `pumpAndSettle` call.

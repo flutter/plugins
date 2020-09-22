@@ -70,7 +70,7 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
         binding.getActivity(),
         flutterPluginBinding.getBinaryMessenger(),
         binding::addRequestPermissionsResultListener,
-        flutterPluginBinding.getFlutterEngine().getRenderer());
+        flutterPluginBinding.getTextureRegistry());
   }
 
   @Override

@@ -4,6 +4,8 @@
 //
 package io.flutter.plugins.flutter_plugin_android_lifecycle;
 
+import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
@@ -12,8 +14,18 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  *
  * <p><strong>DO NOT USE THIS CLASS.</strong>
  */
-public class FlutterAndroidLifecyclePlugin {
+public class FlutterAndroidLifecyclePlugin implements FlutterPlugin {
   public static void registerWith(Registrar registrar) {
+    // no-op
+  }
+
+  @Override
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+    // no-op
+  }
+
+  @Override
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     // no-op
   }
 }

@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import 'dart:io';
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:connectivity/connectivity.dart';
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Connectivity test driver', () {
     Connectivity _connectivity;
