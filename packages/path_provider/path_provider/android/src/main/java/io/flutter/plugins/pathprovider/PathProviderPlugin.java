@@ -21,21 +21,23 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.util.PathUtils;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
   private Context context;
   private MethodChannel channel;
   private final Executor uiThreadExecutor = new UiThreadExecutor();
-  private final Executor executor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
-      .setNameFormat("path-provider-background-%d")
-      .setPriority(Thread.NORM_PRIORITY)
-      .build());
+  private final Executor executor =
+      Executors.newSingleThreadExecutor(
+          new ThreadFactoryBuilder()
+              .setNameFormat("path-provider-background-%d")
+              .setPriority(Thread.NORM_PRIORITY)
+              .build());
 
   public PathProviderPlugin() {}
 
@@ -62,22 +64,26 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
   private <T> void executeInBackground(Callable<T> task, Result result) {
     final SettableFuture<T> future = SettableFuture.create();
-    Futures.addCallback(future,
-      new FutureCallback<T>() {
-       public void onSuccess(T answer) {
-         result.success(answer);
-       }
-       public void onFailure(Throwable t) {
-         result.error(t.getClass().getName(), t.getMessage(), null);
-       }
-     }, uiThreadExecutor);
-    executor.execute(() -> {
-      try {
-        future.set(task.call());
-      } catch (Throwable t) {
-        future.setException(t);
-      }
-    });
+    Futures.addCallback(
+        future,
+        new FutureCallback<T>() {
+          public void onSuccess(T answer) {
+            result.success(answer);
+          }
+
+          public void onFailure(Throwable t) {
+            result.error(t.getClass().getName(), t.getMessage(), null);
+          }
+        },
+        uiThreadExecutor);
+    executor.execute(
+        () -> {
+          try {
+            future.set(task.call());
+          } catch (Throwable t) {
+            future.setException(t);
+          }
+        });
   }
 
   @Override
