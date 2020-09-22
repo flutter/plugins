@@ -19,7 +19,7 @@ void main() {
     expect(await canLaunch('http://flutter.dev'), true);
 
     // SMS handling is available by default on most platforms.
-    if (kIsWeb || !Platform.isLinux) {
+    if (kIsWeb || !(Platform.isLinux || Platform.isWindows)) {
       expect(await canLaunch('sms:5555555555'), true);
     }
 

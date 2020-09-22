@@ -78,7 +78,6 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     String method = call.method;
-    Object arguments = call.arguments;
     try {
       if (method.equals("AlarmService.initialized")) {
         // This message is sent by the background method channel as soon as the background isolate
@@ -152,9 +151,9 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
     }
 
     Log.i(TAG, "Starting AlarmService...");
-    String appBundlePath = FlutterMain.findAppBundlePath(context);
+    String appBundlePath = FlutterMain.findAppBundlePath();
     AssetManager assets = context.getAssets();
-    if (appBundlePath != null && !isRunning()) {
+    if (!isRunning()) {
       backgroundFlutterEngine = new FlutterEngine(context);
 
       // We need to create an instance of `FlutterEngine` before looking up the
@@ -162,10 +161,6 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
       // lookup will fail.
       FlutterCallbackInformation flutterCallback =
           FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
-      if (flutterCallback == null) {
-        Log.e(TAG, "Fatal: failed to find callback");
-        return;
-      }
 
       DartExecutor executor = backgroundFlutterEngine.getDartExecutor();
       initializeMethodChannel(executor);

@@ -1,6 +1,10 @@
-## 0.3.22+3
+## 0.3.24
 
 * Added support for progress tracking.
+
+## 0.3.23
+
+* Handle WebView multi-window support.
 
 ## 0.3.22+2
 
