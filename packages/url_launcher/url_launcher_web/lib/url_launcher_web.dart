@@ -20,8 +20,10 @@ bool _navigatorIsSafari(html.Navigator navigator) {
   // An web view running in an iOS app does not have a 'Version/X.X.X' string in the appVersion
   final vendor = navigator.vendor;
   final appVersion = navigator.appVersion;
-  return vendor != null && vendor.contains('Apple') &&
-      appVersion != null && appVersion.contains('Version');
+  return vendor != null &&
+      vendor.contains('Apple') &&
+      appVersion != null &&
+      appVersion.contains('Version');
 }
 
 /// The web implementation of [UrlLauncherPlatform].
@@ -38,10 +40,10 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   }.union(_safariTargetTopSchemes);
 
   /// A constructor that allows tests to override the window object used by the plugin.
-  UrlLauncherPlugin({@visibleForTesting html.Window debugWindow })
+  UrlLauncherPlugin({@visibleForTesting html.Window debugWindow})
       : _window = debugWindow ?? html.window {
-        _isSafari = _navigatorIsSafari(_window.navigator);
-      }
+    _isSafari = _navigatorIsSafari(_window.navigator);
+  }
 
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith(Registrar registrar) {

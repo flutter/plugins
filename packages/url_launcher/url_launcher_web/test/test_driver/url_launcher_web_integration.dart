@@ -11,6 +11,7 @@ import 'package:mockito/mockito.dart';
 import 'package:integration_test/integration_test.dart';
 
 class _MockWindow extends Mock implements html.Window {}
+
 class _MockNavigator extends Mock implements html.Navigator {}
 
 void main() {
@@ -36,7 +37,8 @@ void main() {
       });
 
       testWidgets('"https" URLs -> true', (WidgetTester _) async {
-        expect(plugin.canLaunch('https://go, (Widogle.com'), completion(isTrue));
+        expect(
+            plugin.canLaunch('https://go, (Widogle.com'), completion(isTrue));
       });
 
       testWidgets('"mailto" URLs -> true', (WidgetTester _) async {
@@ -124,43 +126,50 @@ void main() {
     });
 
     group('openNewWindow', () {
-      testWidgets('http urls should be launched in a new window', (WidgetTester _) async {
+      testWidgets('http urls should be launched in a new window',
+          (WidgetTester _) async {
         plugin.openNewWindow('http://www.google.com');
 
         verify(mockWindow.open('http://www.google.com', ''));
       });
 
-      testWidgets('https urls should be launched in a new window', (WidgetTester _) async {
+      testWidgets('https urls should be launched in a new window',
+          (WidgetTester _) async {
         plugin.openNewWindow('https://www.google.com');
 
         verify(mockWindow.open('https://www.google.com', ''));
       });
 
-      testWidgets('mailto urls should be launched on a new window', (WidgetTester _) async {
+      testWidgets('mailto urls should be launched on a new window',
+          (WidgetTester _) async {
         plugin.openNewWindow('mailto:name@mydomain.com');
 
         verify(mockWindow.open('mailto:name@mydomain.com', ''));
       });
 
-      testWidgets('tel urls should be launched on a new window', (WidgetTester _) async {
+      testWidgets('tel urls should be launched on a new window',
+          (WidgetTester _) async {
         plugin.openNewWindow('tel:5551234567');
 
         verify(mockWindow.open('tel:5551234567', ''));
       });
 
-      testWidgets('sms urls should be launched on a new window', (WidgetTester _) async {
+      testWidgets('sms urls should be launched on a new window',
+          (WidgetTester _) async {
         plugin.openNewWindow('sms:+19725551212?body=hello%20there');
 
         verify(mockWindow.open('sms:+19725551212?body=hello%20there', ''));
       });
-      testWidgets('setting webOnlyLinkTarget as _self opens the url in the same tab',
+      testWidgets(
+          'setting webOnlyLinkTarget as _self opens the url in the same tab',
           (WidgetTester _) async {
         plugin.openNewWindow('https://www.google.com',
             webOnlyWindowName: '_self');
         verify(mockWindow.open('https://www.google.com', '_self'));
       });
 
-      testWidgets('setting webOnlyLinkTarget as _blank opens the url in a new tab',
+      testWidgets(
+          'setting webOnlyLinkTarget as _blank opens the url in a new tab',
           (WidgetTester _) async {
         plugin.openNewWindow('https://www.google.com',
             webOnlyWindowName: '_blank');
@@ -170,36 +179,42 @@ void main() {
       group('Safari', () {
         setUp(() {
           when(mockNavigator.vendor).thenReturn('Apple Computer, Inc.');
-          when(mockNavigator.appVersion).thenReturn('5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15');
+          when(mockNavigator.appVersion).thenReturn(
+              '5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15');
           // Recreate the plugin, so it grabs the overrides from this group
           plugin = UrlLauncherPlugin(debugWindow: mockWindow);
         });
 
-        testWidgets('http urls should be launched in a new window', (WidgetTester _) async {
+        testWidgets('http urls should be launched in a new window',
+            (WidgetTester _) async {
           plugin.openNewWindow('http://www.google.com');
 
           verify(mockWindow.open('http://www.google.com', ''));
         });
 
-        testWidgets('https urls should be launched in a new window', (WidgetTester _) async {
+        testWidgets('https urls should be launched in a new window',
+            (WidgetTester _) async {
           plugin.openNewWindow('https://www.google.com');
 
           verify(mockWindow.open('https://www.google.com', ''));
         });
 
-        testWidgets('mailto urls should be launched on the same window', (WidgetTester _) async {
+        testWidgets('mailto urls should be launched on the same window',
+            (WidgetTester _) async {
           plugin.openNewWindow('mailto:name@mydomain.com');
 
           verify(mockWindow.open('mailto:name@mydomain.com', '_top'));
         });
 
-        testWidgets('tel urls should be launched on the same window', (WidgetTester _) async {
+        testWidgets('tel urls should be launched on the same window',
+            (WidgetTester _) async {
           plugin.openNewWindow('tel:5551234567');
 
           verify(mockWindow.open('tel:5551234567', '_top'));
         });
 
-        testWidgets('sms urls should be launched on the same window', (WidgetTester _) async {
+        testWidgets('sms urls should be launched on the same window',
+            (WidgetTester _) async {
           plugin.openNewWindow('sms:+19725551212?body=hello%20there');
 
           verify(
