@@ -20,6 +20,10 @@ class PathProviderWindows extends PathProviderPlatform {
 
   /// Stub; see comment on VersionInfoQuerier.
   VersionInfoQuerier versionInfoQuerier;
+
+  /// Match PathProviderWindows so that the analyzer won't report invalid
+  /// overrides if tests provide fake PathProviderWindows implementations.
+  Future<String> getPath(String folderID) async => '';
 }
 
 /// Stub to satisfy the analyzer, which doesn't seem to handle conditional
