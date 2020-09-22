@@ -2,7 +2,8 @@
 
 int main(int argc, char** argv) {
   // Only X11 is currently supported.
-  // Wayland support is being developed: https://github.com/flutter/flutter/issues/57932.
+  // Wayland support is being developed:
+  // https://github.com/flutter/flutter/issues/57932.
   gdk_set_allowed_backends("x11");
 
   g_autoptr(MyApplication) app = my_application_new();
