@@ -49,6 +49,7 @@ class GoogleMap extends StatefulWidget {
     this.polygons,
     this.polylines,
     this.circles,
+    this.onCameraMoveStartedWithGesture,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -119,6 +120,12 @@ class GoogleMap extends StatefulWidget {
 
   /// Circles to be placed on the map.
   final Set<Circle> circles;
+
+  /// Called when the camera starts moving.
+  ///
+  /// This is called when onCameraMoveStarted is called expect that it has an argument
+  /// isGesture is true whenever the camera move was started by an user gesture
+  final CameraMoveStartCallback onCameraMoveStartedWithGesture;
 
   /// Called when the camera starts moving.
   ///

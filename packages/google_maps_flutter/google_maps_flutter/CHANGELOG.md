@@ -1,3 +1,7 @@
+## 0.5.33
+
+* Fix typo in google_maps_flutter/example/map_ui.dart.
+
 ## 0.5.32
 
 * Fix typo in google_maps_flutter/example/map_ui.dart.
