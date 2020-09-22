@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'package:flutter/services.dart' show MethodCall;
 
 /// A fake backend that can be used to test components that require a valid

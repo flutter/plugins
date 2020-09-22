@@ -1,3 +1,7 @@
+## 0.4.4
+
+* Remove a dart:async import that's not necessary for Dart >=2.1
+
 ## 0.4.3
 
 * Update package:e2e -> package:integration_test

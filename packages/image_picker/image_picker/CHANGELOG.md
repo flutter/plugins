@@ -1,3 +1,7 @@
+## 0.6.7+12
+
+* Remove a dart:async import that's not necessary for Dart >=2.1
+
 ## 0.6.7+11
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

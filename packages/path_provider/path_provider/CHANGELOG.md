@@ -1,3 +1,7 @@
+## 1.6.20
+
+* Removed a `dart:async` import that isn't required for \>=Dart 2.1.
+
 ## 1.6.19
 
 * Android implementation does path queries in the background thread rather than UI thread.
