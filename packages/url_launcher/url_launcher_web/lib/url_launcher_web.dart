@@ -4,6 +4,7 @@ import 'dart:html' as html;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+import 'third_party/platform_detect/browser.dart';
 
 const _safariTargetTopSchemes = {
   'mailto',
@@ -14,17 +15,6 @@ String _getUrlScheme(String url) => Uri.tryParse(url)?.scheme;
 
 bool _isSafariTargetTopScheme(String url) =>
     _safariTargetTopSchemes.contains(_getUrlScheme(url));
-
-// Taken from package:platform_detect.
-bool _navigatorIsSafari(html.Navigator navigator) {
-  // An web view running in an iOS app does not have a 'Version/X.X.X' string in the appVersion
-  final vendor = navigator.vendor;
-  final appVersion = navigator.appVersion;
-  return vendor != null &&
-      vendor.contains('Apple') &&
-      appVersion != null &&
-      appVersion.contains('Version');
-}
 
 /// The web implementation of [UrlLauncherPlatform].
 ///
@@ -42,7 +32,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   /// A constructor that allows tests to override the window object used by the plugin.
   UrlLauncherPlugin({@visibleForTesting html.Window debugWindow})
       : _window = debugWindow ?? html.window {
-    _isSafari = _navigatorIsSafari(_window.navigator);
+    _isSafari = navigatorIsSafari(_window.navigator);
   }
 
   /// Registers this class as the default instance of [UrlLauncherPlatform].
