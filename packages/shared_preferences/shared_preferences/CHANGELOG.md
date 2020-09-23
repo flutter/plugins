@@ -1,3 +1,7 @@
+## 0.5.12
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 0.5.11
 
 * Support Windows by default.

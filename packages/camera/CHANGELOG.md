@@ -1,3 +1,7 @@
+## 0.5.8+7
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 0.5.8+6
 
 * Avoiding uses or overrides a deprecated API in CameraPlugin.java.

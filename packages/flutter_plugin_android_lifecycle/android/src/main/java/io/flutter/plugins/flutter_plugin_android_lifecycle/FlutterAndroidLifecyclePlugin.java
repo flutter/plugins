@@ -6,7 +6,6 @@ package io.flutter.plugins.flutter_plugin_android_lifecycle;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
  * Plugin class that exists because the Flutter tool expects such a class to exist for every Android
@@ -15,7 +14,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  * <p><strong>DO NOT USE THIS CLASS.</strong>
  */
 public class FlutterAndroidLifecyclePlugin implements FlutterPlugin {
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     // no-op
   }
 
