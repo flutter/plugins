@@ -5,10 +5,10 @@
 package io.flutter.plugins.androidintentexample;
 
 import android.os.Bundle;
-import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.androidintent.AndroidIntentPlugin;
 
-public class EmbeddingV1Activity extends FlutterActivity {
+@SuppressWarnings("deprecation")
+public class EmbeddingV1Activity extends io.flutter.app.FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

@@ -13,7 +13,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.util.PathUtils;
 import java.io.File;
 import java.util.ArrayList;
@@ -26,7 +25,8 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
 
   public PathProviderPlugin() {}
 
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     PathProviderPlugin instance = new PathProviderPlugin();
     instance.channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/path_provider");
     instance.context = registrar.context();
