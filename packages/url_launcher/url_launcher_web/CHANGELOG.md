@@ -1,3 +1,8 @@
+# 0.1.4
+
+- (Null safety) Remove dependency on `package:platform_detect`
+- Port unit tests to run with `flutter drive`
+
 # 0.1.3+2
 
 - Fix a typo in a test name and fix some style inconsistencies.
