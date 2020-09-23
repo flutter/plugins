@@ -1,3 +1,7 @@
+## 0.10.12+4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 0.10.12+3
 
 * Avoiding uses or overrides a deprecated API in `VideoPlayerPlugin` class.

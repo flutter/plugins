@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 1.0.5
 
 * Ported to use platform interface.

@@ -1,3 +1,7 @@
+## 5.7.1
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 5.7.0
 
 * Handle WebView multi-window support.
