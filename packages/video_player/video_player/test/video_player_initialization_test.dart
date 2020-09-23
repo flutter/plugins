@@ -19,6 +19,6 @@ void main() {
       'https://127.0.0.1',
     );
     await controller.initialize();
-    expect(fakeVideoPlayerPlatform.calls.first.method, 'init');
+    expect(fakeVideoPlayerPlatform.calls.first, 'init');
   });
 }

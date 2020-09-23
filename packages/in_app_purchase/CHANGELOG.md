@@ -1,3 +1,61 @@
+## 0.3.4+9
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
+
+## 0.3.4+8
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
+
+## 0.3.4+7
+
+* iOS: Fix typo of the `simulatesAskToBuyInSandbox` key.
+
+## 0.3.4+6
+
+* iOS: Fix the bug that prevent restored subscription transactions from being completed
+
+## 0.3.4+5
+
+* Added necessary README docs for getting started with Android.
+
+## 0.3.4+4
+
+* Update package:e2e -> package:integration_test
+
+## 0.3.4+3
+
+* Fixed typo 'manuelly' for 'manually'.
+
+## 0.3.4+2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.3.4+1
+
+* iOS: Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
+* iOS: Fix the app crashes  if `InAppPurchaseConnection.instance` is called in the `main()`.
+
+## 0.3.4
+
+* Expose SKError code to client apps.
+
+## 0.3.3+2
+
+* Post-v2 Android embedding cleanups.
+
+## 0.3.3+1
+
+* Update documentations for `InAppPurchase.completePurchase` and update README.
+
+## 0.3.3
+
+* Introduce `SKPaymentQueueWrapper.transactions`.
+
 ## 0.3.2+2
 
 * Fix CocoaPods podspec lint warnings.
@@ -5,7 +63,7 @@
 ## 0.3.2+1
 
 * iOS: Fix only transactions with SKPaymentTransactionStatePurchased and SKPaymentTransactionStateFailed can be finished.
-* iOS: Only one pending transaction of a given product is allowed.  
+* iOS: Only one pending transaction of a given product is allowed.
 
 ## 0.3.2
 

@@ -9,9 +9,14 @@ import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Message;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
+import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import androidx.annotation.NonNull;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -28,6 +33,46 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+
+  // Verifies that a url opened by `Window.open` has a secure url.
+  private class FlutterWebChromeClient extends WebChromeClient {
+    @Override
+    public boolean onCreateWindow(
+        final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+      final WebViewClient webViewClient =
+          new WebViewClient() {
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public boolean shouldOverrideUrlLoading(
+                @NonNull WebView view, @NonNull WebResourceRequest request) {
+              final String url = request.getUrl().toString();
+              if (!flutterWebViewClient.shouldOverrideUrlLoading(
+                  FlutterWebView.this.webView, request)) {
+                webView.loadUrl(url);
+              }
+              return true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+              if (!flutterWebViewClient.shouldOverrideUrlLoading(
+                  FlutterWebView.this.webView, url)) {
+                webView.loadUrl(url);
+              }
+              return true;
+            }
+          };
+
+      final WebView newWebView = new WebView(view.getContext());
+      newWebView.setWebViewClient(webViewClient);
+
+      final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+      transport.setWebView(newWebView);
+      resultMsg.sendToTarget();
+
+      return true;
+    }
+  }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @SuppressWarnings("unchecked")
@@ -49,6 +94,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
     webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+
+    // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
+    webView.getSettings().setSupportMultipleWindows(true);
+    webView.setWebChromeClient(new FlutterWebChromeClient());
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
@@ -158,6 +207,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getTitle":
         getTitle(result);
         break;
+      case "scrollTo":
+        scrollTo(methodCall, result);
+        break;
+      case "scrollBy":
+        scrollBy(methodCall, result);
+        break;
+      case "getScrollX":
+        getScrollX(result);
+        break;
+      case "getScrollY":
+        getScrollY(result);
+        break;
       default:
         result.notImplemented();
     }
@@ -252,6 +313,33 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void getTitle(Result result) {
     result.success(webView.getTitle());
+  }
+
+  private void scrollTo(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    int x = (int) request.get("x");
+    int y = (int) request.get("y");
+
+    webView.scrollTo(x, y);
+
+    result.success(null);
+  }
+
+  private void scrollBy(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    int x = (int) request.get("x");
+    int y = (int) request.get("y");
+
+    webView.scrollBy(x, y);
+    result.success(null);
+  }
+
+  private void getScrollX(Result result) {
+    result.success(webView.getScrollX());
+  }
+
+  private void getScrollY(Result result) {
+    result.success(webView.getScrollY());
   }
 
   private void applySettings(Map<String, Object> settings) {
