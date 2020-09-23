@@ -32,7 +32,6 @@ public final class AndroidIntentPlugin implements FlutterPlugin, ActivityAware {
    * won't react to changes in activity or context, unlike {@link AndroidIntentPlugin}.
    */
   @SuppressWarnings("deprecation")
-  @SuppressWarnings("deprecation")
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     IntentSender sender = new IntentSender(registrar.activity(), registrar.context());
     MethodCallHandlerImpl impl = new MethodCallHandlerImpl(sender);

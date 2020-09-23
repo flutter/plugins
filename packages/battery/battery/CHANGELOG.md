@@ -1,4 +1,4 @@
-## 1.0.5+1
+## 1.0.6
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
 
