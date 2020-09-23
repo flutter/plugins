@@ -517,4 +517,22 @@ public class Camera {
             : (isFrontFacing) ? -currentOrientation : currentOrientation;
     return (sensorOrientationOffset + sensorOrientation + 360) % 360;
   }
+
+  private final int CAMERA_FLASH_MODE_OFF = 0;
+  private final int CAMERA_FLASH_MODE_TORCH = 3;
+
+  public void setFlash(boolean value) {
+    try {
+      setFlashModeRequest(captureRequestBuilder, value ? CAMERA_FLASH_MODE_TORCH : CAMERA_FLASH_MODE_OFF);
+      CaptureRequest request = captureRequestBuilder.build();
+      cameraCaptureSession.setRepeatingRequest(request, null, null);
+    } catch (Exception e) {
+
+    }
+  }
+
+  private void setFlashModeRequest(CaptureRequest.Builder builderRequest, int mode) {
+    builderRequest.set(CaptureRequest.FLASH_MODE, mode == CAMERA_FLASH_MODE_TORCH ?
+            CameraMetadata.FLASH_MODE_TORCH :CameraMetadata.FLASH_MODE_OFF );
+  }
 }

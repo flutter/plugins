@@ -77,8 +77,8 @@ CameraLensDirection _parseCameraLensDirection(String string) {
 /// May throw a [CameraException].
 Future<List<CameraDescription>> availableCameras() async {
   try {
-    final List<Map<dynamic, dynamic>> cameras = await _channel
-        .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
+    final List<Map<dynamic, dynamic>> cameras =
+        await _channel.invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
     return cameras.map((Map<dynamic, dynamic> camera) {
       return CameraDescription(
         name: camera['name'],
@@ -108,9 +108,7 @@ class CameraDescription {
 
   @override
   bool operator ==(Object o) {
-    return o is CameraDescription &&
-        o.name == name &&
-        o.lensDirection == lensDirection;
+    return o is CameraDescription && o.name == name && o.lensDirection == lensDirection;
   }
 
   @override
@@ -143,9 +141,7 @@ class CameraPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return controller.value.isInitialized
-        ? Texture(textureId: controller._textureId)
-        : Container();
+    return controller.value.isInitialized ? Texture(textureId: controller._textureId) : Container();
   }
 }
 
@@ -268,8 +264,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       _creatingCompleter = Completer<void>();
-      final Map<String, dynamic> reply =
-          await _channel.invokeMapMethod<String, dynamic>(
+      final Map<String, dynamic> reply = await _channel.invokeMapMethod<String, dynamic>(
         'initialize',
         <String, dynamic>{
           'cameraName': description.name,
@@ -289,9 +284,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       throw CameraException(e.code, e.message);
     }
     _eventSubscription =
-        EventChannel('flutter.io/cameraPlugin/cameraEvents$_textureId')
-            .receiveBroadcastStream()
-            .listen(_listener);
+        EventChannel('flutter.io/cameraPlugin/cameraEvents$_textureId').receiveBroadcastStream().listen(_listener);
     _creatingCompleter.complete();
     return _creatingCompleter.future;
   }
@@ -404,10 +397,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
-    const EventChannel cameraEventChannel =
-        EventChannel('plugins.flutter.io/camera/imageStream');
-    _imageStreamSubscription =
-        cameraEventChannel.receiveBroadcastStream().listen(
+    const EventChannel cameraEventChannel = EventChannel('plugins.flutter.io/camera/imageStream');
+    _imageStreamSubscription = cameraEventChannel.receiveBroadcastStream().listen(
       (dynamic imageData) {
         onAvailable(CameraImage._fromPlatformData(imageData));
       },
@@ -564,6 +555,20 @@ class CameraController extends ValueNotifier<CameraValue> {
         'resumeVideoRecording',
         <String, dynamic>{'textureId': _textureId},
       );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  Future<bool> flash(bool value) async {
+    try {
+      final Map<String, dynamic> reply = await _channel.invokeMapMethod<String, dynamic>(
+        'enableFlash',
+        <String, dynamic>{
+          'flash': value,
+        },
+      );
+      return reply['flash'];
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

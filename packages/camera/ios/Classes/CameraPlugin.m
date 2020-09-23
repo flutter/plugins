@@ -205,6 +205,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopImageStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
+- (void)setFlash:(BOOL)isEnabled;
 @end
 
 @implementation FLTCam {
@@ -759,6 +760,23 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
   }
 }
+- (void)setFlash: (BOOL) isEnabled {
+    Class captureDeviceClass = NSClassFromString(@"AVCaptureDevice");
+    if (captureDeviceClass != nil) {
+        AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+        if ([device hasTorch] && [device hasFlash]) {
+            [device lockForConfiguration:nil];
+            if (isEnabled) {
+                [device setTorchMode:AVCaptureTorchModeOn];
+                [device setFlashMode:AVCaptureFlashModeOn];
+            } else {
+                [device setTorchMode:AVCaptureTorchModeOff];
+                [device setFlashMode:AVCaptureFlashModeOff];
+            }
+            [device unlockForConfiguration];
+        }
+    }
+}
 @end
 
 @interface CameraPlugin ()
@@ -895,6 +913,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       [_camera startVideoRecordingAtPath:call.arguments[@"filePath"] result:result];
     } else if ([@"stopVideoRecording" isEqualToString:call.method]) {
       [_camera stopVideoRecordingWithResult:result];
+    } else if ([@"enableFlash" isEqualToString:call.method]) {
+      BOOL isEnabled = [call.arguments[@"flash"] boolValue];
+      [_camera setFlash:isEnabled];
     } else {
       result(FlutterMethodNotImplemented);
     }
