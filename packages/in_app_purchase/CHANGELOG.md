@@ -1,6 +1,12 @@
-## 0.3.4+9
+## 0.3.4+10
 
 * Update android compileSdkVersion to 29.
+
+## 0.3.4+9
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
 
 ## 0.3.4+8
 

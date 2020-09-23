@@ -1,6 +1,14 @@
-## 5.6.1
+## 5.7.2
 
 * Update android compileSdkVersion to 29.
+
+## 5.7.1
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 5.7.0
+
+* Handle WebView multi-window support.
 
 ## 5.6.0
 

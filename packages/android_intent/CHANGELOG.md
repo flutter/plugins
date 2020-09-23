@@ -1,6 +1,10 @@
-## 0.3.7+4
+## 0.3.7+5
 
 * Update android compileSdkVersion to 29.
+
+## 0.3.7+4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
 
 ## 0.3.7+3
 
@@ -16,8 +20,8 @@
 
 ## 0.3.7
 
-* Add a `Future<bool> canResolveActivity` method to the AndroidIntent class. It 
-  can be used to determine whether a device supports a particular intent or has 
+* Add a `Future<bool> canResolveActivity` method to the AndroidIntent class. It
+  can be used to determine whether a device supports a particular intent or has
   an app installed that can resolve it. It is based on PackageManager
   [resolveActivity](https://developer.android.com/reference/android/content/pm/PackageManager#resolveActivity(android.content.Intent,%20int)).
 
@@ -40,7 +44,7 @@
 
 ## 0.3.5
 
-* Add support for [setType](https://developer.android.com/reference/android/content/Intent.html#setType(java.lang.String)) and [setDataAndType](https://developer.android.com/reference/android/content/Intent.html#setDataAndType(android.net.Uri,%20java.lang.String)) parameters. 
+* Add support for [setType](https://developer.android.com/reference/android/content/Intent.html#setType(java.lang.String)) and [setDataAndType](https://developer.android.com/reference/android/content/Intent.html#setDataAndType(android.net.Uri,%20java.lang.String)) parameters.
 
 ##  0.3.4+8
 

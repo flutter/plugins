@@ -1,3 +1,7 @@
+## 4.5.5
+
+* Update android compileSdkVersion to 29.
+
 ## 4.5.4
 
 * Update android compileSdkVersion to 29.

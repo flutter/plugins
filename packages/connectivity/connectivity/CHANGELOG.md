@@ -1,6 +1,10 @@
-## 0.4.9+3
+## 0.4.9+4
 
 * Update android compileSdkVersion to 29.
+
+## 0.4.9+3
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
 
 ## 0.4.9+2
 
