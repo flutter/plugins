@@ -30,8 +30,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FlutterBackgroundExecutor implements MethodCallHandler {
   private static final String TAG = "FlutterBackgroundExecutor";
   private static final String CALLBACK_HANDLE_KEY = "callback_handle";
+
   @SuppressWarnings("deprecation")
-  private static io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback pluginRegistrantCallback;
+  private static io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback
+      pluginRegistrantCallback;
 
   /**
    * The {@link MethodChannel} that connects the Android side of this plugin with the background
@@ -52,7 +54,8 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
    * callbacks will not be able to utilize functionality from other plugins.
    */
   @SuppressWarnings("deprecation")
-  public static void setPluginRegistrant(io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback callback) {
+  public static void setPluginRegistrant(
+      io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback callback) {
     pluginRegistrantCallback = callback;
   }
 

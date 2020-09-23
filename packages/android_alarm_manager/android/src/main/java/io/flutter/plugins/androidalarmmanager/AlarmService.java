@@ -100,7 +100,8 @@ public class AlarmService extends JobIntentService {
    * plugins are registered automatically.
    */
   @SuppressWarnings("deprecation")
-  public static void setPluginRegistrant(io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback callback) {
+  public static void setPluginRegistrant(
+      io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback callback) {
     // Indirectly set in FlutterBackgroundExecutor for backwards compatibility.
     FlutterBackgroundExecutor.setPluginRegistrant(callback);
   }

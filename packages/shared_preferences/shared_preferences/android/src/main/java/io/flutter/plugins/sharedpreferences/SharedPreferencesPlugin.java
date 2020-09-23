@@ -14,7 +14,8 @@ public class SharedPreferencesPlugin implements FlutterPlugin {
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
   private MethodChannel channel;
 
-  @SuppressWarnings("deprecation") public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     final SharedPreferencesPlugin plugin = new SharedPreferencesPlugin();
     plugin.setupChannel(registrar.messenger(), registrar.context());
   }

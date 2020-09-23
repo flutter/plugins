@@ -29,7 +29,9 @@ public class ImagePickerPluginTest {
   @Rule public ExpectedException exception = ExpectedException.none();
 
   @SuppressWarnings("deprecation")
-  @Mock io.flutter.plugin.common.PluginRegistry.Registrar mockRegistrar;
+  @Mock
+  io.flutter.plugin.common.PluginRegistry.Registrar mockRegistrar;
+
   @Mock Activity mockActivity;
   @Mock Application mockApplication;
   @Mock ImagePickerDelegate mockImagePickerDelegate;

@@ -60,7 +60,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   private MethodChannel channel;
   private ActivityPluginBinding activityPluginBinding;
 
-  @SuppressWarnings("deprecation") public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     GoogleSignInPlugin instance = new GoogleSignInPlugin();
     instance.initInstance(registrar.messenger(), registrar.context(), new GoogleSignInWrapper());
     instance.setUpRegistrar(registrar);

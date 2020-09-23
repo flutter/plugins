@@ -7,7 +7,6 @@ package io.flutter.plugins.videoplayer;
 import android.content.Context;
 import android.util.Log;
 import android.util.LongSparseArray;
-import io.flutter.FlutterInjector;
 import io.flutter.embedding.engine.loader.FlutterLoader;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -56,7 +55,8 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    final FlutterLoader flutterLoader = FlutterInjector.instance().flutterLoader();
+    @SuppressWarnings("deprecation")
+    final FlutterLoader flutterLoader = FlutterLoader.getInstance();
     this.flutterState =
         new FlutterState(
             binding.getApplicationContext(),

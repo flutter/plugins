@@ -27,8 +27,8 @@ import org.json.JSONException;
  *   <li>The Dart side of this plugin sends the Android side a "AlarmService.start" message, along
  *       with a Dart callback handle for a Dart callback that should be immediately invoked by a
  *       background Dart isolate.
- *   <li>The Android side of this plugin spins up a background {@link FlutterEngine}, which
- *       includes a background Dart isolate.
+ *   <li>The Android side of this plugin spins up a background {@link FlutterEngine}, which includes
+ *       a background Dart isolate.
  *   <li>The Android side of this plugin instructs the new background Dart isolate to execute the
  *       callback that was received in the "AlarmService.start" message.
  *   <li>The Dart side of this plugin, running within the new background isolate, executes the
