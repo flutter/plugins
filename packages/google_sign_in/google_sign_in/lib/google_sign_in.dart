@@ -245,16 +245,18 @@ class GoogleSignIn {
     return _currentUser;
   }
 
-  Future<void> _ensureInitialized() {
-    return _initialization ??= GoogleSignInPlatform.instance.init(
-      signInOption: signInOption,
-      scopes: scopes,
-      hostedDomain: hostedDomain,
-      clientId: clientId,
-    )..catchError((dynamic _) {
-        // Invalidate initialization if it errors out.
-        _initialization = null;
-      });
+  Future<void> _ensureInitialized() async {
+    try {
+      return _initialization ??= GoogleSignInPlatform.instance.init(
+        signInOption: signInOption,
+        scopes: scopes,
+        hostedDomain: hostedDomain,
+        clientId: clientId,
+      );
+    } catch (_) {
+      // Invalidate initialization if it errors out.
+      _initialization = null;
+    }
   }
 
   /// The most recently scheduled method call.
@@ -354,12 +356,19 @@ class GoogleSignIn {
   /// a Future which resolves to the same user instance.
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
-  Future<GoogleSignInAccount> signIn() {
-    final Future<GoogleSignInAccount> result =
-        _addMethodCall(GoogleSignInPlatform.instance.signIn, canSkipCall: true);
-    bool isCanceled(dynamic error) =>
-        error is PlatformException && error.code == kSignInCanceledError;
-    return result.catchError((dynamic _) => null, test: isCanceled);
+  Future<GoogleSignInAccount> signIn() async {
+    try {
+      return await _addMethodCall(GoogleSignInPlatform.instance.signIn,
+          canSkipCall: true);
+    } catch (e) {
+      bool isCanceled(dynamic error) =>
+          error is PlatformException && error.code == kSignInCanceledError;
+
+      if (isCanceled(e)) {
+        return null;
+      }
+      rethrow;
+    }
   }
 
   /// Marks current user as being in the signed out state.
