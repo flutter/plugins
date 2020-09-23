@@ -197,19 +197,29 @@
 }
 
 - (void)finishTransaction:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (![call.arguments isKindOfClass:[NSString class]]) {
+  if (![call.arguments isKindOfClass:[NSDictionary class]]) {
     result([FlutterError errorWithCode:@"storekit_invalid_argument"
-                               message:@"Argument type of finishTransaction is not a string."
+                               message:@"Argument type of finishTransaction is not a Dictionary"
                                details:call.arguments]);
     return;
   }
-  NSString *transactionIdentifier = call.arguments;
+  NSDictionary *paymentMap = (NSDictionary *)call.arguments;
+  NSString *transactionIdentifier = [paymentMap objectForKey:@"transactionIdentifier"];
+  NSString *productIdentifier = [paymentMap objectForKey:@"productIdentifier"];
 
   NSArray<SKPaymentTransaction *> *pendingTransactions =
       [self.paymentQueueHandler getUnfinishedTransactions];
 
   for (SKPaymentTransaction *transaction in pendingTransactions) {
-    if ([transaction.transactionIdentifier isEqualToString:transactionIdentifier]) {
+    // If the user cancels the purchase dialog we won't have transactionIdentifier. So if it is null we compare the product identifier.
+    if ([transaction.transactionIdentifier isEqualToString:transactionIdentifier] ||
+        (
+         [transactionIdentifier isEqual:[NSNull null]] &&
+         transaction.transactionIdentifier == nil &&
+         [transaction.payment.productIdentifier isEqualToString:productIdentifier]
+         )
+        )
+      {
       @try {
         [self.paymentQueueHandler finishTransaction:transaction];
       } @catch (NSException *e) {
