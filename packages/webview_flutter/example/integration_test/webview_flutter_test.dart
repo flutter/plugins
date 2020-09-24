@@ -697,6 +697,7 @@ void main() {
       );
 
       expect(errorCompleter.future, doesNotComplete);
+      await Future.delayed(Duration(seconds: 5));
     });
 
     testWidgets(
