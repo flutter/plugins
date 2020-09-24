@@ -15,7 +15,6 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -42,7 +41,8 @@ public class GoogleMapsPlugin
 
   private static final String VIEW_TYPE = "plugins.flutter.io/google_maps";
 
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     if (registrar.activity() == null) {
       // When a background flutter view tries to register the plugin, the registrar has no activity.
       // We stop the registration process as this plugin is foreground only.

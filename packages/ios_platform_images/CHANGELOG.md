@@ -1,3 +1,7 @@
+## 0.1.2+3
+
+* Remove no-op android folder in the example app.
+
 ## 0.1.2+2
 
 * Post-v2 Android embedding cleanups.
