@@ -109,6 +109,11 @@ Future<bool> launch(
 
 /// Checks whether the specified URL can be handled by some app installed on the
 /// device.
+///
+/// On Android (from API 30), [canLaunch] will return `false` when the required
+/// visibility configuration is not provided in the AndroidManifest.xml file.
+/// For more information see the [Managing package visibility](https://developer.android.com/training/basics/intents/package-visibility)
+/// article in the Android docs.
 Future<bool> canLaunch(String urlString) async {
   if (urlString == null) {
     return false;
