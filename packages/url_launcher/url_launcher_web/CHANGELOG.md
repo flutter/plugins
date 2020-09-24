@@ -1,3 +1,16 @@
+# 0.1.4+1
+
+- Add a more correct attribution to `package:platform_detect` code.
+
+# 0.1.4
+
+- (Null safety) Remove dependency on `package:platform_detect`
+- Port unit tests to run with `flutter drive`
+
+# 0.1.3+2
+
+- Fix a typo in a test name and fix some style inconsistencies.
+
 # 0.1.3+1
 
 - Depend explicitly on the `platform_interface` package that adds the `webOnlyWindowName` parameter.

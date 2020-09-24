@@ -11,6 +11,7 @@ import 'package:meta/meta.dart';
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/method_channel_shared_preferences.dart';
+import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
@@ -31,10 +32,13 @@ class SharedPreferences {
       // Only do the initial registration if it hasn't already been overridden
       // with a non-default instance.
       if (!kIsWeb &&
-          Platform.isLinux &&
           SharedPreferencesStorePlatform.instance
               is MethodChannelSharedPreferencesStore) {
-        SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
+        if (Platform.isLinux) {
+          SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
+        } else if (Platform.isWindows) {
+          SharedPreferencesStorePlatform.instance = SharedPreferencesWindows();
+        }
       }
       _manualDartRegistrationNeeded = false;
     }
