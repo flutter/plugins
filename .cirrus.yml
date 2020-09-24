@@ -59,7 +59,7 @@ task:
         - ./chromedriver/chromedriver --port=4444 &
       test_script:
         - cd $INTEGRATION_TEST_PATH/example/
-        - flutter drive -v --driver=test_driver/integration_test_driver.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
+        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:

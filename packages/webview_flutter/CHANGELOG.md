@@ -22,6 +22,10 @@ class WebViewExample extends StatefulWidget {
 }
 ```
 
+## 0.3.24
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 0.3.23
 
 * Handle WebView multi-window support.
