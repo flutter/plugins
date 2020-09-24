@@ -36,7 +36,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   pedantic: ^1.8.0
-  pigeon: 0.1.5
+  pigeon: 0.1.7
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
