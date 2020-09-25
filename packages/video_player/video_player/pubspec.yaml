@@ -20,7 +20,7 @@ flutter:
 
 dependencies:
   meta: ^1.0.5
-  video_player_platform_interface: ^2.1.1
+  video_player_platform_interface: ^2.1.0
   # The design on https://flutter.dev/go/federated-plugins was to leave
   # this constraint as "any". We cannot do it right now as it fails pub publish
   # validation, so we set a ^ constraint.
