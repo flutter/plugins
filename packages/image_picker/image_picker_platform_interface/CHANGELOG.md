@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Update documentation of `pickImage()` regarding compression support for specific image types.
+
 ## 1.1.1
 
 * Update documentation of getImage() about Android's disability to preference front/rear camera.

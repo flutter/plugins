@@ -828,6 +828,108 @@ void main() {
     final String currentUrl = await controller.currentUrl();
     expect(currentUrl, 'about:blank');
   });
+
+  testWidgets(
+    'can open new window and go back',
+    (WidgetTester tester) async {
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final Completer<void> pageLoaded = Completer<void>();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            onPageFinished: (String url) {
+              pageLoaded.complete();
+            },
+            initialUrl: 'https://flutter.dev',
+          ),
+        ),
+      );
+      final WebViewController controller = await controllerCompleter.future;
+      await controller
+          .evaluateJavascript('window.open("https://www.google.com")');
+      await pageLoaded.future;
+      expect(controller.currentUrl(), completion('https://www.google.com/'));
+
+      await controller.goBack();
+      expect(controller.currentUrl(), completion('https://www.flutter.dev'));
+    },
+    skip: !Platform.isAndroid,
+  );
+
+  testWidgets(
+    'javascript does not run in parent window',
+    (WidgetTester tester) async {
+      final String iframe = '''
+        <!DOCTYPE html>
+        <script>
+          window.onload = () => {
+            window.open(`javascript:
+              var elem = document.createElement("p");
+              elem.innerHTML = "<b>Executed JS in parent origin: " + window.location.origin + "</b>";
+              document.body.append(elem);
+            `);
+          };
+        </script>
+      ''';
+      final String iframeTestBase64 =
+          base64Encode(const Utf8Encoder().convert(iframe));
+
+      final String openWindowTest = '''
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>XSS test</title>
+        </head>
+        <body>
+          <iframe
+            onload="window.iframeLoaded = true;"
+            src="data:text/html;charset=utf-8;base64,$iframeTestBase64"></iframe>
+        </body>
+        </html>
+      ''';
+      final String openWindowTestBase64 =
+          base64Encode(const Utf8Encoder().convert(openWindowTest));
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      final Completer<void> pageLoadCompleter = Completer<void>();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            initialUrl:
+                'data:text/html;charset=utf-8;base64,$openWindowTestBase64',
+            onPageFinished: (String url) {
+              pageLoadCompleter.complete();
+            },
+          ),
+        ),
+      );
+
+      final WebViewController controller = await controllerCompleter.future;
+      await pageLoadCompleter.future;
+
+      expect(controller.evaluateJavascript('iframeLoaded'), completion('true'));
+      expect(
+        controller.evaluateJavascript(
+            'document.querySelector("p") && document.querySelector("p").textContent'),
+        completion('null'),
+      );
+    },
+    skip: !Platform.isAndroid,
+  );
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.
