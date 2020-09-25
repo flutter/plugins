@@ -262,7 +262,14 @@ void main() {
       await controller.play();
 
       expect(controller.value.isPlaying, isTrue);
-      expect(fakeVideoPlayerPlatform.calls.last, 'play');
+
+      // The two last calls will be "play" and then "setPlaybackSpeed". The
+      // reason for this is that "play" calls "setPlaybackSpeed" internally.
+      expect(
+          fakeVideoPlayerPlatform
+              .calls[fakeVideoPlayerPlatform.calls.length - 2],
+          'play');
+      expect(fakeVideoPlayerPlatform.calls.last, 'setPlaybackSpeed');
     });
 
     test('setLooping', () async {
@@ -641,9 +648,9 @@ void main() {
   });
 }
 
-class FakeVideoPlayerPlatform extends VideoPlayerApiTest {
+class FakeVideoPlayerPlatform extends TestHostVideoPlayerApi {
   FakeVideoPlayerPlatform() {
-    VideoPlayerApiTestSetup(this);
+    TestHostVideoPlayerApi.setup(this);
   }
 
   Completer<bool> initialized = Completer<bool>();
