@@ -588,9 +588,9 @@ void main() {
   });
 }
 
-class FakeVideoPlayerPlatform extends VideoPlayerApiTest {
+class FakeVideoPlayerPlatform extends TestHostVideoPlayerApi {
   FakeVideoPlayerPlatform() {
-    VideoPlayerApiTestSetup(this);
+    TestHostVideoPlayerApi.setup(this);
   }
 
   Completer<bool> initialized = Completer<bool>();
@@ -655,6 +655,11 @@ class FakeVideoPlayerPlatform extends VideoPlayerApiTest {
   @override
   void setVolume(VolumeMessage arg) {
     calls.add('setVolume');
+  }
+
+  @override
+  void setPlaybackSpeed(PlaybackSpeedMessage arg) {
+    // todo: implement as part of completing https://github.com/flutter/plugins/pull/3031
   }
 
   @override

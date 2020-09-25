@@ -1,3 +1,8 @@
+## 0.10.12+5
+
+* Depend on `video_player_platform_interface` version that contains the new `TestHostVideoPlayerApi`
+  in order for tests to pass using the latest dependency.
+
 ## 0.10.12+4
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
