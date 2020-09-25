@@ -479,17 +479,17 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// different ranges for speed values. The [speed] must be greater than 0.
   ///
   /// The values will be handled as follows:
-  /// * On web, no exceptions will be thrown, however, different browser
-  ///   implementations will e.g. mute audio.
+  /// * On web, the audio will be muted at some speed when the browser
+  ///   determines that the sound would not be useful anymore. For example,
   ///   "Gecko mutes the sound outside the range `0.25` to `5.0`" (see https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/playbackRate).
+  /// * On Android, some very extreme speeds will not be played back accurately.
+  ///   Instead, your video will still be played back, but the speed will be
+  ///   clamped by ExoPlayer (but the values are allowed by the player, like on
+  ///   web).
   /// * On iOS, you can sometimes not go above `2.0` playback speed on a video.
   ///   An error will be thrown for if the option is unsupported. It is also
   ///   possible that your specific video cannot be slowed down, in which case
   ///   the plugin also reports errors.
-  /// * On Android, the handling is similar to web, where the plugin will not
-  ///   report any errors, however, you cannot expect support for all speed
-  ///   values. In that case, your video will still be played back, but the
-  ///   speed will be clamped by ExoPlayer.
   Future<void> setPlaybackSpeed(double speed) async {
     if (speed < 0) {
       throw ArgumentError.value(

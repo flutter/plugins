@@ -143,9 +143,6 @@ the rate of playback for your video.
 For example, when given a value of `2.0`, your video will play at 2x the regular playback speed
 and so on.
 
-On web, the audio will be muted at some speeds (when the browser determines the sound would not be
-useful anymore, e.g. `speed < 0.25` or `speed > 5`). On Android, some very extreme speeds will not
-be played back accurately, but the video will still be played back at a capped speed. And on iOS, 
-speeds greater than `2.0` are not always supported, however, the plugin will throw an error for that.
+To learn about playback speed limitations, see the [`setPlaybackSpeed` method documentation](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setPlaybackSpeed.html).
 
 Furthermore, see the example app for an example playback speed implementation.
