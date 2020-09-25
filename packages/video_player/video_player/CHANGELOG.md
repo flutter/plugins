@@ -1,6 +1,7 @@
 ## 0.10.12+5
 
-* Locked `video_player_platform_interface` to version `2.1.1` for test to succeed.
+* Depend on `video_player_platform_interface` version that contains the new `TestHostVideoPlayerApi`
+  in order for tests to pass using the latest dependency.
 
 ## 0.10.12+4
 
