@@ -1,7 +1,11 @@
-## 1.0.6
+## 1.0.7
 
 * Android: Add BATTERY_STATUS_NOT_CHARGING status.
 * Android: Handle deprecation & unchecked warning as error.
+
+## 1.0.6
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
 
 ## 1.0.5
 
