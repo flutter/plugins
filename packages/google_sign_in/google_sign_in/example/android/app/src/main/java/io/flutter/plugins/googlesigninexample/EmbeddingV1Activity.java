@@ -5,11 +5,11 @@
 package io.flutter.plugins.googlesigninexample;
 
 import android.os.Bundle;
-import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.googlesignin.GoogleSignInPlugin;
 import io.flutter.view.FlutterMain;
 
-public class EmbeddingV1Activity extends FlutterActivity {
+@SuppressWarnings("deprecation")
+public class EmbeddingV1Activity extends io.flutter.app.FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     FlutterMain.startInitialization(this);
