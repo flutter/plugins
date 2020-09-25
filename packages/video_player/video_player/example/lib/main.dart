@@ -307,16 +307,31 @@ class _ControlsOverlay extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.topRight,
-          child: FlatButton(
-            onPressed: () {
-              final currentIndex = _examplePlaybackRates
-                      .indexOf(controller.value.playbackSpeed),
-                  nextIndex = (currentIndex + 1) % _examplePlaybackRates.length;
-
-              // Go through all provided example playback rates.
-              controller.setPlaybackSpeed(_examplePlaybackRates[nextIndex]);
+          child: PopupMenuButton<double>(
+            initialValue: controller.value.playbackSpeed,
+            tooltip: 'Playback speed',
+            onSelected: (speed) {
+              controller.setPlaybackSpeed(speed);
             },
-            child: Text('${controller.value.playbackSpeed}x'),
+            itemBuilder: (context) {
+              return [
+                for (final speed in _examplePlaybackRates)
+                  PopupMenuItem(
+                    value: speed,
+                    child: Text('${speed}x'),
+                  )
+              ];
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                // Using less vertical padding as the text is also longer
+                // horizontally, so it feels like it would need more spacing
+                // horizontally (matching the aspect ratio of the video).
+                vertical: 12,
+                horizontal: 16,
+              ),
+              child: Text('${controller.value.playbackSpeed}x'),
+            ),
           ),
         ),
       ],

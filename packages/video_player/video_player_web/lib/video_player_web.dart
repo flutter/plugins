@@ -121,7 +121,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 
   @override
   Future<void> setPlaybackSpeed(int textureId, double speed) async {
-    assert(speed >= 0);
+    assert(speed > 0);
 
     return _videoPlayers[textureId].setPlaybackSpeed(speed);
   }
@@ -240,7 +240,7 @@ class _VideoPlayer {
   }
 
   void setPlaybackSpeed(double speed) {
-    assert(speed >= 0);
+    assert(speed > 0);
 
     videoElement.playbackRate = speed;
   }

@@ -297,7 +297,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           initializingCompleter.complete(null);
           _applyLooping();
           _applyVolume();
-          _applyPlaybackSpeed();
           _applyPlayPause();
           break;
         case VideoEventType.completed:
@@ -477,7 +476,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Sets the playback speed of [this].
   ///
   /// [speed] indicates a speed value with different platforms accepting
-  /// different ranges for speed values (that must not be negative).
+  /// different ranges for speed values. The [speed] must be greater than 0.
+  ///
   /// The values will be handled as follows:
   /// * On web, no exceptions will be thrown, however, different browser
   ///   implementations will e.g. mute audio.
@@ -488,12 +488,18 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///   the plugin also reports errors.
   /// * On Android, the handling is similar to web, where the plugin will not
   ///   report any errors, however, you cannot expect support for all speed
-  ///   values (even though it should go way above `2.0`).
+  ///   values. In that case, your video will still be played back, but the
+  ///   speed will be clamped by ExoPlayer.
   Future<void> setPlaybackSpeed(double speed) async {
     if (speed < 0) {
       throw ArgumentError.value(
         speed,
         'Negative playback speeds are generally unsupported.',
+      );
+    } else if (speed == 0) {
+      throw ArgumentError.value(
+        speed,
+        'Zero playback speed is generally unsupported. Consider using [pause].',
       );
     }
 
