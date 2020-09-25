@@ -1,3 +1,11 @@
+## 0.6.5+2
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.6.5+1
+
+* Avoiding uses unchecked or unsafe Object Type Casting
+
 ## 0.6.5
 
 * Added support for sharing files
