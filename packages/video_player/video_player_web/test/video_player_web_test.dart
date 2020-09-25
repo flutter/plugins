@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 @TestOn('browser')
-
 import 'dart:async';
 
 import 'package:flutter/services.dart';
@@ -107,6 +106,13 @@ void main() {
 
     test('can set volume', () {
       expect(VideoPlayerPlatform.instance.setVolume(textureId, 0.8), completes);
+    });
+
+    test('can set playback speed', () {
+      expect(
+        VideoPlayerPlatform.instance.setPlaybackSpeed(textureId, 2.0),
+        completes,
+      );
     });
 
     test('can seek to position', () {
