@@ -253,7 +253,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                   VideoPlayer(_controller),
                   ClosedCaption(text: _controller.value.caption.text),
                   _PlayPauseOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller, allowScrubbing: false),
+                  VideoProgressIndicator(_controller, allowScrubbing: true),
                 ],
               ),
             ),
