@@ -1,3 +1,7 @@
+## 0.10.12+5
+
+* Locked `video_player_platform_interface` to version `2.1.1` for test to succeed.
+
 ## 0.10.12+4
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
