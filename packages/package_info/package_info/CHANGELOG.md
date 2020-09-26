@@ -1,3 +1,7 @@
+## 0.4.4
+
+* Moved everything from package_info to package_info/package_info.
+
 ## 0.4.3
 
 * Update package:e2e -> package:integration_test
