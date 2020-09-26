@@ -29,7 +29,10 @@ dependencies:
   # https://github.com/flutter/flutter/issues/46264
   video_player_web:
     # todo(creativecreatorormaybenot): use '>=0.1.4 <2.0.0' web dependency
-    path: ../video_player_web
+    git:
+      url: https://github.com/flutter/plugins
+      path: packages/video_player/video_player_web
+      ref: 0ff58344b2acfd907702f04e3e27e48f4a4ca73d
 
   flutter:
     sdk: flutter
