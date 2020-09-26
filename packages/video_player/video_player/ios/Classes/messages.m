@@ -59,9 +59,9 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
   return result;
 }
 - (NSDictionary *)toMap {
-  return
-      [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]),
-                                                 @"textureId", nil];
+  return [NSDictionary
+      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]),
+                                   @"textureId", nil];
 }
 @end
 
@@ -112,9 +112,10 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
 }
 - (NSDictionary *)toMap {
   return [NSDictionary
-      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]), @"textureId",
-                                   (self.isLooping != nil ? self.isLooping : [NSNull null]), @"isLooping",
-                                   nil];
+      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]),
+                                   @"textureId",
+                                   (self.isLooping != nil ? self.isLooping : [NSNull null]),
+                                   @"isLooping", nil];
 }
 @end
 
@@ -133,8 +134,9 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
 }
 - (NSDictionary *)toMap {
   return [NSDictionary
-      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]), @"textureId",
-                                   (self.volume != nil ? self.volume : [NSNull null]), @"volume", nil];
+      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]),
+                                   @"textureId", (self.volume != nil ? self.volume : [NSNull null]),
+                                   @"volume", nil];
 }
 @end
 
@@ -153,8 +155,9 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
 }
 - (NSDictionary *)toMap {
   return [NSDictionary
-      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]), @"textureId",
-                                   (self.speed != nil ? self.speed : [NSNull null]), @"speed", nil];
+      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]),
+                                   @"textureId", (self.speed != nil ? self.speed : [NSNull null]),
+                                   @"speed", nil];
 }
 @end
 
@@ -173,9 +176,10 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
 }
 - (NSDictionary *)toMap {
   return [NSDictionary
-      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]), @"textureId",
-                                   (self.position != nil ? self.position : [NSNull null]), @"position",
-                                   nil];
+      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]),
+                                   @"textureId",
+                                   (self.position != nil ? self.position : [NSNull null]),
+                                   @"position", nil];
 }
 @end
 
