@@ -7,5 +7,8 @@ enum BatteryState {
   charging,
 
   /// The battery is currently losing energy.
-  discharging
+  discharging,
+
+  /// The battery is currently not charging.
+  not_charging,
 }

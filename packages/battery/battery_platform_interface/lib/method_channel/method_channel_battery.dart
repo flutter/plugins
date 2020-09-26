@@ -45,6 +45,8 @@ BatteryState _parseBatteryState(String state) {
       return BatteryState.charging;
     case 'discharging':
       return BatteryState.discharging;
+    case 'not_charging':
+      return BatteryState.not_charging;
     default:
       throw ArgumentError('$state is not a valid BatteryState.');
   }
