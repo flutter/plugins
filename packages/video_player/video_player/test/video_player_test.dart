@@ -4,12 +4,13 @@
 
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:video_player/video_player.dart';
 import 'package:video_player_platform_interface/messages.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
@@ -27,23 +28,34 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   String get dataSource => '';
+
   @override
   DataSourceType get dataSourceType => DataSourceType.file;
+
   @override
   String get package => null;
+
   @override
   Future<Duration> get position async => value.position;
 
   @override
   Future<void> seekTo(Duration moment) async {}
+
   @override
   Future<void> setVolume(double volume) async {}
+
+  @override
+  Future<void> setPlaybackSpeed(double speed) async {}
+
   @override
   Future<void> initialize() async {}
+
   @override
   Future<void> pause() async {}
+
   @override
   Future<void> play() async {}
+
   @override
   Future<void> setLooping(bool looping) async {}
 
@@ -250,7 +262,14 @@ void main() {
       await controller.play();
 
       expect(controller.value.isPlaying, isTrue);
-      expect(fakeVideoPlayerPlatform.calls.last, 'play');
+
+      // The two last calls will be "play" and then "setPlaybackSpeed". The
+      // reason for this is that "play" calls "setPlaybackSpeed" internally.
+      expect(
+          fakeVideoPlayerPlatform
+              .calls[fakeVideoPlayerPlatform.calls.length - 2],
+          'play');
+      expect(fakeVideoPlayerPlatform.calls.last, 'setPlaybackSpeed');
     });
 
     test('setLooping', () async {
@@ -332,6 +351,31 @@ void main() {
 
         await controller.setVolume(11);
         expect(controller.value.volume, 1.0);
+      });
+    });
+
+    group('setPlaybackSpeed', () {
+      test('works', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        expect(controller.value.playbackSpeed, 1.0);
+
+        const double speed = 1.5;
+        await controller.setPlaybackSpeed(speed);
+
+        expect(controller.value.playbackSpeed, speed);
+      });
+
+      test('rejects negative values', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        expect(controller.value.playbackSpeed, 1.0);
+
+        expect(() => controller.setPlaybackSpeed(-1), throwsArgumentError);
       });
     });
 
@@ -458,6 +502,7 @@ void main() {
       expect(uninitialized.isLooping, isFalse);
       expect(uninitialized.isBuffering, isFalse);
       expect(uninitialized.volume, 1.0);
+      expect(uninitialized.playbackSpeed, 1.0);
       expect(uninitialized.errorDescription, isNull);
       expect(uninitialized.size, isNull);
       expect(uninitialized.size, isNull);
@@ -478,6 +523,7 @@ void main() {
       expect(error.isLooping, isFalse);
       expect(error.isBuffering, isFalse);
       expect(error.volume, 1.0);
+      expect(error.playbackSpeed, 1.0);
       expect(error.errorDescription, errorMessage);
       expect(error.size, isNull);
       expect(error.size, isNull);
@@ -498,20 +544,34 @@ void main() {
       const bool isLooping = true;
       const bool isBuffering = true;
       const double volume = 0.5;
+      const double playbackSpeed = 1.5;
 
       final VideoPlayerValue value = VideoPlayerValue(
-          duration: duration,
-          size: size,
-          position: position,
-          caption: caption,
-          buffered: buffered,
-          isPlaying: isPlaying,
-          isLooping: isLooping,
-          isBuffering: isBuffering,
-          volume: volume);
+        duration: duration,
+        size: size,
+        position: position,
+        caption: caption,
+        buffered: buffered,
+        isPlaying: isPlaying,
+        isLooping: isLooping,
+        isBuffering: isBuffering,
+        volume: volume,
+        playbackSpeed: playbackSpeed,
+      );
 
-      expect(value.toString(),
-          'VideoPlayerValue(duration: 0:00:05.000000, size: Size(400.0, 300.0), position: 0:00:01.000000, caption: Instance of \'Caption\', buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], isPlaying: true, isLooping: true, isBuffering: truevolume: 0.5, errorDescription: null)');
+      expect(
+          value.toString(),
+          'VideoPlayerValue(duration: 0:00:05.000000, '
+          'size: Size(400.0, 300.0), '
+          'position: 0:00:01.000000, '
+          'caption: Instance of \'Caption\', '
+          'buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], '
+          'isPlaying: true, '
+          'isLooping: true, '
+          'isBuffering: true, '
+          'volume: 0.5, '
+          'playbackSpeed: 1.5, '
+          'errorDescription: null)');
     });
 
     test('copyWith()', () {
@@ -659,7 +719,7 @@ class FakeVideoPlayerPlatform extends TestHostVideoPlayerApi {
 
   @override
   void setPlaybackSpeed(PlaybackSpeedMessage arg) {
-    // todo: implement as part of completing https://github.com/flutter/plugins/pull/3031
+    calls.add('setPlaybackSpeed');
   }
 
   @override
