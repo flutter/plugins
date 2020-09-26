@@ -10,5 +10,5 @@ enum BatteryState {
   discharging,
 
   /// The battery is currently not charging.
-  not_charging,
+  not_charging
 }
