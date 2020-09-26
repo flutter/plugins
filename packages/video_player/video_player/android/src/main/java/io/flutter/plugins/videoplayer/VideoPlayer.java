@@ -11,6 +11,7 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -231,6 +232,14 @@ final class VideoPlayer {
   void setVolume(double value) {
     float bracketedValue = (float) Math.max(0.0, Math.min(1.0, value));
     exoPlayer.setVolume(bracketedValue);
+  }
+
+  void setPlaybackSpeed(double value) {
+    // We do not need to consider pitch and skipSilence for now as we do not handle them and
+    // therefore never diverge from the default values.
+    final PlaybackParameters playbackParameters = new PlaybackParameters(((float) value));
+
+    exoPlayer.setPlaybackParameters(playbackParameters);
   }
 
   void seekTo(int location) {
