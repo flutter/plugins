@@ -1,3 +1,8 @@
+## 0.11.0
+
+* Added option to set the video playback speed on the video controller.
+* **Minor breaking change**: fixed `VideoPlayerValue.toString` to insert a comma after `isBuffering`.
+
 ## 0.10.12+5
 
 * Depend on `video_player_platform_interface` version that contains the new `TestHostVideoPlayerApi`

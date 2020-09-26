@@ -14,6 +14,7 @@ import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugins.videoplayer.Messages.CreateMessage;
 import io.flutter.plugins.videoplayer.Messages.LoopingMessage;
 import io.flutter.plugins.videoplayer.Messages.MixWithOthersMessage;
+import io.flutter.plugins.videoplayer.Messages.PlaybackSpeedMessage;
 import io.flutter.plugins.videoplayer.Messages.PositionMessage;
 import io.flutter.plugins.videoplayer.Messages.TextureMessage;
 import io.flutter.plugins.videoplayer.Messages.VideoPlayerApi;
@@ -152,6 +153,11 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
   public void setVolume(VolumeMessage arg) {
     VideoPlayer player = videoPlayers.get(arg.getTextureId());
     player.setVolume(arg.getVolume());
+  }
+
+  public void setPlaybackSpeed(PlaybackSpeedMessage arg) {
+    VideoPlayer player = videoPlayers.get(arg.getTextureId());
+    player.setPlaybackSpeed(arg.getSpeed());
   }
 
   public void play(TextureMessage arg) {
