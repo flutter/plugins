@@ -79,7 +79,8 @@ class PurchaseParam {
   PurchaseParam(
       {@required this.productDetails,
       this.applicationUserName,
-      this.sandboxTesting});
+      this.sandboxTesting = false})
+      : assert(sandboxTesting != null);
 
   /// The product to create payment for.
   ///
