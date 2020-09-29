@@ -1,10 +1,46 @@
-## 0.4.0
+## 1.0.0
 
-* Add support for building `WebView` widget with Android hybrid views. To use this feature, set
-  `WebView.platform` to an instance of `SurfaceAndroidWebView`. For example:
+We are happy to announce that the WebView plugin is now *ready* for production 🎉.
+This means that we have addressed the top issues filed by the community since the first release of the plugin.
+
+### Android
+
+* 🎹  We fixed all known keyboard, and accessibility issues:
+https://github.com/flutter/flutter/issues/19418,
+https://github.com/flutter/flutter/issues/41089,
+https://github.com/flutter/flutter/issues/50716,
+https://github.com/flutter/flutter/issues/36478,
+https://github.com/flutter/flutter/issues/52211,
+https://github.com/flutter/flutter/issues/37989,
+https://github.com/flutter/flutter/issues/51254,
+https://github.com/flutter/flutter/issues/50716,
+https://github.com/flutter/flutter/issues/51915,
+https://github.com/flutter/flutter/issues/55724,
+https://github.com/flutter/flutter/issues/56513,
+https://github.com/flutter/flutter/issues/56515,
+https://github.com/flutter/flutter/issues/61085,
+https://github.com/flutter/flutter/issues/62205,
+https://github.com/flutter/flutter/issues/62547,
+https://github.com/flutter/flutter/issues/58943,
+https://github.com/flutter/flutter/issues/56361,
+https://github.com/flutter/flutter/issues/42902,
+https://github.com/flutter/flutter/issues/40716,
+https://github.com/flutter/flutter/issues/39880,
+https://github.com/flutter/flutter/issues/37989,
+https://github.com/flutter/flutter/issues/27924.
+
+* ✅ Text selection: https://github.com/flutter/flutter/issues/24585, https://github.com/flutter/flutter/issues/24584.
+
+* 🌎 API level: `WebView` just requires API level 19 (It used to be 20): https://github.com/flutter/flutter/issues/23728.
+
+* ⚡️ Performance: https://github.com/flutter/flutter/issues/61280, https://github.com/flutter/flutter/issues/31243.
+
+To get these fixes, set `WebView.platform = SurfaceAndroidWebView();` in `initState()`. For example:
 
 ```dart
 import 'dart:io';
+
+import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewExample extends StatefulWidget {
   @override
@@ -21,6 +57,14 @@ class WebViewExample extends StatefulWidget {
   }
 }
 ```
+
+### iOS
+
+* 📱 It's no longer required to add the `io.flutter.embedded_views_preview` to `Info.plist` since
+platform views are enabled by default: https://github.com/flutter/flutter/issues/57067.
+In previous versions, importing `WebView` required an expensive thread configuration even before the
+`WebView` was rendered. In 1.0.0, this thread configuration only takes place when the `WebView` is
+rendered.
 
 ## 0.3.24
 
