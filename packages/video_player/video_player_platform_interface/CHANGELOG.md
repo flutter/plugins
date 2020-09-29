@@ -1,3 +1,7 @@
+## 2.2.0
+
+* Added option to set the video playback speed on the video controller.
+
 ## 2.1.1
 
 * Fix mixWithOthers test channel.
