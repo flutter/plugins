@@ -1,3 +1,11 @@
+## 0.9.1
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.9.0
+
+* Add screenshot capability to web tests.
+
 ## 0.8.2
 
 * Add support to get timeline.

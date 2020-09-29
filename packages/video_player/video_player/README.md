@@ -127,3 +127,22 @@ class _VideoAppState extends State<VideoApp> {
   }
 }
 ```
+
+## Usage
+
+The following section contains usage information that goes beyond what is included in the
+documentation in order to give a more elaborate overview of the API.
+
+This is not complete as of now. You can contribute to this section by [opening a pull request](https://github.com/flutter/plugins/pulls).
+
+### Playback speed
+
+You can set the playback speed on your `_controller` (instance of `VideoPlayerController`) by
+calling `_controller.setPlaybackSpeed`. `setPlaybackSpeed` takes a `double` speed value indicating 
+the rate of playback for your video.  
+For example, when given a value of `2.0`, your video will play at 2x the regular playback speed
+and so on.
+
+To learn about playback speed limitations, see the [`setPlaybackSpeed` method documentation](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setPlaybackSpeed.html).
+
+Furthermore, see the example app for an example playback speed implementation.

@@ -180,7 +180,7 @@
   payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
   if (@available(iOS 8.3, *)) {
     payment.simulatesAskToBuyInSandbox =
-        [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
+        [[paymentMap objectForKey:@"simulatesAskToBuyInSandbox"] boolValue];
   }
 
   if (![self.paymentQueueHandler addPayment:payment]) {
@@ -203,31 +203,24 @@
                                details:call.arguments]);
     return;
   }
-  NSString *identifier = call.arguments;
-  SKPaymentTransaction *transaction =
-      [self.paymentQueueHandler.transactions objectForKey:identifier];
-  if (!transaction) {
-    result([FlutterError
-        errorWithCode:@"storekit_platform_invalid_transaction"
-              message:[NSString
-                          stringWithFormat:@"The transaction with transactionIdentifer:%@ does not "
-                                           @"exist. Note that if the transactionState is "
-                                           @"purchasing, the transactionIdentifier will be "
-                                           @"nil(null).",
-                                           transaction.transactionIdentifier]
-              details:call.arguments]);
-    return;
+  NSString *transactionIdentifier = call.arguments;
+
+  NSArray<SKPaymentTransaction *> *pendingTransactions =
+      [self.paymentQueueHandler getUnfinishedTransactions];
+
+  for (SKPaymentTransaction *transaction in pendingTransactions) {
+    if ([transaction.transactionIdentifier isEqualToString:transactionIdentifier]) {
+      @try {
+        [self.paymentQueueHandler finishTransaction:transaction];
+      } @catch (NSException *e) {
+        result([FlutterError errorWithCode:@"storekit_finish_transaction_exception"
+                                   message:e.name
+                                   details:e.description]);
+        return;
+      }
+    }
   }
-  @try {
-    // finish transaction will throw exception if the transaction type is purchasing. Notify dart
-    // about this exception.
-    [self.paymentQueueHandler finishTransaction:transaction];
-  } @catch (NSException *e) {
-    result([FlutterError errorWithCode:@"storekit_finish_transaction_exception"
-                               message:e.name
-                               details:e.description]);
-    return;
-  }
+
   result(nil);
 }
 
@@ -240,6 +233,7 @@
     return;
   }
   [self.paymentQueueHandler restoreTransactions:call.arguments];
+  result(nil);
 }
 
 - (void)retrieveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {
