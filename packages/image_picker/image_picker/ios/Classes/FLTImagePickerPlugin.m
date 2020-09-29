@@ -76,6 +76,7 @@ static const int SOURCE_GALLERY = 1;
     _arguments = call.arguments;
 
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
+    BOOL usePhaAsset = [[_arguments objectForKey:@"iosPhaAsset"] boolValue];
 
     switch (imageSource) {
       case SOURCE_CAMERA: {
@@ -86,7 +87,11 @@ static const int SOURCE_GALLERY = 1;
         break;
       }
       case SOURCE_GALLERY:
-        [self checkPhotoAuthorization];
+        if (usePhaAsset) {
+          [self checkPhotoAuthorization];
+          break;
+        }
+        [self showPhotoLibrary];
         break;
       default:
         result([FlutterError errorWithCode:@"invalid_source"
@@ -108,6 +113,7 @@ static const int SOURCE_GALLERY = 1;
     _arguments = call.arguments;
 
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
+    BOOL usePhaAsset = [[_arguments objectForKey:@"iosPhaAsset"] boolValue];
     if ([[_arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
       NSTimeInterval max = [[_arguments objectForKey:@"maxDuration"] doubleValue];
       _imagePickerController.videoMaximumDuration = max;
@@ -118,7 +124,11 @@ static const int SOURCE_GALLERY = 1;
         [self checkCameraAuthorization];
         break;
       case SOURCE_GALLERY:
-        [self checkPhotoAuthorization];
+        if (usePhaAsset) {
+          [self checkPhotoAuthorization];
+          break;
+        }
+        [self showPhotoLibrary];
         break;
       default:
         result([FlutterError errorWithCode:@"invalid_source"
@@ -299,6 +309,7 @@ static const int SOURCE_GALLERY = 1;
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
     NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
+    BOOL usePhaAsset = [[_arguments objectForKey:@"iosPhaAsset"] boolValue];
 
     if (![imageQuality isKindOfClass:[NSNumber class]]) {
       imageQuality = @1;
@@ -312,7 +323,10 @@ static const int SOURCE_GALLERY = 1;
       image = [FLTImagePickerImageUtil scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
     }
 
-    PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+    PHAsset *originalAsset;
+    if (usePhaAsset) {
+      originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+    }
     if (!originalAsset) {
       // Image picked without an original asset (e.g. User took a photo directly)
       [self saveImageWithPickerInfo:info image:image imageQuality:imageQuality];

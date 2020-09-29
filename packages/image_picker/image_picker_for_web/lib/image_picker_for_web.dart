@@ -36,6 +36,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double maxWidth,
     double maxHeight,
     int imageQuality,
+    bool iosPhaAsset = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     String capture = computeCaptureAttribute(source, preferredCameraDevice);

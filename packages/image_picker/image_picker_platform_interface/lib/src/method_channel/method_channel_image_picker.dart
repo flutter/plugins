@@ -25,6 +25,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double maxWidth,
     double maxHeight,
     int imageQuality,
+    bool iosPhaAsset = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
     String path = await pickImagePath(
@@ -32,6 +33,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
+      iosPhaAsset: iosPhaAsset,
       preferredCameraDevice: preferredCameraDevice,
     );
     return path != null ? PickedFile(path) : null;
@@ -43,6 +45,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double maxWidth,
     double maxHeight,
     int imageQuality,
+    bool iosPhaAsset = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     assert(source != null);
@@ -66,6 +69,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
         'imageQuality': imageQuality,
+        'iosPhaAsset': iosPhaAsset,
         'cameraDevice': preferredCameraDevice.index
       },
     );

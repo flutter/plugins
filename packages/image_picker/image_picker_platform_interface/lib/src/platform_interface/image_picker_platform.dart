@@ -54,6 +54,8 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// image types such as JPEG and on Android PNG and WebP, too. If compression is not supported for the image that is picked,
   /// a warning message will be logged.
   ///
+  /// Set `iosPhaAsset` to `false` to disable `PHAAsset` and related permissions requirements on iOS.
+  ///
   /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
   /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
   /// Defaults to [CameraDevice.rear].
@@ -66,6 +68,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     double maxWidth,
     double maxHeight,
     int imageQuality,
+    bool iosPhaAsset = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     throw UnimplementedError('legacyPickImage() has not been implemented.');
@@ -130,6 +133,8 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// image types such as JPEG. If compression is not supported for the image that is picked,
   /// an warning message will be logged.
   ///
+  /// Set `iosPhaAsset` to `false` to disable `PHAAsset` and related permissions requirements on iOS.
+  ///
   /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
   /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
   /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
@@ -143,6 +148,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     double maxWidth,
     double maxHeight,
     int imageQuality,
+    bool iosPhaAsset = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     throw UnimplementedError('pickImage() has not been implemented.');
