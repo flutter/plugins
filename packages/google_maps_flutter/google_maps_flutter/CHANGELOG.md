@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Bump the minimal Flutter SDK to 1.22 where platform views is out of developers preview.
+
 ## 0.5.33
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
