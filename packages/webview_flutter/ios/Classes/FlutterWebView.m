@@ -408,6 +408,7 @@
   }
   NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
   [request setAllHTTPHeaderFields:headers];
+  _navigationDelegate.latestLoadRequestURL = request.URL;
   [_webView loadRequest:request];
   return true;
 }

@@ -28,6 +28,10 @@
   if (!self.hasDartNavigationDelegate) {
     decisionHandler(WKNavigationActionPolicyAllow);
     return;
+  } else if ([[_latestLoadRequestURL URLByAppendingPathComponent:@""] isEqual:navigationAction.request.URL]) {
+    decisionHandler(WKNavigationActionPolicyAllow);
+    _latestLoadRequestURL = nil;
+    return;
   }
   NSDictionary *arguments = @{
     @"url" : navigationAction.request.URL.absoluteString,

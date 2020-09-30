@@ -8,7 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTWKNavigationDelegate : NSObject <WKNavigationDelegate>
-
+@property NSURL *latestLoadRequestURL;
 - (instancetype)initWithChannel:(FlutterMethodChannel*)channel;
 
 /**
