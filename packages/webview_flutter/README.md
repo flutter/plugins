@@ -7,24 +7,29 @@ A Flutter plugin that provides a WebView widget.
 On iOS the WebView widget is backed by a [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview);
 On Android the WebView widget is backed by a [WebView](https://developer.android.com/reference/android/webkit/WebView).
 
-**The WebView plugin has reached [1.0.0](/link-to-release-notes), and it's now *ready* for production.**
-
 ## Usage
 Add `webview_flutter` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
-See the [WebView](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebView-class.html)
+You can now include a WebView widget in your widget tree. See the
+[WebView](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebView-class.html)
 widget's Dartdoc for more details on how to use the widget.
 
-### Android
 
-There are two implementations of the underlying primitive called [Platform Views](https://flutter.dev/docs/development/platform-integration/platform-views).
 
-Prior to 1.0.0, WebView only used an Android [VirtualDisplay](https://github.com/flutter/flutter/wiki/Android-Platform-Views#the-approach).
-While this implementation provides the best average rendering performance, it introduced [keyboard and accesibility issues](https://github.com/flutter/flutter/wiki/Android-Platform-Views#associated-problems-and-workarounds)
-that were hard to fix. In 1.0.0, the WebView also uses [Hybrid composition](https://github.com/flutter/flutter/wiki/Hybrid-Composition#android),
-which enables the WebView to be embedded in the Android view hierarchy.
+## Android Platform Views
+The WebView is relying on
+[Platform Views](https://flutter.dev/docs/development/platform-integration/platform-views) to embed
+the Android’s webview within the Flutter app. By default a Virtual Display based platform view
+backend is used, this implementation has multiple
+[keyboard](https://github.com/flutter/flutter/issues?q=is%3Aopen+label%3Avd-only+label%3A%22p%3A+webview-keyboard%22).
+When keyboard input is required we recommend using the Hybrid Composition based platform views
+implementation. Note that on Android versions prior to Android 10 Hybrid Composition has some
+[performance drawbacks](https://flutter.dev/docs/development/platform-integration/platform-views#performance).
 
-To enable hybrid composition, set `WebView.platform = SurfaceAndroidWebView();` in `initState()`. For example:
+### Using Hybrid Composition
+
+To enable hybrid composition, set `WebView.platform = SurfaceAndroidWebView();` in `initState()`.
+For example:
 
 ```dart
 import 'dart:io';
@@ -46,8 +51,6 @@ class WebViewExample extends StatefulWidget {
   }
 }
 ```
-
-Prior to Android 10, Hybrid composition performs a device-host-device copy of the Flutter texture. In general, reducing Flutter animations while the WebView is rendered helps improve performance. However, we recommend testing your app with the devices and Android versions typically used by your users.
 
 `SurfaceAndroidWebView()` requires [API level 19](https://developer.android.com/studio/releases/platforms?hl=th#4.4). The plugin itself doesn't enforce the API level, so if you want to make the app available on devices running this API level or above, add the following to `<your-app>/android/app/build.gradle`:
 

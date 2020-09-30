@@ -1,70 +1,16 @@
-## 1.0.0
+## 1.0.0 - Out of developer preview 🎉.
 
-We are happy to announce that the WebView plugin is now *ready* for production 🎉.
-This means that we have addressed the top issues filed by the community since the first release of the plugin.
+* Bumped the minimal Flutter SDK to 1.22 where platform views are out of developer preview, and
+performing better on iOS. Flutter 1.22 no longer requires adding the
+`io.flutter.embedded_views_preview` flag to `Info.plist`.
 
-### Android
-
-* 🎹  We fixed all known keyboard, and accessibility issues:
-https://github.com/flutter/flutter/issues/19418,
-https://github.com/flutter/flutter/issues/41089,
-https://github.com/flutter/flutter/issues/50716,
-https://github.com/flutter/flutter/issues/36478,
-https://github.com/flutter/flutter/issues/52211,
-https://github.com/flutter/flutter/issues/37989,
-https://github.com/flutter/flutter/issues/51254,
-https://github.com/flutter/flutter/issues/50716,
-https://github.com/flutter/flutter/issues/51915,
-https://github.com/flutter/flutter/issues/55724,
-https://github.com/flutter/flutter/issues/56513,
-https://github.com/flutter/flutter/issues/56515,
-https://github.com/flutter/flutter/issues/61085,
-https://github.com/flutter/flutter/issues/62205,
-https://github.com/flutter/flutter/issues/62547,
-https://github.com/flutter/flutter/issues/58943,
-https://github.com/flutter/flutter/issues/56361,
-https://github.com/flutter/flutter/issues/42902,
-https://github.com/flutter/flutter/issues/40716,
-https://github.com/flutter/flutter/issues/39880,
-https://github.com/flutter/flutter/issues/37989,
-https://github.com/flutter/flutter/issues/27924.
-
-* ✅ Text selection: https://github.com/flutter/flutter/issues/24585, https://github.com/flutter/flutter/issues/24584.
-
-* 🌎 API level: `WebView` just requires API level 19 (It used to be 20): https://github.com/flutter/flutter/issues/23728.
-
-* ⚡️ Performance: https://github.com/flutter/flutter/issues/61280, https://github.com/flutter/flutter/issues/31243.
-
-To get these fixes, set `WebView.platform = SurfaceAndroidWebView();` in `initState()`. For example:
-
-```dart
-import 'dart:io';
-
-import 'package:webview_flutter/webview_flutter.dart';
-
-class WebViewExample extends StatefulWidget {
-  @override
-  void initState() {
-    super.initState();
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return WebView(
-      initialUrl: 'https://flutter.dev',
-    );
-  }
-}
-```
-
-### iOS
-
-* 📱 It's no longer required to add the `io.flutter.embedded_views_preview` to `Info.plist` since
-platform views are enabled by default: https://github.com/flutter/flutter/issues/57067.
-In previous versions, importing `WebView` required an expensive thread configuration even before the
-`WebView` was rendered. In 1.0.0, this thread configuration only takes place when the `WebView` is
-rendered.
+* Added support for Hybrid Composition on Android (see opt-in instructions in [README](https://github.com/flutter/plugins/blob/master/packages/webview_flutter/README.md#android))
+  * Lowered the required Android API to 19 (was previously 20): [#23728](https://github.com/flutter/flutter/issues/23728).
+  * Fixed the following issues:
+    * 🎹 Keyboard: [#41089](https://github.com/flutter/flutter/issues/41089), [#36478](https://github.com/flutter/flutter/issues/36478), [#51254](https://github.com/flutter/flutter/issues/51254), [#50716](https://github.com/flutter/flutter/issues/50716), [#55724](https://github.com/flutter/flutter/issues/55724),  [#56513](https://github.com/flutter/flutter/issues/56513), [#56515](https://github.com/flutter/flutter/issues/56515), [#61085](https://github.com/flutter/flutter/issues/61085), [#62205](https://github.com/flutter/flutter/issues/62205), [#62547](https://github.com/flutter/flutter/issues/62547), [#58943](https://github.com/flutter/flutter/issues/58943), [#56361](https://github.com/flutter/flutter/issues/56361), [#56361](https://github.com/flutter/flutter/issues/42902), [#40716](https://github.com/flutter/flutter/issues/40716), [#37989](https://github.com/flutter/flutter/issues/37989), [#27924](https://github.com/flutter/flutter/issues/27924).
+    * ♿️ Accessibility: [#50716](https://github.com/flutter/flutter/issues/50716).
+    * ⚡️ Performance: [#61280](https://github.com/flutter/flutter/issues/61280), [#31243](https://github.com/flutter/flutter/issues/31243),  [#52211](https://github.com/flutter/flutter/issues/52211).
+    * 📹 Video: [#5191](https://github.com/flutter/flutter/issues/5191).
 
 ## 0.3.24
 
