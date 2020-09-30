@@ -9,6 +9,6 @@ enum BatteryState {
   /// The battery is currently losing energy.
   discharging,
 
-  /// The battery is currently not charging(Android Only).
+  /// The battery is currently not charging (Android Only).
   not_charging
 }
