@@ -4,20 +4,6 @@
 
 A Flutter plugin that provides a [Google Maps](https://developers.google.com/maps/) widget.
 
-## Developers Preview Status
-The plugin relies on Flutter's new mechanism for embedding Android and iOS views.
-As that mechanism is currently in a developers preview, this plugin should also be
-considered a developers preview.
-
-Known issues are tagged with the [platform-views](https://github.com/flutter/flutter/labels/a%3A%20platform-views) and/or [maps](https://github.com/flutter/flutter/labels/p%3A%20maps) labels.
-
-To use this plugin on iOS you need to opt-in for the embedded views preview by
-adding a boolean property to the app's `Info.plist` file, with the key `io.flutter.embedded_views_preview`
-and the value `YES`.
-
-The API exposed by this plugin is not yet stable, and we expect some breaking changes to land soon.
-
-
 ## Usage
 
 To use this plugin, add `google_maps_flutter` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
