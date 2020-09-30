@@ -370,7 +370,7 @@ public class Camera {
       recordingVideo = false;
       mediaRecorder.stop();
       mediaRecorder.reset();
-      startPreview();
+//      startPreview();
       result.success(null);
     } catch (CameraAccessException | IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
