@@ -1,3 +1,7 @@
+## 0.11.0+1
+
+* Added isDurationIndefinite to support indefinite streams
+
 ## 0.11.0
 
 * Added option to set the video playback speed on the video controller.

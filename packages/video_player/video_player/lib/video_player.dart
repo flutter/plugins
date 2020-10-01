@@ -819,12 +819,12 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
         fit: StackFit.passthrough,
         children: <Widget>[
           LinearProgressIndicator(
-            value: maxBuffering / duration,
+            value: duration > 0 ? maxBuffering / duration : 0,
             valueColor: AlwaysStoppedAnimation<Color>(colors.bufferedColor),
             backgroundColor: colors.backgroundColor,
           ),
           LinearProgressIndicator(
-            value: position / duration,
+            value: duration > 0 ? position / duration : 0,
             valueColor: AlwaysStoppedAnimation<Color>(colors.playedColor),
             backgroundColor: Colors.transparent,
           ),

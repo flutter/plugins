@@ -302,6 +302,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = !_isPlaying;
 }
 
+- (bool)isDurationIndefinite {
+  return CMTIME_IS_INDEFINITE([[_player currentItem] duration]);
+}
+
 - (void)sendInitialized {
   if (_eventSink && !_isInitialized) {
     CGSize size = [self.player currentItem].presentationSize;
@@ -313,7 +317,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       return;
     }
     // The player may be initialized but still needs to determine the duration.
-    if ([self duration] == 0) {
+    if ([self duration] == 0 && ![self isDurationIndefinite]) {
       return;
     }
 
