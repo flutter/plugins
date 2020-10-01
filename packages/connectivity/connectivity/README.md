@@ -103,25 +103,26 @@ To request location authorization, make sure to add the following keys to your _
 * `NSLocationAlwaysAndWhenInUseUsageDescription` - describe why the app needs access to the user’s location information all the time (foreground and background). This is called _Privacy - Location Always and When In Use Usage Description_ in the visual editor.
 * `NSLocationWhenInUseUsageDescription` - describe why the app needs access to the user’s location information when the app is running in the foreground. This is called _Privacy - Location When In Use Usage Description_ in the visual editor.
 
-### iOS - Disabling code that accesses sensitive data
+### No Location Permission 
 
-If you don't wish to set `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationWhenInUseUsageDescription` on iOS, you also have the option to disable the code that uses these permissions.  This may be useful if you don't wish to specify permissions that you have no intention of using and only want to use the plugin for checking the connection status of the device.
+If you don't wish to set `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationWhenInUseUsageDescription` on iOS, you also have the option to disable the code that uses these permissions.  This may be useful if you don't wish to specify permissions that you have no intention of using and only want to use the plugin for checking the connection status of the device.  When disabled, the `getWifiName` and `getWifiBSSID` methods will throw a `MissingPluginException` error.
 
 To do so, add the following to your `Podfile`:
 ```
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
-    # Add this section:
+    # ADD THIS SECTION
     target.build_configurations.each do |config|
        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
         '$(inherited)',
-        'DISABLE_CONNECTIVITY_LOCATION_CODE=1'
+        'NO_LOCATION_PERMISSION_CONNECTIVITY=1'
     ]
+    # ADD END
   end
 end
 ```
-To re-enable that code, you should remove the `'DISABLE_CONNECTIVITY_LOCATION_CODE=1'` and insure `pod install` is run again.
+To re-enable that code, you should remove the `'NO_LOCATION_PERMISSION_CONNECTIVITY=1'` and insure `pod install` is run again.
 
 *Note that by disabling these blocks of code the following plugin methods will no longer be accessible on iOS, and will throw a `MissingPluginException`:*
 - `getLocationServiceAuthorization`
