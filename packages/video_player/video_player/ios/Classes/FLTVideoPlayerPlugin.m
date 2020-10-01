@@ -325,6 +325,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
+      @"isDurationIndefinite": @([self isDurationIndefinite]),
       @"width" : @(width),
       @"height" : @(height)
     });
