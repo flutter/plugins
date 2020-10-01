@@ -96,7 +96,7 @@ static const int SOURCE_GALLERY = 1;
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
-    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    _imagePickerController.modalPresentationStyle = UIModalPresentationPopover;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[
       (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
