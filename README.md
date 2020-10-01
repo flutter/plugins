@@ -15,6 +15,7 @@ Check out the all amazing [plugins](https://flutter.dev/docs/development/tools/s
 
 These plugins are also available on
 [pub](https://pub.dev/flutter/packages).
+
 ## Issues
 
 Please file any issues, bugs, or feature requests in the [main flutter
