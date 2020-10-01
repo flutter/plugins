@@ -105,7 +105,7 @@ To request location authorization, make sure to add the following keys to your _
 
 ### No Location Permission 
 
-If you don't wish to set `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationWhenInUseUsageDescription` on iOS, you also have the option to disable the code that uses these permissions.  This may be useful if you don't wish to specify permissions that you have no intention of using and only want to use the plugin for checking the connection status of the device.  When disabled, the `getWifiName` and `getWifiBSSID` methods will throw a `MissingPluginException` error.
+If you don't wish to set `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationWhenInUseUsageDescription` on iOS, you also have the option to disable the code that uses these permissions. This may be useful if you don't wish to specify permissions that you have no intention of using and only want to use the plugin for checking the connection status of the device. When disabled, the `getWifiName` and `getWifiBSSID` methods will throw a `MissingPluginException` error.
 
 To do so, add the following to your `Podfile`:
 ```
