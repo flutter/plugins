@@ -319,7 +319,7 @@ Set<Polyline> _rawOptionsToInitialPolylines(Map<String, dynamic> rawOptions) {
           zIndex: rawPolyline['zIndex'],
           width: rawPolyline['width'],
           points: rawPolyline['points']
-              ?.map((rawPoint) => LatLng.fromJson(rawPoint))
+              ?.map<LatLng>((rawPoint) => LatLng.fromJson(rawPoint))
               ?.toList(),
         );
       }) ??
@@ -342,7 +342,7 @@ Set<Polygon> _rawOptionsToInitialPolygons(Map<String, dynamic> rawOptions) {
           visible: rawPolygon['visible'],
           zIndex: rawPolygon['zIndex'],
           points: rawPolygon['points']
-              ?.map((rawPoint) => LatLng.fromJson(rawPoint))
+              ?.map<LatLng>((rawPoint) => LatLng.fromJson(rawPoint))
               ?.toList(),
         );
       }) ??
