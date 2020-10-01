@@ -1,4 +1,4 @@
-# Google Maps for Flutter (Developers Preview)
+# Google Maps for Flutter
 
 [![pub package](https://img.shields.io/pub/v/google_maps_flutter.svg)](https://pub.dartlang.org/packages/google_maps_flutter)
 
