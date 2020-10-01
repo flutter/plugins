@@ -37,6 +37,8 @@ task:
         # https://github.com/flutter/flutter/issues/42864
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
+        # Fetches tags from the flutter repo.
+        - flutter doctor
         - ./script/incremental_build.sh test
     - name: analyze
       script: ./script/incremental_build.sh analyze
@@ -46,6 +48,8 @@ task:
         # https://github.com/flutter/flutter/issues/42864
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
+        # Fetches tags from the flutter repo.
+        - flutter doctor
         - ./script/build_all_plugins_app.sh apk
     - name: integration_web_smoke_test
       # Tests integration example test in web.
@@ -77,6 +81,8 @@ task:
         # https://github.com/flutter/flutter/issues/42864
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
+        # Fetches tags from the flutter repo.
+        - flutter doctor
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
         # See: https://github.com/flutter/flutter/issues/24935
@@ -122,6 +128,8 @@ task:
       build_script:
         # TODO(stuartmorgan): Include stable once Linux is supported on stable.
         - flutter channel master
+        # Fetches tags from the flutter repo.
+        - flutter doctor
         - ./script/incremental_build.sh build-examples --linux
         - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
@@ -148,6 +156,8 @@ task:
         # https://github.com/flutter/flutter/issues/42864
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
+        # Fetches tags from the flutter repo.
+        - flutter doctor
         - ./script/build_all_plugins_app.sh ios --no-codesign
     - name: lint_darwin_plugins
       env:
@@ -177,6 +187,8 @@ task:
         # https://github.com/flutter/flutter/issues/42864
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
+        # Fetches tags from the flutter repo.
+        - flutter doctor
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples
 task:
@@ -202,5 +214,7 @@ task:
         PATH: $PATH:/usr/local/bin
       build_script:
         - flutter channel master
+        # Fetches tags from the flutter repo.
+        - flutter doctor
         - ./script/incremental_build.sh build-examples --macos --no-ipa
         - ./script/incremental_build.sh drive-examples --macos
