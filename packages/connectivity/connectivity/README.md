@@ -114,10 +114,11 @@ post_install do |installer|
     flutter_additional_ios_build_settings(target)
     # ADD THIS SECTION
     target.build_configurations.each do |config|
-       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
-        '$(inherited)',
-        'NO_LOCATION_PERMISSION_CONNECTIVITY=1'
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+      '$(inherited)',
+      'NO_LOCATION_PERMISSION_CONNECTIVITY=1'
     ]
+    end
     # ADD END
   end
 end
