@@ -6,10 +6,10 @@ package io.flutter.plugins.webviewflutterexample;
 
 import android.os.Bundle;
 import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
-import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin;
 
-public class EmbeddingV1Activity extends FlutterActivity {
+@SuppressWarnings("deprecation")
+public class EmbeddingV1Activity extends io.flutter.app.FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

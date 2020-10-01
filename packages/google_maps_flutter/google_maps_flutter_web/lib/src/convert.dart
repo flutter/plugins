@@ -379,22 +379,25 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
   Marker marker,
   gmaps.Marker currentMarker,
 ) {
-  final iconConfig = marker.icon.toJson() as List;
+  final iconConfig = marker.icon?.toJson() as List;
   gmaps.Icon icon;
 
-  if (iconConfig[0] == 'fromAssetImage') {
-    // iconConfig[2] contains the DPIs of the screen, but that information is
-    // already encoded in the iconConfig[1]
+  if (iconConfig != null) {
+    if (iconConfig[0] == 'fromAssetImage') {
+      assert(iconConfig.length >= 2);
+      // iconConfig[2] contains the DPIs of the screen, but that information is
+      // already encoded in the iconConfig[1]
 
-    icon = gmaps.Icon()
-      ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1]);
+      icon = gmaps.Icon()
+        ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1]);
 
-    // iconConfig[3] may contain the [width, height] of the image, if passed!
-    if (iconConfig.length >= 4 && iconConfig[3] != null) {
-      final size = gmaps.Size(iconConfig[3][0], iconConfig[3][1]);
-      icon
-        ..size = size
-        ..scaledSize = size;
+      // iconConfig[3] may contain the [width, height] of the image, if passed!
+      if (iconConfig.length >= 4 && iconConfig[3] != null) {
+        final size = gmaps.Size(iconConfig[3][0], iconConfig[3][1]);
+        icon
+          ..size = size
+          ..scaledSize = size;
+      }
     }
   }
   return gmaps.MarkerOptions()
