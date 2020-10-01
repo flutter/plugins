@@ -154,7 +154,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   Future<int> getScrollY() => _channel.invokeMethod<int>("getScrollY");
 
   @override
-  Future<int> getContentHeight() => _channel.invokeMethod<int>("getContentHeight");
+  Future<int> getContentHeight() =>
+      _channel.invokeMethod<int>("getContentHeight");
 
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {

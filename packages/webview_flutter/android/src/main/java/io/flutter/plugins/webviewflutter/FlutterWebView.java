@@ -221,7 +221,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "getContentHeight":
         getContentHeight(result);
-        break;    
+        break;
       default:
         result.notImplemented();
     }
