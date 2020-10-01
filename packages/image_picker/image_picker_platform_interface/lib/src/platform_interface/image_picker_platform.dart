@@ -67,6 +67,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     double maxHeight,
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
+    bool iosPhaAsset,
   }) {
     throw UnimplementedError('legacyPickImage() has not been implemented.');
   }
@@ -144,6 +145,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     double maxHeight,
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
+    bool iosPhaAsset,
   }) {
     throw UnimplementedError('pickImage() has not been implemented.');
   }

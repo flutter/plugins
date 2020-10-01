@@ -57,12 +57,14 @@ class ImagePicker {
       double maxWidth,
       double maxHeight,
       int imageQuality,
+      bool iosPhaAsset = true,
       CameraDevice preferredCameraDevice = CameraDevice.rear}) async {
     String path = await platform.pickImagePath(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
+      iosPhaAsset: iosPhaAsset,
       preferredCameraDevice: preferredCameraDevice,
     );
 
@@ -98,6 +100,7 @@ class ImagePicker {
     double maxWidth,
     double maxHeight,
     int imageQuality,
+    bool iosPhaAsset = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     return platform.pickImage(
@@ -105,6 +108,7 @@ class ImagePicker {
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
+      iosPhaAsset: iosPhaAsset,
       preferredCameraDevice: preferredCameraDevice,
     );
   }
