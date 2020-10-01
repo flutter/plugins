@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Remove `io.flutter.embedded_views_preview` requirement from readme.
+
 ## 1.0.1
 
 * Fix headline in the readme.
