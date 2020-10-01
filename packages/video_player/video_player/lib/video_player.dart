@@ -36,6 +36,7 @@ class VideoPlayerValue {
     this.isPlaying = false,
     this.isLooping = false,
     this.isBuffering = false,
+    this.isDurationIndefinite = false,
     this.volume = 1.0,
     this.playbackSpeed = 1.0,
     this.errorDescription,
@@ -74,6 +75,9 @@ class VideoPlayerValue {
 
   /// True if the video is currently buffering.
   final bool isBuffering;
+
+  /// True if the video has an undetermined duration, eg. a live stream.
+  final bool isDurationIndefinite;
 
   /// The current volume of the playback.
   final double volume;
@@ -122,6 +126,7 @@ class VideoPlayerValue {
     bool isPlaying,
     bool isLooping,
     bool isBuffering,
+    bool isDurationIndefinite,
     double volume,
     double playbackSpeed,
     String errorDescription,
@@ -135,6 +140,7 @@ class VideoPlayerValue {
       isPlaying: isPlaying ?? this.isPlaying,
       isLooping: isLooping ?? this.isLooping,
       isBuffering: isBuffering ?? this.isBuffering,
+      isDurationIndefinite: isDurationIndefinite ?? this.isDurationIndefinite,
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       errorDescription: errorDescription ?? this.errorDescription,
@@ -152,6 +158,7 @@ class VideoPlayerValue {
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
         'isBuffering: $isBuffering, '
+        'isDurationIndefinite: $isDurationIndefinite, '
         'volume: $volume, '
         'playbackSpeed: $playbackSpeed, '
         'errorDescription: $errorDescription)';
@@ -292,6 +299,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         case VideoEventType.initialized:
           value = value.copyWith(
             duration: event.duration,
+            isDurationIndefinite: event.isDurationIndefinite,
             size: event.size,
           );
           initializingCompleter.complete(null);

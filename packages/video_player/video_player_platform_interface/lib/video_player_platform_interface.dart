@@ -218,6 +218,7 @@ class VideoEvent {
   VideoEvent({
     @required this.eventType,
     this.duration,
+    this.isDurationIndefinite,
     this.size,
     this.buffered,
   });
@@ -229,6 +230,11 @@ class VideoEvent {
   ///
   /// Only used if [eventType] is [VideoEventType.initialized].
   final Duration duration;
+  
+  /// Determines if the video has a defined duration
+  /// 
+  /// Only used if [eventType] is [VideoEventType.initialized].
+  final bool isDurationIndefinite;
 
   /// Size of the video.
   ///
@@ -247,6 +253,7 @@ class VideoEvent {
             runtimeType == other.runtimeType &&
             eventType == other.eventType &&
             duration == other.duration &&
+            isDurationIndefinite == other.isDurationIndefinite &&
             size == other.size &&
             listEquals(buffered, other.buffered);
   }
@@ -255,6 +262,7 @@ class VideoEvent {
   int get hashCode =>
       eventType.hashCode ^
       duration.hashCode ^
+      isDurationIndefinite.hashCode ^
       size.hashCode ^
       buffered.hashCode;
 }

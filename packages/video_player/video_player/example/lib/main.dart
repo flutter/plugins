@@ -218,13 +218,16 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      'https://rtmp.api.rt.com/hls/rtdru.m3u8',
       closedCaptionFile: _loadCaptions(),
       videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
     );
 
     _controller.addListener(() {
-      setState(() {});
+      setState(() {
+        debugPrint('Indefinite = ${_controller.value.isDurationIndefinite}');
+      });
     });
     _controller.setLooping(true);
     _controller.initialize();
