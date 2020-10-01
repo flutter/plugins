@@ -765,6 +765,11 @@ class WebViewController {
   Future<int> getScrollY() {
     return _webViewPlatformController.getScrollY();
   }
+
+  /// Return the height of WebView content pixels
+  Future<int> getContentHeight() {
+    return _webViewPlatformController.getContentHeight();
+  }
 }
 
 /// Manages cookies pertaining to all [WebView]s.

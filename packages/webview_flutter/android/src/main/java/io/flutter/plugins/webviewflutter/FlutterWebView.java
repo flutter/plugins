@@ -219,6 +219,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getScrollY":
         getScrollY(result);
         break;
+      case "getContentHeight":
+        getContentHeight(result);
+        break;    
       default:
         result.notImplemented();
     }
@@ -340,6 +343,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void getScrollY(Result result) {
     result.success(webView.getScrollY());
+  }
+
+  private void getContentHeight(Result result) {
+    result.success(webView.getContentHeight());
   }
 
   private void applySettings(Map<String, Object> settings) {

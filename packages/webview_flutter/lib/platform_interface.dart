@@ -317,6 +317,12 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView getScrollY is not implemented on the current platform");
   }
+
+  /// Return the height of WebView content pixels
+  Future<int> getContentHeight() {
+    throw UnimplementedError(
+        "WebView getContentHeight is not implemented on the current platform");
+  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.
