@@ -1,6 +1,6 @@
 ## 0.5.0
 
-* Added an optional way to disable code that accesses sensitive location information on iOS.  Please check the [README](https://github.com/flutter/plugins/blob/master/packages/connectivity/connectivity/README.md#iOS---Disabling-code-that-accesses-sensitive-data) for information on how to do that.
+* No Location Permission using preprocessor flag.  Please check the [README](https://github.com/flutter/plugins/blob/master/packages/connectivity/connectivity/README.md#No-Location-Permission) for information on how to do that.
 
 ## 0.4.9+3
 
