@@ -54,6 +54,44 @@
   return info;
 }
 
+#ifndef NO_LOCATION_PERMISSION_CONNECTIVITY
+- (NSString*)getWifiName {
+  return [self findNetworkInfo:@"SSID"];
+}
+
+- (NSString*)getBSSID {
+  return [self findNetworkInfo:@"BSSID"];
+}
+
+- (NSString*)convertCLAuthorizationStatusToString:(CLAuthorizationStatus)status {
+  switch (status) {
+    case kCLAuthorizationStatusNotDetermined: {
+      return @"notDetermined";
+    }
+    case kCLAuthorizationStatusRestricted: {
+      return @"restricted";
+    }
+    case kCLAuthorizationStatusDenied: {
+      return @"denied";
+    }
+    case kCLAuthorizationStatusAuthorizedAlways: {
+      return @"authorizedAlways";
+    }
+    case kCLAuthorizationStatusAuthorizedWhenInUse: {
+      return @"authorizedWhenInUse";
+    }
+    default: { return @"unknown"; }
+  }
+}
+
+- (FLTConnectivityLocationHandler*)locationHandler {
+  if (!_locationHandler) {
+    _locationHandler = [FLTConnectivityLocationHandler new];
+  }
+  return _locationHandler;
+}
+#endif
+
 - (NSString*)statusFromReachability:(Reachability*)reachability {
   NetworkStatus status = [reachability currentReachabilityStatus];
   switch (status) {
@@ -136,44 +174,6 @@
 
   return address;
 }
-
-#ifndef NO_LOCATION_PERMISSION_CONNECTIVITY
-- (NSString*)getWifiName {
-  return [self findNetworkInfo:@"SSID"];
-}
-
-- (NSString*)getBSSID {
-  return [self findNetworkInfo:@"BSSID"];
-}
-
-- (NSString*)convertCLAuthorizationStatusToString:(CLAuthorizationStatus)status {
-  switch (status) {
-    case kCLAuthorizationStatusNotDetermined: {
-      return @"notDetermined";
-    }
-    case kCLAuthorizationStatusRestricted: {
-      return @"restricted";
-    }
-    case kCLAuthorizationStatusDenied: {
-      return @"denied";
-    }
-    case kCLAuthorizationStatusAuthorizedAlways: {
-      return @"authorizedAlways";
-    }
-    case kCLAuthorizationStatusAuthorizedWhenInUse: {
-      return @"authorizedWhenInUse";
-    }
-    default: { return @"unknown"; }
-  }
-}
-
-- (FLTConnectivityLocationHandler*)locationHandler {
-  if (!_locationHandler) {
-    _locationHandler = [FLTConnectivityLocationHandler new];
-  }
-  return _locationHandler;
-}
-#endif
 
 #pragma mark FlutterStreamHandler impl
 
