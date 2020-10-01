@@ -11,9 +11,10 @@ Flutter plugins enable access to platform-specific APIs. For more information
 about plugins, and how to use them, see
 [https://flutter.dev/platform-plugins/](https://flutter.dev/platform-plugins/).
 
+Check out the all amazing [plugins](https://flutter.dev/docs/development/tools/sdk/release-notes/release-notes-1.12.13#plugins) of latest flutter 1.12.13
+
 These plugins are also available on
 [pub](https://pub.dev/flutter/packages).
-
 ## Issues
 
 Please file any issues, bugs, or feature requests in the [main flutter
