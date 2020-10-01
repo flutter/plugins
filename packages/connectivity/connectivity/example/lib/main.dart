@@ -157,9 +157,6 @@ class _MyHomePageState extends State<MyHomePage> {
         } on PlatformException catch (e) {
           print(e.toString());
           wifiIP = "Failed to get Wifi IP";
-        } on MissingPluginException catch (e) {
-          print(e.toString());
-          wifiIP = "Location permissions not enabled";
         }
 
         setState(() {
