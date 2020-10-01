@@ -132,7 +132,7 @@ you need to also add:
 ```
 
 to your Info.plist file. Failure to do so results in a dialog that tells the user your
-app has not been updated to use TouchID.
+app has not been updated to use Face ID.
 
 
 ## Android Integration
