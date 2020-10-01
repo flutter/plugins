@@ -1,3 +1,7 @@
+## 1.0.0 - Out of developer preview  🎉.
+
+* Bump the minimal Flutter SDK to 1.22 where platform views are out of developer preview and performing better on iOS. Flutter 1.22 no longer requires adding the `io.flutter.embedded_views_preview` to `Info.plist` in iOS.
+
 ## 0.5.33
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

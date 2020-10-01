@@ -608,6 +608,84 @@ void main() {
     });
   });
 
+  group('$SurfaceAndroidWebView', () {
+    setUpAll(() {
+      WebView.platform = SurfaceAndroidWebView();
+    });
+
+    tearDownAll(() {
+      WebView.platform = null;
+    });
+
+    testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
+      final String scrollTestPage = '''
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              body {
+                height: 100%;
+                width: 100%;
+              }
+              #container{
+                width:5000px;
+                height:5000px;
+            }
+            </style>
+          </head>
+          <body>
+            <div id="container"/>
+          </body>
+        </html>
+      ''';
+
+      final String scrollTestPageBase64 =
+          base64Encode(const Utf8Encoder().convert(scrollTestPage));
+
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            initialUrl:
+                'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            onPageFinished: (String url) {
+              pageLoaded.complete(null);
+            },
+          ),
+        ),
+      );
+
+      final WebViewController controller = await controllerCompleter.future;
+      await pageLoaded.future;
+
+      await tester.pumpAndSettle(Duration(seconds: 3));
+
+      // Check scrollTo()
+      const int X_SCROLL = 123;
+      const int Y_SCROLL = 321;
+
+      await controller.scrollTo(X_SCROLL, Y_SCROLL);
+      int scrollPosX = await controller.getScrollX();
+      int scrollPosY = await controller.getScrollY();
+      expect(X_SCROLL, scrollPosX);
+      expect(Y_SCROLL, scrollPosY);
+
+      // Check scrollBy() (on top of scrollTo())
+      await controller.scrollBy(X_SCROLL, Y_SCROLL);
+      scrollPosX = await controller.getScrollX();
+      scrollPosY = await controller.getScrollY();
+      expect(X_SCROLL * 2, scrollPosX);
+      expect(Y_SCROLL * 2, scrollPosY);
+    });
+  }, skip: !Platform.isAndroid);
+
   group('NavigationDelegate', () {
     final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
     final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
