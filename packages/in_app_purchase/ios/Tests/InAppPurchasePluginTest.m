@@ -36,7 +36,7 @@
                            result = r;
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
-  XCTAssertEqual(result, FlutterMethodNotImplemented);
+  XCTAssertNotEqual(result, FlutterMethodNotImplemented);
 }
 
 - (void)testCanMakePayments {
