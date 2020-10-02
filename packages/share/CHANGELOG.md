@@ -1,3 +1,7 @@
+## 0.6.5+3
+
+* Ensure UIActivityViewController is presented on the view controller visible
+
 ## 0.6.5+2
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

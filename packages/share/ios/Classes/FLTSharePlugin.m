@@ -6,6 +6,21 @@
 
 static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
+static UIViewController *RootViewController() {
+  return [UIApplication sharedApplication].keyWindow.rootViewController;
+}
+
+static UIViewController *TopViewControllerForViewController(UIViewController *viewController) {
+  if (viewController.presentedViewController) {
+    return TopViewControllerForViewController(viewController.presentedViewController);
+  }
+  if ([viewController isKindOfClass:[UINavigationController class]]) {
+    return TopViewControllerForViewController(
+        ((UINavigationController *)viewController).visibleViewController);
+  }
+  return viewController;
+}
+
 @interface ShareData : NSObject <UIActivityItemSource>
 
 @property(readonly, nonatomic, copy) NSString *subject;
@@ -122,9 +137,11 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
         return;
       }
 
+      UIViewController *topViewController =
+        TopViewControllerForViewController(RootViewController());
       [self shareText:shareText
                  subject:shareSubject
-          withController:[UIApplication sharedApplication].keyWindow.rootViewController
+          withController:topViewController
                 atSource:originRect];
       result(nil);
     } else if ([@"shareFiles" isEqualToString:call.method]) {
@@ -149,11 +166,13 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
         }
       }
 
+      UIViewController *topViewController =
+        TopViewControllerForViewController(RootViewController());
       [self shareFiles:paths
             withMimeType:mimeTypes
              withSubject:subject
                 withText:text
-          withController:[UIApplication sharedApplication].keyWindow.rootViewController
+          withController:topViewController
                 atSource:originRect];
       result(nil);
     } else {
