@@ -111,7 +111,8 @@ public class ImagePickerPlugin
   private Lifecycle lifecycle;
   private LifeCycleObserver observer;
 
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     if (registrar.activity() == null) {
       // If a background flutter view tries to register the plugin, there will be no activity from the registrar,
       // we stop the registering process immediately because the ImagePicker requires an activity.

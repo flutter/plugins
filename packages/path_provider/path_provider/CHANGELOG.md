@@ -1,3 +1,11 @@
+## 1.6.19
+
+* Android implementation does path queries in the background thread rather than UI thread.
+
+## 1.6.18
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 1.6.17
 
 * Update Windows endorsement verison again, to pick up the fix for

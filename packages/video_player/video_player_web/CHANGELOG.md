@@ -1,3 +1,7 @@
+## 0.1.4
+
+* Added option to set the video playback speed on the video controller.
+
 ## 0.1.3+2
 
 * Allow users to set the 'muted' attribute on video elements by setting their volume to 0.

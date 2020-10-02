@@ -1,3 +1,7 @@
+## 0.4.2+8
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 0.4.2+7
 
 * Port device_info plugin to use platform interface.

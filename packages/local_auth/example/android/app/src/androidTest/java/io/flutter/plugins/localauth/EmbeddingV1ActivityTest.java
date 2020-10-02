@@ -7,6 +7,7 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 @RunWith(FlutterTestRunner.class)
+@SuppressWarnings("deprecation")
 public class EmbeddingV1ActivityTest {
   @Rule
   public ActivityTestRule<EmbeddingV1Activity> rule =

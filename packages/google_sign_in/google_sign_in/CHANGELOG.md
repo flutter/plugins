@@ -1,3 +1,7 @@
+## 4.5.4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 4.5.3
 
 * Update package:e2e -> package:integration_test
