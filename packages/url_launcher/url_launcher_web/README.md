@@ -25,8 +25,8 @@ This is what the above means to your `pubspec.yaml`:
 ...
 dependencies:
   ...
-  url_launcher: ^5.1.4
-  url_launcher_web: ^0.1.0
+  url_launcher: ^5.7.3
+  url_launcher_web: ^0.1.5
   ...
 ```
 

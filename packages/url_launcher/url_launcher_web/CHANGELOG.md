@@ -1,3 +1,7 @@
+# 0.1.5
+
+* Update README to reflect latest dependencies.
+
 # 0.1.4+2
 
 - Move `lib/third_party` to `lib/src/third_party`.
