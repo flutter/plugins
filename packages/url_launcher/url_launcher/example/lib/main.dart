@@ -63,6 +63,19 @@ class _MyHomePageState extends State<MyHomePage> {
       throw 'Could not launch $url';
     }
   }
+  
+  Future<void> _launchWhatsApp(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: true,
+        forceWebView: true,
+        headers: <String, String>{'my_header_key': 'my_header_value'},
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
+  
 
   Future<void> _launchInWebViewWithJavaScript(String url) async {
     if (await canLaunch(url)) {
@@ -125,6 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     const String toLaunch = 'https://www.cylog.org/headers/';
+    const String whatsAppLaunch ='https://wa.me/17818044311';
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -196,6 +210,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Launch in app + close after 5 seconds'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
+              RaisedButton(
+                onPressed: () => setState(() {
+                  _launched = _launchWhatsApp(whatsAppLaunch);
+                }),
+                child: const Text('Launch WhatsApp!'),
+              ),
               FutureBuilder<void>(future: _launched, builder: _launchStatus),
             ],
           ),
