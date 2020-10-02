@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:io' show Directory;
-import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

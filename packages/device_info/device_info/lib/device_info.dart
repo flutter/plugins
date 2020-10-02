@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'package:device_info_platform_interface/device_info_platform_interface.dart';
 
 export 'package:device_info_platform_interface/device_info_platform_interface.dart'
