@@ -41,7 +41,8 @@ public class ConnectivityPlugin implements FlutterPlugin {
     eventChannel = new EventChannel(messenger, "plugins.flutter.io/connectivity_status");
     ConnectivityManager connectivityManager =
         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-    WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    WifiManager wifiManager =
+        (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
     Connectivity connectivity = new Connectivity(connectivityManager, wifiManager);
 
