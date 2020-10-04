@@ -1,3 +1,7 @@
+## 0.0.1+7
+
+* Android: Handle deprecation & unchecked warning as error.
+
 ## 0.0.1+6
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
