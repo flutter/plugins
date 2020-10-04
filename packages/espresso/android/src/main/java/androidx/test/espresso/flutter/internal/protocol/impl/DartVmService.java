@@ -359,7 +359,8 @@ public final class DartVmService implements FlutterTestingProtocol {
                 isolateId, isolateInfoResp.getError()));
         return false;
       }
-      for (JsonElement jsonElement : isolateInfoResp.getResult().get(EXTENSION_RPCS_TAG).getAsJsonArray()) {
+      for (JsonElement jsonElement :
+          isolateInfoResp.getResult().get(EXTENSION_RPCS_TAG).getAsJsonArray()) {
         String extensionApi = jsonElement.getAsString();
         if (TESTING_EXTENSION_METHOD.equals(extensionApi)) {
           Log.d(
