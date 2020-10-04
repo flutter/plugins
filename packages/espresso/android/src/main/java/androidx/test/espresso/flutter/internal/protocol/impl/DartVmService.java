@@ -363,8 +363,8 @@ public final class DartVmService implements FlutterTestingProtocol {
         String extensionApi = jsonElement.getAsString();
         if (TESTING_EXTENSION_METHOD.equals(extensionApi)) {
           Log.d(
-                  TAG,
-                  String.format("Flutter testing API registered with Dart isolate %s.", isolateId));
+              TAG,
+              String.format("Flutter testing API registered with Dart isolate %s.", isolateId));
           return true;
         }
       }
