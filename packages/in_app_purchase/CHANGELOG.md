@@ -1,4 +1,8 @@
 
+## 0.3.4+11
+
+* [iOS] Fixed: crash when sending null for simulatesAskToBuyInSandbox parameter.
+
 ## 0.3.4+10
 
 * Fixed typo 'verity' for 'verify'.
