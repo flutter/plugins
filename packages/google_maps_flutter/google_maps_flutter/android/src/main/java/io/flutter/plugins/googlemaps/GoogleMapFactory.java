@@ -21,6 +21,7 @@ public class GoogleMapFactory extends PlatformViewFactory {
   private final Application application;
   private final int activityHashCode;
   private final Lifecycle lifecycle;
+
   @SuppressWarnings("deprecation")
   private final PluginRegistry.Registrar registrar; // V1 embedding only.
 

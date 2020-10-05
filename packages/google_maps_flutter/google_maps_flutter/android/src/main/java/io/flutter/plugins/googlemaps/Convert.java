@@ -45,15 +45,21 @@ class Convert {
       case "fromAsset":
         if (data.size() == 2) {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(toString(data.get(1))));
+              FlutterInjector.instance()
+                  .flutterLoader()
+                  .getLookupKeyForAsset(toString(data.get(1))));
         } else {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
+              FlutterInjector.instance()
+                  .flutterLoader()
+                  .getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
       case "fromAssetImage":
         if (data.size() == 3) {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(toString(data.get(1))));
+              FlutterInjector.instance()
+                  .flutterLoader()
+                  .getLookupKeyForAsset(toString(data.get(1))));
         } else {
           throw new IllegalArgumentException(
               "'fromAssetImage' Expected exactly 3 arguments, got: " + data.size());
