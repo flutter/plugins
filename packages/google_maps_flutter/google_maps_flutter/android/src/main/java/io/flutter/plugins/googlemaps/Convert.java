@@ -23,7 +23,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.SquareCap;
-import io.flutter.view.FlutterMain;
+import io.flutter.FlutterInjector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,15 +45,15 @@ class Convert {
       case "fromAsset":
         if (data.size() == 2) {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+                  FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(toString(data.get(1))));
         } else {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
+                  FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
       case "fromAssetImage":
         if (data.size() == 3) {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+                  FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(toString(data.get(1))));
         } else {
           throw new IllegalArgumentException(
               "'fromAssetImage' Expected exactly 3 arguments, got: " + data.size());
@@ -207,8 +207,9 @@ class Convert {
   }
 
   static Point toPoint(Object o) {
-    Map<String, Integer> screenCoordinate = (Map<String, Integer>) o;
-    return new Point(screenCoordinate.get("x"), screenCoordinate.get("y"));
+    Object x = toMap(o).get("x");
+    Object y = toMap(o).get("y");
+    return new Point((int) x, (int) y);
   }
 
   static Map<String, Integer> pointToJson(Point point) {
@@ -232,6 +233,18 @@ class Convert {
 
   private static Map<?, ?> toMap(Object o) {
     return (Map<?, ?>) o;
+  }
+
+  private static Map<String, Object> toObjectMap(Object o) {
+    Map<String, Object> hashMap = new HashMap<>();
+    Map<?, ?> map = (Map<?, ?>) o;
+    for (Object key : map.keySet()) {
+      Object object = map.get(key);
+      if (object != null) {
+        hashMap.put((String) key, object);
+      }
+    }
+    return hashMap;
   }
 
   private static float toFractionalPixels(Object o, float density) {
@@ -377,7 +390,7 @@ class Convert {
 
     final Object infoWindow = data.get("infoWindow");
     if (infoWindow != null) {
-      interpretInfoWindowOptions(sink, (Map<String, Object>) infoWindow);
+      interpretInfoWindowOptions(sink, toObjectMap(infoWindow));
     }
     final Object position = data.get("position");
     if (position != null) {

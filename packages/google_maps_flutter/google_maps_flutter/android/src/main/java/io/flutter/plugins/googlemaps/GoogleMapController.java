@@ -42,10 +42,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
-import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.common.*;
 import io.flutter.plugin.platform.PlatformView;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -89,6 +86,7 @@ final class GoogleMapController
   private final Context context;
   private final Application
       mApplication; // Do not use direclty, use getApplication() instead to get correct application object for both v1 and v2 embedding.
+  @SuppressWarnings("deprecation")
   private final PluginRegistry.Registrar registrar; // For v1 embedding only.
   private final MarkersController markersController;
   private final PolygonsController polygonsController;
@@ -100,15 +98,15 @@ final class GoogleMapController
   private List<Object> initialCircles;
 
   GoogleMapController(
-      int id,
-      Context context,
-      AtomicInteger activityState,
-      BinaryMessenger binaryMessenger,
-      Application application,
-      Lifecycle lifecycle,
-      PluginRegistry.Registrar registrar,
-      int registrarActivityHashCode,
-      GoogleMapOptions options) {
+          int id,
+          Context context,
+          AtomicInteger activityState,
+          BinaryMessenger binaryMessenger,
+          Application application,
+          Lifecycle lifecycle,
+          @SuppressWarnings("deprecation") PluginRegistry.Registrar registrar,
+          int registrarActivityHashCode,
+          GoogleMapOptions options) {
     this.id = id;
     this.context = context;
     this.activityState = activityState;
@@ -302,12 +300,12 @@ final class GoogleMapController
         }
       case "markers#update":
         {
-          Object markersToAdd = call.argument("markersToAdd");
-          markersController.addMarkers((List<Object>) markersToAdd);
-          Object markersToChange = call.argument("markersToChange");
-          markersController.changeMarkers((List<Object>) markersToChange);
-          Object markerIdsToRemove = call.argument("markerIdsToRemove");
-          markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          List<Object> markersToAdd = call.argument("markersToAdd");
+          markersController.addMarkers(markersToAdd);
+          List<Object> markersToChange = call.argument("markersToChange");
+          markersController.changeMarkers(markersToChange);
+          List<Object> markerIdsToRemove = call.argument("markerIdsToRemove");
+          markersController.removeMarkers(markerIdsToRemove);
           result.success(null);
           break;
         }
@@ -331,34 +329,34 @@ final class GoogleMapController
         }
       case "polygons#update":
         {
-          Object polygonsToAdd = call.argument("polygonsToAdd");
-          polygonsController.addPolygons((List<Object>) polygonsToAdd);
-          Object polygonsToChange = call.argument("polygonsToChange");
-          polygonsController.changePolygons((List<Object>) polygonsToChange);
-          Object polygonIdsToRemove = call.argument("polygonIdsToRemove");
-          polygonsController.removePolygons((List<Object>) polygonIdsToRemove);
+          List<Object> polygonsToAdd = call.argument("polygonsToAdd");
+          polygonsController.addPolygons(polygonsToAdd);
+          List<Object> polygonsToChange = call.argument("polygonsToChange");
+          polygonsController.changePolygons(polygonsToChange);
+          List<Object> polygonIdsToRemove = call.argument("polygonIdsToRemove");
+          polygonsController.removePolygons(polygonIdsToRemove);
           result.success(null);
           break;
         }
       case "polylines#update":
         {
-          Object polylinesToAdd = call.argument("polylinesToAdd");
-          polylinesController.addPolylines((List<Object>) polylinesToAdd);
-          Object polylinesToChange = call.argument("polylinesToChange");
-          polylinesController.changePolylines((List<Object>) polylinesToChange);
-          Object polylineIdsToRemove = call.argument("polylineIdsToRemove");
-          polylinesController.removePolylines((List<Object>) polylineIdsToRemove);
+          List<Object> polylinesToAdd = call.argument("polylinesToAdd");
+          polylinesController.addPolylines(polylinesToAdd);
+          List<Object> polylinesToChange = call.argument("polylinesToChange");
+          polylinesController.changePolylines(polylinesToChange);
+          List<Object> polylineIdsToRemove = call.argument("polylineIdsToRemove");
+          polylinesController.removePolylines(polylineIdsToRemove);
           result.success(null);
           break;
         }
       case "circles#update":
         {
-          Object circlesToAdd = call.argument("circlesToAdd");
-          circlesController.addCircles((List<Object>) circlesToAdd);
-          Object circlesToChange = call.argument("circlesToChange");
-          circlesController.changeCircles((List<Object>) circlesToChange);
-          Object circleIdsToRemove = call.argument("circleIdsToRemove");
-          circlesController.removeCircles((List<Object>) circleIdsToRemove);
+          List<Object> circlesToAdd = call.argument("circlesToAdd");
+          circlesController.addCircles(circlesToAdd);
+          List<Object> circlesToChange = call.argument("circlesToChange");
+          circlesController.changeCircles(circlesToChange);
+          List<Object> circleIdsToRemove = call.argument("circleIdsToRemove");
+          circlesController.removeCircles(circleIdsToRemove);
           result.success(null);
           break;
         }
@@ -798,7 +796,8 @@ final class GoogleMapController
 
   @Override
   public void setInitialMarkers(Object initialMarkers) {
-    this.initialMarkers = (List<Object>) initialMarkers;
+    ArrayList<?> markers = (ArrayList<?>) initialMarkers;
+    this.initialMarkers = markers != null ? new ArrayList<>(markers) : null;
     if (googleMap != null) {
       updateInitialMarkers();
     }
@@ -810,7 +809,8 @@ final class GoogleMapController
 
   @Override
   public void setInitialPolygons(Object initialPolygons) {
-    this.initialPolygons = (List<Object>) initialPolygons;
+    ArrayList<?> polygons = (ArrayList<?>) initialPolygons;
+    this.initialPolygons = polygons != null ? new ArrayList<>(polygons) : null;
     if (googleMap != null) {
       updateInitialPolygons();
     }
@@ -822,7 +822,8 @@ final class GoogleMapController
 
   @Override
   public void setInitialPolylines(Object initialPolylines) {
-    this.initialPolylines = (List<Object>) initialPolylines;
+    ArrayList<?> polylines = (ArrayList<?>) initialPolylines;
+    this.initialPolylines = polylines != null ? new ArrayList<>(polylines) : null;
     if (googleMap != null) {
       updateInitialPolylines();
     }
@@ -834,7 +835,8 @@ final class GoogleMapController
 
   @Override
   public void setInitialCircles(Object initialCircles) {
-    this.initialCircles = (List<Object>) initialCircles;
+    ArrayList<?> circles = (ArrayList<?>) initialCircles;
+    this.initialCircles = circles != null ? new ArrayList<>(circles) : null;
     if (googleMap != null) {
       updateInitialCircles();
     }
