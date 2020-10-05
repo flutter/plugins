@@ -1,4 +1,4 @@
-## 0.0.2+1
+## 1.0.2+1
 
 * Android: Handle deprecation & unchecked warning as error.
 
