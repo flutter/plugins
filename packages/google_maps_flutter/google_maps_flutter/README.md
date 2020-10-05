@@ -1,4 +1,4 @@
-# Google Maps for Flutter (Developers Preview)
+# Google Maps for Flutter
 
 [![pub package](https://img.shields.io/pub/v/google_maps_flutter.svg)](https://pub.dartlang.org/packages/google_maps_flutter)
 
@@ -73,11 +73,8 @@ import GoogleMaps
   }
 }
 ```
-Opt-in to the embedded views preview by adding a boolean property to the app's `Info.plist` file
-with the key `io.flutter.embedded_views_preview` and the value `YES`.
 
 ### Both
-
 
 You can now add a `GoogleMap` widget to your widget tree.
 

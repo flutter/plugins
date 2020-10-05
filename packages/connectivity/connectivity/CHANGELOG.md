@@ -2,6 +2,11 @@
 
 * No Location Permission using preprocessor flag. Please check the [README](https://github.com/flutter/plugins/blob/master/packages/connectivity/connectivity/README.md#No-Location-Permission) for information on how to do that.
 
+## 0.4.9+4
+
+* Update README with the updated information about WifiInfo on Android O or higher.
+* Android: Avoiding uses or overrides a deprecated API
+
 ## 0.4.9+3
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
