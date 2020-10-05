@@ -738,32 +738,35 @@ class WebViewController {
     return _webViewPlatformController.getTitle();
   }
 
-  /// Sets the WebView's content scroll position.
-  ///
-  /// The parameters `x` and `y` specify the scroll position in WebView pixels.
-  Future<void> scrollTo(int x, int y) {
-    return _webViewPlatformController.scrollTo(x, y);
+  /// Set the absolute scrolled position of this view.
+  /// `offset` absolute position to scroll to in logical pixels.
+  Future<void> scrollTo(Offset offset) {
+    return _webViewPlatformController.scrollTo(offset);
   }
 
   /// Move the scrolled position of this view.
-  ///
-  /// The parameters `x` and `y` specify the amount of WebView pixels to scroll by horizontally and vertically respectively.
-  Future<void> scrollBy(int x, int y) {
-    return _webViewPlatformController.scrollBy(x, y);
+  /// `offset` relative position to scroll by in logical pixels.
+  Future<void> scrollBy(Offset offset) {
+    return _webViewPlatformController.scrollBy(offset);
   }
 
-  /// Return the horizontal scroll position, in WebView pixels, of this view.
-  ///
-  /// Scroll position is measured from left.
-  Future<int> getScrollX() {
-    return _webViewPlatformController.getScrollX();
+  /// Return the absolute scroll position of this view in logical pixels.
+  Future<Offset> getScrollPosition() {
+    return _webViewPlatformController.getScrollPosition();
   }
 
-  /// Return the vertical scroll position, in WebView pixels, of this view.
-  ///
-  /// Scroll position is measured from top.
-  Future<int> getScrollY() {
-    return _webViewPlatformController.getScrollY();
+  /// Return the scroll extent of this view in logical pixels.
+  Future<Size> getScrollExtent() {
+    return _webViewPlatformController.getScrollExtent();
+  }
+
+  /// Set which scrollbars should be displayed.
+  /// `vertical` determines if the vertical scrollbar is enabled.
+  /// `horizontal` determines if the horizontal scrollbar is enabled.
+  Future<void> setScrollBarsEnabled({@required bool vertical, bool horizontal = false}) {
+    assert(vertical != null && horizontal != null);
+    return _webViewPlatformController.setScrollBarsEnabled(
+        vertical, horizontal);
   }
 }
 
