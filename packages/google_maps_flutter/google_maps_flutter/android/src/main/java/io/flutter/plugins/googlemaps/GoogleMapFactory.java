@@ -8,7 +8,8 @@ import android.app.Application;
 import android.content.Context;
 import androidx.lifecycle.Lifecycle;
 import com.google.android.gms.maps.model.CameraPosition;
-import io.flutter.plugin.common.*;
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
 import java.util.Map;
@@ -23,14 +24,14 @@ public class GoogleMapFactory extends PlatformViewFactory {
   private final Lifecycle lifecycle;
 
   @SuppressWarnings("deprecation")
-  private final PluginRegistry.Registrar registrar; // V1 embedding only.
+  private final io.flutter.plugin.common.PluginRegistry.Registrar registrar; // V1 embedding only.
 
   GoogleMapFactory(
       AtomicInteger state,
       BinaryMessenger binaryMessenger,
       Application application,
       Lifecycle lifecycle,
-      @SuppressWarnings("deprecation") PluginRegistry.Registrar registrar,
+      @SuppressWarnings("deprecation") io.flutter.plugin.common.PluginRegistry.Registrar registrar,
       int activityHashCode) {
     super(StandardMessageCodec.INSTANCE);
     mActivityState = state;

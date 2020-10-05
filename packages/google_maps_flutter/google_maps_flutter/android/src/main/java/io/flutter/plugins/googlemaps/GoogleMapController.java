@@ -42,7 +42,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
-import io.flutter.plugin.common.*;
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.platform.PlatformView;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -88,7 +90,7 @@ final class GoogleMapController
       mApplication; // Do not use direclty, use getApplication() instead to get correct application object for both v1 and v2 embedding.
 
   @SuppressWarnings("deprecation")
-  private final PluginRegistry.Registrar registrar; // For v1 embedding only.
+  private final io.flutter.plugin.common.PluginRegistry.Registrar registrar; // For v1 embedding only.
 
   private final MarkersController markersController;
   private final PolygonsController polygonsController;
@@ -106,7 +108,7 @@ final class GoogleMapController
       BinaryMessenger binaryMessenger,
       Application application,
       Lifecycle lifecycle,
-      @SuppressWarnings("deprecation") PluginRegistry.Registrar registrar,
+      @SuppressWarnings("deprecation") io.flutter.plugin.common.PluginRegistry.Registrar registrar,
       int registrarActivityHashCode,
       GoogleMapOptions options) {
     this.id = id;
