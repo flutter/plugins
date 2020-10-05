@@ -90,8 +90,8 @@ final class GoogleMapController
       mApplication; // Do not use direclty, use getApplication() instead to get correct application object for both v1 and v2 embedding.
 
   @SuppressWarnings("deprecation")
-  private final io.flutter.plugin.common.PluginRegistry.Registrar registrar; // For v1 embedding only.
-
+  private final io.flutter.plugin.common.PluginRegistry.Registrar
+      registrar; // For v1 embedding only.
   private final MarkersController markersController;
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
