@@ -1,3 +1,11 @@
+## 4.5.4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 4.5.3
+
+* Update package:e2e -> package:integration_test
+
 ## 4.5.2
 
 * Update package:e2e reference to use the local version in the flutter/plugins

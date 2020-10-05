@@ -1,3 +1,31 @@
+## 5.7.2
+
+* Add API documentation explaining the [canLaunch] method returns `false` if package visibility (Android API 30) is not managed correctly.
+
+## 5.7.1
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 5.7.0
+
+* Handle WebView multi-window support.
+
+## 5.6.0
+
+* Support Windows by default.
+
+## 5.5.3
+
+* Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android.
+
+## 5.5.2
+
+* Depend explicitly on the `platform_interface` package that adds the `webOnlyWindowName` parameter.
+
+## 5.5.1
+
+* Added webOnlyWindowName parameter to launch()
+
 ## 5.5.0
 
 * Support Linux by default.

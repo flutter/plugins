@@ -1,3 +1,11 @@
+## 0.3.1+3
+
+* Fix homepage in `pubspec.yaml`.
+
+## 0.3.1+2
+
+* Update package:e2e to use package:integration_test
+
 ## 0.3.1+1
 
 * Update package:e2e reference to use the local version in the flutter/plugins

@@ -44,6 +44,9 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// [enableDomStorage] is an Android only setting. If true, WebView enable
 /// DOM storage.
 /// [headers] is an Android only setting that adds headers to the WebView.
+/// [webOnlyWindowName] is an Web only setting . _blank opens the new url in new tab ,
+/// _self opens the new url in current tab.
+/// Default behaviour is to open the url in new tab.
 ///
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
@@ -63,6 +66,7 @@ Future<bool> launch(
   bool universalLinksOnly,
   Map<String, String> headers,
   Brightness statusBarBrightness,
+  String webOnlyWindowName,
 }) async {
   assert(urlString != null);
   final Uri url = Uri.parse(urlString.trimLeft());
@@ -93,6 +97,7 @@ Future<bool> launch(
     enableDomStorage: enableDomStorage ?? false,
     universalLinksOnly: universalLinksOnly ?? false,
     headers: headers ?? <String, String>{},
+    webOnlyWindowName: webOnlyWindowName,
   );
   assert(previousAutomaticSystemUiAdjustment != null);
   if (statusBarBrightness != null) {
@@ -104,6 +109,11 @@ Future<bool> launch(
 
 /// Checks whether the specified URL can be handled by some app installed on the
 /// device.
+///
+/// On Android (from API 30), [canLaunch] will return `false` when the required
+/// visibility configuration is not provided in the AndroidManifest.xml file.
+/// For more information see the [Managing package visibility](https://developer.android.com/training/basics/intents/package-visibility)
+/// article in the Android docs.
 Future<bool> canLaunch(String urlString) async {
   if (urlString == null) {
     return false;

@@ -1,3 +1,15 @@
+## 1.0.11
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 1.0.10
+
+* Update android compileSdkVersion to 29.
+
+## 1.0.9
+
+* Let the no-op plugin implement the `FlutterPlugin` interface.
+
 ## 1.0.8
 
 * Post-v2 Android embedding cleanup.

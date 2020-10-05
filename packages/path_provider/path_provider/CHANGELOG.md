@@ -1,3 +1,29 @@
+## 1.6.19
+
+* Android implementation does path queries in the background thread rather than UI thread.
+
+## 1.6.18
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 1.6.17
+
+* Update Windows endorsement verison again, to pick up the fix for
+  web compilation in projects that include path_provider.
+
+## 1.6.16
+
+* Update Windows endorsement verison
+
+## 1.6.15
+
+* Endorse Windows implementation.
+* Remove the need to call disablePathProviderPlatformOverride in tests
+
+## 1.6.14
+
+* Update package:e2e -> package:integration_test
+
 ## 1.6.13
 
 * Update package:e2e reference to use the local version in the flutter/plugins

@@ -1,3 +1,16 @@
+## 0.4.9+4
+
+* Update README with the updated information about WifiInfo on Android O or higher.
+* Android: Avoiding uses or overrides a deprecated API
+
+## 0.4.9+3
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.4.9+2
+
+* Update package:e2e to use package:integration_test
+
 ## 0.4.9+1
 
 * Update package:e2e reference to use the local version in the flutter/plugins
