@@ -25,12 +25,12 @@ public class GoogleMapFactory extends PlatformViewFactory {
   private final PluginRegistry.Registrar registrar; // V1 embedding only.
 
   GoogleMapFactory(
-          AtomicInteger state,
-          BinaryMessenger binaryMessenger,
-          Application application,
-          Lifecycle lifecycle,
-          @SuppressWarnings("deprecation") PluginRegistry.Registrar registrar,
-          int activityHashCode) {
+      AtomicInteger state,
+      BinaryMessenger binaryMessenger,
+      Application application,
+      Lifecycle lifecycle,
+      @SuppressWarnings("deprecation") PluginRegistry.Registrar registrar,
+      int activityHashCode) {
     super(StandardMessageCodec.INSTANCE);
     mActivityState = state;
     this.binaryMessenger = binaryMessenger;

@@ -29,14 +29,14 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private Rect padding = new Rect(0, 0, 0, 0);
 
   GoogleMapController build(
-          int id,
-          Context context,
-          AtomicInteger state,
-          BinaryMessenger binaryMessenger,
-          Application application,
-          Lifecycle lifecycle,
-          @SuppressWarnings("deprecation") PluginRegistry.Registrar registrar,
-          int activityHashCode) {
+      int id,
+      Context context,
+      AtomicInteger state,
+      BinaryMessenger binaryMessenger,
+      Application application,
+      Lifecycle lifecycle,
+      @SuppressWarnings("deprecation") PluginRegistry.Registrar registrar,
+      int activityHashCode) {
     final GoogleMapController controller =
         new GoogleMapController(
             id,

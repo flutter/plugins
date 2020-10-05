@@ -98,15 +98,15 @@ final class GoogleMapController
   private List<Object> initialCircles;
 
   GoogleMapController(
-          int id,
-          Context context,
-          AtomicInteger activityState,
-          BinaryMessenger binaryMessenger,
-          Application application,
-          Lifecycle lifecycle,
-          @SuppressWarnings("deprecation") PluginRegistry.Registrar registrar,
-          int registrarActivityHashCode,
-          GoogleMapOptions options) {
+      int id,
+      Context context,
+      AtomicInteger activityState,
+      BinaryMessenger binaryMessenger,
+      Application application,
+      Lifecycle lifecycle,
+      @SuppressWarnings("deprecation") PluginRegistry.Registrar registrar,
+      int registrarActivityHashCode,
+      GoogleMapOptions options) {
     this.id = id;
     this.context = context;
     this.activityState = activityState;

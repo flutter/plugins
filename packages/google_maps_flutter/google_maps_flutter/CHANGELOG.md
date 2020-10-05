@@ -1,3 +1,7 @@
+## 0.0.2+1
+
+* Android: Handle deprecation & unchecked warning as error.
+
 ## 1.0.2
 
 * Remove `io.flutter.embedded_views_preview` requirement from readme.
