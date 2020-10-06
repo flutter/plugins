@@ -249,7 +249,7 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)PresentImagePickerController {
-  [[self viewControllerWithWindow:nil]  presentViewController:_imagePickerController animated:YES completion:nil];
+  [[self viewControllerWithWindow:nil]  presentViewController:[UIViewController new] animated:YES completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
