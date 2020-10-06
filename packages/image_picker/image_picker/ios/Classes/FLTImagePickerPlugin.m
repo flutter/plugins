@@ -12,8 +12,9 @@
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
+#import "FLTImagePickerController.h"
 
-@interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIAdaptivePresentationControllerDelegate>
+@interface FLTImagePickerPlugin ()
 
 @property(copy, nonatomic) FlutterResult result;
 
@@ -24,7 +25,7 @@ static const int SOURCE_GALLERY = 1;
 
 @implementation FLTImagePickerPlugin {
   NSDictionary *_arguments;
-  UIImagePickerController *_imagePickerController;
+  FLTImagePickerController *_imagePickerController;
   UIImagePickerControllerCameraDevice _device;
 }
 
@@ -58,17 +59,8 @@ static const int SOURCE_GALLERY = 1;
   return topController;
 }
 
-- (UIImagePickerController *)constructAImagePickerController {
-  UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
-  imagePickerController.modalPresentationStyle = UIModalPresentationPopover;
-  imagePickerController.delegate = self;
-  imagePickerController.presentationController.delegate = self;
-  return imagePickerController;
-}
-
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (self.result) {
-    NSLog(@"multiple request");
     self.result([FlutterError errorWithCode:@"multiple_request"
                                     message:@"Cancelled by a second request"
                                     details:nil]);
@@ -76,7 +68,7 @@ static const int SOURCE_GALLERY = 1;
     return;
   }
 
-  _imagePickerController = [self constructAImagePickerController];
+  _imagePickerController = [[FLTImagePickerController alloc] initWithPlugin:self];
 
   if ([@"pickImage" isEqualToString:call.method]) {
     _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
@@ -341,6 +333,10 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+  [self handleImagePickerControllerDismissed];
+}
+
+- (void)handleImagePickerControllerDismissed {
   if (!self.result) {
     return;
   }
@@ -350,15 +346,6 @@ static const int SOURCE_GALLERY = 1;
   // Dismiss image picker after cleaning up can precent race a condition,
   // where the result is not cleaned before the next image picker is brought up.
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)presentationControllerWillDismiss:(UIPresentationController *)presentationController {
-  if (presentationController.presentedViewController != _imagePickerController) {
-    NSLog(@"not image picker");
-    return;
-  }
-  [self imagePickerControllerDidCancel:_imagePickerController];
-  NSLog(@"dismiss");
 }
 
 - (void)saveImageWithOriginalImageData:(NSData *)originalImageData
