@@ -146,6 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _previewImage() {
+    Widget widget;
     final Text retrieveError = _getRetrieveErrorWidget();
     if (retrieveError != null) {
       return retrieveError;
@@ -154,21 +155,26 @@ class _MyHomePageState extends State<MyHomePage> {
       if (kIsWeb) {
         // Why network?
         // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
-        return Image.network(_imageFile.path);
+        widget = Image.network(_imageFile.path);
       } else {
-        return Image.file(File(_imageFile.path));
+        widget = Image.file(File(_imageFile.path));
       }
     } else if (_pickImageError != null) {
-      return Text(
+      widget = Text(
         'Pick image error: $_pickImageError',
         textAlign: TextAlign.center,
       );
     } else {
-      return const Text(
+      widget =  const Text(
         'You have not yet picked an image.',
         textAlign: TextAlign.center,
       );
     }
+    if (widget is Image) {
+      // Add a semantic node to image widgets so we can test it with XCUITests.
+      return Semantics(child: widget, label: 'image_picker_example_picked_image');
+    }
+    return widget;
   }
 
   Future<void> retrieveLostData() async {
@@ -236,6 +242,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
+                print('on pressed');
                 _onImageButtonPressed(ImageSource.gallery, context: context);
               },
               heroTag: 'image0',

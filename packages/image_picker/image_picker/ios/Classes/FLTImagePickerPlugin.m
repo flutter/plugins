@@ -68,6 +68,7 @@ static const int SOURCE_GALLERY = 1;
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (self.result) {
+    NSLog(@"multiple request");
     self.result([FlutterError errorWithCode:@"multiple_request"
                                     message:@"Cancelled by a second request"
                                     details:nil]);
@@ -339,20 +340,24 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-  [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
   if (!self.result) {
     return;
   }
   self.result(nil);
   self.result = nil;
   _arguments = nil;
+  // Dismiss image picker after cleaning up can precent race a condition,
+  // where the result is not cleaned before the next image picker is brought up.
+  [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)presentationControllerWillDismiss:(UIPresentationController *)presentationController {
   if (presentationController.presentedViewController != _imagePickerController) {
+    NSLog(@"not image picker");
     return;
   }
   [self imagePickerControllerDidCancel:_imagePickerController];
+  NSLog(@"dismiss");
 }
 
 - (void)saveImageWithOriginalImageData:(NSData *)originalImageData
