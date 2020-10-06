@@ -1,3 +1,7 @@
+## 5.7.8
+
+* Added a new `LaunchStatus` to handle the ActivityNotFound exception that `activity.startActivity` can throw.
+
 ## 5.7.7
 
 * Introduce the Link widget with an implementation for native platforms.
