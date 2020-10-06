@@ -188,6 +188,9 @@
     // Swipe down to dismiss image picker
     XCUIElement* aImage = app.scrollViews.firstMatch.images.firstMatch;
     [aImage swipeDown];
+    NSPredicate *imageDisappear = [NSPredicate predicateWithFormat:@"exists == FALSE"];
+    XCTestExpectation *expection = [self expectationForPredicate:imageDisappear evaluatedWithObject:aImage handler:nil];
+    [self waitForExpectations:@[expection] timeout:30];
 
     // Find the "not picked image text".
     XCUIElement* imageNotPickedText = [app.otherElements elementMatchingPredicate:[NSPredicate

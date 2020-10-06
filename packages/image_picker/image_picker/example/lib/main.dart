@@ -155,26 +155,23 @@ class _MyHomePageState extends State<MyHomePage> {
       if (kIsWeb) {
         // Why network?
         // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
-        widget = Image.network(_imageFile.path);
+        return Image.network(_imageFile.path);
       } else {
-        widget = Image.file(File(_imageFile.path));
+        return Semantics(
+            child: Image.file(File(_imageFile.path)),
+            label: 'image_picker_example_picked_image');
       }
     } else if (_pickImageError != null) {
-      widget = Text(
+      return Text(
         'Pick image error: $_pickImageError',
         textAlign: TextAlign.center,
       );
     } else {
-      widget =  const Text(
+      return const Text(
         'You have not yet picked an image.',
         textAlign: TextAlign.center,
       );
     }
-    if (widget is Image) {
-      // Add a semantic node to image widgets so we can test it with XCUITests.
-      return Semantics(child: widget, label: 'image_picker_example_picked_image');
-    }
-    return widget;
   }
 
   Future<void> retrieveLostData() async {

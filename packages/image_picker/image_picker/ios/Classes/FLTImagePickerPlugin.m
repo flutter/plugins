@@ -73,6 +73,7 @@ static const int SOURCE_GALLERY = 1;
                                     message:@"Cancelled by a second request"
                                     details:nil]);
     self.result = nil;
+    return;
   }
 
   _imagePickerController = [self constructAImagePickerController];
