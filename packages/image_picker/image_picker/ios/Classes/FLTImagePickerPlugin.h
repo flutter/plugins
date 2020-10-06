@@ -4,7 +4,8 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTImagePickerPlugin : NSObject <FlutterPlugin, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface FLTImagePickerPlugin
+    : NSObject <FlutterPlugin, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 - (void)handleImagePickerControllerDismissed;
 

@@ -7,7 +7,7 @@
 
 @interface FLTImagePickerController ()
 
-@property (weak, nonatomic) FLTImagePickerPlugin *plugin;
+@property(weak, nonatomic) FLTImagePickerPlugin *plugin;
 
 @end
 

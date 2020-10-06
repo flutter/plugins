@@ -9,10 +9,10 @@
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
 
+#import "FLTImagePickerController.h"
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
-#import "FLTImagePickerController.h"
 
 @interface FLTImagePickerPlugin ()
 
@@ -249,7 +249,9 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)PresentImagePickerController {
-  [[self viewControllerWithWindow:nil]  presentViewController:[UIViewController new] animated:YES completion:nil];
+  [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
+                                                    animated:YES
+                                                  completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
