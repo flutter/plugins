@@ -17,7 +17,7 @@ version: 1.0.3
 repository: https://github.com/flutter/plugins/tree/master/packages/plugin_platform_interface
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.10.0-56.0.dev <3.0.0'
 
 dependencies:
   meta: ^1.0.0

@@ -1,5 +1,7 @@
 include: package:pedantic/analysis_options.1.8.0.yaml
 analyzer:
+  enable-experiment:
+    - non-nullable
   exclude:
     # Ignore generated files
     - '**/*.g.dart'
