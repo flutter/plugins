@@ -94,7 +94,7 @@ class UrlLauncher {
     OK,
     /** No activity was found to launch. */
     NO_ACTIVITY,
-    /** No Activity found to handle intent. */
+    /** No Activity found that can handle given intent. */
     ACTIVITY_NOT_FOUND,
   }
 }
