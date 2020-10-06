@@ -1,3 +1,6 @@
+## 0.3.4+12
+
+* [iOS] Fixed: finishing purchases upon payment dialog cancellation.
 
 ## 0.3.4+11
 
