@@ -90,7 +90,6 @@ class _MyHomePageState extends State<MyHomePage> {
             maxHeight: maxHeight,
             imageQuality: quality,
           );
-          print(pickedFile);
           setState(() {
             _imageFile = pickedFile;
           });
@@ -147,7 +146,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _previewImage() {
-    Widget widget;
     final Text retrieveError = _getRetrieveErrorWidget();
     if (retrieveError != null) {
       return retrieveError;
@@ -240,7 +238,6 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
-                print('on pressed');
                 _onImageButtonPressed(ImageSource.gallery, context: context);
               },
               heroTag: 'image0',
