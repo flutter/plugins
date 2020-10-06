@@ -231,14 +231,17 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          FloatingActionButton(
-            onPressed: () {
-              isVideo = false;
-              _onImageButtonPressed(ImageSource.gallery, context: context);
-            },
-            heroTag: 'image0',
-            tooltip: 'Pick Image from gallery',
-            child: const Icon(Icons.photo_library),
+          Semantics(
+            label: 'image_picker_example_from_gallery',
+            child: FloatingActionButton(
+              onPressed: () {
+                isVideo = false;
+                _onImageButtonPressed(ImageSource.gallery, context: context);
+              },
+              heroTag: 'image0',
+              tooltip: 'Pick Image from gallery',
+              child: const Icon(Icons.photo_library),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 16.0),
