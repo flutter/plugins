@@ -13,7 +13,7 @@
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
 
-@interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIAdaptivePresentationControllerDelegate>
 
 @property(copy, nonatomic) FlutterResult result;
 
@@ -58,6 +58,14 @@ static const int SOURCE_GALLERY = 1;
   return topController;
 }
 
+- (UIImagePickerController *)constructAImagePickerController {
+  UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+  imagePickerController.modalPresentationStyle = UIModalPresentationPopover;
+  imagePickerController.delegate = self;
+  imagePickerController.presentationController.delegate = self;
+  return imagePickerController;
+}
+
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (self.result) {
     self.result([FlutterError errorWithCode:@"multiple_request"
@@ -66,10 +74,9 @@ static const int SOURCE_GALLERY = 1;
     self.result = nil;
   }
 
+  _imagePickerController = [self constructAImagePickerController];
+
   if ([@"pickImage" isEqualToString:call.method]) {
-    _imagePickerController = [[UIImagePickerController alloc] init];
-    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
     self.result = result;
@@ -95,9 +102,6 @@ static const int SOURCE_GALLERY = 1;
         break;
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
-    _imagePickerController = [[UIImagePickerController alloc] init];
-    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[
       (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
       (NSString *)kUTTypeMPEG4
@@ -142,9 +146,7 @@ static const int SOURCE_GALLERY = 1;
       [UIImagePickerController isCameraDeviceAvailable:_device]) {
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
     _imagePickerController.cameraDevice = _device;
-    [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
-                                                      animated:YES
-                                                    completion:nil];
+    [self PresentImagePickerController];
   } else {
     [[[UIAlertView alloc] initWithTitle:@"Error"
                                 message:@"Camera not available."
@@ -249,9 +251,11 @@ static const int SOURCE_GALLERY = 1;
 - (void)showPhotoLibrary {
   // No need to check if SourceType is available. It always is.
   _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
-                                                    animated:YES
-                                                  completion:nil];
+  [self PresentImagePickerController];
+}
+
+- (void)PresentImagePickerController {
+  [[self viewControllerWithWindow:nil]  presentViewController:_imagePickerController animated:YES completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
@@ -342,6 +346,13 @@ static const int SOURCE_GALLERY = 1;
   self.result(nil);
   self.result = nil;
   _arguments = nil;
+}
+
+- (void)presentationControllerWillDismiss:(UIPresentationController *)presentationController {
+  if (presentationController.presentedViewController != _imagePickerController) {
+    return;
+  }
+  [self imagePickerControllerDidCancel:_imagePickerController];
 }
 
 - (void)saveImageWithOriginalImageData:(NSData *)originalImageData
