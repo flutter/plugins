@@ -1,3 +1,10 @@
+## 0.6.7+12
+
+* iOS
+  - Change presentation style to |UIModalPresentationPopover| to prevent an iOS 14 crash.
+  - Do not bring up the image picker if the second request is too early.
+  - Setup XCUITests.
+
 ## 0.6.7+11
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
