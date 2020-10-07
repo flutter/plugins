@@ -115,8 +115,9 @@ class MethodCallHandlerImpl
         endConnection(result);
         break;
       case InAppPurchasePlugin.MethodNames.QUERY_SKU_DETAILS:
+        List<String> skusList = call.argument("skusList");
         querySkuDetailsAsync(
-            (String) call.argument("skuType"), (List<String>) call.argument("skusList"), result);
+            (String) call.argument("skuType"), skusList, result);
         break;
       case InAppPurchasePlugin.MethodNames.LAUNCH_BILLING_FLOW:
         launchBillingFlow(
