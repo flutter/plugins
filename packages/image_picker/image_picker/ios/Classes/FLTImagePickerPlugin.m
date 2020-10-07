@@ -254,7 +254,8 @@ static const int SOURCE_GALLERY = 1;
                                                   completion:nil];
 }
 
-- (void)FinishPickingMediaWithInfo:(NSDictionary<NSString *,id> * _Nonnull)info completion:(void (^)(void))completion {
+- (void)FinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *_Nonnull)info
+                        completion:(void (^)(void))completion {
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
   if (!self.result) {
     completion();
@@ -264,7 +265,7 @@ static const int SOURCE_GALLERY = 1;
     if (@available(iOS 13.0, *)) {
       NSString *fileName = [videoURL lastPathComponent];
       NSURL *destination =
-      [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+          [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
 
       if ([[NSFileManager defaultManager] isReadableFileAtPath:[videoURL path]]) {
         NSError *error;
@@ -317,29 +318,35 @@ static const int SOURCE_GALLERY = 1;
     } else {
       __weak typeof(self) weakSelf = self;
       [[PHImageManager defaultManager]
-       requestImageDataForAsset:originalAsset
-       options:nil
-       resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                       UIImageOrientation orientation, NSDictionary *_Nullable info) {
-        // maxWidth and maxHeight are used only for GIF images.
-        [weakSelf saveImageWithOriginalImageData:imageData
-                                           image:image
-                                        maxWidth:maxWidth
-                                       maxHeight:maxHeight
-                                    imageQuality:imageQuality];
-        completion();
-      }];
+          requestImageDataForAsset:originalAsset
+                           options:nil
+                     resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                     UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                       // maxWidth and maxHeight are used only for GIF images.
+                       [weakSelf saveImageWithOriginalImageData:imageData
+                                                          image:image
+                                                       maxWidth:maxWidth
+                                                      maxHeight:maxHeight
+                                                   imageQuality:imageQuality];
+                       completion();
+                     }];
     }
   }
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
-  [self FinishPickingMediaWithInfo:info completion:^{
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self->_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-    });
-  }];
+  [self FinishPickingMediaWithInfo:info
+                        completion:^{
+                          dispatch_async(dispatch_get_main_queue(), ^{
+                            // Dismissing the image picker before cleaning up leads to a race
+                            // condition, where the result is not cleaned before the next image
+                            // picker is brought up. So we dismiss the `_imagePickerController` as
+                            // the last step.
+                            [self->_imagePickerController dismissViewControllerAnimated:YES
+                                                                             completion:nil];
+                          });
+                        }];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -354,8 +361,9 @@ static const int SOURCE_GALLERY = 1;
   self.result(nil);
   self.result = nil;
   _arguments = nil;
-  // Dismiss image picker after cleaning up can precent race a condition,
+  // Dismissing the image picker before cleaning up leads to a race condition,
   // where the result is not cleaned before the next image picker is brought up.
+  // So we dismiss the `_imagePickerController` as the last step.
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
 }
 

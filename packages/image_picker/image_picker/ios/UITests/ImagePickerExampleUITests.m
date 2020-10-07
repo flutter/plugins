@@ -76,7 +76,7 @@
   }
 }
 
-- (void)testLauchingImagePickerFromPhotoGalleryAndPickImages{
+- (void)testLauchingImagePickerFromPhotoGalleryAndPickImages {
   XCUIApplication* app = [[XCUIApplication alloc] init];
   [app launch];
 
