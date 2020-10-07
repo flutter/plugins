@@ -1,3 +1,8 @@
+## 0.11.0+1
+
+* Fixed uncanceled timers when calling `play` on the controller multiple times causing value
+  listeners to be called indefinitely (after `pause`) and more often than needed. 
+
 ## 0.11.0
 
 * Added option to set the video playback speed on the video controller.

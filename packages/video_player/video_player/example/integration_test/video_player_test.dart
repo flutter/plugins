@@ -3,8 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:io';
-import 'package:integration_test/integration_test.dart';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:video_player/video_player.dart';
 
 const Duration _playDuration = Duration(seconds: 1);
@@ -61,6 +62,30 @@ void main() {
       // Verify that we stopped playing after the pause.
       expect(_controller.value.isPlaying, false);
       expect(_controller.value.position, pausedPosition);
+    }, skip: Platform.isIOS);
+
+    testWidgets('cancels timers', (WidgetTester tester) async {
+      await _controller.initialize();
+
+      var eventCount = 0;
+      final listener = () => eventCount++;
+      _controller.addListener(listener);
+
+      // Play for a second, then pause, and then wait a second.
+      await _controller.play();
+      // Call play twice to test if timers leak.
+      await _controller.play();
+      await tester.pumpAndSettle(_playDuration);
+
+      final prePauseEventCount = eventCount;
+      await _controller.pause();
+      await tester.pumpAndSettle(_playDuration);
+
+      // If timers were properly canceled, there should only be one new event
+      // (from pausing). If timers were not canceled, there will be more events.
+      expect(eventCount, prePauseEventCount + 1);
+
+      _controller.removeListener(listener);
     }, skip: Platform.isIOS);
   });
 }
