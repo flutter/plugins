@@ -76,12 +76,12 @@
   }
 }
 
-- (void)testLauchingImagePickerFromPhotoGalleryAndPickImagesTwice {
+- (void)testLauchingImagePickerFromPhotoGalleryAndPickImages{
   XCUIApplication* app = [[XCUIApplication alloc] init];
   [app launch];
 
-  // There has been a bug where bring up the image picker from gallery twice will crash
-  const int numberOfTries = 2;
+  // Running multiple times to ensure there are no race conditions.
+  const int numberOfTries = 10;
 
   for (int i = 0; i < numberOfTries; i++) {
     // Find and tap on the pick from gallery button.
