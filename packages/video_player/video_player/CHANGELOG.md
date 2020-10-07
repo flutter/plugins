@@ -1,7 +1,7 @@
 ## 0.11.0+1
 
-* Fixed uncanceled timers when calling `play` on the controller multiple times causing value
-  listeners to be called indefinitely (after `pause`) and more often than needed. 
+* Fixed uncanceled timers when calling `play` on the controller multiple times before `pause`, which
+  caused value listeners to be called indefinitely (after `pause`) and more often than needed. 
 
 ## 0.11.0
 
