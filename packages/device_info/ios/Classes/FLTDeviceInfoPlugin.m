@@ -37,8 +37,8 @@
       },
       @"screenWidthPixel" : [self getScreenWidth],
       @"screenHeightPixel" : [self getScreenHeight],
-      @"language": [[NSLocale currentLocale] objectForKey: NSLocaleLanguageCode],
-      @"country": [self getCountryCode]
+      @"language" : [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode],
+      @"country" : [self getCountryCode]
     });
   } else {
     result(FlutterMethodNotImplemented);
@@ -58,8 +58,8 @@
 
 // The country code of the device Locale
 - (NSString*)getCountryCode {
-  NSString *country = [[NSLocale currentLocale] objectForKey: NSLocaleCountryCode];
-  if(country != nil) {
+  NSString* country = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+  if (country != nil) {
     return country;
   } else {
     return @"";
@@ -71,7 +71,7 @@
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   CGFloat screenScale = [[UIScreen mainScreen] scale];
   CGFloat width = screenBounds.size.width * screenScale;
-  return [NSNumber numberWithInt: (NSInteger)width];
+  return [NSNumber numberWithInt:(NSInteger)width];
 }
 
 // The absolute height of the available display size in pixels.
@@ -79,7 +79,7 @@
   CGRect screenBounds = [[UIScreen mainScreen] bounds];
   CGFloat screenScale = [[UIScreen mainScreen] scale];
   CGFloat height = screenBounds.size.height * screenScale;
-  return [NSNumber numberWithInt: (NSInteger)height];
+  return [NSNumber numberWithInt:(NSInteger)height];
 }
 
 
