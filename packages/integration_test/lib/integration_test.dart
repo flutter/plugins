@@ -309,7 +309,8 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     addTimingsCallback(watcher);
     await action();
     removeTimingsCallback(watcher);
-    final FrameTimingSummarizer frameTimes = FrameTimingSummarizer(frameTimings);
+    final FrameTimingSummarizer frameTimes =
+        FrameTimingSummarizer(frameTimings);
     reportData ??= <String, dynamic>{};
     reportData[reportKey] = frameTimes.summary;
   }
