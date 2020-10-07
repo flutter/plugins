@@ -304,10 +304,19 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
       }
       return true;
     }());
+
+    // The engine could batch FrameTimings and send them only once per second.
+    // Delay for a sufficient time so either old FrameTimings are flushed and not
+    // interfering our measurements here, or new FrameTimings are all reported.
+    Future<void> delayForFrameTimings() =>
+      Future<void>.delayed(const Duration(seconds: 2));
+
+    await delayForFrameTimings(); // flush old FrameTimings
     final List<FrameTiming> frameTimings = <FrameTiming>[];
     final TimingsCallback watcher = frameTimings.addAll;
     addTimingsCallback(watcher);
     await action();
+    await delayForFrameTimings(); // make sure all FrameTimings are reported
     removeTimingsCallback(watcher);
     final FrameTimingSummarizer frameTimes =
         FrameTimingSummarizer(frameTimings);
