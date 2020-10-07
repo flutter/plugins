@@ -1,3 +1,7 @@
+## 0.6.3+3
+
+* Update README for Android Integration.
+
 ## 0.6.3+2
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
