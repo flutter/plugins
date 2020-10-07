@@ -167,34 +167,33 @@ class AndroidDeviceInfo {
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo _fromMap(Map<String, dynamic> map) {
     return AndroidDeviceInfo._(
-      version:
-          AndroidBuildVersion._fromMap(map['version']?.cast<String, dynamic>()),
-      board: map['board'],
-      bootloader: map['bootloader'],
-      brand: map['brand'],
-      device: map['device'],
-      display: map['display'],
-      fingerprint: map['fingerprint'],
-      hardware: map['hardware'],
-      host: map['host'],
-      id: map['id'],
-      manufacturer: map['manufacturer'],
-      model: map['model'],
-      product: map['product'],
-      supported32BitAbis: _fromList(map['supported32BitAbis']),
-      supported64BitAbis: _fromList(map['supported64BitAbis']),
-      supportedAbis: _fromList(map['supportedAbis']),
-      tags: map['tags'],
-      type: map['type'],
-      isPhysicalDevice: map['isPhysicalDevice'],
-      androidId: map['androidId'],
-      systemFeatures: _fromList(map['systemFeatures']),
-      screenWidthPixel: map['screenWidthPixel'],
-      screenHeightPixel: map['screenHeightPixel'],
-      densityDpi: map['densityDpi'],
-      language: map['language'],
-      country: map['country']
-    );
+        version: AndroidBuildVersion._fromMap(
+            map['version']?.cast<String, dynamic>()),
+        board: map['board'],
+        bootloader: map['bootloader'],
+        brand: map['brand'],
+        device: map['device'],
+        display: map['display'],
+        fingerprint: map['fingerprint'],
+        hardware: map['hardware'],
+        host: map['host'],
+        id: map['id'],
+        manufacturer: map['manufacturer'],
+        model: map['model'],
+        product: map['product'],
+        supported32BitAbis: _fromList(map['supported32BitAbis']),
+        supported64BitAbis: _fromList(map['supported64BitAbis']),
+        supportedAbis: _fromList(map['supportedAbis']),
+        tags: map['tags'],
+        type: map['type'],
+        isPhysicalDevice: map['isPhysicalDevice'],
+        androidId: map['androidId'],
+        systemFeatures: _fromList(map['systemFeatures']),
+        screenWidthPixel: map['screenWidthPixel'],
+        screenHeightPixel: map['screenHeightPixel'],
+        densityDpi: map['densityDpi'],
+        language: map['language'],
+        country: map['country']);
   }
 
   /// Deserializes message as List<String>
@@ -260,20 +259,19 @@ class AndroidBuildVersion {
 ///
 /// See: https://developer.apple.com/documentation/uikit/uidevice
 class IosDeviceInfo {
-  IosDeviceInfo._({
-    this.name,
-    this.systemName,
-    this.systemVersion,
-    this.model,
-    this.localizedModel,
-    this.identifierForVendor,
-    this.isPhysicalDevice,
-    this.utsname,
-    this.screenWidthPixel,
-    this.screenHeightPixel,
-    this.language,
-    this.country
-  });
+  IosDeviceInfo._(
+      {this.name,
+      this.systemName,
+      this.systemVersion,
+      this.model,
+      this.localizedModel,
+      this.identifierForVendor,
+      this.isPhysicalDevice,
+      this.utsname,
+      this.screenWidthPixel,
+      this.screenHeightPixel,
+      this.language,
+      this.country});
 
   /// Device name.
   final String name;
@@ -314,19 +312,18 @@ class IosDeviceInfo {
   /// Deserializes from the map message received from [_kChannel].
   static IosDeviceInfo _fromMap(Map<String, dynamic> map) {
     return IosDeviceInfo._(
-      name: map['name'],
-      systemName: map['systemName'],
-      systemVersion: map['systemVersion'],
-      model: map['model'],
-      localizedModel: map['localizedModel'],
-      identifierForVendor: map['identifierForVendor'],
-      isPhysicalDevice: map['isPhysicalDevice'] == 'true',
-      utsname: IosUtsname._fromMap(map['utsname']?.cast<String, dynamic>()),
-      screenWidthPixel: map['screenWidthPixel'],
-      screenHeightPixel: map['screenHeightPixel'],
-      language: map['language'],
-      country: map['country']
-    );
+        name: map['name'],
+        systemName: map['systemName'],
+        systemVersion: map['systemVersion'],
+        model: map['model'],
+        localizedModel: map['localizedModel'],
+        identifierForVendor: map['identifierForVendor'],
+        isPhysicalDevice: map['isPhysicalDevice'] == 'true',
+        utsname: IosUtsname._fromMap(map['utsname']?.cast<String, dynamic>()),
+        screenWidthPixel: map['screenWidthPixel'],
+        screenHeightPixel: map['screenHeightPixel'],
+        language: map['language'],
+        country: map['country']);
   }
 }
 
