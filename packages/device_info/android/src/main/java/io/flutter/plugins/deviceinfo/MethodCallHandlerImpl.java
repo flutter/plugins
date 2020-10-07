@@ -12,8 +12,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
-import android.view.WindowManager;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.Arrays;
@@ -144,9 +142,9 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         || Build.PRODUCT.contains("simulator");
   }
 
-
   /**
    * Return the screen density expressed as dots-per-inch.
+   *
    * @return Screen density
    */
   private String getDensity() {
