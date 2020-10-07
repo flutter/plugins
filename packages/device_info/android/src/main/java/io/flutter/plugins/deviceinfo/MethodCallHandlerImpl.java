@@ -152,7 +152,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private String getDensity() {
     DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
     String densityString = displayMetrics.densityDpi + " dpi";
-    switch (displayMetrics.densityDpi){
+    switch (displayMetrics.densityDpi) {
       case DisplayMetrics.DENSITY_LOW:
         return densityString + " (LDPI)";
       case DisplayMetrics.DENSITY_MEDIUM:
