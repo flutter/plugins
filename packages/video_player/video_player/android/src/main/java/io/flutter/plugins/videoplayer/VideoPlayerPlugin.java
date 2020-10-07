@@ -5,8 +5,15 @@
 package io.flutter.plugins.videoplayer;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.util.LongSparseArray;
+
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.HttpsURLConnection;
+
 import io.flutter.embedding.engine.loader.FlutterLoader;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -56,6 +63,16 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
+    if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      try {
+        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomSSLSocketFactory());
+      } catch (KeyManagementException e) {
+        e.printStackTrace();
+      } catch (NoSuchAlgorithmException e) {
+        e.printStackTrace();
+      }
+    }
+
     @SuppressWarnings("deprecation")
     final FlutterLoader flutterLoader = FlutterLoader.getInstance();
     this.flutterState =
