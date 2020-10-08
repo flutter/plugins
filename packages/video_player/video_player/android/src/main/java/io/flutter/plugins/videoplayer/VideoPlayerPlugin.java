@@ -7,7 +7,7 @@ package io.flutter.plugins.videoplayer;
 import android.content.Context;
 import android.util.Log;
 import android.util.LongSparseArray;
-import io.flutter.embedding.engine.loader.FlutterLoader;
+import io.flutter.FlutterInjector;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
