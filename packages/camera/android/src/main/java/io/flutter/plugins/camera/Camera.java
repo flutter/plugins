@@ -410,17 +410,9 @@ public class Camera {
   }
   
   public void startPreview() throws CameraAccessException {
-<<<<<<< HEAD
     if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
     
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
-||||||| constructed merge base
-    createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
-=======
-    if (pictureImageReader != null) {
-      createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
-    }
->>>>>>> [camera] Adding check for null before creating capture session.
   }
 
   public void startPreviewWithImageStream(EventChannel imageStreamChannel)
