@@ -71,7 +71,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     int imageQuality,
     bool createThumbnail,
     CameraDevice preferredCameraDevice,
-  }) {
+  }) async {
     assert(source != null);
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
@@ -86,8 +86,8 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
 
-    return _channel.invokeMethod<Map<String, String>>(
-      'pickImagePaths',
+    return _channel.invokeMapMethod<String, String>(
+      'pickImage',
       <String, dynamic>{
         'source': source.index,
         'maxWidth': maxWidth,

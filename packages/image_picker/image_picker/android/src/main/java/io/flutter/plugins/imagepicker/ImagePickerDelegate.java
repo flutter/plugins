@@ -22,6 +22,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -551,18 +552,25 @@ public class ImagePickerDelegate
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
       Integer imageQuality = methodCall.argument("imageQuality");
+      Boolean shouldCreateThumbnail = methodCall.argument("createThumbnail");
 
       String finalImagePath =
           imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
 
-      finishWithSuccess(finalImagePath);
+      String thumbnailPath = null;
+      if(shouldCreateThumbnail != null ? shouldCreateThumbnail : false){
+        thumbnailPath = imageResizer
+                .resizeImageIfNeeded(path, 600.0, 600.0, 100);
+      }
+
+      finishWithSuccess(finalImagePath, thumbnailPath);
 
       //delete original file if scaled
       if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
     } else {
-      finishWithSuccess(path);
+      finishWithSuccess(path, null);
     }
   }
 
@@ -583,6 +591,18 @@ public class ImagePickerDelegate
     cache.clear();
 
     return true;
+  }
+
+  private void finishWithSuccess(String imagePath, String thumbnailPath) {
+    if (pendingResult == null) {
+      cache.saveResult(imagePath, null, null);
+      return;
+    }
+    HashMap<String, String> result = new HashMap<>();
+    result.put("image", imagePath);
+    result.put("thumbnail", thumbnailPath);
+    pendingResult.success(result);
+    clearMethodCallAndResult();
   }
 
   private void finishWithSuccess(String imagePath) {

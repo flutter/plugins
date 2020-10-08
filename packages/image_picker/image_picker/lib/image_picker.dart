@@ -20,6 +20,7 @@ export 'package:image_picker_platform_interface/image_picker_platform_interface.
         LostData,
         LostDataResponse,
         PickedFile,
+        PickedImage,
         RetrieveType;
 
 /// Provides an easy way to pick an image/video from the image library,
@@ -98,6 +99,7 @@ class ImagePicker {
     double maxWidth,
     double maxHeight,
     int imageQuality,
+    bool createThumbnail = false,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     return platform.pickImage(
@@ -105,6 +107,7 @@ class ImagePicker {
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
+      createThumbnail: createThumbnail,
       preferredCameraDevice: preferredCameraDevice,
     );
   }

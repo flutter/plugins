@@ -38,7 +38,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  PickedFile _imageFile;
+  PickedImage _imageFile;
   dynamic _pickImageError;
   bool isVideo = false;
   VideoPlayerController _controller;
@@ -46,9 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String _retrieveDataError;
 
   final ImagePicker _picker = ImagePicker();
-  final TextEditingController maxWidthController = TextEditingController();
-  final TextEditingController maxHeightController = TextEditingController();
-  final TextEditingController qualityController = TextEditingController();
 
   Future<void> _playVideo(PickedFile file) async {
     if (file != null && mounted) {
@@ -81,15 +78,19 @@ class _MyHomePageState extends State<MyHomePage> {
           source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else {
-      await _displayPickImageDialog(context,
-          (double maxWidth, double maxHeight, int quality) async {
+      await _displayPickImageDialog(context, (
+        double maxWidth,
+        double maxHeight,
+        int quality,
+        bool createThumbnail,
+      ) async {
         try {
           final pickedFile = await _picker.getImage(
-            source: source,
-            maxWidth: maxWidth,
-            maxHeight: maxHeight,
-            imageQuality: quality,
-          );
+              source: source,
+              maxWidth: maxWidth,
+              maxHeight: maxHeight,
+              imageQuality: quality,
+              createThumbnail: createThumbnail);
           setState(() {
             _imageFile = pickedFile;
           });
@@ -114,9 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     _disposeVideoController();
-    maxWidthController.dispose();
-    maxHeightController.dispose();
-    qualityController.dispose();
     super.dispose();
   }
 
@@ -156,7 +154,11 @@ class _MyHomePageState extends State<MyHomePage> {
         // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
         return Image.network(_imageFile.path);
       } else {
-        return Image.file(File(_imageFile.path));
+        return Column(children: [
+        if(_imageFile.thumbnail != null)
+          Image.file(File(_imageFile.thumbnail.path)),
+         Image.file(File(_imageFile.path)),
+        ],);
       }
     } else if (_pickImageError != null) {
       return Text(
@@ -297,60 +299,99 @@ class _MyHomePageState extends State<MyHomePage> {
     return showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: Text('Add optional parameters'),
-            content: Column(
-              children: <Widget>[
-                TextField(
-                  controller: maxWidthController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration:
-                      InputDecoration(hintText: "Enter maxWidth if desired"),
-                ),
-                TextField(
-                  controller: maxHeightController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration:
-                      InputDecoration(hintText: "Enter maxHeight if desired"),
-                ),
-                TextField(
-                  controller: qualityController,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      InputDecoration(hintText: "Enter quality if desired"),
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: const Text('CANCEL'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              FlatButton(
-                  child: const Text('PICK'),
-                  onPressed: () {
-                    double width = maxWidthController.text.isNotEmpty
-                        ? double.parse(maxWidthController.text)
-                        : null;
-                    double height = maxHeightController.text.isNotEmpty
-                        ? double.parse(maxHeightController.text)
-                        : null;
-                    int quality = qualityController.text.isNotEmpty
-                        ? int.parse(qualityController.text)
-                        : null;
-                    onPick(width, height, quality);
-                    Navigator.of(context).pop();
-                  }),
-            ],
-          );
+          return ImagePickerDialog(onPick: onPick,);
         });
   }
 }
 
+class ImagePickerDialog extends StatefulWidget {
+  final OnPickImageCallback onPick;
+
+  const ImagePickerDialog({Key key, @required this.onPick}) : super(key: key);
+
+  @override
+  _ImagePickerDialogState createState() => _ImagePickerDialogState();
+}
+
+class _ImagePickerDialogState extends State<ImagePickerDialog> {
+
+  final TextEditingController maxWidthController = TextEditingController();
+  final TextEditingController maxHeightController = TextEditingController();
+  final TextEditingController qualityController = TextEditingController();
+
+  bool _createThumbnail = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Add optional parameters'),
+      content: Column(
+        children: <Widget>[
+          TextField(
+            controller: maxWidthController,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+            decoration:
+            InputDecoration(hintText: "Enter maxWidth if desired"),
+          ),
+          TextField(
+            controller: maxHeightController,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+            decoration:
+            InputDecoration(hintText: "Enter maxHeight if desired"),
+          ),
+          CheckboxListTile(
+            value: _createThumbnail,
+            onChanged: (value) => setState(
+                  () => _createThumbnail = value,
+            ),
+            title: Text('Create thumbnail'),
+          ),
+          TextField(
+            controller: qualityController,
+            keyboardType: TextInputType.number,
+            decoration:
+            InputDecoration(hintText: "Enter quality if desired"),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: const Text('CANCEL'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        FlatButton(
+            child: const Text('PICK'),
+            onPressed: () {
+              double width = maxWidthController.text.isNotEmpty
+                  ? double.parse(maxWidthController.text)
+                  : null;
+              double height = maxHeightController.text.isNotEmpty
+                  ? double.parse(maxHeightController.text)
+                  : null;
+              int quality = qualityController.text.isNotEmpty
+                  ? int.parse(qualityController.text)
+                  : null;
+              widget.onPick(width, height, quality, _createThumbnail);
+              Navigator.of(context).pop();
+            }),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    maxWidthController.dispose();
+    maxHeightController.dispose();
+    qualityController.dispose();
+    super.dispose();
+  }
+}
+
+
 typedef void OnPickImageCallback(
-    double maxWidth, double maxHeight, int quality);
+    double maxWidth, double maxHeight, int quality, bool createThumbnail);
 
 class AspectRatioVideo extends StatefulWidget {
   AspectRatioVideo(this.controller);
