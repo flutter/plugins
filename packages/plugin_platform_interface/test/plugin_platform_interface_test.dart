@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // ignore: todo
-// TODO(egarciad): Remove once Mockito is migrated to null.
+// TODO(egarciad): Remove once Mockito is migrated to null safety.
 // @dart = 2.9
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
