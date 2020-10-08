@@ -29,14 +29,14 @@
     XCTAssertNotNil(shareWithEmptyOriginButton);
     [shareWithEmptyOriginButton tap];
 
-    // Find the copy button indicates the share sheet is up
-    XCUIElement* copyButtonOnShareSheet =
-        [app.cells elementMatchingPredicate:[NSPredicate predicateWithFormat:@"label == %@", @"Copy"]];
-    if (![copyButtonOnShareSheet waitForExistenceWithTimeout:30]) {
+    // Find the share popup.
+    XCUIElement* activityListView =
+        [app.otherElements elementMatchingPredicate:[NSPredicate predicateWithFormat:@"identifier == %@", @"ActivityListView"]];
+    if (![activityListView waitForExistenceWithTimeout:30]) {
       NSLog(@"%@", app.debugDescription);
-      XCTFail(@"Failed due to not able to find copyButtonOnShareSheet with %@ seconds", @(30));
+      XCTFail(@"Failed due to not able to find activityListView with %@ seconds", @(30));
     }
-    XCTAssertNotNil(copyButtonOnShareSheet);
+    XCTAssertNotNil(activityListView);
 }
 
 @end
