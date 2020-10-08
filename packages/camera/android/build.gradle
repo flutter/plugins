@@ -1,6 +1,6 @@
 group 'io.flutter.plugins.camera'
 version '1.0-SNAPSHOT'
-def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
+def args = ["-Xlint:deprecation","-Xlint:unchecked"]
 
 buildscript {
     repositories {
@@ -51,4 +51,5 @@ android {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:3.5.13'
 }
