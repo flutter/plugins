@@ -1,3 +1,7 @@
+## 0.6.5+3
+
+* Fix iPad share window not showing when `origin` is null.
+
 ## 0.6.5+2
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
