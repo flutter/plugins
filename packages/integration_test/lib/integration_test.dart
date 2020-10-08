@@ -308,6 +308,9 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     // The engine could batch FrameTimings and send them only once per second.
     // Delay for a sufficient time so either old FrameTimings are flushed and not
     // interfering our measurements here, or new FrameTimings are all reported.
+    // TODO(CareF): remove this when flush FrameTiming is readly in engine.
+    //              See https://github.com/flutter/flutter/issues/64808
+    //              and https://github.com/flutter/flutter/issues/67593
     Future<void> delayForFrameTimings() =>
       Future<void>.delayed(const Duration(seconds: 2));
 
