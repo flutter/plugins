@@ -1,3 +1,7 @@
+## 5.7.4
+
+* Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android of the `FlutterWebChromeClient` class.
+
 ## 5.7.3
 
 * Check in linux/ directory for example/
