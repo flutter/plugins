@@ -73,12 +73,12 @@ public class Camera {
   }
 
   public Camera(
-          final Activity activity,
-          final SurfaceTextureEntry flutterTexture,
-          final DartMessenger dartMessenger,
-          final String cameraName,
-          final String resolutionPreset,
-          final boolean enableAudio)
+      final Activity activity,
+      final SurfaceTextureEntry flutterTexture,
+      final DartMessenger dartMessenger,
+      final String cameraName,
+      final String resolutionPreset,
+      final boolean enableAudio)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
@@ -121,7 +121,8 @@ public class Camera {
       mediaRecorder.release();
     }
 
-    mediaRecorder = new MediaRecorderBuilder(recordingProfile, outputFilePath)
+    mediaRecorder =
+        new MediaRecorderBuilder(recordingProfile, outputFilePath)
             .setEnableAudio(enableAudio)
             .setMediaOrientation(getMediaOrientation())
             .build();
