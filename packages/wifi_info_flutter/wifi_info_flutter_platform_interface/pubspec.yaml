@@ -1,8 +1,7 @@
 name: wifi_info_flutter_platform_interface
 description: A new Flutter package project.
 version: 0.0.1
-author:
-homepage:
+homepage: https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter_platform_interface
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
