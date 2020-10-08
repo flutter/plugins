@@ -2,9 +2,9 @@
 
 @implementation WifiInfoFlutterPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"wifi_info_flutter"
-            binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel* channel =
+      [FlutterMethodChannel methodChannelWithName:@"wifi_info_flutter"
+                                  binaryMessenger:[registrar messenger]];
   WifiInfoFlutterPlugin* instance = [[WifiInfoFlutterPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
