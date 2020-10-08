@@ -5,7 +5,7 @@
 Pod::Spec.new do |s|
   s.name             = 'wifi_info_flutter'
   s.version          = '0.0.1'
-  s.summary          = 'A wifi information plugin for Flutter'
+  s.summary          = 'A wifi information plugin for Flutter.'
   s.description      = <<-DESC
 A Flutter plugin for retrieving wifi information from a device.
                        DESC
