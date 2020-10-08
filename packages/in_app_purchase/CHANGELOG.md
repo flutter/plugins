@@ -1,3 +1,10 @@
+## 0.3.4+12
+
+* [iOS] Fixed: finishing purchases upon payment dialog cancellation.
+
+## 0.3.4+11
+
+* [iOS] Fixed: crash when sending null for simulatesAskToBuyInSandbox parameter.
 
 ## 0.3.4+10
 
