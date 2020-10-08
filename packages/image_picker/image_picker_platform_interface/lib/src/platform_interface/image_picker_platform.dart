@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:image_picker_platform_interface/src/types/picked_image.dart';
 import 'package:meta/meta.dart' show required;
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -138,11 +139,12 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  Future<PickedFile> pickImage({
+  Future<PickedImage> pickImage({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
     int imageQuality,
+    bool createThumbnail = false,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     throw UnimplementedError('pickImage() has not been implemented.');

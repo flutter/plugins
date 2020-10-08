@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker_platform_interface/src/types/picked_image.dart';
 import 'package:meta/meta.dart' show required, visibleForTesting;
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
@@ -20,21 +21,28 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   MethodChannel get channel => _channel;
 
   @override
-  Future<PickedFile> pickImage({
+  Future<PickedImage> pickImage({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
     int imageQuality,
+    bool createThumbnail = false,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    String path = await pickImagePath(
+    var paths = await _pickImagePaths(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
+      createThumbnail: createThumbnail,
       preferredCameraDevice: preferredCameraDevice,
     );
-    return path != null ? PickedFile(path) : null;
+    return paths != null
+        ? PickedImage(
+            paths['image'],
+            thumbnailPath: paths['thumbnail'],
+          )
+        : null;
   }
 
   @override
@@ -44,6 +52,25 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double maxHeight,
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
+  }) async {
+    var paths = await _pickImagePaths(
+      source: source,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      imageQuality: imageQuality,
+      preferredCameraDevice: preferredCameraDevice,
+      createThumbnail: false,
+    );
+    return paths['image'];
+  }
+
+  Future<Map<String, String>> _pickImagePaths({
+    @required ImageSource source,
+    double maxWidth,
+    double maxHeight,
+    int imageQuality,
+    bool createThumbnail,
+    CameraDevice preferredCameraDevice,
   }) {
     assert(source != null);
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
@@ -59,13 +86,14 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
 
-    return _channel.invokeMethod<String>(
-      'pickImage',
+    return _channel.invokeMethod<Map<String, String>>(
+      'pickImagePaths',
       <String, dynamic>{
         'source': source.index,
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
         'imageQuality': imageQuality,
+        'createThumbnail': createThumbnail,
         'cameraDevice': preferredCameraDevice.index
       },
     );
