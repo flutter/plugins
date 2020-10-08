@@ -87,6 +87,7 @@ public class WebViewActivity extends Activity {
             }
 
             @Override
+            @SuppressWarnings("deprecation")
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
               webview.loadUrl(url);
               return true;
