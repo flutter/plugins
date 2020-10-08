@@ -408,8 +408,10 @@ public class Camera {
 
     result.success(null);
   }
-
+  
   public void startPreview() throws CameraAccessException {
+    if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
+    
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
 
