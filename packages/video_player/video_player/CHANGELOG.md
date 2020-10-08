@@ -1,3 +1,7 @@
+## 0.11.1
+
+* Enable TLSv1.1 & TLSv1.2 for API 19 and below.
+
 ## 0.11.0
 
 * Added option to set the video playback speed on the video controller.
