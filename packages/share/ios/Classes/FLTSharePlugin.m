@@ -168,17 +168,8 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   UIActivityViewController *activityViewController =
       [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];
   activityViewController.popoverPresentationController.sourceView = controller.view;
-  if (!CGRectIsEmpty(origin)) {
-    activityViewController.popoverPresentationController.sourceRect = origin;
-  } else {
-    // Explicitly set the sourceRect to their default values based on iOS version.
-    // This is to fix a bug on iPad: https://github.com/flutter/flutter/issues/66485
-    if (@available(iOS 13.2, *)) {
-      activityViewController.popoverPresentationController.sourceRect = CGRectNull;
-    } else {
-      activityViewController.popoverPresentationController.sourceRect = CGRectZero;
-    }
-  }
+  activityViewController.popoverPresentationController.sourceRect = origin;
+
   [controller presentViewController:activityViewController animated:YES completion:nil];
 }
 
