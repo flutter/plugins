@@ -12,8 +12,8 @@ A Flutter plugin for retrieving wifi information from a device.
   s.homepage         = 'https://github.com/flutter/plugins'
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter' }
-  s.documentation_url = 'https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter'
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master' }
+  s.documentation_url = 'https://pub.dev'
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
