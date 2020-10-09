@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ## 5.7.5
+=======
+## 5.7.3
+>>>>>>> a741c59a... Update CHANGELOG.md
 
 * Improved documentation of the `headers` parameter.
 
