@@ -1,3 +1,7 @@
+## 1.1.0-nullsafety
+
+* Migrate to null safety.
+
 ## 1.0.3
 
 * Fix homepage in `pubspec.yaml`.
