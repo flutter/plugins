@@ -87,9 +87,9 @@ public class WebViewActivity extends Activity {
             }
 
             /*
-            * This method is deprecated in API 24. Still overridden to support
-            * earlier Android versions.
-            */
+             * This method is deprecated in API 24. Still overridden to support
+             * earlier Android versions.
+             */
             @SuppressWarnings("deprecation")
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
