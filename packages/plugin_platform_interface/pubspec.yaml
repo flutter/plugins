@@ -19,6 +19,9 @@ repository: https://github.com/flutter/plugins/tree/master/packages/plugin_platf
 environment:
   sdk: '>=2.10.0-56.0.dev <3.0.0'
 
+# Don't publish this package until null safety is stable or the package is in the allow list.
+publish_to: none
+
 dependencies:
   meta: ^1.3.0-nullsafety.3
 
