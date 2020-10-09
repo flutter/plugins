@@ -1,3 +1,7 @@
+## 0.5.8+8
+
+* Fixed garbled audio (in video) by setting audio encoding bitrate.
+
 ## 0.5.8+7
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
