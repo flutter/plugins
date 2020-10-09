@@ -5,6 +5,7 @@
 package io.flutter.plugins.videoplayer;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.util.LongSparseArray;
 import io.flutter.embedding.engine.loader.FlutterLoader;
@@ -20,6 +21,9 @@ import io.flutter.plugins.videoplayer.Messages.TextureMessage;
 import io.flutter.plugins.videoplayer.Messages.VideoPlayerApi;
 import io.flutter.plugins.videoplayer.Messages.VolumeMessage;
 import io.flutter.view.TextureRegistry;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import javax.net.ssl.HttpsURLConnection;
 
 /** Android platform implementation of the VideoPlayerPlugin. */
 public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
@@ -56,6 +60,19 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
+    if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      try {
+        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomSSLSocketFactory());
+      } catch (KeyManagementException | NoSuchAlgorithmException e) {
+        Log.w(
+            TAG,
+            "Failed to enable TLSv1.1 and TLSv1.2 Protocols for API level 19 and below.\n"
+                + "For more information about Socket Security, please consult the following link:\n"
+                + "https://developer.android.com/reference/javax/net/ssl/SSLSocket",
+            e);
+      }
+    }
+
     @SuppressWarnings("deprecation")
     final FlutterLoader flutterLoader = FlutterLoader.getInstance();
     this.flutterState =

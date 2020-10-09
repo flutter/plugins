@@ -1,3 +1,7 @@
+## 0.3.4+13
+
+* Android Code Inspection and Clean up.
+
 ## 0.3.4+12
 
 * [iOS] Fixed: finishing purchases upon payment dialog cancellation.

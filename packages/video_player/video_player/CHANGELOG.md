@@ -1,7 +1,11 @@
-## 0.11.0+1
+## 0.11.1+1
 
 * Fixed uncanceled timers when calling `play` on the controller multiple times before `pause`, which
   caused value listeners to be called indefinitely (after `pause`) and more often than needed. 
+
+## 0.11.1
+
+* Enable TLSv1.1 & TLSv1.2 for API 19 and below.
 
 ## 0.11.0
 

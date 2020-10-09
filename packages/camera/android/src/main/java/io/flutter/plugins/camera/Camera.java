@@ -28,6 +28,7 @@ import android.view.Surface;
 import androidx.annotation.NonNull;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugins.camera.media.MediaRecorderBuilder;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -82,7 +83,6 @@ public class Camera {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
     }
-
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
     this.flutterTexture = flutterTexture;
@@ -120,23 +120,12 @@ public class Camera {
     if (mediaRecorder != null) {
       mediaRecorder.release();
     }
-    mediaRecorder = new MediaRecorder();
 
-    // There's a specific order that mediaRecorder expects. Do not change the order
-    // of these function calls.
-    if (enableAudio) mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-    mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-    mediaRecorder.setOutputFormat(recordingProfile.fileFormat);
-    if (enableAudio) mediaRecorder.setAudioEncoder(recordingProfile.audioCodec);
-    mediaRecorder.setVideoEncoder(recordingProfile.videoCodec);
-    mediaRecorder.setVideoEncodingBitRate(recordingProfile.videoBitRate);
-    if (enableAudio) mediaRecorder.setAudioSamplingRate(recordingProfile.audioSampleRate);
-    mediaRecorder.setVideoFrameRate(recordingProfile.videoFrameRate);
-    mediaRecorder.setVideoSize(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
-    mediaRecorder.setOutputFile(outputFilePath);
-    mediaRecorder.setOrientationHint(getMediaOrientation());
-
-    mediaRecorder.prepare();
+    mediaRecorder =
+        new MediaRecorderBuilder(recordingProfile, outputFilePath)
+            .setEnableAudio(enableAudio)
+            .setMediaOrientation(getMediaOrientation())
+            .build();
   }
 
   @SuppressLint("MissingPermission")
