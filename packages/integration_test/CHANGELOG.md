@@ -1,3 +1,7 @@
+## 0.9.2
+
+* Add `watchPerformance` for performance test.
+
 ## 0.9.1
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
