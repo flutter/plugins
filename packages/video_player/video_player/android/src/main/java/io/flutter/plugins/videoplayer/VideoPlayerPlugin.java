@@ -73,9 +73,8 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
             e);
       }
     }
-    
+
     final FlutterInjector injector = FlutterInjector.instance();
-    
     this.flutterState =
         new FlutterState(
             binding.getApplicationContext(),
