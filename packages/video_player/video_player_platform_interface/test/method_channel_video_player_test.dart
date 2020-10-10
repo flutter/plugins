@@ -8,12 +8,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:video_player_platform_interface/messages.dart';
-import 'package:mockito/mockito.dart';
 import 'package:video_player_platform_interface/method_channel_video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 class _ApiLogger implements TestHostVideoPlayerApi {
   final List<String> log = [];
+  InitializeMessage initializeMessage;
   TextureMessage textureMessage;
   CreateMessage createMessage;
   PositionMessage positionMessage;
@@ -36,8 +36,9 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   }
 
   @override
-  void initialize() {
+  void initialize(InitializeMessage arg) {
     log.add('init');
+    initializeMessage = arg;
   }
 
   @override
@@ -169,10 +170,6 @@ void main() {
 
     group('create with network', () {
       test('with cache', () async {
-        channel.setMockMethodCallHandler((MethodCall methodCall) async {
-          log.add(methodCall);
-          return <String, dynamic>{'textureId': 3};
-        });
         final int textureId = await player.create(
           DataSource(
             sourceType: DataSourceType.network,
@@ -181,24 +178,14 @@ void main() {
           ),
         );
 
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('create', arguments: <String, Object>{
-              'uri': 'someUri',
-              'formatHint': null,
-              'useCache': true,
-            })
-          ],
-        );
+        expect(log.log.last, 'create');
+        expect(log.createMessage.uri, 'someUri');
+        expect(log.createMessage.formatHint, 'null');
+        expect(log.createMessage.useCache, true);
         expect(textureId, 3);
       });
 
       test('without cache', () async {
-        channel.setMockMethodCallHandler((MethodCall methodCall) async {
-          log.add(methodCall);
-          return <String, dynamic>{'textureId': 3};
-        });
         final int textureId = await player.create(
           DataSource(
             sourceType: DataSourceType.network,
@@ -207,24 +194,14 @@ void main() {
           ),
         );
 
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('create', arguments: <String, Object>{
-              'uri': 'someUri',
-              'formatHint': null,
-              'useCache': false,
-            })
-          ],
-        );
+        expect(log.log.last, 'create');
+        expect(log.createMessage.uri, 'someUri');
+        expect(log.createMessage.formatHint, 'null');
+        expect(log.createMessage.useCache, false);
         expect(textureId, 3);
       });
 
       test('without cache by default', () async {
-        channel.setMockMethodCallHandler((MethodCall methodCall) async {
-          log.add(methodCall);
-          return <String, dynamic>{'textureId': 3};
-        });
         final int textureId = await player.create(
           DataSource(
             sourceType: DataSourceType.network,
@@ -232,24 +209,14 @@ void main() {
           ),
         );
 
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('create', arguments: <String, Object>{
-              'uri': 'someUri',
-              'formatHint': null,
-              'useCache': false,
-            })
-          ],
-        );
+        expect(log.log.last, 'create');
+        expect(log.createMessage.uri, 'someUri');
+        expect(log.createMessage.formatHint, 'null');
+        expect(log.createMessage.useCache, false);
         expect(textureId, 3);
       });
 
       test('with hint', () async {
-        channel.setMockMethodCallHandler((MethodCall methodCall) async {
-          log.add(methodCall);
-          return <String, dynamic>{'textureId': 3};
-        });
         final int textureId = await player.create(
           DataSource(
             sourceType: DataSourceType.network,
@@ -258,16 +225,10 @@ void main() {
           ),
         );
 
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('create', arguments: <String, Object>{
-              'uri': 'someUri',
-              'formatHint': 'dash',
-              'useCache': false,
-            })
-          ],
-        );
+        expect(log.log.last, 'create');
+        expect(log.createMessage.uri, 'someUri');
+        expect(log.createMessage.formatHint, 'dash');
+        expect(log.createMessage.useCache, false);
         expect(textureId, 3);
       });
     });

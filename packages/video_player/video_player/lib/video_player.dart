@@ -185,13 +185,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code. The [useCache] argument must be non-null,
   /// default is false.
-  VideoPlayerController.network(this.dataSource, {
+  VideoPlayerController.network(
+    this.dataSource, {
     this.formatHint,
     this.closedCaptionFile,
     this.videoPlayerOptions,
     bool useCache = false,
-  })
-      : assert(useCache != null),
+  })  : assert(useCache != null),
         dataSourceType = DataSourceType.network,
         package = null,
         useCache = useCache,
@@ -201,8 +201,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
-  VideoPlayerController.file(File file, {this.closedCaptionFile})
-      : dataSource = 'file://${file.path}',
+  VideoPlayerController.file(
+    File file, {
+    this.closedCaptionFile,
+    this.videoPlayerOptions,
+  })  : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
@@ -312,11 +315,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     if (videoPlayerOptions?.mixWithOthers != null) {
-      await VideoPlayerPlatform
+      await VideoPlayerPlatform.instance
           .setMixWithOthers(videoPlayerOptions.mixWithOthers);
     }
 
-    _textureId = await VideoPlayerPlatform.create(dataSourceDescription);
+    _textureId =
+        await VideoPlayerPlatform.instance.create(dataSourceDescription);
     _creatingCompleter.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
@@ -443,7 +447,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       await VideoPlayerPlatform.instance.play(_textureId);
       _timer = Timer.periodic(
         const Duration(milliseconds: 500),
-            (Timer timer) async {
+        (Timer timer) async {
           if (_isDisposed) {
             return;
           }
@@ -482,7 +486,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     // the video is manually played from Flutter.
     if (!value.isPlaying) return;
 
-    await _videoPlayerPlatform.setPlaybackSpeed(
+    await VideoPlayerPlatform.instance.setPlaybackSpeed(
       _textureId,
       value.playbackSpeed,
     );
@@ -790,7 +794,8 @@ class VideoProgressIndicator extends StatefulWidget {
   /// Defaults will be used for everything except [controller] if they're not
   /// provided. [allowScrubbing] defaults to false, and [padding] will default
   /// to `top: 5.0`.
-  VideoProgressIndicator(this.controller, {
+  VideoProgressIndicator(
+    this.controller, {
     VideoProgressColors colors,
     this.allowScrubbing,
     this.padding = const EdgeInsets.only(top: 5.0),
@@ -939,16 +944,10 @@ class ClosedCaption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextStyle effectiveTextStyle = textStyle ??
-        DefaultTextStyle
-            .of(context)
-            .style
-            .copyWith(
-          fontSize: 36.0,
-          color: Colors.white,
-        );
-    VideoPlayerController.file(File file,
-        {this.closedCaptionFile, this.videoPlayerOptions})
-        : VideoPlayerPlatform.instance.buildView(_textureId);
+        DefaultTextStyle.of(context).style.copyWith(
+              fontSize: 36.0,
+              color: Colors.white,
+            );
 
     if (text == null) {
       return SizedBox.shrink();

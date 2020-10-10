@@ -73,8 +73,8 @@ final class VideoPlayer {
       String dataSource,
       String formatHint,
       VideoPlayerOptions options,
-      int maxCacheSize,
-      int maxCacheFileSize,
+      long maxCacheSize,
+      long maxCacheFileSize,
       boolean useCache) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;

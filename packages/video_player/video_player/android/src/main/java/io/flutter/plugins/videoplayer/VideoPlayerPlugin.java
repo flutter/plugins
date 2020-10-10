@@ -12,6 +12,7 @@ import io.flutter.embedding.engine.loader.FlutterLoader;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugins.videoplayer.Messages.InitializeMessage;
 import io.flutter.plugins.videoplayer.Messages.CreateMessage;
 import io.flutter.plugins.videoplayer.Messages.LoopingMessage;
 import io.flutter.plugins.videoplayer.Messages.MixWithOthersMessage;
@@ -32,8 +33,8 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
   private FlutterState flutterState;
   private VideoPlayerOptions options = new VideoPlayerOptions();
 
-  private int maxCacheSize;
-  private int maxCacheFileSize;
+  private long maxCacheSize;
+  private long maxCacheFileSize;
 
   /** Register this with the v2 embedding for the plugin to respond to lifecycle callbacks. */
   public VideoPlayerPlugin() {}
@@ -113,10 +114,10 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
     disposeAllPlayers();
   }
 
-  public void initialize() {
+  public void initialize(InitializeMessage arg) {
     disposeAllPlayers();
-    maxCacheSize = call.argument("maxCacheSize");
-    maxCacheFileSize = call.argument("maxCacheFileSize");
+    maxCacheSize = arg.getMaxCacheSize();
+    maxCacheFileSize = arg.getMaxCacheFileSize();
   }
 
   public TextureMessage create(CreateMessage arg) {
@@ -158,7 +159,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               options,
                   maxCacheSize,
                   maxCacheFileSize,
-                  call.argument("useCache"));
+                  arg.getUseCache());
       videoPlayers.put(handle.id(), player);
     }
 

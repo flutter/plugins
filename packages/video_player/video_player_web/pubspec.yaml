@@ -20,11 +20,12 @@ dependencies:
     sdk: flutter
   meta: ^1.1.7
   video_player_platform_interface: #^2.3.0
+    path: ../video_player_platform_interface
     # workaround for success build checks in PR
-    git:
-      url: git://github.com/sanekyy/plugins.git
-      ref: caching
-      path: packages/video_player/video_player_platform_interface
+#    git:
+#      url: git://github.com/sanekyy/plugins.git
+#      ref: caching
+#      path: packages/video_player/video_player_platform_interface
 
 dev_dependencies:
   flutter_test:

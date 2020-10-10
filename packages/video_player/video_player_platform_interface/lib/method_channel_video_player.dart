@@ -17,10 +17,10 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<void> init(int maxCacheSize, int maxCacheFileSize) {
-    InitMessage message = InitMessage();
+    InitializeMessage message = InitializeMessage();
     message.maxCacheSize = maxCacheSize;
     message.maxCacheFileSize = maxCacheFileSize;
-    return _api.initialize();
+    return _api.initialize(message);
   }
 
   @override
