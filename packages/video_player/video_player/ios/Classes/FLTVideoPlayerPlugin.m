@@ -520,7 +520,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return result;
 }
 
-- (void)initialize:(FlutterError* __autoreleasing*)error {
+- (void)initialize:(FLTInitializeMessage*)input error:(FlutterError**)error {
   // Allow audio playback when the Ring/Silent switch is set to silent
   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
 
@@ -529,6 +529,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [_players[textureId] dispose];
   }
   [_players removeAllObjects];
+  _maxCacheSize = input.maxCacheSize;
+  _maxCacheFileSize = input.maxCacheFileSize;
 }
 
 - (FLTTextureMessage*)create:(FLTCreateMessage*)input error:(FlutterError**)error {
@@ -544,8 +546,20 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
     return [self onPlayerSetup:player frameUpdater:frameUpdater];
   } else if (input.uri) {
-    player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:input.uri]
-                                    frameUpdater:frameUpdater];
+    BOOL useCache = input.useCache;
+    BOOL enableCache = _maxCacheSize > 0 && _maxCacheFileSize > 0 && useCache;
+    if (enableCache) {
+      NSString* escapedURL = [input.uri
+        stringByAddingPercentEncodingWithAllowedCharacters:NSMutableCharacterSet
+                                                               .alphanumericCharacterSet];
+
+      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:escapedURL]
+                                      frameUpdater:frameUpdater
+                                       enableCache:enableCache];
+    } else {
+      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:input.uri]
+                                          frameUpdater:frameUpdater];
+    }
     return [self onPlayerSetup:player frameUpdater:frameUpdater];
   } else {
     *error = [FlutterError errorWithCode:@"video_player" message:@"not implemented" details:nil];
