@@ -4,8 +4,8 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 
 import '../wifi_info_flutter_platform_interface.dart';
 import 'utils.dart';
