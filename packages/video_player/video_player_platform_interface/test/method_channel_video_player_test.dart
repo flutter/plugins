@@ -133,8 +133,8 @@ void main() {
         log.log.last,
         'init',
       );
-      // 'maxCacheSize': 100,
-      // 'maxCacheFileSize': 10,
+      expect(log.initializeMessage.maxCacheSize, 100);
+      expect(log.initializeMessage.maxCacheFileSize, 10);
     });
 
     test('dispose', () async {
@@ -180,7 +180,7 @@ void main() {
 
         expect(log.log.last, 'create');
         expect(log.createMessage.uri, 'someUri');
-        expect(log.createMessage.formatHint, 'null');
+        expect(log.createMessage.formatHint, null);
         expect(log.createMessage.useCache, true);
         expect(textureId, 3);
       });
@@ -196,7 +196,7 @@ void main() {
 
         expect(log.log.last, 'create');
         expect(log.createMessage.uri, 'someUri');
-        expect(log.createMessage.formatHint, 'null');
+        expect(log.createMessage.formatHint, null);
         expect(log.createMessage.useCache, false);
         expect(textureId, 3);
       });
@@ -211,7 +211,7 @@ void main() {
 
         expect(log.log.last, 'create');
         expect(log.createMessage.uri, 'someUri');
-        expect(log.createMessage.formatHint, 'null');
+        expect(log.createMessage.formatHint, null);
         expect(log.createMessage.useCache, false);
         expect(textureId, 3);
       });
