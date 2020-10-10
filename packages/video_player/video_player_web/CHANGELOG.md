@@ -1,6 +1,27 @@
+## 0.1.5
+
+- bump video_player_platform_interface to 2.3.0
+
+## 0.1.4
+
+* Added option to set the video playback speed on the video controller.
+
+## 0.1.3+2
+
+* Allow users to set the 'muted' attribute on video elements by setting their volume to 0.
+* Do not parse URIs on 'network' videos to not break blobs (Safari).
+
+## 0.1.3+1
+
+* Remove Android folder from `video_player_web`.
+
+## 0.1.3
+
+* Updated video_player_platform_interface, bumped minimum Dart version to 2.1.0.
+
 ## 0.1.2+3
 
-- bump video_player_platform_interface to 1.0.6
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
 
 ## 0.1.2+2
 

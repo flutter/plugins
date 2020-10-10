@@ -1,6 +1,61 @@
-## 0.10.10
+## 0.12.0
 
 * Add caching functionality to videos from network sources.
+
+## 0.11.1
+
+* Enable TLSv1.1 & TLSv1.2 for API 19 and below.
+
+## 0.11.0
+
+* Added option to set the video playback speed on the video controller.
+* **Minor breaking change**: fixed `VideoPlayerValue.toString` to insert a comma after `isBuffering`.
+
+## 0.10.12+5
+
+* Depend on `video_player_platform_interface` version that contains the new `TestHostVideoPlayerApi`
+  in order for tests to pass using the latest dependency.
+
+## 0.10.12+4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.10.12+3
+
+* Avoiding uses or overrides a deprecated API in `VideoPlayerPlugin` class.
+
+## 0.10.12+2
+
+* Fix `setMixWithOthers` test.
+
+## 0.10.12+1
+
+* Depend on the version of `video_player_platform_interface` that contains the new `VideoPlayerOptions` class.
+
+## 0.10.12
+
+* Introduce VideoPlayerOptions to set the audio mix mode.
+
+## 0.10.11+2
+
+* Fix aspectRatio calculation when size.width or size.height are zero.
+
+## 0.10.11+1
+
+* Post-v2 Android embedding cleanups.
+
+## 0.10.11
+
+* iOS: Fixed crash when detaching from a dying engine.
+* Android: Fixed exception when detaching from any engine.
+
+## 0.10.10
+
+* Migrated to [pigeon](https://pub.dev/packages/pigeon).
+
+## 0.10.9+2
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
 
 ## 0.10.9+1
 
@@ -27,7 +82,7 @@
 
 ## 0.10.7
 
-* `VideoPlayerController` support for reading closed caption files. 
+* `VideoPlayerController` support for reading closed caption files.
 * `VideoPlayerValue` has a `caption` field for reading the current closed caption at any given time.
 
 ## 0.10.6
