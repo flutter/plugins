@@ -6,7 +6,6 @@ package io.flutter.plugins.videoplayer;
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /** Generated class from Pigeon. */
@@ -16,12 +15,24 @@ public class Messages {
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class InitializeMessage {
     private Long maxCacheSize;
-    public Long getMaxCacheSize() { return maxCacheSize; }
-    public void setMaxCacheSize(Long setterArg) { this.maxCacheSize = setterArg; }
+
+    public Long getMaxCacheSize() {
+      return maxCacheSize;
+    }
+
+    public void setMaxCacheSize(Long setterArg) {
+      this.maxCacheSize = setterArg;
+    }
 
     private Long maxCacheFileSize;
-    public Long getMaxCacheFileSize() { return maxCacheFileSize; }
-    public void setMaxCacheFileSize(Long setterArg) { this.maxCacheFileSize = setterArg; }
+
+    public Long getMaxCacheFileSize() {
+      return maxCacheFileSize;
+    }
+
+    public void setMaxCacheFileSize(Long setterArg) {
+      this.maxCacheFileSize = setterArg;
+    }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
@@ -29,12 +40,21 @@ public class Messages {
       toMapResult.put("maxCacheFileSize", maxCacheFileSize);
       return toMapResult;
     }
+
     static InitializeMessage fromMap(HashMap map) {
       InitializeMessage fromMapResult = new InitializeMessage();
       Object maxCacheSize = map.get("maxCacheSize");
-      fromMapResult.maxCacheSize = (maxCacheSize == null) ? null : ((maxCacheSize instanceof Integer) ? (Integer)maxCacheSize : (Long)maxCacheSize);
+      fromMapResult.maxCacheSize =
+          (maxCacheSize == null)
+              ? null
+              : ((maxCacheSize instanceof Integer) ? (Integer) maxCacheSize : (Long) maxCacheSize);
       Object maxCacheFileSize = map.get("maxCacheFileSize");
-      fromMapResult.maxCacheFileSize = (maxCacheFileSize == null) ? null : ((maxCacheFileSize instanceof Integer) ? (Integer)maxCacheFileSize : (Long)maxCacheFileSize);
+      fromMapResult.maxCacheFileSize =
+          (maxCacheFileSize == null)
+              ? null
+              : ((maxCacheFileSize instanceof Integer)
+                  ? (Integer) maxCacheFileSize
+                  : (Long) maxCacheFileSize);
       return fromMapResult;
     }
   }
@@ -42,18 +62,28 @@ public class Messages {
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class TextureMessage {
     private Long textureId;
-    public Long getTextureId() { return textureId; }
-    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    public Long getTextureId() {
+      return textureId;
+    }
+
+    public void setTextureId(Long setterArg) {
+      this.textureId = setterArg;
+    }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       return toMapResult;
     }
+
     static TextureMessage fromMap(HashMap map) {
       TextureMessage fromMapResult = new TextureMessage();
       Object textureId = map.get("textureId");
-      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      fromMapResult.textureId =
+          (textureId == null)
+              ? null
+              : ((textureId instanceof Integer) ? (Integer) textureId : (Long) textureId);
       return fromMapResult;
     }
   }
@@ -61,24 +91,54 @@ public class Messages {
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class CreateMessage {
     private String asset;
-    public String getAsset() { return asset; }
-    public void setAsset(String setterArg) { this.asset = setterArg; }
+
+    public String getAsset() {
+      return asset;
+    }
+
+    public void setAsset(String setterArg) {
+      this.asset = setterArg;
+    }
 
     private String uri;
-    public String getUri() { return uri; }
-    public void setUri(String setterArg) { this.uri = setterArg; }
+
+    public String getUri() {
+      return uri;
+    }
+
+    public void setUri(String setterArg) {
+      this.uri = setterArg;
+    }
 
     private String packageName;
-    public String getPackageName() { return packageName; }
-    public void setPackageName(String setterArg) { this.packageName = setterArg; }
+
+    public String getPackageName() {
+      return packageName;
+    }
+
+    public void setPackageName(String setterArg) {
+      this.packageName = setterArg;
+    }
 
     private String formatHint;
-    public String getFormatHint() { return formatHint; }
-    public void setFormatHint(String setterArg) { this.formatHint = setterArg; }
+
+    public String getFormatHint() {
+      return formatHint;
+    }
+
+    public void setFormatHint(String setterArg) {
+      this.formatHint = setterArg;
+    }
 
     private Boolean useCache;
-    public Boolean getUseCache() { return useCache; }
-    public void setUseCache(Boolean setterArg) { this.useCache = setterArg; }
+
+    public Boolean getUseCache() {
+      return useCache;
+    }
+
+    public void setUseCache(Boolean setterArg) {
+      this.useCache = setterArg;
+    }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
@@ -89,18 +149,19 @@ public class Messages {
       toMapResult.put("useCache", useCache);
       return toMapResult;
     }
+
     static CreateMessage fromMap(HashMap map) {
       CreateMessage fromMapResult = new CreateMessage();
       Object asset = map.get("asset");
-      fromMapResult.asset = (String)asset;
+      fromMapResult.asset = (String) asset;
       Object uri = map.get("uri");
-      fromMapResult.uri = (String)uri;
+      fromMapResult.uri = (String) uri;
       Object packageName = map.get("packageName");
-      fromMapResult.packageName = (String)packageName;
+      fromMapResult.packageName = (String) packageName;
       Object formatHint = map.get("formatHint");
-      fromMapResult.formatHint = (String)formatHint;
+      fromMapResult.formatHint = (String) formatHint;
       Object useCache = map.get("useCache");
-      fromMapResult.useCache = (Boolean)useCache;
+      fromMapResult.useCache = (Boolean) useCache;
       return fromMapResult;
     }
   }
@@ -108,12 +169,24 @@ public class Messages {
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class LoopingMessage {
     private Long textureId;
-    public Long getTextureId() { return textureId; }
-    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    public Long getTextureId() {
+      return textureId;
+    }
+
+    public void setTextureId(Long setterArg) {
+      this.textureId = setterArg;
+    }
 
     private Boolean isLooping;
-    public Boolean getIsLooping() { return isLooping; }
-    public void setIsLooping(Boolean setterArg) { this.isLooping = setterArg; }
+
+    public Boolean getIsLooping() {
+      return isLooping;
+    }
+
+    public void setIsLooping(Boolean setterArg) {
+      this.isLooping = setterArg;
+    }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
@@ -121,12 +194,16 @@ public class Messages {
       toMapResult.put("isLooping", isLooping);
       return toMapResult;
     }
+
     static LoopingMessage fromMap(HashMap map) {
       LoopingMessage fromMapResult = new LoopingMessage();
       Object textureId = map.get("textureId");
-      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      fromMapResult.textureId =
+          (textureId == null)
+              ? null
+              : ((textureId instanceof Integer) ? (Integer) textureId : (Long) textureId);
       Object isLooping = map.get("isLooping");
-      fromMapResult.isLooping = (Boolean)isLooping;
+      fromMapResult.isLooping = (Boolean) isLooping;
       return fromMapResult;
     }
   }
@@ -134,12 +211,24 @@ public class Messages {
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class VolumeMessage {
     private Long textureId;
-    public Long getTextureId() { return textureId; }
-    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    public Long getTextureId() {
+      return textureId;
+    }
+
+    public void setTextureId(Long setterArg) {
+      this.textureId = setterArg;
+    }
 
     private Double volume;
-    public Double getVolume() { return volume; }
-    public void setVolume(Double setterArg) { this.volume = setterArg; }
+
+    public Double getVolume() {
+      return volume;
+    }
+
+    public void setVolume(Double setterArg) {
+      this.volume = setterArg;
+    }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
@@ -147,12 +236,16 @@ public class Messages {
       toMapResult.put("volume", volume);
       return toMapResult;
     }
+
     static VolumeMessage fromMap(HashMap map) {
       VolumeMessage fromMapResult = new VolumeMessage();
       Object textureId = map.get("textureId");
-      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      fromMapResult.textureId =
+          (textureId == null)
+              ? null
+              : ((textureId instanceof Integer) ? (Integer) textureId : (Long) textureId);
       Object volume = map.get("volume");
-      fromMapResult.volume = (Double)volume;
+      fromMapResult.volume = (Double) volume;
       return fromMapResult;
     }
   }
@@ -160,12 +253,24 @@ public class Messages {
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class PlaybackSpeedMessage {
     private Long textureId;
-    public Long getTextureId() { return textureId; }
-    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    public Long getTextureId() {
+      return textureId;
+    }
+
+    public void setTextureId(Long setterArg) {
+      this.textureId = setterArg;
+    }
 
     private Double speed;
-    public Double getSpeed() { return speed; }
-    public void setSpeed(Double setterArg) { this.speed = setterArg; }
+
+    public Double getSpeed() {
+      return speed;
+    }
+
+    public void setSpeed(Double setterArg) {
+      this.speed = setterArg;
+    }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
@@ -173,12 +278,16 @@ public class Messages {
       toMapResult.put("speed", speed);
       return toMapResult;
     }
+
     static PlaybackSpeedMessage fromMap(HashMap map) {
       PlaybackSpeedMessage fromMapResult = new PlaybackSpeedMessage();
       Object textureId = map.get("textureId");
-      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      fromMapResult.textureId =
+          (textureId == null)
+              ? null
+              : ((textureId instanceof Integer) ? (Integer) textureId : (Long) textureId);
       Object speed = map.get("speed");
-      fromMapResult.speed = (Double)speed;
+      fromMapResult.speed = (Double) speed;
       return fromMapResult;
     }
   }
@@ -186,12 +295,24 @@ public class Messages {
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class PositionMessage {
     private Long textureId;
-    public Long getTextureId() { return textureId; }
-    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    public Long getTextureId() {
+      return textureId;
+    }
+
+    public void setTextureId(Long setterArg) {
+      this.textureId = setterArg;
+    }
 
     private Long position;
-    public Long getPosition() { return position; }
-    public void setPosition(Long setterArg) { this.position = setterArg; }
+
+    public Long getPosition() {
+      return position;
+    }
+
+    public void setPosition(Long setterArg) {
+      this.position = setterArg;
+    }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
@@ -199,12 +320,19 @@ public class Messages {
       toMapResult.put("position", position);
       return toMapResult;
     }
+
     static PositionMessage fromMap(HashMap map) {
       PositionMessage fromMapResult = new PositionMessage();
       Object textureId = map.get("textureId");
-      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      fromMapResult.textureId =
+          (textureId == null)
+              ? null
+              : ((textureId instanceof Integer) ? (Integer) textureId : (Long) textureId);
       Object position = map.get("position");
-      fromMapResult.position = (position == null) ? null : ((position instanceof Integer) ? (Integer)position : (Long)position);
+      fromMapResult.position =
+          (position == null)
+              ? null
+              : ((position instanceof Integer) ? (Integer) position : (Long) position);
       return fromMapResult;
     }
   }
@@ -212,271 +340,322 @@ public class Messages {
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class MixWithOthersMessage {
     private Boolean mixWithOthers;
-    public Boolean getMixWithOthers() { return mixWithOthers; }
-    public void setMixWithOthers(Boolean setterArg) { this.mixWithOthers = setterArg; }
+
+    public Boolean getMixWithOthers() {
+      return mixWithOthers;
+    }
+
+    public void setMixWithOthers(Boolean setterArg) {
+      this.mixWithOthers = setterArg;
+    }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("mixWithOthers", mixWithOthers);
       return toMapResult;
     }
+
     static MixWithOthersMessage fromMap(HashMap map) {
       MixWithOthersMessage fromMapResult = new MixWithOthersMessage();
       Object mixWithOthers = map.get("mixWithOthers");
-      fromMapResult.mixWithOthers = (Boolean)mixWithOthers;
+      fromMapResult.mixWithOthers = (Boolean) mixWithOthers;
       return fromMapResult;
     }
   }
 
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface VideoPlayerApi {
     void initialize(InitializeMessage arg);
+
     TextureMessage create(CreateMessage arg);
+
     void dispose(TextureMessage arg);
+
     void setLooping(LoopingMessage arg);
+
     void setVolume(VolumeMessage arg);
+
     void setPlaybackSpeed(PlaybackSpeedMessage arg);
+
     void play(TextureMessage arg);
+
     PositionMessage position(TextureMessage arg);
+
     void seekTo(PositionMessage arg);
+
     void pause(TextureMessage arg);
+
     void setMixWithOthers(MixWithOthersMessage arg);
 
     /** Sets up an instance of `VideoPlayerApi` to handle messages through the `binaryMessenger` */
     static void setup(BinaryMessenger binaryMessenger, VideoPlayerApi api) {
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.initialize", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.initialize",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              InitializeMessage input = InitializeMessage.fromMap((HashMap)message);
-              api.initialize(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  InitializeMessage input = InitializeMessage.fromMap((HashMap) message);
+                  api.initialize(input);
+                  wrapped.put("result", null);
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.create", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.create",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              CreateMessage input = CreateMessage.fromMap((HashMap)message);
-              TextureMessage output = api.create(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  CreateMessage input = CreateMessage.fromMap((HashMap) message);
+                  TextureMessage output = api.create(input);
+                  wrapped.put("result", output.toMap());
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.dispose", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.dispose",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              TextureMessage input = TextureMessage.fromMap((HashMap)message);
-              api.dispose(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  api.dispose(input);
+                  wrapped.put("result", null);
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.setLooping", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.setLooping",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              LoopingMessage input = LoopingMessage.fromMap((HashMap)message);
-              api.setLooping(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  LoopingMessage input = LoopingMessage.fromMap((HashMap) message);
+                  api.setLooping(input);
+                  wrapped.put("result", null);
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.setVolume", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.setVolume",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              VolumeMessage input = VolumeMessage.fromMap((HashMap)message);
-              api.setVolume(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  VolumeMessage input = VolumeMessage.fromMap((HashMap) message);
+                  api.setVolume(input);
+                  wrapped.put("result", null);
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.setPlaybackSpeed", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.setPlaybackSpeed",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              PlaybackSpeedMessage input = PlaybackSpeedMessage.fromMap((HashMap)message);
-              api.setPlaybackSpeed(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  PlaybackSpeedMessage input = PlaybackSpeedMessage.fromMap((HashMap) message);
+                  api.setPlaybackSpeed(input);
+                  wrapped.put("result", null);
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.play", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.play",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              TextureMessage input = TextureMessage.fromMap((HashMap)message);
-              api.play(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  api.play(input);
+                  wrapped.put("result", null);
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.position", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.position",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              TextureMessage input = TextureMessage.fromMap((HashMap)message);
-              PositionMessage output = api.position(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  PositionMessage output = api.position(input);
+                  wrapped.put("result", output.toMap());
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.seekTo", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.seekTo",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              PositionMessage input = PositionMessage.fromMap((HashMap)message);
-              api.seekTo(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  PositionMessage input = PositionMessage.fromMap((HashMap) message);
+                  api.seekTo(input);
+                  wrapped.put("result", null);
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.pause", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.pause",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              TextureMessage input = TextureMessage.fromMap((HashMap)message);
-              api.pause(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  api.pause(input);
+                  wrapped.put("result", null);
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VideoPlayerApi.setMixWithOthers", new StandardMessageCodec());
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.setMixWithOthers",
+                new StandardMessageCodec());
         if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              MixWithOthersMessage input = MixWithOthersMessage.fromMap((HashMap)message);
-              api.setMixWithOthers(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  MixWithOthersMessage input = MixWithOthersMessage.fromMap((HashMap) message);
+                  api.setMixWithOthers(input);
+                  wrapped.put("result", null);
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
         } else {
           channel.setMessageHandler(null);
         }
       }
     }
   }
+
   private static HashMap wrapError(Exception exception) {
     HashMap<String, Object> errorMap = new HashMap<>();
     errorMap.put("message", exception.toString());

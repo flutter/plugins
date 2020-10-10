@@ -12,8 +12,8 @@ import io.flutter.embedding.engine.loader.FlutterLoader;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugins.videoplayer.Messages.InitializeMessage;
 import io.flutter.plugins.videoplayer.Messages.CreateMessage;
+import io.flutter.plugins.videoplayer.Messages.InitializeMessage;
 import io.flutter.plugins.videoplayer.Messages.LoopingMessage;
 import io.flutter.plugins.videoplayer.Messages.MixWithOthersMessage;
 import io.flutter.plugins.videoplayer.Messages.PlaybackSpeedMessage;
@@ -144,9 +144,9 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               "asset:///" + assetLookupKey,
               null,
               options,
-                  maxCacheSize,
-                  maxCacheFileSize,
-                  false);
+              maxCacheSize,
+              maxCacheFileSize,
+              false);
       videoPlayers.put(handle.id(), player);
     } else {
       player =
@@ -157,9 +157,9 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               arg.getUri(),
               arg.getFormatHint(),
               options,
-                  maxCacheSize,
-                  maxCacheFileSize,
-                  arg.getUseCache());
+              maxCacheSize,
+              maxCacheFileSize,
+              arg.getUseCache());
       videoPlayers.put(handle.id(), player);
     }
 
