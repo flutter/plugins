@@ -220,13 +220,12 @@ void main() {
           );
           await controller.initialize();
 
-          expect(
-              fakeVideoPlayerPlatform.dataSourceDescriptions[0],
-              <String, dynamic>{
-                'uri': 'https://127.0.0.1',
-                'formatHint': null,
-                'useCache': false,
-              });
+          expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+              'https://127.0.0.1');
+          expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+              null);
+          expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].useCache,
+              false);
         });
 
         test('without cache by default', () async {
@@ -236,13 +235,12 @@ void main() {
           );
           await controller.initialize();
 
-          expect(
-              fakeVideoPlayerPlatform.dataSourceDescriptions[0],
-              <String, dynamic>{
-                'uri': 'https://127.0.0.1',
-                'formatHint': null,
-                'useCache': false,
-              });
+          expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+              'https://127.0.0.1');
+          expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+              null);
+          expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].useCache,
+              false);
         });
 
         test('network with hint', () async {
