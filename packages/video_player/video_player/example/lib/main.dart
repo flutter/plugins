@@ -314,13 +314,13 @@ class _ControlsOverlay extends StatelessWidget {
               controller.setPlaybackSpeed(speed);
             },
             itemBuilder: (context) {
-              return [
-                for (final speed in _examplePlaybackRates)
+              return
+                _examplePlaybackRates.map((speed) =>
                   PopupMenuItem(
                     value: speed,
                     child: Text('${speed}x'),
                   )
-              ];
+                ).toList();
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(

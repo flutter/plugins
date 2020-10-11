@@ -69,6 +69,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   VideoPlayerOptions get videoPlayerOptions => null;
+  
+  @override
+  List<Cookie> get cookies => null;
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -186,9 +189,11 @@ void main() {
         );
         await controller.initialize();
 
-        expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0].asset, 'a.avi');
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].asset,
+            'a.avi');
         expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].packageName,
+            null);
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
             null);
       });
 
@@ -200,8 +205,13 @@ void main() {
 
         expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
             'https://127.0.0.1');
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].asset,
+            null);
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+            null);
         expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint, null);
+            fakeVideoPlayerPlatform.dataSourceDescriptions[0].cookies,
+            null);
       });
 
       test('network with hint', () async {
@@ -214,6 +224,20 @@ void main() {
             'https://127.0.0.1');
         expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
             'dash');
+      });
+
+      test('network with cookies', () async {
+        final cookieStr = 'name=value; Domain=example.com; Path=/';
+
+        final VideoPlayerController controller = VideoPlayerController.network(
+            'https://127.0.0.1',
+            cookies: [Cookie.fromSetCookieValue(cookieStr)]);
+        await controller.initialize();
+
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+            'https://127.0.0.1');
+        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].cookies[0],
+            cookieStr);
       });
 
       test('init errors', () async {
