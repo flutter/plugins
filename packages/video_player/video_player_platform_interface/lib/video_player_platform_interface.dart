@@ -151,6 +151,7 @@ class DataSource {
     this.formatHint,
     this.asset,
     this.package,
+    this.cookies,
   });
 
   /// The way in which the video was originally loaded.
@@ -175,6 +176,12 @@ class DataSource {
   /// The package that the asset was loaded from. Only set for
   /// [DataSourceType.asset] videos.
   final String package;
+
+  /// Http cookies string to include with [DataSourceType.network] requests.
+  ///
+  /// Each cookie should be formatted as expected from a "set-cookie" header.
+  /// Some platforms will ignore cookies without matching domain and path.
+  final List<String> cookies;
 }
 
 /// The way in which the video was originally loaded.

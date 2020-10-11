@@ -1,3 +1,7 @@
+## 2.3.0 
+
+* Add cookie support for network resources.
+
 ## 2.2.0
 
 * Added option to set the video playback speed on the video controller.
