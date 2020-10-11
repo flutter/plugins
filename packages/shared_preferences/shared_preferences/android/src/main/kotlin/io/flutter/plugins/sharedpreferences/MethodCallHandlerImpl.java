@@ -27,7 +27,7 @@ import java.util.Set;
  * responsible of managing the {@link android.content.SharedPreferences}.
  */
 @SuppressWarnings("unchecked")
-class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
+public class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
 
@@ -42,7 +42,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    * Constructs a {@link MethodCallHandlerImpl} instance. Creates a {@link
    * android.content.SharedPreferences} based on the {@code context}.
    */
-  MethodCallHandlerImpl(Context context) {
+  public MethodCallHandlerImpl(Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 
