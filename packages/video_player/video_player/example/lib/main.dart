@@ -6,7 +6,6 @@
 
 /// An example of using the plugin, controlling lifecycle and playback of the
 /// video.
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -221,8 +220,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
     super.initState();
     _controller = VideoPlayerController();
 
-    // pass to constructor?
-    videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true)
+    _controller.setVideoPlayerOptions(VideoPlayerOptions(mixWithOthers: true));
 
     _controller.addListener(() {
       setState(() {});

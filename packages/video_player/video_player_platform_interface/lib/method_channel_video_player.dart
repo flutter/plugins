@@ -26,9 +26,8 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<int> create(DataSource dataSource) async {
-    CreateMessage message = CreateMessage();
-    TextureMessage response = await _api.create(message);
+  Future<int> create() async {
+    TextureMessage response = await _api.create();
     return response.textureId;
   }
 
@@ -45,7 +44,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
         break;
       case DataSourceType.network:
         message.uri = dataSource.uri;
-        message.formatHint = _videoFormatStringMap[dataSource.formatHint];
+        message.formatHint = dataSource.rawFormalHint;
         break;
       case DataSourceType.file:
         message.uri = dataSource.uri;

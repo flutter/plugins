@@ -21,10 +21,11 @@ dependencies:
   meta: ^1.1.7
   video_player_platform_interface: #^3.0.0
     # workaround for success build checks in PR
-    git:
-      url: git://github.com/sanekyy/plugins.git
-      ref: reusable_video_controller
-      path: packages/video_player/video_player_platform_interface
+    path: ../video_player_platform_interface
+#    git:
+#      url: git://github.com/sanekyy/plugins.git
+#      ref: reusable_video_controller
+#      path: packages/video_player/video_player_platform_interface
 
 dev_dependencies:
   flutter_test:

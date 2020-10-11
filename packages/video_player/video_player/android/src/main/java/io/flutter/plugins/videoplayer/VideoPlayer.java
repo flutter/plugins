@@ -57,19 +57,17 @@ final class VideoPlayer {
 
   private boolean isInitialized = false;
 
-  private final VideoPlayerOptions options;
+  private VideoPlayerOptions options;
 
   private String key;
 
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
-      TextureRegistry.SurfaceTextureEntry textureEntry,
-      VideoPlayerOptions options,
-      Result result) {
+      TextureRegistry.SurfaceTextureEntry textureEntry
+      ) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
-    this.options = options;
 
     TrackSelector trackSelector = new DefaultTrackSelector();
     exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
@@ -77,8 +75,7 @@ final class VideoPlayer {
     setupVideoPlayer(eventChannel, textureEntry);
   }
 
-  void setDataSource(
-      Context context, String key, String dataSource, String formatHint, Result result) {
+  void setDataSource(Context context, String key, String dataSource, String formatHint) {
     this.key = key;
 
     isInitialized = false;
@@ -175,7 +172,6 @@ final class VideoPlayer {
 
     surface = new Surface(textureEntry.surfaceTexture());
     exoPlayer.setVideoSurface(surface);
-    setAudioAttributes(exoPlayer, options.mixWithOthers);
 
     exoPlayer.addListener(
         new EventListener() {
@@ -204,6 +200,11 @@ final class VideoPlayer {
             }
           }
         });
+  }
+
+  void setVideoOptions(VideoPlayerOptions options){
+    this.options = options;
+    setAudioAttributes(exoPlayer, options.mixWithOthers);
   }
 
   void sendBufferingUpdate() {

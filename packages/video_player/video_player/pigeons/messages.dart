@@ -24,7 +24,9 @@ class PositionMessage {
   int position;
 }
 
-class CreateMessage {
+class DataSourceMessage {
+  int textureId;
+  String key;
   String asset;
   String uri;
   String packageName;
@@ -38,15 +40,27 @@ class MixWithOthersMessage {
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class VideoPlayerApi {
   void initialize();
-  TextureMessage create(CreateMessage msg);
+
+  TextureMessage create();
+
+  void setDataSource(DataSourceMessage msg);
+
   void dispose(TextureMessage msg);
+
   void setLooping(LoopingMessage msg);
+
   void setVolume(VolumeMessage msg);
+
   void setPlaybackSpeed(PlaybackSpeedMessage msg);
+
   void play(TextureMessage msg);
+
   PositionMessage position(TextureMessage msg);
+
   void seekTo(PositionMessage msg);
+
   void pause(TextureMessage msg);
+
   void setMixWithOthers(MixWithOthersMessage msg);
 }
 

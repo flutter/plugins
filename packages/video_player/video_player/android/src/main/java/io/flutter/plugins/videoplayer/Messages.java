@@ -42,7 +42,27 @@ public class Messages {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
-  public static class CreateMessage {
+  public static class DataSourceMessage {
+    private Long textureId;
+
+    public Long getTextureId() {
+      return textureId;
+    }
+
+    public void setTextureId(Long setterArg) {
+      this.textureId = setterArg;
+    }
+
+    private String key;
+
+    public String getKey() {
+      return key;
+    }
+
+    public void setKey(String setterArg) {
+      this.key = setterArg;
+    }
+
     private String asset;
 
     public String getAsset() {
@@ -85,6 +105,8 @@ public class Messages {
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("key", key);
       toMapResult.put("asset", asset);
       toMapResult.put("uri", uri);
       toMapResult.put("packageName", packageName);
@@ -92,8 +114,15 @@ public class Messages {
       return toMapResult;
     }
 
-    static CreateMessage fromMap(HashMap map) {
-      CreateMessage fromMapResult = new CreateMessage();
+    static DataSourceMessage fromMap(HashMap map) {
+      DataSourceMessage fromMapResult = new DataSourceMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId =
+          (textureId == null)
+              ? null
+              : ((textureId instanceof Integer) ? (Integer) textureId : (Long) textureId);
+      Object key = map.get("key");
+      fromMapResult.key = (String) key;
       Object asset = map.get("asset");
       fromMapResult.asset = (String) asset;
       Object uri = map.get("uri");
@@ -307,7 +336,9 @@ public class Messages {
   public interface VideoPlayerApi {
     void initialize();
 
-    TextureMessage create(CreateMessage arg);
+    TextureMessage create();
+
+    void setDataSource(DataSourceMessage arg);
 
     void dispose(TextureMessage arg);
 
@@ -362,10 +393,32 @@ public class Messages {
               (message, reply) -> {
                 HashMap<String, HashMap> wrapped = new HashMap<>();
                 try {
-                  @SuppressWarnings("ConstantConditions")
-                  CreateMessage input = CreateMessage.fromMap((HashMap) message);
-                  TextureMessage output = api.create(input);
+                  TextureMessage output = api.create();
                   wrapped.put("result", output.toMap());
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.setDataSource",
+                new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  DataSourceMessage input = DataSourceMessage.fromMap((HashMap) message);
+                  api.setDataSource(input);
+                  wrapped.put("result", null);
                 } catch (Exception exception) {
                   wrapped.put("error", wrapError(exception));
                 }

@@ -14,7 +14,6 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 class _ApiLogger implements TestHostVideoPlayerApi {
   final List<String> log = [];
   TextureMessage textureMessage;
-  CreateMessage createMessage;
   DataSourceMessage dataSourceMessage;
   PositionMessage positionMessage;
   LoopingMessage loopingMessage;
@@ -23,13 +22,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   MixWithOthersMessage mixWithOthersMessage;
 
   @override
-  TextureMessage create(CreateMessage arg) {
+  TextureMessage create() {
     log.add('create');
-    createMessage = arg;
-    return TextureMessage()
-      ..textureId = 3;
+    return TextureMessage()..textureId = 3;
   }
 
+  @override
   void setDataSource(DataSourceMessage arg) {
     log.add('setDataSource');
     dataSourceMessage = arg;
@@ -68,8 +66,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   PositionMessage position(TextureMessage arg) {
     log.add('position');
     textureMessage = arg;
-    return PositionMessage()
-      ..position = 234;
+    return PositionMessage()..position = 234;
   }
 
   @override
@@ -114,7 +111,7 @@ void main() {
 
     test('Can be mocked with `implements`', () {
       final ImplementsVideoPlayerPlatform mock =
-      ImplementsVideoPlayerPlatform();
+          ImplementsVideoPlayerPlatform();
       when(mock.isMock).thenReturn(true);
       VideoPlayerPlatform.instance = mock;
     });
@@ -157,7 +154,8 @@ void main() {
           sourceType: DataSourceType.asset,
           asset: 'someAsset',
           package: 'somePackage',
-        ),);
+        ),
+      );
       expect(log.log.last, 'setDataSource');
       // nested data source?
       expect(log.dataSourceMessage.key, 'somePackage:someAsset');
@@ -172,11 +170,12 @@ void main() {
 
       await player.setDataSource(
         textureId,
-          DataSource(
-        sourceType: DataSourceType.network,
-        uri: 'someUri',
-        formatHint: VideoFormat.dash,
-      ),);
+        DataSource(
+          sourceType: DataSourceType.network,
+          uri: 'someUri',
+          formatHint: VideoFormat.dash,
+        ),
+      );
       expect(log.log.last, 'setDataSource');
       // nested data source?
       expect(log.dataSourceMessage.key, 'someUri:dash');
@@ -190,11 +189,12 @@ void main() {
       expect(log.log.last, 'create');
 
       await player.setDataSource(
-          textureId,
-          DataSource(
-        sourceType: DataSourceType.file,
-        uri: 'someUri',
-      ),);
+        textureId,
+        DataSource(
+          sourceType: DataSourceType.file,
+          uri: 'someUri',
+        ),
+      );
 
       expect(log.log.last, 'setDataSource');
       // nested data source?
@@ -269,9 +269,9 @@ void main() {
       // ignore: deprecated_member_use
       defaultBinaryMessenger.setMockMessageHandler(
         "flutter.io/videoPlayer/videoEvents123",
-            (ByteData message) async {
+        (ByteData message) async {
           final MethodCall methodCall =
-          const StandardMethodCodec().decodeMethodCall(message);
+              const StandardMethodCodec().decodeMethodCall(message);
           if (methodCall.method == 'listen') {
             // TODO(cbenhagen): This has been deprecated and should be replaced
             // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
@@ -287,7 +287,7 @@ void main() {
                   'width': 1920,
                   'height': 1080,
                 }),
-                    (ByteData data) {});
+                (ByteData data) {});
 
             // TODO(cbenhagen): This has been deprecated and should be replaced
             // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
@@ -300,7 +300,7 @@ void main() {
                   'key': key,
                   'event': 'completed',
                 }),
-                    (ByteData data) {});
+                (ByteData data) {});
 
             // TODO(cbenhagen): This has been deprecated and should be replaced
             // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
@@ -317,7 +317,7 @@ void main() {
                     <int>[1235, 4000],
                   ],
                 }),
-                    (ByteData data) {});
+                (ByteData data) {});
 
             // TODO(cbenhagen): This has been deprecated and should be replaced
             // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
@@ -330,7 +330,7 @@ void main() {
                   'key': key,
                   'event': 'bufferingStart',
                 }),
-                    (ByteData data) {});
+                (ByteData data) {});
 
             // TODO(cbenhagen): This has been deprecated and should be replaced
             // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
@@ -343,7 +343,7 @@ void main() {
                   'key': key,
                   'event': 'bufferingEnd',
                 }),
-                    (ByteData data) {});
+                (ByteData data) {});
 
             return const StandardMethodCodec().encodeSuccessEnvelope(null);
           } else if (methodCall.method == 'cancel') {

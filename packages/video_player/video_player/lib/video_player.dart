@@ -13,10 +13,13 @@ import 'package:pedantic/pedantic.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
-
-import 'src/closed_caption_file.dart';
-export 'src/closed_caption_file.dart';
+    show
+        DurationRange,
+        DataSourceType,
+        VideoFormat,
+        VideoPlayerOptions,
+        ClosedCaptionFile,
+        SubRipCaptionFile;
 
 final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
 // This will clear all open videos on the platform when a full restart is
@@ -179,11 +182,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   DataSource _dataSource;
 
-  MOVE TO DATA SOURCE?
-  /// Provide additional configuration options (optional). Like setting the audio mode to mix
-  final VideoPlayerOptions videoPlayerOptions;
-  ///////
+  VideoPlayerOptions _videoPlayerOptions;
 
+  /// Provide additional configuration options (optional). Like setting the audio mode to mix
+  VideoPlayerOptions get videoPlayerOptions => _videoPlayerOptions;
 
   ClosedCaptionFile _closedCaptionFile;
   Timer _timer;
@@ -203,13 +205,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> _create() async {
     _textureId = await _videoPlayerPlatform.create();
-
-    // WHERE CALL IT?
-    temp error text
-    if (videoPlayerOptions?.mixWithOthers != null) {
-      await _videoPlayerPlatform
-          .setMixWithOthers(videoPlayerOptions.mixWithOthers);
-    }
 
     _creatingCompleter.complete(null);
 
@@ -322,9 +317,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   Future<void> _setDataSource(DataSource dataSourceDescription) async {
-    if (_isDisposed) {
-      return;
-    }
+    if (_isDisposed) return;
 
     this._dataSource = dataSourceDescription;
 
@@ -370,6 +363,19 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     _isDisposed = true;
     super.dispose();
+  }
+
+  Future<void> setVideoPlayerOptions(
+    VideoPlayerOptions videoPlayerOptions,
+  ) async {
+    if (_isDisposed) return;
+
+    _videoPlayerOptions = videoPlayerOptions;
+
+    if (!_creatingCompleter.isCompleted) await _creatingCompleter.future;
+
+    await _videoPlayerPlatform
+        .setMixWithOthers(videoPlayerOptions.mixWithOthers);
   }
 
   /// Starts playing the video.

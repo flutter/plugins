@@ -155,7 +155,7 @@ class _VideoPlayer {
       StreamController<VideoEvent>();
 
   final int textureId;
-  Uri uri;
+  String uri;
   String key;
   VideoElement videoElement;
   bool isInitialized = false;
@@ -200,11 +200,11 @@ class _VideoPlayer {
     });
   }
 
-  void setDataSource(String key, Uri uri) {
+  void setDataSource(String key, String uri) {
     this.key = key;
     this.uri = uri;
     isInitialized = false;
-    videoElement.src = uri.toString();
+    videoElement.src = uri;
   }
 
   void sendBufferingUpdate() {

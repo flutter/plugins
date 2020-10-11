@@ -3,11 +3,13 @@
 // ignore_for_file: public_member_api_docs, non_constant_identifier_names, avoid_as, unused_import
 // @dart = 2.8
 import 'dart:async';
-import 'package:flutter/services.dart';
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
+
+import 'package:flutter/services.dart';
 
 class TextureMessage {
   int textureId;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -26,14 +28,19 @@ class TextureMessage {
   }
 }
 
-class CreateMessage {
+class DataSourceMessage {
+  int textureId;
+  String key;
   String asset;
   String uri;
   String packageName;
   String formatHint;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['key'] = key;
     pigeonMap['asset'] = asset;
     pigeonMap['uri'] = uri;
     pigeonMap['packageName'] = packageName;
@@ -42,11 +49,13 @@ class CreateMessage {
   }
 
   // ignore: unused_element
-  static CreateMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
+  static DataSourceMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
     if (pigeonMap == null) {
       return null;
     }
-    final CreateMessage result = CreateMessage();
+    final DataSourceMessage result = DataSourceMessage();
+    result.textureId = pigeonMap['textureId'];
+    result.key = pigeonMap['key'];
     result.asset = pigeonMap['asset'];
     result.uri = pigeonMap['uri'];
     result.packageName = pigeonMap['packageName'];
@@ -58,6 +67,7 @@ class CreateMessage {
 class LoopingMessage {
   int textureId;
   bool isLooping;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -81,6 +91,7 @@ class LoopingMessage {
 class VolumeMessage {
   int textureId;
   double volume;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -104,6 +115,7 @@ class VolumeMessage {
 class PlaybackSpeedMessage {
   int textureId;
   double speed;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -127,6 +139,7 @@ class PlaybackSpeedMessage {
 class PositionMessage {
   int textureId;
   int position;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -149,6 +162,7 @@ class PositionMessage {
 
 class MixWithOthersMessage {
   bool mixWithOthers;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -189,10 +203,32 @@ class VideoPlayerApi {
     }
   }
 
-  Future<TextureMessage> create(CreateMessage arg) async {
-    final Map<dynamic, dynamic> requestMap = arg._toMap();
+  Future<TextureMessage> create() async {
     const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.VideoPlayerApi.create', StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return TextureMessage._fromMap(replyMap['result']);
+    }
+  }
+
+  Future<void> setDataSource(DataSourceMessage arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.VideoPlayerApi.setDataSource',
+        StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
@@ -207,7 +243,7 @@ class VideoPlayerApi {
           message: error['message'],
           details: error['details']);
     } else {
-      return TextureMessage._fromMap(replyMap['result']);
+      // noop
     }
   }
 
@@ -414,16 +450,29 @@ class VideoPlayerApi {
 
 abstract class TestHostVideoPlayerApi {
   void initialize();
-  TextureMessage create(CreateMessage arg);
+
+  TextureMessage create();
+
+  void setDataSource(DataSourceMessage arg);
+
   void dispose(TextureMessage arg);
+
   void setLooping(LoopingMessage arg);
+
   void setVolume(VolumeMessage arg);
+
   void setPlaybackSpeed(PlaybackSpeedMessage arg);
+
   void play(TextureMessage arg);
+
   PositionMessage position(TextureMessage arg);
+
   void seekTo(PositionMessage arg);
+
   void pause(TextureMessage arg);
+
   void setMixWithOthers(MixWithOthersMessage arg);
+
   static void setup(TestHostVideoPlayerApi api) {
     {
       const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
@@ -438,11 +487,20 @@ abstract class TestHostVideoPlayerApi {
       const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.VideoPlayerApi.create', StandardMessageCodec());
       channel.setMockMessageHandler((dynamic message) async {
+        final TextureMessage output = api.create();
+        return <dynamic, dynamic>{'result': output._toMap()};
+      });
+    }
+    {
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.VideoPlayerApi.setDataSource',
+          StandardMessageCodec());
+      channel.setMockMessageHandler((dynamic message) async {
         final Map<dynamic, dynamic> mapMessage =
             message as Map<dynamic, dynamic>;
-        final CreateMessage input = CreateMessage._fromMap(mapMessage);
-        final TextureMessage output = api.create(input);
-        return <dynamic, dynamic>{'result': output._toMap()};
+        final DataSourceMessage input = DataSourceMessage._fromMap(mapMessage);
+        api.setDataSource(input);
+        return <dynamic, dynamic>{};
       });
     }
     {
