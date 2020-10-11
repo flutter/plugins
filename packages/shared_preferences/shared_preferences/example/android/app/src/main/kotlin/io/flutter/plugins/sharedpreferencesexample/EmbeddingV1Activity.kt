@@ -5,18 +5,19 @@
 package io.flutter.plugins.sharedpreferencesexample;
 
 import android.os.Bundle;
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.plugin.common.PluginRegistry.Registrar
 import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
 import io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin;
 
 @SuppressWarnings("deprecation")
-public class EmbeddingV1Activity extends io.flutter.app.FlutterActivity {
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
+class EmbeddingV1Activity : FlutterActivity() {
+   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState);
-    IntegrationTestPlugin.registerWith(
+    /// TODO: CHECK WHY THE ACTIVITY WON'T RECOGNIZE THE METHOD registrarFor, it works as planned without those 2 sections.
+    /*IntegrationTestPlugin.registerWith(
         registrarFor("dev.flutter.plugins.integration_test.IntegrationTestPlugin"));
     SharedPreferencesPlugin.registerWith(
-        registrarFor("io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin"));
+        registrarFor("io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin"));*/
   }
 }
