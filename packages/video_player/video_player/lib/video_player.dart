@@ -177,6 +177,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.asset(this.dataSource,
       {this.package, this.closedCaptionFile, this.videoPlayerOptions})
       : dataSourceType = DataSourceType.asset,
+        cookies = null,
         formatHint = null,
         super(VideoPlayerValue(duration: null));
 
@@ -188,7 +189,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
   VideoPlayerController.network(this.dataSource,
-      {this.formatHint, this.closedCaptionFile, this.videoPlayerOptions})
+      {this.formatHint, this.closedCaptionFile, this.videoPlayerOptions, this.cookies})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: null));
@@ -201,6 +202,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       {this.closedCaptionFile, this.videoPlayerOptions})
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
+        cookies = null,
         package = null,
         formatHint = null,
         super(VideoPlayerValue(duration: null));
@@ -221,6 +223,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Provide additional configuration options (optional). Like setting the audio mode to mix
   final VideoPlayerOptions videoPlayerOptions;
+
+  /// Http cookies while building [dataSource] from networks
+  final List<Cookie> cookies;
 
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String package;
@@ -264,6 +269,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           sourceType: DataSourceType.network,
           uri: dataSource,
           formatHint: formatHint,
+          cookies: cookies?.map((c) => c.toString())?.toList(),
         );
         break;
       case DataSourceType.file:

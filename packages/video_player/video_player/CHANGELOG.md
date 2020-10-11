@@ -1,3 +1,7 @@
+## 0.11.2
+
+* Add cookie support for remote network sources. 
+
 ## 0.11.1
 
 * Enable TLSv1.1 & TLSv1.2 for API 19 and below.
