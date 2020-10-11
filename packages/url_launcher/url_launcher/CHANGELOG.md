@@ -1,3 +1,59 @@
+## 5.7.2
+
+* Add API documentation explaining the [canLaunch] method returns `false` if package visibility (Android API 30) is not managed correctly.
+
+## 5.7.1
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 5.7.0
+
+* Handle WebView multi-window support.
+
+## 5.6.0
+
+* Support Windows by default.
+
+## 5.5.3
+
+* Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android.
+
+## 5.5.2
+
+* Depend explicitly on the `platform_interface` package that adds the `webOnlyWindowName` parameter.
+
+## 5.5.1
+
+* Added webOnlyWindowName parameter to launch()
+
+## 5.5.0
+
+* Support Linux by default.
+
+## 5.4.11
+
+* Add documentation in README suggesting how to properly encode urls with special characters.
+
+## 5.4.10
+
+* Post-v2 Android embedding cleanups.
+
+## 5.4.9
+
+* Update README.
+
+## 5.4.8
+
+* Initialize `previousAutomaticSystemUiAdjustment` in launch method.
+
+## 5.4.7
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 5.4.6
+
+* Add `web` to the example app.
+
 ## 5.4.5
 
 * Remove Android dependencies fallback.
@@ -22,7 +78,7 @@
 
 ## 5.4.0
 
-* Support macos by default.
+* Support macOS by default.
 
 ## 5.3.0
 
@@ -48,7 +104,7 @@
 
 ## 5.2.3
 
-Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
 
 ## 5.2.2
 

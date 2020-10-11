@@ -10,6 +10,8 @@
 // for more info.
 static NSString *const kClientIdKey = @"CLIENT_ID";
 
+static NSString *const kServerClientIdKey = @"SERVER_CLIENT_ID";
+
 // These error codes must match with ones declared on Android and Dart sides.
 static NSString *const kErrorReasonSignInRequired = @"sign_in_required";
 static NSString *const kErrorReasonSignInCanceled = @"sign_in_canceled";
@@ -76,6 +78,7 @@ static FlutterError *getFlutterError(NSError *error) {
       if (path) {
         NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
         [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
+        [GIDSignIn sharedInstance].serverClientID = plist[kServerClientIdKey];
         [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
         [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
         result(nil);
@@ -221,6 +224,7 @@ static FlutterError *getFlutterError(NSError *error) {
         @"email" : user.profile.email ?: [NSNull null],
         @"id" : user.userID ?: [NSNull null],
         @"photoUrl" : [photoUrl absoluteString] ?: [NSNull null],
+        @"serverAuthCode" : user.serverAuthCode ?: [NSNull null]
       }
                          error:nil];
     }

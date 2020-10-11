@@ -7,6 +7,13 @@ This plugin works for iOS and Android.
 > Note that on Android, this does not guarantee connection to Internet. For instance,
 the app might have wifi access but it might be a VPN or a hotel WiFi with no access.
 
+**Please set your constraint to `connectivity: '>=0.4.y+x <2.0.0'`**
+
+## Backward compatible 1.0.0 version is coming
+The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.4.y+z`.
+Please use `connectivity: '>=0.4.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
+For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+
 ## Usage
 
 Sample usage to check current status:
@@ -52,6 +59,14 @@ dispose() {
 
 Note that connectivity changes are no longer communicated to Android apps in the background starting with Android O. *You should always check for connectivity status when your app is resumed.* The broadcast is only useful when your application is in the foreground.
 
+To successfully get WiFi Name or Wi-Fi BSSID starting with Android O, ensure all of the following conditions are met:
+
+ * If your app is targeting Android 10 (API level 29) SDK or higher, your app has the ACCESS_FINE_LOCATION permission.
+ 
+ * If your app is targeting SDK lower than Android 10 (API level 29), your app has the ACCESS_COARSE_LOCATION or ACCESS_FINE_LOCATION permission.
+ 
+ * Location services are enabled on the device (under Settings > Location).
+ 
 You can get wi-fi related information using:
 
 ```dart

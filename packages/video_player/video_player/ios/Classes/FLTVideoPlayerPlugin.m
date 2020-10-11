@@ -5,6 +5,7 @@
 #import "FLTVideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
+#import "messages.h"
 
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.
@@ -421,31 +422,28 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
 
-// This workaround if you will change dataSource. Flutter engine caches CVPixelBufferRef and if you
-// return NULL from method copyPixelBuffer Flutter will use cached CVPixelBufferRef. If you will
-// change your datasource you can see frame from previeous video. Thats why we should return
-// trasparent frame for this situation
-- (CVPixelBufferRef)prevTransparentBuffer {
-  if (_prevBuffer) {
-    CVPixelBufferLockBaseAddress(_prevBuffer, 0);
-
-    long bufferWidth = CVPixelBufferGetWidth(_prevBuffer);
-    long bufferHeight = CVPixelBufferGetHeight(_prevBuffer);
-    unsigned char* pixel = (unsigned char*)CVPixelBufferGetBaseAddress(_prevBuffer);
-
-    for (long row = 0; row < bufferHeight; row++) {
-      for (long column = 0; column < bufferWidth; column++) {
-        pixel[0] = 0;
-        pixel[1] = 0;
-        pixel[2] = 0;
-        pixel[3] = 0;
-        pixel += 4;
-      }
+- (void)setPlaybackSpeed:(double)speed {
+  // See https://developer.apple.com/library/archive/qa/qa1772/_index.html for an explanation of
+  // these checks.
+  if (speed > 2.0 && !_player.currentItem.canPlayFastForward) {
+    if (_eventSink != nil) {
+      _eventSink([FlutterError errorWithCode:@"VideoError"
+                                     message:@"Video cannot be fast-forwarded beyond 2.0x"
+                                     details:nil]);
     }
-    CVPixelBufferUnlockBaseAddress(_prevBuffer, 0);
-    return _prevBuffer;
+    return;
   }
-  return _prevBuffer;
+
+  if (speed < 1.0 && !_player.currentItem.canPlaySlowForward) {
+    if (_eventSink != nil) {
+      _eventSink([FlutterError errorWithCode:@"VideoError"
+                                     message:@"Video cannot be slow-forwarded"
+                                     details:nil]);
+    }
+    return;
+  }
+
+  _player.rate = speed;
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
@@ -525,7 +523,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 @end
 
-@interface FLTVideoPlayerPlugin ()
+@interface FLTVideoPlayerPlugin () <FLTVideoPlayerApi>
 @property(readonly, weak, nonatomic) NSObject<FlutterTextureRegistry>* registry;
 @property(readonly, weak, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
 @property(readonly, strong, nonatomic) NSMutableDictionary* players;
@@ -534,12 +532,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 @implementation FLTVideoPlayerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel =
-      [FlutterMethodChannel methodChannelWithName:@"flutter.io/videoPlayer"
-                                  binaryMessenger:[registrar messenger]];
   FLTVideoPlayerPlugin* instance = [[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
-  [registrar addMethodCallDelegate:instance channel:channel];
   [registrar publish:instance];
+  FLTVideoPlayerApiSetup(registrar.messenger, instance);
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -558,11 +553,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [player disposeSansEventChannel];
   }
   [_players removeAllObjects];
+  // TODO(57151): This should be commented out when 57151's fix lands on stable.
+  // This is the correct behavior we never did it in the past and the engine
+  // doesn't currently support it.
+  // FLTVideoPlayerApiSetup(registrar.messenger, nil);
 }
 
-- (void)onPlayerSetup:(FLTVideoPlayer*)player
-         frameUpdater:(FLTFrameUpdater*)frameUpdater
-               result:(FlutterResult)result {
+- (FLTTextureMessage*)onPlayerSetup:(FLTVideoPlayer*)player
+                       frameUpdater:(FLTFrameUpdater*)frameUpdater {
   int64_t textureId = [_registry registerTexture:player];
   frameUpdater.textureId = textureId;
   FlutterEventChannel* eventChannel = [FlutterEventChannel
@@ -572,91 +570,111 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   [eventChannel setStreamHandler:player];
   player.eventChannel = eventChannel;
   _players[@(textureId)] = player;
-  result(@{@"textureId" : @(textureId)});
+  FLTTextureMessage* result = [[FLTTextureMessage alloc] init];
+  result.textureId = @(textureId);
+  return result;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"init" isEqualToString:call.method]) {
-    // Allow audio playback when the Ring/Silent switch is set to silent
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+- (void)initialize:(FlutterError* __autoreleasing*)error {
+  // Allow audio playback when the Ring/Silent switch is set to silent
+  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
 
-    for (NSNumber* textureId in _players) {
-      [_registry unregisterTexture:[textureId unsignedIntegerValue]];
-      [_players[textureId] dispose];
-    }
-    [_players removeAllObjects];
-    result(nil);
-  } else if ([@"create" isEqualToString:call.method]) {
-    FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
-    FLTVideoPlayer* player = [[FLTVideoPlayer alloc] initWithFrameUpdater:frameUpdater];
-    [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
-  } else {
-    NSDictionary* argsMap = call.arguments;
-    int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
-    FLTVideoPlayer* player = _players[@(textureId)];
-    if ([@"setDataSource" isEqualToString:call.method]) {
-      [player clear];
-      // This call will clear cached frame because we will return transparent frame
-      [_registry textureFrameAvailable:textureId];
-      NSDictionary* dataSource = argsMap[@"dataSource"];
-      NSString* assetArg = dataSource[@"asset"];
-      NSString* uriArg = dataSource[@"uri"];
-      NSString* key = dataSource[@"key"];
-      if (assetArg) {
-        NSString* assetPath;
-        NSString* package = dataSource[@"package"];
-        if (![package isEqual:[NSNull null]]) {
-          assetPath = [_registrar lookupKeyForAsset:assetArg fromPackage:package];
-        } else {
-          assetPath = [_registrar lookupKeyForAsset:assetArg];
-        }
-        [player setDataSourceAsset:assetPath withKey:key];
-      } else if (uriArg) {
-        [player setDataSourceURL:[NSURL URLWithString:uriArg] withKey:key];
-      } else {
-        result(FlutterMethodNotImplemented);
-      }
-      result(nil);
-    } else if ([@"dispose" isEqualToString:call.method]) {
-      [_registry unregisterTexture:textureId];
-      [_players removeObjectForKey:@(textureId)];
-      // If the Flutter contains https://github.com/flutter/engine/pull/12695,
-      // the `player` is disposed via `onTextureUnregistered` at the right time.
-      // Without https://github.com/flutter/engine/pull/12695, there is no guarantee that the
-      // texture has completed the un-reregistration. It may leads a crash if we dispose the
-      // `player` before the texture is unregistered. We add a dispatch_after hack to make sure the
-      // texture is unregistered before we dispose the `player`.
-      //
-      // TODO(cyanglaz): Remove this dispatch block when
-      // https://github.com/flutter/flutter/commit/8159a9906095efc9af8b223f5e232cb63542ad0b is in
-      // stable And update the min flutter version of the plugin to the stable version.
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
-                     dispatch_get_main_queue(), ^{
-                       if (!player.disposed) {
-                         [player dispose];
-                       }
-                     });
-      result(nil);
-    } else if ([@"setLooping" isEqualToString:call.method]) {
-      [player setIsLooping:[argsMap[@"looping"] boolValue]];
-      result(nil);
-    } else if ([@"setVolume" isEqualToString:call.method]) {
-      [player setVolume:[argsMap[@"volume"] doubleValue]];
-      result(nil);
-    } else if ([@"play" isEqualToString:call.method]) {
-      [player play];
-      result(nil);
-    } else if ([@"position" isEqualToString:call.method]) {
-      result(@([player position]));
-    } else if ([@"seekTo" isEqualToString:call.method]) {
-      [player seekTo:[argsMap[@"location"] intValue]];
-      result(nil);
-    } else if ([@"pause" isEqualToString:call.method]) {
-      [player pause];
-      result(nil);
+  for (NSNumber* textureId in _players) {
+    [_registry unregisterTexture:[textureId unsignedIntegerValue]];
+    [_players[textureId] dispose];
+  }
+  [_players removeAllObjects];
+}
+
+- (FLTTextureMessage*)create:(FLTCreateMessage*)input error:(FlutterError**)error {
+  FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
+  FLTVideoPlayer* player;
+  if (input.asset) {
+    NSString* assetPath;
+    if (input.packageName) {
+      assetPath = [_registrar lookupKeyForAsset:input.asset fromPackage:input.packageName];
     } else {
-      result(FlutterMethodNotImplemented);
+      assetPath = [_registrar lookupKeyForAsset:input.asset];
     }
+    player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
+    return [self onPlayerSetup:player frameUpdater:frameUpdater];
+  } else if (input.uri) {
+    player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:input.uri]
+                                    frameUpdater:frameUpdater];
+    return [self onPlayerSetup:player frameUpdater:frameUpdater];
+  } else {
+    *error = [FlutterError errorWithCode:@"video_player" message:@"not implemented" details:nil];
+    return nil;
+  }
+}
+
+- (void)dispose:(FLTTextureMessage*)input error:(FlutterError**)error {
+  FLTVideoPlayer* player = _players[input.textureId];
+  [_registry unregisterTexture:input.textureId.intValue];
+  [_players removeObjectForKey:input.textureId];
+  // If the Flutter contains https://github.com/flutter/engine/pull/12695,
+  // the `player` is disposed via `onTextureUnregistered` at the right time.
+  // Without https://github.com/flutter/engine/pull/12695, there is no guarantee that the
+  // texture has completed the un-reregistration. It may leads a crash if we dispose the
+  // `player` before the texture is unregistered. We add a dispatch_after hack to make sure the
+  // texture is unregistered before we dispose the `player`.
+  //
+  // TODO(cyanglaz): Remove this dispatch block when
+  // https://github.com/flutter/flutter/commit/8159a9906095efc9af8b223f5e232cb63542ad0b is in
+  // stable And update the min flutter version of the plugin to the stable version.
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
+                 dispatch_get_main_queue(), ^{
+                   if (!player.disposed) {
+                     [player dispose];
+                   }
+                 });
+}
+
+- (void)setLooping:(FLTLoopingMessage*)input error:(FlutterError**)error {
+  FLTVideoPlayer* player = _players[input.textureId];
+  [player setIsLooping:[input.isLooping boolValue]];
+}
+
+- (void)setVolume:(FLTVolumeMessage*)input error:(FlutterError**)error {
+  FLTVideoPlayer* player = _players[input.textureId];
+  [player setVolume:[input.volume doubleValue]];
+}
+
+- (void)setPlaybackSpeed:(FLTPlaybackSpeedMessage*)input error:(FlutterError**)error {
+  FLTVideoPlayer* player = _players[input.textureId];
+  [player setPlaybackSpeed:[input.speed doubleValue]];
+}
+
+- (void)play:(FLTTextureMessage*)input error:(FlutterError**)error {
+  FLTVideoPlayer* player = _players[input.textureId];
+  [player play];
+}
+
+- (FLTPositionMessage*)position:(FLTTextureMessage*)input error:(FlutterError**)error {
+  FLTVideoPlayer* player = _players[input.textureId];
+  FLTPositionMessage* result = [[FLTPositionMessage alloc] init];
+  result.position = @([player position]);
+  return result;
+}
+
+- (void)seekTo:(FLTPositionMessage*)input error:(FlutterError**)error {
+  FLTVideoPlayer* player = _players[input.textureId];
+  [player seekTo:[input.position intValue]];
+}
+
+- (void)pause:(FLTTextureMessage*)input error:(FlutterError**)error {
+  FLTVideoPlayer* player = _players[input.textureId];
+  [player pause];
+}
+
+- (void)setMixWithOthers:(FLTMixWithOthersMessage*)input
+                   error:(FlutterError* _Nullable __autoreleasing*)error {
+  if ([input.mixWithOthers boolValue]) {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+                                     withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                                           error:nil];
+  } else {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
   }
 }
 

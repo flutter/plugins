@@ -11,6 +11,7 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -31,7 +32,6 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.view.TextureRegistry;
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,20 +57,24 @@ final class VideoPlayer {
 
   private boolean isInitialized = false;
 
+  private final VideoPlayerOptions options;
+
   private String key;
 
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
+      VideoPlayerOptions options,
       Result result) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
+    this.options = options;
 
     TrackSelector trackSelector = new DefaultTrackSelector();
     exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
 
-    setupVideoPlayer(eventChannel, textureEntry, result);
+    setupVideoPlayer(eventChannel, textureEntry);
   }
 
   void setDataSource(
@@ -95,8 +99,6 @@ final class VideoPlayer {
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
     exoPlayer.prepare(mediaSource);
-
-    result.success(null);
   }
 
   private static boolean isHTTP(Uri uri) {
@@ -156,7 +158,7 @@ final class VideoPlayer {
   }
 
   private void setupVideoPlayer(
-      EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry, Result result) {
+      EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry) {
 
     eventChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
@@ -173,7 +175,7 @@ final class VideoPlayer {
 
     surface = new Surface(textureEntry.surfaceTexture());
     exoPlayer.setVideoSurface(surface);
-    setAudioAttributes(exoPlayer);
+    setAudioAttributes(exoPlayer, options.mixWithOthers);
 
     exoPlayer.addListener(
         new EventListener() {
@@ -202,10 +204,6 @@ final class VideoPlayer {
             }
           }
         });
-
-    Map<String, Object> reply = new HashMap<>();
-    reply.put("textureId", textureEntry.id());
-    result.success(reply);
   }
 
   void sendBufferingUpdate() {
@@ -218,10 +216,10 @@ final class VideoPlayer {
   }
 
   @SuppressWarnings("deprecation")
-  private static void setAudioAttributes(SimpleExoPlayer exoPlayer) {
+  private static void setAudioAttributes(SimpleExoPlayer exoPlayer, boolean isMixMode) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       exoPlayer.setAudioAttributes(
-          new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build());
+          new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(), !isMixMode);
     } else {
       exoPlayer.setAudioStreamType(C.STREAM_TYPE_MUSIC);
     }
@@ -242,6 +240,14 @@ final class VideoPlayer {
   void setVolume(double value) {
     float bracketedValue = (float) Math.max(0.0, Math.min(1.0, value));
     exoPlayer.setVolume(bracketedValue);
+  }
+
+  void setPlaybackSpeed(double value) {
+    // We do not need to consider pitch and skipSilence for now as we do not handle them and
+    // therefore never diverge from the default values.
+    final PlaybackParameters playbackParameters = new PlaybackParameters(((float) value));
+
+    exoPlayer.setPlaybackParameters(playbackParameters);
   }
 
   void seekTo(int location) {

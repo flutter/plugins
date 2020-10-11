@@ -76,10 +76,12 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   Future<void> setDataSource(int textureId, DataSource dataSource) async {
     final _VideoPlayer player = _videoPlayers[textureId];
 
-    Uri uri;
+    String uri;
     switch (dataSource.sourceType) {
       case DataSourceType.network:
-        uri = Uri.parse(dataSource.uri);
+        // Do NOT modify the incoming uri, it can be a Blob, and Safari doesn't
+        // like blobs that have changed.
+        uri = dataSource.uri;
         break;
       case DataSourceType.asset:
         String assetUrl = dataSource.asset;
@@ -89,7 +91,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
         // 'webOnlyAssetManager' is only in the web version of dart:ui
         // ignore: undefined_prefixed_name
         assetUrl = ui.webOnlyAssetManager.getAssetUrl(assetUrl);
-        uri = Uri.parse(assetUrl);
+        uri = assetUrl;
         break;
       case DataSourceType.file:
         return Future.error(UnimplementedError(
@@ -117,6 +119,13 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   @override
   Future<void> setVolume(int textureId, double volume) async {
     return _videoPlayers[textureId].setVolume(volume);
+  }
+
+  @override
+  Future<void> setPlaybackSpeed(int textureId, double speed) async {
+    assert(speed > 0);
+
+    return _videoPlayers[textureId].setPlaybackSpeed(speed);
   }
 
   @override
@@ -156,6 +165,9 @@ class _VideoPlayer {
       ..autoplay = false
       ..controls = false
       ..style.border = 'none';
+
+    // Allows Safari iOS to play the video inline
+    videoElement.setAttribute('playsinline', 'true');
 
     // TODO(hterkelsen): Use initialization parameters once they are available
     // ignore: undefined_prefixed_name
@@ -227,7 +239,19 @@ class _VideoPlayer {
   }
 
   void setVolume(double value) {
+    // TODO: Do we need to expose a "muted" API? https://github.com/flutter/flutter/issues/60721
+    if (value > 0.0) {
+      videoElement.muted = false;
+    } else {
+      videoElement.muted = true;
+    }
     videoElement.volume = value;
+  }
+
+  void setPlaybackSpeed(double speed) {
+    assert(speed > 0);
+
+    videoElement.playbackRate = speed;
   }
 
   void seekTo(Duration position) {
