@@ -72,6 +72,11 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
         // Do NOT modify the incoming uri, it can be a Blob, and Safari doesn't
         // like blobs that have changed.
         uri = dataSource.uri;
+        if (dataSource.cookies != null) {
+          for (final cookie in dataSource.cookies) {
+            document.cookie = cookie;
+          }
+        }
         break;
       case DataSourceType.asset:
         String assetUrl = dataSource.asset;
