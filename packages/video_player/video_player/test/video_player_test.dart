@@ -70,9 +70,6 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<void> setLooping(bool looping) async {}
 
   @override
-  Future<ClosedCaptionFile> get closedCaptionFile => _loadClosedCaption();
-
-  @override
   VideoPlayerOptions get videoPlayerOptions => null;
 
   @override
