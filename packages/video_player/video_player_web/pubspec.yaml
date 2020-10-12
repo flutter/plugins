@@ -19,7 +19,11 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   meta: ^1.1.7
-  video_player_platform_interface: ^2.2.0
+  video_player_platform_interface:
+    git:
+      url: https://github.com/ragnor-rs/plugins.git
+      path: packages/video_player/video_player_platform_interface
+      ref: speed_fix_for_ios
 
 dev_dependencies:
   flutter_test:

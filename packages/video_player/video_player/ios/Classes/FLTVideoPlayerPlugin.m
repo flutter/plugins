@@ -46,6 +46,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
+@property(nonatomic) double requiredSpeed;
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
 - (void)pause;
@@ -296,6 +297,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
   if (_isPlaying) {
     [_player play];
+    _player.rate = _requiredSpeed;
   } else {
     [_player pause];
   }
@@ -378,6 +380,13 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                                      details:nil]);
     }
     return;
+  }
+
+  _requiredSpeed = speed;
+
+  // AVAudioPlayer starts playback when rate is set.
+  if (!_isPlaying) {
+   return;
   }
 
   _player.rate = speed;
