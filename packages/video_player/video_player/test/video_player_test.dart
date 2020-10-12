@@ -73,7 +73,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   VideoPlayerOptions get videoPlayerOptions => null;
 
   @override
-  Future<void> setVideoPlayerOptions(VideoPlayerOptions videoPlayerOptions) {}
+  Future<void> setVideoPlayerOptions(
+    VideoPlayerOptions videoPlayerOptions,
+  ) async {}
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
