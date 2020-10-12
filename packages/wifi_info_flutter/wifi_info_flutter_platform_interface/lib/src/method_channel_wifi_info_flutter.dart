@@ -19,13 +19,7 @@ class MethodChannelWifiInfoFlutter extends WifiInfoFlutterPlatform {
 
   @override
   Future<String> getWifiName() async {
-    String wifiName = await methodChannel.invokeMethod<String>('wifiName');
-    // as Android might return <unknown ssid>, uniforming result
-    // our iOS implementation will return null
-    if (wifiName == '<unknown ssid>') {
-      wifiName = null;
-    }
-    return wifiName;
+    return methodChannel.invokeMethod<String>('wifiName');
   }
 
   @override
