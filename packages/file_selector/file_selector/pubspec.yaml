@@ -1,23 +1,12 @@
 name: file_selector
-description: Flutter plugin for launching a URL on Android and iOS. Supports
-  web, phone, SMS, and email schemes.
-homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher
-version: 0.1.0
-
-flutter:
-  plugin:
-    platforms:
-      web:
-        default_package: file_selector_web
+description: Flutter plugin for opening and saving files.
+homepage: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector
+version: 1.0.0
 
 dependencies:
   flutter:
     sdk: flutter
-  file_selector_platform_interface:
-    path: ../file_selector_platform_interface
-  file_selector_web:
-    path: ../file_selector_web
-
+  file_selector_platform_interface: ^1.0.0
 
 dev_dependencies:
   flutter_test:
