@@ -19,6 +19,7 @@ class WifiInfoFlutter {
     String ssid = null;
     if (wifiInfo != null) ssid = wifiInfo.getSSID();
     if (ssid != null) ssid = ssid.replaceAll("\"", ""); // Android returns "SSID"
+    if (ssid != null && ssid.equals("<unknown ssid>")) ssid = null;
     return ssid;
   }
 
