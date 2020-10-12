@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Support NNBD.
+
 ## 1.0.1
 
 - Documentation typo fixed.
