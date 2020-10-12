@@ -13,7 +13,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group("$MethodChannelDeviceInfo", () {
-    MethodChannelDeviceInfo methodChannelDeviceInfo;
+    late MethodChannelDeviceInfo methodChannelDeviceInfo;
 
     setUp(() async {
       methodChannelDeviceInfo = MethodChannelDeviceInfo();

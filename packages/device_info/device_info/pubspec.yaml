@@ -19,7 +19,8 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  device_info_platform_interface: ^1.0.0
+  device_info_platform_interface:
+    path: ../device_info_platform_interface
 
 dev_dependencies:
   test: ^1.3.0
