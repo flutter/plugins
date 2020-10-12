@@ -5,7 +5,6 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart' show required;
 
 import 'url_launcher_platform_interface.dart';
 

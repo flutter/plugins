@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart' show required;
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'method_channel_url_launcher.dart';
