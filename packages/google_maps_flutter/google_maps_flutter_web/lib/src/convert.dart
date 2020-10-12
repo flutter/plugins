@@ -13,6 +13,8 @@ final _nullLatLngBounds = LatLngBounds(
 // Defaults taken from the Google Maps Platform SDK documentation.
 final _defaultStrokeColor = Colors.black.value;
 final _defaultFillColor = Colors.transparent.value;
+final _defaultCssColor = '#000000';
+final _defaultCssOpacity = 0.0;
 
 // Indices in the plugin side don't match with the ones
 // in the gmaps lib. This translates from plugin -> gmaps.
@@ -23,6 +25,22 @@ final _mapTypeToMapTypeId = {
   3: gmaps.MapTypeId.TERRAIN,
   4: gmaps.MapTypeId.HYBRID,
 };
+
+// Converts a [Color] into a valid CSS value #RRGGBB.
+String _getCssColor(Color color) {
+  if (color == null) {
+    return _defaultCssColor;
+  }
+  return '#' + color.value.toRadixString(16).padLeft(8, '0').substring(2);
+}
+
+// Extracts the opacity from a [Color].
+double _getCssOpacity(Color color) {
+  if (color == null) {
+    return _defaultCssOpacity;
+  }
+  return color.opacity;
+}
 
 // Converts options from the plugin into gmaps.MapOptions that can be used by the JS SDK.
 // The following options are not handled here, for various reasons:
@@ -319,7 +337,7 @@ Set<Polyline> _rawOptionsToInitialPolylines(Map<String, dynamic> rawOptions) {
           zIndex: rawPolyline['zIndex'],
           width: rawPolyline['width'],
           points: rawPolyline['points']
-              ?.map((rawPoint) => LatLng.fromJson(rawPoint))
+              ?.map<LatLng>((rawPoint) => LatLng.fromJson(rawPoint))
               ?.toList(),
         );
       }) ??
@@ -342,7 +360,7 @@ Set<Polygon> _rawOptionsToInitialPolygons(Map<String, dynamic> rawOptions) {
           visible: rawPolygon['visible'],
           zIndex: rawPolygon['zIndex'],
           points: rawPolygon['points']
-              ?.map((rawPoint) => LatLng.fromJson(rawPoint))
+              ?.map<LatLng>((rawPoint) => LatLng.fromJson(rawPoint))
               ?.toList(),
         );
       }) ??
@@ -418,11 +436,11 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
 
 gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
   final populationOptions = gmaps.CircleOptions()
-    ..strokeColor = '#' + circle.strokeColor.value.toRadixString(16)
-    ..strokeOpacity = 0.8
+    ..strokeColor = _getCssColor(circle.strokeColor)
+    ..strokeOpacity = _getCssOpacity(circle.strokeColor)
     ..strokeWeight = circle.strokeWidth
-    ..fillColor = '#' + circle.fillColor.value.toRadixString(16)
-    ..fillOpacity = 0.6
+    ..fillColor = _getCssColor(circle.fillColor)
+    ..fillOpacity = _getCssOpacity(circle.fillColor)
     ..center = gmaps.LatLng(circle.center.latitude, circle.center.longitude)
     ..radius = circle.radius
     ..visible = circle.visible;
@@ -437,11 +455,11 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
   });
   return gmaps.PolygonOptions()
     ..paths = paths
-    ..strokeColor = '#' + polygon.strokeColor.value.toRadixString(16)
-    ..strokeOpacity = 0.8
+    ..strokeColor = _getCssColor(polygon.strokeColor)
+    ..strokeOpacity = _getCssOpacity(polygon.strokeColor)
     ..strokeWeight = polygon.strokeWidth
-    ..fillColor = '#' + polygon.fillColor.value.toRadixString(16)
-    ..fillOpacity = 0.35
+    ..fillColor = _getCssColor(polygon.fillColor)
+    ..fillOpacity = _getCssOpacity(polygon.fillColor)
     ..visible = polygon.visible
     ..zIndex = polygon.zIndex
     ..geodesic = polygon.geodesic;
@@ -456,9 +474,9 @@ gmaps.PolylineOptions _polylineOptionsFromPolyline(
 
   return gmaps.PolylineOptions()
     ..path = paths
-    ..strokeOpacity = 1.0
     ..strokeWeight = polyline.width
-    ..strokeColor = '#' + polyline.color.value.toRadixString(16).substring(0, 6)
+    ..strokeColor = _getCssColor(polyline.color)
+    ..strokeOpacity = _getCssOpacity(polyline.color)
     ..visible = polyline.visible
     ..zIndex = polyline.zIndex
     ..geodesic = polyline.geodesic;
