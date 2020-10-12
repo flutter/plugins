@@ -1,3 +1,11 @@
+## 1.0.2
+
+* Android Code Inspection and Clean up.
+
+## 1.0.1
+
+* Add documentation for `WebViewPlatformCreatedCallback`.
+
 ## 1.0.0 - Out of developer preview 🎉.
 
 * Bumped the minimal Flutter SDK to 1.22 where platform views are out of developer preview, and
