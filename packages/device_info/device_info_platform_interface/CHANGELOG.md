@@ -1,6 +1,6 @@
-## 2.0.1
+## 1.1.0-nullsafety
 
-- Support NNBD.
+* Migrate to null safety.
 
 ## 1.0.1
 
