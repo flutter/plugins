@@ -1,3 +1,7 @@
+## 0.3.4+14
+
+* Add test target to iOS example app Podfile
+
 ## 0.3.4+13
 
 * Android Code Inspection and Clean up.
