@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../wifi_info_flutter_platform_interface.dart';
-import 'utils.dart';
 
 /// An implementation of [WifiInfoFlutterPlatform] that uses method channels.
 class MethodChannelWifiInfoFlutter extends WifiInfoFlutterPlatform {
@@ -39,13 +38,21 @@ class MethodChannelWifiInfoFlutter extends WifiInfoFlutterPlatform {
     return methodChannel.invokeMethod<String>(
         'requestLocationServiceAuthorization', <bool>[
       requestAlwaysLocationUsage
-    ]).then(parseLocationAuthorizationStatus);
+    ]).then(_parseLocationAuthorizationStatus);
   }
 
   @override
   Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
     return methodChannel
         .invokeMethod<String>('getLocationServiceAuthorization')
-        .then(parseLocationAuthorizationStatus);
+        .then(_parseLocationAuthorizationStatus);
   }
+}
+
+/// Convert a String to a LocationAuthorizationStatus value.
+LocationAuthorizationStatus _parseLocationAuthorizationStatus(String result) {
+  return LocationAuthorizationStatus.values.firstWhere(
+    (LocationAuthorizationStatus status) => result == describeEnum(status),
+    orElse: () => LocationAuthorizationStatus.unknown,
+  );
 }
