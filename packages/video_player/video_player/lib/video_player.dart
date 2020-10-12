@@ -365,6 +365,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     super.dispose();
   }
 
+  /// Provide additional configuration options (optional).
+  /// Like setting the audio mode to mix
   Future<void> setVideoPlayerOptions(
     VideoPlayerOptions videoPlayerOptions,
   ) async {
