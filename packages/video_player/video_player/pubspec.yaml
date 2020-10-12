@@ -24,12 +24,12 @@ dependencies:
     git:
       url: https://github.com/ragnor-rs/plugins.git
       path: packages/video_player/video_player_platform_interface
-      ref: speed_fix_for_ios
+      ref: master
   video_player_web:
     git:
       url: https://github.com/ragnor-rs/plugins.git
       path: packages/video_player/video_player_web
-      ref: speed_fix_for_ios
+      ref: master
   flutter:
     sdk: flutter
 
