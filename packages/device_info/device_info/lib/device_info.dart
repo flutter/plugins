@@ -15,7 +15,7 @@ class DeviceInfoPlugin {
   DeviceInfoPlugin();
 
   /// This information does not change from call to call. Cache it.
-  AndroidDeviceInfo _cachedAndroidDeviceInfo;
+  AndroidDeviceInfo? _cachedAndroidDeviceInfo;
 
   /// Information derived from `android.os.Build`.
   ///
@@ -25,7 +25,7 @@ class DeviceInfoPlugin {
           await DeviceInfoPlatform.instance.androidInfo();
 
   /// This information does not change from call to call. Cache it.
-  IosDeviceInfo _cachedIosDeviceInfo;
+  IosDeviceInfo? _cachedIosDeviceInfo;
 
   /// Information derived from `UIDevice`.
   ///

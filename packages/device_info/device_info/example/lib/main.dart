@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initPlatformState() async {
-    Map<String, dynamic> deviceData;
+    Map<String, dynamic> deviceData = <String, dynamic>{};
 
     try {
       if (Platform.isAndroid) {
@@ -59,13 +59,13 @@ class _MyAppState extends State<MyApp> {
 
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
     return <String, dynamic>{
-      'version.securityPatch': build.version.securityPatch,
-      'version.sdkInt': build.version.sdkInt,
-      'version.release': build.version.release,
-      'version.previewSdkInt': build.version.previewSdkInt,
-      'version.incremental': build.version.incremental,
-      'version.codename': build.version.codename,
-      'version.baseOS': build.version.baseOS,
+      'version.securityPatch': build.version?.securityPatch,
+      'version.sdkInt': build.version?.sdkInt,
+      'version.release': build.version?.release,
+      'version.previewSdkInt': build.version?.previewSdkInt,
+      'version.incremental': build.version?.incremental,
+      'version.codename': build.version?.codename,
+      'version.baseOS': build.version?.baseOS,
       'board': build.board,
       'bootloader': build.bootloader,
       'brand': build.brand,
@@ -98,11 +98,11 @@ class _MyAppState extends State<MyApp> {
       'localizedModel': data.localizedModel,
       'identifierForVendor': data.identifierForVendor,
       'isPhysicalDevice': data.isPhysicalDevice,
-      'utsname.sysname:': data.utsname.sysname,
-      'utsname.nodename:': data.utsname.nodename,
-      'utsname.release:': data.utsname.release,
-      'utsname.version:': data.utsname.version,
-      'utsname.machine:': data.utsname.machine,
+      'utsname.sysname:': data.utsname?.sysname,
+      'utsname.nodename:': data.utsname?.nodename,
+      'utsname.release:': data.utsname?.release,
+      'utsname.version:': data.utsname?.version,
+      'utsname.machine:': data.utsname?.machine,
     };
   }
 
