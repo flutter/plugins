@@ -77,7 +77,7 @@ class FlutterWebViewClient {
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  private boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+  boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
     if (!hasNavigationDelegate) {
       return false;
     }
@@ -97,7 +97,7 @@ class FlutterWebViewClient {
     return request.isForMainFrame();
   }
 
-  private boolean shouldOverrideUrlLoading(WebView view, String url) {
+  boolean shouldOverrideUrlLoading(WebView view, String url) {
     if (!hasNavigationDelegate) {
       return false;
     }
