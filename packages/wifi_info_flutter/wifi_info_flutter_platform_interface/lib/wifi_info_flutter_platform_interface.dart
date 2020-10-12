@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'src/enums.dart';
-import 'src/method_channel_connectivity.dart';
+import 'src/method_channel_wifi_info_flutter.dart';
 
 export 'src/enums.dart';
 
