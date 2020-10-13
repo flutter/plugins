@@ -43,6 +43,18 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       log.add(methodCall);
+
+      if (methodCall.method == 'canLaunch') {
+        if (methodCall.arguments['url'] == 'http://example.com/null') {
+          return null;
+        }
+      }
+
+      if (methodCall.method == 'launch') {
+        if (methodCall.arguments['url'] == 'http://example.com/null') {
+          return null;
+        }
+      }
     });
 
     final MethodChannelUrlLauncher launcher = MethodChannelUrlLauncher();
@@ -61,6 +73,12 @@ void main() {
           })
         ],
       );
+    });
+
+    test('canLaunch should return false if platform returns null', () async {
+      final canLaunch = await launcher.canLaunch('http://example.com/null');
+
+      expect(canLaunch, false);
     });
 
     test('launch', () async {
@@ -269,6 +287,20 @@ void main() {
           })
         ],
       );
+    });
+
+    test('launch should return false if platform returns null', () async {
+      final launched = await launcher.launch(
+        'http://example.com/',
+        useSafariVC: true,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        headers: const <String, String>{},
+      );
+
+      expect(launched, false);
     });
 
     test('closeWebView default behavior', () async {
