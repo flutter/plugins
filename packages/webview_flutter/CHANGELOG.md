@@ -1,4 +1,4 @@
-## 1.0.2+1
+## 1.0.3
 
 * Updated `minSdkVersion` in build.gradle to 20 .
 
