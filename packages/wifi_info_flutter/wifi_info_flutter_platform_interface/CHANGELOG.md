@@ -1,3 +1,4 @@
-## [0.0.1] - TODO: Add release date.
+## 0.0.1
 
-* TODO: Describe initial release.
+* Initial release of package. Includes support for retrieving wifi name, wifi BSSID, wifi ip address
+and requesting location service authorization.
