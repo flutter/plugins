@@ -21,12 +21,10 @@ class RunLoop {
   void Run();
 
   // Registers the given Flutter instance for event servicing.
-  void RegisterFlutterInstance(
-      flutter::FlutterEngine* flutter_instance);
+  void RegisterFlutterInstance(flutter::FlutterEngine* flutter_instance);
 
   // Unregisters the given Flutter instance from event servicing.
-  void UnregisterFlutterInstance(
-      flutter::FlutterEngine* flutter_instance);
+  void UnregisterFlutterInstance(flutter::FlutterEngine* flutter_instance);
 
  private:
   using TimePoint = std::chrono::steady_clock::time_point;
