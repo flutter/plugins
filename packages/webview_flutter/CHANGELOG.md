@@ -1,3 +1,7 @@
+## 1.0.2+1
+
+* Updated `minSdkVersion` in build.gradle to 20.
+
 ## 1.0.2
 
 * Android Code Inspection and Clean up.
