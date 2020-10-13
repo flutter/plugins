@@ -1,3 +1,7 @@
+## 0.5.12+2
+
+* Check in windows/ directory for example/
+
 ## 0.5.12+1
 
 * Check in linux/ directory for example/

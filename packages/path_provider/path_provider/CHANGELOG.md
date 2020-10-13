@@ -1,3 +1,7 @@
+## 1.6.21
+
+* Check in windows/ directory for example/
+
 ## 1.6.20
 
 * Check in linux/ directory for example/
