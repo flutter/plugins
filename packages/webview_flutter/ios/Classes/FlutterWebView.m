@@ -85,7 +85,11 @@
     }
 
     NSString* documentStartScript = args[@"documentStartScript"];
-    userContentController.addUserScript(WKUserScript(source: documentStartScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+    WKUserScript* wrapperScript =
+        [[WKUserScript alloc] initWithSource:documentStartScript
+                               injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+                            forMainFrameOnly:NO];
+    [userContentController addUserScript:wrapperScript];
 
     NSDictionary<NSString*, id>* settings = args[@"settings"];
 
