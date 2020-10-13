@@ -14,7 +14,9 @@ flutter:
         fileName: url_launcher_web.dart
 
 dependencies:
-  url_launcher_platform_interface: ^1.0.8
+  # TODO(mvanbeusekom): Update to use pub.dev once null safety version is published.
+  url_launcher_platform_interface: 
+    path: ../url_launcher_platform_interface
   flutter:
     sdk: flutter
   flutter_web_plugins:
@@ -24,7 +26,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  url_launcher: ^5.2.5
+  # TODO(mvanbeusekom): Update to use pub.dev once null safety version is published.
+  url_launcher:
+    path: ../url_launcher
   pedantic: ^1.8.0
   mockito: ^4.1.1
   integration_test:

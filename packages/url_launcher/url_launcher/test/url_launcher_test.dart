@@ -6,7 +6,10 @@
 
 import 'dart:async';
 import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
+// TODO(mvanbeusekom): Remove once Mockito is migrated to null safety.
+// @dart = 2.9
 import 'package:mockito/mockito.dart';
 import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -41,10 +44,6 @@ void main() {
     });
   });
   group('launch', () {
-    test('requires a non-null urlString', () {
-      expect(() => launch(null), throwsAssertionError);
-    });
-
     test('default behavior', () async {
       await launch('http://flutter.dev/');
       expect(

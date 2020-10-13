@@ -1,3 +1,7 @@
+## 5.8.0-nullsafety
+
+* Migrate to null safety.
+
 ## 5.7.4
 
 * Update android compileSdkVersion to 29.
