@@ -84,6 +84,9 @@
       [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
     }
 
+    NSString* documentStartScript = args[@"documentStartScript"];
+    userContentController.addUserScript(WKUserScript(source: documentStartScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+
     NSDictionary<NSString*, id>* settings = args[@"settings"];
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];

@@ -427,6 +427,7 @@ class CreationParams {
   /// The `autoMediaPlaybackPolicy` parameter must not be null.
   CreationParams({
     this.initialUrl,
+    this.documentStartScript,
     this.webSettings,
     this.javascriptChannelNames,
     this.userAgent,
@@ -438,6 +439,7 @@ class CreationParams {
   ///
   /// When null the webview will be created without loading any page.
   final String initialUrl;
+  final String documentStartScript;
 
   /// The initial [WebSettings] for the new webview.
   ///
