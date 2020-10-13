@@ -13,7 +13,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// An implementation of [UrlLauncherPlatform] that uses method channels.
 class MethodChannelUrlLauncher extends UrlLauncherPlatform {
   @override
-  Future<bool?> canLaunch(String url) {
+  Future<bool> canLaunch(String url) {
     return _channel.invokeMethod<bool>(
       'canLaunch',
       <String, Object>{'url': url},
@@ -26,7 +26,7 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
   }
 
   @override
-  Future<bool?> launch(
+  Future<bool> launch(
     String url, {
     required bool useSafariVC,
     required bool useWebView,
