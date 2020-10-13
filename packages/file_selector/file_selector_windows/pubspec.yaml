@@ -1,0 +1,21 @@
+name: file_selector_windows
+description: Windows implementation of the file_selector plugin.
+# 0.0.y+z is compatible with 1.0.0, if you land a breaking change bump
+# the version to 2.0.0.
+# See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+version: 0.0.1
+homepage: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_windows
+
+flutter:
+  plugin:
+    platforms:
+      windows:
+        pluginClass: FileSelectorPlugin
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.12.8 <2.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter

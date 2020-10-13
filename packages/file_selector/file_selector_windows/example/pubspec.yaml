@@ -1,0 +1,19 @@
+name: file_selector_example
+description: Demonstrates the Windows implementation of the file_selector plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  file_selector_platform_interface: any
+  file_selector_windows:
+    path: ../
+
+dev_dependencies:
+  integration_test:
+    path: ../../../integration_test
+  flutter_driver:
+    sdk: flutter
+  pedantic: ^1.8.0
+
+flutter:
+  uses-material-design: true
