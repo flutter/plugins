@@ -28,33 +28,11 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initDirectories() async {
-    String tempDirectory;
-    String downloadsDirectory;
-    String appSupportDirectory;
-    String documentsDirectory;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      tempDirectory = (await getTemporaryDirectory()).path;
-    } on PlatformException {
-      tempDirectory = 'Failed to get temp directory.';
-    }
-    try {
-      downloadsDirectory = (await getDownloadsDirectory()).path;
-    } on PlatformException {
-      downloadsDirectory = 'Failed to get downloads directory.';
-    }
+    String tempDirectory = (await getTemporaryDirectory()).path;
+    String downloadsDirectory = (await getDownloadsDirectory()).path;
+    String appSupportDirectory = (await getApplicationDocumentsDirectory()).path;
+    String documentsDirectory = (await getApplicationSupportDirectory()).path;
 
-    try {
-      documentsDirectory = (await getApplicationDocumentsDirectory()).path;
-    } on PlatformException {
-      documentsDirectory = 'Failed to get documents directory.';
-    }
-
-    try {
-      appSupportDirectory = (await getApplicationSupportDirectory()).path;
-    } on PlatformException {
-      appSupportDirectory = 'Failed to get documents directory.';
-    }
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
