@@ -92,6 +92,8 @@ class _SaveTestState extends State<SaveTest> {
             ),
             SizedBox(height: 10),
             RaisedButton(
+              color: Colors.blue,
+              textColor: Colors.white,
               child: Text('Press to save a text file'),
               onPressed: () => {_saveFile()},
             ),
@@ -147,10 +149,15 @@ class _OpenTestState extends State<OpenTest> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             RaisedButton(
+              color: Colors.blue,
+              textColor: Colors.white,
               child: Text('Press to open an image file(png, jpg)'),
               onPressed: () => _onOpenImageFile(),
             ),
+            SizedBox(height: 10),
             RaisedButton(
+              color: Colors.blue,
+              textColor: Colors.white,
               child: Text('Press to open a text file (json, txt)'),
               onPressed: () => _onOpenTextFile(),
             ),
@@ -270,12 +277,16 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 10),
             RaisedButton(
+              color: Colors.blue,
+              textColor: Colors.white,
               child: Text('Press to try saving a file'),
               onPressed: () => Navigator.pushNamed(context, '/save'),
             ),
+            SizedBox(height: 10),
             RaisedButton(
+              color: Colors.blue,
+              textColor: Colors.white,
               child: Text('Press to try opening a file'),
               onPressed: () => Navigator.pushNamed(context, '/open'),
             ),
