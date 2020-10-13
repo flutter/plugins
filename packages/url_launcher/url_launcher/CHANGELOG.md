@@ -1,3 +1,7 @@
+## 5.7.3
+
+* Check in linux/ directory for example/
+
 ## 5.7.2
 
 * Add API documentation explaining the [canLaunch] method returns `false` if package visibility (Android API 30) is not managed correctly.
