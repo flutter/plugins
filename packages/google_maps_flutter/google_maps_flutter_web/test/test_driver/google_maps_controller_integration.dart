@@ -149,10 +149,26 @@ void main() {
             {'markerId': 'marker-1'}
           ],
           'polygonsToAdd': [
-            {'polygonId': 'polygon-1'}
+            {
+              'polygonId': 'polygon-1',
+              'points': [
+                [43.355114, -5.851333],
+                [43.354797, -5.851860],
+                [43.354469, -5.851318],
+                [43.354762, -5.850824],
+              ],
+            },
           ],
           'polylinesToAdd': [
-            {'polylineId': 'polyline-1'}
+            {
+              'polylineId': 'polyline-1',
+              'points': [
+                [43.355114, -5.851333],
+                [43.354797, -5.851860],
+                [43.354469, -5.851318],
+                [43.354762, -5.850824],
+              ],
+            },
           ],
         });
         controller.debugSetOverrides(

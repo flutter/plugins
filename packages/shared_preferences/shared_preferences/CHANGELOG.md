@@ -1,6 +1,14 @@
-## 0.5.10+1
+## 0.5.12+1
 
 * Check in linux/ directory for example/
+
+## 0.5.12
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.5.11
+
+* Support Windows by default.
 
 ## 0.5.10
 
