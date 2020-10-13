@@ -214,6 +214,15 @@ void main() {
             'dash');
       });
 
+      test('network with stream', () async {
+        final VideoPlayerController controller =
+            VideoPlayerController.network('https://127.0.0.1/indefinite');
+
+        await controller.initialize();
+
+        expect(controller.value.isDurationIndefinite, true);
+      });
+
       test('init errors', () async {
         final VideoPlayerController controller = VideoPlayerController.network(
           'http://testing.com/invalid_url',

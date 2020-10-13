@@ -6,11 +6,10 @@ import 'dart:async';
 
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
-import 'package:video_player/video_player.dart';
 
 Future<void> main() async {
   final FlutterDriver driver = await FlutterDriver.connect();
-  VideoPlayerController _controller;
+
   tearDownAll(() async {
     await driver.close();
   });
@@ -27,17 +26,4 @@ Future<void> main() async {
     final Health health = await driver.checkHealth();
     expect(health.status, HealthStatus.ok);
   }, skip: 'Cirrus CI currently hangs while playing videos');
-
-  group('Livestream should have indefinite duration', () {
-    setUp(() async {
-      _controller = VideoPlayerController.network(
-          'https://rtmp.api.rt.com/hls/rtdru.m3u8');
-    });
-
-    test('Should initialize', () async {
-      await _controller.initialize();
-
-      expect(_controller.value.isDurationIndefinite, true);
-    });
-  });
 }
