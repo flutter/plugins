@@ -44,17 +44,9 @@ void main() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       log.add(methodCall);
 
-      if (methodCall.method == 'canLaunch') {
-        if (methodCall.arguments['url'] == 'http://example.com/null') {
-          return null;
-        }
-      }
-
-      if (methodCall.method == 'launch') {
-        if (methodCall.arguments['url'] == 'http://example.com/null') {
-          return null;
-        }
-      }
+      // Return null explicitly instead of relying on the implicit null
+      // returned by the method channel if no return statement is specified.
+      return null;
     });
 
     final MethodChannelUrlLauncher launcher = MethodChannelUrlLauncher();
@@ -76,7 +68,7 @@ void main() {
     });
 
     test('canLaunch should return false if platform returns null', () async {
-      final canLaunch = await launcher.canLaunch('http://example.com/null');
+      final canLaunch = await launcher.canLaunch('http://example.com/');
 
       expect(canLaunch, false);
     });
