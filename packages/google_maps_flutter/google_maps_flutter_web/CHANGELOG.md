@@ -1,3 +1,7 @@
+## 0.1.0+4
+
+* Fix crash when InfoWindow title/snippet has links. [Issue](https://github.com/flutter/flutter/issues/67854).
+
 ## 0.1.0+3
 
 * Fix crash when converting initial polylines and polygons. [Issue](https://github.com/flutter/flutter/issues/65152).

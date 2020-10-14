@@ -379,9 +379,9 @@ gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
   }
 
   final content = '<h3 class="infowindow-title">' +
-      sanitizeHtml(marker.infoWindow.title ?? "") +
+      _doSanitizeHtml(marker.infoWindow.title ?? "") +
       '</h3>' +
-      sanitizeHtml(marker.infoWindow.snippet ?? "");
+      _doSanitizeHtml(marker.infoWindow.snippet ?? "");
 
   return gmaps.InfoWindowOptions()
     ..content = content
@@ -424,7 +424,7 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
           marker.position.latitude,
           marker.position.longitude,
         )
-    ..title = sanitizeHtml(marker.infoWindow?.title ?? "")
+    ..title = _doSanitizeHtml(marker.infoWindow?.title ?? "")
     ..zIndex = marker.zIndex
     ..visible = marker.visible
     ..opacity = marker.alpha
@@ -545,6 +545,12 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
     default:
       throw UnimplementedError('Unimplemented CameraMove: ${json[0]}.');
   }
+}
+
+// Pass a noop `adLinkRel` callback to sanitizeHtml.
+// This is required until this is fixed: https://github.com/google/dart-neats/issues/71
+String _doSanitizeHtml(String text) {
+  return sanitizeHtml(text, addLinkRel: (_) => []);
 }
 
 // original JS by: Byron Singh (https://stackoverflow.com/a/30541162)
