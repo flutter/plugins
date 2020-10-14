@@ -45,10 +45,7 @@ dev_dependencies:
   mockito: ^4.1.1
   # TODO (mvanbeusekom): Update to use pub.dev once 1.10.0-nullsafety released.
   plugin_platform_interface:
-    git: 
-      url: https://github.com/flutter/plugins.git
-      ref: nnbd
-      path: packages/plugin_platform_interface
+    path: ../../plugin_platform_interface
   pedantic: ^1.10.0-nullsafety.1
 
 environment:
