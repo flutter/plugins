@@ -1,3 +1,7 @@
+## 1.6.20
+
+* Check in linux/ directory for example/
+
 ## 1.6.19
 
 * Android implementation does path queries in the background thread rather than UI thread.
