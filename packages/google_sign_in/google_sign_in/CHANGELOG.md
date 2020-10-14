@@ -4,7 +4,7 @@
 
 ## 4.5.4
 
-* Update android compileSdkVersion to 29.
+* Keep handling deprecated Android v1 classes for backward compatibility.
 
 ## 4.5.3
 
