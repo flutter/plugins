@@ -1,6 +1,11 @@
-## 0.4.9+4
+## 0.4.9+5
 
 * Update android compileSdkVersion to 29.
+
+## 0.4.9+4
+
+* Update README with the updated information about WifiInfo on Android O or higher.
+* Android: Avoiding uses or overrides a deprecated API
 
 ## 0.4.9+3
 

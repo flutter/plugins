@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'dart:ui';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,6 +81,10 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
   bool get registerTestTextInput => false;
 
   Size _surfaceSize;
+
+  // This flag is used to print warning messages when tracking performance
+  // under debug mode.
+  static bool _firstRun = false;
 
   /// Artificially changes the surface size to `size` on the Widget binding,
   /// then flushes microtasks.
@@ -281,5 +286,44 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     );
     reportData ??= <String, dynamic>{};
     reportData[reportKey] = timeline.toJson();
+  }
+
+  /// Watches the [FrameTiming] during `action` and report it to the binding
+  /// with key `reportKey`.
+  ///
+  /// This can be used to implement performance tests previously using
+  /// [traceAction] and [TimelineSummary] from [flutter_driver]
+  Future<void> watchPerformance(
+    Future<void> action(), {
+    String reportKey = 'performance',
+  }) async {
+    assert(() {
+      if (_firstRun) {
+        debugPrint(kDebugWarning);
+        _firstRun = false;
+      }
+      return true;
+    }());
+
+    // The engine could batch FrameTimings and send them only once per second.
+    // Delay for a sufficient time so either old FrameTimings are flushed and not
+    // interfering our measurements here, or new FrameTimings are all reported.
+    // TODO(CareF): remove this when flush FrameTiming is readly in engine.
+    //              See https://github.com/flutter/flutter/issues/64808
+    //              and https://github.com/flutter/flutter/issues/67593
+    Future<void> delayForFrameTimings() =>
+        Future<void>.delayed(const Duration(seconds: 2));
+
+    await delayForFrameTimings(); // flush old FrameTimings
+    final List<FrameTiming> frameTimings = <FrameTiming>[];
+    final TimingsCallback watcher = frameTimings.addAll;
+    addTimingsCallback(watcher);
+    await action();
+    await delayForFrameTimings(); // make sure all FrameTimings are reported
+    removeTimingsCallback(watcher);
+    final FrameTimingSummarizer frameTimes =
+        FrameTimingSummarizer(frameTimings);
+    reportData ??= <String, dynamic>{};
+    reportData[reportKey] = frameTimes.summary;
   }
 }

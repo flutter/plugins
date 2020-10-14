@@ -1,6 +1,10 @@
-## 0.9.1+1
+## 0.9.2+1
 
 * Update android compileSdkVersion to 29.
+
+## 0.9.2
+
+* Add `watchPerformance` for performance test.
 
 ## 0.9.1
 

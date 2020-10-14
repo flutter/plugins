@@ -31,9 +31,16 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    android {
+        compileOptions {
+            sourceCompatibility 1.8
+            targetCompatibility 1.8
+        }
+    }
 }
 
 dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'com.google.guava:guava:20.0'
     testImplementation 'junit:junit:4.12'
 }

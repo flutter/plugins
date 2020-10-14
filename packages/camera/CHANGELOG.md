@@ -1,6 +1,10 @@
-## 0.5.8+8
+## 0.5.8+9
 
 * Update android compileSdkVersion to 29.
+
+## 0.5.8+8
+
+* Fixed garbled audio (in video) by setting audio encoding bitrate.
 
 ## 0.5.8+7
 

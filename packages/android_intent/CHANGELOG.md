@@ -1,6 +1,10 @@
-## 0.3.7+5
+## 0.3.7+6
 
 * Update android compileSdkVersion to 29.
+
+## 0.3.7+5
+
+* Android Code Inspection and Clean up.
 
 ## 0.3.7+4
 
