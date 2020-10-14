@@ -1,3 +1,7 @@
+## 5.7.4
+
+* Update android compileSdkVersion to 29.
+
 ## 5.7.3
 
 * Check in linux/ directory for example/
