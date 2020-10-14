@@ -4,10 +4,14 @@
 
 import 'dart:async';
 import 'dart:html' as html;
+// ignore: undefined_shown_name
+import 'dart:ui' as ui show platformViewRegistry;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
+import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+import 'package:url_launcher_web/link.dart';
 
 import 'src/third_party/platform_detect/browser.dart';
 
@@ -43,6 +47,9 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith(Registrar registrar) {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
+    linkDelegate = (LinkInfo linkInfo) => WebLinkDelegate(linkInfo);
+    // ignore: undefined_prefixed_name
+    ui.platformViewRegistry.registerViewFactory(viewType, linkViewFactory);
   }
 
   /// Opens the given [url] in the specified [webOnlyWindowName].
