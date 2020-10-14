@@ -9,6 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
+export 'src/link.dart' show Link;
+export 'package:url_launcher_platform_interface/link.dart'
+    show FollowLink, LinkTarget, LinkWidgetBuilder;
+
 /// Parses the specified URL string and delegates handling of it to the
 /// underlying platform.
 ///
