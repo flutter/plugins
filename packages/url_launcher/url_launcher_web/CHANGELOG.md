@@ -1,3 +1,7 @@
+# 0.2.0-nullsafety
+
+- Migrate to null safety.
+
 # 0.1.4+2
 
 - Move `lib/third_party` to `lib/src/third_party`.
