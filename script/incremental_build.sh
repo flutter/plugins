@@ -22,6 +22,7 @@ fi
 CUSTOM_ANALYSIS_PLUGINS=(
   "in_app_purchase"
   "camera"
+  "plugin_platform_interface"
   "video_player/video_player_web"
   "google_maps_flutter/google_maps_flutter_web"
 )
