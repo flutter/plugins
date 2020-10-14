@@ -10,10 +10,7 @@ dependencies:
     sdk: flutter
   # TODO (mvanbeusekom): use pub.dev once 1.10.0-nullsafety released.
   plugin_platform_interface:
-    git: 
-      url: https://github.com/flutter/plugins.git
-      ref: nnbd
-      path: packages/plugin_platform_interface
+      path: ../../plugin_platform_interface
 
 dev_dependencies:
   flutter_test:
