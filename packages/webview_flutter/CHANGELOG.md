@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Android Code Inspection and Clean up.
+
 ## 1.0.1
 
 * Add documentation for `WebViewPlatformCreatedCallback`.
