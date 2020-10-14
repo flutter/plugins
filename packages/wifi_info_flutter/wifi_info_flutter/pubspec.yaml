@@ -12,10 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   wifi_info_flutter_platform_interface:
-    git:
-      url: git@github.com:bparrishMines/plugins.git
-      ref: wifi_interface
-      path: packages/wifi_info_flutter/wifi_info_flutter_platform_interface
+    path: ../wifi_info_flutter_platform_interface
 
 dev_dependencies:
   mockito: ^4.1.1
