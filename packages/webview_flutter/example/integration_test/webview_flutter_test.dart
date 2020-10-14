@@ -1008,6 +1008,60 @@ void main() {
     },
     skip: !Platform.isAndroid,
   );
+
+  testWidgets('onUpdateVisitedHistory triggers when the URL changes',
+      (WidgetTester tester) async {
+    final String onUpdateVisitedHistoryTest = '''
+        <!DOCTYPE html><html>
+        <head><title>onUpdateVisitedHistory test</title>
+          <script type="text/javascript">
+            function changeHash() {
+              window.location.href = 'https://www.google.com/';
+            }
+          </script>
+        </head>
+        <body onload="changeHash();" bgColor="blue">
+        </body>
+        </html>
+      ''';
+    final String onUpdateVisitedHistoryTestBase64 =
+        base64Encode(const Utf8Encoder().convert(onUpdateVisitedHistoryTest));
+    final Completer<String> onUpdateVisitedHistoryCompleter =
+        Completer<String>();
+    final GlobalKey key = GlobalKey();
+
+    final String initialUrl =
+        'data:text/html;charset=utf-8;base64,$onUpdateVisitedHistoryTestBase64';
+
+    final WebView webView = WebView(
+        key: key,
+        initialUrl: initialUrl,
+        javascriptMode: JavascriptMode.unrestricted,
+        onUpdateVisitedHistory: (String newUrl) {
+          if (newUrl == initialUrl) {
+            return;
+          }
+          onUpdateVisitedHistoryCompleter.complete(newUrl);
+        });
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              width: 200,
+              height: 200,
+              child: webView,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final String nextUrl = await onUpdateVisitedHistoryCompleter.future;
+    expect(nextUrl, 'https://www.google.com/');
+  });
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.

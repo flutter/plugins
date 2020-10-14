@@ -889,6 +889,22 @@ void main() {
 
     expect(platformWebView.userAgent, 'UA');
   });
+  testWidgets('onUpdateVisitedHistory', (WidgetTester tester) async {
+    String visitedUrl;
+
+    await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onUpdateVisitedHistory: (String url) {
+          visitedUrl = url;
+        }));
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    platformWebView.fakeOnUpdateVisitedHistoryCallback('https://google.com');
+
+    expect(visitedUrl, 'https://google.com');
+  });
 }
 
 class FakePlatformWebView {
@@ -1046,6 +1062,24 @@ class FakePlatformWebView {
     ));
 
     ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+      channel.name,
+      data,
+      (ByteData data) {},
+    );
+  }
+
+  void fakeOnUpdateVisitedHistoryCallback(String nextUrl) {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+
+    final ByteData data = codec.encodeMethodCall(MethodCall(
+      'onUpdateVisitedHistory',
+      <dynamic, dynamic>{'url': nextUrl},
+    ));
+
+    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
+    // https://github.com/flutter/flutter/issues/33446
+    // ignore: deprecated_member_use
+    BinaryMessages.handlePlatformMessage(
       channel.name,
       data,
       (ByteData data) {},

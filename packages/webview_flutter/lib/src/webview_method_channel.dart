@@ -61,6 +61,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
           ),
         );
         return null;
+      case 'onUpdateVisitedHistory':
+        _platformCallbacksHandler.onUpdateVisitedHistory(call.arguments['url']);
+        return null;
     }
 
     throw MissingPluginException(
