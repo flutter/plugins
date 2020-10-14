@@ -1,6 +1,7 @@
 ## 0.6.5+3
 
-* Update android compileSdkVersion to 29.
+* Replace deprecated `Environment.getExternalStorageDirectory()` call on Android.
+* Upgrade to Android Gradle plugin 3.5.0 & target API level 29.
 
 ## 0.6.5+2
 
