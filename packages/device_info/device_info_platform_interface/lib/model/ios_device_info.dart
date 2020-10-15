@@ -8,14 +8,14 @@
 class IosDeviceInfo {
   /// IOS device info class.
   IosDeviceInfo({
-    this.name,
-    this.systemName,
-    this.systemVersion,
-    this.model,
-    this.localizedModel,
-    this.identifierForVendor,
-    this.isPhysicalDevice,
-    this.utsname,
+    required this.name,
+    required this.systemName,
+    required this.systemVersion,
+    required this.model,
+    required this.localizedModel,
+    required this.identifierForVendor,
+    required this.isPhysicalDevice,
+    required this.utsname,
   });
 
   /// Device name.
@@ -62,11 +62,11 @@ class IosDeviceInfo {
 /// See http://pubs.opengroup.org/onlinepubs/7908799/xsh/sysutsname.h.html for details.
 class IosUtsname {
   IosUtsname._({
-    this.sysname,
-    this.nodename,
-    this.release,
-    this.version,
-    this.machine,
+    required this.sysname,
+    required this.nodename,
+    required this.release,
+    required this.version,
+    required this.machine,
   });
 
   /// Operating system name.
