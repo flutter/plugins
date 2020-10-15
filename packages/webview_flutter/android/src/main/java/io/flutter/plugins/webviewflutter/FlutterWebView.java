@@ -103,13 +103,16 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     methodChannel.setMethodCallHandler(this);
 
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
-    applySettings((Map<String, Object>) params.get("settings"));
+    Map<String, Object> settings = (Map<String, Object>) params.get("settings");
+    if (settings != null) applySettings(settings);
 
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
-      registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
+      List<String> names = (List<String>) params.get(JS_CHANNEL_NAMES_FIELD);
+      if (names != null) registerJavaScriptChannelNames(names);
     }
 
-    updateAutoMediaPlaybackPolicy((Integer) params.get("autoMediaPlaybackPolicy"));
+    Integer autoMediaPlaybackPolicy = (Integer) params.get("autoMediaPlaybackPolicy");
+    if (autoMediaPlaybackPolicy != null) updateAutoMediaPlaybackPolicy(autoMediaPlaybackPolicy);
     if (params.containsKey("userAgent")) {
       String userAgent = (String) params.get("userAgent");
       updateUserAgent(userAgent);
@@ -316,7 +319,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void scrollTo(MethodCall methodCall, Result result) {
-    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    Map<String, Object> request = methodCall.arguments();
     int x = (int) request.get("x");
     int y = (int) request.get("y");
 
@@ -326,7 +329,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void scrollBy(MethodCall methodCall, Result result) {
-    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    Map<String, Object> request = methodCall.arguments();
     int x = (int) request.get("x");
     int y = (int) request.get("y");
 
@@ -346,7 +349,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     for (String key : settings.keySet()) {
       switch (key) {
         case "jsMode":
-          updateJsMode((Integer) settings.get(key));
+          Integer mode = (Integer) settings.get(key);
+          if (mode != null) updateJsMode(mode);
           break;
         case "hasNavigationDelegate":
           final boolean hasNavigationDelegate = (boolean) settings.get(key);
@@ -359,7 +363,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "debuggingEnabled":
           final boolean debuggingEnabled = (boolean) settings.get(key);
 
-          webView.setWebContentsDebuggingEnabled(debuggingEnabled);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webView.setWebContentsDebuggingEnabled(debuggingEnabled);
+          }
           break;
         case "gestureNavigationEnabled":
           break;
@@ -389,7 +395,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     // This is the index of the AutoMediaPlaybackPolicy enum, index 1 is always_allow, for all
     // other values we require a user gesture.
     boolean requireUserGesture = mode != 1;
-    webView.getSettings().setMediaPlaybackRequiresUserGesture(requireUserGesture);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      webView.getSettings().setMediaPlaybackRequiresUserGesture(requireUserGesture);
+    }
   }
 
   private void registerJavaScriptChannelNames(List<String> channelNames) {
