@@ -14,19 +14,20 @@ import 'package:flutter/services.dart';
 
 import 'package:url_launcher_platform_interface/link.dart';
 
-typedef _ClickListener = void Function(html.MouseEvent);
+/// Signature for a function that handles a mouse click event.
+typedef ClickListener = void Function(html.MouseEvent);
 
 /// The unique identifier for the view type to be used for link platform views.
-const String viewType = '__url_launcher::link';
+const String linkViewType = '__url_launcher::link';
 
 /// The name of the property used to set the viewId on the DOM element.
-const String _viewIdProperty = '__url_launcher::link::viewId';
+const String linkViewIdProperty = '__url_launcher::link::viewId';
 
 /// Signature for a function that takes a unique [id] and creates an HTML element.
-typedef PlatformViewFactory = html.Element Function(int viewId);
+typedef HtmlViewFactory = html.Element Function(int viewId);
 
 /// Factory that returns the link DOM element for each unique view id.
-PlatformViewFactory get linkViewFactory => _LinkViewController._viewFactory;
+HtmlViewFactory get linkViewFactory => LinkViewController._viewFactory;
 
 /// The delegate for building the [Link] widget on the web.
 ///
@@ -39,26 +40,30 @@ class WebLinkDelegate extends StatefulWidget {
   final LinkInfo link;
 
   @override
-  _WebLinkDelegateState createState() => _WebLinkDelegateState();
+  WebLinkDelegateState createState() => WebLinkDelegateState();
 }
 
-class _WebLinkDelegateState extends State<WebLinkDelegate> {
-  _LinkViewController _controller;
+/// The link delegate used on the web platform.
+///
+/// For external URIs, it lets the browser do its thing. For app route names, it
+/// pushes the route name to the framework.
+class WebLinkDelegateState extends State<WebLinkDelegate> {
+  LinkViewController _controller;
 
   @override
   void didUpdateWidget(WebLinkDelegate oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.link.uri != oldWidget.link.uri) {
-      _controller?._setUri(widget.link.uri);
+      _controller?.setUri(widget.link.uri);
     }
     if (widget.link.target != oldWidget.link.target) {
-      _controller?._setTarget(widget.link.target);
+      _controller?.setTarget(widget.link.target);
     }
   }
 
   Future<void> _followLink() {
     final Completer<void> completer = Completer<void>();
-    _LinkViewController._registerHitTest(
+    LinkViewController.registerHitTest(
       _controller,
       onClick: (html.MouseEvent event) {
         completer.complete(_onDomClick(event));
@@ -93,7 +98,7 @@ class _WebLinkDelegateState extends State<WebLinkDelegate> {
         ),
         Positioned.fill(
           child: PlatformViewLink(
-            viewType: viewType,
+            viewType: linkViewType,
             onCreatePlatformView: _createController,
             surfaceFactory:
                 (BuildContext context, PlatformViewController controller) {
@@ -110,20 +115,21 @@ class _WebLinkDelegateState extends State<WebLinkDelegate> {
     );
   }
 
-  _LinkViewController _createController(PlatformViewCreationParams params) {
-    _controller = _LinkViewController(params.id);
+  LinkViewController _createController(PlatformViewCreationParams params) {
+    _controller = LinkViewController(params.id);
     _controller._initialize().then((_) {
       params.onPlatformViewCreated(params.id);
     });
     return _controller
-      .._setUri(widget.link.uri)
-      .._setTarget(widget.link.target);
+      ..setUri(widget.link.uri)
+      ..setTarget(widget.link.target);
   }
 }
 
 /// Controls link views.
-class _LinkViewController extends PlatformViewController {
-  _LinkViewController(this.viewId) {
+class LinkViewController extends PlatformViewController {
+  /// Creates a [LinkViewController] instance with the unique [viewId].
+  LinkViewController(this.viewId) {
     if (_instances.isEmpty) {
       // This is the first controller being created, attach the global click
       // listener.
@@ -132,40 +138,41 @@ class _LinkViewController extends PlatformViewController {
     _instances[viewId] = this;
   }
 
-  static Map<int, _LinkViewController> _instances =
-      <int, _LinkViewController>{};
+  static Map<int, LinkViewController> _instances =
+      <int, LinkViewController>{};
 
   static html.Element _viewFactory(int viewId) {
     return _instances[viewId]?._element;
   }
 
   static int _hitTestedViewId;
-  static _ClickListener _hitTestedClickCallback;
+  static ClickListener _hitTestedClickCallback;
 
   static StreamSubscription _clickSubscribtion;
 
   static void _onGlobalClick(html.MouseEvent event) {
-    final int viewId = _getViewIdFromTarget(event);
+    final int viewId = getViewIdFromTarget(event);
     _instances[viewId]?._onDomClick(event);
     // After the DOM click event has been received, clean up the hit test state
     // so we can start fresh on the next click.
-    _unregisterHitTest();
+    unregisterHitTest();
   }
 
-  /// Call this method to indicated that a hit test has been registered for the
+  /// Call this method to indicate that a hit test has been registered for the
   /// given [controller].
   ///
   /// The [onClick] callback is invoked when the anchor element receives a
   /// `click` from the browser.
-  static void _registerHitTest(
-    _LinkViewController controller, {
-    @required _ClickListener onClick,
+  static void registerHitTest(
+    LinkViewController controller, {
+    @required ClickListener onClick,
   }) {
     _hitTestedViewId = controller.viewId;
     _hitTestedClickCallback = onClick;
   }
 
-  static void _unregisterHitTest() {
+  /// Removes all information about previously registered hit tests.
+  static void unregisterHitTest() {
     _hitTestedViewId = null;
     _hitTestedClickCallback = null;
   }
@@ -178,7 +185,7 @@ class _LinkViewController extends PlatformViewController {
 
   Future<void> _initialize() async {
     _element = html.Element.tag('a');
-    setProperty(_element, _viewIdProperty, viewId);
+    setProperty(_element, linkViewIdProperty, viewId);
     _element.style
       ..opacity = '0'
       ..display = 'block'
@@ -186,7 +193,7 @@ class _LinkViewController extends PlatformViewController {
 
     final Map<String, dynamic> args = <String, dynamic>{
       'id': viewId,
-      'viewType': viewType,
+      'viewType': linkViewType,
     };
     await SystemChannels.platform_views.invokeMethod<void>('create', args);
   }
@@ -203,7 +210,8 @@ class _LinkViewController extends PlatformViewController {
     }
   }
 
-  void _setUri(Uri uri) {
+  /// Set the [Uri] value for this link.
+  void setUri(Uri uri) {
     assert(_isInitialized);
     if (uri == null) {
       _element.removeAttribute('href');
@@ -212,7 +220,8 @@ class _LinkViewController extends PlatformViewController {
     }
   }
 
-  void _setTarget(LinkTarget target) {
+  /// Set the [LinkTarget] value for this link.
+  void setTarget(LinkTarget target) {
     assert(_isInitialized);
     _element.setAttribute('target', _getHtmlTarget(target));
   }
@@ -255,28 +264,34 @@ class _LinkViewController extends PlatformViewController {
   }
 }
 
-int _getViewIdFromTarget(html.Event event) {
-  final html.Element linkElement = _getLinkElementFromTarget(event);
+/// Finds the view id of the DOM element targeted by the [event].
+int getViewIdFromTarget(html.Event event) {
+  final html.Element linkElement = getLinkElementFromTarget(event);
   if (linkElement != null) {
-    return getProperty(linkElement, _viewIdProperty);
+    return getProperty(linkElement, linkViewIdProperty);
   }
   return null;
 }
 
-html.Element _getLinkElementFromTarget(html.Event event) {
+/// Finds the targeted DOM element by the [event].
+///
+/// It handles the case where the target element is inside a shadow DOM too.
+html.Element getLinkElementFromTarget(html.Event event) {
   final html.Element target = event.target;
-  if (_isLinkElement(target)) {
+  if (isLinkElement(target)) {
     return target;
   }
   if (target.shadowRoot != null) {
     final html.Element child = target.shadowRoot.lastChild;
-    if (_isLinkElement(child)) {
+    if (isLinkElement(child)) {
       return child;
     }
   }
   return null;
 }
 
-bool _isLinkElement(html.Element element) {
-  return element.tagName == 'A' && hasProperty(element, _viewIdProperty);
+/// Checks if the given [element] is a link that was created by
+/// [LinkViewController].
+bool isLinkElement(html.Element element) {
+  return element.tagName == 'A' && hasProperty(element, linkViewIdProperty);
 }
