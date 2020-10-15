@@ -19,7 +19,6 @@ dependencies:
 
 dev_dependencies:
   pedantic: ^1.8.0
-  mockito: ^4.1.1
 
 flutter:
   plugin:

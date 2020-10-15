@@ -5,40 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:vm_service/vm_service.dart' as vm;
-
-vm.Timeline _ktimelines = vm.Timeline(
-  traceEvents: <vm.TimelineEvent>[],
-  timeOriginMicros: 100,
-  timeExtentMicros: 200,
-);
 
 void main() async {
   late Future<Map<String, dynamic>> request;
 
   group('Test Integration binding', () {
-    late MockVM mockVM;
+    late FakeVmService fakeVmService;
     late IntegrationTestWidgetsFlutterBinding integrationBinding;
-    List<int> clockTimes = <int>[100, 200];
 
     setUp(() {
+      fakeVmService = FakeVmService();
       integrationBinding =
           IntegrationTestWidgetsFlutterBinding.ensureInitialized(
-        vmService: mockVM,
+        vmService: fakeVmService,
       ) as IntegrationTestWidgetsFlutterBinding;
 
       request = integrationBinding.callback(<String, String>{
         'command': 'request_data',
       });
-      mockVM = MockVM();
-      when(mockVM.getVMTimeline(
-        timeOriginMicros: anyNamed('timeOriginMicros'),
-        timeExtentMicros: anyNamed('timeExtentMicros'),
-      )).thenAnswer((_) => Future.value(_ktimelines));
-      when(mockVM.getVMTimelineMicros()).thenAnswer(
-        (_) => Future.value(vm.Timestamp(timestamp: clockTimes.removeAt(0))),
-      );
     });
 
     testWidgets('Run Integration app', (WidgetTester tester) async {
@@ -82,7 +67,7 @@ void main() async {
       expect(integrationBinding.reportData!.containsKey('timeline'), true);
       expect(
         json.encode(integrationBinding.reportData!['timeline']),
-        json.encode(_ktimelines),
+        json.encode(fakeVmService.kTimelines),
       );
     });
   });
@@ -99,4 +84,23 @@ void main() async {
   });
 }
 
-class MockVM extends Mock implements vm.VmService {}
+class FakeVmService extends Fake implements vm.VmService {
+  final vm.Timeline kTimelines = vm.Timeline(
+    traceEvents: <vm.TimelineEvent>[],
+    timeOriginMicros: 100,
+    timeExtentMicros: 200,
+  );
+
+  final List<int> clockTimes = <int>[100, 200];
+
+  @override
+  Future<vm.Timeline> getVMTimeline(
+      {int? timeOriginMicros, int? timeExtentMicros}) async {
+    return kTimelines;
+  }
+
+  @override
+  Future<vm.Timestamp> getVMTimelineMicros() async {
+    return vm.Timestamp(timestamp: clockTimes.removeAt(0));
+  }
+}
