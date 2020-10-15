@@ -1,6 +1,6 @@
 ## 0.1.0+4
 
-* Fix crash when InfoWindow title/snippet has links. [Issue](https://github.com/flutter/flutter/issues/67854).
+* Update `package:sanitize_html` to `^1.4.1` to prevent [a crash](https://github.com/flutter/flutter/issues/67854) when InfoWindow title/snippet have links.
 
 ## 0.1.0+3
 
