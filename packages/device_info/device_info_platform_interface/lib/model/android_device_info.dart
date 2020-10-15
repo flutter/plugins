@@ -132,7 +132,7 @@ class AndroidDeviceInfo {
       supportedAbis: _fromList(map['supportedAbis'] ?? []),
       tags: map['tags'] ?? '',
       type: map['type'] ?? '',
-      isPhysicalDevice: map['isPhysicalDevice'] ?? '',
+      isPhysicalDevice: map['isPhysicalDevice'] ?? false,
       androidId: map['androidId'] ?? '',
       systemFeatures: _fromList(map['systemFeatures'] ?? []),
     );
@@ -189,9 +189,9 @@ class AndroidBuildVersion {
       baseOS: map['baseOS'] ?? '',
       codename: map['codename'] ?? '',
       incremental: map['incremental'] ?? '',
-      previewSdkInt: map['previewSdkInt'] ?? '',
+      previewSdkInt: map['previewSdkInt'] ?? 0,
       release: map['release'] ?? '',
-      sdkInt: map['sdkInt'] ?? '',
+      sdkInt: map['sdkInt'] ?? 0,
       securityPatch: map['securityPatch'] ?? '',
     );
   }
