@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart' show required;
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'method_channel_url_launcher.dart';
@@ -49,13 +48,13 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
   /// in `package:url_launcher/url_launcher.dart`.
   Future<bool> launch(
     String url, {
-    @required bool useSafariVC,
-    @required bool useWebView,
-    @required bool enableJavaScript,
-    @required bool enableDomStorage,
-    @required bool universalLinksOnly,
-    @required Map<String, String> headers,
-    String webOnlyWindowName,
+    required bool useSafariVC,
+    required bool useWebView,
+    required bool enableJavaScript,
+    required bool enableDomStorage,
+    required bool universalLinksOnly,
+    required Map<String, String> headers,
+    String? webOnlyWindowName,
   }) {
     throw UnimplementedError('launch() has not been implemented.');
   }

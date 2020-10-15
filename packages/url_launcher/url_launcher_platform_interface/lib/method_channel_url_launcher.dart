@@ -5,7 +5,6 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart' show required;
 
 import 'url_launcher_platform_interface.dart';
 
@@ -18,7 +17,7 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
     return _channel.invokeMethod<bool>(
       'canLaunch',
       <String, Object>{'url': url},
-    );
+    ).then((value) => value ?? false);
   }
 
   @override
@@ -29,13 +28,13 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
   @override
   Future<bool> launch(
     String url, {
-    @required bool useSafariVC,
-    @required bool useWebView,
-    @required bool enableJavaScript,
-    @required bool enableDomStorage,
-    @required bool universalLinksOnly,
-    @required Map<String, String> headers,
-    String webOnlyWindowName,
+    required bool useSafariVC,
+    required bool useWebView,
+    required bool enableJavaScript,
+    required bool enableDomStorage,
+    required bool universalLinksOnly,
+    required Map<String, String> headers,
+    String? webOnlyWindowName,
   }) {
     return _channel.invokeMethod<bool>(
       'launch',
@@ -48,6 +47,6 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
         'universalLinksOnly': universalLinksOnly,
         'headers': headers,
       },
-    );
+    ).then((value) => value ?? false);
   }
 }
