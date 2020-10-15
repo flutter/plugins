@@ -1,3 +1,7 @@
+## 0.10.0-nullsafety
+
+* (Prelease) Migration for sound null safety in Dart.
+
 ## 0.9.1
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

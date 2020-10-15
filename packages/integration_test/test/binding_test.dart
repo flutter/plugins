@@ -18,16 +18,16 @@ void main() async {
   late Future<Map<String, dynamic>> request;
 
   group('Test Integration binding', () {
-    final WidgetsBinding binding =
-        IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-    assert(binding is IntegrationTestWidgetsFlutterBinding);
-    final IntegrationTestWidgetsFlutterBinding integrationBinding =
-        binding as IntegrationTestWidgetsFlutterBinding;
-
     late MockVM mockVM;
-    List<int> clockTimes = [100, 200];
+    late IntegrationTestWidgetsFlutterBinding integrationBinding;
+    List<int> clockTimes = <int>[100, 200];
 
     setUp(() {
+      integrationBinding =
+          IntegrationTestWidgetsFlutterBinding.ensureInitialized(
+        vmService: mockVM,
+      ) as IntegrationTestWidgetsFlutterBinding;
+
       request = integrationBinding.callback(<String, String>{
         'command': 'request_data',
       });
@@ -76,7 +76,7 @@ void main() async {
     });
 
     testWidgets('Test traceAction', (WidgetTester tester) async {
-      await integrationBinding.enableTimeline(vmService: mockVM);
+      await integrationBinding.enableTimeline();
       await integrationBinding.traceAction(() async {});
       expect(integrationBinding.reportData, isNotNull);
       expect(integrationBinding.reportData!.containsKey('timeline'), true);

@@ -118,11 +118,16 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
   ///
   /// Returns an instance of the [IntegrationTestWidgetsFlutterBinding], creating and
   /// initializing it if necessary.
-  static WidgetsBinding ensureInitialized() {
+  static WidgetsBinding ensureInitialized(
+      {@visibleForTesting vm.VmService? vmService}) {
     if (WidgetsBinding.instance == null) {
       IntegrationTestWidgetsFlutterBinding();
     }
     assert(WidgetsBinding.instance is IntegrationTestWidgetsFlutterBinding);
+    if (vmService != null) {
+      (WidgetsBinding.instance as IntegrationTestWidgetsFlutterBinding)
+          ._cachedVmService = vmService;
+    }
     return WidgetsBinding.instance!;
   }
 
@@ -212,11 +217,10 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
   @visibleForTesting
   Future<void> enableTimeline({
     List<String> streams = const <String>['all'],
-    @visibleForTesting vm.VmService? vmService,
   }) async {
     assert(streams != null); // ignore: unnecessary_null_comparison
     assert(streams.isNotEmpty);
-    vmService ??= await _vmService;
+    final vm.VmService vmService = await _vmService;
     await vmService.setVMTimelineFlags(streams);
   }
 
