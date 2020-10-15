@@ -26,7 +26,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<int> create(DataSource dataSource) async {
+  Future<int?> create(DataSource dataSource) async {
     CreateMessage message = CreateMessage();
 
     switch (dataSource.sourceType) {
@@ -91,7 +91,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   Future<Duration> getPosition(int textureId) async {
     PositionMessage response =
         await _api.position(TextureMessage()..textureId = textureId);
-    return Duration(milliseconds: response.position);
+    return Duration(milliseconds: response.position!);
   }
 
   @override
