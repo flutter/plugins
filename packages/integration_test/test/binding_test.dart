@@ -15,7 +15,7 @@ vm.Timeline _ktimelines = vm.Timeline(
 );
 
 void main() async {
-  Future<Map<String, dynamic>> request;
+  late Future<Map<String, dynamic>> request;
 
   group('Test Integration binding', () {
     final WidgetsBinding binding =
@@ -24,7 +24,7 @@ void main() async {
     final IntegrationTestWidgetsFlutterBinding integrationBinding =
         binding as IntegrationTestWidgetsFlutterBinding;
 
-    MockVM mockVM;
+    late MockVM mockVM;
     List<int> clockTimes = [100, 200];
 
     setUp(() {
@@ -79,9 +79,9 @@ void main() async {
       await integrationBinding.enableTimeline(vmService: mockVM);
       await integrationBinding.traceAction(() async {});
       expect(integrationBinding.reportData, isNotNull);
-      expect(integrationBinding.reportData.containsKey('timeline'), true);
+      expect(integrationBinding.reportData!.containsKey('timeline'), true);
       expect(
-        json.encode(integrationBinding.reportData['timeline']),
+        json.encode(integrationBinding.reportData!['timeline']),
         json.encode(_ktimelines),
       );
     });
@@ -95,7 +95,7 @@ void main() async {
         (await request)['response'] as Map<String, dynamic>;
     final String message = response['message'] as String;
     Response result = Response.fromJson(message);
-    assert(result.data['answer'] == 42);
+    assert(result.data!['answer'] == 42);
   });
 }
 

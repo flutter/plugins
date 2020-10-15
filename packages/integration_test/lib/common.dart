@@ -16,26 +16,26 @@ class Response {
   final bool _allTestsPassed;
 
   /// The extra information to be added along side the test result.
-  Map<String, dynamic> data;
+  Map<String, dynamic>? data;
 
   /// Constructor to use for positive response.
   Response.allTestsPassed({this.data})
-      : this._allTestsPassed = true,
-        this._failureDetails = null;
+      : _allTestsPassed = true,
+        _failureDetails = <Failure>[];
 
   /// Constructor for failure response.
   Response.someTestsFailed(this._failureDetails, {this.data})
-      : this._allTestsPassed = false;
+      : _allTestsPassed = false;
 
   /// Constructor for failure response.
-  Response.toolException({String ex})
-      : this._allTestsPassed = false,
-        this._failureDetails = [Failure('ToolException', ex)];
+  Response.toolException({String? ex})
+      : _allTestsPassed = false,
+        _failureDetails = <Failure>[Failure('ToolException', ex)];
 
   /// Constructor for web driver commands response.
   Response.webDriverCommand({this.data})
-      : this._allTestsPassed = false,
-        this._failureDetails = null;
+      : _allTestsPassed = false,
+        _failureDetails = <Failure>[];
 
   /// Whether the test ran successfully or not.
   bool get allTestsPassed => _allTestsPassed;
@@ -86,8 +86,8 @@ class Response {
 
   /// Create a list of Strings from [_failureDetails].
   List<String> _failureDetailsAsString() {
-    final List<String> list = List<String>();
-    if (_failureDetails == null || _failureDetails.isEmpty) {
+    final List<String> list = <String>[];
+    if (_failureDetails.isEmpty) {
       return list;
     }
 
@@ -100,7 +100,7 @@ class Response {
 
   /// Creates a [Failure] list using a json response.
   static List<Failure> _failureDetailsFromJson(List<dynamic> list) {
-    final List<Failure> failureList = List<Failure>();
+    final List<Failure> failureList = <Failure>[];
     list.forEach((s) {
       final String failure = s as String;
       failureList.add(Failure.fromJsonString(failure));
@@ -115,14 +115,14 @@ class Failure {
   final String methodName;
 
   /// The details of the failure such as stack trace.
-  final String details;
+  final String? details;
 
   /// Constructor requiring all fields during initialization.
   Failure(this.methodName, this.details);
 
   /// Serializes the object to JSON.
   String toJson() {
-    return json.encode(<String, String>{
+    return json.encode(<String, String?>{
       'methodName': methodName,
       'details': details,
     });
@@ -244,13 +244,13 @@ class WebDriverCommand {
 
   /// Constructor for [WebDriverCommandType.noop] command.
   WebDriverCommand.noop()
-      : this.type = WebDriverCommandType.noop,
-        this.values = Map();
+      : type = WebDriverCommandType.noop,
+        values = Map();
 
   /// Constructor for [WebDriverCommandType.noop] screenshot.
   WebDriverCommand.screenshot(String screenshot_name)
-      : this.type = WebDriverCommandType.screenshot,
-        this.values = {'screenshot_name': screenshot_name};
+      : type = WebDriverCommandType.screenshot,
+        values = {'screenshot_name': screenshot_name};
 
   /// Util method for converting [WebDriverCommandType] to a map entry.
   ///
@@ -294,7 +294,7 @@ abstract class IntegrationTestResults {
   List<Failure> get failureMethodsDetails;
 
   /// The extra data for the reported result.
-  Map<String, dynamic> get reportData;
+  Map<String, dynamic>? get reportData;
 
   /// Whether all the test methods completed succesfully.
   Completer<bool> get allTestsPassed;

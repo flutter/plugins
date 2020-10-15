@@ -5,7 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() async {
   final IntegrationTestWidgetsFlutterBinding binding =
-      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+      IntegrationTestWidgetsFlutterBinding.ensureInitialized()
+          as IntegrationTestWidgetsFlutterBinding;
 
   testWidgets('passing test 1', (WidgetTester tester) async {
     expect(true, true);

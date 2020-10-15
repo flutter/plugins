@@ -14,7 +14,8 @@ import 'package:integration_test_example/main.dart' as app;
 
 void main() {
   final IntegrationTestWidgetsFlutterBinding binding =
-      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+      IntegrationTestWidgetsFlutterBinding.ensureInitialized()
+          as IntegrationTestWidgetsFlutterBinding;
 
   testWidgets('verify text', (WidgetTester tester) async {
     // Build our app and trigger a frame.
@@ -31,7 +32,8 @@ void main() {
       find.byWidgetPredicate(
         (Widget widget) =>
             widget is Text &&
-            widget.data
+            widget.data != null &&
+            widget.data!
                 .startsWith('Platform: ${html.window.navigator.platform}\n'),
       ),
       findsOneWidget,

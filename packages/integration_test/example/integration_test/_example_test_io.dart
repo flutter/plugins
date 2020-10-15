@@ -32,7 +32,8 @@ void main() {
         find.byWidgetPredicate(
           (Widget widget) =>
               widget is Text &&
-              widget.data.startsWith('Platform: ${Platform.operatingSystem}'),
+              widget.data != null &&
+              widget.data!.startsWith('Platform: ${Platform.operatingSystem}'),
         ),
         findsOneWidget,
       );

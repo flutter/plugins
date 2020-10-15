@@ -21,7 +21,7 @@ class IOCallbackManager implements CallbackManager {
   @override
   Future<Map<String, dynamic>> callback(
       Map<String, String> params, IntegrationTestResults testRunner) async {
-    final String command = params['command'];
+    final String command = params['command'] as String;
     Map<String, String> response;
     switch (command) {
       case 'request_data':

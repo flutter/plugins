@@ -30,9 +30,9 @@ typedef ResponseDataCallback = FutureOr<void> Function(Map<String, dynamic>);
 Future<void> writeResponseData(
   Map<String, dynamic> data, {
   String testOutputFilename = 'integration_response_data',
-  String destinationDirectory,
+  String? destinationDirectory,
 }) async {
-  assert(testOutputFilename != null);
+  assert(testOutputFilename != null); // ignore: unnecessary_null_comparison
   destinationDirectory ??= testOutputsDirectory;
   await fs.directory(destinationDirectory).create(recursive: true);
   final File file = fs.file(path.join(
@@ -65,7 +65,7 @@ Future<void> writeResponseData(
 /// ```
 Future<void> integrationDriver({
   Duration timeout = const Duration(minutes: 1),
-  ResponseDataCallback responseDataCallback = writeResponseData,
+  ResponseDataCallback? responseDataCallback = writeResponseData,
 }) async {
   final FlutterDriver driver = await FlutterDriver.connect();
   final String jsonResult = await driver.requestData(null, timeout: timeout);
@@ -75,7 +75,7 @@ Future<void> integrationDriver({
   if (response.allTestsPassed) {
     print('All tests passed.');
     if (responseDataCallback != null) {
-      await responseDataCallback(response.data);
+      await responseDataCallback(response.data!);
     }
     exit(0);
   } else {

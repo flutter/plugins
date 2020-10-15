@@ -79,14 +79,14 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
   @override
   bool get registerTestTextInput => false;
 
-  Size _surfaceSize;
+  Size? _surfaceSize;
 
   /// Artificially changes the surface size to `size` on the Widget binding,
   /// then flushes microtasks.
   ///
   /// Set to null to use the default surface size.
   @override
-  Future<void> setSurfaceSize(Size size) {
+  Future<void> setSurfaceSize(Size? size) {
     return TestAsyncUtils.guard<void>(() async {
       assert(inTest);
       if (_surfaceSize == size) {
@@ -123,7 +123,7 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
       IntegrationTestWidgetsFlutterBinding();
     }
     assert(WidgetsBinding.instance is IntegrationTestWidgetsFlutterBinding);
-    return WidgetsBinding.instance;
+    return WidgetsBinding.instance!;
   }
 
   static const MethodChannel _channel =
@@ -145,9 +145,9 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
   ///
   /// The default value is `null`.
   @override
-  Map<String, dynamic> get reportData => _reportData;
-  Map<String, dynamic> _reportData;
-  set reportData(Map<String, dynamic> data) => this._reportData = data;
+  Map<String, dynamic>? get reportData => _reportData;
+  Map<String, dynamic>? _reportData;
+  set reportData(Map<String, dynamic>? data) => this._reportData = data;
 
   /// Manages callbacks received from driver side and commands send to driver
   /// side.
@@ -184,7 +184,7 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     Future<void> testBody(),
     VoidCallback invariantTester, {
     String description = '',
-    Duration timeout,
+    Duration? timeout,
   }) async {
     await super.runTest(
       testBody,
@@ -195,28 +195,29 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     results[description] ??= _success;
   }
 
-  vm.VmService _vmService;
+  vm.VmService? _cachedVmService;
+  Future<vm.VmService> get _vmService async {
+    if (_cachedVmService == null) {
+      final developer.ServiceProtocolInfo info =
+          await developer.Service.getInfo();
+      assert(info.serverUri != null);
+      _cachedVmService = await vm_io.vmServiceConnectUri(
+        'ws://localhost:${info.serverUri!.port}${info.serverUri!.path}ws',
+      );
+    }
+    return _cachedVmService!;
+  }
 
   /// Initialize the [vm.VmService] settings for the timeline.
   @visibleForTesting
   Future<void> enableTimeline({
     List<String> streams = const <String>['all'],
-    @visibleForTesting vm.VmService vmService,
+    @visibleForTesting vm.VmService? vmService,
   }) async {
-    assert(streams != null);
+    assert(streams != null); // ignore: unnecessary_null_comparison
     assert(streams.isNotEmpty);
-    if (vmService != null) {
-      _vmService = vmService;
-    }
-    if (_vmService == null) {
-      final developer.ServiceProtocolInfo info =
-          await developer.Service.getInfo();
-      assert(info.serverUri != null);
-      _vmService = await vm_io.vmServiceConnectUri(
-        'ws://localhost:${info.serverUri.port}${info.serverUri.path}ws',
-      );
-    }
-    await _vmService.setVMTimelineFlags(streams);
+    vmService ??= await _vmService;
+    await vmService.setVMTimelineFlags(streams);
   }
 
   /// Runs [action] and returns a [vm.Timeline] trace for it.
@@ -238,16 +239,17 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     bool retainPriorEvents = false,
   }) async {
     await enableTimeline(streams: streams);
+    final vm.VmService vmService = await _vmService;
     if (retainPriorEvents) {
       await action();
-      return await _vmService.getVMTimeline();
+      return await vmService.getVMTimeline();
     }
 
-    await _vmService.clearVMTimeline();
-    final vm.Timestamp startTime = await _vmService.getVMTimelineMicros();
+    await vmService.clearVMTimeline();
+    final vm.Timestamp startTime = await vmService.getVMTimelineMicros();
     await action();
-    final vm.Timestamp endTime = await _vmService.getVMTimelineMicros();
-    return await _vmService.getVMTimeline(
+    final vm.Timestamp endTime = await vmService.getVMTimelineMicros();
+    return await vmService.getVMTimeline(
       timeOriginMicros: startTime.timestamp,
       timeExtentMicros: endTime.timestamp,
     );
@@ -280,6 +282,6 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
       retainPriorEvents: retainPriorEvents,
     );
     reportData ??= <String, dynamic>{};
-    reportData[reportKey] = timeline.toJson();
+    reportData![reportKey] = timeline.toJson();
   }
 }
