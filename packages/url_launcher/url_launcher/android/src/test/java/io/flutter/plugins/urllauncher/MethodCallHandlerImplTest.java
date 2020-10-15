@@ -1,5 +1,6 @@
 package io.flutter.plugins.urllauncher;
 
+import android.os.Bundle;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -104,6 +105,115 @@ public class MethodCallHandlerImplTest {
 
     verify(result, times(1)).success(false);
   }
+
+  @Test
+  public void onMethodCall_launchReturnsNoActivityError() {
+    // Setup mock objects
+    urlLauncher = mock(UrlLauncher.class);
+    Result result = mock(Result.class);
+    // Setup expected values
+    String url = "foo";
+    boolean useWebView = false;
+    boolean enableJavaScript = false;
+    boolean enableDomStorage = false;
+    // Setup arguments map send on the method channel
+    Map<String, Object> args = new HashMap<>();
+    args.put("url", url);
+    args.put("useWebView", useWebView);
+    args.put("enableJavaScript", enableJavaScript);
+    args.put("enableDomStorage", enableDomStorage);
+    args.put("headers", new HashMap<>());
+    // Mock the launch method on the urlLauncher class
+    when(
+            urlLauncher.launch(
+                    eq(url),
+                    any(Bundle.class),
+                    eq(useWebView),
+                    eq(enableJavaScript),
+                    eq(enableDomStorage)))
+            .thenReturn(UrlLauncher.LaunchStatus.NO_ACTIVITY);
+    // Act by calling the "launch" method on the method channel
+    methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
+    // Verify the results and assert
+    verify(result, times(1))
+            .error(
+                    "NO_ACTIVITY",
+                    "Launching a URL requires a foreground activity.",
+                    null);
+  }
+
+  @Test
+  public void onMethodCall_launchReturnsActivityNotFoundError() {
+    // Setup mock objects
+    urlLauncher = mock(UrlLauncher.class);
+    Result result = mock(Result.class);
+    // Setup expected values
+    String url = "foo";
+    boolean useWebView = false;
+    boolean enableJavaScript = false;
+    boolean enableDomStorage = false;
+    // Setup arguments map send on the method channel
+    Map<String, Object> args = new HashMap<>();
+    args.put("url", url);
+    args.put("useWebView", useWebView);
+    args.put("enableJavaScript", enableJavaScript);
+    args.put("enableDomStorage", enableDomStorage);
+    args.put("headers", new HashMap<>());
+    // Mock the launch method on the urlLauncher class
+    when(
+            urlLauncher.launch(
+                    eq(url),
+                    any(Bundle.class),
+                    eq(useWebView),
+                    eq(enableJavaScript),
+                    eq(enableDomStorage)))
+            .thenReturn(UrlLauncher.LaunchStatus.ACTIVITY_NOT_FOUND);
+    // Act by calling the "launch" method on the method channel
+    methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
+    // Verify the results and assert
+    verify(result, times(1))
+            .error(
+                    "ACTIVITY_NOT_FOUND",
+                    String.format("No Activity found to handle intent { %s }", url),
+                    null);
+  }
+
+  @Test
+  public void onMethodCall_launchReturnsTrue() {
+    // Setup mock objects
+    urlLauncher = mock(UrlLauncher.class);
+    Result result = mock(Result.class);
+    // Setup expected values
+    String url = "foo";
+    boolean useWebView = false;
+    boolean enableJavaScript = false;
+    boolean enableDomStorage = false;
+    // Setup arguments map send on the method channel
+    Map<String, Object> args = new HashMap<>();
+    args.put("url", url);
+    args.put("useWebView", useWebView);
+    args.put("enableJavaScript", enableJavaScript);
+    args.put("enableDomStorage", enableDomStorage);
+    args.put("headers", new HashMap<>());
+    // Mock the launch method on the urlLauncher class
+    when(
+            urlLauncher.launch(
+                    eq(url),
+                    any(Bundle.class),
+                    eq(useWebView),
+                    eq(enableJavaScript),
+                    eq(enableDomStorage)))
+            .thenReturn(UrlLauncher.LaunchStatus.OK);
+    // Act by calling the "launch" method on the method channel
+    methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
+    // Verify the results and assert
+    verify(result, times(1))
+            .success(true);
+  }
+
 
   @Test
   public void onMethodCall_closeWebView() {
