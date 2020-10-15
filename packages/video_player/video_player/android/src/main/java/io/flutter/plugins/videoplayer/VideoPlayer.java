@@ -78,12 +78,7 @@ final class VideoPlayer {
     DataSource.Factory dataSourceFactory;
     if (isHTTP(uri)) {
       dataSourceFactory =
-          new DefaultHttpDataSourceFactory(
-              "ExoPlayer",
-              null,
-              DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-              DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-              true);
+              new CacheDataSourceFactory(context, 100 * 1024 * 1024, 5 * 1024 * 1024);
     } else {
       dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
     }
