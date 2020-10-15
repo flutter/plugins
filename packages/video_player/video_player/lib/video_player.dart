@@ -175,7 +175,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
   VideoPlayerController.asset(this.dataSource,
-      {this.package, this.closedCaptionFile, this.videoPlayerOptions})
+      {this.package, this.closedCaptionFile, this.videoPlayerOptions, this.isBackgroundPlaybackEnabled = false})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
         super(VideoPlayerValue(duration: null));
@@ -188,7 +188,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
   VideoPlayerController.network(this.dataSource,
-      {this.formatHint, this.closedCaptionFile, this.videoPlayerOptions})
+      {this.formatHint, this.closedCaptionFile, this.videoPlayerOptions, this.isBackgroundPlaybackEnabled = false})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: null));
@@ -198,7 +198,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
   VideoPlayerController.file(File file,
-      {this.closedCaptionFile, this.videoPlayerOptions})
+      {this.closedCaptionFile, this.videoPlayerOptions, this.isBackgroundPlaybackEnabled = false})
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
@@ -232,6 +232,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// [initialize()] is called.
   final Future<ClosedCaptionFile> closedCaptionFile;
 
+  /// Optional field to enable/disable background video playback.
+  /// Equals false by default.
+  final bool isBackgroundPlaybackEnabled;
+
   ClosedCaptionFile _closedCaptionFile;
   Timer _timer;
   bool _isDisposed = false;
@@ -246,8 +250,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
-    _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
-    _lifeCycleObserver.initialize();
+    if (!isBackgroundPlaybackEnabled) {
+      _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
+      _lifeCycleObserver.initialize();
+    }
     _creatingCompleter = Completer<void>();
 
     DataSource dataSourceDescription;
@@ -349,7 +355,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         await _eventSubscription?.cancel();
         await _videoPlayerPlatform.dispose(_textureId);
       }
-      _lifeCycleObserver.dispose();
+      _lifeCycleObserver?.dispose();
     }
     _isDisposed = true;
     super.dispose();
