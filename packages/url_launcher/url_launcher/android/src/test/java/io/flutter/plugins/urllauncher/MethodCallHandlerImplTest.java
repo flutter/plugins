@@ -1,6 +1,5 @@
 package io.flutter.plugins.urllauncher;
 
-import android.os.Bundle;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -9,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.os.Bundle;
 import androidx.test.core.app.ApplicationProvider;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.BinaryMessenger.BinaryMessageHandler;
@@ -124,23 +124,15 @@ public class MethodCallHandlerImplTest {
     args.put("enableDomStorage", enableDomStorage);
     args.put("headers", new HashMap<>());
     // Mock the launch method on the urlLauncher class
-    when(
-            urlLauncher.launch(
-                    eq(url),
-                    any(Bundle.class),
-                    eq(useWebView),
-                    eq(enableJavaScript),
-                    eq(enableDomStorage)))
-            .thenReturn(UrlLauncher.LaunchStatus.NO_ACTIVITY);
+    when(urlLauncher.launch(
+            eq(url), any(Bundle.class), eq(useWebView), eq(enableJavaScript), eq(enableDomStorage)))
+        .thenReturn(UrlLauncher.LaunchStatus.NO_ACTIVITY);
     // Act by calling the "launch" method on the method channel
     methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
     methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
     // Verify the results and assert
     verify(result, times(1))
-            .error(
-                    "NO_ACTIVITY",
-                    "Launching a URL requires a foreground activity.",
-                    null);
+        .error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);
   }
 
   @Test
@@ -161,23 +153,18 @@ public class MethodCallHandlerImplTest {
     args.put("enableDomStorage", enableDomStorage);
     args.put("headers", new HashMap<>());
     // Mock the launch method on the urlLauncher class
-    when(
-            urlLauncher.launch(
-                    eq(url),
-                    any(Bundle.class),
-                    eq(useWebView),
-                    eq(enableJavaScript),
-                    eq(enableDomStorage)))
-            .thenReturn(UrlLauncher.LaunchStatus.ACTIVITY_NOT_FOUND);
+    when(urlLauncher.launch(
+            eq(url), any(Bundle.class), eq(useWebView), eq(enableJavaScript), eq(enableDomStorage)))
+        .thenReturn(UrlLauncher.LaunchStatus.ACTIVITY_NOT_FOUND);
     // Act by calling the "launch" method on the method channel
     methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
     methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
     // Verify the results and assert
     verify(result, times(1))
-            .error(
-                    "ACTIVITY_NOT_FOUND",
-                    String.format("No Activity found to handle intent { %s }", url),
-                    null);
+        .error(
+            "ACTIVITY_NOT_FOUND",
+            String.format("No Activity found to handle intent { %s }", url),
+            null);
   }
 
   @Test
@@ -198,22 +185,15 @@ public class MethodCallHandlerImplTest {
     args.put("enableDomStorage", enableDomStorage);
     args.put("headers", new HashMap<>());
     // Mock the launch method on the urlLauncher class
-    when(
-            urlLauncher.launch(
-                    eq(url),
-                    any(Bundle.class),
-                    eq(useWebView),
-                    eq(enableJavaScript),
-                    eq(enableDomStorage)))
-            .thenReturn(UrlLauncher.LaunchStatus.OK);
+    when(urlLauncher.launch(
+            eq(url), any(Bundle.class), eq(useWebView), eq(enableJavaScript), eq(enableDomStorage)))
+        .thenReturn(UrlLauncher.LaunchStatus.OK);
     // Act by calling the "launch" method on the method channel
     methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
     methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
     // Verify the results and assert
-    verify(result, times(1))
-            .success(true);
+    verify(result, times(1)).success(true);
   }
-
 
   @Test
   public void onMethodCall_closeWebView() {
