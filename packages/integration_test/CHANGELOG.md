@@ -1,6 +1,16 @@
+# CHANGELOG
+
 ## 0.10.0-nullsafety
 
 * (Prelease) Migration for sound null safety in Dart.
+
+## 0.9.2+1
+
+* Update android compileSdkVersion to 29.
+
+## 0.9.2
+
+* Add `watchPerformance` for performance test.
 
 ## 0.9.1
 
