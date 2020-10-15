@@ -19,4 +19,3 @@ flutter:
 
 environment:
   sdk: '>=2.10.0-56.0.dev <3.0.0'
-  

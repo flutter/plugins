@@ -19,38 +19,38 @@ class IosDeviceInfo {
   });
 
   /// Device name.
-  final String? name;
+  final String name;
 
   /// The name of the current operating system.
-  final String? systemName;
+  final String systemName;
 
   /// The current operating system version.
-  final String? systemVersion;
+  final String systemVersion;
 
   /// Device model.
-  final String? model;
+  final String model;
 
   /// Localized name of the device model.
-  final String? localizedModel;
+  final String localizedModel;
 
   /// Unique UUID value identifying the current device.
-  final String? identifierForVendor;
+  final String identifierForVendor;
 
   /// `false` if the application is running in a simulator, `true` otherwise.
-  final bool? isPhysicalDevice;
+  final bool isPhysicalDevice;
 
   /// Operating system information derived from `sys/utsname.h`.
-  final IosUtsname? utsname;
+  final IosUtsname utsname;
 
   /// Deserializes from the map message received from [_kChannel].
   static IosDeviceInfo fromMap(Map<String, dynamic> map) {
     return IosDeviceInfo(
-      name: map['name'],
-      systemName: map['systemName'],
-      systemVersion: map['systemVersion'],
-      model: map['model'],
-      localizedModel: map['localizedModel'],
-      identifierForVendor: map['identifierForVendor'],
+      name: map['name'] ?? '',
+      systemName: map['systemName'] ?? '',
+      systemVersion: map['systemVersion'] ?? '',
+      model: map['model'] ?? '',
+      localizedModel: map['localizedModel'] ?? '',
+      identifierForVendor: map['identifierForVendor'] ?? '',
       isPhysicalDevice: map['isPhysicalDevice'] == 'true',
       utsname:
           IosUtsname._fromMap(map['utsname']?.cast<String, dynamic>() ?? {}),
@@ -70,28 +70,28 @@ class IosUtsname {
   });
 
   /// Operating system name.
-  final String? sysname;
+  final String sysname;
 
   /// Network node name.
-  final String? nodename;
+  final String nodename;
 
   /// Release level.
-  final String? release;
+  final String release;
 
   /// Version level.
-  final String? version;
+  final String version;
 
   /// Hardware type (e.g. 'iPhone7,1' for iPhone 6 Plus).
-  final String? machine;
+  final String machine;
 
   /// Deserializes from the map message received from [_kChannel].
   static IosUtsname _fromMap(Map<String, dynamic> map) {
     return IosUtsname._(
-      sysname: map['sysname'],
-      nodename: map['nodename'],
-      release: map['release'],
-      version: map['version'],
-      machine: map['machine'],
+      sysname: map['sysname'] ?? '',
+      nodename: map['nodename'] ?? '',
+      release: map['release'] ?? '',
+      version: map['version'] ?? '',
+      machine: map['machine'] ?? '',
     );
   }
 }
