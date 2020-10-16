@@ -1,4 +1,4 @@
-## 1.0.5
+## 1.1.0
 
 * Add support for holes in Polygons.
 
