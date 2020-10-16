@@ -79,8 +79,7 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
       // browser handle it.
       event.preventDefault();
       final String routeName = widget.link.uri.toString();
-      // TODO(mdebbar): how do we know if `isUsingRouter` should be true or false?
-      return pushRouteNameToFramework(routeName, isUsingRouter: false);
+      return pushRouteNameToFramework(context, routeName);
     }
 
     // External links will be handled by the browser, so we don't have to do
@@ -138,8 +137,7 @@ class LinkViewController extends PlatformViewController {
     _instances[viewId] = this;
   }
 
-  static Map<int, LinkViewController> _instances =
-      <int, LinkViewController>{};
+  static Map<int, LinkViewController> _instances = <int, LinkViewController>{};
 
   static html.Element _viewFactory(int viewId) {
     return _instances[viewId]?._element;

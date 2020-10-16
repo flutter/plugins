@@ -47,10 +47,12 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith(Registrar registrar) {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
-    linkDelegate = (LinkInfo linkInfo) => WebLinkDelegate(linkInfo);
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(linkViewType, linkViewFactory);
   }
+
+  @override
+  LinkDelegate linkDelegate = (LinkInfo linkInfo) => WebLinkDelegate(linkInfo);
 
   /// Opens the given [url] in the specified [webOnlyWindowName].
   ///
