@@ -12,8 +12,8 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  IosDeviceInfo? iosInfo;
-  AndroidDeviceInfo? androidInfo;
+  IosDeviceInfo iosInfo;
+  AndroidDeviceInfo androidInfo;
 
   setUpAll(() async {
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -26,9 +26,9 @@ void main() {
 
   testWidgets('Can get non-null device model', (WidgetTester tester) async {
     if (Platform.isIOS) {
-      expect(iosInfo?.model, isNotNull);
+      expect(iosInfo.model, isNotNull);
     } else if (Platform.isAndroid) {
-      expect(androidInfo?.model, isNotNull);
+      expect(androidInfo.model, isNotNull);
     }
   });
 }
