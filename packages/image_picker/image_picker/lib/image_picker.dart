@@ -70,9 +70,9 @@ class ImagePicker {
     return path == null ? null : File(path);
   }
 
-  /// Returns a [PickedFile] object wrapping the image that was picked.
+  /// Returns a [PickedImage] object wrapping the image that was picked.
   ///
-  /// The returned [PickedFile] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
+  /// The returned [PickedImage] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
   ///
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -94,22 +94,36 @@ class ImagePicker {
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
-  Future<PickedFile> getImage({
+  Future<PickedImage> getImage({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
     int imageQuality,
     bool createThumbnail = false,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-  }) {
-    return platform.pickImage(
-      source: source,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
-      createThumbnail: createThumbnail,
-      preferredCameraDevice: preferredCameraDevice,
-    );
+  }) async {
+    try {
+      return await platform.pickImageWithThumbnail(
+        source: source,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+        createThumbnail: createThumbnail,
+        preferredCameraDevice: preferredCameraDevice,
+      );
+    } on UnimplementedError {
+      if(createThumbnail){
+        print("Creating thumbnails is not supported on this platform");
+      }
+      var pickedFile = await platform.pickImage(
+        source: source,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+        preferredCameraDevice: preferredCameraDevice,
+      );
+      return pickedFile == null ? null : PickedImage.fromFile(pickedFile);
+    }
   }
 
   /// Returns a [File] object pointing to the video that was picked.

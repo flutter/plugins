@@ -570,7 +570,7 @@ public class ImagePickerDelegate
         new File(path).delete();
       }
     } else {
-      finishWithSuccess(path, null);
+      finishWithSuccess(path);
     }
   }
 
@@ -593,25 +593,25 @@ public class ImagePickerDelegate
     return true;
   }
 
-  private void finishWithSuccess(String imagePath, String thumbnailPath) {
-    if (pendingResult == null) {
-      cache.saveResult(imagePath, null, null);
-      return;
-    }
-    HashMap<String, String> result = new HashMap<>();
-    result.put("image", imagePath);
-    result.put("thumbnail", thumbnailPath);
-    pendingResult.success(result);
-    clearMethodCallAndResult();
+  private void finishWithSuccess(String imagePath){
+    finishWithSuccess(imagePath, null);
   }
 
-  private void finishWithSuccess(String imagePath) {
-    if (pendingResult == null) {
+  private void finishWithSuccess(String imagePath, String thumbnailPath) {
+    if (pendingResult == null || methodCall == null) {
       cache.saveResult(imagePath, null, null);
       return;
     }
-    pendingResult.success(imagePath);
+    if (ImagePickerPlugin.METHOD_CALL_IMAGE_WITH_THUMBNAIL.equals(methodCall.method)) {
+      HashMap<String, String> result = new HashMap<>();
+      result.put("image", imagePath);
+      result.put("thumbnail", thumbnailPath);
+      pendingResult.success(result);
+    } else {
+      pendingResult.success(imagePath);
+    }
     clearMethodCallAndResult();
+
   }
 
   private void finishWithAlreadyActiveError(MethodChannel.Result result) {

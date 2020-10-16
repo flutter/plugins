@@ -21,7 +21,25 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   MethodChannel get channel => _channel;
 
   @override
-  Future<PickedImage> pickImage({
+  Future<PickedFile> pickImage({
+    @required ImageSource source,
+    double maxWidth,
+    double maxHeight,
+    int imageQuality,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+  }) async {
+    String path = await pickImagePath(
+      source: source,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      imageQuality: imageQuality,
+      preferredCameraDevice: preferredCameraDevice,
+    );
+    return path != null ? PickedFile(path) : null;
+  }
+
+  @override
+  Future<PickedImage> pickImageWithThumbnail({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
@@ -29,20 +47,30 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     bool createThumbnail = false,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    var paths = await _pickImagePaths(
-      source: source,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
-      createThumbnail: createThumbnail,
-      preferredCameraDevice: preferredCameraDevice,
-    );
-    return paths != null
-        ? PickedImage(
-            paths['image'],
-            thumbnailPath: paths['thumbnail'],
-          )
-        : null;
+    try {
+      var paths = await _pickImagePaths(
+        source: source,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+        createThumbnail: createThumbnail,
+        preferredCameraDevice: preferredCameraDevice,
+      );
+      return paths != null
+          ? PickedImage(
+              paths['image'],
+              thumbnailPath: paths['thumbnail'],
+            )
+          : null;
+    } on MissingPluginException catch (e) {
+        var file = await pickImage(
+          source: source,
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: imageQuality,
+          preferredCameraDevice: preferredCameraDevice,);
+        return file == null ? null : PickedImage.fromFile(file);
+    }
   }
 
   @override
@@ -52,16 +80,31 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double maxHeight,
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-  }) async {
-    var paths = await _pickImagePaths(
-      source: source,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
-      preferredCameraDevice: preferredCameraDevice,
-      createThumbnail: false,
+  }) {
+    assert(source != null);
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
+    }
+
+    if (maxWidth != null && maxWidth < 0) {
+      throw ArgumentError.value(maxWidth, 'maxWidth', 'cannot be negative');
+    }
+
+    if (maxHeight != null && maxHeight < 0) {
+      throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
+    }
+
+    return _channel.invokeMethod<String>(
+      'pickImage',
+      <String, dynamic>{
+        'source': source.index,
+        'maxWidth': maxWidth,
+        'maxHeight': maxHeight,
+        'imageQuality': imageQuality,
+        'cameraDevice': preferredCameraDevice.index
+      },
     );
-    return paths['image'];
   }
 
   Future<Map<String, String>> _pickImagePaths({
@@ -87,7 +130,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     }
 
     return _channel.invokeMapMethod<String, String>(
-      'pickImage',
+      'pickImageWithThumbnail',
       <String, dynamic>{
         'source': source.index,
         'maxWidth': maxWidth,

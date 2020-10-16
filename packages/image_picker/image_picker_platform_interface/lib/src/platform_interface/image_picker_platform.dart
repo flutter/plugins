@@ -127,7 +127,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///
   /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
   /// where 100 is the original/max quality. If `imageQuality` is null, the image with
-  /// the original quality will be returned. Compression is only supportted for certain
+  /// the original quality will be returned. Compression is only supported for certain
   /// image types such as JPEG. If compression is not supported for the image that is picked,
   /// an warning message will be logged.
   ///
@@ -139,7 +139,41 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  Future<PickedImage> pickImage({
+  @Deprecated('Use pickImageWithThumbnail instead.')
+  Future<PickedFile> pickImage({
+    @required ImageSource source,
+    double maxWidth,
+    double maxHeight,
+    int imageQuality,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+  }) {
+    throw UnimplementedError('pickImage() has not been implemented.');
+  }
+
+  /// Returns a [PickedImage] with the image that was picked.
+  ///
+  /// The `source` argument controls where the image comes from. This can
+  /// be either [ImageSource.camera] or [ImageSource.gallery].
+  ///
+  /// If specified, the image will be at most `maxWidth` wide and
+  /// `maxHeight` tall. Otherwise the image will be returned at it's
+  /// original width and height.
+  ///
+  /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
+  /// where 100 is the original/max quality. If `imageQuality` is null, the image with
+  /// the original quality will be returned. Compression is only supported for certain
+  /// image types such as JPEG. If compression is not supported for the image that is picked,
+  /// an warning message will be logged.
+  ///
+  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
+  /// the front or rear camera should be opened, this function is not guaranteed
+  /// to work on an Android device.
+  ///
+  /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
+  /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
+  Future<PickedImage> pickImageWithThumbnail({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
@@ -147,7 +181,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     bool createThumbnail = false,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
-    throw UnimplementedError('pickImage() has not been implemented.');
+    throw UnimplementedError('pickImageWithThumbnail() has not been implemented.');
   }
 
   /// Returns a [PickedFile] containing the video that was picked.
