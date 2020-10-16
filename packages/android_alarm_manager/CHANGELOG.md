@@ -1,3 +1,7 @@
+## 0.4.5+16
+
+* Update android minSdkVersion to 19
+
 ## 0.4.5+15
 
 * Update android compileSdkVersion to 29.
