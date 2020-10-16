@@ -7,6 +7,7 @@
 #error File requires ARC to be enabled.
 #endif
 
+#ifndef __clang_analyzer__
 static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
   NSDictionary *errorDict = (NSDictionary *)[NSNull null];
   if (error) {
@@ -361,3 +362,4 @@ void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTVi
     }
   }
 }
+#endif
