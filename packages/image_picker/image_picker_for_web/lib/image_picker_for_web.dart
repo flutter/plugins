@@ -31,12 +31,11 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   }
 
   @override
-  Future<PickedImage> pickImage({
+  Future<PickedFile> pickImage({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
     int imageQuality,
-    bool createThumbnail = false,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     String capture = computeCaptureAttribute(source, preferredCameraDevice);
