@@ -286,4 +286,7 @@ class UrlLauncherPlatformMock extends Mock
 class ImplementsUrlLauncherPlatform extends Mock
     implements UrlLauncherPlatform {}
 
-class ExtendsUrlLauncherPlatform extends UrlLauncherPlatform {}
+class ExtendsUrlLauncherPlatform extends UrlLauncherPlatform {
+  @override
+  final LinkDelegate linkDelegate = null;
+}
