@@ -38,10 +38,14 @@ class MarkersController extends GeometryController {
     gmaps.InfoWindow gmInfoWindow;
 
     if (infoWindowOptions != null) {
-      gmInfoWindow = gmaps.InfoWindow(infoWindowOptions)
-        ..addListener('click', () {
+      gmInfoWindow = gmaps.InfoWindow(infoWindowOptions);
+      // Google Maps' JS SDK does not have a click event on the InfoWindow, so
+      // we make one...
+      if (infoWindowOptions.content is HtmlElement) {
+        infoWindowOptions.content.onClick.listen((_) {
           _onInfoWindowTap(marker.markerId);
         });
+      }
     }
 
     final currentMarker = _markerIdToController[marker.markerId]?.marker;

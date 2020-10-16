@@ -379,22 +379,30 @@ gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
     return null;
   }
 
-  String content = '';
-
+  // Add an outer wrapper to the contents of the infowindow, we need it to listen
+  // to click events...
+  final container = DivElement()
+    ..id = 'gmaps-marker-${marker.markerId.value}-infowindow';
   if (marker.infoWindow.title?.isNotEmpty ?? false) {
-    // This h3 is here to "copy" the behavior of the "title" of the mobile version.
-    content += '<h3 class="infowindow-title">' +
-        sanitizeHtml(marker.infoWindow.title ?? "") +
-        '</h3>';
+    final title = HeadingElement.h3()
+      ..className = 'infowindow-title'
+      ..innerText = marker.infoWindow.title;
+    container.children.add(title);
   }
   if (marker.infoWindow.snippet?.isNotEmpty ?? false) {
-    content += sanitizeHtml(marker.infoWindow.snippet ?? "");
+    final snippet = DivElement()
+      ..className = 'infowindow-snippet'
+      ..setInnerHtml(
+        sanitizeHtml(marker.infoWindow.snippet),
+        treeSanitizer: NodeTreeSanitizer.trusted,
+      );
+    container.children.add(snippet);
   }
 
-  assert(content != '');
+  assert(container.children.isNotEmpty);
 
   return gmaps.InfoWindowOptions()
-    ..content = content
+    ..content = container
     ..zIndex = marker.zIndex;
   // TODO: Compute the pixelOffset of the infoWindow, from the size of the Marker,
   // and the marker.infoWindow.anchor property.
