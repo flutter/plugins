@@ -13,7 +13,10 @@ dependencies:
     sdk: flutter
   meta: ^1.3.0-nullsafety.3
   plugin_platform_interface:
-    git: https://github.com/flutter/plugins/blob/nnbd/packages/plugin_platform_interface
+    git:
+      url: https://github.com/flutter/plugins.git
+      ref: nnbd
+      path: packages/plugin_platform_interface
 
 dev_dependencies:
   flutter_test:

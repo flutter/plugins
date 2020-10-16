@@ -23,8 +23,10 @@ dependencies:
   flutter:
     sdk: flutter
   device_info_platform_interface:
-    git: https://github.com/flutter/plugins/blob/nnbd/packages/device_info/device_info_platform_interface
-
+    git:
+      url: https://github.com/flutter/plugins.git
+      ref: nnbd
+      path: device_info/device_info_platform_interface
 dev_dependencies:
   test: ^1.10.0-nullsafety.1
   flutter_test:
