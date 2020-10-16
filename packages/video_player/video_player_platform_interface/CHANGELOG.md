@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety
+
+* Migrate to null safety.
+
 ## 2.2.0
 
 * Added option to set the video playback speed on the video controller.
