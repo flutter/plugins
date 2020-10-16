@@ -127,8 +127,12 @@ void main() {
       controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
-      expect(controller.markers[MarkerId('1')].marker.title,
-          equals('title for test'));
+      expect(controller.markers[MarkerId('1')].infoWindow.content,
+          contains('title for test'));
+      expect(
+          controller.markers[MarkerId('1')].infoWindow.content,
+          contains(
+              '<a href="https://www.google.com">Go to Google &gt;&gt;&gt;</a>'));
     });
   });
 }

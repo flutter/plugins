@@ -270,14 +270,15 @@ Set<Marker> _rawOptionsToInitialMarkers(Map<String, dynamic> rawOptions) {
         if (rawMarker['position'] != null) {
           position = LatLng.fromJson(rawMarker['position']);
         }
-        if (rawMarker['infoWindow'] != null || rawMarker['snippet'] != null) {
-          String title = rawMarker['infoWindow'] != null
-              ? rawMarker['infoWindow']['title']
-              : null;
-          infoWindow = InfoWindow(
-            title: title ?? '',
-            snippet: rawMarker['snippet'] ?? '',
-          );
+        if (rawMarker['infoWindow'] != null) {
+          final title = rawMarker['infoWindow']['title'];
+          final snippet = rawMarker['infoWindow']['snippet'];
+          if (title != null || snippet != null) {
+            infoWindow = InfoWindow(
+              title: title ?? '',
+              snippet: snippet ?? '',
+            );
+          }
         }
         return Marker(
           markerId: MarkerId(rawMarker['markerId']),
@@ -378,10 +379,19 @@ gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
     return null;
   }
 
-  final content = '<h3 class="infowindow-title">' +
-      sanitizeHtml(marker.infoWindow.title ?? "") +
-      '</h3>' +
-      sanitizeHtml(marker.infoWindow.snippet ?? "");
+  String content = '';
+
+  if (marker.infoWindow.title?.isNotEmpty ?? false) {
+    // This h3 is here to "copy" the behavior of the "title" of the mobile version.
+    content += '<h3 class="infowindow-title">' +
+        sanitizeHtml(marker.infoWindow.title ?? "") +
+        '</h3>';
+  }
+  if (marker.infoWindow.snippet?.isNotEmpty ?? false) {
+    content += sanitizeHtml(marker.infoWindow.snippet ?? "");
+  }
+
+  assert(content != '');
 
   return gmaps.InfoWindowOptions()
     ..content = content
