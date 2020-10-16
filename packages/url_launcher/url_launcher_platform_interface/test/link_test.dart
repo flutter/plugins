@@ -9,10 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:url_launcher_platform_interface/link.dart';
-import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 final MethodCodec _codec = const JSONMethodCodec();
 
@@ -24,7 +22,11 @@ void main() {
 
   setUp(() {
     oldHandler = window.onPlatformMessage;
-    window.onPlatformMessage = (String name, ByteData data, PlatformMessageResponseCallback callback) {
+    window.onPlatformMessage = (
+      String name,
+      ByteData data,
+      PlatformMessageResponseCallback callback,
+    ) {
       lastCall = _codec.decodeMethodCall(data);
       callback(_codec.encodeSuccessEnvelope(true));
     };
@@ -37,23 +39,33 @@ void main() {
   test('pushRouteNameToFramework() calls pushRoute when no Router', () async {
     final CustomBuildContext context = CustomBuildContext(router: null);
     await pushRouteNameToFramework(context, '/foo/bar');
-    expect(lastCall, isMethodCall(
-      'pushRoute',
-      arguments: '/foo/bar',
-    ));
+    expect(
+      lastCall,
+      isMethodCall(
+        'pushRoute',
+        arguments: '/foo/bar',
+      ),
+    );
   });
 
-  test('pushRouteNameToFramework() calls pushRouteInformation when Router exists', () async {
-    final CustomBuildContext context = CustomBuildContext(router: CustomRouter());
-    await pushRouteNameToFramework(context, '/foo/bar');
-    expect(lastCall, isMethodCall(
-      'pushRouteInformation',
-      arguments: <dynamic, dynamic>{
-          'location': '/foo/bar',
-          'state': null,
-        },
-    ));
-  });
+  test(
+    'pushRouteNameToFramework() calls pushRouteInformation when Router exists',
+    () async {
+      final CustomBuildContext context =
+          CustomBuildContext(router: CustomRouter());
+      await pushRouteNameToFramework(context, '/foo/bar');
+      expect(
+        lastCall,
+        isMethodCall(
+          'pushRouteInformation',
+          arguments: <dynamic, dynamic>{
+            'location': '/foo/bar',
+            'state': null,
+          },
+        ),
+      );
+    },
+  );
 }
 
 class CustomBuildContext<T> extends Mock implements BuildContext {
@@ -68,7 +80,8 @@ class CustomBuildContext<T> extends Mock implements BuildContext {
   }
 }
 
+// ignore: must_be_immutable
 class CustomRouter extends Mock implements Router {
   @override
-  String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) => '';
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) => '';
 }
