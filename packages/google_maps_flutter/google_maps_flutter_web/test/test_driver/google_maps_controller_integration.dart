@@ -420,6 +420,8 @@ void main() {
       group('map.projection methods', () {
         // These are too much for dart mockito, can't mock:
         // map.projection.method() (in Javascript ;) )
+
+        // Caused https://github.com/flutter/flutter/issues/67606
       });
     });
 
