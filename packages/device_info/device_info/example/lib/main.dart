@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initPlatformState() async {
-    Map<String, dynamic> deviceData;
+    Map<String, dynamic> deviceData = <String, dynamic>{};
 
     try {
       if (Platform.isAndroid) {
