@@ -59,9 +59,6 @@ class LinkTarget {
   static const blank = LinkTarget._(debugLabel: 'blank');
 }
 
-/// Used to override the delegate that builds the link.
-LinkDelegate linkDelegate;
-
 /// Encapsulates all the information necessary to build a Link widget.
 abstract class LinkInfo {
   /// Called at build time to construct the widget tree under the link.
@@ -80,9 +77,11 @@ abstract class LinkInfo {
 /// Pushes the [routeName] into Flutter's navigation system via a platform
 /// message.
 Future<ByteData> pushRouteNameToFramework(
-  String routeName, {
-  @required bool isUsingRouter,
-}) {
+  BuildContext context,
+  String routeName,
+) {
+  final bool isUsingRouter =
+      context.findAncestorWidgetOfExactType<Router>() != null;
   final MethodCall call = isUsingRouter
       ? MethodCall('pushRouteInformation', <dynamic, dynamic>{
           'location': routeName,
