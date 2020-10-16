@@ -1,3 +1,7 @@
+## 0.5.12+2
+
+* Update android compileSdkVersion to 29.
+
 ## 0.5.12+1
 
 * Check in linux/ directory for example/

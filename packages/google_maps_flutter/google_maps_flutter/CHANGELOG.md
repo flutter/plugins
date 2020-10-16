@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Update android compileSdkVersion to 29.
+
 ## 1.0.2
 
 * Remove `io.flutter.embedded_views_preview` requirement from readme.

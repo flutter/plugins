@@ -1,3 +1,7 @@
+## 0.11.1+2
+
+* Update android compileSdkVersion to 29.
+
 ## 0.11.1+1
 
 * Fixed uncanceled timers when calling `play` on the controller multiple times before `pause`, which

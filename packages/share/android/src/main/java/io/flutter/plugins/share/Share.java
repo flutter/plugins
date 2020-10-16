@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Environment;
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import java.io.File;
@@ -166,7 +165,7 @@ class Share {
   private boolean fileIsOnExternal(File file) {
     try {
       String filePath = file.getCanonicalPath();
-      File externalDir = Environment.getExternalStorageDirectory();
+      File externalDir = context.getExternalFilesDir(null);
       return externalDir != null && filePath.startsWith(externalDir.getCanonicalPath());
     } catch (IOException e) {
       return false;

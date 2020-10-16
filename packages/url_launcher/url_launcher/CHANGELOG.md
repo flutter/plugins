@@ -1,6 +1,14 @@
-## 5.7.4
+## 5.7.6
 
 * Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android of the `FlutterWebChromeClient` class.
+
+## 5.7.5
+
+* Improved documentation of the `headers` parameter.
+
+## 5.7.4
+
+* Update android compileSdkVersion to 29.
 
 ## 5.7.3
 
