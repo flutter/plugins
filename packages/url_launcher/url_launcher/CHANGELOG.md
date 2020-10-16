@@ -1,4 +1,4 @@
-## 5.8.0-nullsafety
+## 6.0.0-nullsafety
 
 * Migrate to null safety.
 
