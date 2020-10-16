@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
@@ -30,7 +29,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> initDirectories() async {
     String tempDirectory = (await getTemporaryDirectory()).path;
     String downloadsDirectory = (await getDownloadsDirectory()).path;
-    String appSupportDirectory = (await getApplicationDocumentsDirectory()).path;
+    String appSupportDirectory =
+        (await getApplicationDocumentsDirectory()).path;
     String documentsDirectory = (await getApplicationSupportDirectory()).path;
 
     // If the widget was removed from the tree while the asynchronous platform
