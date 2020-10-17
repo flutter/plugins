@@ -252,7 +252,7 @@ void main() {
 
       await controller.dispose();
 
-      expect(controller.textureId, 1);
+      expect(controller.textureId, 0);
       expect(await controller.position, isNull);
     });
 

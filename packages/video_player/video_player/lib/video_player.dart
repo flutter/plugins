@@ -357,11 +357,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       await _creatingCompleter!.future;
       if (!_isDisposed) {
         _isDisposed = true;
-
-      _timer?.cancel();
-
-      await _eventSubscription?.cancel();
-      await _videoPlayerPlatform.dispose(_textureId);
+        _timer?.cancel();
+        await _eventSubscription?.cancel();
+        await _videoPlayerPlatform.dispose(_textureId);
+      }
     }
     _lifeCycleObserver.dispose();
   }
