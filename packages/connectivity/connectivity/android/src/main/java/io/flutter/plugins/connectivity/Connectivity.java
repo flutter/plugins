@@ -14,9 +14,7 @@ import android.net.NetworkCapabilities;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-
 import androidx.core.content.ContextCompat;
-
 import io.flutter.Log;
 
 /** Reports connectivity related information such as connectivity type and wifi information. */
@@ -125,19 +123,19 @@ class Connectivity {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return true;
 
     LocationManager locationManager =
-            (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
     boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     boolean permissionsGranted =
-            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED;
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED;
 
     if (!permissionsGranted || !gpsEnabled) {
       Log.w(
-              TAG,
-              "Attempted to get Wi-Fi data that requires additional permission(s).\n"
-                      + "For more information about Wi-Fi Restrictions in Android 8.0 and above, please consult the following link:\n"
-                      + "https://developer.android.com/guide/topics/connectivity/wifi-scan");
+          TAG,
+          "Attempted to get Wi-Fi data that requires additional permission(s).\n"
+              + "For more information about Wi-Fi Restrictions in Android 8.0 and above, please consult the following link:\n"
+              + "https://developer.android.com/guide/topics/connectivity/wifi-scan");
     }
     return permissionsGranted && gpsEnabled;
   }
