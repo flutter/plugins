@@ -81,7 +81,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
         // 'webOnlyAssetManager' is only in the web version of dart:ui
         // ignore: undefined_prefixed_name
         ui.webOnlyAssetManager.getAssetUrl(assetUrl);
-        assetUrl = "";
+        assetUrl = '';
         uri = assetUrl;
         break;
       case DataSourceType.file:
