@@ -1,3 +1,23 @@
+## 0.9.2+1
+
+* Update android compileSdkVersion to 29.
+
+## 0.9.2
+
+* Add `watchPerformance` for performance test.
+
+## 0.9.1
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.9.0
+
+* Add screenshot capability to web tests.
+
+## 0.8.2
+
+* Add support to get timeline.
+
 ## 0.8.1
 
 * Show stack trace of widget test errors on the platform side

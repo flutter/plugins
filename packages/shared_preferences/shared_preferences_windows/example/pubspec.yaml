@@ -1,0 +1,24 @@
+name: shared_preferences_windows_example
+description: Demonstrates how to use the shared_preferences_windows plugin.
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences_windows: ^0.0.1
+
+dependency_overrides:
+  shared_preferences_windows:
+    path: ../
+
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  test: any
+  e2e: ^0.2.0
+  pedantic: ^1.8.0
+
+flutter:
+  uses-material-design: true
