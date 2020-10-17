@@ -4,6 +4,10 @@
 
 package io.flutter.plugins.connectivity;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -11,14 +15,21 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 
+import androidx.core.content.ContextCompat;
+
+import io.flutter.Log;
+
 /** Reports connectivity related information such as connectivity type and wifi information. */
 class Connectivity {
   private ConnectivityManager connectivityManager;
   private WifiManager wifiManager;
+  private Context context;
+  private static final String TAG = "Connectivity";
 
-  Connectivity(ConnectivityManager connectivityManager, WifiManager wifiManager) {
+  Connectivity(ConnectivityManager connectivityManager, WifiManager wifiManager, Context context) {
     this.connectivityManager = connectivityManager;
     this.wifiManager = wifiManager;
+    this.context = context;
   }
 
   String getNetworkType() {
@@ -41,6 +52,9 @@ class Connectivity {
   }
 
   String getWifiName() {
+    if (!checkRequirement()) {
+      return null;
+    }
     WifiInfo wifiInfo = getWifiInfo();
     String ssid = null;
     if (wifiInfo != null) ssid = wifiInfo.getSSID();
@@ -49,6 +63,9 @@ class Connectivity {
   }
 
   String getWifiBSSID() {
+    if (!checkRequirement()) {
+      return null;
+    }
     WifiInfo wifiInfo = getWifiInfo();
     String bssid = null;
     if (wifiInfo != null) {
@@ -102,5 +119,26 @@ class Connectivity {
 
   public ConnectivityManager getConnectivityManager() {
     return connectivityManager;
+  }
+
+  private Boolean checkRequirement() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return true;
+
+    LocationManager locationManager =
+            (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+    boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    boolean permissionsGranted =
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED;
+
+    if (!permissionsGranted || !gpsEnabled) {
+      Log.w(
+              TAG,
+              "Attempted to get Wi-Fi data that requires additional permission(s).\n"
+                      + "For more information about Wi-Fi Restrictions in Android 8.0 and above, please consult the following link:\n"
+                      + "https://developer.android.com/guide/topics/connectivity/wifi-scan");
+    }
+    return permissionsGranted && gpsEnabled;
   }
 }

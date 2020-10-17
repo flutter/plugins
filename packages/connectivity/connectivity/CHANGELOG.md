@@ -1,3 +1,10 @@
+## 0.4.9+6
+
+* Android: Add CHANGE_WIFI_STATE permission.
+* Android: Add Log warning for unsatisfied requirement(s) in Android P or higher.
+* Android: Fix IllegalArgumentException.
+* Android: Update Example project.
+
 ## 0.4.9+5
 
 * Update android compileSdkVersion to 29.
