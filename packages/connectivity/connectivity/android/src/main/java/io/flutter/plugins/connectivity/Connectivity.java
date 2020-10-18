@@ -122,21 +122,34 @@ class Connectivity {
   private Boolean checkRequirement() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return true;
 
-    LocationManager locationManager =
-        (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
-    boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     boolean permissionsGranted =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED;
 
-    if (!permissionsGranted || !gpsEnabled) {
+    if (!permissionsGranted) {
       Log.w(
           TAG,
           "Attempted to get Wi-Fi data that requires additional permission(s).\n"
-              + "For more information about Wi-Fi Restrictions in Android 8.0 and above, please consult the following link:\n"
+              + "To successfully get WiFi Name or Wi-Fi BSSID starting with Android P, please ensure your app has the ACCESS_FINE_LOCATION permission.\n"
+              + "For more information about Wi-Fi Restrictions in Android 9.0 and above, please consult the following link:\n"
               + "https://developer.android.com/guide/topics/connectivity/wifi-scan");
+      return false;
     }
-    return permissionsGranted && gpsEnabled;
+
+    LocationManager locationManager =
+        (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+    boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+    if (!gpsEnabled) {
+      Log.w(
+          TAG,
+          "Attempted to get Wi-Fi data that requires additional permission(s).\n"
+              + "To successfully get WiFi Name or Wi-Fi BSSID starting with Android P, please ensure Location services are enabled on the device (under Settings > Location).\n"
+              + "For more information about Wi-Fi Restrictions in Android 9.0 and above, please consult the following link:\n"
+              + "https://developer.android.com/guide/topics/connectivity/wifi-scan");
+      return false;
+    }
+    return true;
   }
 }

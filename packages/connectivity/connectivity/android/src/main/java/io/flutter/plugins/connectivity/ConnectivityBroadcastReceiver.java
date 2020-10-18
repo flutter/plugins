@@ -66,19 +66,17 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   ConnectivityManager.NetworkCallback getNetworkCallback() {
-    ConnectivityManager.NetworkCallback networkCallback =
-        new ConnectivityManager.NetworkCallback() {
-          @Override
-          public void onAvailable(Network network) {
-            sendEvent();
-          }
+    networkCallback = new ConnectivityManager.NetworkCallback() {
+      @Override
+      public void onAvailable(Network network) {
+        sendEvent();
+      }
 
-          @Override
-          public void onLost(Network network) {
-            sendEvent();
-          }
-        };
-    this.networkCallback = networkCallback;
+      @Override
+      public void onLost(Network network) {
+        sendEvent();
+      }
+    };
     return networkCallback;
   }
 
