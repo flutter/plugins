@@ -77,21 +77,29 @@ abstract class LinkInfo {
 /// message.
 Future<ByteData> pushRouteNameToFramework(
   BuildContext context,
-  String routeName,
-) {
-  final bool isUsingRouter =
-      context.findAncestorWidgetOfExactType<Router>() != null;
-  final MethodCall call = isUsingRouter
-      ? MethodCall('pushRouteInformation', <dynamic, dynamic>{
+  String routeName, {
+  @visibleForTesting
+  bool debugForceRouter = false,
+}) {
+  final Completer<ByteData> completer = Completer<ByteData>();
+  if (debugForceRouter || Router.of(context, nullOk: true) != null) {
+    SystemNavigator.routeInformationUpdated(location: routeName);
+    window.onPlatformMessage(
+      'flutter/navigation',
+      _codec.encodeMethodCall(
+        MethodCall('pushRouteInformation', <dynamic, dynamic>{
           'location': routeName,
           'state': null,
-        })
-      : MethodCall('pushRoute', routeName);
-  final Completer<ByteData> completer = Completer<ByteData>();
-  window.onPlatformMessage(
-    'flutter/navigation',
-    _codec.encodeMethodCall(call),
-    completer.complete,
-  );
+        }),
+      ),
+      completer.complete,
+    );
+  } else {
+    window.onPlatformMessage(
+      'flutter/navigation',
+      _codec.encodeMethodCall(MethodCall('pushRoute', routeName)),
+      completer.complete,
+    );
+  }
   return completer.future;
 }

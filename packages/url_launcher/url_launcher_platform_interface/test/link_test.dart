@@ -8,7 +8,6 @@ import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:meta/meta.dart';
 
 import 'package:url_launcher_platform_interface/link.dart';
 
@@ -37,8 +36,7 @@ void main() {
   });
 
   test('pushRouteNameToFramework() calls pushRoute when no Router', () async {
-    final CustomBuildContext context = CustomBuildContext(router: null);
-    await pushRouteNameToFramework(context, '/foo/bar');
+    await pushRouteNameToFramework(CustomBuildContext(), '/foo/bar');
     expect(
       lastCall,
       isMethodCall(
@@ -51,9 +49,11 @@ void main() {
   test(
     'pushRouteNameToFramework() calls pushRouteInformation when Router exists',
     () async {
-      final CustomBuildContext context =
-          CustomBuildContext(router: CustomRouter());
-      await pushRouteNameToFramework(context, '/foo/bar');
+      await pushRouteNameToFramework(
+        CustomBuildContext(),
+        '/foo/bar',
+        debugForceRouter: true,
+      );
       expect(
         lastCall,
         isMethodCall(
@@ -68,20 +68,4 @@ void main() {
   );
 }
 
-class CustomBuildContext<T> extends Mock implements BuildContext {
-  CustomBuildContext({@required this.router});
-
-  final Router<T> router;
-
-  @override
-  S findAncestorWidgetOfExactType<S extends Widget>() {
-    expect(S, Router);
-    return router as S;
-  }
-}
-
-// ignore: must_be_immutable
-class CustomRouter extends Mock implements Router {
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) => '';
-}
+class CustomBuildContext<T> extends Mock implements BuildContext {}
