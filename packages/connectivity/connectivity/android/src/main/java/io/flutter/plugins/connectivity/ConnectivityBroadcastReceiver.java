@@ -77,7 +77,7 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
           public void onLost(Network network) {
             sendEvent();
           }
-    };
+        };
     return networkCallback;
   }
 
