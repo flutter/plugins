@@ -5,8 +5,8 @@
 #import "FLTVideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
-#import "messages.h"
 #import "VIMediaCache.h"
+#import "messages.h"
 
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.
@@ -550,15 +550,15 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     BOOL enableCache = _maxCacheSize > 0 && _maxCacheFileSize > 0 && useCache;
     if (enableCache) {
       NSString* escapedURL = [input.uri
-        stringByAddingPercentEncodingWithAllowedCharacters:NSMutableCharacterSet
-                                                               .alphanumericCharacterSet];
+          stringByAddingPercentEncodingWithAllowedCharacters:NSMutableCharacterSet
+                                                                 .alphanumericCharacterSet];
 
       player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:escapedURL]
                                       frameUpdater:frameUpdater
                                        enableCache:enableCache];
     } else {
       player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:input.uri]
-                                          frameUpdater:frameUpdater];
+                                      frameUpdater:frameUpdater];
     }
     return [self onPlayerSetup:player frameUpdater:frameUpdater];
   } else {
