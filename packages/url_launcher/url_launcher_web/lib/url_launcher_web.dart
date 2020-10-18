@@ -52,7 +52,9 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   }
 
   @override
-  LinkDelegate linkDelegate = (LinkInfo linkInfo) => WebLinkDelegate(linkInfo);
+  LinkDelegate get linkDelegate {
+    return (LinkInfo linkInfo) => WebLinkDelegate(linkInfo);
+  }
 
   /// Opens the given [url] in the specified [webOnlyWindowName].
   ///
