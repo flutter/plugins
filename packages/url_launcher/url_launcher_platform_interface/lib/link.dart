@@ -78,8 +78,7 @@ abstract class LinkInfo {
 Future<ByteData> pushRouteNameToFramework(
   BuildContext context,
   String routeName, {
-  @visibleForTesting
-  bool debugForceRouter = false,
+  @visibleForTesting bool debugForceRouter = false,
 }) {
   final Completer<ByteData> completer = Completer<ByteData>();
   if (debugForceRouter || Router.of(context, nullOk: true) != null) {
