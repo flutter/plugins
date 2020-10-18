@@ -64,8 +64,7 @@ final class VideoPlayer {
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
-      TextureRegistry.SurfaceTextureEntry textureEntry
-      ) {
+      TextureRegistry.SurfaceTextureEntry textureEntry) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
 
@@ -202,7 +201,7 @@ final class VideoPlayer {
         });
   }
 
-  void setVideoOptions(VideoPlayerOptions options){
+  void setVideoOptions(VideoPlayerOptions options) {
     this.options = options;
     setAudioAttributes(exoPlayer, options.mixWithOthers);
   }
