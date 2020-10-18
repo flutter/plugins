@@ -417,6 +417,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _timer?.cancel();
     if (value.isPlaying) {
       await _videoPlayerPlatform.play(_textureId);
+
+      // Cancel previous timer.
+      _timer?.cancel();
       _timer = Timer.periodic(
         const Duration(milliseconds: 500),
         (Timer timer) async {
