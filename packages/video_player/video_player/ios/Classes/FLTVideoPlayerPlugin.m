@@ -529,8 +529,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [_players[textureId] dispose];
   }
   [_players removeAllObjects];
-  _maxCacheSize = input.maxCacheSize;
-  _maxCacheFileSize = input.maxCacheFileSize;
+  _maxCacheSize = [input.maxCacheSize longValue];
+  _maxCacheFileSize = [input.maxCacheFileSize longValue];
 }
 
 - (FLTTextureMessage*)create:(FLTCreateMessage*)input error:(FlutterError**)error {
