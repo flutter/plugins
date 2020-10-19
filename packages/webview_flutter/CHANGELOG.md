@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Fix example in the readme.
+
 ## 1.0.3
 
 * Update android compileSdkVersion to 29.
