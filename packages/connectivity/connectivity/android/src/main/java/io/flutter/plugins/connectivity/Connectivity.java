@@ -50,7 +50,7 @@ class Connectivity {
   }
 
   String getWifiName() {
-    if (!checkRequirement()) {
+    if (!checkPermissions()) {
       return null;
     }
     WifiInfo wifiInfo = getWifiInfo();
@@ -61,7 +61,7 @@ class Connectivity {
   }
 
   String getWifiBSSID() {
-    if (!checkRequirement()) {
+    if (!checkPermissions()) {
       return null;
     }
     WifiInfo wifiInfo = getWifiInfo();
@@ -119,7 +119,7 @@ class Connectivity {
     return connectivityManager;
   }
 
-  private Boolean checkRequirement() {
+  private Boolean checkPermissions() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
       return true;
     }
