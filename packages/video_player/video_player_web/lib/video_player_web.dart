@@ -254,13 +254,15 @@ class _VideoPlayer {
   }
 
   void sendInitialized() {
+    num duration = videoElement.duration;
+    if (duration == double.infinity) {
+      duration = 1:
+    }
     eventController.add(
       VideoEvent(
         eventType: VideoEventType.initialized,
         duration: Duration(
-          milliseconds: ((videoElement.duration == double.infinity
-              ? 1
-              : videoElement.duration) * 1000).round(),
+          milliseconds: (duration * 1000).round(),
         ),
         size: Size(
           videoElement.videoWidth.toDouble() ?? 0.0,
