@@ -26,16 +26,12 @@ void main() {
     // Take a screenshot.
     await binding.takeScreenshot('platform_name');
 
+    final Finder finder = find.byKey(const Key('platform'));
+    final Text platformText = tester.widget(finder);
+
     // Verify that platform is retrieved.
-    expect(
-      find.byWidgetPredicate(
-        (Widget widget) =>
-            widget is Text &&
-            widget.data
-                .startsWith('Platform: ${html.window.navigator.platform}\n'),
-      ),
-      findsOneWidget,
-    );
+    expect(finder, findsOneWidget);
+    expect(platformText, 'Platform: ${html.window.navigator.platform}\n');
   });
 
   testWidgets('verify screenshot', (WidgetTester tester) async {
