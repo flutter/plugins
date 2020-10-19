@@ -120,7 +120,9 @@ class Connectivity {
   }
 
   private Boolean checkRequirement() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return true;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      return true;
+    }
 
     boolean permissionsGranted =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
