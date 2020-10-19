@@ -11,6 +11,7 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -56,14 +57,18 @@ final class VideoPlayer {
 
   private boolean isInitialized = false;
 
+  private final VideoPlayerOptions options;
+
   VideoPlayer(
       Context context,
       EventChannel eventChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
       String dataSource,
-      String formatHint) {
+      String formatHint,
+      VideoPlayerOptions options) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
+    this.options = options;
 
     TrackSelector trackSelector = new DefaultTrackSelector();
     exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
@@ -163,7 +168,7 @@ final class VideoPlayer {
 
     surface = new Surface(textureEntry.surfaceTexture());
     exoPlayer.setVideoSurface(surface);
-    setAudioAttributes(exoPlayer);
+    setAudioAttributes(exoPlayer, options.mixWithOthers);
 
     exoPlayer.addListener(
         new EventListener() {
@@ -203,10 +208,10 @@ final class VideoPlayer {
   }
 
   @SuppressWarnings("deprecation")
-  private static void setAudioAttributes(SimpleExoPlayer exoPlayer) {
+  private static void setAudioAttributes(SimpleExoPlayer exoPlayer, boolean isMixMode) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       exoPlayer.setAudioAttributes(
-          new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build());
+          new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(), !isMixMode);
     } else {
       exoPlayer.setAudioStreamType(C.STREAM_TYPE_MUSIC);
     }
@@ -227,6 +232,14 @@ final class VideoPlayer {
   void setVolume(double value) {
     float bracketedValue = (float) Math.max(0.0, Math.min(1.0, value));
     exoPlayer.setVolume(bracketedValue);
+  }
+
+  void setPlaybackSpeed(double value) {
+    // We do not need to consider pitch and skipSilence for now as we do not handle them and
+    // therefore never diverge from the default values.
+    final PlaybackParameters playbackParameters = new PlaybackParameters(((float) value));
+
+    exoPlayer.setPlaybackParameters(playbackParameters);
   }
 
   void seekTo(int location) {
