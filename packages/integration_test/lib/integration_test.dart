@@ -70,6 +70,22 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     };
   }
 
+  @override
+  void handlePointerEvent(
+    PointerEvent pointerEvent, {
+    TestBindingEventSource source = TestBindingEventSource.device,
+  }) {
+    if (kIsWeb) {
+      // Web driver does not create real device events. Routing web
+      // integration tests' pointer events with source set to `device`,
+      // results in exceptions.
+      super.handlePointerEvent(pointerEvent,
+          source: TestBindingEventSource.test);
+    } else {
+      super.handlePointerEvent(pointerEvent);
+    }
+  }
+
   // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
   // ignore: override_on_non_overriding_member
   @override
