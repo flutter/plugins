@@ -81,7 +81,7 @@ Future<ByteData> pushRouteNameToFramework(
   @visibleForTesting bool debugForceRouter = false,
 }) {
   final Completer<ByteData> completer = Completer<ByteData>();
-  if (debugForceRouter || Router.of(context, nullOk: true) != null) {
+  if (debugForceRouter || _hasRouter(context)) {
     SystemNavigator.routeInformationUpdated(location: routeName);
     window.onPlatformMessage(
       'flutter/navigation',
@@ -101,4 +101,13 @@ Future<ByteData> pushRouteNameToFramework(
     );
   }
   return completer.future;
+}
+
+bool _hasRouter(BuildContext context) {
+  try {
+    return Router.of(context) != null;
+  } on AssertionError {
+    // When a `Router` can't be found, an assertion error is thrown.
+    return false;
+  }
 }
