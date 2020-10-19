@@ -44,11 +44,14 @@ class VideoPlayerValue {
 
   /// Returns an instance for a video that hasn't been loaded.
   VideoPlayerValue.uninitialized()
-    : this(duration: Duration.zero, isInitialized: false);
+      : this(duration: Duration.zero, isInitialized: false);
 
   /// Returns an instance with the given [errorDescription].
   VideoPlayerValue.erroneous(String errorDescription)
-      : this(duration: Duration.zero, isInitialized: false, errorDescription: errorDescription);
+      : this(
+            duration: Duration.zero,
+            isInitialized: false,
+            errorDescription: errorDescription);
 
   /// The total duration of the video.
   ///
@@ -290,7 +293,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           .setMixWithOthers(videoPlayerOptions!.mixWithOthers);
     }
 
-    _textureId = (await _videoPlayerPlatform.create(dataSourceDescription)) ?? kUninitializedTextureId;
+    _textureId = (await _videoPlayerPlatform.create(dataSourceDescription)) ??
+        kUninitializedTextureId;
     _creatingCompleter!.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
@@ -352,6 +356,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   @override
+  // ignore: must_call_super
   Future<void> dispose() async {
     if (_creatingCompleter != null) {
       await _creatingCompleter!.future;

@@ -265,7 +265,8 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
 }
 
 class _ControlsOverlay extends StatelessWidget {
-  const _ControlsOverlay({Key? key, required this.controller}) : super(key: key);
+  const _ControlsOverlay({Key? key, required this.controller})
+      : super(key: key);
 
   static const _examplePlaybackRates = [
     0.25,

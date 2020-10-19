@@ -246,7 +246,8 @@ void main() {
       final VideoPlayerController controller = VideoPlayerController.network(
         'https://127.0.0.1',
       );
-      expect(controller.textureId, VideoPlayerController.kUninitializedTextureId);
+      expect(
+          controller.textureId, VideoPlayerController.kUninitializedTextureId);
       expect(await controller.position, const Duration(seconds: 0));
       await controller.initialize();
 
@@ -535,7 +536,8 @@ void main() {
       const Duration duration = Duration(seconds: 5);
       const Size size = Size(400, 300);
       const Duration position = Duration(seconds: 1);
-      const Caption caption = Caption(text: 'foo', number: 0, start: Duration.zero, end: Duration.zero);
+      const Caption caption = Caption(
+          text: 'foo', number: 0, start: Duration.zero, end: Duration.zero);
       final List<DurationRange> buffered = <DurationRange>[
         DurationRange(const Duration(seconds: 0), const Duration(seconds: 4))
       ];
