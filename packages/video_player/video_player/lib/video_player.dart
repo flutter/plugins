@@ -55,7 +55,7 @@ class VideoPlayerValue {
 
   /// The total duration of the video.
   ///
-  /// The duration is zero if the video hasn't been initialized.
+  /// The duration is [Duration.zero] if the video hasn't been initialized.
   final Duration duration;
 
   /// The current playback position.
@@ -356,7 +356,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   @override
-  // ignore: must_call_super
   Future<void> dispose() async {
     if (_creatingCompleter != null) {
       await _creatingCompleter!.future;
@@ -366,8 +365,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         await _eventSubscription?.cancel();
         await _videoPlayerPlatform.dispose(_textureId);
       }
+      _lifeCycleObserver.dispose();
     }
-    _lifeCycleObserver.dispose();
+    _isDisposed = true;
+    super.dispose();
   }
 
   /// Starts playing the video.
@@ -416,10 +417,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             return;
           }
           final Duration? newPosition = await position;
-          if (_isDisposed) {
+          if (newPosition == null) {
             return;
           }
-          _updatePosition(newPosition!);
+          _updatePosition(newPosition);
         },
       );
 
