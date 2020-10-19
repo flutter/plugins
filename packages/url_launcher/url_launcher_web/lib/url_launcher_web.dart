@@ -1,10 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
-import 'third_party/platform_detect/browser.dart';
+
+import 'src/third_party/platform_detect/browser.dart';
 
 const _safariTargetTopSchemes = {
   'mailto',
