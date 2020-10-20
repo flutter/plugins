@@ -22,11 +22,11 @@ To successfully get WiFi Name or Wi-Fi BSSID starting with Android O, ensure all
 You can get wi-fi related information using:
 
 ```dart
-import 'package:connectivity/connectivity.dart';
+import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 
-var wifiBSSID = await (WifiFlutter().getWifiBSSID());
-var wifiIP = await (WifiFlutter().getWifiIP());
-var wifiName = await (WifiFlutter().getWifiName());
+var wifiBSSID = await WifiFlutter().getWifiBSSID();
+var wifiIP = await WifiFlutter().getWifiIP();
+var wifiName = await WifiFlutter().getWifiName();
 ```
 
 ### iOS 12

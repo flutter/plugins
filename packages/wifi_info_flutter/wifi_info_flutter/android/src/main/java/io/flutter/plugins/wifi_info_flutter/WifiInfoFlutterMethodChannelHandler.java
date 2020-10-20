@@ -16,8 +16,8 @@ class WifiInfoFlutterMethodChannelHandler implements MethodChannel.MethodCallHan
   private WifiInfoFlutter wifiInfoFlutter;
 
   /**
-   * Construct the ConnectivityMethodChannelHandler with a {@code connectivity}. The {@code
-   * connectivity} must not be null.
+   * Construct the WifiInfoFlutterMethodChannelHandler with a {@code wifiInfoFlutter}. The {@code
+   * wifiInfoFlutter} must not be null.
    */
   WifiInfoFlutterMethodChannelHandler(WifiInfoFlutter wifiInfoFlutter) {
     assert (wifiInfoFlutter != null);

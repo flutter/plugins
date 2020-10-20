@@ -4,9 +4,10 @@
 
 package io.flutter.plugins.wifi_info_flutter;
 
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-/** Reports connectivity related information such as wifi information. */
+/** Reports wifi information. */
 class WifiInfoFlutter {
   private WifiManager wifiManager;
 
@@ -15,7 +16,7 @@ class WifiInfoFlutter {
   }
 
   String getWifiName() {
-    android.net.wifi.WifiInfo wifiInfo = getWifiInfo();
+    final WifiInfo wifiInfo = getWifiInfo();
     String ssid = null;
     if (wifiInfo != null) ssid = wifiInfo.getSSID();
     if (ssid != null) ssid = ssid.replaceAll("\"", ""); // Android returns "SSID"
@@ -24,7 +25,7 @@ class WifiInfoFlutter {
   }
 
   String getWifiBSSID() {
-    android.net.wifi.WifiInfo wifiInfo = getWifiInfo();
+    final WifiInfo wifiInfo = getWifiInfo();
     String bssid = null;
     if (wifiInfo != null) {
       bssid = wifiInfo.getBSSID();
@@ -33,7 +34,7 @@ class WifiInfoFlutter {
   }
 
   String getWifiIPAddress() {
-    android.net.wifi.WifiInfo wifiInfo = null;
+    final WifiInfo wifiInfo = null;
     if (wifiManager != null) wifiInfo = wifiManager.getConnectionInfo();
 
     String ip = null;
@@ -49,7 +50,7 @@ class WifiInfoFlutter {
     return ip;
   }
 
-  private android.net.wifi.WifiInfo getWifiInfo() {
+  private WifiInfo getWifiInfo() {
     return wifiManager == null ? null : wifiManager.getConnectionInfo();
   }
 }
