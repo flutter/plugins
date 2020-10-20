@@ -12,9 +12,8 @@ flutter:
         pluginClass: UrlLauncherPlugin
       ios:
         pluginClass: FLTURLLauncherPlugin
-      # TODO(mvanbeusekom): Temporary disabled until web is migrated to nnbd (advised by @blasten).
-      #web:
-      #  default_package: url_launcher_web
+      web:
+        default_package: url_launcher_web
       linux:
         default_package: url_laucher_linux
       macos:

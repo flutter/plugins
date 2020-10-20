@@ -1,3 +1,7 @@
+# 0.2.0-nullsafety
+
+- Migrate to null safety.
+
 # 0.1.5+3
 
 - Fix Link misalignment [issue](https://github.com/flutter/flutter/issues/70053).
