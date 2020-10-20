@@ -26,8 +26,9 @@ dependencies:
   meta: ^1.0.5
   connectivity_platform_interface:
     path: ../connectivity_platform_interface
-  connectivity_macos: ^0.1.0
-  connectivity_for_web: ^0.3.0
+  #TODO(cyanglaz): re-endorse the below plugins when they have migrated to nnbd.
+  # connectivity_macos: ^0.1.0
+  # connectivity_for_web: ^0.3.0
 
 dev_dependencies:
   flutter_test:
