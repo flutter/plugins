@@ -14,9 +14,6 @@ import 'package:flutter/services.dart';
 
 import 'package:url_launcher_platform_interface/link.dart';
 
-/// Signature for a function that handles a mouse click event.
-typedef ClickListener = void Function(html.MouseEvent);
-
 /// The unique identifier for the view type to be used for link platform views.
 const String linkViewType = '__url_launcher::link';
 
@@ -62,29 +59,8 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
   }
 
   Future<void> _followLink() {
-    final Completer<void> completer = Completer<void>();
-    LinkViewController.registerHitTest(
-      _controller,
-      onClick: (html.MouseEvent event) {
-        completer.complete(_onDomClick(event));
-      },
-    );
-    return completer.future;
-  }
-
-  Future<void> _onDomClick(html.MouseEvent event) {
-    if (!widget.link.uri.hasScheme) {
-      // A uri that doesn't have a scheme is an internal route name. In this
-      // case, we push it via Flutter's navigation system instead of letting the
-      // browser handle it.
-      event.preventDefault();
-      final String routeName = widget.link.uri.toString();
-      return pushRouteNameToFramework(context, routeName);
-    }
-
-    // External links will be handled by the browser, so we don't have to do
-    // anything.
-    return Future<void>.value(null);
+    LinkViewController.registerHitTest(_controller);
+    return Future<void>.value();
   }
 
   @override
@@ -98,7 +74,12 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
         Positioned.fill(
           child: PlatformViewLink(
             viewType: linkViewType,
-            onCreatePlatformView: _createController,
+            onCreatePlatformView: (PlatformViewCreationParams params) {
+              _controller = LinkViewController.fromParams(params, context);
+              return _controller
+                ..setUri(widget.link.uri)
+                ..setTarget(widget.link.target);
+            },
             surfaceFactory:
                 (BuildContext context, PlatformViewController controller) {
               return PlatformViewSurface(
@@ -113,28 +94,32 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
       ],
     );
   }
-
-  LinkViewController _createController(PlatformViewCreationParams params) {
-    _controller = LinkViewController(params.id);
-    _controller._initialize().then((_) {
-      params.onPlatformViewCreated(params.id);
-    });
-    return _controller
-      ..setUri(widget.link.uri)
-      ..setTarget(widget.link.target);
-  }
 }
 
 /// Controls link views.
 class LinkViewController extends PlatformViewController {
   /// Creates a [LinkViewController] instance with the unique [viewId].
-  LinkViewController(this.viewId) {
+  LinkViewController(this.viewId, this.context) {
     if (_instances.isEmpty) {
       // This is the first controller being created, attach the global click
       // listener.
       _clickSubscribtion = html.window.onClick.listen(_onGlobalClick);
     }
     _instances[viewId] = this;
+  }
+
+  /// Creates and initializes a [LinkViewController] instance with the given
+  /// platform view [params].
+  factory LinkViewController.fromParams(
+    PlatformViewCreationParams params,
+    BuildContext context,
+  ) {
+    final int viewId = params.id;
+    final LinkViewController controller = LinkViewController(viewId, context);
+    controller._initialize().then((_) {
+      params.onPlatformViewCreated(viewId);
+    });
+    return controller;
   }
 
   static Map<int, LinkViewController> _instances = <int, LinkViewController>{};
@@ -144,7 +129,6 @@ class LinkViewController extends PlatformViewController {
   }
 
   static int _hitTestedViewId;
-  static ClickListener _hitTestedClickCallback;
 
   static StreamSubscription _clickSubscribtion;
 
@@ -161,22 +145,20 @@ class LinkViewController extends PlatformViewController {
   ///
   /// The [onClick] callback is invoked when the anchor element receives a
   /// `click` from the browser.
-  static void registerHitTest(
-    LinkViewController controller, {
-    @required ClickListener onClick,
-  }) {
+  static void registerHitTest(LinkViewController controller) {
     _hitTestedViewId = controller.viewId;
-    _hitTestedClickCallback = onClick;
   }
 
   /// Removes all information about previously registered hit tests.
   static void unregisterHitTest() {
     _hitTestedViewId = null;
-    _hitTestedClickCallback = null;
   }
 
   @override
   final int viewId;
+
+  /// The context of the [Link] widget that created this controller.
+  final BuildContext context;
 
   html.Element _element;
   bool get _isInitialized => _element != null;
@@ -198,19 +180,34 @@ class LinkViewController extends PlatformViewController {
 
   void _onDomClick(html.MouseEvent event) {
     final bool isHitTested = _hitTestedViewId == viewId;
-    if (isHitTested) {
-      _hitTestedClickCallback(event);
-    } else {
+    if (!isHitTested) {
       // There was no hit test registered for this click. This means the click
       // landed on the anchor element but not on the underlying widget. In this
       // case, we prevent the browser from following the click.
       event.preventDefault();
+      return;
     }
+
+    if (_uri.hasScheme) {
+      // External links will be handled by the browser, so we don't have to do
+      // anything.
+      return;
+    }
+
+    // A uri that doesn't have a scheme is an internal route name. In this
+    // case, we push it via Flutter's navigation system instead of letting the
+    // browser handle it.
+    event.preventDefault();
+    final String routeName = _uri.toString();
+    pushRouteNameToFramework(context, routeName);
   }
+
+  Uri _uri;
 
   /// Set the [Uri] value for this link.
   void setUri(Uri uri) {
     assert(_isInitialized);
+    _uri = uri;
     if (uri == null) {
       _element.removeAttribute('href');
     } else {
