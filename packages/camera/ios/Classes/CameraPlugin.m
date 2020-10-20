@@ -657,7 +657,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
 }
 
-- (void)toggleTorch:(bool)enabled:(FlutterResult)result:(AVCaptureDevice *)device {
+- (void)toggleTorch:(bool)enabled :(FlutterResult)result :(AVCaptureDevice *)device {
   NSLog(@"[toggleTorch] Calling  with enabled: %s _isTorchEnabled: %s",
         enabled == true ? "true" : "false", _isTorchEnabled == true ? "true" : "false");
   if ([device hasTorch]) {
@@ -854,7 +854,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     } else {
       result(FlutterMethodNotImplemented);
     }
-    result(reply);
   } else if ([@"enableTorch" isEqualToString:call.method]) {
     [_camera toggleTorch:true:result:_camera.captureDevice];
   } else if ([@"disableTorch" isEqualToString:call.method]) {
