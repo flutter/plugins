@@ -1,6 +1,16 @@
 ## 2.0.0
 
-* Wifi related APIs are not moved to [wifi_info_flutter](https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter)
+* [Breaking Change] The `getWifiName`, `getWifiBSSID` and `getWifiIP` are removed to [wifi_info_flutter](https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter)
+* Migration guide:
+
+  If you don't use any of the above APIs, your code should work as is. In addition, you can also remove `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationWhenInUseUsageDescription` in `ios/Runner/Info.plist`
+
+  If you use any of the above APIs, you can find the same APIs in the [wifi_info_flutter](https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter) plugin.
+  For example, to migrate `getWifiName` to use the new plugin:
+  ```dart
+  final WifiInfo _wifiInfo = WifiInfo();
+  final String wifiName = await _wifiInfo.getWifiName();
+  ```
 
 ## 0.4.9+5
 
