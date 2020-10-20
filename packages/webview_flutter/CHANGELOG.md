@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Update the example app to fix the deprecation warning.
+
 ## 1.0.3
 
 * Update android compileSdkVersion to 29.

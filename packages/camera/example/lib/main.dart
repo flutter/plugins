@@ -272,7 +272,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(_scaffoldKey.currentContext)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
