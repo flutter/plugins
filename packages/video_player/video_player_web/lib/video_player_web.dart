@@ -256,7 +256,7 @@ class _VideoPlayer {
   void sendInitialized() {
     num duration = videoElement.duration;
     if (duration == double.infinity) {
-      duration = 1:
+      duration = 1;
     }
     eventController.add(
       VideoEvent(
