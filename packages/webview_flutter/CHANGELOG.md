@@ -1,6 +1,6 @@
 ## 1.0.4
 
-* Update the example app to fix the deprecation warning.
+* Suppress the `deprecated_member_use` warning in the example app for `ScaffoldMessenger.showSnackBar`.
 
 ## 1.0.3
 

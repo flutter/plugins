@@ -92,7 +92,8 @@ class _WebViewExampleState extends State<WebViewExample> {
     return JavascriptChannel(
         name: 'Toaster',
         onMessageReceived: (JavascriptMessage message) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          // ignore: deprecated_member_use
+          Scaffold.of(context).showSnackBar(
             SnackBar(content: Text(message.message)),
           );
         });
@@ -107,7 +108,8 @@ class _WebViewExampleState extends State<WebViewExample> {
             return FloatingActionButton(
               onPressed: () async {
                 final String url = await controller.data.currentUrl();
-                ScaffoldMessenger.of(context).showSnackBar(
+                // ignore: deprecated_member_use
+                Scaffold.of(context).showSnackBar(
                   SnackBar(content: Text('Favorited $url')),
                 );
               },
@@ -215,7 +217,8 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     final String cookies =
         await controller.evaluateJavascript('document.cookie');
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    // ignore: deprecated_member_use
+    Scaffold.of(context).showSnackBar(SnackBar(
       content: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
@@ -230,7 +233,8 @@ class SampleMenu extends StatelessWidget {
   void _onAddToCache(WebViewController controller, BuildContext context) async {
     await controller.evaluateJavascript(
         'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    // ignore: deprecated_member_use
+    Scaffold.of(context).showSnackBar(const SnackBar(
       content: Text('Added a test entry to cache.'),
     ));
   }
@@ -243,7 +247,8 @@ class SampleMenu extends StatelessWidget {
 
   void _onClearCache(WebViewController controller, BuildContext context) async {
     await controller.clearCache();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    // ignore: deprecated_member_use
+    Scaffold.of(context).showSnackBar(const SnackBar(
       content: Text("Cache cleared."),
     ));
   }
@@ -254,7 +259,8 @@ class SampleMenu extends StatelessWidget {
     if (!hadCookies) {
       message = 'There are no cookies.';
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    // ignore: deprecated_member_use
+    Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(message),
     ));
   }
@@ -306,7 +312,8 @@ class NavigationControls extends StatelessWidget {
                       if (await controller.canGoBack()) {
                         await controller.goBack();
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        // ignore: deprecated_member_use
+                        Scaffold.of(context).showSnackBar(
                           const SnackBar(content: Text("No back history item")),
                         );
                         return;
@@ -321,7 +328,8 @@ class NavigationControls extends StatelessWidget {
                       if (await controller.canGoForward()) {
                         await controller.goForward();
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        // ignore: deprecated_member_use
+                        Scaffold.of(context).showSnackBar(
                           const SnackBar(
                               content: Text("No forward history item")),
                         );
