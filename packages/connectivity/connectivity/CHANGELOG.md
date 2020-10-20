@@ -1,3 +1,7 @@
+## 2.0.0
+
+* Wifi related APIs are not moved to [wifi_info_flutter](https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter)
+
 ## 0.4.9+5
 
 * Update android compileSdkVersion to 29.
