@@ -257,7 +257,6 @@ class LinkViewController extends PlatformViewController {
       if (_instances.isEmpty) {
         await _clickSubscribtion.cancel();
       }
-      // Asynchronously dispose this view.
       await SystemChannels.platform_views.invokeMethod<void>('dispose', viewId);
     }
   }
