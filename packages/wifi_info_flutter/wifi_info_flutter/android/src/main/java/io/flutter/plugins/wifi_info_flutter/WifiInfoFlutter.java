@@ -34,7 +34,7 @@ class WifiInfoFlutter {
   }
 
   String getWifiIPAddress() {
-    final WifiInfo wifiInfo = null;
+    WifiInfo wifiInfo = null;
     if (wifiManager != null) wifiInfo = wifiManager.getConnectionInfo();
 
     String ip = null;
