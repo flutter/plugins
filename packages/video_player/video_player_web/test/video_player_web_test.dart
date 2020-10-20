@@ -14,16 +14,16 @@ import 'package:video_player_web/video_player_web.dart';
 
 void main() {
   group('VideoPlayer for Web', () {
-    int textureId;
+    late int textureId;
 
     setUp(() async {
       VideoPlayerPlatform.instance = VideoPlayerPlugin();
-      textureId = await VideoPlayerPlatform.instance.create(
+      textureId = (await VideoPlayerPlatform.instance.create(
         DataSource(
             sourceType: DataSourceType.network,
             uri:
                 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
-      );
+      ))!;
     });
 
     test('$VideoPlayerPlugin is the live instance', () {
@@ -84,12 +84,12 @@ void main() {
     });
 
     test('throws PlatformException when playing bad media', () async {
-      int videoPlayerId = await VideoPlayerPlatform.instance.create(
+      int videoPlayerId = (await VideoPlayerPlatform.instance.create(
         DataSource(
             sourceType: DataSourceType.network,
             uri:
                 'https://flutter.github.io/assets-for-api-docs/assets/videos/_non_existent_video.mp4'),
-      );
+      ))!;
 
       Stream<VideoEvent> eventStream =
           VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
