@@ -33,7 +33,7 @@ class VideoPlayerValue {
     this.position = Duration.zero,
     this.caption = Caption.none,
     this.buffered = const <DurationRange>[],
-    this.isInitialized = true,
+    this.isInitialized = false,
     this.isPlaying = false,
     this.isLooping = false,
     this.isBuffering = false,
@@ -105,10 +105,7 @@ class VideoPlayerValue {
   /// Returns [size.width] / [size.height] when size is non-null, or `1.0.` when
   /// size is null or the aspect ratio would be less than or equal to 0.0.
   double get aspectRatio {
-    if (!isInitialized) {
-      return 0.0;
-    }
-    if (size.width == 0 || size.height == 0) {
+    if (!isInitialized || size.width == 0 || size.height == 0) {
       return 1.0;
     }
     final double aspectRatio = size.width / size.height;
@@ -268,7 +265,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       case DataSourceType.asset:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.asset,
-          uri: '',
           asset: dataSource,
           package: package,
         );

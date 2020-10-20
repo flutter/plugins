@@ -145,7 +145,6 @@ void main() {
     test('create with asset', () async {
       final int textureId = await player.create(DataSource(
         sourceType: DataSourceType.asset,
-        uri: 'someUri',
         asset: 'someAsset',
         package: 'somePackage',
       ));

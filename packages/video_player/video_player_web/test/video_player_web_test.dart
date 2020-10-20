@@ -52,7 +52,6 @@ void main() {
               sourceType: DataSourceType.asset,
               asset: 'videos/bee.mp4',
               package: 'bee_vids',
-              uri: 'irrelevant',
             ),
           ),
           completion(isNonZero));
