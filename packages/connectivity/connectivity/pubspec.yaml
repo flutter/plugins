@@ -24,7 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.0.5
-  connectivity_platform_interface: ^1.0.2
+  connectivity_platform_interface:
+    path: ../connectivity_platform_interface
   connectivity_macos: ^0.1.0
   connectivity_for_web: ^0.3.0
 
@@ -37,7 +38,8 @@ dev_dependencies:
   integration_test:
     path: ../../integration_test
   mockito: ^4.1.1
-  plugin_platform_interface: ^1.0.0
+  plugin_platform_interface:
+    path: ../../plugin_platform_interface
   pedantic: ^1.8.0
 
 environment:
