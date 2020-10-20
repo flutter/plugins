@@ -103,7 +103,7 @@ class LinkViewController extends PlatformViewController {
     if (_instances.isEmpty) {
       // This is the first controller being created, attach the global click
       // listener.
-      _clickSubscribtion = html.window.onClick.listen(_onGlobalClick);
+      _clickSubscription = html.window.onClick.listen(_onGlobalClick);
     }
     _instances[viewId] = this;
   }
@@ -130,7 +130,7 @@ class LinkViewController extends PlatformViewController {
 
   static int _hitTestedViewId;
 
-  static StreamSubscription _clickSubscribtion;
+  static StreamSubscription _clickSubscription;
 
   static void _onGlobalClick(html.MouseEvent event) {
     final int viewId = getViewIdFromTarget(event);
@@ -255,7 +255,7 @@ class LinkViewController extends PlatformViewController {
       assert(_instances[viewId] == this);
       _instances.remove(viewId);
       if (_instances.isEmpty) {
-        await _clickSubscribtion.cancel();
+        await _clickSubscription.cancel();
       }
       await SystemChannels.platform_views.invokeMethod<void>('dispose', viewId);
     }
