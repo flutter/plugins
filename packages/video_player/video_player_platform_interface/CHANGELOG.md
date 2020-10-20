@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.1
+
+* Make DataSource's `uri` parameter nullable.
+
 ## 3.0.0-nullsafety
 
 * Migrate to null safety.
