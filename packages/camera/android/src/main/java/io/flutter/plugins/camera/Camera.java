@@ -22,17 +22,32 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.os.Environment;
+import android.util.Log;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import androidx.annotation.NonNull;
+
+import com.coremedia.iso.IsoFile;
+import com.coremedia.iso.boxes.Container;
+import com.coremedia.iso.boxes.TimeToSampleBox;
+import com.coremedia.iso.boxes.TrackBox;
+import com.googlecode.mp4parser.DataSource;
+import com.googlecode.mp4parser.FileDataSourceImpl;
+import com.googlecode.mp4parser.authoring.Movie;
+import com.googlecode.mp4parser.authoring.Mp4TrackImpl;
+import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
+
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,6 +75,7 @@ public class Camera {
   private boolean recordingVideo;
   private CamcorderProfile recordingProfile;
   private int currentOrientation = ORIENTATION_UNKNOWN;
+  private String mFilePath;
 
   // Mirrors camera.dart
   public enum ResolutionPreset {
@@ -127,8 +143,11 @@ public class Camera {
     if (enableAudio) mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
     mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
     mediaRecorder.setOutputFormat(recordingProfile.fileFormat);
+//    mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
     if (enableAudio) mediaRecorder.setAudioEncoder(recordingProfile.audioCodec);
+//    if (enableAudio) mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
     mediaRecorder.setVideoEncoder(recordingProfile.videoCodec);
+//    mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
     mediaRecorder.setVideoEncodingBitRate(recordingProfile.videoBitRate);
     if (enableAudio) mediaRecorder.setAudioSamplingRate(recordingProfile.audioSampleRate);
     mediaRecorder.setVideoFrameRate(recordingProfile.videoFrameRate);
@@ -349,6 +368,7 @@ public class Camera {
       result.error("fileExists", "File at path '" + filePath + "' already exists.", null);
       return;
     }
+    this.mFilePath = filePath;
     try {
       prepareMediaRecorder(filePath);
       recordingVideo = true;
@@ -372,10 +392,70 @@ public class Camera {
       mediaRecorder.stop();
       mediaRecorder.reset();
 //      startPreview();
-      result.success(null);
+//      result.success(null);
+      parseVideo(this.mFilePath,result);
     } catch (IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
     }
+  }
+
+  private void parseVideo(String mFilePath, @NonNull final Result result) {
+    try {
+      Log.d("Camera:", "go parsing 1");
+      DataSource channel = new FileDataSourceImpl(mFilePath);
+      IsoFile isoFile = new IsoFile(channel);
+      List<TrackBox> trackBoxes = isoFile.getMovieBox().getBoxes(TrackBox.class);
+      boolean isError = false;
+      for (TrackBox trackBox : trackBoxes) {
+        TimeToSampleBox.Entry firstEntry = trackBox.getMediaBox().getMediaInformationBox().getSampleTableBox().getTimeToSampleBox().getEntries().get(0);
+        if (firstEntry.getDelta() > 10000) {
+          isError = true;
+          firstEntry.setDelta(3000);
+        }
+      }
+      Log.d("Camera:", "go parsing 3");
+      File file = getOutputMediaFile();
+      String filePath = mFilePath;
+      if(file != null) {
+        filePath = file.getAbsolutePath();
+        Log.d("Camera:", "go parsing 4" + filePath);
+      }
+      if (isError) {
+        Log.d("Camera:", "go parsing 5");
+        Movie movie = new Movie();
+        for (TrackBox trackBox : trackBoxes) {
+          movie.addTrack(new Mp4TrackImpl(channel.toString() + "[" + trackBox.getTrackHeaderBox().getTrackId() + "]", trackBox));
+        }
+        movie.setMatrix(isoFile.getMovieBox().getMovieHeaderBox().getMatrix());
+        Container out = new DefaultMp4Builder().build(movie);
+
+        FileChannel fc = new RandomAccessFile(filePath, "rw").getChannel();
+        out.writeContainer(fc);
+        fc.close();
+      }
+      Log.d("Camera:", "go parsing 6");
+//      return mFilePath;
+      result.success(null);
+    }catch (IOException e){
+      result.error("Parsing video failed", e.getMessage(), null);
+    }
+  }
+
+  private File getOutputMediaFile() {
+    // External sdcard file location
+    File mediaStorageDir = new File(String.valueOf(Environment.getExternalStorageDirectory()));
+    // Create storage directory if it does not exist
+    if (!mediaStorageDir.exists()) {
+      if (!mediaStorageDir.mkdirs()) {
+        Log.d("Parsing video", "Oops! Failed create directory");
+        return null;
+      }
+    }
+    File mediaFile;
+
+    mediaFile = new File(mediaStorageDir.getPath() + File.separator
+            + "VID_0911" + ".mp4");
+    return mediaFile;
   }
 
   public void pauseVideoRecording(@NonNull final Result result) {
