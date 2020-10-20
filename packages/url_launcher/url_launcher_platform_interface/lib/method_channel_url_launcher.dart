@@ -7,12 +7,16 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show required;
 
+import 'link.dart';
 import 'url_launcher_platform_interface.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 
 /// An implementation of [UrlLauncherPlatform] that uses method channels.
 class MethodChannelUrlLauncher extends UrlLauncherPlatform {
+  @override
+  final LinkDelegate linkDelegate = null;
+
   @override
   Future<bool> canLaunch(String url) {
     return _channel.invokeMethod<bool>(
