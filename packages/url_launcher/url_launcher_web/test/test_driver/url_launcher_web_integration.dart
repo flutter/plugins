@@ -5,8 +5,6 @@
 import 'dart:html' as html;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
-// TODO(mvanbeusekom): Remove once Mockito is migrated to null safety.
-// @dart = 2.9
 import 'package:mockito/mockito.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -18,10 +16,10 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('UrlLauncherPlugin', () {
-    late _MockWindow mockWindow;
-    late _MockNavigator mockNavigator;
+    _MockWindow mockWindow;
+    _MockNavigator mockNavigator;
 
-    late UrlLauncherPlugin plugin;
+    UrlLauncherPlugin plugin;
 
     setUp(() {
       mockWindow = _MockWindow();
@@ -72,6 +70,12 @@ void main() {
         expect(
             plugin.launch(
               'https://www.google.com',
+              useSafariVC: null,
+              useWebView: null,
+              universalLinksOnly: null,
+              enableDomStorage: null,
+              enableJavaScript: null,
+              headers: null,
             ),
             completion(isTrue));
       });
@@ -80,6 +84,12 @@ void main() {
         expect(
             plugin.launch(
               'mailto:name@mydomain.com',
+              useSafariVC: null,
+              useWebView: null,
+              universalLinksOnly: null,
+              enableDomStorage: null,
+              enableJavaScript: null,
+              headers: null,
             ),
             completion(isTrue));
       });
@@ -88,6 +98,12 @@ void main() {
         expect(
             plugin.launch(
               'tel:5551234567',
+              useSafariVC: null,
+              useWebView: null,
+              universalLinksOnly: null,
+              enableDomStorage: null,
+              enableJavaScript: null,
+              headers: null,
             ),
             completion(isTrue));
       });
@@ -96,6 +112,12 @@ void main() {
         expect(
             plugin.launch(
               'sms:+19725551212?body=hello%20there',
+              useSafariVC: null,
+              useWebView: null,
+              universalLinksOnly: null,
+              enableDomStorage: null,
+              enableJavaScript: null,
+              headers: null,
             ),
             completion(isTrue));
       });
