@@ -12,9 +12,8 @@ flutter:
         pluginClass: UrlLauncherPlugin
       ios:
         pluginClass: FLTURLLauncherPlugin
-      # TODO(mvanbeusekom): Temporary disabled until web is migrated to nnbd (advised by @blasten).
-      #web:
-      #  default_package: url_launcher_web
+      web:
+        default_package: url_launcher_web
       linux:
         default_package: url_laucher_linux
       macos:
@@ -36,8 +35,9 @@ dependencies:
   url_launcher_linux: ^0.0.1
   url_launcher_macos: ^0.0.1
   url_launcher_windows: ^0.0.1
-  # TODO(mvanbeusekom): Temporary disabled until web is migrated to nnbd (advised by @blasten).
-  #url_launcher_web: ^0.1.3
+  # TODO (mvanbeusekom): Update to use pub.dev once 0.2.0-nullsafety released.
+  url_launcher_web:
+    path: ../url_launcher_web
 
 dev_dependencies:
   flutter_test:
