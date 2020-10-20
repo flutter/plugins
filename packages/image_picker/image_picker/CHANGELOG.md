@@ -1,3 +1,7 @@
+## 0.6.7+13
+
+* Android: fixes an issue where videos could be wrongly picked with `.jpg` extension.
+
 ## 0.6.7+12
 
 * Update android compileSdkVersion to 29.
