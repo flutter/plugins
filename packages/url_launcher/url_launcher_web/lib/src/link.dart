@@ -171,6 +171,10 @@ class LinkViewController extends PlatformViewController {
       ..display = 'block'
       ..cursor = 'unset';
 
+    // This is recommended on MDN:
+    // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attr-target
+    _element.setAttribute('rel', 'noreferrer noopener');
+
     final Map<String, dynamic> args = <String, dynamic>{
       'id': viewId,
       'viewType': linkViewType,
