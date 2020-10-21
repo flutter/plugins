@@ -215,11 +215,12 @@ public class Camera {
   public void takePicture(String filePath, @NonNull final Result result) {
     final File file = new File(filePath);
 
-    if (file.exists()) {
-      result.error(
-          "fileExists", "File at path '" + filePath + "' already exists. Cannot overwrite.", null);
-      return;
-    }
+        FilePathValidator validator = new FilePathValidator(filePath);
+        validator.validate();
+        if (!validator.isValid()) {
+            result.error("filePathInvalid", validator.getErrorMessage(), null);
+            return;
+        }
 
     pictureImageReader.setOnImageAvailableListener(
         reader -> {
@@ -333,21 +334,23 @@ public class Camera {
     cameraDevice.createCaptureSession(surfaceList, callback, null);
   }
 
-  public void startVideoRecording(String filePath, Result result) {
-    if (new File(filePath).exists()) {
-      result.error("fileExists", "File at path '" + filePath + "' already exists.", null);
-      return;
+    public void startVideoRecording(String filePath, Result result) {
+        FilePathValidator validator = new FilePathValidator(filePath);
+        validator.validate();
+        if (!validator.isValid()) {
+            result.error("filePathInvalid", validator.getErrorMessage(), null);
+            return;
+        }
+        try {
+            prepareMediaRecorder(filePath);
+            recordingVideo = true;
+            createCaptureSession(
+                    CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
+            result.success(null);
+        } catch (CameraAccessException | IOException e) {
+            result.error("videoRecordingFailed", e.getMessage(), null);
+        }
     }
-    try {
-      prepareMediaRecorder(filePath);
-      recordingVideo = true;
-      createCaptureSession(
-          CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
-      result.success(null);
-    } catch (CameraAccessException | IOException e) {
-      result.error("videoRecordingFailed", e.getMessage(), null);
-    }
-  }
 
   public void stopVideoRecording(@NonNull final Result result) {
     if (!recordingVideo) {
