@@ -17,14 +17,8 @@ Downloaded by pub (not CocoaPods).
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  
+
   s.platform = :ios, '8.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
-
-  s.test_spec 'UITests' do |test_spec|
-    test_spec.source_files = 'UITests/**/*'
-    test_spec.test_type = :ui
-    test_spec.requires_app_host = true
-  end
 end
 
