@@ -97,6 +97,5 @@ Future<Map<String, dynamic>> _runTest(String scriptPath) async {
           .firstWhere(
               (String message) => message.contains(_integrationResultsPrefix)))
       .replaceAll(RegExp('.*${_integrationResultsPrefix}'), '');
-  // print(testResults);
   return jsonDecode(testResults);
 }
