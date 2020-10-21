@@ -1,3 +1,7 @@
+## 0.5.8+11
+
+* Return correct error message when supplied file points to a directory.
+
 ## 0.5.8+10
 
 * Suppress the `deprecated_member_use` warning in the example app for `ScaffoldMessenger.showSnackBar`.
