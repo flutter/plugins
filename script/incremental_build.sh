@@ -28,6 +28,7 @@ CUSTOM_ANALYSIS_PLUGINS=(
   "video_player/video_player_web"
   "google_maps_flutter/google_maps_flutter_web"
   "url_launcher/url_launcher_platform_interface"
+  "url_launcher/url_launcher"
   "device_info/device_info_platform_interface"
   "device_info/device_info"
 )
