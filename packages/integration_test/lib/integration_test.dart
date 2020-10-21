@@ -11,6 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:test_core/src/direct_run.dart';
 import 'package:vm_service/vm_service.dart' as vm;
 import 'package:vm_service/vm_service_io.dart' as vm_io;
 
@@ -18,54 +19,109 @@ import 'common.dart';
 import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
 import '_callback_io.dart' if (dart.library.html) '_callback_web.dart'
     as driver_actions;
+import 'src/constants.dart';
+import 'src/reporter.dart';
 
-const String _success = 'success';
+bool _isUsingLegacyReporting = true;
+
+/// Executes a block that contains tests.
+///
+/// Example Usage:
+/// ```
+/// import 'package:flutter_test/flutter_test.dart';
+/// import 'package:integration_test/integration_test.dart';
+///
+/// void main() => run(_testMain);
+///
+/// void _testMain() {
+///   test('A test', () {
+///     expect(true, true);
+///   });
+/// }
+/// ```
+///
+/// The returned future will complete with the test results of the running
+/// [testMain]. These results will also be sent to native over the platform
+/// channel, unless [reportResultsToNative] is set to false.
+// TODO(jiahaog): Have stronger types for the returned success / failure result.
+Future<Map<String, Object>> run(FutureOr<void> Function() testMain,
+    {bool reportResultsToNative = true}) async {
+  assert(WidgetsBinding.instance == null);
+
+  _isUsingLegacyReporting = false;
+  final IntegrationTestWidgetsFlutterBinding binding =
+      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  // Pipe detailed exceptions within [testWidgets] to `package:test`.
+  reportTestException = (FlutterErrorDetails details, String testDescription) {
+    registerException('Test $testDescription failed: $details');
+  };
+
+  final Completer<Map<String, Object>> resultsCompleter =
+      Completer<Map<String, Object>>();
+
+  await directRunTests(
+    testMain,
+    reporterFactory: (engine) => ResultReporter(engine, resultsCompleter),
+  );
+
+  final Map<String, Object> results = await resultsCompleter.future;
+
+  if (reportResultsToNative) {
+    await _reportResultsToNative(binding, results);
+  }
+  return results;
+}
+
+String _formatFailureForPlatform(Failure failure) =>
+    '${failure.error} ${failure.details}';
+
+Future<void> _reportResultsToNative(
+    IntegrationTestWidgetsFlutterBinding binding,
+    Map<String, Object> results) async {
+  binding.results = results;
+  print('Test execution completed: ${binding.results}');
+
+  binding._allTestsPassed
+      .complete(!binding.results.values.any((val) => val is Failure));
+
+  try {
+    binding.callbackManager.cleanup();
+    await IntegrationTestWidgetsFlutterBinding._channel.invokeMethod<void>(
+      'allTestsFinished',
+      <String, dynamic>{
+        'results': {
+          for (final result in binding.results.entries)
+            result.key: result.value is Failure
+                ? _formatFailureForPlatform(result.value)
+                : result.value
+        }
+      },
+    );
+  } on MissingPluginException {
+    print('Warning: integration_test test plugin was not detected.');
+  }
+}
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
 class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     implements IntegrationTestResults {
-  /// Sets up a listener to report that the tests are finished when everything is
-  /// torn down.
+  /// If [run] is not used, sets up a listener to report that the tests are
+  /// finished when everything is torn down.
+  ///
+  /// This functionality is deprecated – clients are expected to use [run] to
+  /// execute their tests instead.
   IntegrationTestWidgetsFlutterBinding() {
-    // TODO(jackson): Report test results as they arrive
-    tearDownAll(() async {
-      try {
-        // For web integration tests we are not using the
-        // `plugins.flutter.io/integration_test`. Mark the tests as complete
-        // before invoking the channel.
-        if (kIsWeb) {
-          if (!_allTestsPassed.isCompleted) {
-            _allTestsPassed.complete(true);
-          }
-        }
-        callbackManager.cleanup();
-        await _channel.invokeMethod<void>(
-          'allTestsFinished',
-          <String, dynamic>{
-            'results': results.map((name, result) {
-              if (result is Failure) {
-                return MapEntry(name, result.details);
-              }
-              return MapEntry(name, result);
-            })
-          },
-        );
-      } on MissingPluginException {
-        print('Warning: integration_test test plugin was not detected.');
-      }
-      if (!_allTestsPassed.isCompleted) _allTestsPassed.complete(true);
-    });
+    if (!_isUsingLegacyReporting) return;
 
-    // TODO(jackson): Report the results individually instead of all at once
-    // See https://github.com/flutter/flutter/issues/38985
+    tearDownAll(() => _reportResultsToNative(this, results));
+
     final TestExceptionReporter oldTestExceptionReporter = reportTestException;
     reportTestException =
         (FlutterErrorDetails details, String testDescription) {
-      results[testDescription] = Failure(testDescription, details.toString());
-      if (!_allTestsPassed.isCompleted) {
-        _allTestsPassed.complete(false);
-      }
+      results[testDescription] = Failure(testDescription, details.toString(),
+          error: details.exception);
       oldTestExceptionReporter(details, testDescription);
     };
   }
@@ -197,7 +253,7 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
       description: description,
       timeout: timeout,
     );
-    results[description] ??= _success;
+    results[description] ??= success;
   }
 
   vm.VmService _vmService;

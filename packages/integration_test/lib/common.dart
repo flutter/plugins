@@ -114,16 +114,20 @@ class Failure {
   /// The name of the test method which failed.
   final String methodName;
 
+  /// The error that was thrown during the test.
+  final Object error;
+
   /// The details of the failure such as stack trace.
   final String details;
 
   /// Constructor requiring all fields during initialization.
-  Failure(this.methodName, this.details);
+  Failure(this.methodName, this.details, {this.error});
 
   /// Serializes the object to JSON.
   String toJson() {
     return json.encode(<String, String>{
       'methodName': methodName,
+      'error': error.toString(),
       'details': details,
     });
   }

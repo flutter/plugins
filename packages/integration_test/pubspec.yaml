@@ -1,6 +1,6 @@
 name: integration_test
 description: Runs tests that use the flutter_test API as integration tests.
-version: 0.9.2+1
+version: 0.10.0-dev
 homepage: https://github.com/flutter/plugins/tree/master/packages/integration_test
 
 environment:
@@ -15,7 +15,15 @@ dependencies:
   flutter_test:
     sdk: flutter
   path: ^1.6.4
+  test_core:
+    path: /Users/jiahaog/dev/dart-test/pkgs/test_core
   vm_service: ^4.2.0
+
+dependency_overrides:
+  test_api:
+    path: /Users/jiahaog/dev/dart-test/pkgs/test_api
+  test_core:
+    path: /Users/jiahaog/dev/dart-test/pkgs/test_core
 
 dev_dependencies:
   pedantic: ^1.8.0

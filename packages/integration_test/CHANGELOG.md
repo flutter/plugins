@@ -1,3 +1,7 @@
+## 0.10.0-dev
+
+* Add a `run` method that integrates with the reporter from `package:test`.
+
 ## 0.9.2+1
 
 * Update android compileSdkVersion to 29.

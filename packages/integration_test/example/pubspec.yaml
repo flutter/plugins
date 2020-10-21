@@ -24,6 +24,12 @@ dev_dependencies:
   test: any
   pedantic: ^1.8.0
 
+dependency_overrides:
+  test_api:
+    path: /Users/jiahaog/dev/dart-test/pkgs/test_api
+  test_core:
+    path: /Users/jiahaog/dev/dart-test/pkgs/test_core
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
