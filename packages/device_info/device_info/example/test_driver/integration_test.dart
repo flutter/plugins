@@ -4,6 +4,7 @@
 
 // TODO(cyanglaz): Remove once https://github.com/flutter/flutter/issues/59879 is fixed.
 // @dart = 2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';

@@ -1,3 +1,7 @@
+# 0.1.0
+
+* Migrate to null safety.
+
 # 0.0.1+8
 
 * Remove no-op android folder in the example app.
