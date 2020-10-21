@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Add a file chooser for Android.
+
 ## 1.0.5
 
 * Fix example in the readme.
