@@ -9,9 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
-export 'package:url_launcher_platform_interface/link.dart'
-    show LinkTarget, LinkWidgetBuilder, FollowLink;
-
 /// A widget that renders a real link on the web, and uses WebViews in native
 /// platforms to open links.
 ///
