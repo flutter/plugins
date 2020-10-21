@@ -62,7 +62,8 @@ class Link extends StatelessWidget implements LinkInfo {
         super(key: key);
 
   LinkDelegate get _effectiveDelegate {
-    return UrlLauncherPlatform.instance.linkDelegate ?? DefaultLinkDelegate.create;
+    return UrlLauncherPlatform.instance.linkDelegate ??
+        DefaultLinkDelegate.create;
   }
 
   @override
