@@ -104,7 +104,7 @@ class Connectivity {
   /// * The app uses the NEHotspotConfiguration API to configure the current Wi-Fi network.
   /// * The app has active VPN configurations installed.
   ///
-  /// If the app falls into the first category, c1all this method before calling `getWifiBSSID` or `getWifiIP`.
+  /// If the app falls into the first category, call this method before calling `getWifiBSSID` or `getWifiIP`.
   /// For example,
   /// ```dart
   /// if (Platform.isIOS) {
