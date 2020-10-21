@@ -41,6 +41,10 @@ Change the minimum Android sdk version to 21 (or higher) in your `android/app/bu
 minSdkVersion 21
 ```
 
+Important to note is that the `MediaRecorder` class is not working properly on emulators. This makes
+that when a video is recorded with sound enabled, the duration won't be correct and you will only
+see the first frame.
+
 ### Example
 
 Here is a small example flutter app displaying a full screen camera preview.
