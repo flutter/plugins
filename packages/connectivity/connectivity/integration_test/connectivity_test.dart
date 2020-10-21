@@ -22,8 +22,11 @@ void main() {
       expect(result, isNotNull);
       switch (result) {
         case ConnectivityResult.wifi:
+          // ignore: deprecated_member_use
           expect(_connectivity.getWifiName(), completes);
+          // ignore: deprecated_member_use
           expect(_connectivity.getWifiBSSID(), completes);
+          // ignore: deprecated_member_use
           expect((await _connectivity.getWifiIP()), isNotNull);
           break;
         default:
@@ -33,6 +36,7 @@ void main() {
 
     testWidgets('test location methods, iOS only', (WidgetTester tester) async {
       if (Platform.isIOS) {
+        // ignore: deprecated_member_use
         expect((await _connectivity.getLocationServiceAuthorization()),
             LocationAuthorizationStatus.notDetermined);
       }

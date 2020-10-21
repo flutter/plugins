@@ -35,28 +35,33 @@ void main() {
     });
 
     test('getWifiName', () async {
+      // ignore: deprecated_member_use
       String result = await connectivity.getWifiName();
       expect(result, kWifiNameResult);
     });
 
     test('getWifiBSSID', () async {
+      // ignore: deprecated_member_use
       String result = await connectivity.getWifiBSSID();
       expect(result, kWifiBSSIDResult);
     });
 
     test('getWifiIP', () async {
+      // ignore: deprecated_member_use
       String result = await connectivity.getWifiIP();
       expect(result, kWifiIpAddressResult);
     });
 
     test('requestLocationServiceAuthorization', () async {
       LocationAuthorizationStatus result =
+          // ignore: deprecated_member_use
           await connectivity.requestLocationServiceAuthorization();
       expect(result, kRequestLocationResult);
     });
 
     test('getLocationServiceAuthorization', () async {
       LocationAuthorizationStatus result =
+          // ignore: deprecated_member_use
           await connectivity.getLocationServiceAuthorization();
       expect(result, kRequestLocationResult);
     });
