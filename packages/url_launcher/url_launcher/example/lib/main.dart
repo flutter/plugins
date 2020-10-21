@@ -35,7 +35,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<void> _launched;
+  Future<void>? _launched;
   String _phone = '';
 
   Future<void> _launchInBrowser(String url) async {

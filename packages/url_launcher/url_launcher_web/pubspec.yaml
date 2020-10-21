@@ -15,8 +15,11 @@ flutter:
 
 dependencies:
   # TODO(mvanbeusekom): Update to use pub.dev once null safety version is published.
-  url_launcher_platform_interface: 
-    path: ../url_launcher_platform_interface
+  url_launcher_platform_interface:
+    git:
+      url: https://github.com/flutter/plugins.git
+      ref: nnbd
+      path: packages/url_launcher/url_launcher_platform_interface
   flutter:
     sdk: flutter
   flutter_web_plugins:

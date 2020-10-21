@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.8
+// TODO(mvanbeusekom): Remove once Mockito is migrated to null safety.
+// @dart = 2.9
 
 import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-// TODO(mvanbeusekom): Remove once Mockito is migrated to null safety.
-// @dart = 2.9
 import 'package:mockito/mockito.dart';
 import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
