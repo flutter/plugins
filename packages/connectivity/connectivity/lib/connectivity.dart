@@ -23,12 +23,12 @@ class Connectivity {
     if (_singleton == null) {
       _singleton = Connectivity._();
     }
-    return _singleton;
+    return _singleton!;
   }
 
   Connectivity._();
 
-  static Connectivity _singleton;
+  static Connectivity? _singleton;
 
   static ConnectivityPlatform get _platform => ConnectivityPlatform.instance;
 
@@ -53,7 +53,7 @@ class Connectivity {
   ///
   /// From android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the SSID.
-  Future<String> getWifiName() {
+  Future<String?> getWifiName() {
     return _platform.getWifiName();
   }
 
@@ -63,12 +63,12 @@ class Connectivity {
   ///
   /// From Android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the BSSID.
-  Future<String> getWifiBSSID() {
+  Future<String?> getWifiBSSID() {
     return _platform.getWifiBSSID();
   }
 
   /// Obtains the IP address of the connected wifi network
-  Future<String> getWifiIP() {
+  Future<String?> getWifiIP() {
     return _platform.getWifiIP();
   }
 
