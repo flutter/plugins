@@ -19,7 +19,7 @@ dependencies:
     git:
       url: https://github.com/flutter/plugins.git
       ref: nnbd
-      path: packages/url_launcher_platform_interface
+      path: packages/url_launcher/url_launcher_platform_interface
   flutter:
     sdk: flutter
   flutter_web_plugins:
