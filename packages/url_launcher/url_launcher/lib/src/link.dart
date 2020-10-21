@@ -12,10 +12,6 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 export 'package:url_launcher_platform_interface/link.dart'
     show LinkTarget, LinkWidgetBuilder, FollowLink;
 
-Widget defaultLinkDelegate(LinkInfo link) {
-  return DefaultLinkDelegate(link);
-}
-
 /// A widget that renders a real link on the web, and uses WebViews in native
 /// platforms to open links.
 ///
@@ -66,7 +62,7 @@ class Link extends StatelessWidget implements LinkInfo {
         super(key: key);
 
   LinkDelegate get _effectiveDelegate {
-    return UrlLauncherPlatform.instance.linkDelegate ?? defaultLinkDelegate;
+    return UrlLauncherPlatform.instance.linkDelegate ?? DefaultLinkDelegate.create;
   }
 
   @override
@@ -82,6 +78,13 @@ class Link extends StatelessWidget implements LinkInfo {
 class DefaultLinkDelegate extends StatelessWidget {
   /// Creates a delegate for the given [link].
   const DefaultLinkDelegate(this.link);
+
+  /// Given a [link], creates an instance of [DefaultLinkDelegate].
+  ///
+  /// This is a static method so it can be used as a tear-off.
+  static DefaultLinkDelegate create(LinkInfo link) {
+    return DefaultLinkDelegate(link);
+  }
 
   /// Information about the link built by the app.
   final LinkInfo link;
