@@ -1,3 +1,7 @@
+## 0.5.8+12
+
+* Return correct error message when supplied file points to a directory.
+
 ## 0.5.8+11
 
 * Fix rare nullptr exception on Android.
