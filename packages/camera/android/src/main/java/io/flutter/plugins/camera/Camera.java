@@ -218,8 +218,8 @@ public class Camera {
     FilePathValidator validator = new FilePathValidator(filePath);
     validator.validate();
     if (!validator.isValid()) {
-        result.error("filePathInvalid", validator.getErrorMessage(), null);
-        return;
+      result.error("filePathInvalid", validator.getErrorMessage(), null);
+      return;
     }
 
     pictureImageReader.setOnImageAvailableListener(
@@ -338,8 +338,8 @@ public class Camera {
     FilePathValidator validator = new FilePathValidator(filePath);
     validator.validate();
     if (!validator.isValid()) {
-        result.error("filePathInvalid", validator.getErrorMessage(), null);
-        return;
+      result.error("filePathInvalid", validator.getErrorMessage(), null);
+      return;
     }
 
     try {
