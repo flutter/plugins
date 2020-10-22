@@ -1,3 +1,11 @@
+# 0.1.5
+
+- Added the web implementation of the Link widget.
+
+# 0.1.4+2
+
+- Move `lib/third_party` to `lib/src/third_party`.
+
 # 0.1.4+1
 
 - Add a more correct attribution to `package:platform_detect` code.

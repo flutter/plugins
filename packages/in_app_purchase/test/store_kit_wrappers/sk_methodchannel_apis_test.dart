@@ -110,7 +110,7 @@ void main() {
       queue.setTransactionObserver(observer);
       await queue.finishTransaction(dummyTransaction);
       expect(fakeIOSPlatform.transactionsFinished.first,
-          equals(dummyTransaction.transactionIdentifier));
+          equals(dummyTransaction.toFinishMap()));
     });
 
     test('should restore transaction', () async {
@@ -139,7 +139,7 @@ class FakeIOSPlatform {
 
   // payment queue
   List<SKPaymentWrapper> payments = [];
-  List<String> transactionsFinished = [];
+  List<Map<String, String>> transactionsFinished = [];
   String applicationNameHasTransactionRestored;
 
   Future<dynamic> onMethodCall(MethodCall call) {
@@ -171,7 +171,7 @@ class FakeIOSPlatform {
         payments.add(SKPaymentWrapper.fromJson(call.arguments));
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin finishTransaction:result:]':
-        transactionsFinished.add(call.arguments);
+        transactionsFinished.add(Map<String, String>.from(call.arguments));
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin restoreTransactions:result:]':
         applicationNameHasTransactionRestored = call.arguments;

@@ -110,5 +110,25 @@ void main() {
       expect(controller.markers.length, 1);
       expect(controller.markers[MarkerId('1')].marker.icon, isNull);
     });
+
+    // https://github.com/flutter/flutter/issues/67854
+    testWidgets('InfoWindow snippet can have links',
+        (WidgetTester tester) async {
+      final markers = {
+        Marker(
+          markerId: MarkerId('1'),
+          infoWindow: InfoWindow(
+            title: 'title for test',
+            snippet: '<a href="https://www.google.com">Go to Google >>></a>',
+          ),
+        ),
+      };
+
+      controller.addMarkers(markers);
+
+      expect(controller.markers.length, 1);
+      expect(controller.markers[MarkerId('1')].marker.title,
+          equals('title for test'));
+    });
   });
 }
