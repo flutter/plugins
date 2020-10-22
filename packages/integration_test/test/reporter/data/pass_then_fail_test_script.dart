@@ -7,12 +7,12 @@ void main() async {
   final IntegrationTestWidgetsFlutterBinding binding =
       IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('passing test 1', (WidgetTester tester) async {
+  testWidgets('Passing test', (WidgetTester tester) async {
     expect(true, true);
   });
 
-  testWidgets('passing test 2', (WidgetTester tester) async {
-    expect(true, true);
+  testWidgets('Failing test', (WidgetTester tester) async {
+    expect(false, true);
   });
 
   tearDownAll(() {

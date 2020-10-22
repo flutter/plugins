@@ -1,6 +1,6 @@
 ## 0.10.0-dev
 
-* Add a `run` method that integrates with the reporter from `package:test`.
+* Add a `run` method for proper reporting of test results.
 
 ## 0.9.2+1
 

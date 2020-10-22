@@ -77,8 +77,9 @@ String _formatFailureForPlatform(Failure failure) =>
     '${failure.error} ${failure.details}';
 
 Future<void> _reportResultsToNative(
-    IntegrationTestWidgetsFlutterBinding binding,
-    Map<String, Object> results) async {
+  IntegrationTestWidgetsFlutterBinding binding,
+  Map<String, Object> results,
+) async {
   binding.results = results;
   print('Test execution completed: ${binding.results}');
 
@@ -113,7 +114,13 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
   /// This functionality is deprecated – clients are expected to use [run] to
   /// execute their tests instead.
   IntegrationTestWidgetsFlutterBinding() {
-    if (!_isUsingLegacyReporting) return;
+    if (!_isUsingLegacyReporting) {
+      // TODO(flutter/flutter#66264): Point users to use the CLI.
+      print('Using the legacy test result reporter, which will not catch all '
+          'errors thrown in declared tests. Consider wrapping tests with [run] '
+          'instead.');
+      return;
+    }
 
     tearDownAll(() => _reportResultsToNative(this, results));
 
