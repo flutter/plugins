@@ -146,6 +146,51 @@
   XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStatePurchased);
 }
 
+- (void)testAddPaymentWithNullSandboxArgument {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"result should return success state"];
+  XCTestExpectation* simulatesAskToBuyInSandboxExpectation =
+      [self expectationWithDescription:@"payment isn't simulatesAskToBuyInSandbox"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin addPayment:result:]"
+                                        arguments:@{
+                                          @"productIdentifier" : @"123",
+                                          @"quantity" : @(1),
+                                          @"simulatesAskToBuyInSandbox" : [NSNull null],
+                                        }];
+  SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
+  queue.testState = SKPaymentTransactionStatePurchased;
+  __block SKPaymentTransaction* transactionForUpdateBlock;
+  self.plugin.paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+      transactionsUpdated:^(NSArray<SKPaymentTransaction*>* _Nonnull transactions) {
+        SKPaymentTransaction* transaction = transactions[0];
+        if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
+          transactionForUpdateBlock = transaction;
+          [expectation fulfill];
+        }
+        if (@available(iOS 8.3, *)) {
+          if (!transaction.payment.simulatesAskToBuyInSandbox) {
+            [simulatesAskToBuyInSandboxExpectation fulfill];
+          }
+        } else {
+          [simulatesAskToBuyInSandboxExpectation fulfill];
+        }
+      }
+      transactionRemoved:nil
+      restoreTransactionFailed:nil
+      restoreCompletedTransactionsFinished:nil
+      shouldAddStorePayment:^BOOL(SKPayment* _Nonnull payment, SKProduct* _Nonnull product) {
+        return YES;
+      }
+      updatedDownloads:nil];
+  [queue addTransactionObserver:self.plugin.paymentQueueHandler];
+  [self.plugin handleMethodCall:call
+                         result:^(id r){
+                         }];
+  [self waitForExpectations:@[ expectation, simulatesAskToBuyInSandboxExpectation ] timeout:5];
+  XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStatePurchased);
+}
+
 - (void)testRestoreTransactions {
   XCTestExpectation* expectation =
       [self expectationWithDescription:@"result successfully restore transactions"];

@@ -1,3 +1,23 @@
+## 5.7.7
+
+* Introduce the Link widget with an implementation for native platforms.
+
+## 5.7.6
+
+* Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android of the `FlutterWebChromeClient` class.
+
+## 5.7.5
+
+* Improved documentation of the `headers` parameter.
+
+## 5.7.4
+
+* Update android compileSdkVersion to 29.
+
+## 5.7.3
+
+* Check in linux/ directory for example/
+
 ## 5.7.2
 
 * Add API documentation explaining the [canLaunch] method returns `false` if package visibility (Android API 30) is not managed correctly.
