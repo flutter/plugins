@@ -404,7 +404,7 @@ public class Camera {
                     firstEntry.setDelta(3000);
                 }
             }
-            if (!isError) {
+            if (isError) {
                 File file = getOutputMediaFile();
                 String filePath = file.getAbsolutePath();
                 Movie movie = new Movie();
