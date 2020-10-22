@@ -1,9 +1,9 @@
 ## 0.1.0+5
 
 * Update `package:google_maps` to `^3.4.5`.
-* Fix GoogleMapController.getLatLng(). [Issue](https://github.com/flutter/flutter/issues/67606).
-* Make InfoWindow contents clickable so onTap works as advertised. [Issue](https://github.com/flutter/flutter/issues/67289).
-* Fix InfoWindow snippets when converting initial markers. [Issue](https://github.com/flutter/flutter/issues/67854).
+* Fix `GoogleMapController.getLatLng()`. [Issue](https://github.com/flutter/flutter/issues/67606).
+* Make `InfoWindow` contents clickable so `onTap` works as advertised. [Issue](https://github.com/flutter/flutter/issues/67289).
+* Fix `InfoWindow` snippets when converting initial markers. [Issue](https://github.com/flutter/flutter/issues/67854).
 
 ## 0.1.0+4
 

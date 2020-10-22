@@ -271,8 +271,8 @@ Set<Marker> _rawOptionsToInitialMarkers(Map<String, dynamic> rawOptions) {
           position = LatLng.fromJson(rawMarker['position']);
         }
         if (rawMarker['infoWindow'] != null) {
-          final title = rawMarker['infoWindow']['title'];
-          final snippet = rawMarker['infoWindow']['snippet'];
+          final String title = rawMarker['infoWindow']['title'];
+          final String snippet = rawMarker['infoWindow']['snippet'];
           if (title != null || snippet != null) {
             infoWindow = InfoWindow(
               title: title ?? '',
@@ -381,16 +381,16 @@ gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
 
   // Add an outer wrapper to the contents of the infowindow, we need it to listen
   // to click events...
-  final container = DivElement()
+  final HtmlElement container = DivElement()
     ..id = 'gmaps-marker-${marker.markerId.value}-infowindow';
   if (marker.infoWindow.title?.isNotEmpty ?? false) {
-    final title = HeadingElement.h3()
+    final HtmlElement title = HeadingElement.h3()
       ..className = 'infowindow-title'
       ..innerText = marker.infoWindow.title;
     container.children.add(title);
   }
   if (marker.infoWindow.snippet?.isNotEmpty ?? false) {
-    final snippet = DivElement()
+    final HtmlElement snippet = DivElement()
       ..className = 'infowindow-snippet'
       ..setInnerHtml(
         sanitizeHtml(marker.infoWindow.snippet),
@@ -398,8 +398,6 @@ gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
       );
     container.children.add(snippet);
   }
-
-  assert(container.children.isNotEmpty);
 
   return gmaps.InfoWindowOptions()
     ..content = container
