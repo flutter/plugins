@@ -53,6 +53,8 @@ class Connectivity {
   ///
   /// From android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the SSID.
+  @Deprecated(
+      'This method is deprecated. Please use wifi_info_flutter instead. See https://github.com/flutter/plugins/blob/master/packages/wifi_info_flutter/wifi_info_flutter/README.md')
   Future<String> getWifiName() {
     return _platform.getWifiName();
   }
@@ -63,11 +65,15 @@ class Connectivity {
   ///
   /// From Android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the BSSID.
+  @Deprecated(
+      'This method is deprecated. Please use wifi_info_flutter instead. See https://github.com/flutter/plugins/blob/master/packages/wifi_info_flutter/wifi_info_flutter/README.md')
   Future<String> getWifiBSSID() {
     return _platform.getWifiBSSID();
   }
 
   /// Obtains the IP address of the connected wifi network
+  @Deprecated(
+      'This method is deprecated. Please use wifi_info_flutter instead. See https://github.com/flutter/plugins/blob/master/packages/wifi_info_flutter/wifi_info_flutter/README.md')
   Future<String> getWifiIP() {
     return _platform.getWifiIP();
   }
@@ -120,6 +126,8 @@ class Connectivity {
   /// Ideally, a location service authorization should only be requested if the current authorization status is not determined.
   ///
   /// See also [getLocationServiceAuthorization] to obtain current location service status.
+  @Deprecated(
+      'This method is deprecated. Please use wifi_info_flutter instead. See https://github.com/flutter/plugins/blob/master/packages/wifi_info_flutter/wifi_info_flutter/README.md')
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
     bool requestAlwaysLocationUsage = false,
   }) {
@@ -164,6 +172,8 @@ class Connectivity {
   /// ```
   ///
   /// See also [requestLocationServiceAuthorization] for requesting a location service authorization.
+  @Deprecated(
+      'This method is deprecated. Please use wifi_info_flutter instead. See https://github.com/flutter/plugins/blob/master/packages/wifi_info_flutter/wifi_info_flutter/README.md')
   Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
     return _platform.getLocationServiceAuthorization();
   }
