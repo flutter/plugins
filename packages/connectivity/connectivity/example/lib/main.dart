@@ -105,18 +105,23 @@ class _MyHomePageState extends State<MyHomePage> {
         try {
           if (!kIsWeb && Platform.isIOS) {
             LocationAuthorizationStatus status =
+                // ignore: deprecated_member_use
                 await _connectivity.getLocationServiceAuthorization();
             if (status == LocationAuthorizationStatus.notDetermined) {
               status =
+                  // ignore: deprecated_member_use
                   await _connectivity.requestLocationServiceAuthorization();
             }
             if (status == LocationAuthorizationStatus.authorizedAlways ||
                 status == LocationAuthorizationStatus.authorizedWhenInUse) {
+              // ignore: deprecated_member_use
               wifiName = await _connectivity.getWifiName();
             } else {
+              // ignore: deprecated_member_use
               wifiName = await _connectivity.getWifiName();
             }
           } else {
+            // ignore: deprecated_member_use
             wifiName = await _connectivity.getWifiName();
           }
         } on PlatformException catch (e) {
@@ -127,18 +132,23 @@ class _MyHomePageState extends State<MyHomePage> {
         try {
           if (!kIsWeb && Platform.isIOS) {
             LocationAuthorizationStatus status =
+                // ignore: deprecated_member_use
                 await _connectivity.getLocationServiceAuthorization();
             if (status == LocationAuthorizationStatus.notDetermined) {
               status =
+                  // ignore: deprecated_member_use
                   await _connectivity.requestLocationServiceAuthorization();
             }
             if (status == LocationAuthorizationStatus.authorizedAlways ||
                 status == LocationAuthorizationStatus.authorizedWhenInUse) {
+              // ignore: deprecated_member_use
               wifiBSSID = await _connectivity.getWifiBSSID();
             } else {
+              // ignore: deprecated_member_use
               wifiBSSID = await _connectivity.getWifiBSSID();
             }
           } else {
+            // ignore: deprecated_member_use
             wifiBSSID = await _connectivity.getWifiBSSID();
           }
         } on PlatformException catch (e) {
@@ -147,6 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         try {
+          // ignore: deprecated_member_use
           wifiIP = await _connectivity.getWifiIP();
         } on PlatformException catch (e) {
           print(e.toString());
