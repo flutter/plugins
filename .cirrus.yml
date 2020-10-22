@@ -1,21 +1,21 @@
-task:
-  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-  only_if: $CIRRUS_TAG == ''
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
-  container:
-    dockerfile: .ci/Dockerfile
-    cpu: 8
-    memory: 16G
-  env:
-    INTEGRATION_TEST_PATH: "./packages/integration_test"
-  upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - git fetch origin master
-  activate_script: pub global activate flutter_plugin_tools
-  matrix:
+# task:
+#   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+#   only_if: $CIRRUS_TAG == ''
+#   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+#   container:
+#     dockerfile: .ci/Dockerfile
+#     cpu: 8
+#     memory: 16G
+#   env:
+#     INTEGRATION_TEST_PATH: "./packages/integration_test"
+#   upgrade_script:
+#     - flutter channel stable
+#     - flutter upgrade
+#     - flutter channel master
+#     - flutter upgrade
+#     - git fetch origin master
+#   activate_script: pub global activate flutter_plugin_tools
+#   matrix:
     # - name: publishable
     #   script:
     #     - flutter channel master
@@ -181,8 +181,6 @@ task:
         - ./script/incremental_build.sh drive-examples
     - name: xctests
       script:
-        # TODO(jackson): Allow web plugins once supported on stable
-        # https://github.com/flutter/flutter/issues/42864
         - ./script/incremental_build.sh xctest --target RunnerUITests
 # task:
 #   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
