@@ -1,3 +1,12 @@
+## 0.5.8+11
+
+* Fix rare nullptr exception on Android.
+* Updated README.md with information about handling App lifecycle changes.
+
+## 0.5.8+10
+
+* Suppress the `deprecated_member_use` warning in the example app for `ScaffoldMessenger.showSnackBar`.
+
 ## 0.5.8+9
 
 * Update android compileSdkVersion to 29.

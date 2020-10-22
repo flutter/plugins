@@ -1,3 +1,11 @@
+## 1.0.5
+
+* Fix example in the readme.
+
+## 1.0.4
+
+* Suppress the `deprecated_member_use` warning in the example app for `ScaffoldMessenger.showSnackBar`.
+
 ## 1.0.3
 
 * Update android compileSdkVersion to 29.

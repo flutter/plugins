@@ -1,3 +1,7 @@
+## 0.0.1+3
+
+* Add a missing include.
+
 ## 0.0.1+2
 
 * Check in linux/ directory for example/
