@@ -183,7 +183,6 @@ task:
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
-        - flutter channel $CHANNEL
         - ./script/incremental_build.sh xctest --target RunnerUITests
 # task:
 #   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
