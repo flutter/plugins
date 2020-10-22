@@ -1,3 +1,3 @@
-## 0.0.1
+## 0.7.0
 
 * Initial Open Source release.
