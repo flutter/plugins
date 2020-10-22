@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 
 // Export enums from the platform_interface so plugin users can use them directly.
