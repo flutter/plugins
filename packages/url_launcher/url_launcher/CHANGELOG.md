@@ -1,3 +1,7 @@
+## 5.7.7
+
+* Introduce the Link widget with an implementation for native platforms.
+
 ## 5.7.6
 
 * Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android of the `FlutterWebChromeClient` class.
