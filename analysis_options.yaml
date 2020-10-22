@@ -6,4 +6,5 @@ analyzer:
     - 'lib/src/generated/*.dart'
 linter:
   rules:
+    - implementation_imports
     - public_member_api_docs
