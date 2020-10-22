@@ -4,7 +4,10 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 
 /**
@@ -15,9 +18,10 @@ import io.flutter.plugin.common.BinaryMessenger;
  * <p>Call {@link #registerWith(Registrar)} to use the stable {@code io.flutter.plugin.common}
  * package instead.
  */
-public class WebViewFlutterPlugin implements FlutterPlugin {
+public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   private FlutterCookieManager flutterCookieManager;
+  private WebViewFactory webViewFactory;
 
   /**
    * Add an instance of this to {@link io.flutter.embedding.engine.plugins.PluginRegistry} to
@@ -53,10 +57,10 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     BinaryMessenger messenger = binding.getBinaryMessenger();
+    webViewFactory = new WebViewFactory(messenger, /*containerView=*/ null);
     binding
         .getPlatformViewRegistry()
-        .registerViewFactory(
-            "plugins.flutter.io/webview", new WebViewFactory(messenger, /*containerView=*/ null));
+        .registerViewFactory("plugins.flutter.io/webview", webViewFactory);
     flutterCookieManager = new FlutterCookieManager(messenger);
   }
 
@@ -68,5 +72,34 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
 
     flutterCookieManager.dispose();
     flutterCookieManager = null;
+    webViewFactory = null;
+  }
+
+  @Override
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+    if (flutterCookieManager == null) {
+      return;
+    }
+
+    webViewFactory.setActivity(binding.getActivity());
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+    if (flutterCookieManager == null) {
+      return;
+    }
+
+    webViewFactory.setActivity(null);
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    onDetachedFromActivity();
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+    onAttachedToActivity(binding);
   }
 }
