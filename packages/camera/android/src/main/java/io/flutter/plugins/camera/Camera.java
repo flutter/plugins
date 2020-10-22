@@ -392,8 +392,12 @@ public class Camera {
       mediaRecorder.stop();
       mediaRecorder.reset();
 //      startPreview();
-//      result.success(null);
-      parseVideo(this.mFilePath,result);
+      String manufacturer = android.os.Build.MANUFACTURER;
+      if(manufacturer.equals("samsung")) {
+        parseVideo(this.mFilePath,result);
+      } else {
+        result.success(null);
+      }
     } catch (IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
     }
@@ -401,7 +405,6 @@ public class Camera {
 
   private void parseVideo(String mFilePath, @NonNull final Result result) {
     try {
-      Log.d("Camera:", "go parsing 1");
       DataSource channel = new FileDataSourceImpl(mFilePath);
       IsoFile isoFile = new IsoFile(channel);
       List<TrackBox> trackBoxes = isoFile.getMovieBox().getBoxes(TrackBox.class);
@@ -413,15 +416,9 @@ public class Camera {
           firstEntry.setDelta(3000);
         }
       }
-      Log.d("Camera:", "go parsing 3");
-      File file = getOutputMediaFile();
-      String filePath = mFilePath;
-      if(file != null) {
-        filePath = file.getAbsolutePath();
-        Log.d("Camera:", "go parsing 4" + filePath);
-      }
-      if (isError) {
-        Log.d("Camera:", "go parsing 5");
+      if (!isError) {
+        File file = getOutputMediaFile();
+        String filePath = file.getAbsolutePath();
         Movie movie = new Movie();
         for (TrackBox trackBox : trackBoxes) {
           movie.addTrack(new Mp4TrackImpl(channel.toString() + "[" + trackBox.getTrackHeaderBox().getTrackId() + "]", trackBox));
@@ -433,8 +430,6 @@ public class Camera {
         out.writeContainer(fc);
         fc.close();
       }
-      Log.d("Camera:", "go parsing 6");
-//      return mFilePath;
       result.success(null);
     }catch (IOException e){
       result.error("Parsing video failed", e.getMessage(), null);
@@ -442,20 +437,11 @@ public class Camera {
   }
 
   private File getOutputMediaFile() {
-    // External sdcard file location
-    File mediaStorageDir = new File(String.valueOf(Environment.getExternalStorageDirectory()));
-    // Create storage directory if it does not exist
-    if (!mediaStorageDir.exists()) {
-      if (!mediaStorageDir.mkdirs()) {
-        Log.d("Parsing video", "Oops! Failed create directory");
-        return null;
-      }
+    File tempFile = new File(mFilePath);
+    if(tempFile.exists()) {
+      tempFile.delete();
     }
-    File mediaFile;
-
-    mediaFile = new File(mediaStorageDir.getPath() + File.separator
-            + "VID_0911" + ".mp4");
-    return mediaFile;
+    return new File(mFilePath);
   }
 
   public void pauseVideoRecording(@NonNull final Result result) {
