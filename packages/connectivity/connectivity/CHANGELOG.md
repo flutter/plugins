@@ -1,3 +1,8 @@
+## 1.0.0
+
+* Mark wifi related code deprecated.
+* Announce 1.0.0!
+
 ## 0.4.9+5
 
 * Update android compileSdkVersion to 29.
