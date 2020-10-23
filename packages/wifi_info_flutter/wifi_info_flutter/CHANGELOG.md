@@ -1,3 +1,4 @@
-## 0.0.1
+## 1.0.0
 
-* TODO: Describe initial release.
+* Initial release of the plugin. This plugin retrieves information about a device's connection to wifi.
+* See [README](./README.md) for details.
