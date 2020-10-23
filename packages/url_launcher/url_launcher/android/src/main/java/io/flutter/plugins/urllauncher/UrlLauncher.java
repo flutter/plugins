@@ -1,6 +1,7 @@
 package io.flutter.plugins.urllauncher;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -48,7 +49,8 @@ class UrlLauncher {
    * @param enableJavaScript Only used if {@param useWebView} is true. Enables JS in the WebView.
    * @param enableDomStorage Only used if {@param useWebView} is true. Enables DOM storage in the
    * @return {@link LaunchStatus#NO_ACTIVITY} if there's no available {@code applicationContext}.
-   *     {@link LaunchStatus#OK} otherwise.
+   *     {@link LaunchStatus#ACTIVITY_NOT_FOUND} if there's no activity found to handle {@code
+   *     launchIntent}. {@link LaunchStatus#OK} otherwise.
    */
   LaunchStatus launch(
       String url,
@@ -72,7 +74,12 @@ class UrlLauncher {
               .putExtra(Browser.EXTRA_HEADERS, headersBundle);
     }
 
-    activity.startActivity(launchIntent);
+    try {
+      activity.startActivity(launchIntent);
+    } catch (ActivityNotFoundException e) {
+      return LaunchStatus.ACTIVITY_NOT_FOUND;
+    }
+
     return LaunchStatus.OK;
   }
 
@@ -87,5 +94,7 @@ class UrlLauncher {
     OK,
     /** No activity was found to launch. */
     NO_ACTIVITY,
+    /** No Activity found that can handle given intent. */
+    ACTIVITY_NOT_FOUND,
   }
 }
