@@ -2,7 +2,10 @@ name: connectivity
 description: Flutter plugin for discovering the state of the network (WiFi &
   mobile/cellular) connectivity on Android and iOS.
 homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity
-version: 2.0.0
+version: 3.0.0-nullsafety
+
+# Don't publish this package until null safety is stable or the package is in the allow list.
+publish_to: none
 
 flutter:
   plugin:
@@ -21,22 +24,26 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.0.5
-  connectivity_platform_interface: ^1.0.2
+  connectivity_platform_interface:
+    path: ../connectivity_platform_interface
+  #TODO(cyanglaz): re-endorse the below plugins when they have migrated to nnbd.
+  # https://github.com/flutter/flutter/issues/68669
   connectivity_macos: ^0.1.0
-  connectivity_for_web: ^0.3.0
+  # connectivity_for_web: ^0.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  test: any
+  test: ^1.10.0-nullsafety.1
   integration_test:
     path: ../../integration_test
   mockito: ^4.1.1
-  plugin_platform_interface: ^1.0.0
-  pedantic: ^1.8.0
+  plugin_platform_interface:
+    path: ../../plugin_platform_interface
+  pedantic: ^1.10.0-nullsafety.1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.10.0-56.0.dev <3.0.0'
   flutter: ">=1.12.13+hotfix.5 <2.0.0"
