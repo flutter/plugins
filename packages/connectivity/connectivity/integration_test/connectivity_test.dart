@@ -14,7 +14,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Connectivity test driver', () {
-    late Connectivity _connectivity;
+    Connectivity _connectivity;
 
     setUpAll(() async {
       _connectivity = Connectivity();
