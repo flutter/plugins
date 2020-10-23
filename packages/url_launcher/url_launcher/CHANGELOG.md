@@ -1,3 +1,11 @@
+## 5.7.8
+
+* Fixed a situation where an app would crash if the url_launcher’s `launch` method can’t find an app to open the provided url. It will now throw a clear Dart PlatformException.
+
+## 5.7.7
+
+* Introduce the Link widget with an implementation for native platforms.
+
 ## 5.7.6
 
 * Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android of the `FlutterWebChromeClient` class.
