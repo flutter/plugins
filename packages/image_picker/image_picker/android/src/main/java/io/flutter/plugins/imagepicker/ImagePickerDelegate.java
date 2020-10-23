@@ -89,7 +89,6 @@ public class ImagePickerDelegate
   private final ImageResizer imageResizer;
   private final ImagePickerCache cache;
   private final PermissionManager permissionManager;
-  private final IntentResolver intentResolver;
   private final FileUriResolver fileUriResolver;
   private final FileUtils fileUtils;
   private CameraDevice cameraDevice;
@@ -100,10 +99,6 @@ public class ImagePickerDelegate
     void askForPermission(String permissionName, int requestCode);
 
     boolean needRequestCameraPermission();
-  }
-
-  interface IntentResolver {
-    boolean resolveActivity(Intent intent);
   }
 
   interface FileUriResolver {
@@ -149,12 +144,6 @@ public class ImagePickerDelegate
             return ImagePickerUtils.needRequestCameraPermission(activity);
           }
         },
-        new IntentResolver() {
-          @Override
-          public boolean resolveActivity(Intent intent) {
-            return intent.resolveActivity(activity.getPackageManager()) != null;
-          }
-        },
         new FileUriResolver() {
           @Override
           public Uri resolveFileProviderUriForFile(String fileProviderName, File file) {
@@ -191,7 +180,6 @@ public class ImagePickerDelegate
       final MethodCall methodCall,
       final ImagePickerCache cache,
       final PermissionManager permissionManager,
-      final IntentResolver intentResolver,
       final FileUriResolver fileUriResolver,
       final FileUtils fileUtils) {
     this.activity = activity;
@@ -201,7 +189,6 @@ public class ImagePickerDelegate
     this.pendingResult = result;
     this.methodCall = methodCall;
     this.permissionManager = permissionManager;
-    this.intentResolver = intentResolver;
     this.fileUriResolver = fileUriResolver;
     this.fileUtils = fileUtils;
     this.cache = cache;
@@ -303,7 +290,6 @@ public class ImagePickerDelegate
       activity.startActivityForResult(intent, REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA);
     } catch (ActivityNotFoundException e) {
       finishWithError("no_available_camera", "No cameras available for taking pictures.");
-      return;
     }
   }
 
@@ -381,7 +367,6 @@ public class ImagePickerDelegate
       activity.startActivityForResult(intent, REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA);
     } catch (ActivityNotFoundException e) {
       finishWithError("no_available_camera", "No cameras available for taking pictures.");
-      return;
     }
   }
 
