@@ -8,7 +8,7 @@ A Flutter plugin that manages files and interactions with file dialogs.
 To use this plugin, add `file_selector` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
 
 ### Examples
-Here are small examples that show you how to use the API.
+Here are small examples that show you how to use the API.  
 Please also take a look at our [example][example] app.
 
 #### Open a single file
