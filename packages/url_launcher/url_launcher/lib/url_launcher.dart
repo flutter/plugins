@@ -44,6 +44,9 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// [enableDomStorage] is an Android only setting. If true, WebView enable
 /// DOM storage.
 /// [headers] is an Android only setting that adds headers to the WebView.
+/// When not using a WebView, the header information is passed to the browser,
+/// some Android browsers do not support the [Browser.EXTRA_HEADERS](https://developer.android.com/reference/android/provider/Browser#EXTRA_HEADERS)
+/// intent extra and the header information will be lost.
 /// [webOnlyWindowName] is an Web only setting . _blank opens the new url in new tab ,
 /// _self opens the new url in current tab.
 /// Default behaviour is to open the url in new tab.
@@ -109,6 +112,11 @@ Future<bool> launch(
 
 /// Checks whether the specified URL can be handled by some app installed on the
 /// device.
+///
+/// On Android (from API 30), [canLaunch] will return `false` when the required
+/// visibility configuration is not provided in the AndroidManifest.xml file.
+/// For more information see the [Managing package visibility](https://developer.android.com/training/basics/intents/package-visibility)
+/// article in the Android docs.
 Future<bool> canLaunch(String urlString) async {
   if (urlString == null) {
     return false;

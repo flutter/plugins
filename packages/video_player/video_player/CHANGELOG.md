@@ -1,3 +1,34 @@
+## 0.11.1+2
+
+* Update android compileSdkVersion to 29.
+
+## 0.11.1+1
+
+* Fixed uncanceled timers when calling `play` on the controller multiple times before `pause`, which
+  caused value listeners to be called indefinitely (after `pause`) and more often than needed. 
+
+## 0.11.1
+
+* Enable TLSv1.1 & TLSv1.2 for API 19 and below.
+
+## 0.11.0
+
+* Added option to set the video playback speed on the video controller.
+* **Minor breaking change**: fixed `VideoPlayerValue.toString` to insert a comma after `isBuffering`.
+
+## 0.10.12+5
+
+* Depend on `video_player_platform_interface` version that contains the new `TestHostVideoPlayerApi`
+  in order for tests to pass using the latest dependency.
+
+## 0.10.12+4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.10.12+3
+
+* Avoiding uses or overrides a deprecated API in `VideoPlayerPlugin` class.
+
 ## 0.10.12+2
 
 * Fix `setMixWithOthers` test.
