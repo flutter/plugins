@@ -16,7 +16,7 @@ typedef FollowLink = Future<void> Function();
 /// the widget tree under it.
 typedef LinkWidgetBuilder = Widget Function(
   BuildContext context,
-  FollowLink followLink,
+  FollowLink? followLink,
 );
 
 /// Signature for a delegate function to build the [Link] widget.
@@ -31,7 +31,7 @@ final MethodCodec _codec = const JSONMethodCodec();
 class LinkTarget {
   /// Const private constructor with a [debugLabel] to allow the creation of
   /// multiple distinct const instances.
-  const LinkTarget._({this.debugLabel});
+  const LinkTarget._({required this.debugLabel});
 
   /// Used to distinguish multiple const instances of [LinkTarget].
   final String debugLabel;
@@ -64,7 +64,7 @@ abstract class LinkInfo {
   LinkWidgetBuilder get builder;
 
   /// The destination that this link leads to.
-  Uri get uri;
+  Uri? get uri;
 
   /// The target indicating where to open the link.
   LinkTarget get target;
@@ -80,10 +80,14 @@ Future<ByteData> pushRouteNameToFramework(
   String routeName, {
   @visibleForTesting bool debugForceRouter = false,
 }) {
+  final PlatformMessageCallback? onPlatformMessage = window.onPlatformMessage;
+  if (onPlatformMessage == null) {
+    return Future<ByteData>.value(null);
+  }
   final Completer<ByteData> completer = Completer<ByteData>();
   if (debugForceRouter || _hasRouter(context)) {
     SystemNavigator.routeInformationUpdated(location: routeName);
-    window.onPlatformMessage(
+    onPlatformMessage(
       'flutter/navigation',
       _codec.encodeMethodCall(
         MethodCall('pushRouteInformation', <dynamic, dynamic>{
@@ -94,7 +98,7 @@ Future<ByteData> pushRouteNameToFramework(
       completer.complete,
     );
   } else {
-    window.onPlatformMessage(
+    onPlatformMessage(
       'flutter/navigation',
       _codec.encodeMethodCall(MethodCall('pushRoute', routeName)),
       completer.complete,
