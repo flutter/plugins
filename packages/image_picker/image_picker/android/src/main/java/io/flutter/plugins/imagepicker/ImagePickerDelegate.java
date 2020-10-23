@@ -289,7 +289,7 @@ public class ImagePickerDelegate
     try {
       activity.startActivityForResult(intent, REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA);
     } catch (ActivityNotFoundException e) {
-      finishWithError("no_available_camera", "No cameras available for taking pictures.");
+4      finishWithError("no_available_camera", "No cameras available for taking pictures.");
     }
   }
 

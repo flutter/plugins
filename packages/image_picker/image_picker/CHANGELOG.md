@@ -1,3 +1,7 @@
+## 0.8.1+4
+
+* Fix using Camera as image source on Android 11+
+
 ## 0.8.1+3
 
 * Fix image picker causing a crash when the cache directory is deleted.
@@ -48,6 +52,7 @@ will no longer be able to access images or videos captured unless they are moved
 * Localize `UIAlertController` strings.
 
 ## 0.7.5+2
+
 * Implement `UIAlertController` with a preferredStyle of `UIAlertControllerStyleAlert` since `UIAlertView` is deprecated.
 
 ## 0.7.5+1
