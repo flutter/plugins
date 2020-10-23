@@ -38,7 +38,8 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
 
   @override
   Future<ConnectivityResult> checkConnectivity() async {
-    final String checkResult = await methodChannel.invokeMethod<String>('check')??'';
+    final String checkResult =
+        await methodChannel.invokeMethod<String>('check') ?? '';
     return parseConnectivityResult(checkResult);
   }
 
@@ -67,16 +68,18 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
     bool requestAlwaysLocationUsage = false,
   }) async {
-    final String requestLocationServiceResult = await methodChannel.invokeMethod<String>(
-        'requestLocationServiceAuthorization', <bool>[
-      requestAlwaysLocationUsage
-    ])??'';
+    final String requestLocationServiceResult = await methodChannel
+            .invokeMethod<String>('requestLocationServiceAuthorization',
+                <bool>[requestAlwaysLocationUsage]) ??
+        '';
     return parseLocationAuthorizationStatus(requestLocationServiceResult);
   }
 
   @override
   Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
-    final String getLocationServiceResult = await methodChannel.invokeMethod<String>('getLocationServiceAuthorization')??'';
+    final String getLocationServiceResult = await methodChannel
+            .invokeMethod<String>('getLocationServiceAuthorization') ??
+        '';
     return parseLocationAuthorizationStatus(getLocationServiceResult);
   }
 }
