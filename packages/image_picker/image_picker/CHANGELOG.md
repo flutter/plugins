@@ -1,26 +1,13 @@
-## NEXT
-
-* Move `ImagePickerFromLimitedGalleryUITests` to `RunnerUITests` target.
-
-## 0.8.2
-
-* Added new methods that return `package:cross_file` `XFile` instances. [Docs](https://pub.dev/documentation/cross_file/latest/index.html).
-* Deprecate methods that return `PickedFile` instances:
-  * `getImage`: use **`pickImage`** instead.
-  * `getVideo`: use **`pickVideo`** instead.
-  * `getMultiImage`: use **`pickMultiImage`** instead.
-  * `getLostData`: use **`retrieveLostData`** instead.
-
 ## 0.8.1+4
 
-* Fixes an issue where `preferredCameraDevice` option is not working for `getVideo` method.
-* Refactor unit tests that were device-only before.
+* Fix using Camera as image source on Android 11+
 
 ## 0.8.1+3
 
 * Fix image picker causing a crash when the cache directory is deleted.
 
 ## 0.8.1+2
+
 * Update the example app to support the multi-image feature.
 
 ## 0.8.1+1
@@ -65,6 +52,7 @@ will no longer be able to access images or videos captured unless they are moved
 * Localize `UIAlertController` strings.
 
 ## 0.7.5+2
+
 * Implement `UIAlertController` with a preferredStyle of `UIAlertControllerStyleAlert` since `UIAlertView` is deprecated.
 
 ## 0.7.5+1
