@@ -39,7 +39,7 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
   }
 
   /// The delegate used by the Link widget to build itself.
-  LinkDelegate get linkDelegate;
+  LinkDelegate? get linkDelegate;
 
   /// Returns `true` if this platform is able to launch [url].
   Future<bool> canLaunch(String url) {
