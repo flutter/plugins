@@ -80,13 +80,14 @@ Future<ByteData> pushRouteNameToFramework(
   String routeName, {
   @visibleForTesting bool debugForceRouter = false,
 }) {
-  if (window.onPlatformMessage == null) {
+  final PlatformMessageCallback? onPlatformMessage = window.onPlatformMessage;
+  if (onPlatformMessage == null) {
     return Future<ByteData>.value(null);
   }
   final Completer<ByteData> completer = Completer<ByteData>();
   if (debugForceRouter || _hasRouter(context)) {
     SystemNavigator.routeInformationUpdated(location: routeName);
-    window.onPlatformMessage!(
+    onPlatformMessage(
       'flutter/navigation',
       _codec.encodeMethodCall(
         MethodCall('pushRouteInformation', <dynamic, dynamic>{
@@ -97,7 +98,7 @@ Future<ByteData> pushRouteNameToFramework(
       completer.complete,
     );
   } else {
-    window.onPlatformMessage!(
+    onPlatformMessage(
       'flutter/navigation',
       _codec.encodeMethodCall(MethodCall('pushRoute', routeName)),
       completer.complete,

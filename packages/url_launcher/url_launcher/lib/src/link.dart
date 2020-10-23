@@ -53,10 +53,9 @@ class Link extends StatelessWidget implements LinkInfo {
   Link({
     Key? key,
     required this.uri,
-    LinkTarget? target,
+    this.target = LinkTarget.defaultTarget,
     required this.builder,
-  })   : target = target ?? LinkTarget.defaultTarget,
-        super(key: key);
+  }) : super(key: key);
 
   LinkDelegate get _effectiveDelegate {
     return UrlLauncherPlatform.instance.linkDelegate ??
@@ -94,7 +93,7 @@ class DefaultLinkDelegate extends StatelessWidget {
   }
 
   Future<void> _followLink(BuildContext context) async {
-    if (link.uri == null || !link.uri!.hasScheme) {
+    if (!link.uri!.hasScheme) {
       // A uri that doesn't have a scheme is an internal route name. In this
       // case, we push it via Flutter's navigation system instead of letting the
       // browser handle it.
