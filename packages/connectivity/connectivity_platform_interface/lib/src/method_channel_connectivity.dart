@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 import 'utils.dart';
+import 'utils.dart';
 
 /// An implementation of [ConnectivityPlatform] that uses method channels.
 class MethodChannelConnectivity extends ConnectivityPlatform {
@@ -27,19 +28,18 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
   /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic result) => result.toString())
-          .map(parseConnectivityResult);
+      _onConnectivityChanged =
+          eventChannel.receiveBroadcastStream().map((dynamic result) {
+        return result != null ? result.toString() : '';
+      }).map(parseConnectivityResult);
     }
     return _onConnectivityChanged!;
   }
 
   @override
-  Future<ConnectivityResult> checkConnectivity() {
-    return methodChannel
-        .invokeMethod<String>('check')
-        .then(parseConnectivityResult);
+  Future<ConnectivityResult> checkConnectivity() async {
+    final String checkResult = await methodChannel.invokeMethod<String>('check')??'';
+    return parseConnectivityResult(checkResult);
   }
 
   @override
@@ -66,17 +66,17 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
   @override
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
     bool requestAlwaysLocationUsage = false,
-  }) {
-    return methodChannel.invokeMethod<String>(
+  }) async {
+    final String requestLocationServiceResult = await methodChannel.invokeMethod<String>(
         'requestLocationServiceAuthorization', <bool>[
       requestAlwaysLocationUsage
-    ]).then(parseLocationAuthorizationStatus);
+    ])??'';
+    return parseLocationAuthorizationStatus(requestLocationServiceResult);
   }
 
   @override
-  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
-    return methodChannel
-        .invokeMethod<String>('getLocationServiceAuthorization')
-        .then(parseLocationAuthorizationStatus);
+  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
+    final String getLocationServiceResult = await methodChannel.invokeMethod<String>('getLocationServiceAuthorization')??'';
+    return parseLocationAuthorizationStatus(getLocationServiceResult);
   }
 }
