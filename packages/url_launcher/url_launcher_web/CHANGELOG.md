@@ -1,3 +1,7 @@
+# 0.1.5
+
+- Added the web implementation of the Link widget.
+
 # 0.1.4+2
 
 - Move `lib/third_party` to `lib/src/third_party`.
@@ -29,7 +33,7 @@
 
 # 0.1.2
 
-- Adds "tel" and "sms" support 
+- Adds "tel" and "sms" support
 
 # 0.1.1+6
 

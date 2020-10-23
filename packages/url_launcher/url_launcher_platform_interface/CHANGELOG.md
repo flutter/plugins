@@ -2,6 +2,10 @@
 
 * Migrate to null safety.
 
+## 1.0.9
+
+* Laid the groundwork for introducing a Link widget.
+
 ## 1.0.8
 
 * Added webOnlyWindowName parameter

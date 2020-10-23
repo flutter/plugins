@@ -1,3 +1,23 @@
+## 6.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 5.7.8
+
+* Fixed a situation where an app would crash if the url_launcher’s `launch` method can’t find an app to open the provided url. It will now throw a clear Dart PlatformException.
+
+## 5.7.7
+
+* Introduce the Link widget with an implementation for native platforms.
+
+## 5.7.6
+
+* Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android of the `FlutterWebChromeClient` class.
+
+## 5.7.5
+
+* Improved documentation of the `headers` parameter.
+
 ## 5.7.4
 
 * Update android compileSdkVersion to 29.
