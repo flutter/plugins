@@ -48,14 +48,14 @@ class _SaveTestState extends State<SaveTest> {
   void _saveFile() async {
     final path = await getSavePath();
 
-    final data = Uint8List.fromList(_fileController.text.codeUnits);
+    final data = Uint8List.fromList("Hola que haces".codeUnits);
 
     final new_file = (_nameController.text == '')
         ? XFile.fromData(data, mimeType: 'text/plain')
         : XFile.fromData(data,
             mimeType: 'text/plain', name: _nameController.text);
 
-    new_file.saveTo(path);
+    await new_file.saveTo(path);
   }
 
   @override
