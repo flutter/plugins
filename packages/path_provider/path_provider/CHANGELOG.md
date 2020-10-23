@@ -1,3 +1,7 @@
+## 1.6.22
+
+* Switch to guava-android dependency instead of full guava.
+
 ## 1.6.21
 
 * Update android compileSdkVersion to 29.
