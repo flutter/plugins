@@ -379,7 +379,8 @@ public class Camera {
             closeCaptureSession();
             if(mediaRecorder != null) {
                 mediaRecorder.stop();
-                mediaRecorder.reset();
+                mediaRecorder.release();
+                mediaRecorder = null;
             }
 //      startPreview();
             String manufacturer = android.os.Build.MANUFACTURER;
