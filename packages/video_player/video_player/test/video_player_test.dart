@@ -541,6 +541,7 @@ void main() {
       final List<DurationRange> buffered = <DurationRange>[
         DurationRange(const Duration(seconds: 0), const Duration(seconds: 4))
       ];
+      const bool isInitialized = true;
       const bool isPlaying = true;
       const bool isLooping = true;
       const bool isBuffering = true;
@@ -553,6 +554,7 @@ void main() {
         position: position,
         caption: caption,
         buffered: buffered,
+        isInitialized: isInitialized,
         isPlaying: isPlaying,
         isLooping: isLooping,
         isBuffering: isBuffering,
