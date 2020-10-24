@@ -377,8 +377,10 @@ public class Camera {
         try {
             recordingVideo = false;
             closeCaptureSession();
-            mediaRecorder.stop();
-            mediaRecorder.reset();
+            if(mediaRecorder != null) {
+                mediaRecorder.stop();
+                mediaRecorder.reset();
+            }
 //      startPreview();
             String manufacturer = android.os.Build.MANUFACTURER;
             if (manufacturer.equals("samsung")) {
