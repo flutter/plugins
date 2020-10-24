@@ -509,7 +509,7 @@ void main() {
       expect(uninitialized.size, equals(Size.zero));
       expect(uninitialized.isInitialized, isFalse);
       expect(uninitialized.hasError, isFalse);
-      expect(uninitialized.aspectRatio, 0.0);
+      expect(uninitialized.aspectRatio, 1.0);
     });
 
     test('erroneous()', () {
@@ -529,7 +529,7 @@ void main() {
       expect(error.size, equals(Size.zero));
       expect(error.isInitialized, isFalse);
       expect(error.hasError, isTrue);
-      expect(error.aspectRatio, 0.0);
+      expect(error.aspectRatio, 1.0);
     });
 
     test('toString()', () {
