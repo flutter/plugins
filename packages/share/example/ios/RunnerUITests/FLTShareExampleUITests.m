@@ -26,7 +26,8 @@ static const NSInteger kSecondsToWaitWhenFindingElements = 30;
                                    predicateWithFormat:@"label == %@", @"Share With Empty Origin"]];
   if (![shareWithEmptyOriginButton waitForExistenceWithTimeout:kSecondsToWaitWhenFindingElements]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
-    XCTFail(@"Failed due to not able to find shareWithEmptyOriginButton with %@ seconds", @(kSecondsToWaitWhenFindingElements));
+    XCTFail(@"Failed due to not able to find shareWithEmptyOriginButton with %@ seconds",
+            @(kSecondsToWaitWhenFindingElements));
   }
 
   XCTAssertNotNil(shareWithEmptyOriginButton);
@@ -38,7 +39,8 @@ static const NSInteger kSecondsToWaitWhenFindingElements = 30;
                                    predicateWithFormat:@"identifier == %@", @"ActivityListView"]];
   if (![activityListView waitForExistenceWithTimeout:kSecondsToWaitWhenFindingElements]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
-    XCTFail(@"Failed due to not able to find activityListView with %@ seconds", @(kSecondsToWaitWhenFindingElements));
+    XCTFail(@"Failed due to not able to find activityListView with %@ seconds",
+            @(kSecondsToWaitWhenFindingElements));
   }
   XCTAssertNotNil(activityListView);
 }
