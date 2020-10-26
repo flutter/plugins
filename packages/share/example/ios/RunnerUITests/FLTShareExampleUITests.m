@@ -4,6 +4,8 @@
 
 #import <XCTest/XCTest.h>
 
+static const NSInteger kSecondsToWaitWhenFindingElements = 30;
+
 @interface FLTShareExampleUITests : XCTestCase
 
 @end
@@ -21,9 +23,9 @@
   XCUIElement* shareWithEmptyOriginButton = [app.buttons
       elementMatchingPredicate:[NSPredicate
                                    predicateWithFormat:@"label == %@", @"Share With Empty Origin"]];
-  if (![shareWithEmptyOriginButton waitForExistenceWithTimeout:30]) {
+  if (![shareWithEmptyOriginButton waitForExistenceWithTimeout:kSecondsToWaitWhenFindingElements]) {
     NSLog(@"%@", app.debugDescription);
-    XCTFail(@"Failed due to not able to find shareWithEmptyOriginButton with %@ seconds", @(30));
+    XCTFail(@"Failed due to not able to find shareWithEmptyOriginButton with %@ seconds", @(kSecondsToWaitWhenFindingElements));
   }
 
   XCTAssertNotNil(shareWithEmptyOriginButton);
@@ -33,9 +35,9 @@
   XCUIElement* activityListView = [app.otherElements
       elementMatchingPredicate:[NSPredicate
                                    predicateWithFormat:@"identifier == %@", @"ActivityListView"]];
-  if (![activityListView waitForExistenceWithTimeout:30]) {
+  if (![activityListView waitForExistenceWithTimeout:kSecondsToWaitWhenFindingElements]) {
     NSLog(@"%@", app.debugDescription);
-    XCTFail(@"Failed due to not able to find activityListView with %@ seconds", @(30));
+    XCTFail(@"Failed due to not able to find activityListView with %@ seconds", @(kSecondsToWaitWhenFindingElements));
   }
   XCTAssertNotNil(activityListView);
 }
