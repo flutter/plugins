@@ -1,7 +1,7 @@
 name: google_maps_flutter_web
 description: Web platform implementation of google_maps_flutter
 homepage: https://github.com/flutter/plugins/tree/master/packages/google_maps_flutter
-version: 0.1.0+4
+version: 0.1.0+5
 
 flutter:
   plugin:
@@ -17,7 +17,7 @@ dependencies:
     sdk: flutter
   meta: ^1.1.7
   google_maps_flutter_platform_interface: ^1.0.4
-  google_maps: ^3.0.0
+  google_maps: ^3.4.5
   stream_transform: ^1.2.0
   sanitize_html: ^1.4.1
 
