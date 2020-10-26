@@ -32,9 +32,9 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class GoogleMapsPlugin
     implements Application.ActivityLifecycleCallbacks,
-    FlutterPlugin,
-    ActivityAware,
-    DefaultLifecycleObserver {
+        FlutterPlugin,
+        ActivityAware,
+        DefaultLifecycleObserver {
   private final AtomicReference<State> state = new AtomicReference<>(INITIALIZED);
   private int registrarActivityHashCode;
   private FlutterPluginBinding pluginBinding;
