@@ -1,3 +1,15 @@
+## 1.6.22
+
+* Switch to guava-android dependency instead of full guava.
+
+## 1.6.21
+
+* Update android compileSdkVersion to 29.
+
+## 1.6.20
+
+* Check in linux/ directory for example/
+
 ## 1.6.19
 
 * Android implementation does path queries in the background thread rather than UI thread.

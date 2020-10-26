@@ -92,6 +92,11 @@ final class MethodCallHandlerImpl implements MethodCallHandler {
 
     if (launchStatus == LaunchStatus.NO_ACTIVITY) {
       result.error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);
+    } else if (launchStatus == LaunchStatus.ACTIVITY_NOT_FOUND) {
+      result.error(
+          "ACTIVITY_NOT_FOUND",
+          String.format("No Activity found to handle intent { %s }", url),
+          null);
     } else {
       result.success(true);
     }
