@@ -15,7 +15,7 @@ dependencies:
   flutter_test:
     sdk: flutter
   path: ^1.6.4
-  test_core: 0.3.12-nullsafety.6
+  test_core: 0.3.12-nullsafety.7
   vm_service: ^4.2.0
 
 dev_dependencies:
