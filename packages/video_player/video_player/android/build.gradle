@@ -1,6 +1,5 @@
 group 'io.flutter.plugins.videoplayer'
 version '1.0-SNAPSHOT'
-def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
 
 buildscript {
     repositories {
@@ -9,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.5.0'
     }
 }
 
@@ -18,10 +17,6 @@ rootProject.allprojects {
         google()
         jcenter()
     }
-}
-
-project.getTasks().withType(JavaCompile){
-    options.compilerArgs.addAll(args)
 }
 
 apply plugin: 'com.android.library'
@@ -44,9 +39,9 @@ android {
     }
 
     dependencies {
-        implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.6'
+        implementation 'com.google.android.exoplayer:exoplayer-core:2.12.1'
+        implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.1'
+        implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.1'
+        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.12.1'
     }
 }
