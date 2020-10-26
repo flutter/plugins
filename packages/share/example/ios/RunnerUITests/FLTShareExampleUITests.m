@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
+#import <os/log.h>
 
 static const NSInteger kSecondsToWaitWhenFindingElements = 30;
 
@@ -24,7 +25,7 @@ static const NSInteger kSecondsToWaitWhenFindingElements = 30;
       elementMatchingPredicate:[NSPredicate
                                    predicateWithFormat:@"label == %@", @"Share With Empty Origin"]];
   if (![shareWithEmptyOriginButton waitForExistenceWithTimeout:kSecondsToWaitWhenFindingElements]) {
-    NSLog(@"%@", app.debugDescription);
+    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find shareWithEmptyOriginButton with %@ seconds", @(kSecondsToWaitWhenFindingElements));
   }
 
@@ -36,7 +37,7 @@ static const NSInteger kSecondsToWaitWhenFindingElements = 30;
       elementMatchingPredicate:[NSPredicate
                                    predicateWithFormat:@"identifier == %@", @"ActivityListView"]];
   if (![activityListView waitForExistenceWithTimeout:kSecondsToWaitWhenFindingElements]) {
-    NSLog(@"%@", app.debugDescription);
+    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find activityListView with %@ seconds", @(kSecondsToWaitWhenFindingElements));
   }
   XCTAssertNotNil(activityListView);
