@@ -39,14 +39,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
       @Nullable Lifecycle lifecycle,
       @Nullable PluginRegistry.Registrar registrar) {
     final GoogleMapController controller =
-        new GoogleMapController(
-            id,
-            context,
-            binaryMessenger,
-            application,
-            lifecycle,
-            registrar,
-            options);
+        new GoogleMapController(id, context, binaryMessenger, application, lifecycle, registrar, options);
     controller.init(lifecycleState);
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
