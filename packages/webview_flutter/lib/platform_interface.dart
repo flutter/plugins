@@ -182,6 +182,41 @@ abstract class WebViewPlatformController {
         "WebView loadUrl is not implemented on the current platform");
   }
 
+  /// Loads the specified content data into the WebView.
+  ///
+  /// The string `data` will be interpreted as a UTF-8 string.
+  ///
+  /// `baseUrl` is the apparent URL which the page was loaded at, used to resolve
+  /// relative paths.
+  ///
+  /// Throws an ArgumentError if `baseUrl` is not a valid URL string.
+  Future<void> loadData(
+    String data,
+    String baseUrl,
+    String mimeType,
+  ) {
+    throw UnimplementedError(
+        "WebView loadData is not implemented on the current platform");
+  }
+
+  /// Loads the specified content data into the WebView.
+  ///
+  /// The string `data` will be interpreted as a Base64 encoded string. Note
+  /// that any trailing padding = or == characters MUST be present for full device
+  /// compatibility.
+  ///
+  /// This function has no `baseUrl` argument because of a limitation of the Android
+  /// WebView API.
+  ///
+  /// Throws an ArgumentError if `baseUrl` is not a valid URL string.
+  Future<void> loadDataBase64(
+    String data,
+    String mimeType,
+  ) {
+    throw UnimplementedError(
+        "WebView loadDataBase64 is not implemented on the current platform");
+  }
+
   /// Updates the webview settings.
   ///
   /// Any non null field in `settings` will be set as the new setting value.

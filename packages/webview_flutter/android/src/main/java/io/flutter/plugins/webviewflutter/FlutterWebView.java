@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
+  private static final String TAG = "FlutterWebView";
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
   private final InputAwareWebView webView;
   private final MethodChannel methodChannel;
@@ -174,6 +175,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "loadUrl":
         loadUrl(methodCall, result);
         break;
+      case "loadData":
+        loadData(methodCall, result);
+        break;
+      case "loadDataBase64":
+        loadDataBase64(methodCall, result);
+        break;
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
@@ -236,6 +243,31 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       headers = Collections.emptyMap();
     }
     webView.loadUrl(url, headers);
+    result.success(null);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void loadData(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    String baseUrl = (String) request.get("baseUrl");
+    String data = (String) request.get("data");
+    String mimeType = (String) request.get("mimeType");
+
+    final String encoding = "UTF-8";
+    webView.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, null);
+    result.success(null);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void loadDataBase64(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    String data = (String) request.get("data");
+    String mimeType = (String) request.get("mimeType");
+
+    // Theoretically, we should be able to use WebView#loadDataWithBaseURL here, but
+    // support for base64 seems to be broken.
+    String url = "data:" + mimeType + ";base64," + data;
+    webView.loadUrl(url);
     result.success(null);
   }
 

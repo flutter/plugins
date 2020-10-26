@@ -609,6 +609,45 @@ class WebViewController {
     return _webViewPlatformController.loadUrl(url, headers);
   }
 
+  /// Loads the specified content data into the WebView.
+  ///
+  /// The string `data` will be interpreted as a UTF-8 string.
+  ///
+  /// `baseUrl` is the apparent URL which the page was loaded at, used to resolve
+  /// relative paths.
+  ///
+  /// Throws an ArgumentError if `baseUrl` is not a valid URL string.
+  Future<void> loadData(
+    String data, {
+    @required String baseUrl,
+    @required String mimeType,
+  }) async {
+    assert(data != null);
+    assert(baseUrl != null);
+    assert(mimeType != null);
+    _validateUrlString(baseUrl);
+    return _webViewPlatformController.loadData(data, baseUrl, mimeType);
+  }
+
+  /// Loads the specified content data into the WebView.
+  ///
+  /// The string `data` will be interpreted as a Base64 encoded string. Note
+  /// that any trailing padding = or == characters MUST be present for full device
+  /// compatibility.
+  ///
+  /// This function has no `baseUrl` argument because of a limitation of the Android
+  /// WebView API.
+  ///
+  /// Throws an ArgumentError if `baseUrl` is not a valid URL string.
+  Future<void> loadDataBase64(
+    String data, {
+    @required String mimeType,
+  }) async {
+    assert(data != null);
+    assert(mimeType != null);
+    return _webViewPlatformController.loadDataBase64(data, mimeType);
+  }
+
   /// Accessor to the current URL that the WebView is displaying.
   ///
   /// If [WebView.initialUrl] was never specified, returns `null`.

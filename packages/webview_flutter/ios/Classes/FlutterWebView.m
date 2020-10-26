@@ -128,6 +128,10 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"loadData"]) {
+    [self onLoadData:call result:result];
+  } else if ([[call method] isEqualToString:@"loadDataBase64"]) {
+    [self onLoadDataBase64:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -181,6 +185,96 @@
   } else {
     result(nil);
   }
+}
+
+- (void)onLoadData:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSDictionary<NSString*, id>* arguments = [call arguments];
+  if (!arguments) {
+    result([FlutterError errorWithCode:@"loadData_failed"
+                               message:@"No arguments passed to method"
+                               details:nil]);
+    return;
+  }
+
+  NSString* const encoding = @"UTF-8";
+  NSString* mimeType = arguments[@"mimeType"];
+  NSString* baseUrl = arguments[@"baseUrl"];
+  NSString* dataStr = arguments[@"data"];
+
+  if (![mimeType isKindOfClass:[NSString class]]) {
+    result([FlutterError errorWithCode:@"loadData_failed"
+                               message:@"Argument type of mimeType is not string"
+                               details:nil]);
+    return;
+  }
+
+  if (![baseUrl isKindOfClass:[NSString class]]) {
+    result([FlutterError errorWithCode:@"loadData_failed"
+                               message:@"Argument type of baseUrl is not string"
+                               details:nil]);
+    return;
+  }
+
+  NSURL* nsUrl = [NSURL URLWithString:baseUrl];
+  if (!nsUrl) {
+    result([FlutterError errorWithCode:@"loadData_failed"
+                               message:@"Argument type of baseUrl is not a valid URL"
+                               details:[NSString stringWithFormat:@"URL was: '%@'", baseUrl]]);
+    return;
+  }
+
+  if (![dataStr isKindOfClass:[NSString class]]) {
+    result([FlutterError errorWithCode:@"loadData_failed"
+                               message:@"Argument type of data is not string"
+                               details:nil]);
+    return;
+  }
+
+  NSData* data = [dataStr dataUsingEncoding:NSUTF8StringEncoding];
+  if (@available(iOS 9.0, *)) {
+    [_webView loadData:data MIMEType:mimeType characterEncodingName:encoding baseURL:nsUrl];
+  } else {
+    NSLog(@"Setting data is not supported for Flutter WebViews prior to iOS 9.");
+  }
+
+  result(nil);
+}
+
+- (void)onLoadDataBase64:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSDictionary<NSString*, id>* arguments = [call arguments];
+  if (!arguments) {
+    result([FlutterError errorWithCode:@"loadDataBase64_failed"
+                               message:@"No arguments passed to method"
+                               details:nil]);
+    return;
+  }
+
+  NSString* const encoding = @"UTF-8";
+  NSString* mimeType = arguments[@"mimeType"];
+  NSString* dataStr = arguments[@"data"];
+
+  if (![mimeType isKindOfClass:[NSString class]]) {
+    result([FlutterError errorWithCode:@"loadDataBase64_failed"
+                               message:@"Argument type of mimeType is not string"
+                               details:nil]);
+    return;
+  }
+
+  if (![dataStr isKindOfClass:[NSString class]]) {
+    result([FlutterError errorWithCode:@"loadDataBase64_failed"
+                               message:@"Argument type of data is not string"
+                               details:nil]);
+    return;
+  }
+
+  NSData* data = [[NSData alloc] initWithBase64EncodedString:dataStr options:0];
+  if (@available(iOS 9.0, *)) {
+    [_webView loadData:data MIMEType:mimeType characterEncodingName:encoding baseURL:nil];
+  } else {
+    NSLog(@"Setting data is not supported for Flutter WebViews prior to iOS 9.");
+  }
+
+  result(nil);
 }
 
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
