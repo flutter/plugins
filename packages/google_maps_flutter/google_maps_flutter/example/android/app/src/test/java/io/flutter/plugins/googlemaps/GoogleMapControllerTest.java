@@ -5,11 +5,11 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Application;
 import android.content.Context;
+import androidx.lifecycle.Lifecycle.State;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.test.core.app.ApplicationProvider;
 import com.google.android.gms.maps.GoogleMap;
 import io.flutter.plugin.common.BinaryMessenger;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,9 +34,8 @@ public class GoogleMapControllerTest {
     context = ApplicationProvider.getApplicationContext();
     application = ApplicationProvider.getApplicationContext();
     googleMapController =
-        new GoogleMapController(
-            0, context, new AtomicInteger(1), mockMessenger, application, null, null, 0, null);
-    googleMapController.init();
+        new GoogleMapController(0, context, mockMessenger, application, null, null, null);
+    googleMapController.init(State.CREATED);
   }
 
   @Test

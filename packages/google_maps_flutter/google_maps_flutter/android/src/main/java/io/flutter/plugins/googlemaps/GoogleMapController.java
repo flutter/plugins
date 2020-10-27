@@ -4,13 +4,6 @@
 
 package io.flutter.plugins.googlemaps;
 
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.CREATED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.DESTROYED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.PAUSED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.RESUMED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -26,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
 import androidx.lifecycle.LifecycleOwner;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
@@ -53,7 +47,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
@@ -68,7 +61,6 @@ final class GoogleMapController
 
   private static final String TAG = "GoogleMapController";
   private final int id;
-  private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
   private final GoogleMapOptions options;
   @Nullable private MapView mapView;
@@ -83,13 +75,12 @@ final class GoogleMapController
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
-  private final int
-      activityHashCode; // Do not use directly, use getActivityHashCode() instead to get correct hashCode for both v1 and v2 embedding.
-  private final Lifecycle lifecycle;
+  @Nullable private final Lifecycle lifecycle;
   private final Context context;
-  private final Application
-      mApplication; // Do not use direclty, use getApplication() instead to get correct application object for both v1 and v2 embedding.
-  private final PluginRegistry.Registrar registrar; // For v1 embedding only.
+  // Do not use directly, use getApplication() instead to get correct application object for both v1
+  // and v2 embedding.
+  @Nullable private final Application mApplication;
+  @Nullable private final PluginRegistry.Registrar registrar; // For v1 embedding only.
   private final MarkersController markersController;
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
@@ -102,16 +93,13 @@ final class GoogleMapController
   GoogleMapController(
       int id,
       Context context,
-      AtomicInteger activityState,
       BinaryMessenger binaryMessenger,
-      Application application,
-      Lifecycle lifecycle,
-      PluginRegistry.Registrar registrar,
-      int registrarActivityHashCode,
+      @Nullable Application application,
+      @Nullable Lifecycle lifecycle,
+      @Nullable PluginRegistry.Registrar registrar,
       GoogleMapOptions options) {
     this.id = id;
     this.context = context;
-    this.activityState = activityState;
     this.options = options;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;
@@ -120,7 +108,6 @@ final class GoogleMapController
     mApplication = application;
     this.lifecycle = lifecycle;
     this.registrar = registrar;
-    this.activityHashCode = registrarActivityHashCode;
     this.markersController = new MarkersController(methodChannel);
     this.polygonsController = new PolygonsController(methodChannel, density);
     this.polylinesController = new PolylinesController(methodChannel, density);
@@ -132,21 +119,8 @@ final class GoogleMapController
     return mapView;
   }
 
-  void init() {
-    switch (activityState.get()) {
-      case STOPPED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        mapView.onPause();
-        mapView.onStop();
-        break;
-      case PAUSED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        mapView.onPause();
-        break;
+  void init(State lifecycleState) {
+    switch (lifecycleState) {
       case RESUMED:
         mapView.onCreate(null);
         mapView.onStart();
@@ -160,11 +134,9 @@ final class GoogleMapController
         mapView.onCreate(null);
         break;
       case DESTROYED:
-        // Nothing to do, the activity has been completely destroyed.
+      case INITIALIZED:
+        // Nothing to do, the activity has been completely destroyed or not yet created.
         break;
-      default:
-        throw new IllegalArgumentException(
-            "Cannot interpret " + activityState.get() + " as an activity state");
     }
     if (lifecycle != null) {
       lifecycle.addObserver(this);
@@ -556,14 +528,14 @@ final class GoogleMapController
   // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionLocked() {
     // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
-  };
+  }
 
   // @Override
   // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
   // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionUnlocked() {
     // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
-  };
+  }
 
   // Application.ActivityLifecycleCallbacks methods
   @Override
@@ -880,7 +852,9 @@ final class GoogleMapController
     if (registrar != null && registrar.activity() != null) {
       return registrar.activity().hashCode();
     } else {
-      return activityHashCode;
+      // TODO(cyanglaz): Remove `getActivityHashCode()` and use a cached hashCode when creating the view for V1 embedding.
+      // https://github.com/flutter/flutter/issues/69128
+      return -1;
     }
   }
 
@@ -916,16 +890,3 @@ final class GoogleMapController
     this.buildingsEnabled = buildingsEnabled;
   }
 }
-
-interface GoogleMapListener
-    extends GoogleMap.OnCameraIdleListener,
-        GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnCameraMoveStartedListener,
-        GoogleMap.OnInfoWindowClickListener,
-        GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnPolygonClickListener,
-        GoogleMap.OnPolylineClickListener,
-        GoogleMap.OnCircleClickListener,
-        GoogleMap.OnMapClickListener,
-        GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMarkerDragListener {}

@@ -4,18 +4,25 @@
 
 package io.flutter.plugins.googlemaps;
 
+import static androidx.lifecycle.Lifecycle.State.CREATED;
+import static androidx.lifecycle.Lifecycle.State.DESTROYED;
+import static androidx.lifecycle.Lifecycle.State.INITIALIZED;
+import static androidx.lifecycle.Lifecycle.State.RESUMED;
+import static androidx.lifecycle.Lifecycle.State.STARTED;
+
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
 import androidx.lifecycle.LifecycleOwner;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Plugin for controlling a set of GoogleMap views to be shown as overlays on top of the Flutter
@@ -28,13 +35,7 @@ public class GoogleMapsPlugin
         FlutterPlugin,
         ActivityAware,
         DefaultLifecycleObserver {
-  static final int CREATED = 1;
-  static final int STARTED = 2;
-  static final int RESUMED = 3;
-  static final int PAUSED = 4;
-  static final int STOPPED = 5;
-  static final int DESTROYED = 6;
-  private final AtomicInteger state = new AtomicInteger(0);
+  private final AtomicReference<State> state = new AtomicReference<>(INITIALIZED);
   private int registrarActivityHashCode;
   private FlutterPluginBinding pluginBinding;
   private Lifecycle lifecycle;
@@ -54,10 +55,14 @@ public class GoogleMapsPlugin
         .platformViewRegistry()
         .registerViewFactory(
             VIEW_TYPE,
-            new GoogleMapFactory(plugin.state, registrar.messenger(), null, null, registrar, -1));
+            new GoogleMapFactory(plugin.state, registrar.messenger(), null, null, registrar));
   }
 
   public GoogleMapsPlugin() {}
+
+  private GoogleMapsPlugin(Activity activity) {
+    this.registrarActivityHashCode = activity.hashCode();
+  }
 
   // FlutterPlugin
 
@@ -86,13 +91,13 @@ public class GoogleMapsPlugin
                 pluginBinding.getBinaryMessenger(),
                 binding.getActivity().getApplication(),
                 lifecycle,
-                null,
-                binding.getActivity().hashCode()));
+                null));
   }
 
   @Override
   public void onDetachedFromActivity() {
     lifecycle.removeObserver(this);
+    lifecycle = null;
   }
 
   @Override
@@ -125,12 +130,12 @@ public class GoogleMapsPlugin
 
   @Override
   public void onPause(@NonNull LifecycleOwner owner) {
-    state.set(PAUSED);
+    state.set(STARTED);
   }
 
   @Override
   public void onStop(@NonNull LifecycleOwner owner) {
-    state.set(STOPPED);
+    state.set(CREATED);
   }
 
   @Override
@@ -169,7 +174,7 @@ public class GoogleMapsPlugin
     if (activity.hashCode() != registrarActivityHashCode) {
       return;
     }
-    state.set(PAUSED);
+    state.set(STARTED);
   }
 
   @Override
@@ -177,7 +182,7 @@ public class GoogleMapsPlugin
     if (activity.hashCode() != registrarActivityHashCode) {
       return;
     }
-    state.set(STOPPED);
+    state.set(CREATED);
   }
 
   @Override
@@ -190,9 +195,5 @@ public class GoogleMapsPlugin
     }
     activity.getApplication().unregisterActivityLifecycleCallbacks(this);
     state.set(DESTROYED);
-  }
-
-  private GoogleMapsPlugin(Activity activity) {
-    this.registrarActivityHashCode = activity.hashCode();
   }
 }
