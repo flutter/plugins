@@ -1,6 +1,14 @@
-## 1.6.21
+## 1.6.23
 
 * Check in windows/ directory for example/
+
+## 1.6.22
+
+* Switch to guava-android dependency instead of full guava.
+
+## 1.6.21
+
+* Update android compileSdkVersion to 29.
 
 ## 1.6.20
 

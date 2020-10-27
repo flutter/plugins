@@ -1,24 +1,24 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FLTConnectivityLocationHandler.h"
+#import "FLTWifiInfoLocationHandler.h"
 
-@interface FLTConnectivityLocationHandler () <CLLocationManagerDelegate>
+@interface FLTWifiInfoLocationHandler () <CLLocationManagerDelegate>
 
-@property(copy, nonatomic) FLTConnectivityLocationCompletion completion;
+@property(copy, nonatomic) FLTWifiInfoLocationCompletion completion;
 @property(strong, nonatomic) CLLocationManager *locationManager;
 
 @end
 
-@implementation FLTConnectivityLocationHandler
+@implementation FLTWifiInfoLocationHandler
 
 + (CLAuthorizationStatus)locationAuthorizationStatus {
   return CLLocationManager.authorizationStatus;
 }
 
 - (void)requestLocationAuthorization:(BOOL)always
-                          completion:(FLTConnectivityLocationCompletion)completionHandler {
+                          completion:(FLTWifiInfoLocationCompletion)completionHandler {
   CLAuthorizationStatus status = CLLocationManager.authorizationStatus;
   if (status != kCLAuthorizationStatusAuthorizedWhenInUse && always) {
     completionHandler(kCLAuthorizationStatusDenied);

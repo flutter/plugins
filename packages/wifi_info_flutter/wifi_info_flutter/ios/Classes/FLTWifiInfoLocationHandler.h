@@ -1,21 +1,22 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class FLTConnectivityLocationDelegate;
+@class FLTWifiInfoLocationDelegate;
 
-typedef void (^FLTConnectivityLocationCompletion)(CLAuthorizationStatus);
+typedef void (^FLTWifiInfoLocationCompletion)(CLAuthorizationStatus);
 
-@interface FLTConnectivityLocationHandler : NSObject
+@interface FLTWifiInfoLocationHandler : NSObject
 
 + (CLAuthorizationStatus)locationAuthorizationStatus;
 
 - (void)requestLocationAuthorization:(BOOL)always
-                          completion:(_Nonnull FLTConnectivityLocationCompletion)completionHnadler;
+                          completion:(_Nonnull FLTWifiInfoLocationCompletion)completionHnadler;
 
 @end
 

@@ -41,6 +41,27 @@ Change the minimum Android sdk version to 21 (or higher) in your `android/app/bu
 minSdkVersion 21
 ```
 
+### Handling Lifecycle states
+
+As of version [0.5.0](https://github.com/flutter/plugins/blob/master/packages/camera/CHANGELOG.md#050) of the camera plugin, lifecycle changes are no longer handled by the plugin. This means developers are now responsible to control camera resources when the lifecycle state is updated. Failure to do so might lead to unexpected behavior (for example as described in issue [#39109](https://github.com/flutter/flutter/issues/39109)). Handling lifecycle changes can be done by overriding the `didChangeAppLifecycleState` method like so:
+
+```dart
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // App state changed before we got the chance to initialize.
+    if (controller == null || !controller.value.isInitialized) {
+      return;
+    }
+    if (state == AppLifecycleState.inactive) {
+      controller?.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      if (controller != null) {
+        onNewCameraSelected(controller.description);
+      }
+    }
+  }
+```
+
 ### Example
 
 Here is a small example flutter app displaying a full screen camera preview.
