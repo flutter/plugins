@@ -524,21 +524,17 @@ final class GoogleMapController
   }
 
   // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView
-  // interface, but the maximum does. This will override it when available even with the annotation
-  // commented out.
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
+  // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionLocked() {
-    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126
-    // is fixed in stable.
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
   }
 
   // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView
-  // interface, but the maximum does. This will override it when available even with the annotation
-  // commented out.
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
+  // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionUnlocked() {
-    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126
-    // is fixed in stable.
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
   }
 
   // Application.ActivityLifecycleCallbacks methods
@@ -856,7 +852,11 @@ final class GoogleMapController
     if (registrar != null && registrar.activity() != null) {
       return registrar.activity().hashCode();
     } else {
-      return -1;
+      // This method should only be invoked in cases where registrar != null, and only at lifecycle
+      // times when registrar.activity() != null. If these constraints are violated, we should fail
+      // fast and loudly.
+      throw new NullPointerException(
+          "Tried to retrieve the activity hash code with null registrar or null activity");
     }
   }
 
