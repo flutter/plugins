@@ -1,6 +1,6 @@
 ## 1.0.1
 
-* Fixed method channel name in android implementation.
+* Fixed method channel name in android implementation. [Issue](https://github.com/flutter/flutter/issues/69073).
 
 ## 1.0.0
 
