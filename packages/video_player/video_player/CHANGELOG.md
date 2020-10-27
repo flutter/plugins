@@ -1,3 +1,7 @@
+## 0.11.1+3
+
+* Android: Upgrade ExoPlayer to 2.12.1.
+
 ## 0.11.1+2
 
 * Update android compileSdkVersion to 29.

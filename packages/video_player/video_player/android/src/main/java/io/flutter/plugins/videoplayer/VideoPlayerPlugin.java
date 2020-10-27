@@ -138,7 +138,6 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               "asset:///" + assetLookupKey,
               null,
               options);
-      videoPlayers.put(handle.id(), player);
     } else {
       player =
           new VideoPlayer(
@@ -148,8 +147,8 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               arg.getUri(),
               arg.getFormatHint(),
               options);
-      videoPlayers.put(handle.id(), player);
     }
+    videoPlayers.put(handle.id(), player);
 
     TextureMessage result = new TextureMessage();
     result.setTextureId(handle.id());
