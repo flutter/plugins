@@ -1,3 +1,7 @@
+## 0.4.5+16
+
+* Remove unnecessary workaround from test.
+
 ## 0.4.5+15
 
 * Update android compileSdkVersion to 29.
