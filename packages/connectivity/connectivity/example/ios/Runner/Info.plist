@@ -22,10 +22,6 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app requires accessing your location information all the time to get wi-fi information.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app requires accessing your location information when the app is in foreground to get wi-fi information.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

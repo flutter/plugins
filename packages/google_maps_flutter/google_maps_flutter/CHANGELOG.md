@@ -1,3 +1,16 @@
+## 1.0.4
+
+* Cleanup of Android code:
+* A few minor formatting changes and additions of `@Nullable` annotations.
+* Removed pass-through of `activityHashCode` to `GoogleMapController`.
+* Replaced custom lifecycle state ints with `androidx.lifecycle.Lifecycle.State` enum.
+* Fixed a bug where the Lifecycle object was being leaked `onDetachFromActivity`, by nulling out the field.
+* Moved GoogleMapListener to its own file. Declaring multiple top level classes in the same file is discouraged.
+
+## 1.0.3
+
+* Update android compileSdkVersion to 29.
+
 ## 1.0.2
 
 * Remove `io.flutter.embedded_views_preview` requirement from readme.
