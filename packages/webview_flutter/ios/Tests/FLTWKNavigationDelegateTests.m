@@ -20,18 +20,22 @@
 
 - (void)setUp {
   self.mockMethodChannel = OCMClassMock(FlutterMethodChannel.class);
-  self.navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:self.mockMethodChannel];
+  self.navigationDelegate =
+      [[FLTWKNavigationDelegate alloc] initWithChannel:self.mockMethodChannel];
 }
 
 - (void)testWebViewWebContentProcessDidTerminateCallsRecourseErrorChannel {
   WKWebView *webview = OCMClassMock(WKWebView.class);
   [self.navigationDelegate webViewWebContentProcessDidTerminate:webview];
-  NSError *error = [[NSError alloc] initWithDomain:WKErrorDomain code:WKErrorWebContentProcessTerminated userInfo:nil];
-  OCMVerify([self.mockMethodChannel invokeMethod:@"onWebResourceError" arguments:[OCMArg checkWithBlock:^BOOL(NSDictionary *args) {
-
-    XCTAssertEqualObjects(args[@"errorType"], @"webContentProcessTerminated");
-    return true;
-  }]]);
+  NSError *error = [[NSError alloc] initWithDomain:WKErrorDomain
+                                              code:WKErrorWebContentProcessTerminated
+                                          userInfo:nil];
+  OCMVerify([self.mockMethodChannel invokeMethod:@"onWebResourceError"
+                                       arguments:[OCMArg checkWithBlock:^BOOL(NSDictionary *args) {
+                                         XCTAssertEqualObjects(args[@"errorType"],
+                                                               @"webContentProcessTerminated");
+                                         return true;
+                                       }]]);
 }
 
 @end

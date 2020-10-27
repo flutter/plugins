@@ -106,7 +106,10 @@
 }
 
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
-  NSError *contentProcessTerminatedError = [[NSError alloc] initWithDomain:WKErrorDomain code:WKErrorWebContentProcessTerminated userInfo:nil];
+  NSError *contentProcessTerminatedError =
+      [[NSError alloc] initWithDomain:WKErrorDomain
+                                 code:WKErrorWebContentProcessTerminated
+                             userInfo:nil];
   [self onWebResourceError:contentProcessTerminatedError];
 }
 
