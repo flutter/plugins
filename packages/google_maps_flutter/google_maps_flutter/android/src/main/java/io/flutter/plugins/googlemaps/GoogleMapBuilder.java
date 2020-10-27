@@ -7,13 +7,14 @@ package io.flutter.plugins.googlemaps;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Rect;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.PluginRegistry;
-import java.util.concurrent.atomic.AtomicInteger;
 
 class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
@@ -32,24 +33,15 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   GoogleMapController build(
       int id,
       Context context,
-      AtomicInteger state,
+      State lifecycleState,
       BinaryMessenger binaryMessenger,
-      Application application,
-      Lifecycle lifecycle,
-      PluginRegistry.Registrar registrar,
-      int activityHashCode) {
+      @Nullable Application application,
+      @Nullable Lifecycle lifecycle,
+      @Nullable PluginRegistry.Registrar registrar) {
     final GoogleMapController controller =
         new GoogleMapController(
-            id,
-            context,
-            state,
-            binaryMessenger,
-            application,
-            lifecycle,
-            registrar,
-            activityHashCode,
-            options);
-    controller.init();
+            id, context, binaryMessenger, application, lifecycle, registrar, options);
+    controller.init(lifecycleState);
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
     controller.setIndoorEnabled(indoorEnabled);
