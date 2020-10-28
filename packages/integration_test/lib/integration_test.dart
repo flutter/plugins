@@ -79,10 +79,7 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     // vs TestBindingEventSource.test. Test uses RenderBindind.dispatch
     // event. The former does not deliver the gesture but only compare
     // matchers.
-    if (this is LiveTestWidgetsFlutterBinding) {
-      super.handlePointerEvent(pointerEvent,
-          source: TestBindingEventSource.test);
-    }
+    super.handlePointerEvent(pointerEvent, source: TestBindingEventSource.test);
   }
 
   // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
