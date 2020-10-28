@@ -1,3 +1,7 @@
+## 0.11.1+4
+
+* Android: fix a bug where the app crashes when loading local assets.
+
 ## 0.11.1+3
 
 * Android: Upgrade ExoPlayer to 2.12.1.
