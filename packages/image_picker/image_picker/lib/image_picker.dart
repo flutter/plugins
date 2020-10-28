@@ -91,12 +91,6 @@ class ImagePicker {
   /// the front or rear camera should be opened, this function is not guaranteed
   /// to work on an Android device.
   ///
-  /// Use `forceFullMetaData` to force retrieve the full meta data of the content picked. Defaults to `true`
-  /// Some platforms require less permissions for getting images/videos without their full metadata,
-  /// when this flag is false the plugin fetches the image in a way that requires minimal extra permissions
-  /// from the platform (e.g on iOS the plugin won’t ask for the XXX permission).
-  /// When this flag is true the plugin tries to get the full image/video metadata which may prompt extra permission requests.
-  ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
   Future<PickedFile> getImage({
@@ -105,7 +99,6 @@ class ImagePicker {
     double maxHeight,
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-    bool forceFullMetaData = true,
   }) {
     return platform.pickImage(
       source: source,
@@ -160,19 +153,12 @@ class ImagePicker {
   /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
   /// Defaults to [CameraDevice.rear].
   ///
-  /// Use `forceFullMetaData` to force retrieve the full meta data of the content picked. Defaults to `true`
-  /// Some platforms require less permissions for getting images/videos without their full metadata,
-  /// when this flag is false the plugin fetches the image in a way that requires minimal extra permissions
-  /// from the platform (e.g on iOS the plugin won’t ask for the XXX permission).
-  /// When this flag is true the plugin tries to get the full image/video metadata which may prompt extra permission requests.
-  ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
   Future<PickedFile> getVideo({
     @required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration maxDuration,
-    bool forceFullMetaData = true,
   }) {
     return platform.pickVideo(
       source: source,
