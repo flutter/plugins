@@ -75,15 +75,12 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     PointerEvent pointerEvent, {
     TestBindingEventSource source = TestBindingEventSource.device,
   }) {
-    if (kIsWeb) {
-      // Web driver does not create real device events. Routing web
-      // integration tests' pointer events with source set to `device`,
-      // results in exceptions.
-      super.handlePointerEvent(pointerEvent,
+    // TestBindingEventSource.device uses WidgerTester.dispatchEvent method
+    // vs TestBindingEventSource.test. Test uses RenderBindind.dispatch
+    // event. The former does not deliver the gesture but only compare
+    // matchers.
+    super.handlePointerEvent(pointerEvent,
           source: TestBindingEventSource.test);
-    } else {
-      super.handlePointerEvent(pointerEvent);
-    }
   }
 
   // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
