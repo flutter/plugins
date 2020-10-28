@@ -5,7 +5,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/integration_te
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5"
 
 dependencies:
   flutter:
