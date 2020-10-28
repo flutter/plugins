@@ -9,7 +9,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
@@ -156,24 +155,14 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
   @override
   void initState() {
     super.initState();
-    _playAsset();
-  }
+    _controller = VideoPlayerController.asset('assets/Butterfly-209.mp4');
 
-  void _playAsset() async {
-    try {
-      print('_playAsset');
-      _controller = VideoPlayerController.asset('assets/Butterfly-209.mp4');
-
-      _controller.addListener(() {
-        setState(() {});
-      });
-      await _controller.setLooping(true);
-      await _controller.initialize().then((_) => setState(() {}));
-      await _controller.play();
-    } on PlatformException catch (e) {
-      print('_playAsset error $e');
-      assert(false, 'exception happened when playing assets $e');
-    }
+    _controller.addListener(() {
+      setState(() {});
+    });
+    _controller.setLooping(true);
+    _controller.initialize().then((_) => setState(() {}));
+    _controller.play();
   }
 
   @override
