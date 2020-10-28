@@ -20,7 +20,6 @@ fi
 #
 # TODO(mklim): Remove everything from this list. https://github.com/flutter/flutter/issues/45440
 CUSTOM_ANALYSIS_PLUGINS=(
-  "in_app_purchase"
   "camera"
   "video_player/video_player_web"
   "google_maps_flutter/google_maps_flutter_web"
