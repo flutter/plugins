@@ -1,3 +1,8 @@
+## 1.0.0
+
+* Announce 1.0.0.
+* Fix a bug on Android when loading videos from assets would crash.
+
 ## 0.11.1+5
 
 * Update Dart SDK constraint in example.
