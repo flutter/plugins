@@ -7,9 +7,6 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/device_info
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
 version: 0.5.0-nullsafety
 
-# Don't publish this package until null safety is stable or the package is in the allow list.
-publish_to: none
-
 flutter:
   plugin:
     platforms:
@@ -22,11 +19,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  device_info_platform_interface:
-    git:
-      url: https://github.com/flutter/plugins.git
-      ref: nnbd
-      path: packages/device_info/device_info_platform_interface
+  device_info_platform_interface: 2.0.0-nullsafety
 dev_dependencies:
   test: ^1.10.0-nullsafety.1
   flutter_test:
