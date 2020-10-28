@@ -1,6 +1,6 @@
 ## 1.0.6
 
-* iOS: `webViewWebContentProcessDidTerminate` is recognized in `WebView.onWebResourceError`.
+* Invoke the WebView.onWebResourceError on iOS when the webview content process crashes.
 
 ## 1.0.5
 
