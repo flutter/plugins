@@ -24,7 +24,7 @@ import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
  * the map. A Texture drawn using GoogleMap bitmap snapshots can then be shown instead of the
  * overlay.
  */
-public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, LifecycleProvider {
+public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
 
   @Nullable private Lifecycle lifecycle;
 
@@ -69,7 +69,17 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, Lifecycle
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     binding
         .getPlatformViewRegistry()
-        .registerViewFactory(VIEW_TYPE, new GoogleMapFactory(binding.getBinaryMessenger(), this));
+        .registerViewFactory(
+            VIEW_TYPE,
+            new GoogleMapFactory(
+                binding.getBinaryMessenger(),
+                new LifecycleProvider() {
+                  @Nullable
+                  @Override
+                  public Lifecycle getLifecycle() {
+                    return lifecycle;
+                  }
+                }));
   }
 
   @Override
@@ -95,12 +105,6 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, Lifecycle
   @Override
   public void onDetachedFromActivityForConfigChanges() {
     onDetachedFromActivity();
-  }
-
-  @Nullable
-  @Override
-  public Lifecycle getLifecycle() {
-    return lifecycle;
   }
 
   /**
