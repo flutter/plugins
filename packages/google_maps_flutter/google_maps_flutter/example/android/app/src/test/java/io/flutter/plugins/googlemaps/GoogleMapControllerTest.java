@@ -3,7 +3,6 @@ package io.flutter.plugins.googlemaps;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.app.Application;
 import android.content.Context;
 import androidx.activity.ComponentActivity;
 import androidx.test.core.app.ApplicationProvider;
