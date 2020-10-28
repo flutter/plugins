@@ -16,9 +16,6 @@ dev_dependencies:
   mockito: ^4.1.1
   pedantic: ^1.10.0-nullsafety.1
 
-# Don't publish this package until null safety is stable or the package is in the allow list.
-publish_to: none
-
 environment:
   sdk: ">=2.10.0-56.0.dev <3.0.0"
   flutter: ">=1.10.0 <2.0.0"
