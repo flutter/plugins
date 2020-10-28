@@ -1,3 +1,7 @@
+## 0.11.1+4
+
+* Android: Added AdaptiveTrackSelection for upscaling HLS video quality
+
 ## 0.11.1+3
 
 * Android: Upgrade ExoPlayer to 2.12.1.
