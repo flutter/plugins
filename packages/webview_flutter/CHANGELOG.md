@@ -1,3 +1,7 @@
+## 1.0.5+1
+
+* static html and baseUrl support. 
+=======
 ## 1.0.5
 
 * Fix example in the readme.
