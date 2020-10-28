@@ -79,8 +79,9 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     // vs TestBindingEventSource.test. Test uses RenderBindind.dispatch
     // event. The former does not deliver the gesture but only compare
     // matchers.
-    if(this is LiveTestWidgetsFlutterBinding) {
-      super.handlePointerEvent(pointerEvent, source: TestBindingEventSource.test);
+    if (this is LiveTestWidgetsFlutterBinding) {
+      super.handlePointerEvent(pointerEvent,
+          source: TestBindingEventSource.test);
     } else {
       print('different runtime type: ${this.runtimeType}');
     }
