@@ -414,9 +414,8 @@ public class Camera {
   }
 
   public void startPreview() throws CameraAccessException {
-    if (pictureImageReader == null || pictureImageReader.getSurface() == null) {
-      return;
-    }
+    if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
+
 
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
@@ -443,9 +442,8 @@ public class Camera {
     imageStreamReader.setOnImageAvailableListener(
         reader -> {
           Image img = reader.acquireLatestImage();
-          if (img == null) {
-            return;
-          }
+          if (img == null) return;
+
 
           List<Map<String, Object>> planes = new ArrayList<>();
           for (Image.Plane plane : img.getPlanes()) {
