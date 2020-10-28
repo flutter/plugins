@@ -23,6 +23,8 @@ import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
@@ -37,6 +39,10 @@ import java.util.List;
 import java.util.Map;
 
 final class VideoPlayer {
+  private static final float bandwidthFraction = .8f;
+  private static final int minDurationForQualityIncreaseMs = 1000;
+  private static final int minDurationForQualityDecreaseMs = 2000;
+  private static final int minDurationToRetainAfterDiscardMs = 2000;
   private static final String FORMAT_SS = "ss";
   private static final String FORMAT_DASH = "dash";
   private static final String FORMAT_HLS = "hls";
@@ -66,8 +72,18 @@ final class VideoPlayer {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
     this.options = options;
-
-    exoPlayer = new SimpleExoPlayer.Builder(context).build();
+    
+    AdaptiveTrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory(
+            minDurationForQualityIncreaseMs, 
+            minDurationForQualityDecreaseMs, 
+            minDurationToRetainAfterDiscardMs, 
+            bandwidthFraction
+    );
+    DefaultTrackSelector trackSelector = new DefaultTrackSelector(context, trackSelectionFactory);
+    exoPlayer = new SimpleExoPlayer
+            .Builder(context)
+            .setTrackSelector(trackSelector)
+            .build();
 
     Uri uri = Uri.parse(dataSource);
 
