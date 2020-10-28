@@ -33,7 +33,7 @@ public class WifiInfoFlutterPlugin implements FlutterPlugin {
   }
 
   private void setupChannels(BinaryMessenger messenger, Context context) {
-    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/wifi_flutter_info");
+    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/wifi_info_flutter");
     final WifiManager wifiManager =
         (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
