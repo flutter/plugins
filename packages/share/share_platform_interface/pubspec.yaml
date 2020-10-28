@@ -1,0 +1,17 @@
+name: share_platform_interface
+description: A common platform interface for the share plugin.
+version: 0.0.1
+homepage: https://github.com/flutter/plugins/tree/master/packages/share/share_platform_interface
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^1.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.20.0 <2.0.0"
