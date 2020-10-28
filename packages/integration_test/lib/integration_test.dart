@@ -75,15 +75,16 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     PointerEvent pointerEvent, {
     TestBindingEventSource source = TestBindingEventSource.device,
   }) {
-    // TestBindingEventSource.device uses WidgerTester.dispatchEvent method
-    // vs TestBindingEventSource.test. Test uses RenderBindind.dispatch
-    // event. The former does not deliver the gesture but only compare
-    // matchers.
-    if (this is LiveTestWidgetsFlutterBinding) {
-      super.handlePointerEvent(pointerEvent,
+    Function function = super.handlePointerEvent;
+    // Due to bindings in _binding_io.dart, WidgetBindings can be decendent of
+    // `AutomatedTestWidgetsFlutterBinding` for non-web environments.
+    if (function != null) {
+      // TestBindingEventSource.device uses WidgerTester.dispatchEvent method
+      // vs TestBindingEventSource.test. Test uses RenderBindind.dispatch
+      // event. The former does not deliver the gesture but only compare
+      // matchers.
+      function(pointerEvent,
           source: TestBindingEventSource.test);
-    } else {
-      print('different runtime type: ${this.runtimeType}');
     }
   }
 
