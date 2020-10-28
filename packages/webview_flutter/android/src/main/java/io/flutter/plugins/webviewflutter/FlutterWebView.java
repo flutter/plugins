@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
-  private static final String TAG = "FlutterWebView";
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
   private final InputAwareWebView webView;
   private final MethodChannel methodChannel;
@@ -266,7 +265,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     // Theoretically, we should be able to use WebView#loadDataWithBaseURL here, but
     // support for base64 seems to be broken.
-    String url = "data:" + mimeType + ";base64," + data;
+    final String url = String.format("data:%s;base64,%s", mimeType, data);
     webView.loadUrl(url);
     result.success(null);
   }

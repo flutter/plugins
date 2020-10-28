@@ -635,7 +635,7 @@ class WebViewController {
   /// that any trailing padding = or == characters MUST be present for full device
   /// compatibility.
   ///
-  /// This function has no `baseUrl` argument because of a limitation of the Android
+  /// This method has no `baseUrl` argument because of a limitation of the Android
   /// WebView API.
   ///
   /// Throws an ArgumentError if `baseUrl` is not a valid URL string.
