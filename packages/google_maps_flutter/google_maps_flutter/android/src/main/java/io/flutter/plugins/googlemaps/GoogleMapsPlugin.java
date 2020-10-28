@@ -54,8 +54,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, Lifecycle
                     public Lifecycle getLifecycle() {
                       return ((LifecycleOwner) activity).getLifecycle();
                     }
-                  }
-              ));
+                  }));
     } else {
       ProxyLifecycleProvider proxyLifecycleProvider = new ProxyLifecycleProvider(activity);
       activity.getApplication().registerActivityLifecycleCallbacks(proxyLifecycleProvider);
@@ -74,8 +73,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, Lifecycle
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     binding
         .getPlatformViewRegistry()
-        .registerViewFactory(
-            VIEW_TYPE, new GoogleMapFactory(binding.getBinaryMessenger(), this));
+        .registerViewFactory(VIEW_TYPE, new GoogleMapFactory(binding.getBinaryMessenger(), this));
   }
 
   @Override
