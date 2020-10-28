@@ -23,5 +23,5 @@ Future<void> main() async {
     await driver.waitUntilNoTransientCallbacks();
     final Health health = await driver.checkHealth();
     expect(health.status, HealthStatus.ok);
-  }, skip: 'Cirrus CI currently hangs while playing videos');
+  });
 }
