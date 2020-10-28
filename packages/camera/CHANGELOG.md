@@ -1,3 +1,7 @@
+## 0.5.8+12
+
+* Added information of video not working correctly on Android emulators to `README.md`.
+
 ## 0.5.8+11
 
 * Fix rare nullptr exception on Android.
