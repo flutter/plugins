@@ -32,6 +32,7 @@ class GooglePlayConnection
     _purchaseUpdatedController = StreamController.broadcast();
     ;
   }
+
   /// Returns the singleton instance of the [GooglePlayConnection].
   static GooglePlayConnection get instance => _getOrCreateInstance();
   static GooglePlayConnection _instance;

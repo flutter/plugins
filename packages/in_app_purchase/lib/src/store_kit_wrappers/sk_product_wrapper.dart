@@ -71,13 +71,17 @@ enum SKSubscriptionPeriodUnit {
   /// An interval lasting one day.
   @JsonValue(0)
   day,
+
   /// An interval lasting one month.
   @JsonValue(1)
+
   /// An interval lasting one week.
   week,
   @JsonValue(2)
+
   /// An interval lasting one month.
   month,
+
   /// An interval lasting one year.
   @JsonValue(3)
   year,

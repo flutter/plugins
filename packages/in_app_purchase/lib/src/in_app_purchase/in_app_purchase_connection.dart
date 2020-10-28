@@ -272,6 +272,7 @@ abstract class InAppPurchaseConnection {
 enum IAPSource {
   /// Google's Play Store.
   GooglePlay,
+
   /// Apple's App Store.
   AppStore
 }
