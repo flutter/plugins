@@ -4,17 +4,13 @@
 
 package io.flutter.plugins.googlemaps;
 
-import static androidx.lifecycle.Lifecycle.State.CREATED;
-import static androidx.lifecycle.Lifecycle.State.DESTROYED;
-import static androidx.lifecycle.Lifecycle.State.RESUMED;
-import static androidx.lifecycle.Lifecycle.State.STARTED;
-
 import android.app.Activity;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.Event;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -29,6 +25,7 @@ import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
  * overlay.
  */
 public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, LifecycleProvider {
+
   @Nullable private Lifecycle lifecycle;
 
   private static final String VIEW_TYPE = "plugins.flutter.io/google_maps";
@@ -122,7 +119,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, Lifecycle
       if (activity.hashCode() != registrarActivityHashCode) {
         return;
       }
-      lifecycle.setCurrentState(CREATED);
+      lifecycle.handleLifecycleEvent(Event.ON_CREATE);
     }
 
     @Override
@@ -130,7 +127,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, Lifecycle
       if (activity.hashCode() != registrarActivityHashCode) {
         return;
       }
-      lifecycle.setCurrentState(STARTED);
+      lifecycle.handleLifecycleEvent(Event.ON_START);
     }
 
     @Override
@@ -138,7 +135,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, Lifecycle
       if (activity.hashCode() != registrarActivityHashCode) {
         return;
       }
-      lifecycle.setCurrentState(RESUMED);
+      lifecycle.handleLifecycleEvent(Event.ON_RESUME);
     }
 
     @Override
@@ -146,7 +143,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, Lifecycle
       if (activity.hashCode() != registrarActivityHashCode) {
         return;
       }
-      lifecycle.setCurrentState(STARTED);
+      lifecycle.handleLifecycleEvent(Event.ON_PAUSE);
     }
 
     @Override
@@ -154,7 +151,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, Lifecycle
       if (activity.hashCode() != registrarActivityHashCode) {
         return;
       }
-      lifecycle.setCurrentState(CREATED);
+      lifecycle.handleLifecycleEvent(Event.ON_STOP);
     }
 
     @Override
@@ -166,7 +163,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, Lifecycle
         return;
       }
       activity.getApplication().unregisterActivityLifecycleCallbacks(this);
-      lifecycle.setCurrentState(DESTROYED);
+      lifecycle.handleLifecycleEvent(Event.ON_DESTROY);
     }
 
     @NonNull
