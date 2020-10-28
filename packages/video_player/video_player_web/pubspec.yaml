@@ -6,9 +6,6 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/v
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
 version: 2.0.0-nullsafety
 
-# Don't publish this package until null safety is stable or the package is in the allow list.
-publish_to: none
-
 flutter:
   plugin:
     platforms:
