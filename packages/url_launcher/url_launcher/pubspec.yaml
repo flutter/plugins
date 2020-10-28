@@ -36,21 +36,9 @@ dependencies:
   # validation, so we set a ^ constraint.
   # TODO(amirh): Revisit this (either update this part in the  design or the pub tool).
   # https://github.com/flutter/flutter/issues/46264
-  url_launcher_linux:
-    git:
-      url: https://github.com/flutter/plugins.git
-      ref: nnbd
-      path: packages/url_launcher/url_launcher_linux
-  url_launcher_macos:
-    git:
-      url: https://github.com/flutter/plugins.git
-      ref: nnbd
-      path: packages/url_launcher/url_launcher_macos
-  url_launcher_windows:
-    git:
-      url: https://github.com/flutter/plugins.git
-      ref: nnbd
-      path: packages/url_launcher/url_launcher_windows
+  url_launcher_linux: 0.1.0-nullsafety
+  url_launcher_macos: 0.1.0-nullsafety
+  url_launcher_windows: 0.1.0-nullsafety
   # TODO(mvanbeusekom): Temporary disabled until web is migrated to nnbd (advised by @blasten).
   #url_launcher_web: ^0.1.3
 
