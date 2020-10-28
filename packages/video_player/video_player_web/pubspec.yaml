@@ -30,4 +30,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=2.8.0 <3.0.0"
-  flutter: ">=1.12.8 <2.0.0"
+  flutter: ">=1.12.8"
