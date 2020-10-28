@@ -417,6 +417,14 @@ class WebSettings {
   }
 }
 
+/// Loads the specified html.
+  ///
+  /// `html` must not be null.
+  Future<void> loadHtml(String html) {
+    throw UnimplementedError(
+        "WebView loadHtml is not implemented on the current platform");
+  }
+
 /// Configuration to use when creating a new [WebViewPlatformController].
 ///
 /// The `autoMediaPlaybackPolicy` parameter must not be null.
@@ -427,6 +435,8 @@ class CreationParams {
   /// The `autoMediaPlaybackPolicy` parameter must not be null.
   CreationParams({
     this.initialUrl,
+    this.html,
+    this.baseUrl,
     this.webSettings,
     this.javascriptChannelNames,
     this.userAgent,
@@ -439,6 +449,11 @@ class CreationParams {
   /// When null the webview will be created without loading any page.
   final String initialUrl;
 
+  /// The initial baseUrl to load in the webview. It will work with html only.
+  final String baseUrl;
+
+  /// The initial html to load in the webview. This will be preferred over initialUrl if it exists.
+  final String html;
   /// The initial [WebSettings] for the new webview.
   ///
   /// This can later be updated with [WebViewPlatformController.updateSettings].
