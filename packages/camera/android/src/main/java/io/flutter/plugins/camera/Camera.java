@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Camera {
+
   private final SurfaceTextureEntry flutterTexture;
   private final CameraManager cameraManager;
   private final OrientationEventListener orientationEventListener;
@@ -215,10 +216,10 @@ public class Camera {
   public void takePicture(String filePath, @NonNull final Result result) {
     final File file = new File(filePath);
 
-    FilePathValidator validator = new FilePathValidator(filePath);
-    validator.validate();
-    if (!validator.isValid()) {
-      result.error("filePathInvalid", validator.getErrorMessage(), null);
+    if (file.exists()) {
+      result.error("fileExists",
+          "File at path '" + filePath + "' already exists, or is directory. Cannot overwrite.",
+          null);
       return;
     }
 
@@ -335,13 +336,12 @@ public class Camera {
   }
 
   public void startVideoRecording(String filePath, Result result) {
-    FilePathValidator validator = new FilePathValidator(filePath);
-    validator.validate();
-    if (!validator.isValid()) {
-      result.error("filePathInvalid", validator.getErrorMessage(), null);
+    if (new File(filePath).exists()) {
+      result.error("fileExists",
+          "File at path '" + filePath + "' already exists, or is directory. Cannot overwrite.",
+          null);
       return;
     }
-
     try {
       prepareMediaRecorder(filePath);
       recordingVideo = true;
@@ -414,7 +414,9 @@ public class Camera {
   }
 
   public void startPreview() throws CameraAccessException {
-    if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
+    if (pictureImageReader == null || pictureImageReader.getSurface() == null) {
+      return;
+    }
 
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
@@ -441,7 +443,9 @@ public class Camera {
     imageStreamReader.setOnImageAvailableListener(
         reader -> {
           Image img = reader.acquireLatestImage();
-          if (img == null) return;
+          if (img == null) {
+            return;
+          }
 
           List<Map<String, Object>> planes = new ArrayList<>();
           for (Image.Plane plane : img.getPlanes()) {
