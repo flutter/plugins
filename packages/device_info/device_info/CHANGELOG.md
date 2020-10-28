@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Announce 1.0.0.
+
 ## 0.4.2+10
 
 * Update Dart SDK constraint in example.
