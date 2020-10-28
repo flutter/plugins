@@ -1,4 +1,4 @@
-## 1.1.0
+## 1.0.5
 
 Overhaul lifecycle management in GoogleMapsPlugin.
 
