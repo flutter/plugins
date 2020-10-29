@@ -7,12 +7,18 @@ import 'package:flutter/foundation.dart';
 import '../common/camera_interface.dart';
 
 /// The direction that the camera faces.
-enum Facing { back, front }
+enum Facing {
+  /// Back facing camera (a user looking at the screen is not seen by the camera).
+  back,
+  /// Front facing camera (a user looking at the screen is seen by the camera).
+  front,
+}
 
 /// Information about a camera.
 ///
 /// Retrieved from [Camera.getCameraInfo].
 class CameraInfo implements CameraDescription {
+  /// Creates a new camera information object with the given id, facing, and orientation.
   const CameraInfo({
     @required this.id,
     @required this.facing,
@@ -21,6 +27,10 @@ class CameraInfo implements CameraDescription {
         assert(facing != null),
         assert(orientation != null);
 
+  /// Factory for creating a [CameraInfo] from a map.
+  ///
+  /// The map must have `'id'` `'orientation'` and `'facing'` keys with non null
+  /// values corresponding to [CameraInfo.id], [CameraInfo.facing], and [CameraInfo.orientation].
   factory CameraInfo.fromMap(Map<String, dynamic> map) {
     return CameraInfo(
       id: map['id'],

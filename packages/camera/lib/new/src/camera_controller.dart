@@ -82,6 +82,7 @@ class CameraController {
   /// Api used by the [configurator].
   final CameraApi api;
 
+  /// True if this controller was already disposed.
   bool get isDisposed => _isDisposed;
 
   /// Retrieves a list of available cameras for the current device.

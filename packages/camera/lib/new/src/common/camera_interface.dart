@@ -16,8 +16,15 @@ enum CameraApi {
   supportAndroid,
 }
 
-/// Location of the camera on the device.
-enum LensDirection { front, back, unknown }
+/// The direction the camera is facing relative to the device.
+enum LensDirection {
+  /// Front facing camera (a user looking at the screen is seen by the camera).
+  front,
+  /// Back facing camera (a user looking at the screen is not seen by the camera).
+  back,
+  /// The direction of the camera is unknown.
+  unknown,
+}
 
 /// Abstract class used to create a common interface to describe a camera from different platform APIs.
 ///

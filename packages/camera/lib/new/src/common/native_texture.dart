@@ -11,7 +11,7 @@ import 'camera_mixins.dart';
 
 /// Used to allocate a buffer for displaying a preview camera texture.
 ///
-/// This is used to for a developer to have a control over the
+/// This is used for a developer to have a control over the
 /// `TextureRegistry.SurfaceTextureEntry` (Android) and FlutterTexture (iOS).
 /// This gives direct access to the textureId and can be reused with separate
 /// camera instances.
@@ -30,6 +30,7 @@ class NativeTexture with CameraMappable {
   /// Id that can be passed to a [Texture] widget.
   final int textureId;
 
+  /// Creates a new texture on the platform side.
   static Future<NativeTexture> allocate() async {
     final int handle = CameraChannel.nextHandle++;
 
