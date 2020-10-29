@@ -99,6 +99,34 @@ void main() {
       expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
     });
 
+    testWidgets('only single InfoWindow is visible',
+        (WidgetTester tester) async {
+      final markers = {
+        Marker(
+          markerId: MarkerId('1'),
+          infoWindow: InfoWindow(title: "Title", snippet: "Snippet"),
+        ),
+        Marker(
+          markerId: MarkerId('2'),
+          infoWindow: InfoWindow(title: "Title", snippet: "Snippet"),
+        ),
+      };
+      controller.addMarkers(markers);
+
+      expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
+
+      controller.showMarkerInfoWindow(MarkerId('1'));
+
+      expect(controller.markers[MarkerId('1')].infoWindowShown, isTrue);
+
+      controller.showMarkerInfoWindow(MarkerId('2'));
+
+      expect(controller.markers[MarkerId('2')].infoWindowShown, isTrue);
+
+      expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
+
+    });
+
     // https://github.com/flutter/flutter/issues/64938
     testWidgets('markers with icon:null work', (WidgetTester tester) async {
       final markers = {
