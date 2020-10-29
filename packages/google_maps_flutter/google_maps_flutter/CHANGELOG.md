@@ -1,3 +1,30 @@
+## 1.0.6
+
+Fix state-saving logic in GoogleMapsPlugin.
+
+GoogleMapController previously implemented `ActivityPluginBinding.OnSaveInstanceStateListener`
+but did not get registered as a listener. This meant that state-saving
+simply didn't work.
+
+The new system powers state saving with a combination of
+[androidx.savedstate.SavedStateRegistry](https://developer.android.com/reference/androidx/savedstate/SavedStateRegistry).
+Unfortunately, due to bugs and shortcomings in the Flutter core 
+embedding library, this required a lot of hackery to get right. 
+
+1. For v1 plugin registration, if the activity implements 
+`SavedStateRegistryOwner`, it's lifecycle is used directly.
+2. For v1 plugin registration, if the activity does not implement 
+`SavedStateRegistryOwner`, the proxy lifecycle now implements 
+`SavedStateRegistryOwner`.
+3. For v2 plugin registration, if the  `ActivityPluginBinding`'s 
+lifecycle's owner implements `SavedStateRegistryOwner`, it uses that 
+registry. This covers the case of `FlutterFragment` and similar.
+4. For v2 plugin registration, if the `ActivityPluginBinding`'s
+lifecycle's owner does not implement `SavedStateRegistryOwner`, it wraps
+the lifecycle in a delegating lifecycle whose owner does implement
+`SavedStateRegistryOwner`. This covers the case of `FlutterActivity` and 
+similar.
+
 ## 1.0.5
 
 Overhaul lifecycle management in GoogleMapsPlugin.
