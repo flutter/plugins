@@ -203,6 +203,7 @@ class SKPaymentQueueWrapper {
 /// [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
 @JsonSerializable(nullable: true)
 class SKError {
+  /// Creates a new [SKError] object with the provided information.
   SKError(
       {@required this.code, @required this.domain, @required this.userInfo});
 
@@ -258,6 +259,7 @@ class SKError {
 /// initiate a payment.
 @JsonSerializable(nullable: true)
 class SKPaymentWrapper {
+  /// Creates a new [SKPaymentWrapper] with the provided information.
   SKPaymentWrapper(
       {@required this.productIdentifier,
       this.applicationUsername,
