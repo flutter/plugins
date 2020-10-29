@@ -8,6 +8,7 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:mime/mime.dart' show lookupMimeType;
+import 'package:share_platform_interface/share_platform_interface.dart';
 
 /// Plugin for summoning a platform share sheet.
 class Share {
@@ -50,7 +51,12 @@ class Share {
       params['originHeight'] = sharePositionOrigin.height;
     }
 
-    return channel.invokeMethod<void>('share', params);
+    // return channel.invokeMethod<void>('share', params);
+    return SharePlatform.instance.share(
+      text,
+      subject: subject,
+      sharePositionOrigin: sharePositionOrigin,
+    );
   }
 
   /// Summons the platform's share sheet to share multiple files.
@@ -71,7 +77,7 @@ class Share {
     String subject,
     String text,
     Rect sharePositionOrigin,
-  }) {
+  }) async {
     assert(paths != null);
     assert(paths.isNotEmpty);
     assert(paths.every((element) => element != null && element.isNotEmpty));
@@ -91,7 +97,12 @@ class Share {
       params['originHeight'] = sharePositionOrigin.height;
     }
 
-    return channel.invokeMethod('shareFiles', params);
+    // return channel.invokeMethod('shareFiles', params);
+    return await SharePlatform.instance.shareFiles(paths,
+        mimeTypes: mimeTypes,
+        subject: subject,
+        text: text,
+        sharePositionOrigin: sharePositionOrigin);
   }
 
   static String _mimeTypeForPath(String path) {
