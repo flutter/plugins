@@ -100,6 +100,7 @@ void main() {
       expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
     });
 
+    // https://github.com/flutter/flutter/issues/67380
     testWidgets('only single InfoWindow is visible',
         (WidgetTester tester) async {
       final markers = {
@@ -115,16 +116,17 @@ void main() {
       controller.addMarkers(markers);
 
       expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
+      expect(controller.markers[MarkerId('2')].infoWindowShown, isFalse);
 
       controller.showMarkerInfoWindow(MarkerId('1'));
 
       expect(controller.markers[MarkerId('1')].infoWindowShown, isTrue);
+      expect(controller.markers[MarkerId('2')].infoWindowShown, isFalse);
 
       controller.showMarkerInfoWindow(MarkerId('2'));
 
-      expect(controller.markers[MarkerId('2')].infoWindowShown, isTrue);
-
       expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
+      expect(controller.markers[MarkerId('2')].infoWindowShown, isTrue);
     });
 
     // https://github.com/flutter/flutter/issues/64938
