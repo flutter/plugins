@@ -11,11 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.Lifecycle.Event;
+import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
+import androidx.savedstate.SavedStateRegistry;
+import androidx.savedstate.SavedStateRegistryController;
+import androidx.savedstate.SavedStateRegistryOwner;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding.OnSaveInstanceStateListener;
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
 
 /**
@@ -26,7 +31,7 @@ import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
  */
 public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
 
-  @Nullable private Lifecycle lifecycle;
+  @Nullable private DelegatingSavedStateRegistryOwner lifecycleOwner;
 
   private static final String VIEW_TYPE = "plugins.flutter.io/google_maps";
 
@@ -39,7 +44,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
       // We stop the registration process as this plugin is foreground only.
       return;
     }
-    if (activity instanceof LifecycleOwner) {
+    if (activity instanceof SavedStateRegistryOwner) {
       registrar
           .platformViewRegistry()
           .registerViewFactory(
@@ -77,7 +82,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
                   @Nullable
                   @Override
                   public Lifecycle getLifecycle() {
-                    return lifecycle;
+                    return lifecycleOwner == null ? null : lifecycleOwner.lifecycle;
                   }
                 }));
   }
@@ -89,12 +94,12 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
-    lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
+    lifecycleOwner = new DelegatingSavedStateRegistryOwner(binding);
   }
 
   @Override
   public void onDetachedFromActivity() {
-    lifecycle = null;
+    lifecycleOwner = null;
   }
 
   @Override
@@ -114,9 +119,11 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
    * <p>This is used in the case where a direct Lifecycle/Owner is not available.
    */
   private static final class ProxyLifecycleProvider
-      implements ActivityLifecycleCallbacks, LifecycleOwner, LifecycleProvider {
+      implements ActivityLifecycleCallbacks, SavedStateRegistryOwner, LifecycleProvider {
 
     private final LifecycleRegistry lifecycle = new LifecycleRegistry(this);
+    private final SavedStateRegistryController savedStateRegistryController =
+        SavedStateRegistryController.create(this);
     private final int registrarActivityHashCode;
 
     private ProxyLifecycleProvider(Activity activity) {
@@ -125,10 +132,11 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
     }
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    public void onActivityCreated(Activity activity, @Nullable Bundle savedInstanceState) {
       if (activity.hashCode() != registrarActivityHashCode) {
         return;
       }
+      savedStateRegistryController.performRestore(savedInstanceState);
       lifecycle.handleLifecycleEvent(Event.ON_CREATE);
     }
 
@@ -165,7 +173,12 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
     }
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+      if (activity.hashCode() != registrarActivityHashCode) {
+        return;
+      }
+      savedStateRegistryController.performSave(outState);
+    }
 
     @Override
     public void onActivityDestroyed(Activity activity) {
@@ -174,6 +187,90 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
       }
       activity.getApplication().unregisterActivityLifecycleCallbacks(this);
       lifecycle.handleLifecycleEvent(Event.ON_DESTROY);
+    }
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+      return lifecycle;
+    }
+
+    @NonNull
+    @Override
+    public SavedStateRegistry getSavedStateRegistry() {
+      return savedStateRegistryController.getSavedStateRegistry();
+    }
+  }
+
+  /**
+   * This logic is incredibly hacky, but is necessary to address multiple problems with the Flutter
+   * embedding library.
+   *
+   * <p>Ideally, every {@link LifecycleOwner} that drives this plugin would also implement {@link
+   * SavedStateRegistryOwner}. This would make this class completely unnecessary. However, {@link
+   * io.flutter.embedding.android.FlutterActivity} does not (at the time of this writing) do this.
+   *
+   *
+   * <p>Given that, ideally, every LifecycleOwner that drives this plugin would restore
+   * state at the correct time. This would allow us to consistently drive state restoration via
+   * {@link OnSaveInstanceStateListener} rather than possibly needing to delegate to the
+   * LifecycleOwner. Unfortunately, {@link io.flutter.embedding.android.FlutterFragment} (at the
+   * time of this writing) restores state in {@link androidx.fragment.app.Fragment#onActivityCreated(Bundle)}
+   * rather than in {@link androidx.fragment.app.Fragment#onCreate(Bundle)}. Note that this is a
+   * pretty serious bug in FlutterFragment.
+   *
+   * <p>Given that, ideally, the {@link ActivityPluginBinding} would provide access to the
+   * LifecycleOwner instead of the underlying {@link Lifecycle}. This would allow the plugin to do
+   * the instanceof check for {@link SavedStateRegistryOwner} directly in {@link
+   * #onAttachedToActivity(ActivityPluginBinding)} and decide to use that Lifecycle/Owner directly
+   * if possible. Instead, the plugin has to always use this delegate to wait for the first call to
+   * {@link #onStateChanged(LifecycleOwner, Event)} to choose which {@link SavedStateRegistry} to
+   * use.
+   *
+   * <p>This logic is safe despite {@link #getSavedStateRegistry()} being {@link NonNull} because
+   * the only caller of that method is {@link GoogleMapController}, which can be guaranteed to
+   * perform the call in its lifecycle observer callback, which necessarily happens after {@link
+   * #onStateChanged(LifecycleOwner, Event)}.
+   */
+  private static final class DelegatingSavedStateRegistryOwner
+      implements LifecycleEventObserver, SavedStateRegistryOwner, OnSaveInstanceStateListener {
+
+    private final LifecycleRegistry lifecycle = new LifecycleRegistry(this);
+    private final SavedStateRegistryController savedStateRegistryController =
+        SavedStateRegistryController.create(this);
+
+    private SavedStateRegistry savedStateRegistry;
+
+    private DelegatingSavedStateRegistryOwner(ActivityPluginBinding binding) {
+      binding.addOnSaveStateListener(this);
+      FlutterLifecycleAdapter.getActivityLifecycle(binding).addObserver(this);
+    }
+
+    @Override
+    public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Event event) {
+      if (savedStateRegistry == null) {
+        savedStateRegistry =
+            source instanceof SavedStateRegistryOwner
+                ? ((SavedStateRegistryOwner) source).getSavedStateRegistry()
+                : savedStateRegistryController.getSavedStateRegistry();
+      }
+      lifecycle.handleLifecycleEvent(event);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle bundle) {
+      savedStateRegistryController.performSave(bundle);
+    }
+
+    @Override
+    public void onRestoreInstanceState(@Nullable Bundle bundle) {
+      savedStateRegistryController.performRestore(bundle);
+    }
+
+    @NonNull
+    @Override
+    public SavedStateRegistry getSavedStateRegistry() {
+      return savedStateRegistry;
     }
 
     @NonNull

@@ -18,6 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.savedstate.SavedStateRegistry;
+import androidx.savedstate.SavedStateRegistry.SavedStateProvider;
+import androidx.savedstate.SavedStateRegistryOwner;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback;
@@ -32,7 +35,6 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -47,7 +49,6 @@ import java.util.Map;
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
     implements DefaultLifecycleObserver,
-        ActivityPluginBinding.OnSaveInstanceStateListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
@@ -55,6 +56,9 @@ final class GoogleMapController
         PlatformView {
 
   private static final String TAG = "GoogleMapController";
+  private static final String SAVED_STATE_KEY =
+      "io.flutter.plugins.googlemaps.GoogleMapController#";
+
   private final int id;
   private final MethodChannel methodChannel;
   private final GoogleMapOptions options;
@@ -512,7 +516,38 @@ final class GoogleMapController
     if (disposed) {
       return;
     }
-    mapView.onCreate(null);
+    if (owner instanceof SavedStateRegistryOwner) {
+      // Accessing SavedStateRegistry *must* be done in DefaultLifecycleObserver#onCreate for
+      // reasons described in the javadoc of GoogleMapsPlugin.StateSavingLifecycleProvider.
+      SavedStateRegistry savedStateRegistry =
+          ((SavedStateRegistryOwner) owner).getSavedStateRegistry();
+      String key = SAVED_STATE_KEY + id;
+      mapView.onCreate(
+          // In a perfect world, savedStateRegistry should be guaranteed to be restored at this
+          // point. However, there's a lot of hacky things going on regarding manual state
+          // restoration that could happen at the wrong time. This could lead to a runtime exception
+          // here, so better safe than sorry.
+          savedStateRegistry.isRestored()
+              ? savedStateRegistry.consumeRestoredStateForKey(key)
+              : null);
+      savedStateRegistry.registerSavedStateProvider(
+          key,
+          new SavedStateProvider() {
+            @NonNull
+            @Override
+            public Bundle saveState() {
+              Bundle bundle = new Bundle();
+              if (mapView != null) {
+                mapView.onSaveInstanceState(bundle);
+              }
+              return bundle;
+            }
+          });
+    } else {
+      // GoogleMapsPlugin should ensure that the LifecycleOwner is always a SavedStateRegistryOwner,
+      // but again: better safe than sorry.
+      mapView.onCreate(null);
+    }
   }
 
   @Override
@@ -554,22 +589,6 @@ final class GoogleMapController
       return;
     }
     destroyMapViewIfNecessary();
-  }
-
-  @Override
-  public void onRestoreInstanceState(Bundle bundle) {
-    if (disposed) {
-      return;
-    }
-    mapView.onCreate(bundle);
-  }
-
-  @Override
-  public void onSaveInstanceState(Bundle bundle) {
-    if (disposed) {
-      return;
-    }
-    mapView.onSaveInstanceState(bundle);
   }
 
   // GoogleMapOptionsSink methods
