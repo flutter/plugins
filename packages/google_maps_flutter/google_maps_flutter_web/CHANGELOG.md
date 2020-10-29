@@ -1,6 +1,6 @@
 ## 0.1.0+6
 
-* Show only single infoWindow
+* Ensure a single `InfoWindow` is shown at a time. [Issue](https://github.com/flutter/flutter/issues/67380).
 
 ## 0.1.0+5
 
