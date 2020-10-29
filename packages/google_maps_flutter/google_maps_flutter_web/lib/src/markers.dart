@@ -100,7 +100,6 @@ class MarkersController extends GeometryController {
   }
 
   // InfoWindow...
-  MarkerController _markerController;
 
   /// Shows the [InfoWindow] of a [MarkerId].
   ///
