@@ -124,7 +124,6 @@ void main() {
       expect(controller.markers[MarkerId('2')].infoWindowShown, isTrue);
 
       expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
-
     });
 
     // https://github.com/flutter/flutter/issues/64938
