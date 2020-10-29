@@ -1,3 +1,7 @@
+## 0.1.0+6
+
+* Remove the analysis_options.yaml file and comply with the flutter/plugins analysis_options.
+
 ## 0.1.0+5
 
 * Update `package:google_maps` to `^3.4.5`.

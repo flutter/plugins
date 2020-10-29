@@ -82,6 +82,7 @@ class GoogleMapController {
     // use it to create the [gmaps.GMap] in the `init()` method of this class.
     _div = DivElement()..id = _getViewType(mapId);
 
+    // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
       _getViewType(mapId),
       (int viewId) => _div,

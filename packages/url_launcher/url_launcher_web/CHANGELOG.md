@@ -1,3 +1,7 @@
+# 0.1.5+1
+
+- Remove the analysis_options.yaml file and comply with the flutter/plugins analysis_options.
+
 # 0.1.5
 
 - Added the web implementation of the Link widget.

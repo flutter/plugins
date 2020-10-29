@@ -1,3 +1,7 @@
+## 0.1.4+1
+
+* Remove the analysis_options.yaml file and comply with the flutter/plugins analysis_options.
+
 ## 0.1.4
 
 * Added option to set the video playback speed on the video controller.

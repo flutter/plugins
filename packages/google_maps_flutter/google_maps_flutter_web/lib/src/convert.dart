@@ -423,6 +423,7 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
       // already encoded in the iconConfig[1]
 
       icon = gmaps.Icon()
+        // ignore: undefined_prefixed_name
         ..url = ui.webOnlyAssetManager.getAssetUrl(iconConfig[1]);
 
       // iconConfig[3] may contain the [width, height] of the image, if passed!
