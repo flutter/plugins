@@ -1,0 +1,29 @@
+name: share_web
+description: A new flutter plugin project.
+version: 0.0.1
+author:
+homepage:
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.20.0 <2.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # TODO: Remove path when the plugin is hosted on https://pub.dev.
+  share_platform_interface:
+    path: ../share_platform_interface
+  js: ^0.6.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  share: ^0.6.5+3
+
+flutter:
+  plugin:
+    platforms:
+      web:
+        pluginClass: SharePlugin
+        fileName: share_web.dart
