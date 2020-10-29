@@ -1,3 +1,7 @@
+## 0.1.0+5
+
+* Show only single info window
+
 ## 0.1.0+4
 
 * Update `package:sanitize_html` to `^1.4.1` to prevent [a crash](https://github.com/flutter/flutter/issues/67854) when InfoWindow title/snippet have links.
