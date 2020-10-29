@@ -74,7 +74,7 @@ final class VideoPlayer {
     this.options = options;
 
     AdaptiveTrackSelection.Factory trackSelectionFactory =
-       new AdaptiveTrackSelection.Factory(
+        new AdaptiveTrackSelection.Factory(
             minDurationForQualityIncreaseMs,
             minDurationForQualityDecreaseMs,
             minDurationToRetainAfterDiscardMs,
