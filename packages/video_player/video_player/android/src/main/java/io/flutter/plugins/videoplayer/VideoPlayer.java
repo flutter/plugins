@@ -72,18 +72,15 @@ final class VideoPlayer {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
     this.options = options;
-    
-    AdaptiveTrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory(
-            minDurationForQualityIncreaseMs, 
-            minDurationForQualityDecreaseMs, 
-            minDurationToRetainAfterDiscardMs, 
-            bandwidthFraction
-    );
+
+    AdaptiveTrackSelection.Factory trackSelectionFactory =
+       new AdaptiveTrackSelection.Factory(
+            minDurationForQualityIncreaseMs,
+            minDurationForQualityDecreaseMs,
+            minDurationToRetainAfterDiscardMs,
+            bandwidthFraction);
     DefaultTrackSelector trackSelector = new DefaultTrackSelector(context, trackSelectionFactory);
-    exoPlayer = new SimpleExoPlayer
-            .Builder(context)
-            .setTrackSelector(trackSelector)
-            .build();
+    exoPlayer = new SimpleExoPlayer.Builder(context).setTrackSelector(trackSelector).build();
 
     Uri uri = Uri.parse(dataSource);
 
