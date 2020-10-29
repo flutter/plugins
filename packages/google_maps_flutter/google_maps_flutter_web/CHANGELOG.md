@@ -1,3 +1,7 @@
+## 0.1.0+6
+
+* Show only single infoWindow
+
 ## 0.1.0+5
 
 * Update `package:google_maps` to `^3.4.5`.

@@ -100,13 +100,15 @@ class MarkersController extends GeometryController {
   }
 
   // InfoWindow...
+  MarkerController _markerController;
 
   /// Shows the [InfoWindow] of a [MarkerId].
   ///
   /// See also [hideMarkerInfoWindow] and [isInfoWindowShown].
   void showMarkerInfoWindow(MarkerId markerId) {
-    MarkerController markerController = _markerIdToController[markerId];
-    markerController?.showInfoWindow();
+    _markerController?.hideInfoWindow();
+    _markerController = _markerIdToController[markerId];
+    _markerController?.showInfoWindow();
   }
 
   /// Hides the [InfoWindow] of a [MarkerId].
