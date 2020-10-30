@@ -1,3 +1,8 @@
+## 1.0.1
+
+* Android: Fix IllegalArgumentException.
+* Android: Update Example project.
+
 ## 2.0.0
 
 * [Breaking Change] The `getWifiName`, `getWifiBSSID` and `getWifiIP` are removed to [wifi_info_flutter](https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter)

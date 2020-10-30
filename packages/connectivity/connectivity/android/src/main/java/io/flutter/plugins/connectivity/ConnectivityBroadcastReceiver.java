@@ -30,6 +30,7 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   private Connectivity connectivity;
   private EventChannel.EventSink events;
   private Handler mainHandler = new Handler(Looper.getMainLooper());
+  private ConnectivityManager.NetworkCallback networkCallback;
   public static final String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
 
   ConnectivityBroadcastReceiver(Context context, Connectivity connectivity) {
@@ -40,8 +41,8 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   @Override
   public void onListen(Object arguments, EventChannel.EventSink events) {
     this.events = events;
-    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      connectivity.getConnectivityManager().registerDefaultNetworkCallback(getNetworkCallback());
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && networkCallback != null) {
+      connectivity.getConnectivityManager().registerDefaultNetworkCallback(networkCallback);
     } else {
       context.registerReceiver(this, new IntentFilter(CONNECTIVITY_ACTION));
     }
@@ -65,17 +66,19 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   ConnectivityManager.NetworkCallback getNetworkCallback() {
-    return new ConnectivityManager.NetworkCallback() {
-      @Override
-      public void onAvailable(Network network) {
-        sendEvent();
-      }
+    networkCallback =
+        new ConnectivityManager.NetworkCallback() {
+          @Override
+          public void onAvailable(Network network) {
+            sendEvent();
+          }
 
-      @Override
-      public void onLost(Network network) {
-        sendEvent();
-      }
-    };
+          @Override
+          public void onLost(Network network) {
+            sendEvent();
+          }
+        };
+    return networkCallback;
   }
 
   private void sendEvent() {
