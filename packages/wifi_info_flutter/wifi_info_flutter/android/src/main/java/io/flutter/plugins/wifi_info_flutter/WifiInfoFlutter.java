@@ -87,8 +87,10 @@ class WifiInfoFlutter {
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
             == PackageManager.PERMISSION_GRANTED;
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P &&
-            !grantedChangeWifiState && !grantedAccessFine && !grantedAccessCoarse) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P
+        && !grantedChangeWifiState
+        && !grantedAccessFine
+        && !grantedAccessCoarse) {
       Log.w(
           TAG,
           "Attempted to get Wi-Fi data that requires additional permission(s).\n"
@@ -111,8 +113,9 @@ class WifiInfoFlutter {
       return false;
     }
 
-    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P &&
-            !grantedAccessFine && !grantedAccessCoarse) {
+    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P
+        && !grantedAccessFine
+        && !grantedAccessCoarse) {
       Log.w(
           TAG,
           "Attempted to get Wi-Fi data that requires additional permission(s).\n"
@@ -124,8 +127,8 @@ class WifiInfoFlutter {
       return false;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-            (!grantedAccessFine || !grantedChangeWifiState)) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        && (!grantedAccessFine || !grantedChangeWifiState)) {
       Log.w(
           TAG,
           "Attempted to get Wi-Fi data that requires additional permission(s).\n"
