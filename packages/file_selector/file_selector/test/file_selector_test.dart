@@ -14,7 +14,6 @@ void main() {
 
   test('getSavePath', () async {
     final expectedPath = '/example/path';
-
     final typeGroup = XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
 
     when(mock.getSavePath(
@@ -49,7 +48,6 @@ void main() {
 
   test('openFile', () async {
     final file = XFile('path');
-
     final typeGroup = XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
 
     when(mock.openFile(
@@ -63,12 +61,11 @@ void main() {
         initialDirectory: 'dir',
         confirmButtonText: 'load');
 
-    expect(result, isNotNull);
+    expect(result, file);
   });
 
   test('openFiles', () async {
     final file = XFile('path');
-
     final typeGroup = XTypeGroup(label: 'group', extensions: ['jpg', 'png']);
 
     when(mock.openFiles(
@@ -82,7 +79,7 @@ void main() {
         initialDirectory: 'dir',
         confirmButtonText: 'load');
 
-    expect(result, isNotNull);
+    expect(result, [file]);
   });
 }
 
