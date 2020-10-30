@@ -48,6 +48,7 @@ class OpenMultipleImagesPage extends StatelessWidget {
 
 /// Widget that displays a text file in a dialog
 class MultipleImagesDisplay extends StatelessWidget {
+  /// The files containing the images
   final List<XFile> files;
 
   /// Default Constructor
