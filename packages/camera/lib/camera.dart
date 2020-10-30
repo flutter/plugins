@@ -17,8 +17,10 @@ final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 enum CameraLensDirection {
   /// Front facing camera (a user looking at the screen is seen by the camera).
   front,
+
   /// Back facing camera (a user looking at the screen is not seen by the camera).
   back,
+
   /// External camera which may not be mounted to the device.
   external,
 }
@@ -287,7 +289,6 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// The properties of the camera device controlled by this controller.
   final CameraDescription description;
-
 
   /// The resolution this controller is targeting.
   ///
