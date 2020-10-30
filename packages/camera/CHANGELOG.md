@@ -1,3 +1,7 @@
+## 0.5.8+13
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.5.8+12
 
 * Added information of video not working correctly on Android emulators to `README.md`.

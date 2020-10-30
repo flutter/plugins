@@ -1,3 +1,7 @@
+# 0.0.1+9
+
+* Remove unused Flutter upper SDK constraint.
+
 # 0.0.1+8
 
 * Remove no-op android folder in the example app.

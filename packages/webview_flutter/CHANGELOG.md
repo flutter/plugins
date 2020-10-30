@@ -1,3 +1,7 @@
+## 1.0.5+1
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 1.0.5
 
 * Fix example in the readme.

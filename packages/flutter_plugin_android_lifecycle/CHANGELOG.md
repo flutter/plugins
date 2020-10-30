@@ -1,3 +1,7 @@
+## 1.0.11+1
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 1.0.11
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

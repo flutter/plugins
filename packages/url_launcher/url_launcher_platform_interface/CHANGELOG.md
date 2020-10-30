@@ -1,3 +1,7 @@
+## 1.0.9+1
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 1.0.9
 
 * Laid the groundwork for introducing a Link widget.

@@ -1,3 +1,7 @@
+## 0.3.7+7
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.3.7+6
 
 * Update android compileSdkVersion to 29.

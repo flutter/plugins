@@ -1,3 +1,7 @@
+## 1.0.4+1
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 1.0.4
 
 * Add a `dispose` method to the interface, so implementations may cleanup resources acquired on `init`.

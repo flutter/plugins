@@ -1,3 +1,7 @@
+# 0.1.5+1
+
+* Remove unused Flutter upper SDK constraint.
+
 # 0.1.5
 
 - Added the web implementation of the Link widget.

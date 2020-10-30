@@ -1,3 +1,7 @@
+## 5.7.9+1
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 5.7.9
 
 * Check in windows/ directory for example/

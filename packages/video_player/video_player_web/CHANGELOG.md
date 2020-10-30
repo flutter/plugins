@@ -1,3 +1,7 @@
+## 0.1.4+1
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.1.4
 
 * Added option to set the video playback speed on the video controller.

@@ -1,3 +1,7 @@
+## 0.1.0+7
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.1.0+6
 
 * Update license headers.

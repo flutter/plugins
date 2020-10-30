@@ -1,3 +1,7 @@
+## 0.4.5+17
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.4.5+16
 
 * Remove unnecessary workaround from test.

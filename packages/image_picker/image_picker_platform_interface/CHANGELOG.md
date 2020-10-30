@@ -1,3 +1,7 @@
+## 1.1.2+1
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 1.1.2
 
 * Update documentation of `pickImage()` regarding compression support for specific image types.

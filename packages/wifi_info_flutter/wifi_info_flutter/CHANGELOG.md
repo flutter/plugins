@@ -1,3 +1,7 @@
+## 1.0.1+1
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 1.0.1
 
 * Fixed method channel name in android implementation. [Issue](https://github.com/flutter/flutter/issues/69073).

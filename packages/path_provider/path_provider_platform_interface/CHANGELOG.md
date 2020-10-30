@@ -1,3 +1,7 @@
+## 1.0.3+1
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 1.0.3
 
 * Increase upper range of `package:platform` constraint to allow 3.X versions.

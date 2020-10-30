@@ -1,3 +1,7 @@
+## 0.9.2+1
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.9.2
 
 * Throw PlatformExceptions from where the GMaps SDK may throw exceptions: `init()` and `signIn()`.

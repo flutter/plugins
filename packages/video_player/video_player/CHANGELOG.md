@@ -1,3 +1,7 @@
+## 0.11.1+5
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.11.1+4
 
 * Add `toString()` to `Caption`.

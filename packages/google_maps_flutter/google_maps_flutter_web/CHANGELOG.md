@@ -1,3 +1,7 @@
+## 0.1.0+7
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.1.0+6
 
 * Ensure a single `InfoWindow` is shown at a time. [Issue](https://github.com/flutter/flutter/issues/67380).

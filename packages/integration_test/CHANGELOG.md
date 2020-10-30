@@ -1,3 +1,7 @@
+## 0.9.2+3
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.9.2+2
 
 * Broaden the constraint on vm_service.

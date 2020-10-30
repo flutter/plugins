@@ -1,3 +1,7 @@
+## 0.0.1+4
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.0.1+3
 
 * Add a missing include.

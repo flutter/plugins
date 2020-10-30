@@ -1,3 +1,7 @@
+## 0.0.1+3
+
+* Remove unused Flutter upper SDK constraint.
+
 ## 0.0.1+2
 
 * Check in windows/ directory for example/
