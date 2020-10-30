@@ -3,6 +3,7 @@ import 'package:example/home_page.dart';
 import 'package:example/save_text_page.dart';
 import 'package:example/open_text_page.dart';
 import 'package:example/open_image_page.dart';
+import 'package:example/open_multiple_images_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         '/save/text': (context) => SaveTextPage(),
         '/open/text': (context) => OpenTextPage(),
         '/open/image': (context) => OpenImagePage(),
+        '/open/images': (context) => OpenMultipleImagesPage(),
       },
     );
   }

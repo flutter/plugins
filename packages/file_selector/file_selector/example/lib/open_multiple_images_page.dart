@@ -4,20 +4,22 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 
 /// Screen that shows an example of openFile(s)
-class OpenImagePage extends StatelessWidget {
+class OpenMultipleImagesPage extends StatelessWidget {
   void _openImageFile(BuildContext context) async {
-    final XTypeGroup typeGroup = XTypeGroup(
+    final XTypeGroup jpgsTypeGroup = XTypeGroup(
       label: 'images',
-      extensions: ['jpg', 'png'],
+      extensions: ['jpg', 'jpeg'],
     );
-    final List<XFile> files = await openFiles(acceptedTypeGroups: [typeGroup]);
-    final XFile file = files[0];
-    final String fileName = file.name;
-    final String filePath = file.path;
-
+    final XTypeGroup pngTypeGroup = XTypeGroup(
+      extensions: ['png'],
+    );
+    final List<XFile> files = await openFiles(acceptedTypeGroups: [
+      jpgsTypeGroup,
+      pngTypeGroup,
+    ]);
     await showDialog(
       context: context,
-      builder: (context) => ImageDisplay(fileName, filePath),
+      builder: (context) => MultipleImagesDisplay(files),
     );
   }
 
@@ -25,7 +27,7 @@ class OpenImagePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Open an image"),
+        title: Text("Open multiple images"),
       ),
       body: Center(
         child: Column(
@@ -34,7 +36,7 @@ class OpenImagePage extends StatelessWidget {
             RaisedButton(
               color: Colors.blue,
               textColor: Colors.white,
-              child: Text('Press to open an image file(png, jpg)'),
+              child: Text('Press to open multiple images (png, jpg)'),
               onPressed: () => _openImageFile(context),
             ),
           ],
@@ -45,23 +47,30 @@ class OpenImagePage extends StatelessWidget {
 }
 
 /// Widget that displays a text file in a dialog
-class ImageDisplay extends StatelessWidget {
-  /// Image's name
-  final String fileName;
-
-  /// Image's path
-  final String filePath;
+class MultipleImagesDisplay extends StatelessWidget {
+  final List<XFile> files;
 
   /// Default Constructor
-  ImageDisplay(this.fileName, this.filePath);
+  MultipleImagesDisplay(this.files);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(fileName),
+      title: Text('Gallery'),
       // On web the filePath is a blob url
       // while on other platforms it is a system path.
-      content: kIsWeb ? Image.network(filePath) : Image.file(File(filePath)),
+      content: Center(
+        child: Row(
+          children: <Widget>[
+            ...files.map(
+              (file) => Flexible(
+                  child: kIsWeb
+                      ? Image.network(file.path)
+                      : Image.file(File(file.path))),
+            )
+          ],
+        ),
+      ),
       actions: [
         FlatButton(
           child: const Text('Close'),

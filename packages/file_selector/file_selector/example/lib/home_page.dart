@@ -29,6 +29,13 @@ class HomePage extends StatelessWidget {
             RaisedButton(
               color: Colors.blue,
               textColor: Colors.white,
+              child: Text('Open multiple images'),
+              onPressed: () => Navigator.pushNamed(context, '/open/images'),
+            ),
+            SizedBox(height: 10),
+            RaisedButton(
+              color: Colors.blue,
+              textColor: Colors.white,
               child: Text('Save text into a file'),
               onPressed: () => Navigator.pushNamed(context, '/save/text'),
             ),
