@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:html';
-import 'dart:ui' as ui;
+import 'src/shims/dart_ui.dart' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
