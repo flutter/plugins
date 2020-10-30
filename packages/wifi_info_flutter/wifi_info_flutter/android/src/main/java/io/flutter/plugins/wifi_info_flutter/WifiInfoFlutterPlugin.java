@@ -37,7 +37,7 @@ public class WifiInfoFlutterPlugin implements FlutterPlugin {
     final WifiManager wifiManager =
         (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-    final WifiInfoFlutter wifiInfoFlutter = new WifiInfoFlutter(wifiManager);
+    final WifiInfoFlutter wifiInfoFlutter = new WifiInfoFlutter(wifiManager, context);
 
     final WifiInfoFlutterMethodChannelHandler methodChannelHandler =
         new WifiInfoFlutterMethodChannelHandler(wifiInfoFlutter);
