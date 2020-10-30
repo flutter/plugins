@@ -1,6 +1,7 @@
 ## 0.11.1+4
 
 * Android: fix a bug where the app crashes when loading local assets.
+* Add `toString()` to `Caption`.
 
 ## 0.11.1+3
 
