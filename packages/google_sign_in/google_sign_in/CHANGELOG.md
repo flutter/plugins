@@ -1,4 +1,4 @@
-## 4.5.5+1
+## 4.5.6
 
 * Remove unused Flutter upper SDK constraint.
 
