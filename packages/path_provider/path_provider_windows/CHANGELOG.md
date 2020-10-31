@@ -1,3 +1,7 @@
+## 0.0.4+3
+
+* Update Dart SDK constraint in example.
+
 ## 0.0.4+2
 
 * Check in windows/ directory for example/

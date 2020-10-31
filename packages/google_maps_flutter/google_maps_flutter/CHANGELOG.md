@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Update Dart SDK constraint in example.
+
 ## 1.0.5
 
 Overhaul lifecycle management in GoogleMapsPlugin.

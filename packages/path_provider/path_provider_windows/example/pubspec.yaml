@@ -19,3 +19,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.4 <2.0.0"

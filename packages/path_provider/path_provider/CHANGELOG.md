@@ -1,3 +1,7 @@
+## 1.6.24
+
+* Update Dart SDK constraint in example.
+
 ## 1.6.23
 
 * Check in windows/ directory for example/
