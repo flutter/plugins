@@ -78,8 +78,6 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
         if (dataSource.package != null && dataSource.package.isNotEmpty) {
           assetUrl = 'packages/${dataSource.package}/$assetUrl';
         }
-        // 'webOnlyAssetManager' is only in the web version of dart:ui
-        // ignore: undefined_prefixed_name
         assetUrl = ui.webOnlyAssetManager.getAssetUrl(assetUrl);
         uri = assetUrl;
         break;
@@ -170,7 +168,6 @@ class _VideoPlayer {
     videoElement.setAttribute('playsinline', 'true');
 
     // TODO(hterkelsen): Use initialization parameters once they are available
-    // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
         'videoPlayer-$textureId', (int viewId) => videoElement);
 
