@@ -1,3 +1,13 @@
+## 1.0.5
+
+Overhaul lifecycle management in GoogleMapsPlugin.
+
+GoogleMapController is now uniformly driven by implementing `DefaultLifecycleObserver`. That observer is registered to a lifecycle from one of three sources:
+
+1. For v2 plugin registration, `GoogleMapsPlugin` obtains the lifecycle via `ActivityAware` methods.
+2. For v1 plugin registration, if the activity implements `LifecycleOwner`, it's lifecycle is used directly.
+3. For v1 plugin registration, if the activity does not implement `LifecycleOwner`, a proxy lifecycle is created and driven via `ActivityLifecycleCallbacks`.
+
 ## 1.0.4
 
 * Cleanup of Android code:
