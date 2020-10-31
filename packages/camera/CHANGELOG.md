@@ -1,6 +1,10 @@
-## 0.5.8+13
+## 0.5.8+14
 
 * Remove unused Flutter upper SDK constraint.
+
+## 0.5.8+13
+
+* Added Dartdocs for all public APIs.
 
 ## 0.5.8+12
 
