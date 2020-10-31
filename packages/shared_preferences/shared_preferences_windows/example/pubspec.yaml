@@ -16,7 +16,6 @@ dependency_overrides:
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-  test: any
   e2e: ^0.2.0
   pedantic: ^1.8.0
 
