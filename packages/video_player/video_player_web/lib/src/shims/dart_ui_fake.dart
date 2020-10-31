@@ -12,7 +12,8 @@ import 'dart:html' as html;
 class platformViewRegistry {
   /// Shim for registerViewFactory
   /// https://github.com/flutter/engine/blob/master/lib/web_ui/lib/ui.dart#L72
-  static registerViewFactory(String viewTypeId, html.Element Function(int viewId) viewFactory) {}
+  static registerViewFactory(
+      String viewTypeId, html.Element Function(int viewId) viewFactory) {}
 }
 
 /// Shim for web_ui engine.AssetManager.
