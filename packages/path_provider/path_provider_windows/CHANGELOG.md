@@ -1,3 +1,7 @@
+## 0.0.4+3
+
+* Remove unused `test` dependency.
+
 ## 0.0.4+2
 
 * Check in windows/ directory for example/

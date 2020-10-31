@@ -1,3 +1,7 @@
+## 1.6.24
+
+* Remove unused `test` dependency.
+
 ## 1.6.23
 
 * Check in windows/ directory for example/
