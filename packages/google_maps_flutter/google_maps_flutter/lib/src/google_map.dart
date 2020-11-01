@@ -10,6 +10,12 @@ part of google_maps_flutter;
 /// map is created.
 typedef void MapCreatedCallback(GoogleMapController controller);
 
+// This counter is used to provide a stable "constant" initialization id
+// to the buildView function, so the web implementation can use it as a
+// cache key. This needs to be provided from the outside, because web
+// views seem to re-render much more often that mobile platform views.
+int _webOnlyMapId = 0;
+
 /// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
   /// Creates a widget displaying data from Google Maps services.
@@ -29,6 +35,7 @@ class GoogleMap extends StatefulWidget {
     this.scrollGesturesEnabled = true,
     this.zoomControlsEnabled = true,
     this.zoomGesturesEnabled = true,
+    this.liteModeEnabled = false,
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
@@ -89,6 +96,11 @@ class GoogleMap extends StatefulWidget {
 
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
+
+  /// True if the map view should be in lite mode. Android only.
+  ///
+  /// See https://developers.google.com/maps/documentation/android-sdk/lite#overview_of_lite_mode for more details.
+  final bool liteModeEnabled;
 
   /// True if the map view should respond to tilt gestures.
   final bool tiltGesturesEnabled;
@@ -199,6 +211,8 @@ class GoogleMap extends StatefulWidget {
 }
 
 class _GoogleMapState extends State<GoogleMap> {
+  final _webOnlyMapCreationId = _webOnlyMapId++;
+
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
@@ -217,7 +231,9 @@ class _GoogleMapState extends State<GoogleMap> {
       'polygonsToAdd': serializePolygonSet(widget.polygons),
       'polylinesToAdd': serializePolylineSet(widget.polylines),
       'circlesToAdd': serializeCircleSet(widget.circles),
+      '_webOnlyMapCreationId': _webOnlyMapCreationId,
     };
+
     return _googleMapsFlutterPlatform.buildView(
       creationParams,
       widget.gestureRecognizers,
@@ -233,6 +249,13 @@ class _GoogleMapState extends State<GoogleMap> {
     _polygons = keyByPolygonId(widget.polygons);
     _polylines = keyByPolylineId(widget.polylines);
     _circles = keyByCircleId(widget.circles);
+  }
+
+  @override
+  void dispose() async {
+    super.dispose();
+    GoogleMapController controller = await _controller.future;
+    controller.dispose();
   }
 
   @override
@@ -372,13 +395,18 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomControlsEnabled,
     this.zoomGesturesEnabled,
+    this.liteModeEnabled,
     this.myLocationEnabled,
     this.myLocationButtonEnabled,
     this.padding,
     this.indoorViewEnabled,
     this.trafficEnabled,
     this.buildingsEnabled,
-  });
+  }) {
+    assert(liteModeEnabled == null ||
+        !liteModeEnabled ||
+        (liteModeEnabled && Platform.isAndroid));
+  }
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
     return _GoogleMapOptions(
@@ -393,6 +421,7 @@ class _GoogleMapOptions {
       trackCameraPosition: map.onCameraMove != null,
       zoomControlsEnabled: map.zoomControlsEnabled,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
+      liteModeEnabled: map.liteModeEnabled,
       myLocationEnabled: map.myLocationEnabled,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
       padding: map.padding,
@@ -423,6 +452,8 @@ class _GoogleMapOptions {
   final bool zoomControlsEnabled;
 
   final bool zoomGesturesEnabled;
+
+  final bool liteModeEnabled;
 
   final bool myLocationEnabled;
 
@@ -455,6 +486,7 @@ class _GoogleMapOptions {
     addIfNonNull('tiltGesturesEnabled', tiltGesturesEnabled);
     addIfNonNull('zoomControlsEnabled', zoomControlsEnabled);
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
+    addIfNonNull('liteModeEnabled', liteModeEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);

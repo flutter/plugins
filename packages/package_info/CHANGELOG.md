@@ -1,3 +1,16 @@
+## 0.4.3+1
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.3
+
+* Update package:e2e -> package:integration_test
+
+## 0.4.2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.4.1
 
 * Add support for macOS.

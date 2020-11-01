@@ -2,7 +2,8 @@
 
 [![pub package](https://img.shields.io/pub/v/path_provider.svg)](https://pub.dartlang.org/packages/path_provider)
 
-A Flutter plugin for finding commonly used locations on the filesystem. Supports iOS and Android.
+A Flutter plugin for finding commonly used locations on the filesystem. Supports iOS, Android, Linux and MacOS.
+Not all methods are supported on all platforms.
 
 ## Usage
 
@@ -19,3 +20,10 @@ String appDocPath = appDocDir.path;
 ```
 
 Please see the example app of this plugin for a full example.
+
+### Usage in tests
+
+`path_provider` now uses a `PlatformInterface`, meaning that not all platforms share the a single `PlatformChannel`-based implementation.
+With that change, tests should be updated to mock `PathProviderPlatform` rather than `PlatformChannel`.
+
+See this `path_provider` [test](https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/test/path_provider_test.dart) for an example.

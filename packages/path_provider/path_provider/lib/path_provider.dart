@@ -3,14 +3,42 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Directory;
+import 'dart:io' show Directory, Platform;
 
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
+import 'package:path_provider_linux/path_provider_linux.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:path_provider_platform_interface/src/method_channel_path_provider.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
 
-PathProviderPlatform get _platform => PathProviderPlatform.instance;
+@visibleForTesting
+@Deprecated('This is no longer necessary, and is now a no-op')
+set disablePathProviderPlatformOverride(bool override) {}
+
+bool _manualDartRegistrationNeeded = true;
+
+PathProviderPlatform get _platform {
+  // This is to manually endorse Dart implementations until automatic
+  // registration of Dart plugins is implemented. For details see
+  // https://github.com/flutter/flutter/issues/52267.
+  if (_manualDartRegistrationNeeded) {
+    // Only do the initial registration if it hasn't already been overridden
+    // with a non-default instance.
+    if (!kIsWeb && PathProviderPlatform.instance is MethodChannelPathProvider) {
+      if (Platform.isLinux) {
+        PathProviderPlatform.instance = PathProviderLinux();
+      } else if (Platform.isWindows) {
+        PathProviderPlatform.instance = PathProviderWindows();
+      }
+    }
+    _manualDartRegistrationNeeded = false;
+  }
+
+  return PathProviderPlatform.instance;
+}
 
 /// Path to the temporary directory on the device that is not backed up and is
 /// suitable for storing caches of downloaded files.

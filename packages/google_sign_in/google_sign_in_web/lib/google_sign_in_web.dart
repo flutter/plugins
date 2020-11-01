@@ -105,16 +105,17 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       // state of the authentication, i.e: if you logout elsewhere...
 
       isAuthInitialized.complete();
-    }), allowInterop((dynamic reason) {
+    }), allowInterop((auth2.GoogleAuthInitFailureError reason) {
       // onError
-      throw PlatformException(
-        code: 'google_sign_in',
-        message: reason.error,
-        details: reason.details,
-      );
+      isAuthInitialized.completeError(PlatformException(
+        code: reason.error,
+        message: reason.details,
+        details:
+            'https://developers.google.com/identity/sign-in/web/reference#error_codes',
+      ));
     }));
 
-    return null;
+    return _isAuthInitialized;
   }
 
   @override
@@ -128,8 +129,16 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   @override
   Future<GoogleSignInUserData> signIn() async {
     await initialized;
-
-    return gapiUserToPluginUserData(await auth2.getAuthInstance().signIn());
+    try {
+      return gapiUserToPluginUserData(await auth2.getAuthInstance().signIn());
+    } on auth2.GoogleAuthSignInError catch (reason) {
+      throw PlatformException(
+        code: reason.error,
+        message: 'Exception raised from GoogleAuth.signIn()',
+        details:
+            'https://developers.google.com/identity/sign-in/web/reference#error_codes_2',
+      );
+    }
   }
 
   @override

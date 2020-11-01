@@ -100,6 +100,11 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('seekTo() has not been implemented.');
   }
 
+  /// Sets the playback speed to a [speed] value indicating the playback rate.
+  Future<void> setPlaybackSpeed(int textureId, double speed) {
+    throw UnimplementedError('setPlaybackSpeed() has not been implemented.');
+  }
+
   /// Gets the video position as [Duration] from the start.
   Future<Duration> getPosition(int textureId) {
     throw UnimplementedError('getPosition() has not been implemented.');
@@ -108,6 +113,11 @@ abstract class VideoPlayerPlatform {
   /// Returns a widget displaying the video with a given textureID.
   Widget buildView(int textureId) {
     throw UnimplementedError('buildView() has not been implemented.');
+  }
+
+  /// Sets the audio mode to mix with other sources
+  Future<void> setMixWithOthers(bool mixWithOthers) {
+    throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
 
   // This method makes sure that VideoPlayer isn't implemented with `implements`.
@@ -179,7 +189,7 @@ enum DataSourceType {
   network,
 
   /// The video was loaded off of the local filesystem.
-  file
+  file,
 }
 
 /// The file format of the given video.
@@ -194,7 +204,7 @@ enum VideoFormat {
   ss,
 
   /// Any format other than the other ones defined in this enum.
-  other
+  other,
 }
 
 /// Event emitted from the platform implementation.
@@ -330,4 +340,14 @@ class DurationRange {
 
   @override
   int get hashCode => start.hashCode ^ end.hashCode;
+}
+
+/// [VideoPlayerOptions] can be optionally used to set additional player settings
+class VideoPlayerOptions {
+  /// Set this to true to mix the video players audio with other audio sources.
+  /// The default value is false
+  final bool mixWithOthers;
+
+  /// set additional optional player settings
+  VideoPlayerOptions({this.mixWithOthers = false});
 }

@@ -9,6 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import androidx.annotation.RequiresApi;
 import io.flutter.plugin.common.EventChannel;
 
 /**
@@ -24,6 +29,8 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   private Context context;
   private Connectivity connectivity;
   private EventChannel.EventSink events;
+  private Handler mainHandler = new Handler(Looper.getMainLooper());
+  public static final String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
 
   ConnectivityBroadcastReceiver(Context context, Connectivity connectivity) {
     this.context = context;
@@ -33,12 +40,20 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   @Override
   public void onListen(Object arguments, EventChannel.EventSink events) {
     this.events = events;
-    context.registerReceiver(this, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      connectivity.getConnectivityManager().registerDefaultNetworkCallback(getNetworkCallback());
+    } else {
+      context.registerReceiver(this, new IntentFilter(CONNECTIVITY_ACTION));
+    }
   }
 
   @Override
   public void onCancel(Object arguments) {
-    context.unregisterReceiver(this);
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      connectivity.getConnectivityManager().unregisterNetworkCallback(getNetworkCallback());
+    } else {
+      context.unregisterReceiver(this);
+    }
   }
 
   @Override
@@ -46,5 +61,31 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
     if (events != null) {
       events.success(connectivity.getNetworkType());
     }
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  ConnectivityManager.NetworkCallback getNetworkCallback() {
+    return new ConnectivityManager.NetworkCallback() {
+      @Override
+      public void onAvailable(Network network) {
+        sendEvent();
+      }
+
+      @Override
+      public void onLost(Network network) {
+        sendEvent();
+      }
+    };
+  }
+
+  private void sendEvent() {
+    Runnable runnable =
+        new Runnable() {
+          @Override
+          public void run() {
+            events.success(connectivity.getNetworkType());
+          }
+        };
+    mainHandler.post(runnable);
   }
 }
