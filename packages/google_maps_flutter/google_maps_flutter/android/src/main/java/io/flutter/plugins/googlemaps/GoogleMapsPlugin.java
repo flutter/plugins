@@ -6,6 +6,8 @@ package io.flutter.plugins.googlemaps;
 
 import android.app.Activity;
 import android.app.Application.ActivityLifecycleCallbacks;
+import android.app.FragmentManager;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,10 +15,17 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.Lifecycle.Event;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
 
 /**
  * Plugin for controlling a set of GoogleMap views to be shown as overlays on top of the Flutter
@@ -24,11 +33,15 @@ import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
  * the map. A Texture drawn using GoogleMap bitmap snapshots can then be shown instead of the
  * overlay.
  */
-public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
+public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, MethodChannel.MethodCallHandler {
 
   @Nullable private Lifecycle lifecycle;
 
   private static final String VIEW_TYPE = "plugins.flutter.io/google_maps";
+  private static final String UTILS_CHANNEL = "plugins.flutter.io/google_maps_utils";
+
+  private MethodChannel utilsMethodChannel;
+  private FragmentManager fragmentManager;
 
   @SuppressWarnings("deprecation")
   public static void registerWith(
@@ -80,21 +93,26 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
                     return lifecycle;
                   }
                 }));
+    utilsMethodChannel = new MethodChannel(binding.getBinaryMessenger(), UTILS_CHANNEL);
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+  }
 
   // ActivityAware
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
     lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
+    fragmentManager = binding.getActivity().getFragmentManager();
+    utilsMethodChannel.setMethodCallHandler(this);
   }
 
   @Override
   public void onDetachedFromActivity() {
     lifecycle = null;
+    utilsMethodChannel.setMethodCallHandler(null);
   }
 
   @Override
@@ -105,6 +123,34 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onDetachedFromActivityForConfigChanges() {
     onDetachedFromActivity();
+  }
+
+  @Override
+  public void onMethodCall(@NonNull MethodCall call, @NonNull final MethodChannel.Result result) {
+    switch (call.method) {
+      case "warmUp":
+        final MapFragment mapFragment = new MapFragment();
+        fragmentManager.beginTransaction().add(mapFragment, "DummyMap").commit();
+        mapFragment.getMapAsync(
+                new OnMapReadyCallback() {
+                  @Override
+                  public void onMapReady(GoogleMap googleMap) {
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && fragmentManager.isStateSaved()) {
+                            return;
+                      }
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && fragmentManager.isDestroyed()) {
+                          return;
+                      }
+
+                      fragmentManager.beginTransaction().remove(mapFragment).commit();
+                    result.success(null);
+                  }
+                });
+        break;
+      default:
+        result.notImplemented();
+        break;
+    }
   }
 
   /**
