@@ -1,3 +1,7 @@
+## 1.0.6
+
+Add TileOverlay support.
+
 ## 1.0.5
 
 Overhaul lifecycle management in GoogleMapsPlugin.
