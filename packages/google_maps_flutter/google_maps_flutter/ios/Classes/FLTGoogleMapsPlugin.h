@@ -9,6 +9,7 @@
 #import "GoogleMapMarkerController.h"
 #import "GoogleMapPolygonController.h"
 #import "GoogleMapPolylineController.h"
+#import "GoogleMapTileOverlayController.h"
 
 @interface FLTGoogleMapsPlugin : NSObject <FlutterPlugin>
 @end

@@ -21,6 +21,9 @@ rootProject.allprojects {
 
 apply plugin: 'com.android.library'
 
+sourceCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+
 android {
     compileSdkVersion 28
 
@@ -30,6 +33,10 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 
     dependencies {
