@@ -37,6 +37,7 @@ gradle-wrapper.jar
 generated_plugin_registrant.dart
 GeneratedPluginRegistrant.h
 GeneratedPluginRegistrant.m
+generated_plugin_registrant.cc
 GeneratedPluginRegistrant.java
 GeneratedPluginRegistrant.swift
 build/

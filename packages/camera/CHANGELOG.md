@@ -1,3 +1,36 @@
+## 0.5.8+13
+
+* Added Dartdocs for all public APIs.
+
+## 0.5.8+12
+
+* Added information of video not working correctly on Android emulators to `README.md`.
+
+## 0.5.8+11
+
+* Fix rare nullptr exception on Android.
+* Updated README.md with information about handling App lifecycle changes.
+
+## 0.5.8+10
+
+* Suppress the `deprecated_member_use` warning in the example app for `ScaffoldMessenger.showSnackBar`.
+
+## 0.5.8+9
+
+* Update android compileSdkVersion to 29.
+
+## 0.5.8+8
+
+* Fixed garbled audio (in video) by setting audio encoding bitrate.
+
+## 0.5.8+7
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.5.8+6
+
+* Avoiding uses or overrides a deprecated API in CameraPlugin.java.
+
 ## 0.5.8+5
 
 * Fix compilation/availability issues on iOS.

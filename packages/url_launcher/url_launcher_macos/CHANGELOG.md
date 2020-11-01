@@ -1,3 +1,7 @@
+# 0.0.1+8
+
+* Remove no-op android folder in the example app.
+
 # 0.0.1+7
 
 * Remove Android folder from url_launcher_web and url_launcher_macos.

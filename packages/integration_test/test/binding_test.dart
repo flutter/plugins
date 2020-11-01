@@ -1,8 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:integration_test/integration_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:vm_service/vm_service.dart' as vm;
+
+vm.Timeline _ktimelines = vm.Timeline(
+  traceEvents: <vm.TimelineEvent>[],
+  timeOriginMicros: 100,
+  timeExtentMicros: 200,
+);
 
 void main() async {
   Future<Map<String, dynamic>> request;
@@ -14,10 +24,21 @@ void main() async {
     final IntegrationTestWidgetsFlutterBinding integrationBinding =
         binding as IntegrationTestWidgetsFlutterBinding;
 
+    MockVM mockVM;
+    List<int> clockTimes = [100, 200];
+
     setUp(() {
       request = integrationBinding.callback(<String, String>{
         'command': 'request_data',
       });
+      mockVM = MockVM();
+      when(mockVM.getVMTimeline(
+        timeOriginMicros: anyNamed('timeOriginMicros'),
+        timeExtentMicros: anyNamed('timeExtentMicros'),
+      )).thenAnswer((_) => Future.value(_ktimelines));
+      when(mockVM.getVMTimelineMicros()).thenAnswer(
+        (_) => Future.value(vm.Timestamp(timestamp: clockTimes.removeAt(0))),
+      );
     });
 
     testWidgets('Run Integration app', (WidgetTester tester) async {
@@ -53,6 +74,17 @@ void main() async {
       expect(widgetCenter.dx, windowCenterX);
       expect(widgetCenter.dy, windowCenterY);
     });
+
+    testWidgets('Test traceAction', (WidgetTester tester) async {
+      await integrationBinding.enableTimeline(vmService: mockVM);
+      await integrationBinding.traceAction(() async {});
+      expect(integrationBinding.reportData, isNotNull);
+      expect(integrationBinding.reportData.containsKey('timeline'), true);
+      expect(
+        json.encode(integrationBinding.reportData['timeline']),
+        json.encode(_ktimelines),
+      );
+    });
   });
 
   tearDownAll(() async {
@@ -66,3 +98,5 @@ void main() async {
     assert(result.data['answer'] == 42);
   });
 }
+
+class MockVM extends Mock implements vm.VmService {}

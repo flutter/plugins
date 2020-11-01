@@ -1,6 +1,6 @@
 #import "IntegrationTestPlugin.h"
 
-static NSString *const kIntegrationTestPluginChannel = @"plugins.flutter.io/integratoin_test";
+static NSString *const kIntegrationTestPluginChannel = @"plugins.flutter.io/integration_test";
 static NSString *const kMethodTestFinished = @"allTestsFinished";
 
 @interface IntegrationTestPlugin ()
