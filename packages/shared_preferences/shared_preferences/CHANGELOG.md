@@ -1,3 +1,7 @@
+## 0.5.13
+
+* Migrated preferences functionality to utilize kotlin.
+
 ## 0.5.12+3
 
 * Check in windows/ directory for example/
