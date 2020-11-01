@@ -566,7 +566,7 @@ void main() {
           'VideoPlayerValue(duration: 0:00:05.000000, '
           'size: Size(400.0, 300.0), '
           'position: 0:00:01.000000, '
-          'caption: Instance of \'Caption\', '
+          'caption: Caption(number: null, start: null, end: null, text: foo), '
           'buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], '
           'isPlaying: true, '
           'isLooping: true, '

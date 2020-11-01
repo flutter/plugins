@@ -1,3 +1,15 @@
+## 0.3.4+16
+
+* Add Dartdocs to all public APIs.
+
+## 0.3.4+15
+
+* Update android compileSdkVersion to 29.
+
+## 0.3.4+14
+
+* Add test target to iOS example app Podfile
+
 ## 0.3.4+13
 
 * Android Code Inspection and Clean up.
