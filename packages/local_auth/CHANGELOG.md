@@ -1,3 +1,11 @@
+## 0.6.3+3
+
+* Update android compileSdkVersion to 29.
+
+## 0.6.3+2
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 0.6.3+1
 
 * Update package:e2e -> package:integration_test

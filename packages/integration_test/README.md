@@ -30,8 +30,8 @@ void main() {
 ### Driver Entrypoint
 
 An accompanying driver script will be needed that can be shared across all
-integration tests. Create a `integration_test_driver.dart` in the `test_driver/`
-directory with the following contents:
+integration tests. Create a file named `integration_test.dart` in the
+`test_driver/` directory with the following contents:
 
 ```dart
 import 'package:integration_test/integration_test_driver.dart';
@@ -57,7 +57,7 @@ integration_test/
 test/
   # Other unit tests go here.
 test_driver/
-  integration_test_driver.dart
+  integration_test.dart
 ```
 
 [Example](https://github.com/flutter/plugins/tree/master/packages/integration_test/example)
@@ -67,11 +67,11 @@ test_driver/
 These tests can be launched with the `flutter drive` command.
 
 To run the `integration_test/foo_test.dart` test with the
-`test_driver/integration_test_driver.dart` driver, use the following command:
+`test_driver/integration_test.dart` driver, use the following command:
 
 ```sh
 flutter drive \
-  --driver=test_driver/integration_test_driver.dart \
+  --driver=test_driver/integration_test.dart \
   --target=integration_test/foo_test.dart
 ```
 
@@ -85,7 +85,7 @@ Use following command to execute the tests:
 
 ```sh
 flutter drive \
-  --driver=test_driver/integration_test_driver.dart \
+  --driver=test_driver/integration_test.dart \
   --target=integration_test/foo_test.dart \
   -d web-server
 ```
@@ -134,10 +134,11 @@ dependencies {
 }
 ```
 
-To run a test on a local Android device (emulated or physical):
+To run `integration_test/foo_test.dart` on a local Android device (emulated or
+physical):
 
 ```sh
-./gradlew app:connectedAndroidTest -Ptarget=`pwd`/../test_driver/<package_name>_integration_test.dart
+./gradlew app:connectedAndroidTest -Ptarget=`pwd`/../integration_test/foo_test.dart
 ```
 
 ## Firebase Test Lab
@@ -189,10 +190,12 @@ target 'Runner' do
 end
 ```
 
-To run a test on your iOS device (simulator or real), rebuild your iOS targets with Flutter tool.
+To run `integration_test/foo_test.dart` on your iOS device, rebuild your iOS
+targets with Flutter tool.
 
 ```sh
-flutter build ios -t test_driver/<package_name>_integration_test.dart (--simulator)
+# Pass --simulator if building for the simulator.
+flutter build ios integration_test/foo_test.dart
 ```
 
 Open Xcode project (by default, it's `ios/Runner.xcodeproj`). Create a test target

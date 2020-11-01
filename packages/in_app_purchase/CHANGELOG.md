@@ -1,3 +1,37 @@
+## 0.3.4+16
+
+* Add Dartdocs to all public APIs.
+
+## 0.3.4+15
+
+* Update android compileSdkVersion to 29.
+
+## 0.3.4+14
+
+* Add test target to iOS example app Podfile
+
+## 0.3.4+13
+
+* Android Code Inspection and Clean up.
+
+## 0.3.4+12
+
+* [iOS] Fixed: finishing purchases upon payment dialog cancellation.
+
+## 0.3.4+11
+
+* [iOS] Fixed: crash when sending null for simulatesAskToBuyInSandbox parameter.
+
+## 0.3.4+10
+
+* Fixed typo 'verity' for 'verify'.
+
+## 0.3.4+9
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
+
 ## 0.3.4+8
 
 * [iOS] Fixed: purchase dialog not showing always.

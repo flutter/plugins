@@ -22,7 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 16
@@ -31,9 +31,16 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    android {
+        compileOptions {
+            sourceCompatibility 1.8
+            targetCompatibility 1.8
+        }
+    }
 }
 
 dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'com.google.guava:guava:28.1-android'
     testImplementation 'junit:junit:4.12'
 }

@@ -1,5 +1,6 @@
 group 'io.flutter.plugins.androidintent'
 version '1.0-SNAPSHOT'
+def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
 
 buildscript {
     repositories {
@@ -19,10 +20,14 @@ rootProject.allprojects {
     }
 }
 
+project.getTasks().withType(JavaCompile){
+    options.compilerArgs.addAll(args)
+}
+
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 16
