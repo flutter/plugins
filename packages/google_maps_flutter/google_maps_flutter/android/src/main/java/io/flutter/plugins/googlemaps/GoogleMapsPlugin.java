@@ -15,11 +15,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.Lifecycle.Event;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
-
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -33,7 +31,8 @@ import io.flutter.plugin.common.MethodChannel;
  * the map. A Texture drawn using GoogleMap bitmap snapshots can then be shown instead of the
  * overlay.
  */
-public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, MethodChannel.MethodCallHandler {
+public class GoogleMapsPlugin
+    implements FlutterPlugin, ActivityAware, MethodChannel.MethodCallHandler {
 
   @Nullable private Lifecycle lifecycle;
 
@@ -97,8 +96,7 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, MethodCha
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
-  }
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
 
   // ActivityAware
 
@@ -132,20 +130,22 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware, MethodCha
         final MapFragment mapFragment = new MapFragment();
         fragmentManager.beginTransaction().add(mapFragment, "DummyMap").commit();
         mapFragment.getMapAsync(
-                new OnMapReadyCallback() {
-                  @Override
-                  public void onMapReady(GoogleMap googleMap) {
-                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && fragmentManager.isStateSaved()) {
-                            return;
-                      }
-                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && fragmentManager.isDestroyed()) {
-                          return;
-                      }
+            new OnMapReadyCallback() {
+              @Override
+              public void onMapReady(GoogleMap googleMap) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    && fragmentManager.isStateSaved()) {
+                  return;
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                    && fragmentManager.isDestroyed()) {
+                  return;
+                }
 
-                      fragmentManager.beginTransaction().remove(mapFragment).commit();
-                    result.success(null);
-                  }
-                });
+                fragmentManager.beginTransaction().remove(mapFragment).commit();
+                result.success(null);
+              }
+            });
         break;
       default:
         result.notImplemented();
