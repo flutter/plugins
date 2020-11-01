@@ -14,7 +14,8 @@ flutter:
         fileName: image_picker_for_web.dart
 
 dependencies:
-  image_picker_platform_interface: ^1.1.0
+  image_picker_platform_interface:
+    path: ../image_picker_platform_interface
   flutter:
     sdk: flutter
   flutter_web_plugins:

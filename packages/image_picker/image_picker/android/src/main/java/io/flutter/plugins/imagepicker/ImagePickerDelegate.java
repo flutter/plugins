@@ -22,6 +22,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -551,11 +552,18 @@ public class ImagePickerDelegate
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
       Integer imageQuality = methodCall.argument("imageQuality");
+      Boolean shouldCreateThumbnail = methodCall.argument("createThumbnail");
 
       String finalImagePath =
           imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
 
-      finishWithSuccess(finalImagePath);
+      String thumbnailPath = null;
+      if(shouldCreateThumbnail != null ? shouldCreateThumbnail : false){
+        thumbnailPath = imageResizer
+                .resizeImageIfNeeded(path, 600.0, 600.0, 100);
+      }
+
+      finishWithSuccess(finalImagePath, thumbnailPath);
 
       //delete original file if scaled
       if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
@@ -585,13 +593,25 @@ public class ImagePickerDelegate
     return true;
   }
 
-  private void finishWithSuccess(String imagePath) {
-    if (pendingResult == null) {
+  private void finishWithSuccess(String imagePath){
+    finishWithSuccess(imagePath, null);
+  }
+
+  private void finishWithSuccess(String imagePath, String thumbnailPath) {
+    if (pendingResult == null || methodCall == null) {
       cache.saveResult(imagePath, null, null);
       return;
     }
-    pendingResult.success(imagePath);
+    if (ImagePickerPlugin.METHOD_CALL_IMAGE_WITH_THUMBNAIL.equals(methodCall.method)) {
+      HashMap<String, String> result = new HashMap<>();
+      result.put("image", imagePath);
+      result.put("thumbnail", thumbnailPath);
+      pendingResult.success(result);
+    } else {
+      pendingResult.success(imagePath);
+    }
     clearMethodCallAndResult();
+
   }
 
   private void finishWithAlreadyActiveError(MethodChannel.Result result) {

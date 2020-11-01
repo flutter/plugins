@@ -92,6 +92,7 @@ public class ImagePickerPlugin
   }
 
   static final String METHOD_CALL_IMAGE = "pickImage";
+  static final String METHOD_CALL_IMAGE_WITH_THUMBNAIL = "pickImageWithThumbnail";
   static final String METHOD_CALL_VIDEO = "pickVideo";
   private static final String METHOD_CALL_RETRIEVE = "retrieve";
   private static final int CAMERA_DEVICE_FRONT = 1;
@@ -291,6 +292,7 @@ public class ImagePickerPlugin
     }
     switch (call.method) {
       case METHOD_CALL_IMAGE:
+      case METHOD_CALL_IMAGE_WITH_THUMBNAIL:
         imageSource = call.argument("source");
         switch (imageSource) {
           case SOURCE_GALLERY:
@@ -320,7 +322,7 @@ public class ImagePickerPlugin
         delegate.retrieveLostImage(result);
         break;
       default:
-        throw new IllegalArgumentException("Unknown method " + call.method);
+        result.notImplemented();
     }
   }
 }

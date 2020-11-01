@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker_platform_interface/src/types/picked_image.dart';
 import 'package:meta/meta.dart' show required, visibleForTesting;
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
@@ -38,6 +39,41 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
+  Future<PickedImage> pickImageWithThumbnail({
+    @required ImageSource source,
+    double maxWidth,
+    double maxHeight,
+    int imageQuality,
+    bool createThumbnail = false,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+  }) async {
+    try {
+      var paths = await _pickImagePaths(
+        source: source,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+        createThumbnail: createThumbnail,
+        preferredCameraDevice: preferredCameraDevice,
+      );
+      return paths != null
+          ? PickedImage(
+              paths['image'],
+              thumbnailPath: paths['thumbnail'],
+            )
+          : null;
+    } on MissingPluginException catch (e) {
+        var file = await pickImage(
+          source: source,
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: imageQuality,
+          preferredCameraDevice: preferredCameraDevice,);
+        return file == null ? null : PickedImage.fromFile(file);
+    }
+  }
+
+  @override
   Future<String> pickImagePath({
     @required ImageSource source,
     double maxWidth,
@@ -66,6 +102,41 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
         'imageQuality': imageQuality,
+        'cameraDevice': preferredCameraDevice.index
+      },
+    );
+  }
+
+  Future<Map<String, String>> _pickImagePaths({
+    @required ImageSource source,
+    double maxWidth,
+    double maxHeight,
+    int imageQuality,
+    bool createThumbnail,
+    CameraDevice preferredCameraDevice,
+  }) async {
+    assert(source != null);
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
+    }
+
+    if (maxWidth != null && maxWidth < 0) {
+      throw ArgumentError.value(maxWidth, 'maxWidth', 'cannot be negative');
+    }
+
+    if (maxHeight != null && maxHeight < 0) {
+      throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
+    }
+
+    return _channel.invokeMapMethod<String, String>(
+      'pickImageWithThumbnail',
+      <String, dynamic>{
+        'source': source.index,
+        'maxWidth': maxWidth,
+        'maxHeight': maxHeight,
+        'imageQuality': imageQuality,
+        'createThumbnail': createThumbnail,
         'cameraDevice': preferredCameraDevice.index
       },
     );

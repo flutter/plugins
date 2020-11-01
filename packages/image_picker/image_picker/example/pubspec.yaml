@@ -9,7 +9,8 @@ dependencies:
   flutter_plugin_android_lifecycle: ^1.0.2
   image_picker:
     path: ../
-  image_picker_for_web: ^0.1.0
+  image_picker_for_web:
+    path: ../../image_picker_for_web
 
 dev_dependencies:
   flutter_driver:
