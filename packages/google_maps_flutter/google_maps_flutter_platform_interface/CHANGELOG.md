@@ -1,10 +1,18 @@
+## 1.0.5
+
+* Android: Add dummy map initialization
+
+## 1.0.4
+
+* Add a `dispose` method to the interface, so implementations may cleanup resources acquired on `init`.
+
 ## 1.0.3
 
-* Update lower bound of dart dependency to 2.1.0.
+* Pass icon width/height if present on `fromAssetImage` BitmapDescriptors (web only)
 
 ## 1.0.2
 
-* Android: Add dummy map initialization
+* Update lower bound of dart dependency to 2.1.0.
 
 ## 1.0.1
 

@@ -1,3 +1,15 @@
+## 0.0.4+5
+
+* Update license header.
+
+## 0.0.4+4
+
+* Remove no-op android folder in the example app.
+
+## 0.0.4+3
+
+* Remove Android folder from `path_provider_macos`.
+
 ## 0.0.4+2
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).

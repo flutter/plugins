@@ -7,7 +7,7 @@
 @interface FLTImagePickerPlugin : NSObject <FlutterPlugin>
 
 // For testing only.
-- (instancetype)initWithViewController:(UIViewController *)viewController;
 - (UIImagePickerController *)getImagePickerController;
+- (UIViewController *)viewControllerWithWindow:(UIWindow *)window;
 
 @end

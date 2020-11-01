@@ -15,9 +15,6 @@
 @property(nullable, copy, nonatomic) ShouldAddStorePayment shouldAddStorePayment;
 @property(nullable, copy, nonatomic) UpdatedDownloads updatedDownloads;
 
-@property(strong, nonatomic)
-    NSMutableDictionary<NSString *, SKPaymentTransaction *> *transactionsSetter;
-
 @end
 
 @implementation FIAPaymentQueueHandler
@@ -39,7 +36,6 @@
     _paymentQueueRestoreCompletedTransactionsFinished = restoreCompletedTransactionsFinished;
     _shouldAddStorePayment = shouldAddStorePayment;
     _updatedDownloads = updatedDownloads;
-    _transactionsSetter = [NSMutableDictionary dictionary];
   }
   return self;
 }
@@ -49,8 +45,10 @@
 }
 
 - (BOOL)addPayment:(SKPayment *)payment {
-  if (self.transactionsSetter[payment.productIdentifier]) {
-    return NO;
+  for (SKPaymentTransaction *transaction in self.queue.transactions) {
+    if ([transaction.payment.productIdentifier isEqualToString:payment.productIdentifier]) {
+      return NO;
+    }
   }
   [self.queue addPayment:payment];
   return YES;
@@ -74,16 +72,6 @@
 // state of transactions and finish as appropriate.
 - (void)paymentQueue:(SKPaymentQueue *)queue
     updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
-  for (SKPaymentTransaction *transaction in transactions) {
-    if (transaction.transactionIdentifier) {
-      // Use product identifier instead of transaction identifier for few reasons:
-      // 1. Only transactions with purchased state and failed state will have a transaction id, it
-      //    will become impossible for clients to finish deferred transactions when needed.
-      // 2. Using product identifiers can help prevent clients from purchasing the same
-      //    subscription more than once by accident.
-      self.transactionsSetter[transaction.payment.productIdentifier] = transaction;
-    }
-  }
   // notify dart through callbacks.
   self.transactionsUpdated(transactions);
 }
@@ -91,11 +79,6 @@
 // Sent when transactions are removed from the queue (via finishTransaction:).
 - (void)paymentQueue:(SKPaymentQueue *)queue
     removedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
-  for (SKPaymentTransaction *transaction in transactions) {
-    if (transaction.transactionIdentifier) {
-      [self.transactionsSetter removeObjectForKey:transaction.payment.productIdentifier];
-    }
-  }
   self.transactionsRemoved(transactions);
 }
 
@@ -126,12 +109,6 @@
 
 - (NSArray<SKPaymentTransaction *> *)getUnfinishedTransactions {
   return self.queue.transactions;
-}
-
-#pragma mark - getter
-
-- (NSDictionary<NSString *, SKPaymentTransaction *> *)transactions {
-  return [self.transactionsSetter copy];
 }
 
 @end

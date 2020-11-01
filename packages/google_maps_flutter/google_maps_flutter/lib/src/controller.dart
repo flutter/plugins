@@ -259,6 +259,11 @@ class GoogleMapController {
     return _googleMapsFlutterPlatform.takeSnapshot(mapId: mapId);
   }
 
+  /// Disposes of the platform resources
+  void dispose() {
+    _googleMapsFlutterPlatform.dispose(mapId: mapId);
+  }
+
   /// This method creates dummy map. This call will initialize all services needed by GoogleMaps
   /// This will speed up next GoogleMap view initialization. Android only.
   static Future<void> warmUp() {

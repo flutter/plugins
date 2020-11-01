@@ -304,6 +304,11 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('onLongPress() has not been implemented.');
   }
 
+  /// Dispose of whatever resources the `mapId` is holding on to.
+  void dispose({@required int mapId}) {
+    throw UnimplementedError('dispose() has not been implemented.');
+  }
+
   /// Returns a widget displaying the map view
   Widget buildView(
       Map<String, dynamic> creationParams,
