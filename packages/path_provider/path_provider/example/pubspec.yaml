@@ -1,5 +1,7 @@
 name: path_provider_example
 description: Demonstrates how to use the path_provider plugin.
+version: 0.0.1
+publish_to: none
 
 dependencies:
   flutter:
@@ -12,7 +14,7 @@ dev_dependencies:
     path: ../../../integration_test
   flutter_driver:
     sdk: flutter
-  test: any
+  #  test: any
   pedantic: ^1.8.0
 
 flutter:
