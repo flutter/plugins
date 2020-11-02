@@ -1,6 +1,7 @@
 ## 2.0.1
 
 * Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
 
 ## 2.0.0
 

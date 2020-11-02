@@ -1,6 +1,7 @@
 ## 0.0.4+3
 
 * Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
 
 ## 0.0.4+2
 
