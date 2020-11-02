@@ -1,3 +1,7 @@
+## 1.0.2
+
+- Opt out of null safety.
+
 ## 1.0.1
 
 - Documentation typo fixed.

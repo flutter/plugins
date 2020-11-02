@@ -1,3 +1,7 @@
+## 0.11.1+5
+
+* Opt out of null safety.
+
 ## 0.11.1+4
 
 * Add `toString()` to `Caption`.

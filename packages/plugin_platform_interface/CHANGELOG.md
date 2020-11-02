@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Opt out of null safety.
+
 ## 1.0.3
 
 * Fix homepage in `pubspec.yaml`.

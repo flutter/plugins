@@ -1,10 +1,14 @@
+## 1.0.7
+
+* Opt out of null safety.
+
 ## 1.0.6
 
 * Update lower bound of dart dependency to 2.1.0.
 
 ## 1.0.5
 
-* Remove dart:io Platform checks from the MethodChannel implementation. This is 
+* Remove dart:io Platform checks from the MethodChannel implementation. This is
 tripping the analysis of other versions of the plugin.
 
 ## 1.0.4

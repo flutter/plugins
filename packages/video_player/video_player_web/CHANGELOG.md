@@ -1,3 +1,7 @@
+## 0.1.5
+
+* Out out of null safety.
+
 ## 0.1.4
 
 * Added option to set the video playback speed on the video controller.

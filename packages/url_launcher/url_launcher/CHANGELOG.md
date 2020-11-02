@@ -1,3 +1,7 @@
+## 5.7.10
+
+* Opt out of null safety.
+
 ## 5.7.9
 
 * Check in windows/ directory for example/

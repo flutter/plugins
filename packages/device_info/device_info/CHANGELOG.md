@@ -1,3 +1,7 @@
+# 0.4.2+10
+
+* Opt out of null safety.
+
 ## 0.4.2+9
 
 * Update android compileSdkVersion to 29.
