@@ -1,3 +1,7 @@
+## 0.6.4
+
+* Add support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.
+
 ## 0.6.3+3
 
 * Update android compileSdkVersion to 29.

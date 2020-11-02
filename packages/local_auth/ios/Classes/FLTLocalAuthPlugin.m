@@ -97,6 +97,11 @@
   self.lastCallArgs = nil;
   self.lastResult = nil;
   context.localizedFallbackTitle = @"";
+  if (arguments[@"localizedFallbackTitle"] != (NSString *)[NSNull null]) {
+    context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"];
+  } else {
+    context.localizedFallbackTitle = @"";
+  }
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
