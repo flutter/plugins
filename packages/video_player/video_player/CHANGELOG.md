@@ -1,6 +1,8 @@
 ## 0.11.1+5
 
 * Update Dart SDK constraint in example.
+* Remove `test` dependency.
+* Convert disabled driver test to integration_test.
 
 ## 0.11.1+4
 
