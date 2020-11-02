@@ -41,8 +41,8 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   @Override
   public void onListen(Object arguments, EventChannel.EventSink events) {
     this.events = events;
-    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && networkCallback != null) {
-      connectivity.getConnectivityManager().registerDefaultNetworkCallback(networkCallback);
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      connectivity.getConnectivityManager().registerDefaultNetworkCallback(getNetworkCallback());
     } else {
       context.registerReceiver(this, new IntentFilter(CONNECTIVITY_ACTION));
     }
@@ -50,8 +50,8 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
 
   @Override
   public void onCancel(Object arguments) {
-    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      connectivity.getConnectivityManager().unregisterNetworkCallback(getNetworkCallback());
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && networkCallback != null) {
+      connectivity.getConnectivityManager().unregisterNetworkCallback(networkCallback);
     } else {
       context.unregisterReceiver(this);
     }
