@@ -142,24 +142,24 @@ task:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
   matrix:
-    - name: build_all_plugins_ipa
-      script:
-        # TODO(jackson): Allow web plugins once supported on stable
-        # https://github.com/flutter/flutter/issues/42864
-        - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
-        - flutter channel $CHANNEL
-        - ./script/build_all_plugins_app.sh ios --no-codesign
-    - name: lint_darwin_plugins
-      env:
-        matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
-      script:
-        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
-        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
-        # Skip the dummy podspecs used to placate the tool.
-        - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
-        - ./script/incremental_build.sh podspecs
+    # - name: build_all_plugins_ipa
+    #   script:
+    #     # TODO(jackson): Allow web plugins once supported on stable
+    #     # https://github.com/flutter/flutter/issues/42864
+    #     - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
+    #     - flutter channel $CHANNEL
+    #     - ./script/build_all_plugins_app.sh ios --no-codesign
+    # - name: lint_darwin_plugins
+    #   env:
+    #     matrix:
+    #       PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
+    #       PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+    #   script:
+    #     # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
+    #     - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
+    #     # Skip the dummy podspecs used to placate the tool.
+    #     - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
+    #     - ./script/incremental_build.sh podspecs
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
