@@ -1,0 +1,23 @@
+name: wifi_info_flutter_example
+description: Demonstrates how to use the wifi_info_flutter plugin.
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  connectivity: 0.4.9+3
+  flutter:
+    sdk: flutter
+  wifi_info_flutter:
+    path: ../
+  cupertino_icons: ^1.0.0
+
+dev_dependencies:
+  integration_test:
+    path: ../../../integration_test
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

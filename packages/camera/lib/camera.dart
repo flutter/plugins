@@ -13,7 +13,17 @@ part 'camera_image.dart';
 
 final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
-enum CameraLensDirection { front, back, external }
+/// The direction the camera is facing.
+enum CameraLensDirection {
+  /// Front facing camera (a user looking at the screen is seen by the camera).
+  front,
+
+  /// Back facing camera (a user looking at the screen is not seen by the camera).
+  back,
+
+  /// External camera which may not be mounted to the device.
+  external,
+}
 
 /// Affect the quality of video recording and image capture:
 ///
@@ -38,6 +48,9 @@ enum ResolutionPreset {
   max,
 }
 
+/// Signature for a callback receiving the a camera image.
+///
+/// This is used by [CameraController.startImageStream].
 // ignore: inference_failure_on_function_return_type
 typedef onLatestImageAvailable = Function(CameraImage image);
 
@@ -91,10 +104,15 @@ Future<List<CameraDescription>> availableCameras() async {
   }
 }
 
+/// Properties of a camera device.
 class CameraDescription {
+  /// Creates a new camera description with the given properties.
   CameraDescription({this.name, this.lensDirection, this.sensorOrientation});
 
+  /// The name of the camera device.
   final String name;
+
+  /// The direction the camera is facing.
   final CameraLensDirection lensDirection;
 
   /// Clockwise angle through which the output image needs to be rotated to be upright on the device screen in its native orientation.
@@ -126,19 +144,27 @@ class CameraDescription {
 
 /// This is thrown when the plugin reports an error.
 class CameraException implements Exception {
+  /// Creates a new camera exception with the given error code and description.
   CameraException(this.code, this.description);
 
+  /// Error code.
+  // TODO(bparrishMines): Document possible error codes.
+  // https://github.com/flutter/flutter/issues/69298
   String code;
+
+  /// Textual description of the error.
   String description;
 
   @override
   String toString() => '$runtimeType($code, $description)';
 }
 
-// Build the UI texture view of the video data with textureId.
+/// A widget showing a live camera preview.
 class CameraPreview extends StatelessWidget {
+  /// Creates a preview widget for the given camera controller.
   const CameraPreview(this.controller);
 
+  /// The controller for the camera that the preview is shown for.
   final CameraController controller;
 
   @override
@@ -151,6 +177,7 @@ class CameraPreview extends StatelessWidget {
 
 /// The state of a [CameraController].
 class CameraValue {
+  /// Creates a new camera controller state.
   const CameraValue({
     this.isInitialized,
     this.errorDescription,
@@ -161,6 +188,7 @@ class CameraValue {
     bool isRecordingPaused,
   }) : _isRecordingPaused = isRecordingPaused;
 
+  /// Creates a new camera controller state for an uninitialzed controller.
   const CameraValue.uninitialized()
       : this(
           isInitialized: false,
@@ -187,6 +215,10 @@ class CameraValue {
   /// True when camera [isRecordingVideo] and recording is paused.
   bool get isRecordingPaused => isRecordingVideo && _isRecordingPaused;
 
+  /// Description of an error state.
+  ///
+  /// This is null while the controller is not in an error state.
+  /// When [hasError] is true this contains the error description.
   final String errorDescription;
 
   /// The size of the preview in pixels.
@@ -199,8 +231,15 @@ class CameraValue {
   /// Can only be called when [initialize] is done.
   double get aspectRatio => previewSize.height / previewSize.width;
 
+  /// Whether the controller is in an error state.
+  ///
+  /// When true [errorDescription] describes the error.
   bool get hasError => errorDescription != null;
 
+  /// Creates a modified copy of the object.
+  ///
+  /// Explicitly specified fields get the specified value, all other fields get
+  /// the same value of the current object.
   CameraValue copyWith({
     bool isInitialized,
     bool isRecordingVideo,
@@ -241,13 +280,22 @@ class CameraValue {
 ///
 /// To show the camera preview on the screen use a [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
+  /// Creates a new camera controller in an uninitialized state.
   CameraController(
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
   }) : super(const CameraValue.uninitialized());
 
+  /// The properties of the camera device controlled by this controller.
   final CameraDescription description;
+
+  /// The resolution this controller is targeting.
+  ///
+  /// This resolution preset is not guaranteed to be available on the device,
+  /// if unavailable a lower resolution will be used.
+  ///
+  /// See also: [ResolutionPreset].
   final ResolutionPreset resolutionPreset;
 
   /// Whether to include audio when recording a video.

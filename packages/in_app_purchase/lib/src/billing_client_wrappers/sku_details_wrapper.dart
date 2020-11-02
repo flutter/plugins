@@ -19,6 +19,7 @@ part 'sku_details_wrapper.g.dart';
 @JsonSerializable()
 @SkuTypeConverter()
 class SkuDetailsWrapper {
+  /// Creates a [SkuDetailsWrapper] with the given purchase details.
   @visibleForTesting
   SkuDetailsWrapper({
     @required this.description,
@@ -47,6 +48,7 @@ class SkuDetailsWrapper {
   factory SkuDetailsWrapper.fromJson(Map map) =>
       _$SkuDetailsWrapperFromJson(map);
 
+  /// Textual description of the product.
   final String description;
 
   /// Trial period in ISO 8601 format.
@@ -78,6 +80,8 @@ class SkuDetailsWrapper {
 
   /// Applies to [SkuType.subs], formatted in ISO 8601.
   final String subscriptionPeriod;
+
+  /// The product's title.
   final String title;
 
   /// The [SkuType] of the product.
@@ -143,6 +147,7 @@ class SkuDetailsWrapper {
 /// Returned by [BillingClient.querySkuDetails].
 @JsonSerializable()
 class SkuDetailsResponseWrapper {
+  /// Creates a [SkuDetailsResponseWrapper] with the given purchase details.
   @visibleForTesting
   SkuDetailsResponseWrapper(
       {@required this.billingResult, this.skuDetailsList});

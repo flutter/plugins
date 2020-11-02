@@ -4,6 +4,7 @@ description: Flutter plugin for Android and iOS device authentication sensors
 homepage: https://github.com/flutter/plugins/tree/master/packages/local_auth
 version: 0.6.4
 
+
 flutter:
   plugin:
     platforms:
