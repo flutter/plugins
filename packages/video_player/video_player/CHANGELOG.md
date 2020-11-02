@@ -1,6 +1,18 @@
+## 2.0.0-nullsafety.1
+
+* Merge master.
+
 ## 2.0.0-nullsafety
 
 * Migration to null safety.
+
+## 0.11.1+4
+
+* Add `toString()` to `Caption`.
+
+## 0.11.1+3
+
+* Android: Upgrade ExoPlayer to 2.12.1.
 
 ## 0.11.1+2
 

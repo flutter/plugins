@@ -54,4 +54,13 @@ class Caption {
   /// and an empty [text] string.
   static const Caption none =
       Caption(number: 0, start: Duration.zero, end: Duration.zero, text: '');
+
+  @override
+  String toString() {
+    return '$runtimeType('
+        'number: $number, '
+        'start: $start, '
+        'end: $end, '
+        'text: $text)';
+  }
 }

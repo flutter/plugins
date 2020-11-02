@@ -41,6 +41,8 @@ Change the minimum Android sdk version to 21 (or higher) in your `android/app/bu
 minSdkVersion 21
 ```
 
+It's important to note that the `MediaRecorder` class is not working properly on emulators, as stated in the documentation: https://developer.android.com/reference/android/media/MediaRecorder. Specifically, when recording a video with sound enabled and trying to play it back, the duration won't be correct and you will only see the first frame.
+
 ### Handling Lifecycle states
 
 As of version [0.5.0](https://github.com/flutter/plugins/blob/master/packages/camera/CHANGELOG.md#050) of the camera plugin, lifecycle changes are no longer handled by the plugin. This means developers are now responsible to control camera resources when the lifecycle state is updated. Failure to do so might lead to unexpected behavior (for example as described in issue [#39109](https://github.com/flutter/flutter/issues/39109)). Handling lifecycle changes can be done by overriding the `didChangeAppLifecycleState` method like so:

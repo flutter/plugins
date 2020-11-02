@@ -14,6 +14,7 @@ part 'enum_converters.g.dart';
 /// `@SKTransactionStatusConverter()`.
 class SKTransactionStatusConverter
     implements JsonConverter<SKPaymentTransactionStateWrapper, int> {
+  /// Default const constructor.
   const SKTransactionStatusConverter();
 
   @override
@@ -23,6 +24,7 @@ class SKTransactionStatusConverter
               .cast<SKPaymentTransactionStateWrapper, dynamic>(),
           json);
 
+  /// Converts an [SKPaymentTransactionStateWrapper] to a [PurchaseStatus].
   PurchaseStatus toPurchaseStatus(SKPaymentTransactionStateWrapper object) {
     switch (object) {
       case SKPaymentTransactionStateWrapper.purchasing:
