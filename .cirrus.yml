@@ -26,7 +26,7 @@ task:
         - pushd $(dirname $(which flutter))
         - git checkout e444b1e3fa
         - git log --oneline HEAD~1..HEAD
-        - echo '03395debde37a59bf839f5c18c0e354b28eae4de' > internal/engine.version
+        - echo '0c7e9528a0ed84d044e965790ea60a729be424a1' > internal/engine.version
         - flutter devices
         - popd 
         - ./script/incremental_build.sh build-examples --ipa
