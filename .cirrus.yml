@@ -24,7 +24,7 @@ task:
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       build_script:
         - pushd $(dirname $(which flutter))
-        - git checkout 09dc5599ddb00ff194ce6f52e72148deb2fde91f
+        - git checkout 36f9af3f55c620a0bbd38b9b0b1f0a9727243cb0
         - flutter devices
         - popd 
         - ./script/incremental_build.sh build-examples --ipa
