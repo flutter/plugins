@@ -1,6 +1,7 @@
 ## 0.9.2+3
 
-* Remove unused `test` dependency in the example app.
+* Remove `test` dependency in the example app.
+* Remove `example/test_driver/failure_test.dart`
 
 ## 0.9.2+2
 
