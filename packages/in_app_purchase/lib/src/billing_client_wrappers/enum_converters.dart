@@ -13,6 +13,7 @@ part 'enum_converters.g.dart';
 /// Use these in `@JsonSerializable()` classes by annotating them with
 /// `@BillingResponseConverter()`.
 class BillingResponseConverter implements JsonConverter<BillingResponse, int> {
+  /// Default const constructor.
   const BillingResponseConverter();
 
   @override
@@ -28,6 +29,7 @@ class BillingResponseConverter implements JsonConverter<BillingResponse, int> {
 /// Use these in `@JsonSerializable()` classes by annotating them with
 /// `@SkuTypeConverter()`.
 class SkuTypeConverter implements JsonConverter<SkuType, String> {
+  /// Default const constructor.
   const SkuTypeConverter();
 
   @override
@@ -52,6 +54,7 @@ class _SerializedEnums {
 /// `@PurchaseStateConverter()`.
 class PurchaseStateConverter
     implements JsonConverter<PurchaseStateWrapper, int> {
+  /// Default const constructor.
   const PurchaseStateConverter();
 
   @override
@@ -63,6 +66,9 @@ class PurchaseStateConverter
   int toJson(PurchaseStateWrapper object) =>
       _$PurchaseStateWrapperEnumMap[object];
 
+  /// Converts the purchase state stored in `object` to a [PurchaseStatus].
+  ///
+  /// [PurchaseStateWrapper.unspecified_state] is mapped to [PurchaseStatus.error].
   PurchaseStatus toPurchaseStatus(PurchaseStateWrapper object) {
     switch (object) {
       case PurchaseStateWrapper.pending:

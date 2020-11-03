@@ -69,13 +69,13 @@ public class MediaRecorderBuilderTest {
 
     InOrder inOrder = inOrder(recorder);
     inOrder.verify(recorder).setAudioSource(MediaRecorder.AudioSource.MIC);
-    inOrder.verify(recorder).setAudioEncodingBitRate(recorderProfile.audioBitRate);
     inOrder.verify(recorder).setVideoSource(MediaRecorder.VideoSource.SURFACE);
     inOrder.verify(recorder).setOutputFormat(recorderProfile.fileFormat);
     inOrder.verify(recorder).setAudioEncoder(recorderProfile.audioCodec);
+    inOrder.verify(recorder).setAudioEncodingBitRate(recorderProfile.audioBitRate);
+    inOrder.verify(recorder).setAudioSamplingRate(recorderProfile.audioSampleRate);
     inOrder.verify(recorder).setVideoEncoder(recorderProfile.videoCodec);
     inOrder.verify(recorder).setVideoEncodingBitRate(recorderProfile.videoBitRate);
-    inOrder.verify(recorder).setAudioSamplingRate(recorderProfile.audioSampleRate);
     inOrder.verify(recorder).setVideoFrameRate(recorderProfile.videoFrameRate);
     inOrder
         .verify(recorder)

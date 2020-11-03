@@ -163,6 +163,7 @@ task:
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
+        PLUGINS_TO_SKIP_XCTESTS: "battery/battery,camera,connectivity/connectivity,device_info/device_info,espresso,google_maps_flutter/google_maps_flutter,google_sign_in/google_sign_in,image_picker/image_picker,in_app_purchase,integration_test,ios_platform_images,local_auth,package_info,path_provider/path_provider,quick_actions,sensors,shared_preferences/shared_preferences,url_launcher/url_launcher,video_player/video_player,webview_flutter,wifi_info_flutter/wifi_info_flutter"
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
@@ -179,6 +180,7 @@ task:
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples
+        - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''

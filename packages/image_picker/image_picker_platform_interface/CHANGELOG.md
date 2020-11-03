@@ -1,3 +1,7 @@
+## 1.1.3
+
+* Update documentation of `pickImage()` regarding HEIC images.
+
 ## 1.1.2
 
 * Update documentation of `pickImage()` regarding compression support for specific image types.
