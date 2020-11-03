@@ -272,6 +272,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
+    // ignore: deprecated_member_use
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
   }
 

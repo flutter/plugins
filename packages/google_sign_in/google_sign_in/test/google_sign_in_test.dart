@@ -154,9 +154,9 @@ void main() {
     test('signIn works even if a previous call throws error in other zone',
         () async {
       responses['signInSilently'] = Exception('Not a user');
-      await runZoned(() async {
+      await runZonedGuarded(() async {
         expect(await googleSignIn.signInSilently(), isNull);
-      }, onError: (dynamic e, dynamic st) {});
+      }, (Object e, StackTrace st) {});
       expect(await googleSignIn.signIn(), isNotNull);
       expect(
         log,

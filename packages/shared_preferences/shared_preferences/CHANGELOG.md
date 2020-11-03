@@ -1,3 +1,19 @@
+## 0.5.12+4
+
+* Remove unused `test` dependency.
+
+## 0.5.12+3
+
+* Check in windows/ directory for example/
+
+## 0.5.12+2
+
+* Update android compileSdkVersion to 29.
+
+## 0.5.12+1
+
+* Check in linux/ directory for example/
+
 ## 0.5.12
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
