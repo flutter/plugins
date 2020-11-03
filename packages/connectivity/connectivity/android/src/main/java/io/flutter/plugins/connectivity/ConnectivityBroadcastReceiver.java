@@ -13,7 +13,6 @@ import android.net.Network;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.RequiresApi;
 import io.flutter.plugin.common.EventChannel;
 
 /**
@@ -42,7 +41,19 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   public void onListen(Object arguments, EventChannel.EventSink events) {
     this.events = events;
     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      connectivity.getConnectivityManager().registerDefaultNetworkCallback(getNetworkCallback());
+      networkCallback =
+          new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(Network network) {
+              sendEvent();
+            }
+
+            @Override
+            public void onLost(Network network) {
+              sendEvent();
+            }
+          };
+      connectivity.getConnectivityManager().registerDefaultNetworkCallback(networkCallback);
     } else {
       context.registerReceiver(this, new IntentFilter(CONNECTIVITY_ACTION));
     }
@@ -50,7 +61,7 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
 
   @Override
   public void onCancel(Object arguments) {
-    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && networkCallback != null) {
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       connectivity.getConnectivityManager().unregisterNetworkCallback(networkCallback);
     } else {
       context.unregisterReceiver(this);
@@ -62,23 +73,6 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
     if (events != null) {
       events.success(connectivity.getNetworkType());
     }
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.N)
-  ConnectivityManager.NetworkCallback getNetworkCallback() {
-    networkCallback =
-        new ConnectivityManager.NetworkCallback() {
-          @Override
-          public void onAvailable(Network network) {
-            sendEvent();
-          }
-
-          @Override
-          public void onLost(Network network) {
-            sendEvent();
-          }
-        };
-    return networkCallback;
   }
 
   private void sendEvent() {

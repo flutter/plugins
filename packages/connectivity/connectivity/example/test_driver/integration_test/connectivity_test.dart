@@ -20,5 +20,11 @@ void main() {
       final ConnectivityResult result = await _connectivity.checkConnectivity();
       expect(result, isNotNull);
     });
+
+    testWidgets('test onConnectivityChanged', (WidgetTester tester) async {
+      final subscription = _connectivity.onConnectivityChanged.listen((event) { });
+      expect(subscription, isNotNull);
+      await subscription.cancel();
+    });
   });
 }
