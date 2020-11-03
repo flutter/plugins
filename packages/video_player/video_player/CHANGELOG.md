@@ -1,3 +1,9 @@
+## 0.11.1+5
+
+* Update Dart SDK constraint in example.
+* Remove `test` dependency.
+* Convert disabled driver test to integration_test.
+
 ## 0.11.1+4
 
 * Add `toString()` to `Caption`.
@@ -13,7 +19,7 @@
 ## 0.11.1+1
 
 * Fixed uncanceled timers when calling `play` on the controller multiple times before `pause`, which
-  caused value listeners to be called indefinitely (after `pause`) and more often than needed. 
+  caused value listeners to be called indefinitely (after `pause`) and more often than needed.
 
 ## 0.11.1
 
