@@ -21,6 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin. It is also
@@ -38,12 +44,34 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private final android.content.SharedPreferences preferences;
 
+  private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+  private static final int CORE_POOL_SIZE = Math.max(2, Math.min(CPU_COUNT - 1, 4));
+  private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
+  private static final int KEEP_ALIVE_SECONDS = 30;
+
+  private final ThreadPoolExecutor threadPoolExecutor;
+
+  private static final BlockingQueue<Runnable> sPoolWorkQueue =
+          new LinkedBlockingQueue<Runnable>(128);
+
+  private static final ThreadFactory sThreadFactory = new ThreadFactory() {
+    private final AtomicInteger mCount = new AtomicInteger(1);
+
+    public Thread newThread(Runnable r) {
+      return new Thread(r, "AsyncTask #" + mCount.getAndIncrement());
+    }
+  };
+
   /**
    * Constructs a {@link MethodCallHandlerImpl} instance. Creates a {@link
    * android.content.SharedPreferences} based on the {@code context}.
    */
   MethodCallHandlerImpl(Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    threadPoolExecutor =  new ThreadPoolExecutor(
+            CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
+            sPoolWorkQueue, sThreadFactory);
+    threadPoolExecutor.allowCoreThreadTimeOut(true);
   }
 
   @Override
@@ -128,7 +156,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       protected void onPostExecute(Boolean value) {
         result.success(value);
       }
-    }.execute();
+    }.executeOnExecutor(threadPoolExecutor);
   }
 
   private List<String> decodeList(String encodedList) throws IOException {
