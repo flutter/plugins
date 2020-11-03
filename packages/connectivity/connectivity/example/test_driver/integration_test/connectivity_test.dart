@@ -22,7 +22,8 @@ void main() {
     });
 
     testWidgets('test onConnectivityChanged', (WidgetTester tester) async {
-      final subscription = _connectivity.onConnectivityChanged.listen((event) { });
+      final subscription =
+          _connectivity.onConnectivityChanged.listen((event) { });
       expect(subscription, isNotNull);
       await subscription.cancel();
     });
