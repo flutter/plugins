@@ -1,3 +1,7 @@
+## 0.11.1+6
+
+* Android: Dispose video players when app is closed.
+
 ## 0.11.1+5
 
 * Update Dart SDK constraint in example.
