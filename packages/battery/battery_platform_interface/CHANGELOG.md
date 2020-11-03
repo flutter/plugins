@@ -1,6 +1,6 @@
-## 1.0.1
+## 1.1.0
 
-- Add not_charging Android Status.
+- **Breaking change**. Add not_charging Android Status.
 
 ## 1.0.0
 
