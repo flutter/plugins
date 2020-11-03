@@ -1,6 +1,7 @@
 ## 1.0.6
 
 * Update Dart SDK constraint in example.
+* Remove unused `test` dependency in the example app.
 
 ## 1.0.5
 
