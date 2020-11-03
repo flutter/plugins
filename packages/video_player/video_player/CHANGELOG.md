@@ -11,6 +11,7 @@
 ## 0.11.1+4
 
 * Add `toString()` to `Caption`.
+* Fix a bug on Android when loading videos from assets would crash.
 
 ## 0.11.1+3
 
