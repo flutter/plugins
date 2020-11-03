@@ -1,5 +1,5 @@
-import 'package:flutter_driver/flutter_driver.dart';
-import 'package:integration_test/common.dart' as common;
+// import 'package:flutter_driver/flutter_driver.dart';
+// import 'package:integration_test/common.dart' as common;
 // import 'package:test/test.dart';
 
 /// This file is only used for testing of `package:integration_test` – do not
