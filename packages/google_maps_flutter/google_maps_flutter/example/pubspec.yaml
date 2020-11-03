@@ -1,6 +1,10 @@
 name: google_maps_flutter_example
 description: Demonstrates how to use the google_maps_flutter plugin.
 
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+  flutter: ">=1.22.0 <2.0.0"
+
 dependencies:
   flutter:
     sdk: flutter
@@ -15,7 +19,6 @@ dependencies:
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-  test: ^1.6.0
   integration_test:
     path: ../../../integration_test
   pedantic: ^1.8.0
