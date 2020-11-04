@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Invoke the WebView.onWebResourceError on iOS when the webview content process crashes.
+
 ## 1.0.5
 
 * Fix example in the readme.
