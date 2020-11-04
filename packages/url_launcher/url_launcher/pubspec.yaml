@@ -2,7 +2,7 @@ name: url_launcher
 description: Flutter plugin for launching a URL on Android and iOS. Supports
   web, phone, SMS, and email schemes.
 homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher
-version: 6.0.0-nullsafety
+version: 6.0.0-nullsafety.1
 
 flutter:
   plugin:
@@ -42,9 +42,9 @@ dev_dependencies:
     sdk: flutter
   test: ^1.10.0-nullsafety.1
   mockito: ^4.1.1
-  plugin_platform_interface: 1.1.0-nullsafety
+  plugin_platform_interface: 1.1.0-nullsafety.1
   pedantic: ^1.10.0-nullsafety.1
 
 environment:
-  sdk: ">=2.10.0-56.0.dev <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5 <2.0.0"

@@ -5,7 +5,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/device_info
 # 0.4.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 2.0.0-nullsafety
+version: 2.0.0-nullsafety.1
 
 flutter:
   plugin:
@@ -19,7 +19,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  device_info_platform_interface: ^2.0.0-nullsafety
+  device_info_platform_interface: ^2.0.0-nullsafety.1
 dev_dependencies:
   test: ^1.10.0-nullsafety.1
   flutter_test:

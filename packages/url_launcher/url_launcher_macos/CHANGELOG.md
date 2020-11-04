@@ -1,3 +1,7 @@
+# 0.1.0-nullsafety.1
+
+* Bump SDK to support null safety.
+
 # 0.1.0-nullsafety
 
 * Migrate to null safety.
