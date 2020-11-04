@@ -25,17 +25,17 @@
 }
 
 - (void)testWebViewWebContentProcessDidTerminateCallsRecourseErrorChannel {
-  WKWebView *webview = OCMClassMock(WKWebView.class);
-  [self.navigationDelegate webViewWebContentProcessDidTerminate:webview];
-  NSError *error = [[NSError alloc] initWithDomain:WKErrorDomain
-                                              code:WKErrorWebContentProcessTerminated
-                                          userInfo:nil];
-  OCMVerify([self.mockMethodChannel invokeMethod:@"onWebResourceError"
-                                       arguments:[OCMArg checkWithBlock:^BOOL(NSDictionary *args) {
-                                         XCTAssertEqualObjects(args[@"errorType"],
-                                                               @"webContentProcessTerminated");
-                                         return true;
-                                       }]]);
+  if (@available(iOS 9.0, *)) {
+    // `webViewWebContentProcessDidTerminate` is only available on iOS 9.0 and above.
+    WKWebView *webview = OCMClassMock(WKWebView.class);
+    [self.navigationDelegate webViewWebContentProcessDidTerminate:webview];
+    OCMVerify([self.mockMethodChannel
+        invokeMethod:@"onWebResourceError"
+           arguments:[OCMArg checkWithBlock:^BOOL(NSDictionary *args) {
+             XCTAssertEqualObjects(args[@"errorType"], @"webContentProcessTerminated");
+             return true;
+           }]]);
+  }
 }
 
 @end
