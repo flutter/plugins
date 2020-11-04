@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
@@ -106,25 +105,5 @@ void main() {
       await tester.pumpAndSettle();
       expect(_controller.value.isPlaying, true);
     });
-  });
-
-  group('android', () {
-    setUp(() {
-      _controller = VideoPlayerController.asset('assets/Butterfly-209.mp4');
-    });
-
-    testWidgets(
-      'can be played',
-          (WidgetTester tester) async {
-        await _controller.initialize();
-
-        await _controller.play();
-        await tester.pumpAndSettle(Duration(seconds: 3));
-
-        expect(_controller.value.isPlaying, true);
-
-        await SystemNavigator.pop(animated: false);
-      },
-    );
   });
 }
