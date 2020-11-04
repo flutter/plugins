@@ -52,15 +52,16 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private final ThreadPoolExecutor threadPoolExecutor;
 
   private static final BlockingQueue<Runnable> sPoolWorkQueue =
-          new LinkedBlockingQueue<Runnable>(128);
+    new LinkedBlockingQueue<Runnable>(128);
 
-  private static final ThreadFactory sThreadFactory = new ThreadFactory() {
-    private final AtomicInteger mCount = new AtomicInteger(1);
+  private static final ThreadFactory sThreadFactory = 
+    new ThreadFactory() {
+      private final AtomicInteger mCount = new AtomicInteger(1);
 
-    public Thread newThread(Runnable r) {
-      return new Thread(r, "AsyncTask #" + mCount.getAndIncrement());
-    }
-  };
+      public Thread newThread(Runnable r) {
+        return new Thread(r, "AsyncTask #" + mCount.getAndIncrement());
+      }
+    };
 
   /**
    * Constructs a {@link MethodCallHandlerImpl} instance. Creates a {@link
@@ -68,9 +69,14 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    */
   MethodCallHandlerImpl(Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-    threadPoolExecutor =  new ThreadPoolExecutor(
-            CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
-            sPoolWorkQueue, sThreadFactory);
+    threadPoolExecutor = 
+      new ThreadPoolExecutor(
+          CORE_POOL_SIZE, 
+          MAXIMUM_POOL_SIZE, 
+          KEEP_ALIVE_SECONDS, 
+          TimeUnit.SECONDS,
+          sPoolWorkQueue, 
+          sThreadFactory);
     threadPoolExecutor.allowCoreThreadTimeOut(true);
   }
 
