@@ -1,10 +1,7 @@
 name: video_player
 description: Flutter plugin for displaying inline video with other Flutter
   widgets on Android, iOS, and web.
-# 0.10.y+z is compatible with 1.0.0, if you land a breaking change bump
-# the version to 2.0.0.
-# See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.11.1+5
+version: 1.0.0
 homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player
 
 flutter:
