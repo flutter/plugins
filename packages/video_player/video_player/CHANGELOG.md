@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Android: Dispose video players when app is closed.
+
 ## 1.0.0
 
 * Announce 1.0.0.
