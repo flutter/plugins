@@ -1,6 +1,5 @@
 package io.flutter.plugins.videoplayerexample;
 
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -19,6 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FlutterActivityTest {
@@ -37,12 +37,10 @@ public class FlutterActivityTest {
     FlutterEngineCache.getInstance().put("my_flutter_engine", engine);
 
     engine.getPlugins().add(videoPlayerPlugin);
-    verify(videoPlayerPlugin, times(1))
-        .onAttachedToEngine(pluginBindingCaptor.capture());
+    verify(videoPlayerPlugin, times(1)).onAttachedToEngine(pluginBindingCaptor.capture());
 
     engine.destroy();
-    verify(videoPlayerPlugin, times(1))
-        .onDetachedFromEngine(pluginBindingCaptor.capture());
+    verify(videoPlayerPlugin, times(1)).onDetachedFromEngine(pluginBindingCaptor.capture());
     verify(videoPlayerPlugin, times(1)).initialize();
   }
 }
