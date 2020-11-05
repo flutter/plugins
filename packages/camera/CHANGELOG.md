@@ -1,3 +1,7 @@
+## 0.5.8+15
+
+* Made `CameraController.isDisposed` publicly accessible.
+
 ## 0.5.8+14
 
 * Changed the order of the setters for `mediaRecorder` in `MediaRecorderBuilder.java` to make it more readable.
