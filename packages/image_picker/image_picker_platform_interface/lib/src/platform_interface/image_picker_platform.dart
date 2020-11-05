@@ -120,6 +120,9 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
+  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
+  /// in addition to a size modification, of which the usage is explained below.
+  ///
   /// If specified, the image will be at most `maxWidth` wide and
   /// `maxHeight` tall. Otherwise the image will be returned at it's
   /// original width and height.

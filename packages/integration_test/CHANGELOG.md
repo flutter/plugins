@@ -1,3 +1,7 @@
+## 0.9.2+2
+
+* Broaden the constraint on vm_service.
+
 ## 0.9.2+1
 
 * Update android compileSdkVersion to 29.
