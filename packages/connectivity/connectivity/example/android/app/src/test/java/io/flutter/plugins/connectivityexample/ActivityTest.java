@@ -1,22 +1,20 @@
 package io.flutter.plugins.connectivityexample;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.spy;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
-
+import io.flutter.plugins.connectivity.Connectivity;
+import io.flutter.plugins.connectivity.ConnectivityBroadcastReceiver;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-
-import io.flutter.plugins.connectivity.Connectivity;
-import io.flutter.plugins.connectivity.ConnectivityBroadcastReceiver;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.spy;
 
 @RunWith(RobolectricTestRunner.class)
 public class ActivityTest {
@@ -34,7 +32,7 @@ public class ActivityTest {
   public void networkCallbackNewApi() {
     Context context = RuntimeEnvironment.application;
     Connectivity connectivity = spy(new Connectivity(connectivityManager));
-    ConnectivityBroadcastReceiver  broadcastReceiver =
+    ConnectivityBroadcastReceiver broadcastReceiver =
         spy(new ConnectivityBroadcastReceiver(context,connectivity));
 
     broadcastReceiver.onListen(any(), any());
