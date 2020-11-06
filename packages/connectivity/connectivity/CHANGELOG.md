@@ -1,3 +1,8 @@
+## 2.0.2
+
+* Android: Fix IllegalArgumentException.
+* Android: Update Example project.
+
 ## 2.0.1
 
 * Remove unused `test` dependency.
