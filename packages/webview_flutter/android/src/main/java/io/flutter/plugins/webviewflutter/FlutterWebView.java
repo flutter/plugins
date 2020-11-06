@@ -5,18 +5,23 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.display.DisplayManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -33,6 +38,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+
+  public static final int ACTIVITY_RESULT_FILE = 38479823;
+  @Nullable private Activity activity;
+  public static ValueCallback<Uri> filePathCallback4;
+  public static ValueCallback<Uri[]> filePathCallbackLollipop;
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
@@ -71,6 +81,41 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       resultMsg.sendToTarget();
 
       return true;
+    }
+
+    // For 4.1 <= Android Version < 5.0
+    public void openFileChooser(
+        ValueCallback<Uri> filePathCallback, String acceptType, String capture) {
+      if (activity == null) {
+        return;
+      }
+
+      filePathCallback4 = filePathCallback;
+      openFileChooser();
+    }
+
+    @Override
+    public boolean onShowFileChooser(
+        WebView webView,
+        ValueCallback<Uri[]> filePathCallback,
+        FileChooserParams fileChooserParams) {
+      if (activity == null) {
+        return super.onShowFileChooser(webView, filePathCallback, fileChooserParams);
+      }
+
+      filePathCallbackLollipop = filePathCallback;
+      openFileChooser();
+
+      return true;
+    }
+
+    void openFileChooser() {
+      Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+      intent.addCategory(Intent.CATEGORY_OPENABLE);
+      intent.setType("*/*");
+
+      activity.startActivityForResult(
+          Intent.createChooser(intent, "File Chooser"), ACTIVITY_RESULT_FILE);
     }
   }
 
@@ -121,6 +166,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
+  }
+
+  void setActivity(@Nullable Activity activity) {
+    this.activity = activity;
   }
 
   @Override

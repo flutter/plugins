@@ -1,3 +1,7 @@
+## 1.0.7
+
+* Add a file chooser for Android.
+
 ## 1.0.6
 
 * Invoke the WebView.onWebResourceError on iOS when the webview content process crashes.
