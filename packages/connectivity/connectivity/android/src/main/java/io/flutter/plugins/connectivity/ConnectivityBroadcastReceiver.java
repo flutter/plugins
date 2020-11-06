@@ -23,7 +23,7 @@ import io.flutter.plugin.common.EventChannel;
  * io.flutter.plugin.common.EventChannel#setStreamHandler(io.flutter.plugin.common.EventChannel.StreamHandler)}
  * to set up the receiver.
  */
-class ConnectivityBroadcastReceiver extends BroadcastReceiver
+public class ConnectivityBroadcastReceiver extends BroadcastReceiver
     implements EventChannel.StreamHandler {
   private Context context;
   private Connectivity connectivity;
@@ -32,7 +32,7 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
   private ConnectivityManager.NetworkCallback networkCallback;
   public static final String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
 
-  ConnectivityBroadcastReceiver(Context context, Connectivity connectivity) {
+  public ConnectivityBroadcastReceiver(Context context, Connectivity connectivity) {
     this.context = context;
     this.connectivity = connectivity;
   }
@@ -73,6 +73,10 @@ class ConnectivityBroadcastReceiver extends BroadcastReceiver
     if (events != null) {
       events.success(connectivity.getNetworkType());
     }
+  }
+
+  public ConnectivityManager.NetworkCallback getNetworkCallback() {
+    return networkCallback;
   }
 
   private void sendEvent() {
