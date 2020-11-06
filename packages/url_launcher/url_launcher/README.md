@@ -8,6 +8,23 @@ iOS, Android, web, Windows, macOS, and Linux.
 ## Usage
 To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
 
+## Installation
+
+### iOS 
+
+When targeting iOS 9.0+, new default from Flutter 1.22+.
+Add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
+
+```
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>https</string>
+  <string>http</string>
+</array>
+```
+
+See [canOpenURL](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) for more details.
+
 ### Example
 
 ``` dart
