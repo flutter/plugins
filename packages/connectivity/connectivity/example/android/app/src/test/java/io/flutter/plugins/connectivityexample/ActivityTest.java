@@ -33,7 +33,7 @@ public class ActivityTest {
     Context context = RuntimeEnvironment.application;
     Connectivity connectivity = spy(new Connectivity(connectivityManager));
     ConnectivityBroadcastReceiver broadcastReceiver =
-        spy(new ConnectivityBroadcastReceiver(context,connectivity));
+        spy(new ConnectivityBroadcastReceiver(context, connectivity));
 
     broadcastReceiver.onListen(any(), any());
     assertNotNull(broadcastReceiver.getNetworkCallback());
