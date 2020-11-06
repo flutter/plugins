@@ -4,11 +4,14 @@
 
 import 'dart:async';
 import 'dart:html' as html;
+import 'src/shims/dart_ui.dart' as ui;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
+import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
+import 'src/link.dart';
 import 'src/third_party/platform_detect/browser.dart';
 
 const _safariTargetTopSchemes = {
@@ -43,6 +46,12 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   /// Registers this class as the default instance of [UrlLauncherPlatform].
   static void registerWith(Registrar registrar) {
     UrlLauncherPlatform.instance = UrlLauncherPlugin();
+    ui.platformViewRegistry.registerViewFactory(linkViewType, linkViewFactory);
+  }
+
+  @override
+  LinkDelegate get linkDelegate {
+    return (LinkInfo linkInfo) => WebLinkDelegate(linkInfo);
   }
 
   /// Opens the given [url] in the specified [webOnlyWindowName].
