@@ -8,6 +8,19 @@ iOS, Android, web, Windows, macOS, and Linux.
 ## Usage
 To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
 
+## Installation
+
+### iOS 
+
+Add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
+```
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>https</string>
+  <string>http</string>
+</array>
+```
+
 ### Example
 
 ``` dart
