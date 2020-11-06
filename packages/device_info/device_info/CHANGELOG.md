@@ -1,3 +1,11 @@
+## 1.0.0
+
+* Announce 1.0.0.
+
+## 0.4.2+10
+
+* Update Dart SDK constraint in example.
+
 ## 0.4.2+9
 
 * Update android compileSdkVersion to 29.

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:html';
 
 import 'package:integration_test/integration_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
@@ -99,6 +100,35 @@ void main() {
       expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
     });
 
+    // https://github.com/flutter/flutter/issues/67380
+    testWidgets('only single InfoWindow is visible',
+        (WidgetTester tester) async {
+      final markers = {
+        Marker(
+          markerId: MarkerId('1'),
+          infoWindow: InfoWindow(title: "Title", snippet: "Snippet"),
+        ),
+        Marker(
+          markerId: MarkerId('2'),
+          infoWindow: InfoWindow(title: "Title", snippet: "Snippet"),
+        ),
+      };
+      controller.addMarkers(markers);
+
+      expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
+      expect(controller.markers[MarkerId('2')].infoWindowShown, isFalse);
+
+      controller.showMarkerInfoWindow(MarkerId('1'));
+
+      expect(controller.markers[MarkerId('1')].infoWindowShown, isTrue);
+      expect(controller.markers[MarkerId('2')].infoWindowShown, isFalse);
+
+      controller.showMarkerInfoWindow(MarkerId('2'));
+
+      expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
+      expect(controller.markers[MarkerId('2')].infoWindowShown, isTrue);
+    });
+
     // https://github.com/flutter/flutter/issues/64938
     testWidgets('markers with icon:null work', (WidgetTester tester) async {
       final markers = {
@@ -127,8 +157,39 @@ void main() {
       controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
-      expect(controller.markers[MarkerId('1')].marker.title,
-          equals('title for test'));
+      final content =
+          controller.markers[MarkerId('1')].infoWindow.content as HtmlElement;
+      expect(content.innerHtml, contains('title for test'));
+      expect(
+          content.innerHtml,
+          contains(
+              '<a href="https://www.google.com">Go to Google &gt;&gt;&gt;</a>'));
+    });
+
+    // https://github.com/flutter/flutter/issues/67289
+    testWidgets('InfoWindow content is clickable', (WidgetTester tester) async {
+      final markers = {
+        Marker(
+          markerId: MarkerId('1'),
+          infoWindow: InfoWindow(
+            title: 'title for test',
+            snippet: 'some snippet',
+          ),
+        ),
+      };
+
+      controller.addMarkers(markers);
+
+      expect(controller.markers.length, 1);
+      final content =
+          controller.markers[MarkerId('1')].infoWindow.content as HtmlElement;
+
+      content.click();
+
+      final event = await stream.stream.first;
+
+      expect(event, isA<InfoWindowTapEvent>());
+      expect((event as InfoWindowTapEvent).value, equals(MarkerId('1')));
     });
   });
 }

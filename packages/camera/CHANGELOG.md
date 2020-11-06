@@ -1,3 +1,15 @@
+## 0.5.8+14
+
+* Changed the order of the setters for `mediaRecorder` in `MediaRecorderBuilder.java` to make it more readable.
+
+## 0.5.8+13
+
+* Added Dartdocs for all public APIs.
+
+## 0.5.8+12
+
+* Added information of video not working correctly on Android emulators to `README.md`.
+
 ## 0.5.8+11
 
 * Fix rare nullptr exception on Android.
