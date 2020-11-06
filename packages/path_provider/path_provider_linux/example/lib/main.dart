@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
@@ -27,12 +28,37 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initDirectories() async {
-    String tempDirectory = (await getTemporaryDirectory()).path;
-    String downloadsDirectory = (await getDownloadsDirectory()).path;
-    String appSupportDirectory =
-        (await getApplicationDocumentsDirectory()).path;
-    String documentsDirectory = (await getApplicationSupportDirectory()).path;
+    String tempDirectory;
+    String downloadsDirectory;
+    String appSupportDirectory;
+    String documentsDirectory;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      tempDirectory = (await getTemporaryDirectory()).path;
+    } on PlatformException catch (e, stackTrace) {
+      tempDirectory = 'Failed to get temp directory.';
+      print('$tempDirectory $e $stackTrace');
+    }
+    try {
+      downloadsDirectory = (await getDownloadsDirectory()).path;
+    } on PlatformException catch (e, stackTrace) {
+      downloadsDirectory = 'Failed to get downloads directory.';
+      print('$downloadsDirectory $e $stackTrace');
+    }
 
+    try {
+      documentsDirectory = (await getApplicationDocumentsDirectory()).path;
+    } on PlatformException catch (e, stackTrace) {
+      documentsDirectory = 'Failed to get documents directory.';
+      print('$documentsDirectory $e $stackTrace');
+    }
+
+    try {
+      appSupportDirectory = (await getApplicationSupportDirectory()).path;
+    } on PlatformException catch (e, stackTrace) {
+      appSupportDirectory = 'Failed to get documents directory.';
+      print('$appSupportDirectory $e $stackTrace');
+    }
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
