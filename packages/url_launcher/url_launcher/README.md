@@ -23,7 +23,7 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 </array>
 ```
 
-More details can be found here [canOpenURL](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl).
+See [canOpenURL](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) for more details.
 
 ### Example
 
