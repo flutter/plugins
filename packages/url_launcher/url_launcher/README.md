@@ -10,7 +10,7 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 
 ## Installation
 
-### iOS 
+### iOS (targeting iOS 9.0+, new default from Flutter 1.22+)
 
 Add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 ```
