@@ -6,9 +6,9 @@ package io.flutter.plugins.videoplayer;
 
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 import android.util.LongSparseArray;
 import io.flutter.FlutterInjector;
+import io.flutter.Log;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
@@ -92,6 +92,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
     }
     flutterState.stopListening(binding.getBinaryMessenger());
     flutterState = null;
+    initialize();
   }
 
   private void disposeAllPlayers() {
