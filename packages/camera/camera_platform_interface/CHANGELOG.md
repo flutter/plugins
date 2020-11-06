@@ -13,3 +13,4 @@
 ## 1.0.0
 
 - Initial open-source release
+ First suggestion for camera platform interface
