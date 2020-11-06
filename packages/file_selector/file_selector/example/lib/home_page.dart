@@ -36,8 +36,15 @@ class HomePage extends StatelessWidget {
             RaisedButton(
               color: Colors.blue,
               textColor: Colors.white,
-              child: Text('Save text into a file'),
+              child: Text('Save a file'),
               onPressed: () => Navigator.pushNamed(context, '/save/text'),
+            ),
+            SizedBox(height: 10),
+            RaisedButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              child: Text('Open a get directory dialog'),
+              onPressed: () => Navigator.pushNamed(context, '/directory'),
             ),
           ],
         ),
