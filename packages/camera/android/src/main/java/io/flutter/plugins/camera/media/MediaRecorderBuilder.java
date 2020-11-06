@@ -49,18 +49,18 @@ public class MediaRecorderBuilder {
   public MediaRecorder build() throws IOException {
     MediaRecorder mediaRecorder = recorderFactory.makeMediaRecorder();
 
-    // There's a specific order that mediaRecorder expects. Do not change the order
-    // of these function calls.
-    if (enableAudio) {
-      mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-      mediaRecorder.setAudioEncodingBitRate(recordingProfile.audioBitRate);
-    }
+    // There's a fixed order that mediaRecorder expects. Only change these functions accordingly.
+    // You can find the specifics here: https://developer.android.com/reference/android/media/MediaRecorder.
+    if (enableAudio) mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
     mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
     mediaRecorder.setOutputFormat(recordingProfile.fileFormat);
-    if (enableAudio) mediaRecorder.setAudioEncoder(recordingProfile.audioCodec);
+    if (enableAudio) {
+      mediaRecorder.setAudioEncoder(recordingProfile.audioCodec);
+      mediaRecorder.setAudioEncodingBitRate(recordingProfile.audioBitRate);
+      mediaRecorder.setAudioSamplingRate(recordingProfile.audioSampleRate);
+    }
     mediaRecorder.setVideoEncoder(recordingProfile.videoCodec);
     mediaRecorder.setVideoEncodingBitRate(recordingProfile.videoBitRate);
-    if (enableAudio) mediaRecorder.setAudioSamplingRate(recordingProfile.audioSampleRate);
     mediaRecorder.setVideoFrameRate(recordingProfile.videoFrameRate);
     mediaRecorder.setVideoSize(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     mediaRecorder.setOutputFile(outputFilePath);
