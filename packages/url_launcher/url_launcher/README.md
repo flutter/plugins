@@ -10,8 +10,9 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 
 ## Installation
 
-### iOS (targeting iOS 9.0+, new default from Flutter 1.22+)
+### iOS 
 
+When targeting iOS 9.0+, new default from Flutter 1.22+.
 Add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 ```
 <key>LSApplicationQueriesSchemes</key>
@@ -20,6 +21,8 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
   <string>http</string>
 </array>
 ```
+
+More details can be found here [canOpenURL](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl).
 
 ### Example
 
