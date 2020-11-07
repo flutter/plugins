@@ -272,6 +272,8 @@ public class Camera {
     createCaptureSession(templateType, null, surfaces);
   }
 
+  // Current workaround for API 30
+  @Deprecated
   private void createCaptureSession(
       int templateType, Runnable onSuccessCallback, Surface... surfaces)
       throws CameraAccessException {
