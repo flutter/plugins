@@ -22,34 +22,44 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
       NSString *key = arguments[@"key"];
       NSNumber *value = arguments[@"value"];
       NSString *suiteName = arguments[@"suiteName"];
-      [[[NSUserDefaults alloc] initWithSuiteName:suiteName] setBool:value.boolValue forKey:key];
+      NSUserDefaults *instance = [suiteName isEqual:[NSNull null]] ? [NSUserDefaults standardUserDefaults] : [[NSUserDefaults alloc] initWithSuiteName:suiteName];
+      [instance setBool:value.boolValue forKey:key];
       result(@YES);
     } else if ([method isEqualToString:@"setInt"]) {
       NSString *key = arguments[@"key"];
       NSNumber *value = arguments[@"value"];
       NSString *suiteName = arguments[@"suiteName"];
+      NSUserDefaults *instance = [suiteName isEqual:[NSNull null]] ? [NSUserDefaults standardUserDefaults] : [[NSUserDefaults alloc] initWithSuiteName:suiteName];
+
       // int type in Dart can come to native side in a variety of forms
       // It is best to store it as is and send it back when needed.
       // Platform channel will handle the conversion.
-      [[[NSUserDefaults alloc] initWithSuiteName:suiteName] setValue:value forKey:key];
+      [instance setValue:value forKey:key];
       result(@YES);
     } else if ([method isEqualToString:@"setDouble"]) {
       NSString *key = arguments[@"key"];
       NSNumber *value = arguments[@"value"];
       NSString *suiteName = arguments[@"suiteName"];
-      [[[NSUserDefaults alloc] initWithSuiteName:suiteName] setDouble:value.doubleValue forKey:key];
+      NSUserDefaults *instance = [suiteName isEqual:[NSNull null]] ? [NSUserDefaults standardUserDefaults] : [[NSUserDefaults alloc] initWithSuiteName:suiteName];
+
+      [instance setDouble:value.doubleValue forKey:key];
       result(@YES);
     } else if ([method isEqualToString:@"setString"]) {
       NSString *key = arguments[@"key"];
       NSString *value = arguments[@"value"];
       NSString *suiteName = arguments[@"suiteName"];
-      [[[NSUserDefaults alloc] initWithSuiteName:suiteName] setValue:value forKey:key];
+
+      NSUserDefaults *instance = [suiteName isEqual:[NSNull null]] ? [NSUserDefaults standardUserDefaults] : [[NSUserDefaults alloc] initWithSuiteName:suiteName];
+
+      [instance setValue:value forKey:key];
       result(@YES);
     } else if ([method isEqualToString:@"setStringList"]) {
       NSString *key = arguments[@"key"];
       NSArray *value = arguments[@"value"];
       NSString *suiteName = arguments[@"suiteName"];
-      [[[NSUserDefaults alloc] initWithSuiteName:suiteName] setValue:value forKey:key];
+      NSUserDefaults *instance = [suiteName isEqual:[NSNull null]] ? [NSUserDefaults standardUserDefaults] : [[NSUserDefaults alloc] initWithSuiteName:suiteName];
+
+      [instance setValue:value forKey:key];
       result(@YES);
     } else if ([method isEqualToString:@"commit"]) {
       // synchronize is deprecated.
@@ -57,11 +67,14 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
       result(@YES);
     } else if ([method isEqualToString:@"remove"]) {
       NSString *suiteName = arguments[@"suiteName"];
-      [[[NSUserDefaults alloc] initWithSuiteName:suiteName] removeObjectForKey:arguments[@"key"]];
+      NSUserDefaults *instance = [suiteName isEqual:[NSNull null]] ? [NSUserDefaults standardUserDefaults] : [[NSUserDefaults alloc] initWithSuiteName:suiteName];
+
+      [instance removeObjectForKey:arguments[@"key"]];
       result(@YES);
     } else if ([method isEqualToString:@"clear"]) {
       NSString *suiteName = arguments[@"suiteName"];
-      NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:suiteName];
+      NSUserDefaults *defaults = [suiteName isEqual:[NSNull null]] ? [NSUserDefaults standardUserDefaults] : [[NSUserDefaults alloc] initWithSuiteName:suiteName];
+
       for (NSString *key in getAllPrefs(suiteName)) {
         [defaults removeObjectForKey:key];
       }
@@ -77,7 +90,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
 static NSMutableDictionary *getAllPrefs(NSString *suiteName) {
   NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
   NSDictionary *prefs =
-      [[[NSUserDefaults alloc] initWithSuiteName:suiteName] persistentDomainForName:appDomain];
+     [suiteName isEqual:[NSNull null]] ? [[NSUserDefaults standardUserDefaults] persistentDomainForName:appDomain] : [[[NSUserDefaults alloc] initWithSuiteName:suiteName]  dictionaryRepresentation];
   NSMutableDictionary *filteredPrefs = [NSMutableDictionary dictionary];
   if (prefs != nil) {
     for (NSString *candidateKey in prefs) {
