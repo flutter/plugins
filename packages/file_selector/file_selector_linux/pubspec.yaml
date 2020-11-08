@@ -1,0 +1,21 @@
+name: file_selector_linux
+description: A Linux implementation of the file_selector plugin.
+homepage: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_linux
+# NOTE: We strongly prefer non-breaking changes, even at the expense of a
+# less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
+version: 0.1.0
+
+dependencies:
+  file_selector_platform_interface: ^1.0.0
+  flutter:
+    sdk: flutter
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.12.8 <2.0.0"
+
+flutter:
+  plugin:
+    platforms:
+      linux:
+        pluginClass: FileSelectorLinuxPlugin
