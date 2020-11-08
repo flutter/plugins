@@ -205,13 +205,13 @@ abstract class WebViewPlatformController {
   /// that any trailing padding = or == characters MUST be present for full device
   /// compatibility.
   ///
-  /// This method has no `baseUrl` argument because of a limitation of the Android
-  /// WebView API.
+  /// The `baseUrl` argument is required but has no effect on Android.
   ///
   /// Throws an ArgumentError if `baseUrl` is not a valid URL string.
   Future<void> loadDataBase64(
     String data,
     String mimeType,
+    String baseUrl,
   ) {
     throw UnimplementedError(
         "WebView loadDataBase64 is not implemented on the current platform");

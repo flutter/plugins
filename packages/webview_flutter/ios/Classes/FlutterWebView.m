@@ -252,6 +252,7 @@
   NSString* const encoding = @"UTF-8";
   NSString* mimeType = arguments[@"mimeType"];
   NSString* dataStr = arguments[@"data"];
+  NSString* baseUrl = arguments[@"baseUrl"];
 
   if (![mimeType isKindOfClass:[NSString class]]) {
     result([FlutterError errorWithCode:@"loadDataBase64_failed"
@@ -267,9 +268,24 @@
     return;
   }
 
+  if (![baseUrl isKindOfClass:[NSString class]]) {
+    result([FlutterError errorWithCode:@"loadDataBase64_failed"
+                               message:@"Argument type of baseUrl is not string"
+                               details:nil]);
+    return;
+  }
+
+  NSURL* nsUrl = [NSURL URLWithString:baseUrl];
+  if (!nsUrl) {
+    result([FlutterError errorWithCode:@"loadData_failed"
+                               message:@"Argument type of baseUrl is not a valid URL"
+                               details:[NSString stringWithFormat:@"URL was: '%@'", baseUrl]]);
+    return;
+  }
+
   NSData* data = [[NSData alloc] initWithBase64EncodedString:dataStr options:0];
   if (@available(iOS 9.0, *)) {
-    [_webView loadData:data MIMEType:mimeType characterEncodingName:encoding baseURL:nil];
+    [_webView loadData:data MIMEType:mimeType characterEncodingName:encoding baseURL:nsUrl];
   } else {
     NSLog(@"Setting data is not supported for Flutter WebViews prior to iOS 9.");
   }

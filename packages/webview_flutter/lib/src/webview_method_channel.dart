@@ -100,12 +100,15 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   Future<void> loadDataBase64(
     String data,
     String mimeType,
+    String baseUrl,
   ) async {
     assert(data != null);
     assert(mimeType != null);
+    assert(baseUrl != null);
     return _channel.invokeMethod<void>('loadDataBase64', <String, dynamic>{
       'data': data,
       'mimeType': mimeType,
+      'baseUrl': baseUrl,
     });
   }
 

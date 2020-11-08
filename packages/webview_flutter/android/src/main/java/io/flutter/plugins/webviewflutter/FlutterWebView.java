@@ -262,6 +262,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
     String data = (String) request.get("data");
     String mimeType = (String) request.get("mimeType");
+    
+    // We do not use baseUrl, because Android has no way to set it in this context.
 
     // Theoretically, we should be able to use WebView#loadDataWithBaseURL here, but
     // support for base64 seems to be broken.
