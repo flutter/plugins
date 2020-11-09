@@ -32,7 +32,6 @@ void main() {
     });
 
     test(
-        // ignore: lines_longer_than_80_chars
         'Default implementation of availableCameras() should throw unimplemented error',
         () {
       // Arrange
@@ -46,7 +45,6 @@ void main() {
     });
 
     test(
-        // ignore: lines_longer_than_80_chars
         'Default implementation of cameraEventsFor() should throw unimplemented error',
         () {
       // Arrange
