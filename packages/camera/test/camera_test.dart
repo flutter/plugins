@@ -16,10 +16,7 @@ void main() {
 
       controller.dispose();
 
-      expect(
-        controller.debugCheckIsDisposed,
-        returnsNormally
-      );
+      expect(controller.debugCheckIsDisposed, returnsNormally);
     });
 
     test('debugCheckIsDisposed should throw assertion error when not disposed',
