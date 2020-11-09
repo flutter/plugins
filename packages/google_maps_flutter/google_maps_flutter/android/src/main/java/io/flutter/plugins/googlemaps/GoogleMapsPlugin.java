@@ -203,8 +203,8 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
   }
 
   /**
-   * This logic is incredibly hacky, but is necessary to address multiple problems with the Flutter
-   * embedding library.
+   * This logic enables accurate state-saving behavior for the plugin regardless of usage. It is
+   * incredibly hacky, in order to address multiple problems with the Flutter embedding library.
    *
    * <p>Ideally, every {@link LifecycleOwner} that drives this plugin would also implement {@link
    * SavedStateRegistryOwner}. This would make this class completely unnecessary. However, {@link
