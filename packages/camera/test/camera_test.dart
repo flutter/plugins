@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('camera', () {
-    test("isDisposed true when disposed", () {
+    test('debugCheckIsDisposed should not throw assertion error when disposed', () {
       final MockCameraDescription description = MockCameraDescription();
       final CameraController controller = CameraController(
         description,
@@ -14,17 +14,28 @@ void main() {
       );
 
       controller.dispose();
-      expect(controller.isDisposed, isTrue);
+
+      try {
+        controller.debugCheckIsDisposed();
+      } on AssertionError {
+        fail(
+            'debugCheckIsDisposed should not throw if the camera controller is not disposed.');
+      }
     });
 
-    test("isDisposed false when not disposed", () {
+    test(
+        'debugCheckIsDisposed should throw assertion error when not disposed',
+        () {
       final MockCameraDescription description = MockCameraDescription();
       final CameraController controller = CameraController(
         description,
         ResolutionPreset.low,
       );
 
-      expect(controller.isDisposed, isFalse);
+      expect(
+        () => controller.debugCheckIsDisposed(),
+        throwsAssertionError,
+      );
     });
   });
 }

@@ -307,8 +307,12 @@ class CameraController extends ValueNotifier<CameraValue> {
   StreamSubscription<dynamic> _imageStreamSubscription;
   Completer<void> _creatingCompleter;
 
-  /// True after [CameraController.dispose] has completed successfully.
-  bool get isDisposed => _isDisposed;
+  /// Checks whether [CameraController.dispose] has completed successfully.
+  ///
+  /// This is a no-op when asserts are disabled.
+  void debugCheckIsDisposed() {
+    assert(_isDisposed);
+  }
 
   /// Initializes the camera on the device.
   ///
