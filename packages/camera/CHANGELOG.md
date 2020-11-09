@@ -1,6 +1,6 @@
 ## 0.5.8+15
 
-* Made `CameraController.isDisposed` publicly accessible.
+* Added the `debugCheckIsDisposed` method which can be used in debug mode to validate if the `CameraController` class has been disposed.
 
 ## 0.5.8+14
 
