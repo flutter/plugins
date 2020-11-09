@@ -16,12 +16,10 @@ void main() {
 
       controller.dispose();
 
-      try {
-        controller.debugCheckIsDisposed();
-      } on AssertionError {
-        fail(
-            'debugCheckIsDisposed should not throw if the camera controller is not disposed.');
-      }
+      expect(
+        controller.debugCheckIsDisposed,
+        returnsNormally
+      );
     });
 
     test('debugCheckIsDisposed should throw assertion error when not disposed',
