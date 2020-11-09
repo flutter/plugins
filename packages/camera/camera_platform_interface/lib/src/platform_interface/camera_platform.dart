@@ -99,7 +99,7 @@ abstract class CameraPlatform extends PlatformInterface {
   /// have significant frame rate drops for [CameraPreview] on lower end
   /// devices.
   // TODO(bmparr): Add settings for resolution and fps.
-  Future<void> startImageStream(onLatestImageAvailable onAvailable) {
+  Future<void> startImageStream(ImageAvailableHandler onAvailable) {
     throw UnimplementedError('startImageStream() is not implemented.');
   }
 
