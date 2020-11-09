@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
+#import <os/log.h>
 #import "RunnerUITestUtils.h"
+
+const int kElementWaitingTime = 30;
 
 @interface ImagePickerFromGalleryUITests : XCTestCase
 
@@ -48,9 +51,9 @@
 
   XCUIElement* imageFromGalleryButton =
       [self.app.otherElements elementMatchingPredicate:predicateToFindImageFromGalleryButton];
-  if (![imageFromGalleryButton waitForExistenceWithTimeout:30]) {
-    NSLog(@"%@", self.app.debugDescription);
-    XCTFail(@"Failed due to not able to find image from gallery button with %@ seconds", @(30));
+  if (![imageFromGalleryButton waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+    XCTFail(@"Failed due to not able to find image from gallery button with %@ seconds", @(kElementWaitingTime));
   }
 
   XCTAssertTrue(imageFromGalleryButton.exists);
@@ -61,9 +64,9 @@
       [NSPredicate predicateWithFormat:@"label == %@", @"PICK"];
 
   XCUIElement* pickButton = [self.app.buttons elementMatchingPredicate:predicateToFindPickButton];
-  if (![pickButton waitForExistenceWithTimeout:30]) {
-    NSLog(@"%@", self.app.debugDescription);
-    XCTFail(@"Failed due to not able to find pick button with %@ seconds", @(30));
+  if (![pickButton waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+    XCTFail(@"Failed due to not able to find pick button with %@ seconds", @(kElementWaitingTime));
   }
 
   XCTAssertTrue(pickButton.exists);
@@ -79,9 +82,9 @@
 
   XCUIElement* cancelButton =
       [self.app.buttons elementMatchingPredicate:predicateToFindCancelButton];
-  if (![cancelButton waitForExistenceWithTimeout:30]) {
-    NSLog(@"%@", self.app.debugDescription);
-    XCTFail(@"Failed due to not able to find Cancel button with %@ seconds", @(30));
+  if (![cancelButton waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+    XCTFail(@"Failed due to not able to find Cancel button with %@ seconds", @(kElementWaitingTime));
   }
 
   XCTAssertTrue(cancelButton.exists);
@@ -92,9 +95,9 @@
       elementMatchingPredicate:[NSPredicate
                                    predicateWithFormat:@"label == %@",
                                                        @"You have not yet picked an image."]];
-  if (![imageNotPickedText waitForExistenceWithTimeout:30]) {
-    NSLog(@"%@", self.app.debugDescription);
-    XCTFail(@"Failed due to not able to find imageNotPickedText with %@ seconds", @(30));
+  if (![imageNotPickedText waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+    XCTFail(@"Failed due to not able to find imageNotPickedText with %@ seconds", @(kElementWaitingTime));
   }
 
   XCTAssertTrue(imageNotPickedText.exists);
@@ -107,9 +110,9 @@
 
   XCUIElement* imageFromGalleryButton =
       [self.app.otherElements elementMatchingPredicate:predicateToFindImageFromGalleryButton];
-  if (![imageFromGalleryButton waitForExistenceWithTimeout:30]) {
-    NSLog(@"%@", self.app.debugDescription);
-    XCTFail(@"Failed due to not able to find image from gallery button with %@ seconds", @(30));
+  if (![imageFromGalleryButton waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+    XCTFail(@"Failed due to not able to find image from gallery button with %@ seconds", @(kElementWaitingTime));
   }
 
   XCTAssertTrue(imageFromGalleryButton.exists);
@@ -120,48 +123,45 @@
       [NSPredicate predicateWithFormat:@"label == %@", @"PICK"];
 
   XCUIElement* pickButton = [self.app.buttons elementMatchingPredicate:predicateToFindPickButton];
-  if (![pickButton waitForExistenceWithTimeout:30]) {
-    NSLog(@"%@", self.app.debugDescription);
-    XCTFail(@"Failed due to not able to find pick button with %@ seconds", @(30));
+  if (![pickButton waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+    XCTFail(@"Failed due to not able to find pick button with %@ seconds", @(kElementWaitingTime));
   }
 
   XCTAssertTrue(pickButton.exists);
   [pickButton tap];
 
-  // Find an image and tap on it. (IOS 14 UI, images are showing direclty)
-  XCUIElement* aImage = self.app.scrollViews.firstMatch.images.firstMatch;
-  XCUIElement* allPhotosCell = [self.app.cells
-      elementMatchingPredicate:[NSPredicate predicateWithFormat:@"label == %@", @"All Photos"]];
-  XCUIElement* firstExist = [RunnerUITestUtils waitForFirstExistence:@[ aImage, allPhotosCell ]
-                                                             timeout:30];
-  if (firstExist) {
-    // For iOS 14 and below, we need to tap on the "All Photos" cell to get to the images page.
-    // The image a11y info is also different.
-    if (allPhotosCell.exists) {
-      [allPhotosCell tap];
-      aImage = [self.app.collectionViews elementMatchingType:XCUIElementTypeCollectionView
-                                                  identifier:@"PhotosGridView"]
-                   .cells.firstMatch;
-    }
-    if (![aImage waitForExistenceWithTimeout:30]) {
-      NSLog(@"%@", self.app.debugDescription);
-      XCTFail(@"Failed due to not able to find an image with %@ seconds", @(30));
-    }
-    XCTAssertTrue(aImage.exists);
-    [aImage tap];
+  // Find an image and tap on it. (IOS 14 UI, images are showing directly)
+  XCUIElement *aImage;
+  if (@available(iOS 14, *)) {
+    aImage = self.app.scrollViews.firstMatch.images.firstMatch;
   } else {
-    NSLog(@"%@", self.app.debugDescription);
-    XCTFail(@"Failed due to not able to find an image with %@ seconds", @(30));
+    XCUIElement* allPhotosCell = [self.app.cells
+        elementMatchingPredicate:[NSPredicate predicateWithFormat:@"label == %@", @"All Photos"]];
+    if (![allPhotosCell waitForExistenceWithTimeout:kElementWaitingTime]) {
+      os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+      XCTFail(@"Failed due to not able to find \"All Photos\" cell with %@ seconds", @(kElementWaitingTime));
+    }
+    [allPhotosCell tap];
+    aImage = [self.app.collectionViews elementMatchingType:XCUIElementTypeCollectionView
+                                                identifier:@"PhotosGridView"]
+                 .cells.firstMatch;
   }
+  if (![aImage waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+    XCTFail(@"Failed due to not able to find an image with %@ seconds", @(kElementWaitingTime));
+  }
+  XCTAssertTrue(aImage.exists);
+  [aImage tap];
 
   // Find the picked image.
   NSPredicate* predicateToFindPickedImage =
       [NSPredicate predicateWithFormat:@"label == %@", @"image_picker_example_picked_image"];
 
   XCUIElement* pickedImage = [self.app.images elementMatchingPredicate:predicateToFindPickedImage];
-  if (![pickedImage waitForExistenceWithTimeout:30]) {
-    NSLog(@"%@", self.app.debugDescription);
-    XCTFail(@"Failed due to not able to find pickedImage with %@ seconds", @(30));
+  if (![pickedImage waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+    XCTFail(@"Failed due to not able to find pickedImage with %@ seconds", @(kElementWaitingTime));
   }
 
   XCTAssertTrue(pickedImage.exists);
