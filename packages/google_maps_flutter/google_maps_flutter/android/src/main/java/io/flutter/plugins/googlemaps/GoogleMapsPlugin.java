@@ -210,12 +210,11 @@ public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
    * SavedStateRegistryOwner}. This would make this class completely unnecessary. However, {@link
    * io.flutter.embedding.android.FlutterActivity} does not (at the time of this writing) do this.
    *
-   *
-   * <p>Given that, ideally, every LifecycleOwner that drives this plugin would restore
-   * state at the correct time. This would allow us to consistently drive state restoration via
-   * {@link OnSaveInstanceStateListener} rather than possibly needing to delegate to the
-   * LifecycleOwner. Unfortunately, {@link io.flutter.embedding.android.FlutterFragment} (at the
-   * time of this writing) restores state in {@link androidx.fragment.app.Fragment#onActivityCreated(Bundle)}
+   * <p>Given that, ideally, every LifecycleOwner that drives this plugin would restore state at the
+   * correct time. This would allow us to consistently drive state restoration via {@link
+   * OnSaveInstanceStateListener} rather than possibly needing to delegate to the LifecycleOwner.
+   * Unfortunately, {@link io.flutter.embedding.android.FlutterFragment} (at the time of this
+   * writing) restores state in {@link androidx.fragment.app.Fragment#onActivityCreated(Bundle)}
    * rather than in {@link androidx.fragment.app.Fragment#onCreate(Bundle)}. Note that this is a
    * pretty serious bug in FlutterFragment.
    *
