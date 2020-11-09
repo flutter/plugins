@@ -14,7 +14,6 @@
 		680049382280F2B9006DD6AB /* pngImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 680049352280F2B8006DD6AB /* pngImage.png */; };
 		680049392280F2B9006DD6AB /* jpgImage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 680049362280F2B8006DD6AB /* jpgImage.jpg */; };
 		6801C8392555D726009DAF8D /* ImagePickerFromGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6801C8382555D726009DAF8D /* ImagePickerFromGalleryUITests.m */; };
-		6801C8422555E0A7009DAF8D /* RunnerUITestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 6801C8412555E0A7009DAF8D /* RunnerUITestUtils.m */; };
 		68B9AF72243E4B3F00927CE4 /* ImagePickerPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */; };
 		68F4B464228B3AB500C25614 /* PhotoAssetUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
@@ -72,8 +71,6 @@
 		6801C8362555D726009DAF8D /* RunnerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6801C8382555D726009DAF8D /* ImagePickerFromGalleryUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerFromGalleryUITests.m; sourceTree = "<group>"; };
 		6801C83A2555D726009DAF8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6801C8402555E0A7009DAF8D /* RunnerUITestUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RunnerUITestUtils.h; sourceTree = "<group>"; };
-		6801C8412555E0A7009DAF8D /* RunnerUITestUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RunnerUITestUtils.m; sourceTree = "<group>"; };
 		68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImagePickerPluginTests.m; path = ../../../ios/Tests/ImagePickerPluginTests.m; sourceTree = "<group>"; };
 		68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PhotoAssetUtilTests.m; path = ../../../ios/Tests/PhotoAssetUtilTests.m; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -149,8 +146,6 @@
 			children = (
 				6801C8382555D726009DAF8D /* ImagePickerFromGalleryUITests.m */,
 				6801C83A2555D726009DAF8D /* Info.plist */,
-				6801C8402555E0A7009DAF8D /* RunnerUITestUtils.h */,
-				6801C8412555E0A7009DAF8D /* RunnerUITestUtils.m */,
 			);
 			path = RunnerUITests;
 			sourceTree = "<group>";
@@ -459,7 +454,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6801C8392555D726009DAF8D /* ImagePickerFromGalleryUITests.m in Sources */,
-				6801C8422555E0A7009DAF8D /* RunnerUITestUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
