@@ -1,3 +1,8 @@
+## 1.0.7
+
+* Minor documentation update to indicate known issue on iOS 13.4 and 13.5.
+  * See: https://github.com/flutter/flutter/issues/53490
+
 ## 1.0.6
 
 * Invoke the WebView.onWebResourceError on iOS when the webview content process crashes.

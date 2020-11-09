@@ -196,6 +196,10 @@ class JavascriptChannel {
 }
 
 /// A web view widget for showing html content.
+///
+/// There is a known issue that on iOS 13.4 and 13.5, other flutter widgets covering
+/// the `WebView` is not able to block the `WebView` from receiving touch events.
+/// See https://github.com/flutter/flutter/issues/53490.
 class WebView extends StatefulWidget {
   /// Creates a new web view.
   ///
