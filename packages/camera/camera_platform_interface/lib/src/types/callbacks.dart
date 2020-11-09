@@ -8,4 +8,4 @@ import 'types.dart';
 ///
 /// This is used by [CameraPlatform.startImageStream].
 // ignore: inference_failure_on_function_return_type
-typedef onLatestImageAvailable = Function(CameraImage image);
+typedef ImageAvailableHandler = Function(CameraImage image);
