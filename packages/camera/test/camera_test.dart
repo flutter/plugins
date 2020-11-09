@@ -6,7 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('camera', () {
-    test('debugCheckIsDisposed should not throw assertion error when disposed', () {
+    test('debugCheckIsDisposed should not throw assertion error when disposed',
+        () {
       final MockCameraDescription description = MockCameraDescription();
       final CameraController controller = CameraController(
         description,
@@ -23,8 +24,7 @@ void main() {
       }
     });
 
-    test(
-        'debugCheckIsDisposed should throw assertion error when not disposed',
+    test('debugCheckIsDisposed should throw assertion error when not disposed',
         () {
       final MockCameraDescription description = MockCameraDescription();
       final CameraController controller = CameraController(
