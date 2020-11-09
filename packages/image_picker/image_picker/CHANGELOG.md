@@ -1,3 +1,7 @@
+## 0.6.7+14
+
+* Set up XCUITests.
+
 ## 0.6.7+13
 
 * Update documentation of `getImage()` about HEIC images.
