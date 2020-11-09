@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 #import <os/log.h>
-#import "RunnerUITestUtils.h"
 
 const int kElementWaitingTime = 30;
 
