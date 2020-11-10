@@ -46,6 +46,10 @@ public class GoogleMapFactory extends PlatformViewFactory {
     if (params.containsKey("circlesToAdd")) {
       builder.setInitialCircles(params.get("circlesToAdd"));
     }
-    return builder.build(id, context, binaryMessenger, lifecycleProvider);
+    String restorationId = "";
+    if (params.containsKey("restorationId")) {
+      restorationId = (String) params.get("restorationId");
+    }
+    return builder.build(id, context, restorationId, binaryMessenger, lifecycleProvider);
   }
 }
