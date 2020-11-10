@@ -61,6 +61,7 @@ final class GoogleMapController
 
   private final int id;
   private final MethodChannel methodChannel;
+  private final String restorationId;
   private final GoogleMapOptions options;
   @Nullable private MapView mapView;
   private GoogleMap googleMap;
@@ -88,11 +89,13 @@ final class GoogleMapController
   GoogleMapController(
       int id,
       Context context,
+      String restorationId,
       BinaryMessenger binaryMessenger,
       LifecycleProvider lifecycleProvider,
       GoogleMapOptions options) {
     this.id = id;
     this.context = context;
+    this.restorationId = restorationId;
     this.options = options;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;
@@ -521,7 +524,7 @@ final class GoogleMapController
       // reasons described in the javadoc of GoogleMapsPlugin.StateSavingLifecycleProvider.
       SavedStateRegistry savedStateRegistry =
           ((SavedStateRegistryOwner) owner).getSavedStateRegistry();
-      String key = SAVED_STATE_KEY + id;
+      String key = SAVED_STATE_KEY + restorationId;
       mapView.onCreate(
           // In a perfect world, savedStateRegistry should be guaranteed to be restored at this
           // point. However, there's a lot of hacky things going on regarding manual state
