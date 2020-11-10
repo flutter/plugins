@@ -1,3 +1,7 @@
+## 1.0.0-nullsafety
+
+* Migrate to null safety.
+
 ## 0.1.1+1
 
 * Check in linux/ directory for example/
