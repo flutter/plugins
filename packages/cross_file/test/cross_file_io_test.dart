@@ -30,7 +30,7 @@ final String textFilePath = textFile.path;
 
 void main() {
   group('Create with a path', () {
-    final file = XFile(textFilePath);
+    final file = CrossFile(textFilePath);
 
     test('Can be read as a string', () async {
       expect(await file.readAsString(), equals(expectedStringContents));
@@ -64,7 +64,7 @@ void main() {
   });
 
   group('Create with data', () {
-    final file = XFile.fromData(bytes);
+    final file = CrossFile.fromData(bytes);
 
     test('Can be read as a string', () async {
       expect(await file.readAsString(), equals(expectedStringContents));

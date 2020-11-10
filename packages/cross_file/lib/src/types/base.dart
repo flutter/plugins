@@ -1,19 +1,19 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-/// The interface for a XFile.
+/// The interface for a CrossFile.
 ///
-/// A XFile is a container that wraps the path of a selected
+/// A CrossFile is a container that wraps the path of a selected
 /// file by the user and (in some platforms, like web) the bytes
 /// with the contents of the file.
 ///
 /// This class is a very limited subset of dart:io [File], so all
 /// the methods should seem familiar.
-abstract class XFileBase {
-  /// Construct a XFile
-  XFileBase(String path);
+abstract class CrossFileBase {
+  /// Construct a CrossFile
+  CrossFileBase(String path);
 
-  /// Save the XFile at the indicated file path.
+  /// Save the CrossFile at the indicated file path.
   void saveTo(String path) async {
     throw UnimplementedError('saveTo has not been implemented.');
   }
@@ -26,7 +26,7 @@ abstract class XFileBase {
   ///
   /// Accessing the data contained in the picked file by its path
   /// is platform-dependant (and won't work on web), so use the
-  /// byte getters in the XFile instance instead.
+  /// byte getters in the CrossFile instance instead.
   String get path {
     throw UnimplementedError('.path has not been implemented.');
   }
@@ -75,7 +75,7 @@ abstract class XFileBase {
     throw UnimplementedError('openRead() has not been implemented.');
   }
 
-  /// Get the last-modified time for the XFile
+  /// Get the last-modified time for the CrossFile
   Future<DateTime> lastModified() {
     throw UnimplementedError('openRead() has not been implemented.');
   }

@@ -8,10 +8,10 @@ import 'dart:html';
 import '../web_helpers/web_helpers.dart';
 import './base.dart';
 
-/// A XFile that works on web.
+/// A CrossFile that works on web.
 ///
 /// It wraps the bytes of a selected file.
-class XFile extends XFileBase {
+class CrossFile extends CrossFileBase {
   String path;
 
   final String mimeType;
@@ -21,40 +21,40 @@ class XFile extends XFileBase {
   final DateTime _lastModified;
   Element _target;
 
-  final XFileTestOverrides _overrides;
+  final CrossFileTestOverrides _overrides;
 
   bool get _hasTestOverrides => _overrides != null;
 
-  /// Construct a XFile object from its ObjectUrl.
+  /// Construct a CrossFile object from its ObjectUrl.
   ///
   /// Optionally, this can be initialized with `bytes` and `length`
   /// so no http requests are performed to retrieve files later.
   ///
   /// `name` needs to be passed from the outside, since we only have
   /// access to it while we create the ObjectUrl.
-  XFile(
+  CrossFile(
     this.path, {
     this.mimeType,
     this.name,
     int length,
     Uint8List bytes,
     DateTime lastModified,
-    @visibleForTesting XFileTestOverrides overrides,
+    @visibleForTesting CrossFileTestOverrides overrides,
   })  : _data = bytes,
         _length = length,
         _overrides = overrides,
         _lastModified = lastModified,
         super(path);
 
-  /// Construct an XFile from its data
-  XFile.fromData(
+  /// Construct an CrossFile from its data
+  CrossFile.fromData(
     Uint8List bytes, {
     this.mimeType,
     this.name,
     int length,
     DateTime lastModified,
     this.path,
-    @visibleForTesting XFileTestOverrides overrides,
+    @visibleForTesting CrossFileTestOverrides overrides,
   })  : _data = bytes,
         _length = length,
         _overrides = overrides,
@@ -102,14 +102,14 @@ class XFile extends XFileBase {
     yield bytes.sublist(start ?? 0, end ?? bytes.length);
   }
 
-  /// Saves the data of this XFile at the location indicated by path.
+  /// Saves the data of this CrossFile at the location indicated by path.
   /// For the web implementation, the path variable is ignored.
   void saveTo(String path) async {
     // Create a DOM container where we can host the anchor.
     _target = ensureInitialized('__x_file_dom_element');
 
     // Create an <a> tag with the appropriate download attributes and click it
-    // May be overridden with XFileTestOverrides
+    // May be overridden with CrossFileTestOverrides
     final AnchorElement element =
         (_hasTestOverrides && _overrides.createAnchorElement != null)
             ? _overrides.createAnchorElement(this.path, this.name)
@@ -123,10 +123,10 @@ class XFile extends XFileBase {
 
 /// Overrides some functions to allow testing
 @visibleForTesting
-class XFileTestOverrides {
+class CrossFileTestOverrides {
   /// For overriding the creation of the file input element.
   Element Function(String href, String suggestedName) createAnchorElement;
 
   /// Default constructor for overrides
-  XFileTestOverrides({this.createAnchorElement});
+  CrossFileTestOverrides({this.createAnchorElement});
 }

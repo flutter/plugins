@@ -4,8 +4,8 @@ import 'dart:typed_data';
 
 import './base.dart';
 
-/// A XFile backed by a dart:io File.
-class XFile extends XFileBase {
+/// A CrossFile backed by a dart:io File.
+class CrossFile extends CrossFileBase {
   final File _file;
   final String mimeType;
   final DateTime _lastModified;
@@ -13,8 +13,8 @@ class XFile extends XFileBase {
 
   final Uint8List _bytes;
 
-  /// Construct a XFile object backed by a dart:io File.
-  XFile(
+  /// Construct a CrossFile object backed by a dart:io File.
+  CrossFile(
     String path, {
     this.mimeType,
     String name,
@@ -26,8 +26,8 @@ class XFile extends XFileBase {
         _lastModified = lastModified,
         super(path);
 
-  /// Construct an XFile from its data
-  XFile.fromData(
+  /// Construct an CrossFile from its data
+  CrossFile.fromData(
     Uint8List bytes, {
     this.mimeType,
     String path,

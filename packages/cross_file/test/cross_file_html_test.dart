@@ -20,7 +20,7 @@ final String textFileUrl = html.Url.createObjectUrl(textFile);
 
 void main() {
   group('Create with an objectUrl', () {
-    final file = XFile(textFileUrl);
+    final file = CrossFile(textFileUrl);
 
     test('Can be read as a string', () async {
       expect(await file.readAsString(), equals(expectedStringContents));
@@ -39,7 +39,7 @@ void main() {
   });
 
   group('Create from data', () {
-    final file = XFile.fromData(bytes);
+    final file = CrossFile.fromData(bytes);
 
     test('Can be read as a string', () async {
       expect(await file.readAsString(), equals(expectedStringContents));
@@ -58,25 +58,25 @@ void main() {
   });
 
   group('saveTo(..)', () {
-    final String xFileDomElementId = '__x_file_dom_element';
+    final String CrossFileDomElementId = '__x_file_dom_element';
 
-    group('XFile saveTo(..)', () {
+    group('CrossFile saveTo(..)', () {
       test('creates a DOM container', () async {
-        XFile file = XFile.fromData(bytes);
+        CrossFile file = CrossFile.fromData(bytes);
 
         await file.saveTo('');
 
-        final container = querySelector('#${xFileDomElementId}');
+        final container = querySelector('#${CrossFileDomElementId}');
 
         expect(container, isNotNull);
       });
 
       test('create anchor element', () async {
-        XFile file = XFile.fromData(bytes, name: textFile.name);
+        CrossFile file = CrossFile.fromData(bytes, name: textFile.name);
 
         await file.saveTo('path');
 
-        final container = querySelector('#${xFileDomElementId}');
+        final container = querySelector('#${CrossFileDomElementId}');
         final AnchorElement element = container?.children?.firstWhere(
             (element) => element.tagName == 'A',
             orElse: () => null);
@@ -89,12 +89,12 @@ void main() {
       test('anchor element is clicked', () async {
         final mockAnchor = AnchorElement();
 
-        XFileTestOverrides overrides = XFileTestOverrides(
+        CrossFileTestOverrides overrides = CrossFileTestOverrides(
           createAnchorElement: (_, __) => mockAnchor,
         );
 
-        XFile file =
-            XFile.fromData(bytes, name: textFile.name, overrides: overrides);
+        CrossFile file = CrossFile.fromData(bytes,
+            name: textFile.name, overrides: overrides);
 
         bool clicked = false;
         mockAnchor.onClick.listen((event) => clicked = true);
