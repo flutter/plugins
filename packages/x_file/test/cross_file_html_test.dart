@@ -9,7 +9,7 @@ import 'dart:html' as html;
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:cross_file/cross_file.dart';
 
 import 'dart:html';
 

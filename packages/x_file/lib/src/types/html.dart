@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http show readBytes;
 import 'package:meta/meta.dart';
 import 'dart:html';
 
-import '../../web_helpers/web_helpers.dart';
+import '../web_helpers/web_helpers.dart';
 import './base.dart';
 
 /// A XFile that works on web.

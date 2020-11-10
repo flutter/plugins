@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:meta/meta.dart';
+import 'package:x_file/x_file.dart';
 
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/file_selector');

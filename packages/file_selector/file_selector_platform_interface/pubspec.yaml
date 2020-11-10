@@ -11,6 +11,8 @@ dependencies:
   meta: ^1.0.5
   http: ^0.12.0+1
   plugin_platform_interface: ^1.0.1
+  x_file:
+    path: ../../x_file
 
 dev_dependencies:
   test: ^1.15.0

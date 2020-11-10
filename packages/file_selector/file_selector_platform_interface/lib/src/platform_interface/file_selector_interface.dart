@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:x_file/x_file.dart';
 
 import '../method_channel/method_channel_file_selector.dart';
 
