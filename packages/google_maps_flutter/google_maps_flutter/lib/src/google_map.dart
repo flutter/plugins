@@ -20,10 +20,14 @@ int _webOnlyMapId = 0;
 class GoogleMap extends StatefulWidget {
   /// Creates a widget displaying data from Google Maps services.
   ///
+  /// If you are including multiple [GoogleMap] instances in the same layout,
+  /// you must specify a distinct value of [restorationId] for each widget.
+  ///
   /// [AssertionError] will be thrown if [initialCameraPosition] is null;
   const GoogleMap({
     Key key,
     @required this.initialCameraPosition,
+    this.restorationId,
     this.onMapCreated,
     this.gestureRecognizers,
     this.compassEnabled = true,
@@ -56,6 +60,13 @@ class GoogleMap extends StatefulWidget {
     this.onLongPress,
   })  : assert(initialCameraPosition != null),
         super(key: key);
+
+  /// Restoration ID to save and restore state of the native widget.
+  ///
+  /// If multiple [GoogleMap] widgets are included in the same layout, you must
+  /// specify a unique value for each widget in order to ensure native state is
+  /// restored correctly. Otherwise, the argument is optional.
+  final String restorationId;
 
   /// Callback method for when the map is ready to be used.
   ///
@@ -225,6 +236,7 @@ class _GoogleMapState extends State<GoogleMap> {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> creationParams = <String, dynamic>{
+      'restorationId': widget.restorationId ?? "",
       'initialCameraPosition': widget.initialCameraPosition?.toMap(),
       'options': _googleMapOptions.toMap(),
       'markersToAdd': serializeMarkerSet(widget.markers),
