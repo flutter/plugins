@@ -1,3 +1,11 @@
+## 0.1.0+7
+
+* Substitute `undefined_prefixed_name: ignore` analyzer setting by a `dart:ui` shim with conditional exports. [Issue](https://github.com/flutter/flutter/issues/69309).
+
+## 0.1.0+6
+
+* Ensure a single `InfoWindow` is shown at a time. [Issue](https://github.com/flutter/flutter/issues/67380).
+
 ## 0.1.0+5
 
 * Update `package:google_maps` to `^3.4.5`.

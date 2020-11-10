@@ -1,3 +1,8 @@
+## 1.6.24
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
 ## 1.6.23
 
 * Check in windows/ directory for example/

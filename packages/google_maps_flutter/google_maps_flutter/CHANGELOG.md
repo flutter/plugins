@@ -1,8 +1,13 @@
-## 1.0.6
+## 1.0.7
 
 Fix state-saving logic in GoogleMapsPlugin. Previously, state saving did
 not work at all. Now, it should be fully functional across multiple 
 different use cases.
+
+## 1.0.6
+
+* Update Dart SDK constraint in example.
+* Remove unused `test` dependency in the example app.
 
 ## 1.0.5
 
