@@ -1,3 +1,7 @@
+## 0.5.8+16
+
+* Moved package to camera/camera subdir, to allow for federated implementations.
+
 ## 0.5.8+15
 
 * Added the `debugCheckIsDisposed` method which can be used in debug mode to validate if the `CameraController` class has been disposed.
