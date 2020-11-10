@@ -32,7 +32,7 @@ public class GoogleMapControllerTest {
     context = ApplicationProvider.getApplicationContext();
     activity = Robolectric.setupActivity(ComponentActivity.class);
     googleMapController =
-        new GoogleMapController(0, context, mockMessenger, activity::getLifecycle, null);
+        new GoogleMapController(0, context, "", mockMessenger, activity::getLifecycle, null);
     googleMapController.init();
   }
 
