@@ -1,8 +1,7 @@
 ## 1.0.7
 
-Fix state-saving logic in GoogleMapsPlugin. Previously, state saving did
-not work at all. Now, it should be fully functional across multiple 
-different use cases.
+* Fix state-saving logic in the Android implementation of `GoogleMapsPlugin`.
+* If multiple `GoogleMap` widgets are used in the same layout, dart callers must specify a unique value for `restorationId` for each widget.
 
 ## 1.0.6
 
