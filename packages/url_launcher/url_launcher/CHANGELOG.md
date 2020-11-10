@@ -1,3 +1,7 @@
+## 5.7.10
+
+* Update Dart SDK constraint in example.
+
 ## 5.7.9
 
 * Check in windows/ directory for example/

@@ -1,3 +1,7 @@
+## 0.0.1+4
+
+* Update Dart SDK constraint in example.
+
 ## 0.0.1+3
 
 * Add a missing include.

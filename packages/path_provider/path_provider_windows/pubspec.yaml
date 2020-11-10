@@ -1,7 +1,7 @@
 name: path_provider_windows
 description: Windows implementation of the path_provider plugin
 homepage: https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider_windows
-version: 0.0.4+2
+version: 0.0.4+3
 
 flutter:
   plugin:

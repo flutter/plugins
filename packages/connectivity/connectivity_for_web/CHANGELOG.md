@@ -1,3 +1,7 @@
+## 0.3.1+4
+
+* Remove unused `test` dependency.
+
 ## 0.3.1+3
 
 * Fix homepage in `pubspec.yaml`.
