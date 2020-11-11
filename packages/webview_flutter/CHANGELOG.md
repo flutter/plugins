@@ -1,6 +1,11 @@
-## 1.0.7
+## 1.0.8
 
 * Add a file chooser for Android.
+
+## 1.0.7
+
+* Minor documentation update to indicate known issue on iOS 13.4 and 13.5.
+  * See: https://github.com/flutter/flutter/issues/53490
 
 ## 1.0.6
 
