@@ -287,8 +287,7 @@ Set<Marker> _rawOptionsToInitialMarkers(Map<String, dynamic> rawOptions) {
           consumeTapEvents: rawMarker['consumeTapEvents'],
           draggable: rawMarker['draggable'],
           flat: rawMarker['flat'],
-          // TODO: Doesn't this support custom icons?
-          icon: BitmapDescriptor.defaultMarker,
+          icon: BitmapDescriptor.fromJson(rawMarker['icon']),
           infoWindow: infoWindow,
           position: position ?? _nullLatLng,
           rotation: rawMarker['rotation'],
@@ -432,6 +431,12 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
           ..size = size
           ..scaledSize = size;
       }
+    } else if (iconConfig[0] == 'fromBytes') {
+      // Grab the bytes, and put them into a blob
+      List<int> bytes = iconConfig[1];
+      final blob = Blob([bytes]); // Let the browser figure out the encoding
+      icon = gmaps.Icon()
+        ..url = Url.createObjectUrlFromBlob(blob);
     }
   }
   return gmaps.MarkerOptions()
