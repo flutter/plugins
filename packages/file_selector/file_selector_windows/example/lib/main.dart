@@ -97,16 +97,16 @@ class _MyHomePageState extends State<MyHomePage> {
                             FileSelectorPlatform.instance.openFiles(
                           initialDirectory: r'C:\',
                           confirmButtonText: 'Open All',
-                          /*acceptedTypeGroups: <XTypeGroup>[
-                          XTypeGroup(label: 'Any'),
-                          XTypeGroup(
-                            label: 'Text',
-                            extensions: <String>[
-                              'txt',
-                              'rtf',
-                            ],
-                          ),
-                        ],*/
+                          acceptedTypeGroups: <XTypeGroup>[
+                            XTypeGroup(label: 'Any'),
+                            XTypeGroup(
+                              label: 'Text',
+                              extensions: <String>[
+                                'txt',
+                                'rtf',
+                              ],
+                            ),
+                          ],
                         );
                       });
                     },
@@ -136,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             XTypeGroup(
                               label: 'Video',
                               extensions: <String>[
-                                'webm'
+                                'webm',
                                 'mpg',
                                 'mpeg',
                                 'mov',
