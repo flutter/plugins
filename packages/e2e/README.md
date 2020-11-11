@@ -1,10 +1,14 @@
-# e2e
+# e2e (deprecated)
+
+## DEPRECATED
+
+This package has been moved to [integration_test](https://github.com/flutter/plugins/tree/master/packages/integration_test).
+
+## Old instructions
 
 This package enables self-driving testing of Flutter code on devices and emulators.
 It adapts flutter_test results into a format that is compatible with `flutter drive`
 and native Android instrumentation testing.
-
-iOS support is not available yet, but is planned in the future.
 
 ## Usage
 
@@ -23,7 +27,6 @@ void main() {
   testWidgets("failing test example", (WidgetTester tester) async {
     expect(2 + 2, equals(5));
   });
-  exit(result == 'pass' ? 0 : 1);
 }
 ```
 
@@ -131,10 +134,12 @@ documentation](https://firebase.google.com/docs/test-lab/?gclid=EAIaIQobChMIs5qV
 to set up a project.
 
 To run an e2e test on Android devices using Firebase Test Lab, use gradle commands to build an
-instrumentation test for Android.
+instrumentation test for Android, after creating `androidTest` as suggested in the last section.
 
-```
+```bash
 pushd android
+# flutter build generates files in android/ for building the app
+flutter build apk
 ./gradlew app:assembleAndroidTest
 ./gradlew app:assembleDebug -Ptarget=<path_to_test>.dart
 popd
@@ -143,7 +148,7 @@ popd
 Upload the build apks Firebase Test Lab, making sure to replace <PATH_TO_KEY_FILE>,
 <PROJECT_NAME>, <RESULTS_BUCKET>, and <RESULTS_DIRECTORY> with your values.
 
-```
+```bash
 gcloud auth activate-service-account --key-file=<PATH_TO_KEY_FILE>
 gcloud --quiet config set project <PROJECT_NAME>
 gcloud firebase test android run --type instrumentation \

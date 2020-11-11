@@ -45,4 +45,13 @@ class Caption {
   /// The actual text that should appear on screen to be read between [start]
   /// and [end].
   final String text;
+
+  @override
+  String toString() {
+    return '$runtimeType('
+        'number: $number, '
+        'start: $start, '
+        'end: $end, '
+        'text: $text)';
+  }
 }

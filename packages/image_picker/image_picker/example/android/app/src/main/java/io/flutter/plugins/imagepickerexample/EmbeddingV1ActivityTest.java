@@ -5,11 +5,12 @@
 package io.flutter.plugins.imagepickerexample;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.e2e.FlutterRunner;
+import dev.flutter.plugins.integration_test.FlutterTestRunner;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
-@RunWith(FlutterRunner.class)
+@RunWith(FlutterTestRunner.class)
+@SuppressWarnings("deprecation")
 public class EmbeddingV1ActivityTest {
   @Rule
   public ActivityTestRule<EmbeddingV1Activity> rule =

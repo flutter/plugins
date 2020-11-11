@@ -1,0 +1,24 @@
+name: path_provider_example
+description: Demonstrates how to use the path_provider plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  path_provider_windows: any
+
+dependency_overrides:
+  path_provider_windows:
+    path: ../
+
+dev_dependencies:
+  e2e: ^0.2.1
+  flutter_driver:
+    sdk: flutter
+  pedantic: ^1.8.0
+
+flutter:
+  uses-material-design: true
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.4 <2.0.0"

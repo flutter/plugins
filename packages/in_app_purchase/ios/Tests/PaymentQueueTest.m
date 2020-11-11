@@ -66,26 +66,7 @@
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStatePurchased);
-}
-
-- (void)testDuplicateTransactionsWillTriggerAnError {
-  SKPaymentQueueStub *queue = [[SKPaymentQueueStub alloc] init];
-  queue.testState = SKPaymentTransactionStatePurchased;
-  FIAPaymentQueueHandler *handler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
-      transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-      }
-      transactionRemoved:nil
-      restoreTransactionFailed:nil
-      restoreCompletedTransactionsFinished:nil
-      shouldAddStorePayment:^BOOL(SKPayment *_Nonnull payment, SKProduct *_Nonnull product) {
-        return YES;
-      }
-      updatedDownloads:nil];
-  [queue addTransactionObserver:handler];
-  SKPayment *payment =
-      [SKPayment paymentWithProduct:[[SKProductStub alloc] initWithMap:self.productResponseMap]];
-  XCTAssertTrue([handler addPayment:payment]);
-  XCTAssertFalse([handler addPayment:payment]);
+  XCTAssertEqual(tran.transactionIdentifier, @"fakeID");
 }
 
 - (void)testTransactionFailed {
@@ -113,6 +94,7 @@
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStateFailed);
+  XCTAssertEqual(tran.transactionIdentifier, nil);
 }
 
 - (void)testTransactionRestored {
@@ -140,6 +122,7 @@
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStateRestored);
+  XCTAssertEqual(tran.transactionIdentifier, @"fakeID");
 }
 
 - (void)testTransactionPurchasing {
@@ -167,6 +150,7 @@
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStatePurchasing);
+  XCTAssertEqual(tran.transactionIdentifier, nil);
 }
 
 - (void)testTransactionDeferred {
@@ -194,6 +178,7 @@
   [handler addPayment:payment];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(tran.transactionState, SKPaymentTransactionStateDeferred);
+  XCTAssertEqual(tran.transactionIdentifier, nil);
 }
 
 - (void)testFinishTransaction {
@@ -203,13 +188,11 @@
   queue.testState = SKPaymentTransactionStateDeferred;
   __block FIAPaymentQueueHandler *handler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
       transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-        XCTAssertEqual(handler.transactions.count, 1);
         XCTAssertEqual(transactions.count, 1);
         SKPaymentTransaction *transaction = transactions[0];
         [handler finishTransaction:transaction];
       }
       transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-        XCTAssertEqual(handler.transactions.count, 0);
         XCTAssertEqual(transactions.count, 1);
         [expectation fulfill];
       }

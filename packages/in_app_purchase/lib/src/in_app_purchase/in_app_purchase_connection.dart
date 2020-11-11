@@ -71,7 +71,7 @@ abstract class InAppPurchaseConnection {
 
   /// Enable the [InAppPurchaseConnection] to handle pending purchases.
   ///
-  /// Android Only: This method is required to be called when initialize the application.
+  /// This method is required to be called when initialize the application.
   /// It is to acknowledge your application has been updated to support pending purchases.
   /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
   /// for more details.
@@ -269,7 +269,13 @@ abstract class InAppPurchaseConnection {
 }
 
 /// Which platform the request is on.
-enum IAPSource { GooglePlay, AppStore }
+enum IAPSource {
+  /// Google's Play Store.
+  GooglePlay,
+
+  /// Apple's App Store.
+  AppStore
+}
 
 /// Captures an error from the underlying purchase platform.
 ///
@@ -279,6 +285,7 @@ enum IAPSource { GooglePlay, AppStore }
 /// * [ProductDetailsResponse] for error when querying product details.
 /// * [PurchaseDetails] for error happened in purchase.
 class IAPError {
+  /// Creates a new IAP error object with the given error details.
   IAPError(
       {@required this.source,
       @required this.code,

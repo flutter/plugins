@@ -2,7 +2,7 @@ name: url_launcher
 description: Flutter plugin for launching a URL on Android and iOS. Supports
   web, phone, SMS, and email schemes.
 homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher
-version: 5.4.9
+version: 5.7.10
 
 flutter:
   plugin:
@@ -13,21 +13,27 @@ flutter:
       ios:
         pluginClass: FLTURLLauncherPlugin
       web:
-        default_package: url_launcher_web 
+        default_package: url_launcher_web
+      linux:
+        default_package: url_laucher_linux
       macos:
         default_package: url_laucher_macos
+      windows:
+        default_package: url_laucher_windows
 
 dependencies:
   flutter:
     sdk: flutter
-  url_launcher_platform_interface: ^1.0.4
+  url_launcher_platform_interface: ^1.0.9
   # The design on https://flutter.dev/go/federated-plugins was to leave
   # this constraint as "any". We cannot do it right now as it fails pub publish
   # validation, so we set a ^ constraint.
   # TODO(amirh): Revisit this (either update this part in the  design or the pub tool).
   # https://github.com/flutter/flutter/issues/46264
-  url_launcher_web: ^0.1.0+1
+  url_launcher_web: ^0.1.5
+  url_launcher_linux: ^0.0.1
   url_launcher_macos: ^0.0.1
+  url_launcher_windows: ^0.0.1
 
 dev_dependencies:
   flutter_test:

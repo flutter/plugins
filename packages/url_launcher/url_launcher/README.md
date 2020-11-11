@@ -2,7 +2,8 @@
 
 [![pub package](https://img.shields.io/pub/v/url_launcher.svg)](https://pub.dartlang.org/packages/url_launcher)
 
-A Flutter plugin for launching a URL in the mobile platform. Supports iOS and Android.
+A Flutter plugin for launching a URL in the mobile platform. Supports
+iOS, Android, web, Windows, macOS, and Linux.
 
 ## Usage
 To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
@@ -53,6 +54,27 @@ Common schemes supported by both iOS and Android:
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
 
+### Encoding URLs
+
+URLs must be properly encoded, especially when including spaces or other special characters. This can be done using the [`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html):
+```dart
+import 'dart:core';
+import 'package:url_launcher/url_launcher.dart';
+
+final Uri _emailLaunchUri = Uri(
+  scheme: 'mailto',
+  path: 'smith@example.com',
+  queryParameters: {
+    'subject': 'Example Subject & Symbols are allowed!'
+  }
+);
+
+// ...
+
+// mailto:smith@example.com?subject=Example+Subject+%26+Symbols+are+allowed%21
+launch(_emailLaunchUri.toString());
+```
+
 ## Handling missing URL receivers
 
 A particular mobile device may not be able to receive all supported URL schemes.
@@ -70,8 +92,8 @@ web page using a URL following the `http` scheme.
 
 ## Browser vs In-app Handling
 By default, Android opens up a browser when handling URLs. You can pass
-`forceWebView: true` parameter to tell the plugin to open a WebView instead. 
-If you do this for a URL of a page containing JavaScript, make sure to pass in 
+`forceWebView: true` parameter to tell the plugin to open a WebView instead.
+If you do this for a URL of a page containing JavaScript, make sure to pass in
 `enableJavaScript: true`, or else the launch method will not work properly. On
 iOS, the default behavior is to open all web URLs within the app. Everything
 else is redirected to the app handler.

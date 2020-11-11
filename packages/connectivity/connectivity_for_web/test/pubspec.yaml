@@ -1,0 +1,25 @@
+name: connectivity_web_example
+description: Example web app for the connectivity plugin
+homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity_web
+
+dependencies:
+  connectivity_for_web:
+    path: ../
+  js: ^0.6.1+1
+  flutter_web_plugins:
+    sdk: flutter
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  integration_test:
+    path: ../../../integration_test
+  mockito: ^4.1.1
+
+environment:
+  sdk: ">=2.6.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.4"

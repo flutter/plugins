@@ -1,3 +1,28 @@
+## 0.4.5+17
+
+* Update Dart SDK constraint in example.
+
+## 0.4.5+16
+
+* Remove unnecessary workaround from test.
+
+## 0.4.5+15
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.5+14
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.4.5+13
+
+* Android Code Inspection and Clean up.
+
+## 0.4.5+12
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.4.5+11
 
 * Update lower bound of dart dependency to 2.1.0.

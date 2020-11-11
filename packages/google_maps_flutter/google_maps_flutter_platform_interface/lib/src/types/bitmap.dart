@@ -9,6 +9,8 @@ import 'package:flutter/material.dart'
     show ImageConfiguration, AssetImage, AssetBundleImageKey;
 import 'package:flutter/services.dart' show AssetBundle;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 /// Defines a bitmap image. For a marker, this class can be used to set the
 /// image of the marker icon. For a ground overlay, it can be used to set the
 /// image to place on the surface of the earth.
@@ -100,6 +102,11 @@ class BitmapDescriptor {
       'fromAssetImage',
       assetBundleImageKey.name,
       assetBundleImageKey.scale,
+      if (kIsWeb && configuration?.size != null)
+        [
+          configuration.size.width,
+          configuration.size.height,
+        ],
     ]);
   }
 
