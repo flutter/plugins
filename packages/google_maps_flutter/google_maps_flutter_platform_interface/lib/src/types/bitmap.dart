@@ -116,6 +116,12 @@ class BitmapDescriptor {
     return BitmapDescriptor._(<dynamic>['fromBytes', byteData]);
   }
 
+  /// The inverse of .toJson.
+  /// Do not use this method, it can be removed at any time.
+  /// This is needed in Web to re-hydrate BitmapDescriptors that have been
+  /// transformed to JSON for transport.
+  BitmapDescriptor.fromJson(dynamic json) : _json = json;
+
   final dynamic _json;
 
   /// Convert the object to a Json format.
