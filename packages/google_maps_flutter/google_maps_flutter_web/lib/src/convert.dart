@@ -287,6 +287,7 @@ Set<Marker> _rawOptionsToInitialMarkers(Map<String, dynamic> rawOptions) {
           consumeTapEvents: rawMarker['consumeTapEvents'],
           draggable: rawMarker['draggable'],
           flat: rawMarker['flat'],
+          // ignore: deprecated_member_use
           icon: BitmapDescriptor.fromJson(rawMarker['icon']),
           infoWindow: infoWindow,
           position: position ?? _nullLatLng,
