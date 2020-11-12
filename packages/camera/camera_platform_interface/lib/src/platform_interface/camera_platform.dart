@@ -81,7 +81,7 @@ abstract class CameraPlatform extends PlatformInterface {
   /// Starts a video recording
   ///
   /// If no [file] parameter is provided, the recording will be saved to a new file in a temporary location.
-  /// 
+  ///
   /// The file is written on the flight as the video is being recorded.
   /// If a file already exists at the path for the provided file instance, an error will be thrown.
   /// The file can be read as soon as [stopVideoRecording] returns it.
@@ -89,7 +89,7 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
-  /// Stops the video recording and returns the file where it was saved
+  /// Stops the video recording and returns the file where it was saved.
   Future<XFile> stopVideoRecording(int cameraId) {
     throw UnimplementedError('stopVideoRecording() is not implemented.');
   }
