@@ -4,10 +4,10 @@
 
 import 'dart:async';
 
+import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 
 import '../../camera_platform_interface.dart';
 
@@ -68,8 +68,9 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Captures an image and returns the file where it was saved.
-  /// If no [file] parameter is provided, the file returned will be in a temporary location.
-  Future<XFile> takePicture(int cameraId, { XFile file }) {
+  /// If no [file] parameter is provided, the file returned will be in a
+  /// temporary location.
+  Future<XFile> takePicture(int cameraId, {XFile file}) {
     throw UnimplementedError('takePicture() is not implemented.');
   }
 
@@ -78,14 +79,16 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('prepareForVideoRecording() is not implemented.');
   }
 
-  /// Starts a video recording
+  /// Starts a video recording.
   ///
-  /// If no [file] parameter is provided, the recording will be saved to a new file in a temporary location.
+  /// If no [file] parameter is provided, the recording will be saved to a new
+  /// file in a temporary location.
   ///
   /// The file is written on the flight as the video is being recorded.
-  /// If a file already exists at the path for the provided file instance, an error will be thrown.
+  /// If a file already exists at the path for the provided file instance,
+  /// an error will be thrown.
   /// The file can be read as soon as [stopVideoRecording] returns it.
-  Future<XFile> startVideoRecording(int cameraId, { XFile file }) {
+  Future<XFile> startVideoRecording(int cameraId, {XFile file}) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
