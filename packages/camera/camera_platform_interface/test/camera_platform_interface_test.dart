@@ -45,14 +45,41 @@ void main() {
     });
 
     test(
-        'Default implementation of cameraEventsFor() should throw unimplemented error',
+        'Default implementation of onResolutionChanged() should throw unimplemented error',
         () {
       // Arrange
       final cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
-        () => cameraPlatform.cameraEventsFor(1),
+        () => cameraPlatform.onResolutionChanged(1),
+        throwsUnimplementedError,
+      );
+    });
+
+
+    test(
+        'Default implementation of onCameraClosing() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.onCameraClosing(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of onCameraError() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.onCameraError(1),
         throwsUnimplementedError,
       );
     });
@@ -122,19 +149,6 @@ void main() {
     });
 
     test(
-        'Default implementation of startImageStream() should throw unimplemented error',
-        () {
-      // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
-
-      // Act & Assert
-      expect(
-        () => cameraPlatform.startImageStream(null),
-        throwsUnimplementedError,
-      );
-    });
-
-    test(
         'Default implementation of startVideoRecording() should throw unimplemented error',
         () {
       // Arrange
@@ -143,19 +157,6 @@ void main() {
       // Act & Assert
       expect(
         () => cameraPlatform.startVideoRecording(1, null),
-        throwsUnimplementedError,
-      );
-    });
-
-    test(
-        'Default implementation of stopImageStream() should throw unimplemented error',
-        () {
-      // Arrange
-      final cameraPlatform = ExtendsCameraPlatform();
-
-      // Act & Assert
-      expect(
-        () => cameraPlatform.stopImageStream(),
         throwsUnimplementedError,
       );
     });
