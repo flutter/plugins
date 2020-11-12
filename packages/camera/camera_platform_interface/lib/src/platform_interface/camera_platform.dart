@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
@@ -67,7 +68,7 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Captures an image and saves it to [path].
-  Future<void> takePicture(int cameraId, String path) {
+  Future<XFile> takePicture(int cameraId) {
     throw UnimplementedError('takePicture() is not implemented.');
   }
 
@@ -84,12 +85,12 @@ abstract class CameraPlatform extends PlatformInterface {
   /// The file is written on the flight as the video is being recorded.
   /// If a file already exists at the provided path an error will be thrown.
   /// The file can be read as soon as [stopVideoRecording] returns.
-  Future<void> startVideoRecording(int cameraId, String path) {
+  Future<void> startVideoRecording(int cameraId) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
   /// Stop the video recording.
-  Future<void> stopVideoRecording(int cameraId) {
+  Future<XFile> stopVideoRecording(int cameraId) {
     throw UnimplementedError('stopVideoRecording() is not implemented.');
   }
 
