@@ -1,3 +1,6 @@
+## 1.0.5
+Add an interface to define Heatmap behaviour
+
 ## 1.0.4
 
 * Add a `dispose` method to the interface, so implementations may cleanup resources acquired on `init`.

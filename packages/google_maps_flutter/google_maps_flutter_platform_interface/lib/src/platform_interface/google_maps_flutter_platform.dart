@@ -5,14 +5,13 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:flutter/widgets.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-
-import 'package:google_maps_flutter_platform_interface/src/method_channel/method_channel_google_maps_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:google_maps_flutter_platform_interface/src/method_channel/method_channel_google_maps_flutter.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// The interface that platform-specific implementations of `google_maps_flutter` must extend.
@@ -113,6 +112,19 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     @required int mapId,
   }) {
     throw UnimplementedError('updateCircles() has not been implemented.');
+  }
+
+  /// Updates heatmap configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> updateHeatmaps(
+    HeatmapUpdates heatmapUpdates, {
+    @required int mapId,
+  }) {
+    throw UnimplementedError('updateHeatmaps() has not been implemented.');
   }
 
   /// Starts an animated change of the map camera position.

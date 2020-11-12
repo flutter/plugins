@@ -5,11 +5,10 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
-
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:stream_transform/stream_transform.dart';
 
@@ -278,6 +277,24 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return channel(mapId).invokeMethod<void>(
       'circles#update',
       circleUpdates.toJson(),
+    );
+  }
+
+  /// Updates heatmap configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  @override
+  Future<void> updateHeatmaps(
+    HeatmapUpdates heatmapUpdates, {
+    @required int mapId,
+  }) {
+    assert(heatmapUpdates != null);
+    return channel(mapId).invokeMethod<void>(
+      'heatmaps#update',
+      heatmapUpdates.toJson(),
     );
   }
 
