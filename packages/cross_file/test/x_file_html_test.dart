@@ -93,8 +93,8 @@ void main() {
           createAnchorElement: (_, __) => mockAnchor,
         );
 
-        XFile file = XFile.fromData(bytes,
-            name: textFile.name, overrides: overrides);
+        XFile file =
+            XFile.fromData(bytes, name: textFile.name, overrides: overrides);
 
         bool clicked = false;
         mockAnchor.onClick.listen((event) => clicked = true);
