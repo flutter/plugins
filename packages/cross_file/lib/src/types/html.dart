@@ -15,7 +15,7 @@ import './base.dart';
 /// A CrossFile that works on web.
 ///
 /// It wraps the bytes of a selected file.
-class CrossFile extends CrossFileBase {
+class XFile extends XFileBase {
   String path;
 
   final String mimeType;
@@ -36,7 +36,7 @@ class CrossFile extends CrossFileBase {
   ///
   /// `name` needs to be passed from the outside, since we only have
   /// access to it while we create the ObjectUrl.
-  CrossFile(
+  XFile(
     this.path, {
     this.mimeType,
     this.name,
@@ -51,7 +51,7 @@ class CrossFile extends CrossFileBase {
         super(path);
 
   /// Construct an CrossFile from its data
-  CrossFile.fromData(
+  XFile.fromData(
     Uint8List bytes, {
     this.mimeType,
     this.name,

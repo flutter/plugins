@@ -13,9 +13,9 @@ import 'dart:typed_data';
 ///
 /// This class is a very limited subset of dart:io [File], so all
 /// the methods should seem familiar.
-abstract class CrossFileBase {
+abstract class XFileBase {
   /// Construct a CrossFile
-  CrossFileBase(String path);
+  XFileBase(String path);
 
   /// Save the CrossFile at the indicated file path.
   void saveTo(String path) async {

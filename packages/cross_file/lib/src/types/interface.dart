@@ -10,7 +10,7 @@ import './base.dart';
 /// A CrossFile is a cross-platform, simplified File abstraction.
 ///
 /// It wraps the bytes of a selected file, and its (platform-dependant) path.
-class CrossFile extends CrossFileBase {
+class XFile extends XFileBase {
   /// Construct a CrossFile object from its path.
   ///
   /// Optionally, this can be initialized with `bytes` and `length`
@@ -19,7 +19,7 @@ class CrossFile extends CrossFileBase {
   /// `name` may be passed from the outside, for those cases where the effective
   /// `path` of the file doesn't match what the user sees when selecting it
   /// (like in web)
-  CrossFile(
+  XFile(
     String path, {
     String mimeType,
     String name,
@@ -33,7 +33,7 @@ class CrossFile extends CrossFileBase {
   }
 
   /// Construct a CrossFile object from its data
-  CrossFile.fromData(
+  XFile.fromData(
     Uint8List bytes, {
     String mimeType,
     String name,

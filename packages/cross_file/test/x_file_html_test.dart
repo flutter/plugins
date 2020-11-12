@@ -9,7 +9,7 @@ import 'dart:html' as html;
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cross_file/cross_file.dart';
+import 'package:cross_file/x_file.dart';
 
 import 'dart:html';
 
@@ -20,7 +20,7 @@ final String textFileUrl = html.Url.createObjectUrl(textFile);
 
 void main() {
   group('Create with an objectUrl', () {
-    final file = CrossFile(textFileUrl);
+    final file = XFile(textFileUrl);
 
     test('Can be read as a string', () async {
       expect(await file.readAsString(), equals(expectedStringContents));
@@ -39,7 +39,7 @@ void main() {
   });
 
   group('Create from data', () {
-    final file = CrossFile.fromData(bytes);
+    final file = XFile.fromData(bytes);
 
     test('Can be read as a string', () async {
       expect(await file.readAsString(), equals(expectedStringContents));
@@ -62,7 +62,7 @@ void main() {
 
     group('CrossFile saveTo(..)', () {
       test('creates a DOM container', () async {
-        CrossFile file = CrossFile.fromData(bytes);
+        XFile file = XFile.fromData(bytes);
 
         await file.saveTo('');
 
@@ -72,7 +72,7 @@ void main() {
       });
 
       test('create anchor element', () async {
-        CrossFile file = CrossFile.fromData(bytes, name: textFile.name);
+        XFile file = XFile.fromData(bytes, name: textFile.name);
 
         await file.saveTo('path');
 
@@ -93,7 +93,7 @@ void main() {
           createAnchorElement: (_, __) => mockAnchor,
         );
 
-        CrossFile file = CrossFile.fromData(bytes,
+        XFile file = XFile.fromData(bytes,
             name: textFile.name, overrides: overrides);
 
         bool clicked = false;

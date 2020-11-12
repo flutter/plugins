@@ -9,7 +9,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cross_file/cross_file.dart';
+import 'package:cross_file/x_file.dart';
 
 // Please note that executing this test with command
 // `flutter test test/x_file_io_test.dart` will set the directory
@@ -30,7 +30,7 @@ final String textFilePath = textFile.path;
 
 void main() {
   group('Create with a path', () {
-    final file = CrossFile(textFilePath);
+    final file = XFile(textFilePath);
 
     test('Can be read as a string', () async {
       expect(await file.readAsString(), equals(expectedStringContents));
@@ -64,7 +64,7 @@ void main() {
   });
 
   group('Create with data', () {
-    final file = CrossFile.fromData(bytes);
+    final file = XFile.fromData(bytes);
 
     test('Can be read as a string', () async {
       expect(await file.readAsString(), equals(expectedStringContents));
