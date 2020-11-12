@@ -67,7 +67,7 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('onCameraError() is not implemented.');
   }
 
-  /// Captures an image and saves it to [path].
+  /// Captures an image and returns the file where it was saved
   Future<XFile> takePicture(int cameraId) {
     throw UnimplementedError('takePicture() is not implemented.');
   }
@@ -77,19 +77,16 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('prepareForVideoRecording() is not implemented.');
   }
 
-  /// Start a video recording and save the file to [path].
-  ///
-  /// A path can for example be obtained using
-  /// [path_provider](https://pub.dartlang.org/packages/path_provider).
+  /// Starts a video recording
   ///
   /// The file is written on the flight as the video is being recorded.
   /// If a file already exists at the provided path an error will be thrown.
-  /// The file can be read as soon as [stopVideoRecording] returns.
+  /// The file can be read as soon as [stopVideoRecording] returns it.
   Future<void> startVideoRecording(int cameraId) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
-  /// Stop the video recording.
+  /// Stops the video recording and returns the file where it was saved
   Future<XFile> stopVideoRecording(int cameraId) {
     throw UnimplementedError('stopVideoRecording() is not implemented.');
   }
