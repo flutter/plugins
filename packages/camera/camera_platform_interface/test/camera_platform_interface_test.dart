@@ -57,7 +57,6 @@ void main() {
       );
     });
 
-
     test(
         'Default implementation of onCameraClosing() should throw unimplemented error',
         () {
