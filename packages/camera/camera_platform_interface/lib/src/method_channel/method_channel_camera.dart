@@ -102,7 +102,6 @@ class MethodChannelCamera extends CameraPlatform {
     return _events(cameraId).whereType<CameraErrorEvent>();
   }
 
-  // TODO(BeMacized): Unit test.
   @override
   Future<XFile> takePicture(int cameraId) async {
     String path = await _channel.invokeMethod<String>(

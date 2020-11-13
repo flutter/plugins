@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:async/async.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -200,7 +201,7 @@ void main() {
           {'name': 'Test 1', 'lensFacing': 'front', 'sensorOrientation': 1},
           {'name': 'Test 2', 'lensFacing': 'back', 'sensorOrientation': 2}
         ];
-        MethodChannelMock(
+        MethodChannelMock channel = MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
           methods: {'availableCameras': returnData},
         );
@@ -209,6 +210,9 @@ void main() {
         List<CameraDescription> cameras = await camera.availableCameras();
 
         // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('availableCameras', arguments: null),
+        ]);
         expect(cameras.length, returnData.length);
         for (int i = 0; i < returnData.length; i++) {
           CameraDescription cameraDescription = CameraDescription(
@@ -219,6 +223,22 @@ void main() {
           );
           expect(cameras[i], cameraDescription);
         }
+      });
+
+      test('Should take a picture and return an XFile instance', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+            channelName: 'plugins.flutter.io/camera',
+            methods: {'takePicture': '/test/path.jpg'});
+
+        // Act
+        XFile file = await camera.takePicture(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('takePicture', arguments: {'textureId': cameraId}),
+        ]);
+        expect(file.path, '/test/path.jpg');
       });
     });
   });
