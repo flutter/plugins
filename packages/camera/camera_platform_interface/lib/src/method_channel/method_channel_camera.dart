@@ -141,7 +141,6 @@ class MethodChannelCamera extends CameraPlatform {
     );
   }
 
-  // TODO(BeMacized): Unit test.
   @override
   Future<void> resumeVideoRecording(int cameraId) async {
     await _channel.invokeMethod<void>(
@@ -150,7 +149,6 @@ class MethodChannelCamera extends CameraPlatform {
     );
   }
 
-  // TODO(BeMacized): Unit test
   @override
   Widget buildView(int cameraId) {
     return Texture(textureId: cameraId);
