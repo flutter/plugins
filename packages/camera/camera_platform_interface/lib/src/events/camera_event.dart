@@ -21,6 +21,16 @@ abstract class CameraEvent {
   ///
   /// The `cameraId` is the ID of the camera that triggered the event.
   CameraEvent(this.cameraId);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CameraEvent &&
+          runtimeType == other.runtimeType &&
+          cameraId == other.cameraId;
+
+  @override
+  int get hashCode => cameraId.hashCode;
 }
 
 /// An event fired when the resolution preset of the camera has changed.
@@ -69,6 +79,7 @@ class ResolutionChangedEvent extends CameraEvent {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ResolutionChangedEvent &&
+          super == (other) &&
           runtimeType == other.runtimeType &&
           captureWidth == other.captureWidth &&
           captureHeight == other.captureHeight &&
@@ -77,6 +88,7 @@ class ResolutionChangedEvent extends CameraEvent {
 
   @override
   int get hashCode =>
+      super.hashCode ^
       captureWidth.hashCode ^
       captureHeight.hashCode ^
       previewWidth.hashCode ^
@@ -99,10 +111,12 @@ class CameraClosingEvent extends CameraEvent {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CameraClosingEvent && runtimeType == other.runtimeType;
+      super == (other) &&
+          other is CameraClosingEvent &&
+          runtimeType == other.runtimeType;
 
   @override
-  int get hashCode => 0;
+  int get hashCode => super.hashCode;
 }
 
 /// An event fired when an error occured while operating the camera.
@@ -128,10 +142,11 @@ class CameraErrorEvent extends CameraEvent {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CameraErrorEvent &&
+      super == (other) &&
+          other is CameraErrorEvent &&
           runtimeType == other.runtimeType &&
           description == other.description;
 
   @override
-  int get hashCode => description.hashCode;
+  int get hashCode => super.hashCode ^ description.hashCode;
 }
