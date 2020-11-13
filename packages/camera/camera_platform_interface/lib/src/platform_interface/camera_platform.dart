@@ -68,9 +68,7 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Captures an image and returns the file where it was saved.
-  /// If no [file] parameter is provided, the file returned will be in a
-  /// temporary location.
-  Future<XFile> takePicture(int cameraId, {XFile file}) {
+  Future<XFile> takePicture(int cameraId) {
     throw UnimplementedError('takePicture() is not implemented.');
   }
 
@@ -79,21 +77,16 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('prepareForVideoRecording() is not implemented.');
   }
 
-  /// Starts a video recording.
-  ///
-  /// If no [file] parameter is provided, the recording will be saved to a new
-  /// file in a temporary location.
+  /// Starts a video recording and returns the file where it will be saved.
   ///
   /// The file is written on the flight as the video is being recorded.
-  /// If a file already exists at the path for the provided file instance,
-  /// an error will be thrown.
   /// The file can be read as soon as [stopVideoRecording] returns it.
-  Future<XFile> startVideoRecording(int cameraId, {XFile file}) {
+  Future<XFile> startVideoRecording(int cameraId) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
-  /// Stops the video recording and returns the file where it was saved.
-  Future<XFile> stopVideoRecording(int cameraId) {
+  /// Stops the video recording.
+  Future<void> stopVideoRecording(int cameraId) {
     throw UnimplementedError('stopVideoRecording() is not implemented.');
   }
 
