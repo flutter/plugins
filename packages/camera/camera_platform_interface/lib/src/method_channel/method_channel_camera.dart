@@ -110,9 +110,8 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<void> prepareForVideoRecording() async {
-    await _channel.invokeMethod<void>('prepareForVideoRecording');
-  }
+  Future<void> prepareForVideoRecording() =>
+    _channel.invokeMethod<void>('prepareForVideoRecording');
 
   @override
   Future<XFile> startVideoRecording(int cameraId) async {
