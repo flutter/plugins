@@ -295,6 +295,24 @@ void main() {
           }),
         ]);
       });
+
+      test('Should pause a video recording', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'pauseVideoRecording': null},
+        );
+
+        // Act
+        await camera.pauseVideoRecording(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('pauseVideoRecording', arguments: {
+            'textureId': cameraId,
+          }),
+        ]);
+      });
     });
   });
 }
