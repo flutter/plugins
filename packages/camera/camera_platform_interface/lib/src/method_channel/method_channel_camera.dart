@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import 'package:stream_transform/stream_transform.dart';
 
@@ -23,6 +24,7 @@ class MethodChannelCamera extends CameraPlatform {
       _cameraEventStreamController.stream
           .where((event) => event.cameraId == cameraId);
 
+  // TODO(BeMacized): Write unit tests.
   @override
   Future<List<CameraDescription>> availableCameras() async {
     try {
@@ -98,6 +100,48 @@ class MethodChannelCamera extends CameraPlatform {
   Stream<CameraErrorEvent> onCameraError(int cameraId) {
     assert(_channels.containsKey(cameraId));
     return _events(cameraId).whereType<CameraErrorEvent>();
+  }
+
+  // TODO(BeMacized): Check signature. Implement. Unit test.
+  @override
+  Future<void> takePicture(int cameraId, String path) {
+    super.takePicture(cameraId, path);
+  }
+
+  // TODO(BeMacized): Unit Test
+  @override
+  Future<void> prepareForVideoRecording() async {
+    await _channel.invokeMethod<void>('prepareForVideoRecording');
+  }
+
+  // TODO(BeMacized): Check signature. Implement. Unit test.
+  @override
+  Future<void> startVideoRecording(int cameraId, String path) {
+    super.startVideoRecording(cameraId, path);
+  }
+
+  // TODO(BeMacized): Implement. Unit test.
+  @override
+  Future<void> stopVideoRecording(int cameraId) {
+    super.stopVideoRecording(cameraId);
+  }
+
+  // TODO(BeMacized): Implement. Unit test.
+  @override
+  Future<void> pauseVideoRecording(int cameraId) {
+    super.pauseVideoRecording(cameraId);
+  }
+
+  // TODO(BeMacized): Implement. Unit test.
+  @override
+  Future<void> resumeVideoRecording(int cameraId) {
+    super.resumeVideoRecording(cameraId);
+  }
+
+  // TODO(BeMacized): Unit test
+  @override
+  Widget buildView(int cameraId) {
+    return Texture(textureId: cameraId);
   }
 
   /// Returns the resolution preset as a String.
