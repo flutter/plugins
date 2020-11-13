@@ -103,10 +103,14 @@ class MethodChannelCamera extends CameraPlatform {
     return _events(cameraId).whereType<CameraErrorEvent>();
   }
 
-  // TODO(BeMacized): Implement. Unit test.
+  // TODO(BeMacized): Unit test.
   @override
-  Future<XFile> takePicture(int cameraId) {
-    super.takePicture(cameraId);
+  Future<XFile> takePicture(int cameraId) async {
+    String path = await _channel.invokeMethod<String>(
+      'takePicture',
+      <String, dynamic>{'textureId': cameraId},
+    );
+    return XFile(path);
   }
 
   // TODO(BeMacized): Unit Test
@@ -115,28 +119,41 @@ class MethodChannelCamera extends CameraPlatform {
     await _channel.invokeMethod<void>('prepareForVideoRecording');
   }
 
-  // TODO(BeMacized): Implement. Unit test.
+  // TODO(BeMacized): Unit test.
   @override
-  Future<XFile> startVideoRecording(int cameraId) {
-    super.startVideoRecording(cameraId);
+  Future<XFile> startVideoRecording(int cameraId) async {
+    String path = await _channel.invokeMethod<String>(
+      'startVideoRecording',
+      <String, dynamic>{'textureId': cameraId},
+    );
+    return XFile(path);
   }
 
-  // TODO(BeMacized): Implement. Unit test.
+  // TODO(BeMacized): Unit test.
   @override
-  Future<void> stopVideoRecording(int cameraId) {
-    super.stopVideoRecording(cameraId);
+  Future<void> stopVideoRecording(int cameraId) async {
+    await _channel.invokeMethod<void>(
+      'stopVideoRecording',
+      <String, dynamic>{'textureId': cameraId},
+    );
   }
 
-  // TODO(BeMacized): Implement. Unit test.
+  // TODO(BeMacized): Unit test.
   @override
-  Future<void> pauseVideoRecording(int cameraId) {
-    super.pauseVideoRecording(cameraId);
+  Future<void> pauseVideoRecording(int cameraId) async {
+    await _channel.invokeMethod<void>(
+      'pauseVideoRecording',
+      <String, dynamic>{'textureId': cameraId},
+    );
   }
 
-  // TODO(BeMacized): Implement. Unit test.
+  // TODO(BeMacized): Unit test.
   @override
-  Future<void> resumeVideoRecording(int cameraId) {
-    super.resumeVideoRecording(cameraId);
+  Future<void> resumeVideoRecording(int cameraId) async {
+    await _channel.invokeMethod<void>(
+      'resumeVideoRecording',
+      <String, dynamic>{'textureId': cameraId},
+    );
   }
 
   // TODO(BeMacized): Unit test
