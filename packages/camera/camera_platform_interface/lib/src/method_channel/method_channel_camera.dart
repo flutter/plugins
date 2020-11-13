@@ -15,8 +15,6 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 
 /// An implementation of [CameraPlatform] that uses method channels.
 class MethodChannelCamera extends CameraPlatform {
-  // TODO(mvanbeusekom): Add default method channel implementation of the
-  // [CameraPlatform] interface.
   final Map<int, MethodChannel> _channels = {};
   final StreamController<CameraEvent> _cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
