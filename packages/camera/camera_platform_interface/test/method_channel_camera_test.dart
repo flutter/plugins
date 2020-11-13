@@ -240,6 +240,24 @@ void main() {
         ]);
         expect(file.path, '/test/path.jpg');
       });
+
+      test('Should start recording a video and return an XFile instance',
+          () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+            channelName: 'plugins.flutter.io/camera',
+            methods: {'startVideoRecording': '/test/path.mkv'});
+
+        // Act
+        XFile file = await camera.startVideoRecording(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('startVideoRecording',
+              arguments: {'textureId': cameraId}),
+        ]);
+        expect(file.path, '/test/path.mkv');
+      });
     });
   });
 }
