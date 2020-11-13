@@ -131,12 +131,11 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<void> pauseVideoRecording(int cameraId) async {
-    await _channel.invokeMethod<void>(
+  Future<void> pauseVideoRecording(int cameraId) =>
+    _channel.invokeMethod<void>(
       'pauseVideoRecording',
       <String, dynamic>{'textureId': cameraId},
     );
-  }
 
   @override
   Future<void> resumeVideoRecording(int cameraId) async {
