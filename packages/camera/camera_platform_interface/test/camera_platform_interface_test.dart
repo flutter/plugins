@@ -156,7 +156,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.startVideoRecording(1, null),
+        () => cameraPlatform.startVideoRecording(1),
         throwsUnimplementedError,
       );
     });
@@ -182,7 +182,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.takePicture(1, null),
+        () => cameraPlatform.takePicture(1),
         throwsUnimplementedError,
       );
     });

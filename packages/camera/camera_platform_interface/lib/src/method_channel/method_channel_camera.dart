@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -102,10 +103,10 @@ class MethodChannelCamera extends CameraPlatform {
     return _events(cameraId).whereType<CameraErrorEvent>();
   }
 
-  // TODO(BeMacized): Check signature. Implement. Unit test.
+  // TODO(BeMacized): Implement. Unit test.
   @override
-  Future<void> takePicture(int cameraId, String path) {
-    super.takePicture(cameraId, path);
+  Future<XFile> takePicture(int cameraId) {
+    super.takePicture(cameraId);
   }
 
   // TODO(BeMacized): Unit Test
@@ -114,10 +115,10 @@ class MethodChannelCamera extends CameraPlatform {
     await _channel.invokeMethod<void>('prepareForVideoRecording');
   }
 
-  // TODO(BeMacized): Check signature. Implement. Unit test.
+  // TODO(BeMacized): Implement. Unit test.
   @override
-  Future<void> startVideoRecording(int cameraId, String path) {
-    super.startVideoRecording(cameraId, path);
+  Future<XFile> startVideoRecording(int cameraId) {
+    super.startVideoRecording(cameraId);
   }
 
   // TODO(BeMacized): Implement. Unit test.

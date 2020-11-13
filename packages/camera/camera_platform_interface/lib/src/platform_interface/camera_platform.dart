@@ -4,9 +4,10 @@
 
 import 'dart:async';
 
+import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 
 import '../../camera_platform_interface.dart';
 
@@ -66,8 +67,8 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('onCameraError() is not implemented.');
   }
 
-  /// Captures an image and saves it to [path].
-  Future<void> takePicture(int cameraId, String path) {
+  /// Captures an image and returns the file where it was saved.
+  Future<XFile> takePicture(int cameraId) {
     throw UnimplementedError('takePicture() is not implemented.');
   }
 
@@ -76,19 +77,19 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('prepareForVideoRecording() is not implemented.');
   }
 
-  /// Start a video recording and save the file to [path].
-  ///
-  /// A path can for example be obtained using
-  /// [path_provider](https://pub.dartlang.org/packages/path_provider).
+  /// Starts a video recording and returns the file where it will be saved.
   ///
   /// The file is written on the flight as the video is being recorded.
-  /// If a file already exists at the provided path an error will be thrown.
   /// The file can be read as soon as [stopVideoRecording] returns.
-  Future<void> startVideoRecording(int cameraId, String path) {
+  Future<XFile> startVideoRecording(int cameraId) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
-  /// Stop the video recording.
+  /// Stops the video recording.
+  ///
+  /// When the [stopVideoRecording] method completes successfully the recorded
+  /// video can be accessed through the file returned by the 
+  /// [startVideoRecording] method.
   Future<void> stopVideoRecording(int cameraId) {
     throw UnimplementedError('stopVideoRecording() is not implemented.');
   }
