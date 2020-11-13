@@ -44,8 +44,8 @@ abstract class CameraPlatform extends PlatformInterface {
 
   /// Initializes the camera on the device and returns its cameraId.
   Future<int> initializeCamera(
-    CameraDescription cameraDescription, {
-    ResolutionPreset resolutionPreset,
+    CameraDescription cameraDescription,
+    ResolutionPreset resolutionPreset, {
     bool enableAudio,
   }) {
     throw UnimplementedError('initializeCamera() is not implemented.');

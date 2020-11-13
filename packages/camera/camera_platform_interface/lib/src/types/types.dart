@@ -5,3 +5,4 @@
 export 'camera_description.dart';
 export 'camera_image.dart';
 export 'resolution_preset.dart';
+export 'camera_exception.dart';
