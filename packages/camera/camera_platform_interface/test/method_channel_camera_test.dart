@@ -9,6 +9,7 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/method_channel_mock.dart';
@@ -312,6 +313,33 @@ void main() {
             'textureId': cameraId,
           }),
         ]);
+      });
+
+      test('Should resume a video recording', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'resumeVideoRecording': null},
+        );
+
+        // Act
+        await camera.resumeVideoRecording(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('resumeVideoRecording', arguments: {
+            'textureId': cameraId,
+          }),
+        ]);
+      });
+
+      test('Should build a texture widget as view widget', () async {
+         // Act
+        Widget widget = camera.buildView(cameraId);
+
+        // Act
+        expect(widget is Texture, isTrue);
+        expect((widget as Texture).textureId, cameraId);
       });
     });
   });
