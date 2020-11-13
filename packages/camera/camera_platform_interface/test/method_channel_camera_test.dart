@@ -236,7 +236,9 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('takePicture', arguments: {'textureId': cameraId}),
+          isMethodCall('takePicture', arguments: {
+            'textureId': cameraId,
+          }),
         ]);
         expect(file.path, '/test/path.jpg');
       });
@@ -269,10 +271,29 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('startVideoRecording',
-              arguments: {'textureId': cameraId}),
+          isMethodCall('startVideoRecording', arguments: {
+            'textureId': cameraId,
+          }),
         ]);
         expect(file.path, '/test/path.mkv');
+      });
+
+      test('Should stop a video recording', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'stopVideoRecording': null},
+        );
+
+        // Act
+        await camera.stopVideoRecording(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('stopVideoRecording', arguments: {
+            'textureId': cameraId,
+          }),
+        ]);
       });
     });
   });
