@@ -33,6 +33,7 @@ class MethodChannelCamera extends CameraPlatform {
       cameraEventStreamController.stream
           .where((event) => event.cameraId == cameraId);
 
+  // TODO(BeMacized): Write unit tests.
   @override
   Future<List<CameraDescription>> availableCameras() async {
     try {
