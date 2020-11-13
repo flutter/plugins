@@ -57,12 +57,19 @@ class UrlLauncher {
       Bundle headersBundle,
       boolean useWebView,
       boolean enableJavaScript,
-      boolean enableDomStorage) {
+      boolean enableDomStorage
+  ) {
+    Intent launchIntent;
+
     if (activity == null) {
-      return LaunchStatus.NO_ACTIVITY;
+      launchIntent = new Intent(Intent.ACTION_VIEW)
+                        .setData(Uri.parse(url))
+                        .putExtra(Browser.EXTRA_HEADERS, headersBundle);
+      launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      applicationContext.startActivity(launchIntent);
+      return LaunchStatus.OK;
     }
 
-    Intent launchIntent;
     if (useWebView) {
       launchIntent =
           WebViewActivity.createIntent(
