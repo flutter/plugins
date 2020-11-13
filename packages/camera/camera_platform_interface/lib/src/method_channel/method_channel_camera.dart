@@ -117,7 +117,6 @@ class MethodChannelCamera extends CameraPlatform {
     await _channel.invokeMethod<void>('prepareForVideoRecording');
   }
 
-  // TODO(BeMacized): Unit test.
   @override
   Future<XFile> startVideoRecording(int cameraId) async {
     String path = await _channel.invokeMethod<String>(
