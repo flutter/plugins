@@ -24,6 +24,23 @@ class MethodChannelCamera extends CameraPlatform {
           .where((event) => event.cameraId == cameraId);
 
   @override
+  Future<List<CameraDescription>> availableCameras() async {
+    try {
+      final List<Map<dynamic, dynamic>> cameras = await _channel
+          .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
+      return cameras.map((Map<dynamic, dynamic> camera) {
+        return CameraDescription(
+          name: camera['name'],
+          lensDirection: _parseCameraLensDirection(camera['lensFacing']),
+          sensorOrientation: camera['sensorOrientation'],
+        );
+      }).toList();
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  @override
   Future<int> initializeCamera(
     CameraDescription cameraDescription,
     ResolutionPreset resolutionPreset, {
@@ -100,6 +117,19 @@ class MethodChannelCamera extends CameraPlatform {
         return 'low';
     }
     throw ArgumentError('Unknown ResolutionPreset value');
+  }
+
+  // Parses a string into a corresponding CameraLensDirection.
+  CameraLensDirection _parseCameraLensDirection(String string) {
+    switch (string) {
+      case 'front':
+        return CameraLensDirection.front;
+      case 'back':
+        return CameraLensDirection.back;
+      case 'external':
+        return CameraLensDirection.external;
+    }
+    throw ArgumentError('Unknown CameraLensDirection value');
   }
 
   @visibleForTesting
