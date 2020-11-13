@@ -133,7 +133,6 @@ class MethodChannelCamera extends CameraPlatform {
     );
   }
 
-  // TODO(BeMacized): Unit test.
   @override
   Future<void> pauseVideoRecording(int cameraId) async {
     await _channel.invokeMethod<void>(
