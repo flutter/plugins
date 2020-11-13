@@ -241,6 +241,22 @@ void main() {
         expect(file.path, '/test/path.jpg');
       });
 
+      test('Should prepare for video recording', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'prepareForVideoRecording': null},
+        );
+
+        // Act
+        await camera.prepareForVideoRecording();
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('prepareForVideoRecording', arguments: null),
+        ]);
+      });
+
       test('Should start recording a video and return an XFile instance',
           () async {
         // Arrange
