@@ -25,7 +25,6 @@ class MethodChannelCamera extends CameraPlatform {
       _cameraEventStreamController.stream
           .where((event) => event.cameraId == cameraId);
 
-  // TODO(BeMacized): Write unit tests.
   @override
   Future<List<CameraDescription>> availableCameras() async {
     try {
@@ -34,7 +33,7 @@ class MethodChannelCamera extends CameraPlatform {
       return cameras.map((Map<dynamic, dynamic> camera) {
         return CameraDescription(
           name: camera['name'],
-          lensDirection: _parseCameraLensDirection(camera['lensFacing']),
+          lensDirection: parseCameraLensDirection(camera['lensFacing']),
           sensorOrientation: camera['sensorOrientation'],
         );
       }).toList();
@@ -182,7 +181,8 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   // Parses a string into a corresponding CameraLensDirection.
-  CameraLensDirection _parseCameraLensDirection(String string) {
+  @visibleForTesting
+  CameraLensDirection parseCameraLensDirection(String string) {
     switch (string) {
       case 'front':
         return CameraLensDirection.front;
