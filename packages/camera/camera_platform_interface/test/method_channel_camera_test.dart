@@ -77,12 +77,11 @@ void main() {
       });
     });
 
-    group('Interaction Tests', () {
-      MethodChannelMock channel;
+    group('Event Tests', () {
       MethodChannelCamera camera;
       int cameraId;
       setUp(() async {
-        channel = MethodChannelMock(
+        MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
           methods: {
             'initialize': {'textureId': 1},
@@ -174,6 +173,52 @@ void main() {
 
         // Clean up
         await streamQueue.cancel();
+      });
+    });
+
+    group('Function Tests', () {
+      MethodChannelCamera camera;
+      int cameraId;
+      setUp(() async {
+        MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {
+            'initialize': {'textureId': 1},
+          },
+        );
+        camera = MethodChannelCamera();
+        cameraId = await camera.initializeCamera(
+          CameraDescription(name: 'Test'),
+          ResolutionPreset.high,
+        );
+      });
+
+      test('Should fetch CameraDescription instances for available cameras',
+          () async {
+        // Arrange
+        List<Map<String, dynamic>> returnData = [
+          {'name': 'Test 1', 'lensFacing': 'front', 'sensorOrientation': 1},
+          {'name': 'Test 2', 'lensFacing': 'back', 'sensorOrientation': 2}
+        ];
+        MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'availableCameras': returnData},
+        );
+
+        // Act
+        List<CameraDescription> cameras = await camera.availableCameras();
+
+        // Assert
+        expect(cameras.length, returnData.length);
+        for (int i = 0; i < returnData.length; i++) {
+          CameraDescription cameraDescription = CameraDescription(
+            name: returnData[i]['name'],
+            lensDirection:
+                camera.parseCameraLensDirection(returnData[i]['lensFacing']),
+            sensorOrientation: returnData[i]['sensorOrientation'],
+          );
+          expect(cameras[i], cameraDescription);
+        }
       });
     });
   });
