@@ -129,7 +129,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.initializeCamera(null, null),
+        () => cameraPlatform.initializeCamera(null),
         throwsUnimplementedError,
       );
     });
