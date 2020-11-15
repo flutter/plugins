@@ -48,14 +48,14 @@ difference in your users' experience.
 
 This package is an unendorsed web platform implementation of `image_picker`.
 
-In order to use this, you'll need to depend in `image_picker: ^0.6.7` (which was the first version of the plugin that allowed federation), and `image_picker_for_web: ^0.1.0`.
+In order to use this, you'll need to depend in `image_picker: ^0.6.7+14` (which was the first version of the plugin that allowed federation), and `image_picker_for_web: ^0.1.0+2`.
 
 ```yaml
 ...
 dependencies:
   ...
-  image_picker: ^0.6.7
-  image_picker_for_web: ^0.1.0
+  image_picker: ^0.6.7+14
+  image_picker_for_web: ^0.1.0+2
   ...
 ...
 ```
