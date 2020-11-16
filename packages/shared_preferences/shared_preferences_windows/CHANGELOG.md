@@ -1,3 +1,11 @@
+## 0.0.1+3
+
+* Remove unused `test` dependency.
+
+## 0.0.1+2
+
+* Check in windows/ directory for example/
+
 ## 0.0.1+1
 
 * Add iOS stub for compatibility with 1.17 and earlier.

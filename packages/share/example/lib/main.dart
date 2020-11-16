@@ -86,6 +86,15 @@ class DemoAppState extends State<DemoApp> {
                       );
                     },
                   ),
+                  const Padding(padding: EdgeInsets.only(top: 12.0)),
+                  Builder(
+                    builder: (BuildContext context) {
+                      return RaisedButton(
+                        child: const Text('Share With Empty Origin'),
+                        onPressed: () => _onShareWithEmptyOrigin(context),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -119,5 +128,9 @@ class DemoAppState extends State<DemoApp> {
           subject: subject,
           sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
     }
+  }
+
+  _onShareWithEmptyOrigin(BuildContext context) async {
+    await Share.share("text");
   }
 }

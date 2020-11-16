@@ -1,3 +1,47 @@
+## 1.0.6
+
+* Update Dart SDK constraint in example.
+* Remove unused `test` dependency in the example app.
+
+## 1.0.5
+
+Overhaul lifecycle management in GoogleMapsPlugin.
+
+GoogleMapController is now uniformly driven by implementing `DefaultLifecycleObserver`. That observer is registered to a lifecycle from one of three sources:
+
+1. For v2 plugin registration, `GoogleMapsPlugin` obtains the lifecycle via `ActivityAware` methods.
+2. For v1 plugin registration, if the activity implements `LifecycleOwner`, it's lifecycle is used directly.
+3. For v1 plugin registration, if the activity does not implement `LifecycleOwner`, a proxy lifecycle is created and driven via `ActivityLifecycleCallbacks`.
+
+## 1.0.4
+
+* Cleanup of Android code:
+* A few minor formatting changes and additions of `@Nullable` annotations.
+* Removed pass-through of `activityHashCode` to `GoogleMapController`.
+* Replaced custom lifecycle state ints with `androidx.lifecycle.Lifecycle.State` enum.
+* Fixed a bug where the Lifecycle object was being leaked `onDetachFromActivity`, by nulling out the field.
+* Moved GoogleMapListener to its own file. Declaring multiple top level classes in the same file is discouraged.
+
+## 1.0.3
+
+* Update android compileSdkVersion to 29.
+
+## 1.0.2
+
+* Remove `io.flutter.embedded_views_preview` requirement from readme.
+
+## 1.0.1
+
+* Fix headline in the readme.
+
+## 1.0.0 - Out of developer preview  🎉.
+
+* Bump the minimal Flutter SDK to 1.22 where platform views are out of developer preview and performing better on iOS. Flutter 1.22 no longer requires adding the `io.flutter.embedded_views_preview` to `Info.plist` in iOS.
+
+## 0.5.33
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 0.5.32
 
 * Fix typo in google_maps_flutter/example/map_ui.dart.

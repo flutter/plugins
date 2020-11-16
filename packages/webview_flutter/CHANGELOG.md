@@ -1,6 +1,54 @@
-## 0.3.24
+## 1.0.8
 
 * Added support for progress tracking.
+
+## 1.0.7
+
+* Minor documentation update to indicate known issue on iOS 13.4 and 13.5.
+  * See: https://github.com/flutter/flutter/issues/53490
+
+## 1.0.6
+
+* Invoke the WebView.onWebResourceError on iOS when the webview content process crashes.
+
+## 1.0.5
+
+* Fix example in the readme.
+
+## 1.0.4
+
+* Suppress the `deprecated_member_use` warning in the example app for `ScaffoldMessenger.showSnackBar`.
+
+## 1.0.3
+
+* Update android compileSdkVersion to 29.
+
+## 1.0.2
+
+* Android Code Inspection and Clean up.
+
+## 1.0.1
+
+* Add documentation for `WebViewPlatformCreatedCallback`.
+
+## 1.0.0 - Out of developer preview 🎉.
+
+* Bumped the minimal Flutter SDK to 1.22 where platform views are out of developer preview, and
+performing better on iOS. Flutter 1.22 no longer requires adding the
+`io.flutter.embedded_views_preview` flag to `Info.plist`.
+
+* Added support for Hybrid Composition on Android (see opt-in instructions in [README](https://github.com/flutter/plugins/blob/master/packages/webview_flutter/README.md#android))
+  * Lowered the required Android API to 19 (was previously 20): [#23728](https://github.com/flutter/flutter/issues/23728).
+  * Fixed the following issues:
+    * 🎹 Keyboard: [#41089](https://github.com/flutter/flutter/issues/41089), [#36478](https://github.com/flutter/flutter/issues/36478), [#51254](https://github.com/flutter/flutter/issues/51254), [#50716](https://github.com/flutter/flutter/issues/50716), [#55724](https://github.com/flutter/flutter/issues/55724),  [#56513](https://github.com/flutter/flutter/issues/56513), [#56515](https://github.com/flutter/flutter/issues/56515), [#61085](https://github.com/flutter/flutter/issues/61085), [#62205](https://github.com/flutter/flutter/issues/62205), [#62547](https://github.com/flutter/flutter/issues/62547), [#58943](https://github.com/flutter/flutter/issues/58943), [#56361](https://github.com/flutter/flutter/issues/56361), [#56361](https://github.com/flutter/flutter/issues/42902), [#40716](https://github.com/flutter/flutter/issues/40716), [#37989](https://github.com/flutter/flutter/issues/37989), [#27924](https://github.com/flutter/flutter/issues/27924).
+    * ♿️ Accessibility: [#50716](https://github.com/flutter/flutter/issues/50716).
+    * ⚡️ Performance: [#61280](https://github.com/flutter/flutter/issues/61280), [#31243](https://github.com/flutter/flutter/issues/31243),  [#52211](https://github.com/flutter/flutter/issues/52211).
+    * 📹 Video: [#5191](https://github.com/flutter/flutter/issues/5191).
+
+## 0.3.24
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+>>>>>>> flutter-origin-master
 
 ## 0.3.23
 

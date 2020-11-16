@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Remove unused `test` dependency.
+
 ## 1.0.3
 
 * Increase upper range of `package:platform` constraint to allow 3.X versions.

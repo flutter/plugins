@@ -8,14 +8,14 @@ import android.content.Context;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
 
 /** SharedPreferencesPlugin */
 public class SharedPreferencesPlugin implements FlutterPlugin {
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
   private MethodChannel channel;
 
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     final SharedPreferencesPlugin plugin = new SharedPreferencesPlugin();
     plugin.setupChannel(registrar.messenger(), registrar.context());
   }

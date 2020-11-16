@@ -3,11 +3,17 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:integration_test/integration_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+// This value is used when comparing the results of
+// converting from a byte value to a double between 0 and 1.
+// (For Color opacity values, for example)
+const _acceptableDelta = 0.01;
 
 /// Test Shapes (Circle, Polygon, Polyline)
 void main() {
@@ -77,6 +83,25 @@ void main() {
       expect(controller.circles, contains(CircleId('2')));
       expect(controller.circles, isNot(contains(CircleId('3'))));
     });
+
+    testWidgets('Converts colors to CSS', (WidgetTester tester) async {
+      final circles = {
+        Circle(
+          circleId: CircleId('1'),
+          fillColor: Color(0x7FFABADA),
+          strokeColor: Color(0xFFC0FFEE),
+        ),
+      };
+
+      controller.addCircles(circles);
+
+      final circle = controller.circles.values.first.circle;
+
+      expect(circle.get('fillColor'), '#fabada');
+      expect(circle.get('fillOpacity'), closeTo(0.5, _acceptableDelta));
+      expect(circle.get('strokeColor'), '#c0ffee');
+      expect(circle.get('strokeOpacity'), closeTo(1, _acceptableDelta));
+    });
   });
 
   group('PolygonsController', () {
@@ -144,6 +169,25 @@ void main() {
       expect(controller.polygons, contains(PolygonId('2')));
       expect(controller.polygons, isNot(contains(PolygonId('3'))));
     });
+
+    testWidgets('Converts colors to CSS', (WidgetTester tester) async {
+      final polygons = {
+        Polygon(
+          polygonId: PolygonId('1'),
+          fillColor: Color(0x7FFABADA),
+          strokeColor: Color(0xFFC0FFEE),
+        ),
+      };
+
+      controller.addPolygons(polygons);
+
+      final polygon = controller.polygons.values.first.polygon;
+
+      expect(polygon.get('fillColor'), '#fabada');
+      expect(polygon.get('fillOpacity'), closeTo(0.5, _acceptableDelta));
+      expect(polygon.get('strokeColor'), '#c0ffee');
+      expect(polygon.get('strokeOpacity'), closeTo(1, _acceptableDelta));
+    });
   });
 
   group('PolylinesController', () {
@@ -209,6 +253,22 @@ void main() {
       expect(controller.lines, isNot(contains(PolylineId('1'))));
       expect(controller.lines, contains(PolylineId('2')));
       expect(controller.lines, isNot(contains(PolylineId('3'))));
+    });
+
+    testWidgets('Converts colors to CSS', (WidgetTester tester) async {
+      final lines = {
+        Polyline(
+          polylineId: PolylineId('1'),
+          color: Color(0x7FFABADA),
+        ),
+      };
+
+      controller.addPolylines(lines);
+
+      final line = controller.lines.values.first.line;
+
+      expect(line.get('strokeColor'), '#fabada');
+      expect(line.get('strokeOpacity'), closeTo(0.5, _acceptableDelta));
     });
   });
 }

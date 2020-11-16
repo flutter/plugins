@@ -359,6 +359,30 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
 
+- (void)setPlaybackSpeed:(double)speed {
+  // See https://developer.apple.com/library/archive/qa/qa1772/_index.html for an explanation of
+  // these checks.
+  if (speed > 2.0 && !_player.currentItem.canPlayFastForward) {
+    if (_eventSink != nil) {
+      _eventSink([FlutterError errorWithCode:@"VideoError"
+                                     message:@"Video cannot be fast-forwarded beyond 2.0x"
+                                     details:nil]);
+    }
+    return;
+  }
+
+  if (speed < 1.0 && !_player.currentItem.canPlaySlowForward) {
+    if (_eventSink != nil) {
+      _eventSink([FlutterError errorWithCode:@"VideoError"
+                                     message:@"Video cannot be slow-forwarded"
+                                     details:nil]);
+    }
+    return;
+  }
+
+  _player.rate = speed;
+}
+
 - (CVPixelBufferRef)copyPixelBuffer {
   CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
@@ -536,6 +560,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (void)setVolume:(FLTVolumeMessage*)input error:(FlutterError**)error {
   FLTVideoPlayer* player = _players[input.textureId];
   [player setVolume:[input.volume doubleValue]];
+}
+
+- (void)setPlaybackSpeed:(FLTPlaybackSpeedMessage*)input error:(FlutterError**)error {
+  FLTVideoPlayer* player = _players[input.textureId];
+  [player setPlaybackSpeed:[input.speed doubleValue]];
 }
 
 - (void)play:(FLTTextureMessage*)input error:(FlutterError**)error {

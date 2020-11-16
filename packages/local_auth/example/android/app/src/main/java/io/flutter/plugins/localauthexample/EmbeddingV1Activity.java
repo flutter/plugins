@@ -6,6 +6,7 @@ import io.flutter.app.FlutterFragmentActivity;
 import io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin;
 import io.flutter.plugins.localauth.LocalAuthPlugin;
 
+@SuppressWarnings("deprecation")
 public class EmbeddingV1Activity extends FlutterFragmentActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {

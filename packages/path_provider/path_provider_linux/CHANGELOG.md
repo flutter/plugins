@@ -1,3 +1,7 @@
+## 0.1.1+1
+
+* Check in linux/ directory for example/
+
 ## 0.1.1	- NOT PUBLISHED
 * Reverts changes on 0.1.0, which broke the tree.
 
