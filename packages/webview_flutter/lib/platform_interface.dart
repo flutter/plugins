@@ -377,8 +377,9 @@ class WebSettings {
   /// sent with [WebviewPlatform#updateSettings].
   ///
   /// The `userAgent` parameter must not be null.
-  WebSettings({
+  const WebSettings({
     this.javascriptMode,
+    this.ignoreSslError,
     this.hasNavigationDelegate,
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
@@ -387,6 +388,9 @@ class WebSettings {
 
   /// The JavaScript execution mode to be used by the webview.
   final JavascriptMode javascriptMode;
+
+  /// Ignore ssl error
+  final bool ignoreSslError;
 
   /// Whether the [WebView] has a [NavigationDelegate] set.
   final bool hasNavigationDelegate;
@@ -413,7 +417,7 @@ class WebSettings {
 
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent)';
+    return 'WebSettings(javascriptMode: $javascriptMode, ignoreSslError: $ignoreSslError, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent)';
   }
 }
 
@@ -425,7 +429,7 @@ class CreationParams {
   /// [WebViewPlatformController].
   ///
   /// The `autoMediaPlaybackPolicy` parameter must not be null.
-  CreationParams({
+  const CreationParams({
     this.initialUrl,
     this.webSettings,
     this.javascriptChannelNames,

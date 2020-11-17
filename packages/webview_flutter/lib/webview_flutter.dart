@@ -218,6 +218,7 @@ class WebView extends StatefulWidget {
     this.onPageStarted,
     this.onPageFinished,
     this.onWebResourceError,
+    this.ignoreSslError = false,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
@@ -354,6 +355,9 @@ class WebView extends StatefulWidget {
   /// the main page.
   final WebResourceErrorCallback onWebResourceError;
 
+  /// ignore ssl error
+  final bool ignoreSslError;
+
   /// Controls whether WebView debugging is enabled.
   ///
   /// Setting this to true enables [WebView debugging on Android](https://developers.google.com/web/tools/chrome-devtools/remote-debugging/).
@@ -466,6 +470,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
 WebSettings _webSettingsFromWidget(WebView widget) {
   return WebSettings(
     javascriptMode: widget.javascriptMode,
+    ignoreSslError: widget.ignoreSslError,
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
@@ -486,11 +491,15 @@ WebSettings _clearUnchangedWebSettings(
   assert(newValue.userAgent.isPresent);
 
   JavascriptMode javascriptMode;
+  bool ignoreSslError;
   bool hasNavigationDelegate;
   bool debuggingEnabled;
   WebSetting<String> userAgent = WebSetting<String>.absent();
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
+  }
+  if (currentValue.ignoreSslError != newValue.ignoreSslError) {
+    ignoreSslError = newValue.ignoreSslError;
   }
   if (currentValue.hasNavigationDelegate != newValue.hasNavigationDelegate) {
     hasNavigationDelegate = newValue.hasNavigationDelegate;
@@ -504,6 +513,7 @@ WebSettings _clearUnchangedWebSettings(
 
   return WebSettings(
     javascriptMode: javascriptMode,
+    ignoreSslError: ignoreSslError,
     hasNavigationDelegate: hasNavigationDelegate,
     debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,

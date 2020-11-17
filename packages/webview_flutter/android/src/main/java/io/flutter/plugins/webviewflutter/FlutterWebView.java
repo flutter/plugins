@@ -352,6 +352,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           Integer mode = (Integer) settings.get(key);
           if (mode != null) updateJsMode(mode);
           break;
+        case "ignoreSslError":
+          final boolean ignoreSslError = (boolean) settings.get(key);
+          flutterWebViewClient.setIgnoreSslError(ignoreSslError);
+          break;
         case "hasNavigationDelegate":
           final boolean hasNavigationDelegate = (boolean) settings.get(key);
 

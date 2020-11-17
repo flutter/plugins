@@ -7,9 +7,11 @@ package io.flutter.plugins.webviewflutter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -30,6 +32,7 @@ class FlutterWebViewClient {
   private static final String TAG = "FlutterWebViewClient";
   private final MethodChannel methodChannel;
   private boolean hasNavigationDelegate;
+  private boolean ignoreSslError;
 
   FlutterWebViewClient(MethodChannel methodChannel) {
     this.methodChannel = methodChannel;
@@ -135,6 +138,14 @@ class FlutterWebViewClient {
     methodChannel.invokeMethod("onWebResourceError", args);
   }
 
+  private void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+    if (ignoreSslError) {
+      handler.proceed();
+    } else {
+      handler.cancel();
+    }
+  }
+
   private void notifyOnNavigationRequest(
       String url, Map<String, String> headers, WebView webview, boolean isMainFrame) {
     HashMap<String, Object> args = new HashMap<>();
@@ -159,6 +170,10 @@ class FlutterWebViewClient {
     }
 
     return internalCreateWebViewClientCompat();
+  }
+
+  void setIgnoreSslError(boolean ignore) {
+    this.ignoreSslError = ignore;
   }
 
   private WebViewClient internalCreateWebViewClient() {
@@ -191,6 +206,11 @@ class FlutterWebViewClient {
       public void onReceivedError(
           WebView view, int errorCode, String description, String failingUrl) {
         FlutterWebViewClient.this.onWebResourceError(errorCode, description, failingUrl);
+      }
+
+      @Override
+      public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+        FlutterWebViewClient.this.onReceivedSslError(view, handler, error);
       }
 
       @Override
