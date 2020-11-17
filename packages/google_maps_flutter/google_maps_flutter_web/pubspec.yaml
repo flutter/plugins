@@ -24,6 +24,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  http: ^0.12.2
   url_launcher: ^5.2.5
   pedantic: ^1.8.0
   mockito: ^4.1.1
