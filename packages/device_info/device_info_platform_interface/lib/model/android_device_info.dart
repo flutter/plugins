@@ -161,12 +161,15 @@ class AndroidBuildVersion {
   });
 
   /// The base OS build the product is based on.
+  /// This is only available on Android 6.0 or above.
   String? baseOS;
 
   /// The developer preview revision of a prerelease SDK.
+  /// This is only available on Android 6.0 or above.
   int? previewSdkInt;
 
   /// The user-visible security patch level.
+  /// This is only available on Android 6.0 or above.
   final String? securityPatch;
 
   /// The current development codename, or the string "REL" if this is a release build.
