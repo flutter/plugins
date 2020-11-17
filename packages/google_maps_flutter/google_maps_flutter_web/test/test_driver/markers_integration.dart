@@ -5,12 +5,16 @@
 // @dart = 2.9
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:html';
 
+import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'resources/icon_image_base64.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -141,6 +145,30 @@ void main() {
 
       expect(controller.markers.length, 1);
       expect(controller.markers[MarkerId('1')].marker.icon, isNull);
+    });
+
+    //
+    testWidgets('markers with custom bitmap icon work',
+        (WidgetTester tester) async {
+      final bytes = Base64Decoder().convert(iconImageBase64);
+      final markers = {
+        Marker(
+            markerId: MarkerId('1'), icon: BitmapDescriptor.fromBytes(bytes)),
+      };
+
+      controller.addMarkers(markers);
+
+      expect(controller.markers.length, 1);
+      expect(controller.markers[MarkerId('1')].marker.icon, isNotNull);
+      expect(controller.markers[MarkerId('1')].marker.icon.url,
+          startsWith('blob:'));
+
+      final blobUrl = controller.markers[MarkerId('1')].marker.icon.url;
+      final response = await http.get(blobUrl);
+
+      expect(response.bodyBytes, bytes,
+          reason:
+              'Bytes from the Icon blob must match bytes used to create Marker');
     });
 
     // https://github.com/flutter/flutter/issues/67854
