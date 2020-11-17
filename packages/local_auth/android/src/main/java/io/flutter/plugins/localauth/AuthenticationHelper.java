@@ -226,7 +226,9 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            completionHandler.onFailure();
+            try {
+              completionHandler.onFailure();
+            } catch (IllegalStateException ignored) {}
             stop();
             activity.startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
           }
@@ -235,7 +237,9 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            completionHandler.onFailure();
+            try {
+              completionHandler.onFailure();
+            } catch (IllegalStateException ignored) {}
             stop();
           }
         };
