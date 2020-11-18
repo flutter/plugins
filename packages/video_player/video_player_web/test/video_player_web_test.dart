@@ -109,6 +109,13 @@ void main() {
       expect(VideoPlayerPlatform.instance.setVolume(textureId, 0.8), completes);
     });
 
+    test('can set playback speed', () {
+      expect(
+        VideoPlayerPlatform.instance.setPlaybackSpeed(textureId, 2.0),
+        completes,
+      );
+    });
+
     test('can seek to position', () {
       expect(
           VideoPlayerPlatform.instance.seekTo(textureId, Duration(seconds: 1)),

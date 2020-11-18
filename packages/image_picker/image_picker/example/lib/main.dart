@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -37,21 +38,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  File _imageFile;
+  PickedFile _imageFile;
   dynamic _pickImageError;
   bool isVideo = false;
   VideoPlayerController _controller;
+  VideoPlayerController _toBeDisposed;
   String _retrieveDataError;
 
+  final ImagePicker _picker = ImagePicker();
   final TextEditingController maxWidthController = TextEditingController();
   final TextEditingController maxHeightController = TextEditingController();
   final TextEditingController qualityController = TextEditingController();
 
-  Future<void> _playVideo(File file) async {
+  Future<void> _playVideo(PickedFile file) async {
     if (file != null && mounted) {
       await _disposeVideoController();
-      _controller = VideoPlayerController.file(file);
-      await _controller.setVolume(1.0);
+      if (kIsWeb) {
+        _controller = VideoPlayerController.network(file.path);
+        // In web, most browsers won't honor a programmatic call to .play
+        // if the video has a sound track (and is not muted).
+        // Mute the video so it auto-plays in web!
+        // This is not needed if the call to .play is the result of user
+        // interaction (clicking on a "play" button, for example).
+        await _controller.setVolume(0.0);
+      } else {
+        _controller = VideoPlayerController.file(File(file.path));
+        await _controller.setVolume(1.0);
+      }
       await _controller.initialize();
       await _controller.setLooping(true);
       await _controller.play();
@@ -64,21 +77,26 @@ class _MyHomePageState extends State<MyHomePage> {
       await _controller.setVolume(0.0);
     }
     if (isVideo) {
-      final File file = await ImagePicker.pickVideo(
+      final PickedFile file = await _picker.getVideo(
           source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else {
       await _displayPickImageDialog(context,
           (double maxWidth, double maxHeight, int quality) async {
         try {
-          _imageFile = await ImagePicker.pickImage(
-              source: source,
-              maxWidth: maxWidth,
-              maxHeight: maxHeight,
-              imageQuality: quality);
-          setState(() {});
+          final pickedFile = await _picker.getImage(
+            source: source,
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+            imageQuality: quality,
+          );
+          setState(() {
+            _imageFile = pickedFile;
+          });
         } catch (e) {
-          _pickImageError = e;
+          setState(() {
+            _pickImageError = e;
+          });
         }
       });
     }
@@ -103,10 +121,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _disposeVideoController() async {
-    if (_controller != null) {
-      await _controller.dispose();
-      _controller = null;
+    if (_toBeDisposed != null) {
+      await _toBeDisposed.dispose();
     }
+    _toBeDisposed = _controller;
+    _controller = null;
   }
 
   Widget _previewVideo() {
@@ -132,7 +151,15 @@ class _MyHomePageState extends State<MyHomePage> {
       return retrieveError;
     }
     if (_imageFile != null) {
-      return Image.file(_imageFile);
+      if (kIsWeb) {
+        // Why network?
+        // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
+        return Image.network(_imageFile.path);
+      } else {
+        return Semantics(
+            child: Image.file(File(_imageFile.path)),
+            label: 'image_picker_example_picked_image');
+      }
     } else if (_pickImageError != null) {
       return Text(
         'Pick image error: $_pickImageError',
@@ -147,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> retrieveLostData() async {
-    final LostDataResponse response = await ImagePicker.retrieveLostData();
+    final LostData response = await _picker.getLostData();
     if (response.isEmpty) {
       return;
     }
@@ -173,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Platform.isAndroid
+        child: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
             ? FutureBuilder<void>(
                 future: retrieveLostData(),
                 builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -206,14 +233,17 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          FloatingActionButton(
-            onPressed: () {
-              isVideo = false;
-              _onImageButtonPressed(ImageSource.gallery, context: context);
-            },
-            heroTag: 'image0',
-            tooltip: 'Pick Image from gallery',
-            child: const Icon(Icons.photo_library),
+          Semantics(
+            label: 'image_picker_example_from_gallery',
+            child: FloatingActionButton(
+              onPressed: () {
+                isVideo = false;
+                _onImageButtonPressed(ImageSource.gallery, context: context);
+              },
+              heroTag: 'image0',
+              tooltip: 'Pick Image from gallery',
+              child: const Icon(Icons.photo_library),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 16.0),

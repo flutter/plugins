@@ -1,6 +1,21 @@
+## 0.1.0+7
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 0.1.0+6
+
+* Update license headers.
+
+## 0.1.0+5
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+* Remove no-op android folder in the example app.
+
 ## 0.1.0+4
 
-* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+* Remove Android folder from `connectivity_macos`.
 
 ## 0.1.0+3
 
@@ -8,6 +23,7 @@
 * Clean up various Android workarounds no longer needed after framework v1.12.
 * Complete v2 embedding support.
 * Fix CocoaPods podspec lint warnings.
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
 
 ## 0.1.0+2
 

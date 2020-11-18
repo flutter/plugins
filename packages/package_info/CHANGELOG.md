@@ -1,3 +1,29 @@
+## 0.4.3+2
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 0.4.3+1
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.3
+
+* Update package:e2e -> package:integration_test
+
+## 0.4.2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.1
+
+* Add support for macOS.
+
+## 0.4.0+18
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.4.0+17
 
 * Bump the minimum Flutter version to 1.12.13+hotfix.5.

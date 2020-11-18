@@ -27,6 +27,9 @@ class GoogleSignInAuthentication {
   /// The OAuth2 access token to access Google services.
   String get accessToken => _data.accessToken;
 
+  /// Server auth code used to access Google Login
+  String get serverAuthCode => _data.serverAuthCode;
+
   @override
   String toString() => 'GoogleSignInAuthentication:$_data';
 }

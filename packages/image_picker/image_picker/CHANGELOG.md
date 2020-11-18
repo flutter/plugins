@@ -1,3 +1,86 @@
+## 0.6.7+14
+
+* Set up XCUITests.
+
+## 0.6.7+13
+
+* Update documentation of `getImage()` about HEIC images.
+
+## 0.6.7+12
+
+* Update android compileSdkVersion to 29.
+
+## 0.6.7+11
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.6.7+10
+
+* Updated documentation with code that does not throw an error when image is not picked.
+
+## 0.6.7+9
+
+* Updated the ExifInterface to the AndroidX version to support more file formats;
+* Update documentation of `getImage()` regarding compression support for specific image types.
+
+## 0.6.7+8
+
+* Update documentation of getImage() about Android's disability to preference front/rear camera.
+
+## 0.6.7+7
+
+* Updating documentation to use isEmpty check.
+
+## 0.6.7+6
+
+* Update package:e2e -> package:integration_test
+
+## 0.6.7+5
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+
+## 0.6.7+4
+
+* Support iOS simulator x86_64 architecture.
+
+## 0.6.7+3
+
+* Fixes to the example app:
+  * Make videos in web start muted. This allows auto-play across browsers.
+  * Prevent the app from disposing of video controllers too early.
+
+## 0.6.7+2
+
+* iOS: Fixes unpresentable album/image picker if window's root view controller is already presenting other view controller.
+
+## 0.6.7+1
+
+* Add web support to the example app.
+
+## 0.6.7
+
+* Utilize the new platform_interface package.
+* **This change marks old methods as `deprecated`. Please check the README for migration instructions to the new API.**
+
+## 0.6.6+5
+
+* Pin the version of the platform interface to 1.0.0 until the plugin refactor
+is ready to go.
+
+## 0.6.6+4
+
+* Fix bug, sometimes double click cancel button will crash.
+
+## 0.6.6+3
+
+* Update README
+
+## 0.6.6+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.6.6+1
 
 * Android: always use URI to get image/video data.

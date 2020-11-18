@@ -20,6 +20,24 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   MethodChannel get channel => _channel;
 
   @override
+  Future<PickedFile> pickImage({
+    @required ImageSource source,
+    double maxWidth,
+    double maxHeight,
+    int imageQuality,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+  }) async {
+    String path = await pickImagePath(
+      source: source,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      imageQuality: imageQuality,
+      preferredCameraDevice: preferredCameraDevice,
+    );
+    return path != null ? PickedFile(path) : null;
+  }
+
+  @override
   Future<String> pickImagePath({
     @required ImageSource source,
     double maxWidth,
@@ -54,6 +72,20 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
+  Future<PickedFile> pickVideo({
+    @required ImageSource source,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+    Duration maxDuration,
+  }) async {
+    String path = await pickVideoPath(
+      source: source,
+      maxDuration: maxDuration,
+      preferredCameraDevice: preferredCameraDevice,
+    );
+    return path != null ? PickedFile(path) : null;
+  }
+
+  @override
   Future<String> pickVideoPath({
     @required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
@@ -71,10 +103,48 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
+  Future<LostData> retrieveLostData() async {
+    final Map<String, dynamic> result =
+        await _channel.invokeMapMethod<String, dynamic>('retrieve');
+
+    if (result == null) {
+      return LostData.empty();
+    }
+
+    assert(result.containsKey('path') ^ result.containsKey('errorCode'));
+
+    final String type = result['type'];
+    assert(type == kTypeImage || type == kTypeVideo);
+
+    RetrieveType retrieveType;
+    if (type == kTypeImage) {
+      retrieveType = RetrieveType.image;
+    } else if (type == kTypeVideo) {
+      retrieveType = RetrieveType.video;
+    }
+
+    PlatformException exception;
+    if (result.containsKey('errorCode')) {
+      exception = PlatformException(
+          code: result['errorCode'], message: result['errorMessage']);
+    }
+
+    final String path = result['path'];
+
+    return LostData(
+      file: path != null ? PickedFile(path) : null,
+      exception: exception,
+      type: retrieveType,
+    );
+  }
+
+  @override
+  // ignore: deprecated_member_use_from_same_package
   Future<LostDataResponse> retrieveLostDataAsDartIoFile() async {
     final Map<String, dynamic> result =
         await _channel.invokeMapMethod<String, dynamic>('retrieve');
     if (result == null) {
+      // ignore: deprecated_member_use_from_same_package
       return LostDataResponse.empty();
     }
     assert(result.containsKey('path') ^ result.containsKey('errorCode'));
@@ -97,6 +167,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
 
     final String path = result['path'];
 
+    // ignore: deprecated_member_use_from_same_package
     return LostDataResponse(
         file: path == null ? null : File(path),
         exception: exception,

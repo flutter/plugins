@@ -1,3 +1,36 @@
+## 4.5.6
+
+* Fix deprecated member warning in tests.
+
+## 4.5.5
+
+* Update android compileSdkVersion to 29.
+
+## 4.5.4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 4.5.3
+
+* Update package:e2e -> package:integration_test
+
+## 4.5.2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 4.5.1
+
+* Add note on Apple sign in requirement in README.
+
+## 4.5.0
+
+* Add support for getting `serverAuthCode`.
+
+## 4.4.6
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 4.4.5
 
 * Fix requestScopes to allow subsequent calls on Android.

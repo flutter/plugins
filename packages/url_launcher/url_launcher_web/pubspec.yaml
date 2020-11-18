@@ -4,7 +4,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/u
 # 0.1.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.1.1+4
+version: 0.1.5+1
 
 flutter:
   plugin:
@@ -14,13 +14,12 @@ flutter:
         fileName: url_launcher_web.dart
 
 dependencies:
-  url_launcher_platform_interface: ^1.0.1
+  url_launcher_platform_interface: ^1.0.9
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
   meta: ^1.1.7
-  js: ^0.6.0
 
 dev_dependencies:
   flutter_test:
@@ -28,7 +27,9 @@ dev_dependencies:
   url_launcher: ^5.2.5
   pedantic: ^1.8.0
   mockito: ^4.1.1
+  integration_test:
+    path: ../../integration_test
 
 environment:
-  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
   flutter: ">=1.10.0 <2.0.0"

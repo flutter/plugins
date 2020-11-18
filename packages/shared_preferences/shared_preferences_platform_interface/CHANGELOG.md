@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 1.0.3
 
 * Make the pedantic dev_dependency explicit.

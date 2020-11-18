@@ -39,3 +39,9 @@ sharing to email.
 ``` dart
 Share.share('check out my website https://example.com', subject: 'Look what I made!');
 ```
+
+To share one or multiple files invoke the static `shareFiles` method anywhere in your Dart code. Optionally you can also pass in `text` and `subject`.
+``` dart
+Share.shareFiles(['${directory.path}/image.jpg'], text: 'Great picture');
+Share.shareFiles(['${directory.path}/image1.jpg', '${directory.path}/image2.jpg']);
+```

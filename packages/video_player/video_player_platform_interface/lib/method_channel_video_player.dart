@@ -72,6 +72,15 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setPlaybackSpeed(int textureId, double speed) {
+    assert(speed > 0);
+
+    return _api.setPlaybackSpeed(PlaybackSpeedMessage()
+      ..textureId = textureId
+      ..speed = speed);
+  }
+
+  @override
   Future<void> seekTo(int textureId, Duration position) {
     return _api.seekTo(PositionMessage()
       ..textureId = textureId
@@ -123,6 +132,13 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   @override
   Widget buildView(int textureId) {
     return Texture(textureId: textureId);
+  }
+
+  @override
+  Future<void> setMixWithOthers(bool mixWithOthers) {
+    return _api.setMixWithOthers(
+      MixWithOthersMessage()..mixWithOthers = mixWithOthers,
+    );
   }
 
   EventChannel _eventChannelFor(int textureId) {

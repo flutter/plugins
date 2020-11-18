@@ -4,17 +4,8 @@
 
 package io.flutter.plugins.googlemaps;
 
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.CREATED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.DESTROYED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.PAUSED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.RESUMED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -45,7 +36,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -53,12 +43,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
-    implements Application.ActivityLifecycleCallbacks,
-        DefaultLifecycleObserver,
+    implements DefaultLifecycleObserver,
         ActivityPluginBinding.OnSaveInstanceStateListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
@@ -68,9 +56,9 @@ final class GoogleMapController
 
   private static final String TAG = "GoogleMapController";
   private final int id;
-  private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
-  private final MapView mapView;
+  private final GoogleMapOptions options;
+  @Nullable private MapView mapView;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
@@ -82,13 +70,8 @@ final class GoogleMapController
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
-  private final int
-      activityHashCode; // Do not use directly, use getActivityHashCode() instead to get correct hashCode for both v1 and v2 embedding.
-  private final Lifecycle lifecycle;
   private final Context context;
-  private final Application
-      mApplication; // Do not use direclty, use getApplication() instead to get correct application object for both v1 and v2 embedding.
-  private final PluginRegistry.Registrar registrar; // For v1 embedding only.
+  private final LifecycleProvider lifecycleProvider;
   private final MarkersController markersController;
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
@@ -101,24 +84,17 @@ final class GoogleMapController
   GoogleMapController(
       int id,
       Context context,
-      AtomicInteger activityState,
       BinaryMessenger binaryMessenger,
-      Application application,
-      Lifecycle lifecycle,
-      PluginRegistry.Registrar registrar,
-      int registrarActivityHashCode,
+      LifecycleProvider lifecycleProvider,
       GoogleMapOptions options) {
     this.id = id;
     this.context = context;
-    this.activityState = activityState;
+    this.options = options;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel = new MethodChannel(binaryMessenger, "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
-    mApplication = application;
-    this.lifecycle = lifecycle;
-    this.registrar = registrar;
-    this.activityHashCode = registrarActivityHashCode;
+    this.lifecycleProvider = lifecycleProvider;
     this.markersController = new MarkersController(methodChannel);
     this.polygonsController = new PolygonsController(methodChannel, density);
     this.polylinesController = new PolylinesController(methodChannel, density);
@@ -131,44 +107,7 @@ final class GoogleMapController
   }
 
   void init() {
-    switch (activityState.get()) {
-      case STOPPED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        mapView.onPause();
-        mapView.onStop();
-        break;
-      case PAUSED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        mapView.onPause();
-        break;
-      case RESUMED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        break;
-      case STARTED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        break;
-      case CREATED:
-        mapView.onCreate(null);
-        break;
-      case DESTROYED:
-        // Nothing to do, the activity has been completely destroyed.
-        break;
-      default:
-        throw new IllegalArgumentException(
-            "Cannot interpret " + activityState.get() + " as an activity state");
-    }
-    if (lifecycle != null) {
-      lifecycle.addObserver(this);
-    } else {
-      getApplication().registerActivityLifecycleCallbacks(this);
-    }
+    lifecycleProvider.getLifecycle().addObserver(this);
     mapView.getMapAsync(this);
   }
 
@@ -383,6 +322,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
           break;
         }
+      case "map#isLiteModeEnabled":
+        {
+          result.success(options.getLiteMode());
+          break;
+        }
       case "map#isZoomControlsEnabled":
         {
           result.success(googleMap.getUiSettings().isZoomControlsEnabled());
@@ -527,7 +471,11 @@ final class GoogleMapController
     disposed = true;
     methodChannel.setMethodCallHandler(null);
     setGoogleMapListener(null);
-    getApplication().unregisterActivityLifecycleCallbacks(this);
+    destroyMapViewIfNecessary();
+    Lifecycle lifecycle = lifecycleProvider.getLifecycle();
+    if (lifecycle != null) {
+      lifecycle.removeObserver(this);
+    }
   }
 
   private void setGoogleMapListener(@Nullable GoogleMapListener listener) {
@@ -548,73 +496,16 @@ final class GoogleMapController
   // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionLocked() {
     // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
-  };
+  }
 
   // @Override
   // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
   // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionUnlocked() {
     // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
-  };
-
-  // Application.ActivityLifecycleCallbacks methods
-  @Override
-  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (disposed || activity.hashCode() != getActivityHashCode()) {
-      return;
-    }
-    mapView.onCreate(savedInstanceState);
   }
 
-  @Override
-  public void onActivityStarted(Activity activity) {
-    if (disposed || activity.hashCode() != getActivityHashCode()) {
-      return;
-    }
-    mapView.onStart();
-  }
-
-  @Override
-  public void onActivityResumed(Activity activity) {
-    if (disposed || activity.hashCode() != getActivityHashCode()) {
-      return;
-    }
-    mapView.onResume();
-  }
-
-  @Override
-  public void onActivityPaused(Activity activity) {
-    if (disposed || activity.hashCode() != getActivityHashCode()) {
-      return;
-    }
-    mapView.onPause();
-  }
-
-  @Override
-  public void onActivityStopped(Activity activity) {
-    if (disposed || activity.hashCode() != getActivityHashCode()) {
-      return;
-    }
-    mapView.onStop();
-  }
-
-  @Override
-  public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-    if (disposed || activity.hashCode() != getActivityHashCode()) {
-      return;
-    }
-    mapView.onSaveInstanceState(outState);
-  }
-
-  @Override
-  public void onActivityDestroyed(Activity activity) {
-    if (disposed || activity.hashCode() != getActivityHashCode()) {
-      return;
-    }
-    mapView.onDestroy();
-  }
-
-  // DefaultLifecycleObserver and OnSaveInstanceStateListener
+  // DefaultLifecycleObserver
 
   @Override
   public void onCreate(@NonNull LifecycleOwner owner) {
@@ -658,10 +549,11 @@ final class GoogleMapController
 
   @Override
   public void onDestroy(@NonNull LifecycleOwner owner) {
+    owner.getLifecycle().removeObserver(this);
     if (disposed) {
       return;
     }
-    mapView.onDestroy();
+    destroyMapViewIfNecessary();
   }
 
   @Override
@@ -747,6 +639,12 @@ final class GoogleMapController
   @Override
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     googleMap.getUiSettings().setZoomGesturesEnabled(zoomGesturesEnabled);
+  }
+
+  /** This call will have no effect on already created map */
+  @Override
+  public void setLiteModeEnabled(boolean liteModeEnabled) {
+    options.liteMode(liteModeEnabled);
   }
 
   @Override
@@ -862,20 +760,12 @@ final class GoogleMapController
         permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
 
-  private int getActivityHashCode() {
-    if (registrar != null && registrar.activity() != null) {
-      return registrar.activity().hashCode();
-    } else {
-      return activityHashCode;
+  private void destroyMapViewIfNecessary() {
+    if (mapView == null) {
+      return;
     }
-  }
-
-  private Application getApplication() {
-    if (registrar != null && registrar.activity() != null) {
-      return registrar.activity().getApplication();
-    } else {
-      return mApplication;
-    }
+    mapView.onDestroy();
+    mapView = null;
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {
@@ -894,16 +784,3 @@ final class GoogleMapController
     this.buildingsEnabled = buildingsEnabled;
   }
 }
-
-interface GoogleMapListener
-    extends GoogleMap.OnCameraIdleListener,
-        GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnCameraMoveStartedListener,
-        GoogleMap.OnInfoWindowClickListener,
-        GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnPolygonClickListener,
-        GoogleMap.OnPolylineClickListener,
-        GoogleMap.OnCircleClickListener,
-        GoogleMap.OnMapClickListener,
-        GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMarkerDragListener {}

@@ -1,3 +1,48 @@
+## 0.5.12+4
+
+* Remove unused `test` dependency.
+
+## 0.5.12+3
+
+* Check in windows/ directory for example/
+
+## 0.5.12+2
+
+* Update android compileSdkVersion to 29.
+
+## 0.5.12+1
+
+* Check in linux/ directory for example/
+
+## 0.5.12
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.5.11
+
+* Support Windows by default.
+
+## 0.5.10
+
+* Update package:e2e -> package:integration_test
+
+## 0.5.9
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.5.8
+
+* Support Linux by default.
+
+## 0.5.7+3
+
+* Post-v2 Android embedding cleanup.
+
+## 0.5.7+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.5.7+1
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).

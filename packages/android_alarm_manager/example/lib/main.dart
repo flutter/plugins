@@ -104,11 +104,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO(jackson): This has been deprecated and should be replaced
-    // with `headline4` when it's available on all the versions of
-    // Flutter that we test.
-    // ignore: deprecated_member_use
-    final textStyle = Theme.of(context).textTheme.display1;
+    final textStyle = Theme.of(context).textTheme.headline4;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),

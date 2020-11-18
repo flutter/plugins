@@ -1,3 +1,28 @@
+## 0.4.2+6
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.2+5
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.4.2+4
+
+* Update package:e2e -> package:integration_test
+
+## 0.4.2+3
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.2+2
+
+* Post-v2 Android embedding cleanup.
+
+## 0.4.2+1
+
+* Update lower bound of dart dependency to 2.1.0.
+
 ## 0.4.2
 
 * Remove Android dependencies fallback.

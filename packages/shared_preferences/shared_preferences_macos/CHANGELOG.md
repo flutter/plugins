@@ -1,3 +1,16 @@
+## 0.0.1+11
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 0.0.1+10
+
+* Remove iOS and Android folders from the example app.
+
+## 0.0.1+9
+
+* Remove Android folder from `shared_preferences_macos`.
+
 ## 0.0.1+8
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
