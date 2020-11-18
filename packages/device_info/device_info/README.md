@@ -21,11 +21,11 @@ IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
 print('Running on ${iosInfo.utsname.machine}');  // e.g. "iPod7,1"
 ```
 
-You will find links to the API docs on the [pub page](https://pub.dartlang.org/packages/device_info).
+You will find links to the API docs on the [pub page](https://pub.dev/packages/device_info).
 
 ## Getting Started
 
 For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+[documentation](https://flutter.dev/).
 
-For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).
+For help on editing plugin code, view the [documentation](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin).

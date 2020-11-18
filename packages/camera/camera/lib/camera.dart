@@ -388,7 +388,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Captures an image and saves it to [path].
   ///
   /// A path can for example be obtained using
-  /// [path_provider](https://pub.dartlang.org/packages/path_provider).
+  /// [path_provider](https://pub.dev/packages/path_provider).
   ///
   /// If a file already exists at the provided path an error will be thrown.
   /// The file can be read as this function returns.
@@ -507,7 +507,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Start a video recording and save the file to [path].
   ///
   /// A path can for example be obtained using
-  /// [path_provider](https://pub.dartlang.org/packages/path_provider).
+  /// [path_provider](https://pub.dev/packages/path_provider).
   ///
   /// The file is written on the flight as the video is being recorded.
   /// If a file already exists at the provided path an error will be thrown.
