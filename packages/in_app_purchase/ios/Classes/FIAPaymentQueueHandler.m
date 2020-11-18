@@ -66,6 +66,12 @@
   }
 }
 
+- (void)presentCodeRedemptionSheet {
+  if (@available(iOS 14.0, *)) {
+    [self.queue presentCodeRedemptionSheet];
+  }
+}
+
 #pragma mark - observing
 
 // Sent when the transaction array has changed (additions or state changes).  Client should check

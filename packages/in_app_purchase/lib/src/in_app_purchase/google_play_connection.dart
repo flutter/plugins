@@ -293,4 +293,10 @@ class GooglePlayConnection
 
     return purchaseDetails;
   }
+
+  @override
+  Future<void> presentCodeRedemptionSheet() {
+    throw UnsupportedError(
+        'The method <presentCodeRedemptionSheet> only works on iOS.');
+  }
 }
