@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Introduce setCaptionOffset to offset the caption display based on a Duration.
+
 ## 1.0.1
 
 * Android: Dispose video players when app is closed.
