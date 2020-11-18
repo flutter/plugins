@@ -250,6 +250,21 @@
   XCTAssertTrue(result);
 }
 
+- (void)testPresentCodeRedemptionSheet {
+  XCTestExpectation* expectation = [self expectationWithDescription:@"expect successfully present Code Redemption Sheet"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]"
+                                        arguments:nil];
+  __block BOOL callbackInvoked = NO;
+  [self.plugin handleMethodCall:call
+                         result:^(id r) {
+                           callbackInvoked = YES;
+                           [expectation fulfill];
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertTrue(callbackInvoked);
+}
+
 - (void)testGetPendingTransactions {
   XCTestExpectation* expectation = [self expectationWithDescription:@"expect success"];
   FlutterMethodCall* call =
