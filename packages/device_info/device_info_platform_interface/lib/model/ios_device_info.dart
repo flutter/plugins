@@ -52,8 +52,7 @@ class IosDeviceInfo {
       localizedModel: map['localizedModel']!,
       identifierForVendor: map['identifierForVendor']!,
       isPhysicalDevice: map['isPhysicalDevice'] == 'true',
-      utsname:
-          IosUtsname._fromMap(map['utsname']!.cast<String, dynamic>()),
+      utsname: IosUtsname._fromMap(map['utsname']!.cast<String, dynamic>()),
     );
   }
 }
