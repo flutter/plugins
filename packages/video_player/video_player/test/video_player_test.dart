@@ -426,7 +426,7 @@ void main() {
         await controller.initialize();
         controller.setCaptionOffset(Duration(milliseconds: 100));
         expect(controller.value.position, const Duration());
-        expect(controller.value.caption.text, 'one');
+        expect(controller.value.caption.text, isNull);
 
         await controller.seekTo(const Duration(milliseconds: 100));
         expect(controller.value.caption.text, 'one');
