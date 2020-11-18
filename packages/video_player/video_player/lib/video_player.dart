@@ -529,8 +529,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// * >0: The caption will have a positive offset. So you will get caption text from the future
   /// * <0: The caption will have a negative offset. So you will get caption text from the past
   void setCaptionOffset(Duration offset) async {
-    value = value.copyWith(captionOffset: offset);
-    value = value.copyWith(caption: _getCaptionAt(value.position));
+    value = value.copyWith(
+      captionOffset: offset,
+      caption: _getCaptionAt(value.position),
+    );
   }
 
   /// The closed caption based on the current [position] in the video.
@@ -559,8 +561,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   void _updatePosition(Duration position) {
-    value = value.copyWith(position: position);
-    value = value.copyWith(caption: _getCaptionAt(position));
+    value = value.copyWith(
+      position: position,
+      caption: _getCaptionAt(position),
+    );
   }
 }
 
