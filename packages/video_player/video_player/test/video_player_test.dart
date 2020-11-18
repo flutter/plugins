@@ -69,6 +69,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   VideoPlayerOptions get videoPlayerOptions => null;
+
+  @override
+  void setCaptionOffset(Duration delay) {}
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -401,11 +404,92 @@ void main() {
         await controller.seekTo(const Duration(milliseconds: 300));
         expect(controller.value.caption.text, 'two');
 
+        await controller.seekTo(const Duration(milliseconds: 301));
+        expect(controller.value.caption.text, 'two');
+
         await controller.seekTo(const Duration(milliseconds: 500));
         expect(controller.value.caption.text, isNull);
 
         await controller.seekTo(const Duration(milliseconds: 300));
         expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 301));
+        expect(controller.value.caption.text, 'two');
+      });
+
+      test('works when seeking with captionOffset positive', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          closedCaptionFile: _loadClosedCaption(),
+        );
+
+        await controller.initialize();
+        controller.setCaptionOffset(Duration(milliseconds: 100));
+        expect(controller.value.position, const Duration());
+        expect(controller.value.caption.text, 'one');
+
+        await controller.seekTo(const Duration(milliseconds: 100));
+        expect(controller.value.caption.text, 'one');
+
+        await controller.seekTo(const Duration(milliseconds: 101));
+        expect(controller.value.caption.text, isNull);
+
+        await controller.seekTo(const Duration(milliseconds: 250));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 300));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 301));
+        expect(controller.value.caption.text, isNull);
+
+        await controller.seekTo(const Duration(milliseconds: 500));
+        expect(controller.value.caption.text, isNull);
+
+        await controller.seekTo(const Duration(milliseconds: 300));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 301));
+        expect(controller.value.caption.text, isNull);
+      });
+
+      test('works when seeking with captionOffset negative', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          closedCaptionFile: _loadClosedCaption(),
+        );
+
+        await controller.initialize();
+        controller.setCaptionOffset(Duration(milliseconds: -100));
+        expect(controller.value.position, const Duration());
+        expect(controller.value.caption.text, isNull);
+
+        await controller.seekTo(const Duration(milliseconds: 100));
+        expect(controller.value.caption.text, isNull);
+
+        await controller.seekTo(const Duration(milliseconds: 200));
+        expect(controller.value.caption.text, 'one');
+
+        await controller.seekTo(const Duration(milliseconds: 250));
+        expect(controller.value.caption.text, 'one');
+
+        await controller.seekTo(const Duration(milliseconds: 300));
+        expect(controller.value.caption.text, 'one');
+
+        await controller.seekTo(const Duration(milliseconds: 301));
+        expect(controller.value.caption.text, isNull);
+
+        await controller.seekTo(const Duration(milliseconds: 400));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 500));
+        expect(controller.value.caption.text, 'two');
+
+        await controller.seekTo(const Duration(milliseconds: 600));
+        expect(controller.value.caption.text, isNull);
+
+        await controller.seekTo(const Duration(milliseconds: 300));
+        expect(controller.value.caption.text, 'one');
       });
     });
 
@@ -499,6 +583,7 @@ void main() {
       expect(uninitialized.duration, isNull);
       expect(uninitialized.position, equals(const Duration(seconds: 0)));
       expect(uninitialized.caption, equals(const Caption()));
+      expect(uninitialized.captionOffset, equals(const Duration(seconds: 0)));
       expect(uninitialized.buffered, isEmpty);
       expect(uninitialized.isPlaying, isFalse);
       expect(uninitialized.isLooping, isFalse);
@@ -520,6 +605,7 @@ void main() {
       expect(error.duration, isNull);
       expect(error.position, equals(const Duration(seconds: 0)));
       expect(error.caption, equals(const Caption()));
+      expect(error.captionOffset, equals(const Duration(seconds: 0)));
       expect(error.buffered, isEmpty);
       expect(error.isPlaying, isFalse);
       expect(error.isLooping, isFalse);
@@ -539,6 +625,7 @@ void main() {
       const Size size = Size(400, 300);
       const Duration position = Duration(seconds: 1);
       const Caption caption = Caption(text: 'foo');
+      const Duration captionOffset = Duration(milliseconds: 250);
       final List<DurationRange> buffered = <DurationRange>[
         DurationRange(const Duration(seconds: 0), const Duration(seconds: 4))
       ];
@@ -553,6 +640,7 @@ void main() {
         size: size,
         position: position,
         caption: caption,
+        captionOffset: captionOffset,
         buffered: buffered,
         isPlaying: isPlaying,
         isLooping: isLooping,
@@ -567,6 +655,7 @@ void main() {
           'size: Size(400.0, 300.0), '
           'position: 0:00:01.000000, '
           'caption: Caption(number: null, start: null, end: null, text: foo), '
+          'captionOffset: 0:00:00.250000, '
           'buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], '
           'isPlaying: true, '
           'isLooping: true, '

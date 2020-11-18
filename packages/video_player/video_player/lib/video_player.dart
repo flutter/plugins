@@ -18,8 +18,8 @@ import 'src/closed_caption_file.dart';
 export 'src/closed_caption_file.dart';
 
 final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
-  // This will clear all open videos on the platform when a full restart is
-  // performed.
+// This will clear all open videos on the platform when a full restart is
+// performed.
   ..init();
 
 /// The duration, current position, buffering state, error state and settings
@@ -31,6 +31,7 @@ class VideoPlayerValue {
     @required this.duration,
     this.size,
     this.position = const Duration(),
+    this.captionOffset = const Duration(),
     this.caption = const Caption(),
     this.buffered = const <DurationRange>[],
     this.isPlaying = false,
@@ -62,6 +63,11 @@ class VideoPlayerValue {
   /// This field will never be null. If there is no caption for the current
   /// [position], this will be an empty [Caption] object.
   final Caption caption;
+
+  /// The [Duration] that should be used to offset the current [position] to get the correct [Caption].
+  ///
+  /// This field will never be null. If there is no [captionOffset] set. It will default to 0 seconds duration
+  final Duration captionOffset;
 
   /// The currently buffered ranges.
   final List<DurationRange> buffered;
@@ -118,6 +124,7 @@ class VideoPlayerValue {
     Size size,
     Duration position,
     Caption caption,
+    Duration captionOffset,
     List<DurationRange> buffered,
     bool isPlaying,
     bool isLooping,
@@ -131,6 +138,7 @@ class VideoPlayerValue {
       size: size ?? this.size,
       position: position ?? this.position,
       caption: caption ?? this.caption,
+      captionOffset: captionOffset ?? this.captionOffset,
       buffered: buffered ?? this.buffered,
       isPlaying: isPlaying ?? this.isPlaying,
       isLooping: isLooping ?? this.isLooping,
@@ -148,6 +156,7 @@ class VideoPlayerValue {
         'size: $size, '
         'position: $position, '
         'caption: $caption, '
+        'captionOffset: $captionOffset, '
         'buffered: [${buffered.join(', ')}], '
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
@@ -510,6 +519,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _applyPlaybackSpeed();
   }
 
+  /// Sets the caption offset of [this].
+  ///
+  /// [offset] indicates the delay in duration  The [offset] can be positive or negative.
+  /// the [offset] will be used when getting the correct caption for a specific position in [this]
+  ///
+  /// The values will be handled as follows:
+  /// *  0: this is the default behaviour. No offset will be applied.
+  /// * >0: The caption will have a positive offset. So you will get caption text from the future
+  /// * <0: The caption will have a negative offset. So you will get caption text from the past
+  void setCaptionOffset(Duration offset) async {
+    value = value.copyWith(captionOffset: offset);
+    value = value.copyWith(caption: _getCaptionAt(value.position));
+  }
+
   /// The closed caption based on the current [position] in the video.
   ///
   /// If there are no closed captions at the current [position], this will
@@ -522,9 +545,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return Caption();
     }
 
+    final delayedPosition = Duration(
+        microseconds:
+            position.inMicroseconds + value.captionOffset.inMicroseconds);
     // TODO: This would be more efficient as a binary search.
     for (final caption in _closedCaptionFile.captions) {
-      if (caption.start <= position && caption.end >= position) {
+      if (caption.start <= delayedPosition && caption.end >= delayedPosition) {
         return caption;
       }
     }
