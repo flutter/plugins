@@ -1,3 +1,7 @@
+## 0.3.5
+
+* [iOS] Introduce `SKPaymentQueueWrapper.presentCodeRedemptionSheet` 
+
 ## 0.3.4+16
 
 * Add Dartdocs to all public APIs.
