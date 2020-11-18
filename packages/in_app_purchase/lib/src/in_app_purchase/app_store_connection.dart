@@ -186,8 +186,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
   }
 
   @override
-  Future<void> presentCodeRedemptionSheet() {
-    _skPaymentQueueWrapper.presentCodeRedemptionSheet();
+  Future presentCodeRedemptionSheet() {
+    return _skPaymentQueueWrapper.presentCodeRedemptionSheet();
   }
 }
 

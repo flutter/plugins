@@ -143,8 +143,7 @@ class SKPaymentQueueWrapper {
   /// presentCodeRedemptionSheet]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/3566726-presentcoderedemptionsheet?language=objc)
   Future<void> presentCodeRedemptionSheet() async {
     await channel.invokeMethod<void>(
-    '-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]',
-    );
+        '-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]');
   }
 
   // Triage a method channel call from the platform and triggers the correct observer method.
