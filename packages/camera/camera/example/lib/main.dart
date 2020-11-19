@@ -38,8 +38,8 @@ void logError(String code, String message) =>
 class _CameraExampleHomeState extends State<CameraExampleHome>
     with WidgetsBindingObserver {
   CameraController controller;
-  String imagePath;
-  String videoPath;
+  XFile imageFile;
+  XFile videoFile;
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
@@ -130,9 +130,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         ),
       );
     } else {
-      return AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: CameraPreview(controller),
+      return Container(
+        // aspectRatio: controller.value.aspectRatio,
+        child: controller.buildView(),
       );
     }
   }
@@ -166,11 +166,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            videoController == null && imagePath == null
+            videoController == null && imageFile == null
                 ? Container()
                 : SizedBox(
                     child: (videoController == null)
-                        ? Image.file(File(imagePath))
+                        ? Image.file(File(imageFile.path))
                         : Container(
                             child: Center(
                               child: AspectRatio(
@@ -306,29 +306,29 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void onTakePictureButtonPressed() {
-    takePicture().then((String filePath) {
+    takePicture().then((XFile file) {
       if (mounted) {
         setState(() {
-          imagePath = filePath;
+          imageFile = file;
           videoController?.dispose();
           videoController = null;
         });
-        if (filePath != null) showInSnackBar('Picture saved to $filePath');
+        if (file != null) showInSnackBar('Picture saved to ${file.path}');
       }
     });
   }
 
   void onVideoRecordButtonPressed() {
-    startVideoRecording().then((String filePath) {
+    startVideoRecording().then((XFile file) {
       if (mounted) setState(() {});
-      if (filePath != null) showInSnackBar('Saving video to $filePath');
+      if (file != null) showInSnackBar('Saving video to ${file.path}');
     });
   }
 
   void onStopButtonPressed() {
     stopVideoRecording().then((_) {
       if (mounted) setState(() {});
-      showInSnackBar('Video recorded to: $videoPath');
+      showInSnackBar('Video recorded to: ${videoFile.path}');
     });
   }
 
@@ -346,16 +346,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
-  Future<String> startVideoRecording() async {
+  Future<XFile> startVideoRecording() async {
     if (!controller.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
       return null;
     }
-
-    final Directory extDir = await getApplicationDocumentsDirectory();
-    final String dirPath = '${extDir.path}/Movies/flutter_test';
-    await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/${timestamp()}.mp4';
 
     if (controller.value.isRecordingVideo) {
       // A recording is already started, do nothing.
@@ -363,13 +358,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     try {
-      videoPath = filePath;
-      await controller.startVideoRecording(filePath);
+      XFile file = await controller.startVideoRecording();
+      return file;
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
     }
-    return filePath;
   }
 
   Future<void> stopVideoRecording() async {
@@ -414,8 +408,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<void> _startVideoPlayer() async {
-    final VideoPlayerController vcontroller =
-        VideoPlayerController.file(File(videoPath));
+    final VideoPlayerController vController =
+        VideoPlayerController.file(File(videoFile.path));
     videoPlayerListener = () {
       if (videoController != null && videoController.value.size != null) {
         // Refreshing the state to update video player with the correct ratio.
@@ -423,28 +417,24 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         videoController.removeListener(videoPlayerListener);
       }
     };
-    vcontroller.addListener(videoPlayerListener);
-    await vcontroller.setLooping(true);
-    await vcontroller.initialize();
+    vController.addListener(videoPlayerListener);
+    await vController.setLooping(true);
+    await vController.initialize();
     await videoController?.dispose();
     if (mounted) {
       setState(() {
-        imagePath = null;
-        videoController = vcontroller;
+        imageFile = null;
+        videoController = vController;
       });
     }
-    await vcontroller.play();
+    await vController.play();
   }
 
-  Future<String> takePicture() async {
+  Future<XFile> takePicture() async {
     if (!controller.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
       return null;
     }
-    final Directory extDir = await getApplicationDocumentsDirectory();
-    final String dirPath = '${extDir.path}/Pictures/flutter_test';
-    await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/${timestamp()}.jpg';
 
     if (controller.value.isTakingPicture) {
       // A capture is already pending, do nothing.
@@ -452,12 +442,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     try {
-      await controller.takePicture(filePath);
+      XFile file = await controller.takePicture();
+      return file;
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
     }
-    return filePath;
   }
 
   void _showCameraException(CameraException e) {

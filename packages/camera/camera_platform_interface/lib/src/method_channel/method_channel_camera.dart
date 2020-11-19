@@ -168,7 +168,7 @@ class MethodChannelCamera extends CameraPlatform {
     throw ArgumentError('Unknown ResolutionPreset value');
   }
 
-  // Parses a string into a corresponding CameraLensDirection.
+  /// Parses a string into a corresponding CameraLensDirection.
   @visibleForTesting
   CameraLensDirection parseCameraLensDirection(String string) {
     switch (string) {
