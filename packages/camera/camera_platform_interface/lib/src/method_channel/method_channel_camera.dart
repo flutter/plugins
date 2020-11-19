@@ -10,7 +10,7 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
-import 'package:stream_transform/stream_transform.dart';
+import 'package:rxdart/rxdart.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 
@@ -28,6 +28,8 @@ class MethodChannelCamera extends CameraPlatform {
   @visibleForTesting
   final StreamController<CameraEvent> cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
+
+  final Map<int, Stream> _cameraResolutionChangedEventStreams = {};
 
   Stream<CameraEvent> _events(int cameraId) =>
       cameraEventStreamController.stream
