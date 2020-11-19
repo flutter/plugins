@@ -24,12 +24,12 @@ dependencies:
     git:
       url: https://github.com/ragnor-rs/plugins.git
       path: packages/video_player/video_player_platform_interface
-      ref: master
+      ref: feature/is-audio-flag
   video_player_web:
     git:
       url: https://github.com/ragnor-rs/plugins.git
       path: packages/video_player/video_player_web
-      ref: master
+      ref: feature/is-audio-flag
   flutter:
     sdk: flutter
 

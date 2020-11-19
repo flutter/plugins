@@ -175,7 +175,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
   VideoPlayerController.asset(this.dataSource,
-      {this.package, this.closedCaptionFile, this.videoPlayerOptions, this.isBackgroundPlaybackEnabled = false})
+      {this.package, this.closedCaptionFile, this.videoPlayerOptions, this.isBackgroundPlaybackEnabled = false, this.isAudio = false})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
         super(VideoPlayerValue(duration: null));
@@ -188,7 +188,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
   VideoPlayerController.network(this.dataSource,
-      {this.formatHint, this.closedCaptionFile, this.videoPlayerOptions, this.isBackgroundPlaybackEnabled = false})
+      {this.formatHint, this.closedCaptionFile, this.videoPlayerOptions, this.isBackgroundPlaybackEnabled = false, this.isAudio = false})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: null));
@@ -198,7 +198,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
   VideoPlayerController.file(File file,
-      {this.closedCaptionFile, this.videoPlayerOptions, this.isBackgroundPlaybackEnabled = false})
+      {this.closedCaptionFile, this.videoPlayerOptions, this.isBackgroundPlaybackEnabled = false, this.isAudio = false})
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
@@ -236,6 +236,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Equals false by default.
   final bool isBackgroundPlaybackEnabled;
 
+  /// Indicates that the resource flag is audio.
+  /// false by default.
+  final bool isAudio;
+
   ClosedCaptionFile _closedCaptionFile;
   Timer _timer;
   bool _isDisposed = false;
@@ -263,6 +267,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           sourceType: DataSourceType.asset,
           asset: dataSource,
           package: package,
+          isAudio: isAudio,
         );
         break;
       case DataSourceType.network:
@@ -270,12 +275,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           sourceType: DataSourceType.network,
           uri: dataSource,
           formatHint: formatHint,
+          isAudio: isAudio,
         );
         break;
       case DataSourceType.file:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.file,
           uri: dataSource,
+          isAudio: isAudio,
         );
         break;
     }

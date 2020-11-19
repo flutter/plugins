@@ -31,6 +31,8 @@ class CreateMessage {
   String uri;
   String packageName;
   String formatHint;
+  bool isAudio;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -38,6 +40,7 @@ class CreateMessage {
     pigeonMap['uri'] = uri;
     pigeonMap['packageName'] = packageName;
     pigeonMap['formatHint'] = formatHint;
+    pigeonMap['isAudio'] = isAudio;
     return pigeonMap;
   }
 
