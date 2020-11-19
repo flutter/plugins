@@ -49,7 +49,7 @@ class MethodChannelCamera extends CameraPlatform {
     ResolutionPreset resolutionPreset, {
     bool enableAudio,
   }) async {
-    int _textureId;
+    int _cameraId;
     try {
       final Map<String, dynamic> reply =
           await _channel.invokeMapMethod<String, dynamic>(
@@ -62,28 +62,28 @@ class MethodChannelCamera extends CameraPlatform {
           'enableAudio': enableAudio,
         },
       );
-      _textureId = reply['textureId'];
+      _cameraId = reply['cameraId'];
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
-    if (!_channels.containsKey(_textureId)) {
+    if (!_channels.containsKey(_cameraId)) {
       final channel =
-          MethodChannel('flutter.io/cameraPlugin/camera$_textureId');
+          MethodChannel('flutter.io/cameraPlugin/camera$_cameraId');
       channel.setMethodCallHandler(
-          (MethodCall call) => handleMethodCall(call, _textureId));
-      _channels[_textureId] = channel;
-      _cameraResolutionChangedEventStreams[_textureId] = _events(_textureId)
+          (MethodCall call) => handleMethodCall(call, _cameraId));
+      _channels[_cameraId] = channel;
+      _cameraResolutionChangedEventStreams[_cameraId] = _events(_cameraId)
           .whereType<ResolutionChangedEvent>()
           .shareReplay(maxSize: 1);
     }
-    return _textureId;
+    return _cameraId;
   }
 
   @override
   Future<void> dispose(int cameraId) async {
     await _channel.invokeMethod<void>(
       'dispose',
-      <String, dynamic>{'textureId': cameraId},
+      <String, dynamic>{'cameraId': cameraId},
     );
     _channels.remove(cameraId);
   }
@@ -107,7 +107,7 @@ class MethodChannelCamera extends CameraPlatform {
   Future<XFile> takePicture(int cameraId) async {
     String path = await _channel.invokeMethod<String>(
       'takePicture',
-      <String, dynamic>{'textureId': cameraId},
+      <String, dynamic>{'cameraId': cameraId},
     );
     return XFile(path);
   }
@@ -120,7 +120,7 @@ class MethodChannelCamera extends CameraPlatform {
   Future<XFile> startVideoRecording(int cameraId) async {
     String path = await _channel.invokeMethod<String>(
       'startVideoRecording',
-      <String, dynamic>{'textureId': cameraId},
+      <String, dynamic>{'cameraId': cameraId},
     );
     return XFile(path);
   }
@@ -129,7 +129,7 @@ class MethodChannelCamera extends CameraPlatform {
   Future<void> stopVideoRecording(int cameraId) async {
     await _channel.invokeMethod<void>(
       'stopVideoRecording',
-      <String, dynamic>{'textureId': cameraId},
+      <String, dynamic>{'cameraId': cameraId},
     );
   }
 
@@ -137,14 +137,14 @@ class MethodChannelCamera extends CameraPlatform {
   Future<void> pauseVideoRecording(int cameraId) =>
     _channel.invokeMethod<void>(
       'pauseVideoRecording',
-      <String, dynamic>{'textureId': cameraId},
+      <String, dynamic>{'cameraId': cameraId},
     );
 
   @override
   Future<void> resumeVideoRecording(int cameraId) =>
     _channel.invokeMethod<void>(
       'resumeVideoRecording',
-      <String, dynamic>{'textureId': cameraId},
+      <String, dynamic>{'cameraId': cameraId},
     );
 
   @override
@@ -188,7 +188,7 @@ class MethodChannelCamera extends CameraPlatform {
   @visibleForTesting
   Future<dynamic> handleMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {
-      case 'camera#resolutionChanged':
+      case 'resolution_changed':
         _cameraEventStreamController.add(ResolutionChangedEvent(
           cameraId,
           call.arguments['captureWidth'],
@@ -197,12 +197,12 @@ class MethodChannelCamera extends CameraPlatform {
           call.arguments['previewHeight'],
         ));
         break;
-      case 'camera#closing':
+      case 'camera_closing':
         _cameraEventStreamController.add(CameraClosingEvent(
           cameraId,
         ));
         break;
-      case 'camera#error':
+      case 'error':
         _cameraEventStreamController.add(CameraErrorEvent(
           cameraId,
           call.arguments['description'],

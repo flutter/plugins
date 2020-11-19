@@ -24,7 +24,7 @@ void main() {
         MethodChannelMock cameraMockChannel = MethodChannelMock(
             channelName: 'plugins.flutter.io/camera',
             methods: {
-              'initialize': {'textureId': 1}
+              'initialize': {'cameraId': 1}
             });
         final camera = MethodChannelCamera();
 
@@ -53,8 +53,8 @@ void main() {
         MethodChannelMock cameraMockChannel = MethodChannelMock(
             channelName: 'plugins.flutter.io/camera',
             methods: {
-              'initialize': {'textureId': 1},
-              'dispose': {'textureId': 1}
+              'initialize': {'cameraId': 1},
+              'dispose': {'cameraId': 1}
             });
 
         final camera = MethodChannelCamera();
@@ -72,7 +72,7 @@ void main() {
           isNotNull,
           isMethodCall(
             'dispose',
-            arguments: {'textureId': 1},
+            arguments: {'cameraId': 1},
           ),
         ]);
       });
@@ -85,7 +85,7 @@ void main() {
         MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
           methods: {
-            'initialize': {'textureId': 1},
+            'initialize': {'cameraId': 1},
           },
         );
         camera = MethodChannelCamera();
@@ -184,7 +184,7 @@ void main() {
         MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
           methods: {
-            'initialize': {'textureId': 1},
+            'initialize': {'cameraId': 1},
           },
         );
         camera = MethodChannelCamera();
@@ -237,7 +237,7 @@ void main() {
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('takePicture', arguments: {
-            'textureId': cameraId,
+            'cameraId': cameraId,
           }),
         ]);
         expect(file.path, '/test/path.jpg');
@@ -272,7 +272,7 @@ void main() {
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('startVideoRecording', arguments: {
-            'textureId': cameraId,
+            'cameraId': cameraId,
           }),
         ]);
         expect(file.path, '/test/path.mkv');
@@ -291,7 +291,7 @@ void main() {
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('stopVideoRecording', arguments: {
-            'textureId': cameraId,
+            'cameraId': cameraId,
           }),
         ]);
       });
@@ -309,7 +309,7 @@ void main() {
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('pauseVideoRecording', arguments: {
-            'textureId': cameraId,
+            'cameraId': cameraId,
           }),
         ]);
       });
@@ -327,7 +327,7 @@ void main() {
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('resumeVideoRecording', arguments: {
-            'textureId': cameraId,
+            'cameraId': cameraId,
           }),
         ]);
       });

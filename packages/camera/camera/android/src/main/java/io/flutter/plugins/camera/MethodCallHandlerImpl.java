@@ -69,12 +69,11 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
                   result.error(errCode, errDesc, null);
                 }
               });
-
           break;
         }
       case "takePicture":
         {
-          camera.takePicture(call.argument("path"), result);
+          camera.takePicture(result);
           break;
         }
       case "prepareForVideoRecording":
@@ -85,7 +84,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         }
       case "startVideoRecording":
         {
-          camera.startVideoRecording(call.argument("filePath"), result);
+          camera.startVideoRecording(result);
           break;
         }
       case "stopVideoRecording":

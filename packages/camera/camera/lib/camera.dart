@@ -190,7 +190,6 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   int _cameraId;
   bool _isDisposed = false;
-  StreamSubscription<dynamic> _eventSubscription;
   StreamSubscription<dynamic> _imageStreamSubscription;
   Completer<void> _creatingCompleter;
 
@@ -215,14 +214,22 @@ class CameraController extends ValueNotifier<CameraValue> {
           description, resolutionPreset,
           enableAudio: enableAudio);
 
-      value = value.copyWith(isInitialized: true);
+      Size previewSize = await CameraPlatform.instance
+          .onResolutionChanged(_cameraId)
+          .take(1)
+          .map((event) => Size(
+                event.previewWidth.toDouble(),
+                event.previewHeight.toDouble(),
+              ))
+          .first;
+
+      value = value.copyWith(
+        isInitialized: true,
+        previewSize: previewSize,
+      );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
-    _eventSubscription =
-        EventChannel('flutter.io/cameraPlugin/camera$_cameraId')
-            .receiveBroadcastStream()
-            .listen(_listener);
     _creatingCompleter.complete();
     return _creatingCompleter.future;
   }
@@ -491,7 +498,6 @@ class CameraController extends ValueNotifier<CameraValue> {
     if (_creatingCompleter != null) {
       await _creatingCompleter.future;
       await CameraPlatform.instance.dispose(_cameraId);
-      await _eventSubscription?.cancel();
     }
   }
 }
