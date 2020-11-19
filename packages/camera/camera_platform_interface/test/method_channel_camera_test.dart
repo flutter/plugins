@@ -33,7 +33,6 @@ void main() {
           CameraDescription(name: 'Test'),
           ResolutionPreset.high,
         );
-        print('cameraId $cameraId');
 
         // Assert
         expect(cameraId, 1);
@@ -334,7 +333,7 @@ void main() {
       });
 
       test('Should build a texture widget as view widget', () async {
-         // Act
+        // Act
         Widget widget = camera.buildView(cameraId);
 
         // Act

@@ -9,15 +9,18 @@ import 'package:file_selector_platform_interface/file_selector_platform_interfac
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
-import 'package:stream_transform/stream_transform.dart';
+import 'package:rxdart/rxdart.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 
 /// An implementation of [CameraPlatform] that uses method channels.
 class MethodChannelCamera extends CameraPlatform {
   final Map<int, MethodChannel> _channels = {};
+
   final StreamController<CameraEvent> _cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
+
+  final Map<int, Stream> _cameraResolutionChangedEventStreams = {};
 
   Stream<CameraEvent> _events(int cameraId) =>
       _cameraEventStreamController.stream
@@ -69,6 +72,9 @@ class MethodChannelCamera extends CameraPlatform {
       channel.setMethodCallHandler(
           (MethodCall call) => handleMethodCall(call, _textureId));
       _channels[_textureId] = channel;
+      _cameraResolutionChangedEventStreams[_textureId] = _events(_textureId)
+          .whereType<ResolutionChangedEvent>()
+          .shareReplay(maxSize: 1);
     }
     return _textureId;
   }
@@ -84,19 +90,16 @@ class MethodChannelCamera extends CameraPlatform {
 
   @override
   Stream<ResolutionChangedEvent> onResolutionChanged(int cameraId) {
-    assert(_channels.containsKey(cameraId));
-    return _events(cameraId).whereType<ResolutionChangedEvent>();
+    return _cameraResolutionChangedEventStreams[cameraId];
   }
 
   @override
   Stream<CameraClosingEvent> onCameraClosing(int cameraId) {
-    assert(_channels.containsKey(cameraId));
     return _events(cameraId).whereType<CameraClosingEvent>();
   }
 
   @override
   Stream<CameraErrorEvent> onCameraError(int cameraId) {
-    assert(_channels.containsKey(cameraId));
     return _events(cameraId).whereType<CameraErrorEvent>();
   }
 
