@@ -16,7 +16,7 @@ class DartMessenger {
   }
 
   DartMessenger(BinaryMessenger messenger, long eventChannelId) {
-    new EventChannel(messenger, "flutter.io/cameraPlugin/cameraEvents" + eventChannelId)
+    new EventChannel(messenger, "flutter.io/cameraPlugin/camera" + eventChannelId)
         .setStreamHandler(
             new EventChannel.StreamHandler() {
               @Override
@@ -44,7 +44,7 @@ class DartMessenger {
     event.put("eventType", eventType.toString().toLowerCase());
     // Only errors have a description.
     if (eventType == EventType.ERROR && !TextUtils.isEmpty(description)) {
-      event.put("errorDescription", description);
+      event.put("description", description);
     }
     eventSink.success(event);
   }

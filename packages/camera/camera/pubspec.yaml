@@ -8,6 +8,8 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/camera/camera
 dependencies:
   flutter:
     sdk: flutter
+  camera_platform_interface:
+    path: ../camera_platform_interface
 
 dev_dependencies:
   path_provider: ^0.5.0
