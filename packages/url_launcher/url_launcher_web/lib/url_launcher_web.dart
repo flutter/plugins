@@ -4,8 +4,7 @@
 
 import 'dart:async';
 import 'dart:html' as html;
-// ignore: undefined_shown_name
-import 'dart:ui' as ui show platformViewRegistry;
+import 'src/shims/dart_ui.dart' as ui;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:meta/meta.dart';
