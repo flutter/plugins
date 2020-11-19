@@ -77,7 +77,9 @@ gmaps.MapOptions _rawOptionsToGmapsOptions(Map<String, dynamic> rawOptions) {
     // Needs gmaps.MapOptions.restriction and gmaps.MapRestriction
     // see: https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions.restriction
   }
-
+  if (optionsUpdate['draggableCursor'] != null) {
+    options.draggableCursor = optionsUpdate['draggableCursor'];
+  }
   if (optionsUpdate['zoomControlsEnabled'] != null) {
     options.zoomControl = optionsUpdate['zoomControlsEnabled'];
   }
@@ -85,7 +87,6 @@ gmaps.MapOptions _rawOptionsToGmapsOptions(Map<String, dynamic> rawOptions) {
   if (optionsUpdate['styles'] != null) {
     options.styles = optionsUpdate['styles'];
   }
-
   if (optionsUpdate['scrollGesturesEnabled'] == false ||
       optionsUpdate['zoomGesturesEnabled'] == false) {
     options.gestureHandling = 'none';

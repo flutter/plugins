@@ -1,3 +1,7 @@
+## 1.0.7
+
+* added webOnlyDraggableCursor parameter.
+
 ## 1.0.6
 
 * Update Dart SDK constraint in example.

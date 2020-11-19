@@ -39,6 +39,7 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
+    this.webOnlyDraggableCursor,
 
     /// If no padding is specified default padding will be 0.
     this.padding = const EdgeInsets.all(0),
@@ -184,6 +185,11 @@ class GoogleMap extends StatefulWidget {
   /// See also:
   ///   * [myLocationEnabled] parameter.
   final bool myLocationButtonEnabled;
+
+  ///The name or url of the cursor to display when mousing over a draggable map.
+  ///Example usage - webOnlyDraggableCursor : "url(assets/cursor.cur),default"
+  /// See https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions.draggableCursor for more details.
+  final webOnlyDraggableCursor;
 
   /// Enables or disables the indoor view from the map
   final bool indoorViewEnabled;
@@ -398,6 +404,7 @@ class _GoogleMapOptions {
     this.liteModeEnabled,
     this.myLocationEnabled,
     this.myLocationButtonEnabled,
+    this.webOnlyDraggableCursor,
     this.padding,
     this.indoorViewEnabled,
     this.trafficEnabled,
@@ -423,6 +430,7 @@ class _GoogleMapOptions {
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       liteModeEnabled: map.liteModeEnabled,
       myLocationEnabled: map.myLocationEnabled,
+      webOnlyDraggableCursor: map.webOnlyDraggableCursor,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
       padding: map.padding,
       indoorViewEnabled: map.indoorViewEnabled,
@@ -459,6 +467,7 @@ class _GoogleMapOptions {
 
   final bool myLocationButtonEnabled;
 
+  final String webOnlyDraggableCursor;
   final EdgeInsets padding;
 
   final bool indoorViewEnabled;
@@ -490,6 +499,8 @@ class _GoogleMapOptions {
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
+    addIfNonNull('draggableCursor', webOnlyDraggableCursor);
+
     addIfNonNull('padding', <double>[
       padding?.top,
       padding?.left,
@@ -499,6 +510,7 @@ class _GoogleMapOptions {
     addIfNonNull('indoorEnabled', indoorViewEnabled);
     addIfNonNull('trafficEnabled', trafficEnabled);
     addIfNonNull('buildingsEnabled', buildingsEnabled);
+
     return optionsMap;
   }
 

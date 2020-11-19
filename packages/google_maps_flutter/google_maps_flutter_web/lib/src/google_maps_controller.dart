@@ -84,7 +84,7 @@ class GoogleMapController {
 
     ui.platformViewRegistry.registerViewFactory(
       _getViewType(mapId),
-      (int viewId) => _div,
+          (int viewId) => _div,
     );
   }
 
@@ -187,9 +187,9 @@ class GoogleMapController {
     Set<Polyline> polylines,
   }) {
     assert(
-        _controllersBoundToMap,
-        'Geometry controllers must be bound to a map before any geometry can ' +
-            'be added to them. Ensure _attachGeometryControllers is called first.');
+    _controllersBoundToMap,
+    'Geometry controllers must be bound to a map before any geometry can ' +
+        'be added to them. Ensure _attachGeometryControllers is called first.');
     _markersController.addMarkers(markers);
     _circlesController.addCircles(circles);
     _polygonsController.addPolygons(polygons);
@@ -202,9 +202,9 @@ class GoogleMapController {
   //
   // Returns the updated _rawOptions object.
   Map<String, dynamic> _mergeRawOptions(
-    Map<String, dynamic> newOptions, {
-    String key = 'options',
-  }) {
+      Map<String, dynamic> newOptions, {
+        String key = 'options',
+      }) {
     _rawOptions[key] = <String, dynamic>{
       ...(_rawOptions[key] ?? {}),
       ...newOptions,
@@ -250,14 +250,14 @@ class GoogleMapController {
   /// Returns the [ScreenCoordinate] for a given viewport [LatLng].
   Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
     final point =
-        _googleMap.projection.fromLatLngToPoint(_latLngToGmLatLng(latLng));
+    _googleMap.projection.fromLatLngToPoint(_latLngToGmLatLng(latLng));
     return ScreenCoordinate(x: point.x, y: point.y);
   }
 
   /// Returns the [LatLng] for a `screenCoordinate` (in pixels) of the viewport.
   Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) async {
     final gmaps.LatLng latLng =
-        _pixelToLatLng(_googleMap, screenCoordinate.x, screenCoordinate.y);
+    _pixelToLatLng(_googleMap, screenCoordinate.x, screenCoordinate.y);
     return _gmLatLngToLatLng(latLng);
   }
 
