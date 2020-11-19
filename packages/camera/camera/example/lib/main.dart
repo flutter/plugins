@@ -321,7 +321,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   void onVideoRecordButtonPressed() {
     startVideoRecording().then((XFile file) {
       if (mounted) setState(() {});
-      if (file != null) showInSnackBar('Saving video to ${file.path}');
+      if (file != null) {
+        showInSnackBar('Saving video to ${file.path}');
+        videoFile = file;
+      }
     });
   }
 

@@ -320,22 +320,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
-        'startImageStream was called on uninitialized CameraController.',
+        'buildView() was called on uninitialized CameraController.',
       );
     }
-    if (value.isRecordingVideo) {
-      throw CameraException(
-        'A video recording is already started.',
-        'startImageStream was called while a video is being recorded.',
-      );
-    }
-    if (value.isStreamingImages) {
-      throw CameraException(
-        'A camera has started streaming images.',
-        'startImageStream was called while a camera was streaming images.',
-      );
-    }
-
     try {
       return CameraPlatform.instance.buildView(_cameraId);
     } on PlatformException catch (e) {
