@@ -23,7 +23,7 @@ dependencies:
     git:
       url: https://github.com/ragnor-rs/plugins.git
       path: packages/video_player/video_player_platform_interface
-      ref: feature/is-audio-flag
+      ref: master
 
 dev_dependencies:
   flutter_test:
