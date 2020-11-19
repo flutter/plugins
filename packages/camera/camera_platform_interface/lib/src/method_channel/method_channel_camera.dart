@@ -58,6 +58,7 @@ class MethodChannelCamera extends CameraPlatform {
     ResolutionPreset resolutionPreset, {
     bool enableAudio,
   }) async {
+    int _cameraId;
     try {
       final Map<String, dynamic> reply =
           await _channel.invokeMapMethod<String, dynamic>(
@@ -70,35 +71,21 @@ class MethodChannelCamera extends CameraPlatform {
           'enableAudio': enableAudio,
         },
       );
-      return reply['cameraId'];
+      _cameraId = reply['cameraId'];
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
-  }
-
-  @override
-  Future<void> initializeCamera(int cameraId) {
-    _channels.putIfAbsent(cameraId, () {
-      final channel = MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
+    if (!_channels.containsKey(_cameraId)) {
+      final channel =
+          MethodChannel('flutter.io/cameraPlugin/camera$_cameraId');
       channel.setMethodCallHandler(
-          (MethodCall call) => handleMethodCall(call, cameraId));
-      return channel;
-    });
-
-    Completer _completer = Completer();
-
-    onCameraInitialized(cameraId).first.then((value) {
-      _completer.complete();
-    });
-
-    _channel.invokeMapMethod<String, dynamic>(
-      'initialize',
-      <String, dynamic>{
-        'cameraId': cameraId,
-      },
-    );
-
-    return _completer.future;
+          (MethodCall call) => handleMethodCall(call, _cameraId));
+      _channels[_cameraId] = channel;
+      _cameraResolutionChangedEventStreams[_cameraId] = _events(_cameraId)
+          .whereType<ResolutionChangedEvent>()
+          .shareReplay(maxSize: 1);
+    }
+    return _cameraId;
   }
 
   @override
@@ -165,17 +152,18 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<void> pauseVideoRecording(int cameraId) => _channel.invokeMethod<void>(
-        'pauseVideoRecording',
-        <String, dynamic>{'cameraId': cameraId},
-      );
+  Future<void> pauseVideoRecording(int cameraId) =>
+    _channel.invokeMethod<void>(
+      'pauseVideoRecording',
+      <String, dynamic>{'cameraId': cameraId},
+    );
 
   @override
   Future<void> resumeVideoRecording(int cameraId) =>
-      _channel.invokeMethod<void>(
-        'resumeVideoRecording',
-        <String, dynamic>{'cameraId': cameraId},
-      );
+    _channel.invokeMethod<void>(
+      'resumeVideoRecording',
+      <String, dynamic>{'cameraId': cameraId},
+    );
 
   @override
   Future<void> setFlashMode(int cameraId, FlashMode mode) =>
@@ -260,27 +248,20 @@ class MethodChannelCamera extends CameraPlatform {
   @visibleForTesting
   Future<dynamic> handleMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {
-      case 'initialized':
-        cameraEventStreamController.add(CameraInitializedEvent(
+      case 'resolution_changed':
+        _cameraEventStreamController.add(ResolutionChangedEvent(
           cameraId,
           call.arguments['previewWidth'],
           call.arguments['previewHeight'],
         ));
         break;
-      case 'resolution_changed':
-        cameraEventStreamController.add(CameraResolutionChangedEvent(
-          cameraId,
-          call.arguments['captureWidth'],
-          call.arguments['captureHeight'],
-        ));
-        break;
       case 'camera_closing':
-        cameraEventStreamController.add(CameraClosingEvent(
+        _cameraEventStreamController.add(CameraClosingEvent(
           cameraId,
         ));
         break;
       case 'error':
-        cameraEventStreamController.add(CameraErrorEvent(
+        _cameraEventStreamController.add(CameraErrorEvent(
           cameraId,
           call.arguments['description'],
         ));
