@@ -34,7 +34,7 @@ import java.util.Map;
 class Convert {
 
   // TODO(hamdikahloun): FlutterMain has been deprecated and should be replaced with FlutterLoader
-  //  when it's available in Stable channel.
+  //  when it's available in Stable channel: https://github.com/flutter/flutter/issues/70923.
   @SuppressWarnings("deprecation")
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
     final List<?> data = toList(o);
