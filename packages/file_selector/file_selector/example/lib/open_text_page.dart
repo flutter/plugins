@@ -1,7 +1,7 @@
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 
-/// Screen that shows an example of openFile(s)
+/// Screen that shows an example of openFile
 class OpenTextPage extends StatelessWidget {
   void _openTextFile(BuildContext context) async {
     final XTypeGroup typeGroup = XTypeGroup(
