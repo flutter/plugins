@@ -152,14 +152,13 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 
 @interface FLTCam : NSObject <FlutterTexture,
                               AVCaptureVideoDataOutputSampleBufferDelegate,
-                              AVCaptureAudioDataOutputSampleBufferDelegate,
-                              FlutterStreamHandler>
+                              AVCaptureAudioDataOutputSampleBufferDelegate
+                              >
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)(void);
 @property BOOL enableAudio;
-@property(nonatomic) FlutterEventChannel *eventChannel;
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
-@property(nonatomic) FlutterEventSink eventSink;
+@property(nonatomic) FlutterMethodChannel *methodChannel;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 @property(readonly, nonatomic) AVCaptureDevice *captureDevice;
 @property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
@@ -347,10 +346,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
   }
   if (!CMSampleBufferDataIsReady(sampleBuffer)) {
-    _eventSink(@{
-      @"event" : @"error",
-      @"errorDescription" : @"sample buffer is not ready. Skipping sample"
-    });
+    [_methodChannel invokeMethod:@"error" arguments:@"sample buffer is not ready. Skipping sample"];
     return;
   }
   if (_isStreamingImages) {
@@ -414,10 +410,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
   if (_isRecording && !_isRecordingPaused) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
-      _eventSink(@{
-        @"event" : @"error",
-        @"errorDescription" : [NSString stringWithFormat:@"%@", _videoWriter.error]
-      });
+      [_methodChannel invokeMethod:@"error" arguments:[NSString stringWithFormat:@"%@", _videoWriter.error]];
       return;
     }
 
@@ -500,20 +493,13 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (void)newVideoSample:(CMSampleBufferRef)sampleBuffer {
   if (_videoWriter.status != AVAssetWriterStatusWriting) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
-      _eventSink(@{
-        @"event" : @"error",
-        @"errorDescription" : [NSString stringWithFormat:@"%@", _videoWriter.error]
-      });
+      [_methodChannel invokeMethod:@"error" arguments:[NSString stringWithFormat:@"%@", _videoWriter.error]];
     }
     return;
   }
   if (_videoWriterInput.readyForMoreMediaData) {
     if (![_videoWriterInput appendSampleBuffer:sampleBuffer]) {
-      _eventSink(@{
-        @"event" : @"error",
-        @"errorDescription" :
-            [NSString stringWithFormat:@"%@", @"Unable to write to video input"]
-      });
+      [_methodChannel invokeMethod:@"error" arguments:[NSString stringWithFormat:@"%@", @"Unable to write to video input"]];
     }
   }
 }
@@ -521,20 +507,13 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (void)newAudioSample:(CMSampleBufferRef)sampleBuffer {
   if (_videoWriter.status != AVAssetWriterStatusWriting) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
-      _eventSink(@{
-        @"event" : @"error",
-        @"errorDescription" : [NSString stringWithFormat:@"%@", _videoWriter.error]
-      });
+      [_methodChannel invokeMethod:@"error" arguments:[NSString stringWithFormat:@"%@", _videoWriter.error]];
     }
     return;
   }
   if (_audioWriterInput.readyForMoreMediaData) {
     if (![_audioWriterInput appendSampleBuffer:sampleBuffer]) {
-      _eventSink(@{
-        @"event" : @"error",
-        @"errorDescription" :
-            [NSString stringWithFormat:@"%@", @"Unable to write to audio input"]
-      });
+      [_methodChannel invokeMethod:@"error" arguments:[NSString stringWithFormat:@"%@", @"Unable to write to audio input"]];
     }
   }
 }
@@ -565,23 +544,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   return pixelBuffer;
 }
 
-- (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
-  _eventSink = nil;
-  // need to unregister stream handler when disposing the camera
-  [_eventChannel setStreamHandler:nil];
-  return nil;
-}
-
-- (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments
-                                       eventSink:(nonnull FlutterEventSink)events {
-  _eventSink = events;
-  return nil;
-}
-
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result {
   if (!_isRecording) {
     if (![self setupWriterForPath:path]) {
-      _eventSink(@{@"event" : @"error", @"errorDescription" : @"Setup Writer Failed"});
+      [_methodChannel invokeMethod:@"error" arguments:@"Setup Writer Failed"];
       return;
     }
     _isRecording = YES;
@@ -592,7 +558,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     _audioIsDisconnected = NO;
     result(nil);
   } else {
-    _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
+    [_methodChannel invokeMethod:@"error" arguments:@"Video is already recording"];
   }
 }
 
@@ -604,10 +570,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
         if (self->_videoWriter.status == AVAssetWriterStatusCompleted) {
           result(nil);
         } else {
-          self->_eventSink(@{
-            @"event" : @"error",
-            @"errorDescription" : @"AVAssetWriter could not finish writing!"
-          });
+          [self->_methodChannel invokeMethod:@"error" arguments:@"AVAssetWriter could not finish writing!"];
         }
       }];
     }
@@ -641,8 +604,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
     _isStreamingImages = YES;
   } else {
-    _eventSink(
-        @{@"event" : @"error", @"errorDescription" : @"Images from camera are already streaming!"});
+    [_methodChannel invokeMethod:@"error" arguments:@"Images from camera are already streaming!"];
   }
 }
 
@@ -651,8 +613,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     _isStreamingImages = NO;
     _imageStreamHandler = nil;
   } else {
-    _eventSink(
-        @{@"event" : @"error", @"errorDescription" : @"Images from camera are not streaming!"});
+    [_methodChannel invokeMethod:@"error" arguments:@"Images from camera are not streaming!"];
   }
 }
 
@@ -672,7 +633,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                               error:&error];
   NSParameterAssert(_videoWriter);
   if (error) {
-    _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
+    [_methodChannel invokeMethod:@"error" arguments:error.description];
     return NO;
   }
   NSDictionary *videoSettings = [NSDictionary
@@ -726,7 +687,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice
                                                                            error:&error];
   if (error) {
-    _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
+    [_methodChannel invokeMethod:@"error" arguments:error.description];
   }
   // Setup the audio output.
   _audioOutput = [[AVCaptureAudioDataOutput alloc] init];
@@ -738,10 +699,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       [_captureSession addOutput:_audioOutput];
       _isAudioSetup = YES;
     } else {
-      _eventSink(@{
-        @"event" : @"error",
-        @"errorDescription" : @"Unable to add Audio input/output to session capture"
-      });
+      [_methodChannel invokeMethod:@"error" arguments:@"Unable to add Audio input/output to session capture"];
       _isAudioSetup = NO;
     }
   }
@@ -841,20 +799,19 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       cam.onFrameAvailable = ^{
         [weakSelf.registry textureFrameAvailable:textureId];
       };
-      FlutterEventChannel *eventChannel = [FlutterEventChannel
-          eventChannelWithName:[NSString
-                                   stringWithFormat:@"flutter.io/cameraPlugin/cameraEvents%lld",
-                                                    textureId]
-               binaryMessenger:_messenger];
-      [eventChannel setStreamHandler:cam];
-      cam.eventChannel = eventChannel;
+      FlutterMethodChannel *methodChannel = [FlutterMethodChannel
+                                             methodChannelWithName:[NSString
+                                                                    stringWithFormat:@"flutter.io/cameraPlugin/camera%lld",
+                                                                    textureId]
+                                             binaryMessenger:_messenger];
+      cam.methodChannel = methodChannel;
       result(@{
-        @"textureId" : @(textureId),
+        @"cameraId" : @(textureId),
+             });
+      [methodChannel invokeMethod:@"resolution_changed" arguments:@{
         @"previewWidth" : @(cam.previewSize.width),
-        @"previewHeight" : @(cam.previewSize.height),
-        @"captureWidth" : @(cam.captureSize.width),
-        @"captureHeight" : @(cam.captureSize.height),
-      });
+        @"previewHeight" : @(cam.previewSize.height)
+      }];
       [cam start];
     }
   } else if ([@"startImageStream" isEqualToString:call.method]) {
