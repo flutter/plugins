@@ -1,3 +1,7 @@
+## 0.5.12+5
+
+* Update integration test examples to use `testWidgets` instead of `test`.
+
 ## 0.5.12+4
 
 * Remove unused `test` dependency.
