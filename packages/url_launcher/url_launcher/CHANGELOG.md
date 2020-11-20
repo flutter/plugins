@@ -1,4 +1,4 @@
-## 5.7.10+1
+## 5.7.11
 
 * Update integration test examples to use `testWidgets` instead of `test`.
 

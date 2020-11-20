@@ -1,4 +1,4 @@
-## 0.0.1+10
+## 0.0.2
 
 * Update integration test examples to use `testWidgets` instead of `test`.
 
