@@ -11,6 +11,7 @@ import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
 import java.util.HashMap;
+import java.util.Map;
 
 /** Generated class from Pigeon. */
 @SuppressWarnings("unused")
@@ -81,6 +82,12 @@ public class Messages {
 
     public String getFormatHint() {
       return formatHint;
+    }
+
+    private Map httpHeaders;
+
+    public Map getHttpHeaders() {
+      return httpHeaders;
     }
 
     public void setFormatHint(String setterArg) {
@@ -294,6 +301,50 @@ public class Messages {
     }
   }
 
+  public static class AbsolutePositionMessage {
+    private Long textureId;
+
+    public Long getTextureId() {
+      return textureId;
+    }
+
+    public void setTextureId(Long setterArg) {
+      this.textureId = setterArg;
+    }
+
+    private Long absolutePosition;
+
+    public Long getAbsolutePosition() {
+      return absolutePosition;
+    }
+
+    public void setAbsolutePosition(Long setterArg) {
+      this.absolutePosition = setterArg;
+    }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("absolutePosition", absolutePosition);
+      return toMapResult;
+    }
+
+    static PositionMessage fromMap(HashMap map) {
+      PositionMessage fromMapResult = new PositionMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId =
+          (textureId == null)
+              ? null
+              : ((textureId instanceof Integer) ? (Integer) textureId : (Long) textureId);
+      Object absolutePosition = map.get("absolutePosition");
+      fromMapResult.position =
+          (absolutePosition == null)
+              ? null
+              : ((absolutePosition instanceof Integer) ? (Integer) absolutePosition : (Long) absolutePosition);
+      return fromMapResult;
+    }
+  }
+
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class MixWithOthersMessage {
     private Boolean mixWithOthers;
@@ -362,6 +413,8 @@ public class Messages {
     void play(TextureMessage arg);
 
     PositionMessage position(TextureMessage arg);
+
+    AbsolutePositionMessage absolutePosition(TextureMessage arg);
 
     void seekTo(PositionMessage arg);
 
@@ -551,6 +604,30 @@ public class Messages {
                   @SuppressWarnings("ConstantConditions")
                   TextureMessage input = TextureMessage.fromMap((HashMap) message);
                   PositionMessage output = api.position(input);
+                  wrapped.put("result", output.toMap());
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.absolutePosition",
+                new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  AbsolutePositionMessage output = api.absolutePosition(input);
                   wrapped.put("result", output.toMap());
                 } catch (Exception exception) {
                   wrapped.put("error", wrapError(exception));

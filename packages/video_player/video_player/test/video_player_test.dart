@@ -71,6 +71,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   VideoPlayerOptions? get videoPlayerOptions => null;
+
+  @override
+  Future<DateTime> get absolutePosition async => DateTime.now();
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>

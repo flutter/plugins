@@ -130,6 +130,29 @@ class PositionMessage {
   }
 }
 
+class AbsolutePositionMessage {
+  int textureId;
+  int absolutePosition;
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['absolutePosition'] = absolutePosition;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static AbsolutePositionMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    if (pigeonMap == null) {
+      return null;
+    }
+    final AbsolutePositionMessage result = AbsolutePositionMessage();
+    result.textureId = pigeonMap['textureId'];
+    result.absolutePosition = pigeonMap['absolutePosition'];
+    return result;
+  }
+}
+
 class MixWithOthersMessage {
   bool? mixWithOthers;
 
@@ -344,6 +367,28 @@ class VideoPlayerApi {
       );
     } else {
       return PositionMessage.decode(replyMap['result']!);
+    }
+  }
+
+  Future<AbsolutePositionMessage> absolutePosition(TextureMessage arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.VideoPlayerApi.absolutePosition', StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return AbsolutePositionMessage._fromMap(replyMap['result']);
     }
   }
 

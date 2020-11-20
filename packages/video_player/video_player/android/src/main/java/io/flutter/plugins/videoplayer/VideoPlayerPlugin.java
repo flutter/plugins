@@ -17,6 +17,7 @@ import io.flutter.plugins.videoplayer.Messages.LoopingMessage;
 import io.flutter.plugins.videoplayer.Messages.MixWithOthersMessage;
 import io.flutter.plugins.videoplayer.Messages.PlaybackSpeedMessage;
 import io.flutter.plugins.videoplayer.Messages.PositionMessage;
+import io.flutter.plugins.videoplayer.Messages.AbsolutePositionMessage;
 import io.flutter.plugins.videoplayer.Messages.TextureMessage;
 import io.flutter.plugins.videoplayer.Messages.VideoPlayerApi;
 import io.flutter.plugins.videoplayer.Messages.VolumeMessage;
@@ -191,6 +192,14 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
     VideoPlayer player = videoPlayers.get(arg.getTextureId());
     PositionMessage result = new PositionMessage();
     result.setPosition(player.getPosition());
+    player.sendBufferingUpdate();
+    return result;
+  }
+
+  public AbsolutePositionMessage absolutePosition(TextureMessage arg) {
+    VideoPlayer player = videoPlayers.get(arg.getTextureId());
+    AbsolutePositionMessage result = new AbsolutePositionMessage();
+    result.setAbsolutePosition(player.getAbsolutePosition());
     player.sendBufferingUpdate();
     return result;
   }

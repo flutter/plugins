@@ -50,6 +50,10 @@ static NSDictionary<NSString *, id> *wrapResult(NSDictionary *result, FlutterErr
 + (FLTPositionMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
+@interface FLTAbsolutePositionMessage ()
++ (FLTAbsolutePositionMessage *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
 @interface FLTMixWithOthersMessage ()
 + (FLTMixWithOthersMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
@@ -195,6 +199,28 @@ static NSDictionary<NSString *, id> *wrapResult(NSDictionary *result, FlutterErr
 }
 @end
 
+@implementation FLTAbsolutePositionMessage
++ (FLTAbsolutePositionMessage *)fromMap:(NSDictionary *)dict {
+  FLTAbsolutePositionMessage *result = [[FLTAbsolutePositionMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.absolutePosition = dict[@"absolutePosition"];
+  if ((NSNull *)result.absolutePosition == [NSNull null]) {
+    result.absolutePosition = nil;
+  }
+  return result;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary
+      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]),
+                                   @"textureId",
+                                   (self.absolutePosition != nil ? self.absolutePosition : [NSNull null]),
+                                   @"absolutePosition", nil];
+}
+@end
+
 @implementation FLTMixWithOthersMessage
 + (FLTMixWithOthersMessage *)fromMap:(NSDictionary *)dict {
   FLTMixWithOthersMessage *result = [[FLTMixWithOthersMessage alloc] init];
@@ -325,6 +351,21 @@ void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTVi
         FLTTextureMessage *input = [FLTTextureMessage fromMap:message];
         FlutterError *error;
         FLTPositionMessage *output = [api position:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VideoPlayerApi.absolutePosition"
+               binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        FLTTextureMessage *input = [FLTTextureMessage fromMap:message];
+        FLTAbsolutePositionMessage *output = [api absolutePosition:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     } else {
