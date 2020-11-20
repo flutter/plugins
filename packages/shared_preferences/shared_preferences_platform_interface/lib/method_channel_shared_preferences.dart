@@ -18,21 +18,21 @@ const MethodChannel _kChannel =
 class MethodChannelSharedPreferencesStore
     extends SharedPreferencesStorePlatform {
   @override
-  Future<bool> remove(String key) {
+  Future<bool?> remove(String key) {
     return _invokeBoolMethod('remove', <String, dynamic>{
       'key': key,
     });
   }
 
   @override
-  Future<bool> setValue(String valueType, String key, Object value) {
+  Future<bool?> setValue(String valueType, String key, Object value) {
     return _invokeBoolMethod('set$valueType', <String, dynamic>{
       'key': key,
       'value': value,
     });
   }
 
-  Future<bool> _invokeBoolMethod(String method, Map<String, dynamic> params) {
+  Future<bool?> _invokeBoolMethod(String method, Map<String, dynamic> params) {
     return _kChannel
         .invokeMethod<bool>(method, params)
         // TODO(yjbanov): I copied this from the original
@@ -45,12 +45,12 @@ class MethodChannelSharedPreferencesStore
   }
 
   @override
-  Future<bool> clear() {
+  Future<bool?> clear() {
     return _kChannel.invokeMethod<bool>('clear');
   }
 
   @override
-  Future<Map<String, Object>> getAll() {
+  Future<Map<String, Object>?> getAll() {
     return _kChannel.invokeMapMethod<String, Object>('getAll');
   }
 }
