@@ -31,6 +31,7 @@ static NSString *const kMethodTestFinished = @"allTestsFinished";
   // bundles.  Setup on static variables can be disregarded when a new static
   // instance of IntegrationTestPlugin is allocated when the bundle is reloaded.
   // See also: https://github.com/flutter/plugins/pull/2465
+  [[self instance] setupChannels:[registrar messenger]];
 }
 
 - (void)setupChannels:(id<FlutterBinaryMessenger>)binaryMessenger {

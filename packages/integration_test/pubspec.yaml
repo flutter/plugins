@@ -32,3 +32,5 @@ flutter:
         pluginClass: IntegrationTestPlugin
       ios:
         pluginClass: IntegrationTestPlugin
+      macos:
+        pluginClass: IntegrationTestPlugin
