@@ -7,10 +7,11 @@ import 'package:flutter/material.dart';
 class OpenMultipleImagesPage extends StatelessWidget {
   void _openImageFile(BuildContext context) async {
     final XTypeGroup jpgsTypeGroup = XTypeGroup(
-      label: 'images',
+      label: 'JPEGs',
       extensions: ['jpg', 'jpeg'],
     );
     final XTypeGroup pngTypeGroup = XTypeGroup(
+      label: 'PNGs',
       extensions: ['png'],
     );
     final List<XFile> files = await openFiles(acceptedTypeGroups: [
