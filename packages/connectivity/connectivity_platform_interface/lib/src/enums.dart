@@ -4,6 +4,9 @@
 
 /// Connection status check result.
 enum ConnectivityResult {
+  /// Ethernet: Device connect to ethernet network
+  ethernet,
+
   /// WiFi: Device connected via Wi-Fi
   wifi,
 
