@@ -295,7 +295,8 @@ void main() {
 
   group('present code redemption sheet', () {
     test('null', () async {
-      expect(await AppStoreConnection.instance.presentCodeRedemptionSheet(), null);
+      expect(
+          await AppStoreConnection.instance.presentCodeRedemptionSheet(), null);
     });
   });
 }

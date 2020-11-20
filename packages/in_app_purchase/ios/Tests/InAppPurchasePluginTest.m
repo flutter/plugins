@@ -251,10 +251,11 @@
 }
 
 - (void)testPresentCodeRedemptionSheet {
-  XCTestExpectation* expectation = [self expectationWithDescription:@"expect successfully present Code Redemption Sheet"];
-  FlutterMethodCall* call =
-      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]"
-                                        arguments:nil];
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"expect successfully present Code Redemption Sheet"];
+  FlutterMethodCall* call =  [FlutterMethodCall
+      methodCallWithMethodName:@"-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]"
+                      arguments:nil];
   __block BOOL callbackInvoked = NO;
   [self.plugin handleMethodCall:call
                          result:^(id r) {

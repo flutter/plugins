@@ -93,7 +93,8 @@
     [self finishTransaction:call result:result];
   } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
     [self restoreTransactions:call result:result];
-  } else if ([@"-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]" isEqualToString:call.method]) {
+  } else if ([@"-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]"
+                 isEqualToString:call.method]) {
     [self presentCodeRedemptionSheet:call result:result];
   } else if ([@"-[InAppPurchasePlugin retrieveReceiptData:result:]" isEqualToString:call.method]) {
     [self retrieveReceiptData:call result:result];
