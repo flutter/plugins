@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class GetDirectoryPage extends StatelessWidget {
   void _getDirectoryPath(BuildContext context) async {
     final String initialDirectory = '~/Desktop';
-    final String confirmButtonText = 'Choose a cool directory';
+    final String confirmButtonText = 'Choose';
     final String directoryPath = await getDirectoryPath(
         initialDirectory: initialDirectory,
         confirmButtonText: confirmButtonText);
