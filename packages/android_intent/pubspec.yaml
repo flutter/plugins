@@ -4,7 +4,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/android_intent
 # 0.3.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.3.7+7
+version: 0.3.7+8
 
 flutter:
   plugin:
