@@ -1,3 +1,7 @@
+## 0.5.8+17
+
+* Android: Update to Target API level 30.
+
 ## 0.5.8+16
 
 * Moved package to camera/camera subdir, to allow for federated implementations.
