@@ -124,3 +124,36 @@ For help getting started with Flutter, view our online
 [documentation](http://flutter.io/).
 
 For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).
+
+## Configuration a background FlutterEngine
+
+`configureFlutterEngine` in `MainActivity` is not called when the alarm manager is started. 
+If you would like to register any channels or pigeons you have to create an application class
+and implement `configureAlarmManagerFlutterEngine` method of `io.flutter.plugins.androidalarmmanager.FlutterAlarmManagerInitializer`
+
+```java
+...
+
+import androidx.annotation.NonNull;
+
+import io.flutter.app.FlutterApplication;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.plugins.androidalarmmanager.FlutterAlarmManagerInitializer;
+
+public class MyApplication extends FlutterApplication implements FlutterAlarmManagerInitializer {
+    @Override
+    public void configureAlarmManagerFlutterEngine(@NonNull FlutterEngine flutterEngine) {
+        // Initialize your channels and pigeons here to make them available in the isolate
+    }
+}
+```
+
+Also, don't forget to change your application class in `AndroidManifest.xml`
+
+```xml
+...
+
+<application
+        android:name=".MyApplication">
+...
+```
