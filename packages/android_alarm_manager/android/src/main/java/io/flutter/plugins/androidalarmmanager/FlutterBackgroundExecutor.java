@@ -157,8 +157,15 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
     @SuppressWarnings("deprecation")
     String appBundlePath = io.flutter.view.FlutterMain.findAppBundlePath();
     AssetManager assets = context.getAssets();
+    Context applicationContext = context.getApplicationContext();
     if (!isRunning()) {
       backgroundFlutterEngine = new FlutterEngine(context);
+
+      if(applicationContext instanceof FlutterAlarmManagerInitializer) {
+        FlutterAlarmManagerInitializer initializer = (FlutterAlarmManagerInitializer)applicationContext;
+
+        initializer.configureAlarmManagerFlutterEngine(backgroundFlutterEngine);
+      }
 
       // We need to create an instance of `FlutterEngine` before looking up the
       // callback. If we don't, the callback cache won't be initialized and the
