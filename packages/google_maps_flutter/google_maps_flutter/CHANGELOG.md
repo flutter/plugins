@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Android: Update to Target API level 30.
+
 ## 1.0.7
 
 * Android: Handle deprecation & unchecked warning as error.

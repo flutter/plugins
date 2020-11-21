@@ -1,3 +1,7 @@
+## 0.3.4+17
+
+* Android: Update to Target API level 30.
+
 ## 0.3.4+16
 
 * Add Dartdocs to all public APIs.

@@ -1,3 +1,7 @@
+## 5.7.11
+
+* Android: Update to Target API level 30.
+
 ## 5.7.10
 
 * Update Dart SDK constraint in example.

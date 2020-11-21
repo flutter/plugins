@@ -1,3 +1,7 @@
+## 0.5.12+5
+
+* Android: Update to Target API level 30.
+
 ## 0.5.12+4
 
 * Remove unused `test` dependency.

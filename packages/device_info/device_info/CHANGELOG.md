@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Android: Update to Target API level 30.
+
 ## 1.0.0
 
 * Announce 1.0.0.

@@ -1,3 +1,7 @@
+## 0.4.0+11
+
+* Android: Update to Target API level 30.
+
 ## 0.4.0+10
 
 * Update android compileSdkVersion to 29.

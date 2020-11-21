@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Android: Update to Target API level 30.
+
 ## 1.0.1
 
 * Android: Dispose video players when app is closed.

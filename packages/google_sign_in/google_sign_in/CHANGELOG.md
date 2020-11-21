@@ -1,3 +1,7 @@
+## 4.5.7
+
+* Android: Update to Target API level 30.
+
 ## 4.5.6
 
 * Fix deprecated member warning in tests.

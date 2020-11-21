@@ -1,3 +1,7 @@
+## 1.0.12
+
+* Android: Update to Target API level 30.
+
 ## 1.0.11
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Android: Update to Target API level 30.
+
 ## 2.0.2
 
 * Android: Fix IllegalArgumentException.
