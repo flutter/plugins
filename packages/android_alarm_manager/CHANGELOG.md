@@ -1,3 +1,7 @@
+## 0.4.5+18
+
+* Add FlutterAlarmManagerInitializer to allow a background flutter engine initialization in the user's code
+
 ## 0.4.5+17
 
 * Update Dart SDK constraint in example.
