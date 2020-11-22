@@ -1,6 +1,6 @@
 ## 0.4.3+3
 
-* Android: Update to Target API level 30.
+* Android: Target API level 30.
 
 ## 0.4.3+2
 
