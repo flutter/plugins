@@ -1,6 +1,10 @@
-## 1.0.7
+## 1.0.8
 
 * added webOnlyDraggableCursor parameter.
+
+## 1.0.7
+
+* Android: Handle deprecation & unchecked warning as error.
 
 ## 1.0.6
 
