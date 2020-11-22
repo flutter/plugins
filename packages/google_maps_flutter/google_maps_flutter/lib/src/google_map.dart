@@ -189,7 +189,7 @@ class GoogleMap extends StatefulWidget {
   ///The name or url of the cursor to display when mousing over a draggable map.
   ///Example usage - webOnlyDraggableCursor : "url(assets/cursor.cur),default"
   /// See https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions.draggableCursor for more details.
-  final webOnlyDraggableCursor;
+  final String webOnlyDraggableCursor;
 
   /// Enables or disables the indoor view from the map
   final bool indoorViewEnabled;
