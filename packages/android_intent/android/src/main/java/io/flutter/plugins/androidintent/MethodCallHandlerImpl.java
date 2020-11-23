@@ -158,7 +158,7 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
       } else if (integerArrayList != null) {
         bundle.putIntegerArrayList(key, integerArrayList);
       } else if (stringArrayList != null) {
-        bundle.putStringArrayList(key, stringArrayList);
+        bundle.putStringArray(key, stringArrayList.toArray(new String[0]));
       } else if (stringMap != null) {
         bundle.putBundle(key, convertArguments(stringMap));
       } else {
