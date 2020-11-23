@@ -107,16 +107,16 @@ void main() {
         final uhdEvent =
             ResolutionChangedEvent(cameraId, 3840, 2160, 1280, 720);
         await camera.handleMethodCall(
-            MethodCall('camera#resolutionChanged', fhdEvent.toJson()),
+            MethodCall('resolution_changed', fhdEvent.toJson()),
             cameraId);
         await camera.handleMethodCall(
-            MethodCall('camera#resolutionChanged', uhdEvent.toJson()),
+            MethodCall('resolution_changed', uhdEvent.toJson()),
             cameraId);
         await camera.handleMethodCall(
-            MethodCall('camera#resolutionChanged', fhdEvent.toJson()),
+            MethodCall('resolution_changed', fhdEvent.toJson()),
             cameraId);
         await camera.handleMethodCall(
-            MethodCall('camera#resolutionChanged', uhdEvent.toJson()),
+            MethodCall('resolution_changed', uhdEvent.toJson()),
             cameraId);
 
         // Assert
@@ -138,11 +138,11 @@ void main() {
         // Emit test events
         final event = CameraClosingEvent(cameraId);
         await camera.handleMethodCall(
-            MethodCall('camera#closing', event.toJson()), cameraId);
+            MethodCall('camera_closing', event.toJson()), cameraId);
         await camera.handleMethodCall(
-            MethodCall('camera#closing', event.toJson()), cameraId);
+            MethodCall('camera_closing', event.toJson()), cameraId);
         await camera.handleMethodCall(
-            MethodCall('camera#closing', event.toJson()), cameraId);
+            MethodCall('camera_closing', event.toJson()), cameraId);
 
         // Assert
         expect(await streamQueue.next, event);
@@ -161,11 +161,11 @@ void main() {
         // Emit test events
         final event = CameraErrorEvent(cameraId, 'Error Description');
         await camera.handleMethodCall(
-            MethodCall('camera#error', event.toJson()), cameraId);
+            MethodCall('error', event.toJson()), cameraId);
         await camera.handleMethodCall(
-            MethodCall('camera#error', event.toJson()), cameraId);
+            MethodCall('error', event.toJson()), cameraId);
         await camera.handleMethodCall(
-            MethodCall('camera#error', event.toJson()), cameraId);
+            MethodCall('error', event.toJson()), cameraId);
 
         // Assert
         expect(await streamQueue.next, event);
