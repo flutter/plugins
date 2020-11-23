@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/services.dart';
 
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
