@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import 'package:camera/camera.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 
 void main() {
   group('camera', () {
@@ -34,6 +35,8 @@ void main() {
     });
   });
 }
+
+class MockCameraPlatform extends Mock implements CameraPlatform {}
 
 class MockCameraDescription extends CameraDescription {
   @override
