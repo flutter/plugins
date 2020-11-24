@@ -316,13 +316,20 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     if ([self duration] == 0) {
       return;
     }
+      
+      // Fetching the natural size and applying the preferredTransform
+      AVPlayerItemTrack *track = [self.player currentItem].tracks.firstObject;
 
+      CGSize naturalSize = track.assetTrack.naturalSize;
+      CGAffineTransform prefTrans = track.assetTrack.preferredTransform;
+      CGSize realSize = CGSizeApplyAffineTransform(naturalSize, prefTrans);
+      
     _isInitialized = true;
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
-      @"width" : @(width),
-      @"height" : @(height)
+      @"width" : @(fabs(realSize.width) ? : width),
+      @"height" : @(fabs(realSize.height) ? : height)
     });
   }
 }
