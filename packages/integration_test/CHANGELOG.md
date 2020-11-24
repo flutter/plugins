@@ -1,3 +1,7 @@
+## 0.9.3
+
+* Set TestBindingEventSource to test for web integration_tests.
+
 ## 0.9.2+2
 
 * Broaden the constraint on vm_service.

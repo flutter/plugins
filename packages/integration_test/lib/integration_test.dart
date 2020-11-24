@@ -70,6 +70,18 @@ class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
     };
   }
 
+  @override
+  void handlePointerEvent(
+    PointerEvent pointerEvent, {
+    TestBindingEventSource source = TestBindingEventSource.device,
+  }) {
+    // TestBindingEventSource.device uses WidgerTester.dispatchEvent method
+    // vs TestBindingEventSource.test. Test uses RenderBindind.dispatch
+    // event. The former does not deliver the gesture but only compare
+    // matchers.
+    super.handlePointerEvent(pointerEvent, source: TestBindingEventSource.test);
+  }
+
   // TODO(dnfield): Remove the ignore once we bump the minimum Flutter version
   // ignore: override_on_non_overriding_member
   @override

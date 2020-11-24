@@ -11,6 +11,14 @@ class MyWebApp extends StatefulWidget {
 }
 
 class _MyWebAppState extends State<MyWebApp> {
+  int _counter = 0;
+
+  void _increment() {
+    setState(() {
+      _counter++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,8 +27,33 @@ class _MyWebAppState extends State<MyWebApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          key: Key('mainapp'),
-          child: Text('Platform: ${html.window.navigator.platform}\n'),
+          child: Column(
+            children: [
+              Text(
+                'Platform: ${html.window.navigator.platform}\n',
+                key: Key('platform'),
+              ),
+              Text(
+                '$_counter',
+                key: Key('counter'),
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                      padding: const EdgeInsets.all(10.0),
+                      onPressed: _increment,
+                      key: Key('button'),
+                      child:
+                          const Text('Button!', style: TextStyle(fontSize: 20)),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
