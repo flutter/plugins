@@ -314,6 +314,11 @@ enum BillingResponse {
   // WARNING: Changes to this class need to be reflected in our generated code.
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
   // further changes.
+
+  // The request has reached the maximum timeout before Google Play responds.
+  @JsonValue(-3)
+  serviceTimeout,
+
   /// The requested feature is not supported by Play Store on the current device.
   @JsonValue(-2)
   featureNotSupported,
