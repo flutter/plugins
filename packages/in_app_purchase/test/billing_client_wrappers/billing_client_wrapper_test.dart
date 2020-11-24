@@ -42,10 +42,54 @@ void main() {
   // Make sure that the enum values are supported and that the converter call
   // does not fail
   group('enumValues', () {
-    test('enum -3', () async {
+    test('-3', () async {
       BillingResponseConverter converter = BillingResponseConverter();
       converter.fromJson(-3);
     });
+		test('-2', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(-2);
+		});
+		test('-1', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(-1);
+		});
+		test('0', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(0);
+		});
+		test('1', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(1);
+		});
+		test('2', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(2);
+		});
+		test('3', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(3);
+		});
+		test('4', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(4);
+		});
+		test('5', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(5);
+		});
+		test('6', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(6);
+		});
+		test('7', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(7);
+		});
+		test('8', () async {
+			BillingResponseConverter converter = BillingResponseConverter();
+			converter.fromJson(8);
+		});
   });
 
   group('startConnection', () {
