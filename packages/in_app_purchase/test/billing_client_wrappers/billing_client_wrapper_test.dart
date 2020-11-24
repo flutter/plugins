@@ -39,6 +39,15 @@ void main() {
     });
   });
 
+  // Make sure that the enum values are supported and that the converter call
+  // does not fail
+  group('enumValues', () {
+    test('enum -3', () async {
+      BillingResponseConverter converter = BillingResponseConverter();
+      converter.fromJson(-3);
+    });
+  });
+
   group('startConnection', () {
     final String methodName =
         'BillingClient#startConnection(BillingClientStateListener)';
