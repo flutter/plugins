@@ -315,7 +315,7 @@ enum BillingResponse {
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
   // further changes.
 
-  // The request has reached the maximum timeout before Google Play responds.
+  /// The request has reached the maximum timeout before Google Play responds.
   @JsonValue(-3)
   serviceTimeout,
 
