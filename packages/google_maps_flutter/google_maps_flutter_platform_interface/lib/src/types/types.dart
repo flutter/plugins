@@ -21,6 +21,7 @@ export 'polyline.dart';
 export 'screen_coordinate.dart';
 export 'tile.dart';
 export 'tile_overlay.dart';
+export 'tile_overlay_updates.dart';
 export 'tile_provider.dart';
 export 'ui.dart';
 

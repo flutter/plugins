@@ -115,6 +115,31 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('updateCircles() has not been implemented.');
   }
 
+  /// Updates tile overlay configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> updateTileOverlays(
+    TileOverlayUpdates tileOverlayUpdates, {
+    @required int mapId,
+  }) {
+    throw UnimplementedError('updateTileOverlays() has not been implemented.');
+  }
+
+  /// Clears the tile cache so that all tiles will be requested again from the
+  /// [TileProvider]. The current tiles from this tile overlay will also be
+  /// cleared from the map after calling this method. The API maintains a small
+  /// in-memory cache of tiles. If you want to cache tiles for longer, you
+  /// should implement an on-disk cache.
+  Future<void> clearTileCache(
+    TileOverlayId tileOverlayId, {
+    @required int mapId,
+  }) {
+    throw UnimplementedError('clearTileCache() has not been implemented.');
+  }
+
   /// Starts an animated change of the map camera position.
   ///
   /// The returned [Future] completes after the change has been started on the
