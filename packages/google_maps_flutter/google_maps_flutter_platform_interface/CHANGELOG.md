@@ -1,6 +1,10 @@
+## 1.0.6
+
+* Add TileOverlay support.
+
 ## 1.0.5
 
-Add TileOverlay support.
+* Temporarily add a `fromJson` constructor to `BitmapDescriptor` so serialized descriptors can be synchronously re-hydrated. This will be removed when a fix for [this issue](https://github.com/flutter/flutter/issues/70330) lands.
 
 ## 1.0.4
 

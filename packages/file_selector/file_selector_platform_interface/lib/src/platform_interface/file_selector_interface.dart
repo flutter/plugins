@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
