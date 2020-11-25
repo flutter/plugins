@@ -1,4 +1,9 @@
-part of google_maps_flutter;
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'types.dart';
+import 'package:meta/meta.dart' show immutable, required;
 
 /// Uniquely identifies a [TileOverlay] among [GoogleMap] tile overlays.
 ///
@@ -115,7 +120,8 @@ class TileOverlay {
     );
   }
 
-  dynamic _toJson() {
+  /// Converts this object to something serializable in JSON.
+  dynamic toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {
@@ -149,24 +155,4 @@ class TileOverlay {
 
   @override
   int get hashCode => tileOverlayId.hashCode;
-}
-
-Map<TileOverlayId, TileOverlay> _keyTileOverlayId(
-    Iterable<TileOverlay> tileOverlays) {
-  if (tileOverlays == null) {
-    return <TileOverlayId, TileOverlay>{};
-  }
-  return Map<TileOverlayId, TileOverlay>.fromEntries(tileOverlays.map(
-      (TileOverlay tileOverlay) => MapEntry<TileOverlayId, TileOverlay>(
-          tileOverlay.tileOverlayId, tileOverlay)));
-}
-
-List<Map<String, dynamic>> _serializeTileOverlaySet(
-    Set<TileOverlay> tileOverlays) {
-  if (tileOverlays == null) {
-    return null;
-  }
-  return tileOverlays
-      .map<Map<String, dynamic>>((TileOverlay p) => p._toJson())
-      .toList();
 }

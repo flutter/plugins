@@ -1,4 +1,10 @@
-part of google_maps_flutter;
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'dart:typed_data';
+
+import 'package:meta/meta.dart' show immutable;
 
 /// Contains information about a Tile that is returned by a [TileProvider].
 @immutable
@@ -15,7 +21,8 @@ class Tile {
   /// A byte array containing the image data.
   final Uint8List data;
 
-  dynamic _toJson() {
+  /// Converts this object to something serializable in JSON.
+  dynamic toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {

@@ -1,4 +1,8 @@
-part of google_maps_flutter;
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'types.dart';
 
 /// An interface for a class that provides the tile images for a TileOverlay.
 abstract class TileProvider {
