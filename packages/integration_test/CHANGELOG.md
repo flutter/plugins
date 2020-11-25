@@ -1,3 +1,7 @@
+## 0.9.3
+
+* Update README to mention that only `testWidgets` is supported for declaring tests.
+
 ## 0.9.2+2
 
 * Broaden the constraint on vm_service.
