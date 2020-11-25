@@ -14,6 +14,8 @@ Create a `integration_test/` directory for your package. In this directory,
 create a `<name>_test.dart`, using the following as a starting point to make
 assertions.
 
+Note: You should only use `testWidgets` to declare your tests, or errors will not be reported correctly.
+
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
