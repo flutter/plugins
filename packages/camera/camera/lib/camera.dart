@@ -257,27 +257,6 @@ class CameraController extends ValueNotifier<CameraValue> {
     await CameraPlatform.instance.prepareForVideoRecording();
   }
 
-  /// Listen to events from the native plugins.
-  ///
-  /// A "cameraClosing" event is sent when the camera is closed automatically by the system (for example when the app go to background). The plugin will try to reopen the camera automatically but any ongoing recording will end.
-  void _listener(dynamic event) {
-    //TODO: Replace
-    debugPrint("event is $event");
-    final Map<dynamic, dynamic> map = event;
-    if (_isDisposed) {
-      return;
-    }
-
-    switch (map['eventType']) {
-      case 'error':
-        value = value.copyWith(errorDescription: event['errorDescription']);
-        break;
-      case 'cameraClosing':
-        value = value.copyWith(isRecordingVideo: false);
-        break;
-    }
-  }
-
   /// Captures an image and saves it to [path].
   ///
   /// A path can for example be obtained using
