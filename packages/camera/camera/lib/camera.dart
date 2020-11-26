@@ -29,39 +29,6 @@ Future<List<CameraDescription>> availableCameras() async {
   return CameraPlatform.instance.availableCameras();
 }
 
-/// This is thrown when the plugin reports an error.
-class CameraException implements Exception {
-  /// Creates a new camera exception with the given error code and description.
-  CameraException(this.code, this.description);
-
-  /// Error code.
-  // TODO(bparrishMines): Document possible error codes.
-  // https://github.com/flutter/flutter/issues/69298
-  String code;
-
-  /// Textual description of the error.
-  String description;
-
-  @override
-  String toString() => '$runtimeType($code, $description)';
-}
-
-/// A widget showing a live camera preview.
-class CameraPreview extends StatelessWidget {
-  /// Creates a preview widget for the given camera controller.
-  const CameraPreview(this.controller);
-
-  /// The controller for the camera that the preview is shown for.
-  final CameraController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return controller.value.isInitialized
-        ? Texture(textureId: controller._cameraId)
-        : Container();
-  }
-}
-
 /// The state of a [CameraController].
 class CameraValue {
   /// Creates a new camera controller state.
@@ -151,7 +118,6 @@ class CameraValue {
   String toString() {
     return '$runtimeType('
         'isRecordingVideo: $isRecordingVideo, '
-        'isRecordingVideo: $isRecordingVideo, '
         'isInitialized: $isInitialized, '
         'errorDescription: $errorDescription, '
         'previewSize: $previewSize, '
@@ -205,7 +171,10 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Throws a [CameraException] if the initialization fails.
   Future<void> initialize() async {
     if (_isDisposed) {
-      return Future<void>.value();
+      throw CameraException(
+        'Disposed CameraController',
+        'initialize was called on a disposed CameraController',
+      );
     }
     try {
       _creatingCompleter = Completer<void>();
@@ -247,27 +216,6 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Throws a [CameraException] if the prepare fails.
   Future<void> prepareForVideoRecording() async {
     await CameraPlatform.instance.prepareForVideoRecording();
-  }
-
-  /// Listen to events from the native plugins.
-  ///
-  /// A "cameraClosing" event is sent when the camera is closed automatically by the system (for example when the app go to background). The plugin will try to reopen the camera automatically but any ongoing recording will end.
-  void _listener(dynamic event) {
-    //TODO: Replace
-    debugPrint("event is $event");
-    final Map<dynamic, dynamic> map = event;
-    if (_isDisposed) {
-      return;
-    }
-
-    switch (map['eventType']) {
-      case 'error':
-        value = value.copyWith(errorDescription: event['errorDescription']);
-        break;
-      case 'cameraClosing':
-        value = value.copyWith(isRecordingVideo: false);
-        break;
-    }
   }
 
   /// Captures an image and saves it to [path].

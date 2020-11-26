@@ -107,17 +107,13 @@ void main() {
         final uhdEvent =
             ResolutionChangedEvent(cameraId, 3840, 2160, 1280, 720);
         await camera.handleMethodCall(
-            MethodCall('resolution_changed', fhdEvent.toJson()),
-            cameraId);
+            MethodCall('resolution_changed', fhdEvent.toJson()), cameraId);
         await camera.handleMethodCall(
-            MethodCall('resolution_changed', uhdEvent.toJson()),
-            cameraId);
+            MethodCall('resolution_changed', uhdEvent.toJson()), cameraId);
         await camera.handleMethodCall(
-            MethodCall('resolution_changed', fhdEvent.toJson()),
-            cameraId);
+            MethodCall('resolution_changed', fhdEvent.toJson()), cameraId);
         await camera.handleMethodCall(
-            MethodCall('resolution_changed', uhdEvent.toJson()),
-            cameraId);
+            MethodCall('resolution_changed', uhdEvent.toJson()), cameraId);
 
         // Assert
         expect(await streamQueue.next, fhdEvent);
