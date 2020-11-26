@@ -206,7 +206,8 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
       UIImage *image = [UIImage imageWithContentsOfFile:path];
       [items addObject:image];
     } else {
-      [items addObject:[[ShareData alloc] initWithFile:path mimeType:mimeType]];
+      NSURL *fileUrl = [NSURL fileURLWithPath:path];
+      [items addObject:fileUrl];
     }
   }
 
