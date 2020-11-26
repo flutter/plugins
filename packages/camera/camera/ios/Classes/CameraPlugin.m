@@ -7,6 +7,7 @@
 #import <Accelerate/Accelerate.h>
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
+#import <uuid/uuid.h>
 
 static FlutterError *getFlutterError(NSError *error) {
     return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
@@ -44,18 +45,37 @@ static FlutterError *getFlutterError(NSError *error) {
     FLTSavePhotoDelegate *selfReference;
 }
 
-- initWithPath:(NSString *)path
-        result:(FlutterResult)result
- motionManager:(CMMotionManager *)motionManager
-cameraPosition:(AVCaptureDevicePosition)cameraPosition {
+- initForResult:(FlutterResult)result
+  motionManager:(CMMotionManager *)motionManager
+ cameraPosition:(AVCaptureDevicePosition)cameraPosition {
     self = [super init];
     NSAssert(self, @"super init cannot be nil");
-    _path = path;
     _result = result;
     _motionManager = motionManager;
     _cameraPosition = cameraPosition;
     selfReference = self;
+    _path = [self getTemporaryFilePathWithExtension:@"jpg" prefix:@"CAP"];
     return self;
+}
+
+- (NSString*)getTemporaryFilePathWithExtension:(NSString*) extension prefix:(NSString*) prefix
+{
+    NSString *docDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *fileDir = [[docDir stringByAppendingPathComponent:@"camera"] stringByAppendingPathComponent:@"pictures"];
+    NSString *fileName = [prefix stringByAppendingString:[[NSUUID UUID] UUIDString]];
+    NSString *file = [[fileDir stringByAppendingPathComponent:fileName] stringByAppendingPathExtension:extension];
+    
+    NSFileManager *fm = [NSFileManager defaultManager];
+    if(![fm fileExistsAtPath:fileDir]) {
+        NSError *error;
+        [[NSFileManager defaultManager] createDirectoryAtPath:fileDir withIntermediateDirectories:true attributes:nil error:&error];
+        if (error) {
+            _result(getFlutterError(error));
+            return nil;
+        }
+    }
+    
+    return file;
 }
 
 - (void)captureOutput:(AVCapturePhotoOutput *)output
@@ -81,7 +101,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
         _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
         return;
     }
-    _result(nil);
+    _result(_path);
 }
 
 - (UIImageOrientation)getImageRotation {
@@ -256,17 +276,17 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     [_captureSession stopRunning];
 }
 
-- (void)captureToFile:(NSString *)path result:(FlutterResult)result API_AVAILABLE(ios(10)) {
+- (void)captureToFile:(FlutterResult)result API_AVAILABLE(ios(10)) {
     AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
     if (_resolutionPreset == max) {
         [settings setHighResolutionPhotoEnabled:YES];
     }
     [_capturePhotoOutput
      capturePhotoWithSettings:settings
-     delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                  result:result
+     delegate:[[FLTSavePhotoDelegate alloc] initForResult:result
                                            motionManager:_motionManager
-                                          cameraPosition:_captureDevice.position]];
+                                          cameraPosition:_captureDevice.position
+                                        ]];
 }
 
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
@@ -835,7 +855,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             result(nil);
         } else if ([@"takePicture" isEqualToString:call.method]) {
             if (@available(iOS 10.0, *)) {
-                [_camera captureToFile:call.arguments[@"path"] result:result];
+                [_camera captureToFile:result];
             } else {
                 result(FlutterMethodNotImplemented);
             }
