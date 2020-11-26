@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -55,6 +55,11 @@ abstract class CameraPlatform extends PlatformInterface {
   /// Initializes the camera on the device.
   Future<void> initializeCamera(int cameraId) {
     throw UnimplementedError('initializeCamera() is not implemented.');
+  }
+
+  /// The camera has been initialized
+  Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) {
+    throw UnimplementedError('onCameraInitialized() is not implemented.');
   }
 
   /// The camera's resolution has changed

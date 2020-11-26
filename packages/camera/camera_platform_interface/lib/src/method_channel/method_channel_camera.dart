@@ -66,13 +66,24 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<void> initializeCamera(int cameraId) async {
+  Future<void> initializeCamera(int cameraId) {
     if (!_channels.containsKey(cameraId)) {
       final channel = MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
       channel.setMethodCallHandler(
           (MethodCall call) => handleMethodCall(call, cameraId));
       _channels[cameraId] = channel;
     }
+    Completer _completer = Completer();
+    onCameraInitialized(cameraId).first.then((value) {
+      _completer.complete();
+    });
+    _channel.invokeMapMethod<String, dynamic>(
+      'initialize',
+      <String, dynamic>{
+        'cameraId': cameraId,
+      },
+    );
+    return _completer.future;
   }
 
   @override
@@ -188,13 +199,18 @@ class MethodChannelCamera extends CameraPlatform {
   @visibleForTesting
   Future<dynamic> handleMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {
+      case 'initialized':
+        _cameraEventStreamController.sink.add(CameraInitializedEvent(
+          cameraId,
+          call.arguments['previewWidth'],
+          call.arguments['previewHeight'],
+        ));
+        break;
       case 'resolution_changed':
         _cameraEventStreamController.add(CameraResolutionChangedEvent(
           cameraId,
           call.arguments['captureWidth'],
           call.arguments['captureHeight'],
-          call.arguments['previewWidth'],
-          call.arguments['previewHeight'],
         ));
         break;
       case 'camera_closing':

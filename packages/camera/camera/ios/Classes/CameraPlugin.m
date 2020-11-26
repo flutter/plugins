@@ -801,28 +801,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 @"cameraId" : @(textureId),
             });
         }
-    } else if ([@"initialize" isEqualToString:call.method]) {
-        NSNumber* cameraIdArg = call.arguments[@"cameraId"];
-        int64_t cameraId = [cameraIdArg longLongValue];
-        
-        __weak CameraPlugin *weakSelf = self;
-        _camera.onFrameAvailable = ^{
-            [weakSelf.registry textureFrameAvailable:cameraId];
-        };
-        
-        FlutterMethodChannel *methodChannel = [FlutterMethodChannel
-                                               methodChannelWithName:[NSString
-                                                                      stringWithFormat:@"flutter.io/cameraPlugin/camera%lld",
-                                                                      cameraId]
-                                               binaryMessenger:_messenger];
-        _camera.methodChannel = methodChannel;
-        [methodChannel invokeMethod:@"initialized" arguments:@{
-            @"previewWidth" : @(_camera.previewSize.width),
-            @"previewHeight" : @(_camera.previewSize.height)
-        }];
-        [_camera start];
-        result(nil);
-    } else if ([@"startImageStream" isEqualToString:call.method]) {
+    }  else if ([@"startImageStream" isEqualToString:call.method]) {
         [_camera startImageStreamWithMessenger:_messenger];
         result(nil);
     } else if ([@"stopImageStream" isEqualToString:call.method]) {
@@ -836,15 +815,32 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         result(nil);
     } else {
         NSDictionary *argsMap = call.arguments;
-        NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
-        if ([@"takePicture" isEqualToString:call.method]) {
+        NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
+        if ([@"initialize" isEqualToString:call.method]) {
+            __weak CameraPlugin *weakSelf = self;
+            _camera.onFrameAvailable = ^{
+                [weakSelf.registry textureFrameAvailable:cameraId];
+            };
+            FlutterMethodChannel *methodChannel = [FlutterMethodChannel
+                                                   methodChannelWithName:[NSString
+                                                                          stringWithFormat:@"flutter.io/cameraPlugin/camera%lld",
+                                                                          (long long) cameraId]
+                                                   binaryMessenger:_messenger];
+            _camera.methodChannel = methodChannel;
+            [methodChannel invokeMethod:@"initialized" arguments:@{
+                @"previewWidth" : @(_camera.previewSize.width),
+                @"previewHeight" : @(_camera.previewSize.height)
+            }];
+            [_camera start];
+            result(nil);
+        } else if ([@"takePicture" isEqualToString:call.method]) {
             if (@available(iOS 10.0, *)) {
                 [_camera captureToFile:call.arguments[@"path"] result:result];
             } else {
                 result(FlutterMethodNotImplemented);
             }
         } else if ([@"dispose" isEqualToString:call.method]) {
-            [_registry unregisterTexture:textureId];
+            [_registry unregisterTexture:cameraId];
             [_camera close];
             _dispatchQueue = nil;
             result(nil);
