@@ -33,8 +33,32 @@ abstract class CameraEvent {
   int get hashCode => cameraId.hashCode;
 }
 
+/// An event fired when the camera has finished initializing.
+class CameraInitializedEvent extends CameraResolutionChangedEvent {
+  /// Build a CameraInitialized event triggered from the camera represented by
+  /// `cameraId`.
+  ///
+  /// The `captureWidth` represents the width of the resulting image in pixels.
+  /// The `captureHeight` represents the height of the resulting image in pixels.
+  /// The `previewWidth` represents the width of the generated preview in pixels.
+  /// The `previewHeight` represents the height of the generated preview in pixels.
+  CameraInitializedEvent(
+    int cameraId,
+    int captureWidth,
+    int captureHeight,
+    int previewWidth,
+    int previewHeight,
+  ) : super(
+          cameraId,
+          captureWidth,
+          captureHeight,
+          previewWidth,
+          previewHeight,
+        );
+}
+
 /// An event fired when the resolution preset of the camera has changed.
-class ResolutionChangedEvent extends CameraEvent {
+class CameraResolutionChangedEvent extends CameraEvent {
   /// The capture width in pixels.
   final int captureWidth;
 
@@ -47,12 +71,14 @@ class ResolutionChangedEvent extends CameraEvent {
   /// The height of the preview in pixels.
   final int previewHeight;
 
-  /// Build a ResolutionChanged event triggered from the camera represented by
-  /// `cameraId`.
+  /// Build a CameraResolutionChanged event triggered from the camera
+  /// represented by `cameraId`.
   ///
-  /// The `captureSize` represents the size of the resulting image in pixels.
-  /// The `previewSize` represents the size of the generated preview in pixels.
-  ResolutionChangedEvent(
+  /// The `captureWidth` represents the width of the resulting image in pixels.
+  /// The `captureHeight` represents the height of the resulting image in pixels.
+  /// The `previewWidth` represents the width of the generated preview in pixels.
+  /// The `previewHeight` represents the height of the generated preview in pixels.
+  CameraResolutionChangedEvent(
     int cameraId,
     this.captureWidth,
     this.captureHeight,
@@ -60,7 +86,7 @@ class ResolutionChangedEvent extends CameraEvent {
     this.previewHeight,
   ) : super(cameraId);
 
-  ResolutionChangedEvent.fromJson(Map<String, dynamic> json)
+  CameraResolutionChangedEvent.fromJson(Map<String, dynamic> json)
       : captureWidth = json['captureWidth'],
         captureHeight = json['captureHeight'],
         previewWidth = json['previewWidth'],
@@ -78,7 +104,7 @@ class ResolutionChangedEvent extends CameraEvent {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ResolutionChangedEvent &&
+      other is CameraResolutionChangedEvent &&
           super == (other) &&
           runtimeType == other.runtimeType &&
           captureWidth == other.captureWidth &&

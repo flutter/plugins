@@ -43,17 +43,22 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('availableCameras() is not implemented.');
   }
 
-  /// Initializes the camera on the device and returns its cameraId.
-  Future<int> initializeCamera(
+  /// Creates an uninitialized camera instance and returns the cameraId.
+  Future<int> createCamera(
     CameraDescription cameraDescription,
     ResolutionPreset resolutionPreset, {
     bool enableAudio,
   }) {
+    throw UnimplementedError('createCamera() is not implemented.');
+  }
+
+  /// Initializes the camera on the device.
+  Future<void> initializeCamera(int cameraId) {
     throw UnimplementedError('initializeCamera() is not implemented.');
   }
 
   /// The camera's resolution has changed
-  Stream<ResolutionChangedEvent> onResolutionChanged(int cameraId) {
+  Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) {
     throw UnimplementedError('onResolutionChanged() is not implemented.');
   }
 
