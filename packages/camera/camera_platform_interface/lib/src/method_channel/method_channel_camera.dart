@@ -76,8 +76,7 @@ class MethodChannelCamera extends CameraPlatform {
       throw CameraException(e.code, e.message);
     }
     if (!_channels.containsKey(_cameraId)) {
-      final channel =
-          MethodChannel('flutter.io/cameraPlugin/camera$_cameraId');
+      final channel = MethodChannel('flutter.io/cameraPlugin/camera$_cameraId');
       channel.setMethodCallHandler(
           (MethodCall call) => handleMethodCall(call, _cameraId));
       _channels[_cameraId] = channel;
@@ -152,18 +151,17 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<void> pauseVideoRecording(int cameraId) =>
-    _channel.invokeMethod<void>(
-      'pauseVideoRecording',
-      <String, dynamic>{'cameraId': cameraId},
-    );
+  Future<void> pauseVideoRecording(int cameraId) => _channel.invokeMethod<void>(
+        'pauseVideoRecording',
+        <String, dynamic>{'cameraId': cameraId},
+      );
 
   @override
   Future<void> resumeVideoRecording(int cameraId) =>
-    _channel.invokeMethod<void>(
-      'resumeVideoRecording',
-      <String, dynamic>{'cameraId': cameraId},
-    );
+      _channel.invokeMethod<void>(
+        'resumeVideoRecording',
+        <String, dynamic>{'cameraId': cameraId},
+      );
 
   @override
   Future<void> setFlashMode(int cameraId, FlashMode mode) =>

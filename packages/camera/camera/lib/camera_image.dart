@@ -113,7 +113,8 @@ ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
 /// Although not all image formats are planar on iOS, we treat 1-dimensional
 /// images as single planar images.
 class CameraImage {
-  CameraImage._fromPlatformData(Map<dynamic, dynamic> data)
+  /// CameraImage Constructor
+  CameraImage.fromPlatformData(Map<dynamic, dynamic> data)
       : format = ImageFormat._fromPlatformData(data['format']),
         height = data['height'],
         width = data['width'],

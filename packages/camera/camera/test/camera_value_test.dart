@@ -92,7 +92,7 @@ void main() {
       );
 
       expect(cameraValue.toString(),
-          'CameraValue(isRecordingVideo: false, isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false)');
+          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false)');
     });
   });
 }
