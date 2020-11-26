@@ -184,7 +184,7 @@ class CameraController extends ValueNotifier<CameraValue> {
           enableAudio: enableAudio);
 
       Size previewSize = await CameraPlatform.instance
-          .onResolutionChanged(_cameraId)
+          .onCameraResolutionChanged(_cameraId)
           .take(1)
           .map((event) => Size(
                 event.previewWidth.toDouble(),

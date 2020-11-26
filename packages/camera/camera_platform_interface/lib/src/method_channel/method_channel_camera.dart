@@ -10,7 +10,7 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 
@@ -28,8 +28,6 @@ class MethodChannelCamera extends CameraPlatform {
   @visibleForTesting
   final StreamController<CameraEvent> cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
-
-  final Map<int, Stream> _cameraResolutionChangedEventStreams = {};
 
   Stream<CameraEvent> _events(int cameraId) =>
       cameraEventStreamController.stream
@@ -58,7 +56,6 @@ class MethodChannelCamera extends CameraPlatform {
     ResolutionPreset resolutionPreset, {
     bool enableAudio,
   }) async {
-    int _cameraId;
     try {
       final Map<String, dynamic> reply =
           await _channel.invokeMapMethod<String, dynamic>(
@@ -71,20 +68,35 @@ class MethodChannelCamera extends CameraPlatform {
           'enableAudio': enableAudio,
         },
       );
-      _cameraId = reply['cameraId'];
+      return reply['cameraId'];
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
-    if (!_channels.containsKey(_cameraId)) {
-      final channel = MethodChannel('flutter.io/cameraPlugin/camera$_cameraId');
+  }
+
+  @override
+  Future<void> initializeCamera(int cameraId) {
+    _channels.putIfAbsent(cameraId, () {
+      final channel = MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
       channel.setMethodCallHandler(
-          (MethodCall call) => handleMethodCall(call, _cameraId));
-      _channels[_cameraId] = channel;
-      _cameraResolutionChangedEventStreams[_cameraId] = _events(_cameraId)
-          .whereType<ResolutionChangedEvent>()
-          .shareReplay(maxSize: 1);
-    }
-    return _cameraId;
+          (MethodCall call) => handleMethodCall(call, cameraId));
+      return channel;
+    });
+
+    Completer _completer = Completer();
+
+    onCameraInitialized(cameraId).first.then((value) {
+      _completer.complete();
+    });
+
+    _channel.invokeMapMethod<String, dynamic>(
+      'initialize',
+      <String, dynamic>{
+        'cameraId': cameraId,
+      },
+    );
+
+    return _completer.future;
   }
 
   @override
@@ -246,20 +258,27 @@ class MethodChannelCamera extends CameraPlatform {
   @visibleForTesting
   Future<dynamic> handleMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {
-      case 'resolution_changed':
-        _cameraEventStreamController.add(ResolutionChangedEvent(
+      case 'initialized':
+        cameraEventStreamController.add(CameraInitializedEvent(
           cameraId,
           call.arguments['previewWidth'],
           call.arguments['previewHeight'],
         ));
         break;
+      case 'resolution_changed':
+        cameraEventStreamController.add(CameraResolutionChangedEvent(
+          cameraId,
+          call.arguments['captureWidth'],
+          call.arguments['captureHeight'],
+        ));
+        break;
       case 'camera_closing':
-        _cameraEventStreamController.add(CameraClosingEvent(
+        cameraEventStreamController.add(CameraClosingEvent(
           cameraId,
         ));
         break;
       case 'error':
-        _cameraEventStreamController.add(CameraErrorEvent(
+        cameraEventStreamController.add(CameraErrorEvent(
           cameraId,
           call.arguments['description'],
         ));

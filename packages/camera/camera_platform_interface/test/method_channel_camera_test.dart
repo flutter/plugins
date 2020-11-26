@@ -97,15 +97,15 @@ void main() {
 
       test('Should receive resolution changes', () async {
         // Act
-        final Stream<ResolutionChangedEvent> resolutionStream =
-            camera.onResolutionChanged(cameraId);
+        final Stream<CameraResolutionChangedEvent> resolutionStream =
+            camera.onCameraResolutionChanged(cameraId);
         final streamQueue = StreamQueue(resolutionStream);
 
         // Emit test events
         final fhdEvent =
-            ResolutionChangedEvent(cameraId, 1920, 1080, 1280, 720);
+            CameraResolutionChangedEvent(cameraId, 1920, 1080, 1280, 720);
         final uhdEvent =
-            ResolutionChangedEvent(cameraId, 3840, 2160, 1280, 720);
+            CameraResolutionChangedEvent(cameraId, 3840, 2160, 1280, 720);
         await camera.handleMethodCall(
             MethodCall('resolution_changed', fhdEvent.toJson()), cameraId);
         await camera.handleMethodCall(
