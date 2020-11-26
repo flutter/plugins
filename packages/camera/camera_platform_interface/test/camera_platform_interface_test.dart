@@ -45,6 +45,19 @@ void main() {
     });
 
     test(
+        'Default implementation of onCameraInitialized() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.onCameraInitialized(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
         'Default implementation of onResolutionChanged() should throw unimplemented error',
         () {
       // Arrange
@@ -96,14 +109,27 @@ void main() {
     });
 
     test(
-        'Default implementation of initialize() should throw unimplemented error',
+        'Default implementation of createCamera() should throw unimplemented error',
         () {
       // Arrange
       final cameraPlatform = ExtendsCameraPlatform();
 
       // Act & Assert
       expect(
-        () => cameraPlatform.initializeCamera(null, null),
+        () => cameraPlatform.createCamera(null, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of initializeCamera() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.initializeCamera(null),
         throwsUnimplementedError,
       );
     });

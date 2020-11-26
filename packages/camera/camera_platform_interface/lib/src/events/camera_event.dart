@@ -52,6 +52,17 @@ class CameraInitializedEvent extends CameraEvent {
     this.previewHeight,
   ) : super(cameraId);
 
+  CameraInitializedEvent.fromJson(Map<String, dynamic> json)
+      : previewWidth = json['previewWidth'],
+        previewHeight = json['previewHeight'],
+        super(json['cameraId']);
+
+  Map<String, dynamic> toJson() => {
+        'cameraId': cameraId,
+        'previewWidth': previewWidth,
+        'previewHeight': previewHeight,
+      };
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -107,9 +118,7 @@ class CameraResolutionChangedEvent extends CameraEvent {
 
   @override
   int get hashCode =>
-      super.hashCode ^
-      captureWidth.hashCode ^
-      captureHeight.hashCode;
+      super.hashCode ^ captureWidth.hashCode ^ captureHeight.hashCode;
 }
 
 /// An event fired when the camera is going to close.

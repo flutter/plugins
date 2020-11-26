@@ -17,11 +17,12 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 class MethodChannelCamera extends CameraPlatform {
   final Map<int, MethodChannel> _channels = {};
 
-  final StreamController<CameraEvent> _cameraEventStreamController =
+  @visibleForTesting
+  final StreamController<CameraEvent> cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
 
   Stream<CameraEvent> _events(int cameraId) =>
-      _cameraEventStreamController.stream
+      cameraEventStreamController.stream
           .where((event) => event.cameraId == cameraId);
 
   @override
@@ -200,26 +201,26 @@ class MethodChannelCamera extends CameraPlatform {
   Future<dynamic> handleMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {
       case 'initialized':
-        _cameraEventStreamController.sink.add(CameraInitializedEvent(
+        cameraEventStreamController.add(CameraInitializedEvent(
           cameraId,
           call.arguments['previewWidth'],
           call.arguments['previewHeight'],
         ));
         break;
       case 'resolution_changed':
-        _cameraEventStreamController.add(CameraResolutionChangedEvent(
+        cameraEventStreamController.add(CameraResolutionChangedEvent(
           cameraId,
           call.arguments['captureWidth'],
           call.arguments['captureHeight'],
         ));
         break;
       case 'camera_closing':
-        _cameraEventStreamController.add(CameraClosingEvent(
+        cameraEventStreamController.add(CameraClosingEvent(
           cameraId,
         ));
         break;
       case 'error':
-        _cameraEventStreamController.add(CameraErrorEvent(
+        cameraEventStreamController.add(CameraErrorEvent(
           cameraId,
           call.arguments['description'],
         ));
