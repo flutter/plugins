@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui';
-
 /// The direction the camera is facing.
 enum CameraLensDirection {
   /// Front facing camera (a user looking at the screen is seen by the camera).
@@ -37,16 +35,15 @@ class CameraDescription {
   final int sensorOrientation;
 
   @override
-  bool operator ==(Object o) {
-    return o is CameraDescription &&
-        o.name == name &&
-        o.lensDirection == lensDirection;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CameraDescription &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          lensDirection == other.lensDirection;
 
   @override
-  int get hashCode {
-    return hashValues(name, lensDirection);
-  }
+  int get hashCode => name.hashCode ^ lensDirection.hashCode;
 
   @override
   String toString() {

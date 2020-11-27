@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -45,6 +45,19 @@ void main() {
     });
 
     test(
+        'Default implementation of onCameraInitialized() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.onCameraInitialized(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
         'Default implementation of onResolutionChanged() should throw unimplemented error',
         () {
       // Arrange
@@ -52,7 +65,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.onResolutionChanged(1),
+        () => cameraPlatform.onCameraResolutionChanged(1),
         throwsUnimplementedError,
       );
     });
@@ -96,7 +109,20 @@ void main() {
     });
 
     test(
-        'Default implementation of initialize() should throw unimplemented error',
+        'Default implementation of createCamera() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.createCamera(null, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of initializeCamera() should throw unimplemented error',
         () {
       // Arrange
       final cameraPlatform = ExtendsCameraPlatform();

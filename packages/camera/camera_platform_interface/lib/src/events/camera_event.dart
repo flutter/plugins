@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 /// Generic Event coming from the native side of Camera.
 ///
 /// All [CameraEvent]s contain the `cameraId` that originated the event. This
@@ -23,23 +21,104 @@ abstract class CameraEvent {
   ///
   /// The `cameraId` is the ID of the camera that triggered the event.
   CameraEvent(this.cameraId);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CameraEvent &&
+          runtimeType == other.runtimeType &&
+          cameraId == other.cameraId;
+
+  @override
+  int get hashCode => cameraId.hashCode;
+}
+
+/// An event fired when the camera has finished initializing.
+class CameraInitializedEvent extends CameraEvent {
+  /// The width of the preview in pixels.
+  final double previewWidth;
+
+  /// The height of the preview in pixels.
+  final double previewHeight;
+
+  /// Build a CameraInitialized event triggered from the camera represented by
+  /// `cameraId`.
+  ///
+  /// The `previewWidth` represents the width of the generated preview in pixels.
+  /// The `previewHeight` represents the height of the generated preview in pixels.
+  CameraInitializedEvent(
+    int cameraId,
+    this.previewWidth,
+    this.previewHeight,
+  ) : super(cameraId);
+
+  CameraInitializedEvent.fromJson(Map<String, dynamic> json)
+      : previewWidth = json['previewWidth'],
+        previewHeight = json['previewHeight'],
+        super(json['cameraId']);
+
+  Map<String, dynamic> toJson() => {
+        'cameraId': cameraId,
+        'previewWidth': previewWidth,
+        'previewHeight': previewHeight,
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      super == other &&
+          other is CameraInitializedEvent &&
+          runtimeType == other.runtimeType &&
+          previewWidth == other.previewWidth &&
+          previewHeight == other.previewHeight;
+
+  @override
+  int get hashCode =>
+      super.hashCode ^ previewWidth.hashCode ^ previewHeight.hashCode;
 }
 
 /// An event fired when the resolution preset of the camera has changed.
-class ResolutionChangedEvent extends CameraEvent {
-  /// The capture size in pixels.
-  final Size captureSize;
+class CameraResolutionChangedEvent extends CameraEvent {
+  /// The capture width in pixels.
+  final double captureWidth;
 
-  /// The size of the preview in pixels.
-  final Size previewSize;
+  /// The capture height in pixels.
+  final double captureHeight;
 
-  /// Build a ResolutionChanged event triggered from the camera represented by
-  /// `cameraId`.
+  /// Build a CameraResolutionChanged event triggered from the camera
+  /// represented by `cameraId`.
   ///
-  /// The `captureSize` represents the size of the resulting image in pixels.
-  /// The `previewSize` represents the size of the generated preview in pixels.
-  ResolutionChangedEvent(int cameraId, this.captureSize, this.previewSize)
-      : super(cameraId);
+  /// The `captureWidth` represents the width of the resulting image in pixels.
+  /// The `captureHeight` represents the height of the resulting image in pixels.
+  CameraResolutionChangedEvent(
+    int cameraId,
+    this.captureWidth,
+    this.captureHeight,
+  ) : super(cameraId);
+
+  CameraResolutionChangedEvent.fromJson(Map<String, dynamic> json)
+      : captureWidth = json['captureWidth'],
+        captureHeight = json['captureHeight'],
+        super(json['cameraId']);
+
+  Map<String, dynamic> toJson() => {
+        'cameraId': cameraId,
+        'captureWidth': captureWidth,
+        'captureHeight': captureHeight,
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CameraResolutionChangedEvent &&
+          super == (other) &&
+          runtimeType == other.runtimeType &&
+          captureWidth == other.captureWidth &&
+          captureHeight == other.captureHeight;
+
+  @override
+  int get hashCode =>
+      super.hashCode ^ captureWidth.hashCode ^ captureHeight.hashCode;
 }
 
 /// An event fired when the camera is going to close.
@@ -47,6 +126,23 @@ class CameraClosingEvent extends CameraEvent {
   /// Build a CameraClosing event triggered from the camera represented by
   /// `cameraId`.
   CameraClosingEvent(int cameraId) : super(cameraId);
+
+  CameraClosingEvent.fromJson(Map<String, dynamic> json)
+      : super(json['cameraId']);
+
+  Map<String, dynamic> toJson() => {
+        'cameraId': cameraId,
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      super == (other) &&
+          other is CameraClosingEvent &&
+          runtimeType == other.runtimeType;
+
+  @override
+  int get hashCode => super.hashCode;
 }
 
 /// An event fired when an error occured while operating the camera.
@@ -59,4 +155,24 @@ class CameraErrorEvent extends CameraEvent {
   ///
   /// The `description` represents the error occured on the camera.
   CameraErrorEvent(int cameraId, this.description) : super(cameraId);
+
+  CameraErrorEvent.fromJson(Map<String, dynamic> json)
+      : description = json['description'],
+        super(json['cameraId']);
+
+  Map<String, dynamic> toJson() => {
+        'cameraId': cameraId,
+        'description': description,
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      super == (other) &&
+          other is CameraErrorEvent &&
+          runtimeType == other.runtimeType &&
+          description == other.description;
+
+  @override
+  int get hashCode => super.hashCode ^ description.hashCode;
 }

@@ -5,3 +5,6 @@
 export 'src/events/camera_event.dart';
 export 'src/platform_interface/camera_platform.dart';
 export 'src/types/types.dart';
+
+/// Expose XFile
+export 'package:cross_file/cross_file.dart';

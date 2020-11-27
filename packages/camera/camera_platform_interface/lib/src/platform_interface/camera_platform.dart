@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -43,17 +43,27 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('availableCameras() is not implemented.');
   }
 
-  /// Initializes the camera on the device and returns its cameraId.
-  Future<int> initializeCamera(
-    CameraDescription cameraDescription, {
-    ResolutionPreset resolutionPreset,
+  /// Creates an uninitialized camera instance and returns the cameraId.
+  Future<int> createCamera(
+    CameraDescription cameraDescription,
+    ResolutionPreset resolutionPreset, {
     bool enableAudio,
   }) {
+    throw UnimplementedError('createCamera() is not implemented.');
+  }
+
+  /// Initializes the camera on the device.
+  Future<void> initializeCamera(int cameraId) {
     throw UnimplementedError('initializeCamera() is not implemented.');
   }
 
+  /// The camera has been initialized
+  Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) {
+    throw UnimplementedError('onCameraInitialized() is not implemented.');
+  }
+
   /// The camera's resolution has changed
-  Stream<ResolutionChangedEvent> onResolutionChanged(int cameraId) {
+  Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) {
     throw UnimplementedError('onResolutionChanged() is not implemented.');
   }
 
@@ -77,20 +87,15 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('prepareForVideoRecording() is not implemented.');
   }
 
-  /// Starts a video recording and returns the file where it will be saved.
+  /// Starts a video recording.
   ///
-  /// The file is written on the flight as the video is being recorded.
-  /// The file can be read as soon as [stopVideoRecording] returns.
-  Future<XFile> startVideoRecording(int cameraId) {
+  /// The video is returned as a [XFile] after calling [stopVideoRecording].
+  Future<void> startVideoRecording(int cameraId) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
-  /// Stops the video recording.
-  ///
-  /// When the [stopVideoRecording] method completes successfully the recorded
-  /// video can be accessed through the file returned by the
-  /// [startVideoRecording] method.
-  Future<void> stopVideoRecording(int cameraId) {
+  /// Stops the video recording and returns the file where it was saved.
+  Future<XFile> stopVideoRecording(int cameraId) {
     throw UnimplementedError('stopVideoRecording() is not implemented.');
   }
 
