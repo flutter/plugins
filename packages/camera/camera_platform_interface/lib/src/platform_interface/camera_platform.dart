@@ -87,20 +87,15 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('prepareForVideoRecording() is not implemented.');
   }
 
-  /// Starts a video recording and returns the file where it will be saved.
+  /// Starts a video recording.
   ///
-  /// The file is written on the flight as the video is being recorded.
-  /// The file can be read as soon as [stopVideoRecording] returns.
-  Future<XFile> startVideoRecording(int cameraId) {
+  /// The file can be read as soon as [stopVideoRecording] returns it.
+  Future<void> startVideoRecording(int cameraId) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
-  /// Stops the video recording.
-  ///
-  /// When the [stopVideoRecording] method completes successfully the recorded
-  /// video can be accessed through the file returned by the
-  /// [startVideoRecording] method.
-  Future<void> stopVideoRecording(int cameraId) {
+  /// Stops the video recording and returns the file where it was saved.
+  Future<XFile> stopVideoRecording(int cameraId) {
     throw UnimplementedError('stopVideoRecording() is not implemented.');
   }
 

@@ -319,15 +319,15 @@ void main() {
         ]);
       });
 
-      test('Should start recording a video and return an XFile instance',
-          () async {
+      test('Should start recording a video', () async {
         // Arrange
         MethodChannelMock channel = MethodChannelMock(
-            channelName: 'plugins.flutter.io/camera',
-            methods: {'startVideoRecording': '/test/path.mkv'});
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'startVideoRecording': null},
+        );
 
         // Act
-        XFile file = await camera.startVideoRecording(cameraId);
+        await camera.startVideoRecording(cameraId);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -335,18 +335,17 @@ void main() {
             'cameraId': cameraId,
           }),
         ]);
-        expect(file.path, '/test/path.mkv');
       });
 
-      test('Should stop a video recording', () async {
+      test('Should stop a video recording and return the file', () async {
         // Arrange
         MethodChannelMock channel = MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
-          methods: {'stopVideoRecording': null},
+          methods: {'stopVideoRecording': '/test/path.mp4'},
         );
 
         // Act
-        await camera.stopVideoRecording(cameraId);
+        XFile file = await camera.stopVideoRecording(cameraId);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -354,6 +353,7 @@ void main() {
             'cameraId': cameraId,
           }),
         ]);
+        expect(file.path, '/test/path.mp4');
       });
 
       test('Should pause a video recording', () async {
