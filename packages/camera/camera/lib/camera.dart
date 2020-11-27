@@ -9,7 +9,7 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-
+import 'package:pedantic/pedantic.dart';
 export 'package:camera_platform_interface/camera_platform_interface.dart';
 
 part 'camera_image.dart';
@@ -178,23 +178,31 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       _creatingCompleter = Completer<void>();
+      Completer _resolutionCompleter = Completer<Size>();
 
-      _cameraId = await CameraPlatform.instance.initializeCamera(
-          description, resolutionPreset,
-          enableAudio: enableAudio);
+      _cameraId = await CameraPlatform.instance.createCamera(
+        description,
+        resolutionPreset,
+        enableAudio: enableAudio,
+      );
 
-      Size previewSize = await CameraPlatform.instance
-          .onResolutionChanged(_cameraId)
-          .take(1)
-          .map((event) => Size(
-                event.previewWidth.toDouble(),
-                event.previewHeight.toDouble(),
-              ))
-          .first;
+      unawaited(
+        CameraPlatform.instance
+            .onCameraInitialized(_cameraId)
+            .map((event) => Size(
+                  event.previewWidth,
+                  event.previewHeight,
+                ))
+
+            .first
+            .then((previewSize) => _resolutionCompleter.complete(previewSize)),
+      );
+
+      await CameraPlatform.instance.initializeCamera(_cameraId);
 
       value = value.copyWith(
         isInitialized: true,
-        previewSize: previewSize,
+        previewSize: await _resolutionCompleter.future,
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);

@@ -33,44 +33,32 @@ abstract class CameraEvent {
   int get hashCode => cameraId.hashCode;
 }
 
-/// An event fired when the resolution preset of the camera has changed.
-class ResolutionChangedEvent extends CameraEvent {
-  /// The capture width in pixels.
-  final int captureWidth;
-
-  /// The capture height in pixels.
-  final int captureHeight;
-
+/// An event fired when the camera has finished initializing.
+class CameraInitializedEvent extends CameraEvent {
   /// The width of the preview in pixels.
-  final int previewWidth;
+  final double previewWidth;
 
   /// The height of the preview in pixels.
-  final int previewHeight;
+  final double previewHeight;
 
-  /// Build a ResolutionChanged event triggered from the camera represented by
+  /// Build a CameraInitialized event triggered from the camera represented by
   /// `cameraId`.
   ///
-  /// The `captureSize` represents the size of the resulting image in pixels.
-  /// The `previewSize` represents the size of the generated preview in pixels.
-  ResolutionChangedEvent(
+  /// The `previewWidth` represents the width of the generated preview in pixels.
+  /// The `previewHeight` represents the height of the generated preview in pixels.
+  CameraInitializedEvent(
     int cameraId,
-    this.captureWidth,
-    this.captureHeight,
     this.previewWidth,
     this.previewHeight,
   ) : super(cameraId);
 
-  ResolutionChangedEvent.fromJson(Map<String, dynamic> json)
-      : captureWidth = json['captureWidth'],
-        captureHeight = json['captureHeight'],
-        previewWidth = json['previewWidth'],
+  CameraInitializedEvent.fromJson(Map<String, dynamic> json)
+      : previewWidth = json['previewWidth'],
         previewHeight = json['previewHeight'],
         super(json['cameraId']);
 
   Map<String, dynamic> toJson() => {
         'cameraId': cameraId,
-        'captureWidth': captureWidth,
-        'captureHeight': captureHeight,
         'previewWidth': previewWidth,
         'previewHeight': previewHeight,
       };
@@ -78,21 +66,59 @@ class ResolutionChangedEvent extends CameraEvent {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ResolutionChangedEvent &&
-          super == (other) &&
+      super == other &&
+          other is CameraInitializedEvent &&
           runtimeType == other.runtimeType &&
-          captureWidth == other.captureWidth &&
-          captureHeight == other.captureHeight &&
           previewWidth == other.previewWidth &&
           previewHeight == other.previewHeight;
 
   @override
   int get hashCode =>
-      super.hashCode ^
-      captureWidth.hashCode ^
-      captureHeight.hashCode ^
-      previewWidth.hashCode ^
-      previewHeight.hashCode;
+      super.hashCode ^ previewWidth.hashCode ^ previewHeight.hashCode;
+}
+
+/// An event fired when the resolution preset of the camera has changed.
+class CameraResolutionChangedEvent extends CameraEvent {
+  /// The capture width in pixels.
+  final double captureWidth;
+
+  /// The capture height in pixels.
+  final double captureHeight;
+
+  /// Build a CameraResolutionChanged event triggered from the camera
+  /// represented by `cameraId`.
+  ///
+  /// The `captureWidth` represents the width of the resulting image in pixels.
+  /// The `captureHeight` represents the height of the resulting image in pixels.
+  CameraResolutionChangedEvent(
+    int cameraId,
+    this.captureWidth,
+    this.captureHeight,
+  ) : super(cameraId);
+
+  CameraResolutionChangedEvent.fromJson(Map<String, dynamic> json)
+      : captureWidth = json['captureWidth'],
+        captureHeight = json['captureHeight'],
+        super(json['cameraId']);
+
+  Map<String, dynamic> toJson() => {
+        'cameraId': cameraId,
+        'captureWidth': captureWidth,
+        'captureHeight': captureHeight,
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CameraResolutionChangedEvent &&
+          super == (other) &&
+          runtimeType == other.runtimeType &&
+          captureWidth == other.captureWidth &&
+          captureHeight == other.captureHeight;
+
+  @override
+  int get hashCode =>
+      super.hashCode ^ captureWidth.hashCode ^ captureHeight.hashCode;
 }
 
 /// An event fired when the camera is going to close.

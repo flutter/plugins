@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:async/async.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,31 +17,64 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('$MethodChannelCamera', () {
-    group('Initialization & Disposal Tests', () {
-      test('Should receive a camera id when initialized', () async {
+    group('Creation, Initialization & Disposal Tests', () {
+      test('Should send creation data and receive back a camera id', () async {
         // Arrange
         MethodChannelMock cameraMockChannel = MethodChannelMock(
             channelName: 'plugins.flutter.io/camera',
             methods: {
-              'initialize': {'cameraId': 1}
+              'create': {'cameraId': 1}
             });
         final camera = MethodChannelCamera();
 
         // Act
-        final cameraId = await camera.initializeCamera(
+        final cameraId = await camera.createCamera(
           CameraDescription(name: 'Test'),
           ResolutionPreset.high,
         );
 
         // Assert
-        expect(cameraId, 1);
         expect(cameraMockChannel.log, <Matcher>[
           isMethodCall(
-            'initialize',
+            'create',
             arguments: {
               'cameraName': 'Test',
               'resolutionPreset': 'high',
               'enableAudio': null
+            },
+          ),
+        ]);
+        expect(cameraId, 1);
+      });
+
+      test('Should send initialization data', () async {
+        // Arrange
+        MethodChannelMock cameraMockChannel = MethodChannelMock(
+            channelName: 'plugins.flutter.io/camera',
+            methods: {
+              'create': {'cameraId': 1},
+              'initialize': null
+            });
+        final camera = MethodChannelCamera();
+        final cameraId = await camera.createCamera(
+          CameraDescription(name: 'Test'),
+          ResolutionPreset.high,
+        );
+
+        // Act
+        Future<void> initializeFuture = camera.initializeCamera(cameraId);
+        camera.cameraEventStreamController
+            .add(CameraInitializedEvent(cameraId, 1920, 1080));
+        await initializeFuture;
+
+        // Assert
+        expect(cameraId, 1);
+        expect(cameraMockChannel.log, <Matcher>[
+          anything,
+          isMethodCall(
+            'initialize',
+            arguments: {
+              'cameraId': 1,
             },
           ),
         ]);
@@ -53,15 +85,20 @@ void main() {
         MethodChannelMock cameraMockChannel = MethodChannelMock(
             channelName: 'plugins.flutter.io/camera',
             methods: {
-              'initialize': {'cameraId': 1},
+              'create': {'cameraId': 1},
+              'initialize': null,
               'dispose': {'cameraId': 1}
             });
 
         final camera = MethodChannelCamera();
-        final cameraId = await camera.initializeCamera(
+        final cameraId = await camera.createCamera(
           CameraDescription(name: 'Test'),
           ResolutionPreset.high,
         );
+        Future<void> initializeFuture = camera.initializeCamera(cameraId);
+        camera.cameraEventStreamController
+            .add(CameraInitializedEvent(cameraId, 1920, 1080));
+        await initializeFuture;
 
         // Act
         await camera.dispose(cameraId);
@@ -69,7 +106,8 @@ void main() {
         // Assert
         expect(cameraId, 1);
         expect(cameraMockChannel.log, <Matcher>[
-          isNotNull,
+          anything,
+          anything,
           isMethodCall(
             'dispose',
             arguments: {'cameraId': 1},
@@ -85,27 +123,48 @@ void main() {
         MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
           methods: {
-            'initialize': {'cameraId': 1},
+            'create': {'cameraId': 1},
+            'initialize': null
           },
         );
         camera = MethodChannelCamera();
-        cameraId = await camera.initializeCamera(
+        cameraId = await camera.createCamera(
           CameraDescription(name: 'Test'),
           ResolutionPreset.high,
         );
+        Future<void> initializeFuture = camera.initializeCamera(cameraId);
+        camera.cameraEventStreamController
+            .add(CameraInitializedEvent(cameraId, 1920, 1080));
+        await initializeFuture;
+      });
+
+      test('Should receive initialized event', () async {
+        // Act
+        final Stream<CameraInitializedEvent> eventStream =
+            camera.onCameraInitialized(cameraId);
+        final streamQueue = StreamQueue(eventStream);
+
+        // Emit test events
+        final event = CameraInitializedEvent(cameraId, 3840, 2160);
+        await camera.handleMethodCall(
+            MethodCall('initialized', event.toJson()), cameraId);
+
+        // Assert
+        expect(await streamQueue.next, event);
+
+        // Clean up
+        await streamQueue.cancel();
       });
 
       test('Should receive resolution changes', () async {
         // Act
-        final Stream<ResolutionChangedEvent> resolutionStream =
-            camera.onResolutionChanged(cameraId);
+        final Stream<CameraResolutionChangedEvent> resolutionStream =
+            camera.onCameraResolutionChanged(cameraId);
         final streamQueue = StreamQueue(resolutionStream);
 
         // Emit test events
-        final fhdEvent =
-            ResolutionChangedEvent(cameraId, 1920, 1080, 1280, 720);
-        final uhdEvent =
-            ResolutionChangedEvent(cameraId, 3840, 2160, 1280, 720);
+        final fhdEvent = CameraResolutionChangedEvent(cameraId, 1920, 1080);
+        final uhdEvent = CameraResolutionChangedEvent(cameraId, 3840, 2160);
         await camera.handleMethodCall(
             MethodCall('resolution_changed', fhdEvent.toJson()), cameraId);
         await camera.handleMethodCall(
@@ -120,8 +179,8 @@ void main() {
         expect(await streamQueue.next, uhdEvent);
         expect(await streamQueue.next, fhdEvent);
         expect(await streamQueue.next, uhdEvent);
-        //
-        // // Clean up
+
+        // Clean up
         await streamQueue.cancel();
       });
 
@@ -180,14 +239,19 @@ void main() {
         MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
           methods: {
-            'initialize': {'cameraId': 1},
+            'create': {'cameraId': 1},
+            'initialize': null
           },
         );
         camera = MethodChannelCamera();
-        cameraId = await camera.initializeCamera(
+        cameraId = await camera.createCamera(
           CameraDescription(name: 'Test'),
           ResolutionPreset.high,
         );
+        Future<void> initializeFuture = camera.initializeCamera(cameraId);
+        camera.cameraEventStreamController
+            .add(CameraInitializedEvent(cameraId, 1920, 1080));
+        await initializeFuture;
       });
 
       test('Should fetch CameraDescription instances for available cameras',
