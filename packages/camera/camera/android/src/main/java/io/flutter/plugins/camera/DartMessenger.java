@@ -25,12 +25,10 @@ class DartMessenger {
         channel = new MethodChannel(messenger, "flutter.io/cameraPlugin/camera" + cameraId);
     }
 
-    void sendResolutionChangedEvent(Integer previewWidth, Integer previewHeight, Integer captureWidth, Integer captureHeight) {
+    void sendInitializedEvent(Integer previewWidth, Integer previewHeight) {
         this.send(EventType.RESOLUTION_CHANGED, new HashMap<String, Object>() {{
             if (previewWidth != null) put("previewWidth", previewWidth);
             if (previewHeight != null) put("previewHeight", previewHeight);
-            if (captureWidth != null) put("captureWidth", captureWidth);
-            if (captureHeight != null) put("captureHeight", captureHeight);
         }});
     }
 

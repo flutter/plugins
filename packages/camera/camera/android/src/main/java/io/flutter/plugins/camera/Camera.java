@@ -138,7 +138,7 @@ public class Camera {
     }
 
     @SuppressLint("MissingPermission")
-    public void open(@NonNull final Result result) throws CameraAccessException {
+    public void open() throws CameraAccessException {
         pictureImageReader =
                 ImageReader.newInstance(
                         captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
@@ -157,14 +157,14 @@ public class Camera {
                         try {
                             startPreview();
                         } catch (CameraAccessException e) {
-                            result.error("CameraAccess", e.getMessage(), null);
+                            dartMessenger.sendCameraErrorEvent(e.getMessage());
                             close();
                             return;
                         }
-                        Map<String, Object> reply = new HashMap<>();
-                        reply.put("cameraId", flutterTexture.id());
-                        result.success(reply);
-                        dartMessenger.sendResolutionChangedEvent(previewSize.getWidth(), previewSize.getHeight(), null, null);
+
+                        dartMessenger.sendInitializedEvent(
+                            previewSize.getWidth(),
+                            previewSize.getHeight());
                     }
 
                     @Override

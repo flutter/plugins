@@ -11,6 +11,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.view.TextureRegistry;
+import java.util.HashMap;
+import java.util.Map;
 
 final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private final Activity activity;
@@ -49,11 +51,12 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           handleException(e, result);
         }
         break;
-      case "initialize":
+      case "create":
         {
           if (camera != null) {
             camera.close();
           }
+
           cameraPermissions.requestPermissions(
               activity,
               permissionsRegistry,
@@ -71,6 +74,22 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
               });
           break;
         }
+      case "initialize": {
+        if (camera != null) {
+          try {
+            camera.open();
+            result.success(null);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+        } else {
+          result.error(
+              "cameraNotFound",
+              "Camera not found. Please call the 'create' method before calling 'initialize'.",
+              null);
+        }
+        break;
+      }
       case "takePicture":
         {
           camera.takePicture(result);
@@ -156,7 +175,9 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
             resolutionPreset,
             enableAudio);
 
-    camera.open(result);
+    Map<String, Object> reply = new HashMap<>();
+    reply.put("cameraId", flutterSurfaceTexture.id());
+    result.success(reply);
   }
 
   // We move catching CameraAccessException out of onMethodCall because it causes a crash
