@@ -5,13 +5,10 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:pedantic/pedantic.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:rxdart/rxdart.dart';
 
 get mockAvailableCameras => [
       CameraDescription(
@@ -26,8 +23,7 @@ get mockAvailableCameras => [
 
 get mockInitializeCamera => 13;
 
-get mockOnResolutionChangedEvent =>
-    ResolutionChangedEvent(13, 100, 100, 75, 75);
+get mockOnCameraInitializedEvent => CameraInitializedEvent(13, 75, 75);
 
 get mockOnCameraClosingEvent => null;
 
@@ -113,7 +109,7 @@ void main() {
       verify(CameraPlatform.instance.dispose(13)).called(1);
     });
 
-    test('initialize() returns when disposed', () async {
+    test('initialize() throws CameraException when disposed', () async {
       CameraController cameraController = CameraController(
           CameraDescription(
               name: 'cam',
@@ -129,10 +125,14 @@ void main() {
       await cameraController.dispose();
 
       verify(CameraPlatform.instance.dispose(13)).called(1);
-      expect(cameraController.value.isInitialized, isFalse);
 
-      await cameraController.initialize();
-      expect(cameraController.value.isInitialized, isTrue);
+      expect(
+          cameraController.initialize,
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'Error description',
+            'initialize was called on a disposed CameraController',
+          )));
     });
   });
 }
@@ -145,16 +145,16 @@ class MockCameraPlatform extends Mock
       Future.value(mockAvailableCameras);
 
   @override
-  Future<int> initializeCamera(
-    CameraDescription cameraDescription,
+  Future<int> createCamera(
+    CameraDescription description,
     ResolutionPreset resolutionPreset, {
     bool enableAudio,
   }) =>
       Future.value(mockInitializeCamera);
 
   @override
-  Stream<ResolutionChangedEvent> onResolutionChanged(int cameraId) {
-    return Stream.value(mockOnResolutionChangedEvent);
+  Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) {
+    return Stream.value(mockOnCameraInitializedEvent);
   }
 
   @override
@@ -170,35 +170,9 @@ class MockCameraPlatform extends Mock
   @override
   Future<XFile> takePicture(int cameraId) => Future.value(mockTakePicture);
 
-  // @override
-  // Future<void> prepareForVideoRecording() {
-  //
-  // }
-
   @override
   Future<XFile> startVideoRecording(int cameraId) =>
       Future.value(mockVideoRecordingXFile);
-
-// @override
-// Future<void> stopVideoRecording(int cameraId) {
-//
-// }
-
-// @override
-// Future<void> pauseVideoRecording(int cameraId) {
-//   throw UnimplementedError('pauseVideoRecording() is not implemented.');
-// }
-
-// @override
-// Future<void> resumeVideoRecording(int cameraId) {
-//   throw UnimplementedError('resumeVideoRecording() is not implemented.');
-// }
-
-// @override
-// Widget buildView(int cameraId) {
-//   throw UnimplementedError('buildView() has not been implemented.');
-// }
-
 }
 
 class MockCameraDescription extends CameraDescription {
