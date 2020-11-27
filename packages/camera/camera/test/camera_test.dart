@@ -133,8 +133,6 @@ void main() {
 
       await cameraController.initialize();
       expect(cameraController.value.isInitialized, isTrue);
-
-
     });
   });
 }
@@ -142,7 +140,6 @@ void main() {
 class MockCameraPlatform extends Mock
     with MockPlatformInterfaceMixin
     implements CameraPlatform {
-
   @override
   Future<List<CameraDescription>> availableCameras() =>
       Future.value(mockAvailableCameras);
