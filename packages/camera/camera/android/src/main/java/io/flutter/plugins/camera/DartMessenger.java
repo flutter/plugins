@@ -14,19 +14,18 @@ class DartMessenger {
     @Nullable
     private MethodChannel channel;
 
-
     enum EventType {
         ERROR,
         CAMERA_CLOSING,
-        RESOLUTION_CHANGED,
+        CAMERA_INITIALIZED,
     }
 
     DartMessenger(BinaryMessenger messenger, long cameraId) {
         channel = new MethodChannel(messenger, "flutter.io/cameraPlugin/camera" + cameraId);
     }
 
-    void sendInitializedEvent(Integer previewWidth, Integer previewHeight) {
-        this.send(EventType.RESOLUTION_CHANGED, new HashMap<String, Object>() {{
+    void sendCameraInitializedEvent(Integer previewWidth, Integer previewHeight) {
+        this.send(EventType.CAMERA_INITIALIZED, new HashMap<String, Object>() {{
             if (previewWidth != null) put("previewWidth", previewWidth);
             if (previewHeight != null) put("previewHeight", previewHeight);
         }});
