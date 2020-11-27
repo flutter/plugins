@@ -93,12 +93,8 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
-  /// Stops the video recording.
-  ///
-  /// When the [stopVideoRecording] method completes successfully the recorded
-  /// video can be accessed through the file returned by the
-  /// [startVideoRecording] method.
-  Future<void> stopVideoRecording(int cameraId) {
+  /// Stops the video recording and returns the file where it was saved.
+  Future<XFile> stopVideoRecording(int cameraId) {
     throw UnimplementedError('stopVideoRecording() is not implemented.');
   }
 

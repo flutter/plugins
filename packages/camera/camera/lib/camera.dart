@@ -321,17 +321,11 @@ class CameraController extends ValueNotifier<CameraValue> {
     _imageStreamSubscription = null;
   }
 
-  /// Start a video recording and save the file to [path].
+  /// Start a video recording.
   ///
-  /// A path can for example be obtained using
-  /// [path_provider](https://pub.dartlang.org/packages/path_provider).
-  ///
-  /// The file is written on the flight as the video is being recorded.
-  /// If a file already exists at the provided path an error will be thrown.
-  /// The file can be read as soon as [stopVideoRecording] returns.
-  ///
+  /// The file can be read as soon as [stopVideoRecording] returns it.
   /// Throws a [CameraException] if the capture fails.
-  Future<XFile> startVideoRecording() async {
+  Future<void> startVideoRecording() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -352,16 +346,17 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      XFile file = await CameraPlatform.instance.startVideoRecording(_cameraId);
+      await CameraPlatform.instance.startVideoRecording(_cameraId);
       value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
-      return file;
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
   }
 
-  /// Stop recording.
-  Future<void> stopVideoRecording() async {
+  /// Stops the video recording and returns the file where it was saved.
+  ///
+  /// Throws a [CameraException] if the capture failed.
+  Future<XFile> stopVideoRecording() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -375,8 +370,9 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      await CameraPlatform.instance.stopVideoRecording(_cameraId);
+      XFile file = await CameraPlatform.instance.stopVideoRecording(_cameraId);
       value = value.copyWith(isRecordingVideo: false);
+      return file;
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

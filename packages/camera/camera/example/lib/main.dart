@@ -9,7 +9,6 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 class CameraExampleHome extends StatefulWidget {
@@ -319,19 +318,19 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void onVideoRecordButtonPressed() {
-    startVideoRecording().then((XFile file) {
+    startVideoRecording().then((_) {
       if (mounted) setState(() {});
-      if (file != null) {
-        showInSnackBar('Saving video to ${file.path}');
-        videoFile = file;
-      }
     });
   }
 
   void onStopButtonPressed() {
-    stopVideoRecording().then((_) {
+    stopVideoRecording().then((file) {
       if (mounted) setState(() {});
-      showInSnackBar('Video recorded to: ${videoFile.path}');
+      if (file != null) {
+        showInSnackBar('Video recorded to ${file.path}');
+        videoFile = file;
+        _startVideoPlayer();
+      }
     });
   }
 
@@ -349,39 +348,36 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
-  Future<XFile> startVideoRecording() async {
+  Future<void> startVideoRecording() async {
     if (!controller.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
-      return null;
+      return;
     }
 
     if (controller.value.isRecordingVideo) {
       // A recording is already started, do nothing.
-      return null;
+      return;
     }
 
     try {
-      XFile file = await controller.startVideoRecording();
-      return file;
+      await controller.startVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
-      return null;
+      return;
     }
   }
 
-  Future<void> stopVideoRecording() async {
+  Future<XFile> stopVideoRecording() async {
     if (!controller.value.isRecordingVideo) {
       return null;
     }
 
     try {
-      await controller.stopVideoRecording();
+      return controller.stopVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
     }
-
-    await _startVideoPlayer();
   }
 
   Future<void> pauseVideoRecording() async {
