@@ -853,8 +853,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             };
             FlutterMethodChannel *methodChannel = [FlutterMethodChannel
                                                    methodChannelWithName:[NSString
-                                                                          stringWithFormat:@"flutter.io/cameraPlugin/camera%lld",
-                                                                          (long long) cameraId]
+                                                                          stringWithFormat:@"flutter.io/cameraPlugin/camera%lu",
+                                                                          (unsigned long) cameraId]
                                                    binaryMessenger:_messenger];
             _camera.methodChannel = methodChannel;
             [methodChannel invokeMethod:@"initialized" arguments:@{
