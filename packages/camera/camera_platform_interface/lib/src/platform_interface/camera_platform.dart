@@ -89,7 +89,7 @@ abstract class CameraPlatform extends PlatformInterface {
 
   /// Starts a video recording.
   ///
-  /// The file can be read as soon as [stopVideoRecording] returns it.
+  /// The video is returned as a [XFile] after calling [stopVideoRecording].
   Future<void> startVideoRecording(int cameraId) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }

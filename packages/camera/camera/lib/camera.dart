@@ -323,7 +323,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Start a video recording.
   ///
-  /// The file can be read as soon as [stopVideoRecording] returns it.
+  /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
   Future<void> startVideoRecording() async {
     if (!value.isInitialized || _isDisposed) {
