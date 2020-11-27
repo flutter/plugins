@@ -273,18 +273,40 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Throws a [CameraException] if image streaming or video recording has
   /// already started.
   // TODO(bmparr): Add settings for resolution and fps.
-  Widget buildView() {
+  Future<void> startImageStream(onLatestImageAvailable onAvailable) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
-        'buildView() was called on uninitialized CameraController.',
+        'startImageStream was called on uninitialized CameraController.',
       );
     }
+    if (value.isRecordingVideo) {
+      throw CameraException(
+        'A video recording is already started.',
+        'startImageStream was called while a video is being recorded.',
+      );
+    }
+    if (value.isStreamingImages) {
+      throw CameraException(
+        'A camera has started streaming images.',
+        'startImageStream was called while a camera was streaming images.',
+      );
+    }
+
     try {
-      return CameraPlatform.instance.buildView(_cameraId);
+      await _channel.invokeMethod<void>('startImageStream');
+      value = value.copyWith(isStreamingImages: true);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
+    const EventChannel cameraEventChannel =
+        EventChannel('plugins.flutter.io/camera/imageStream');
+    _imageStreamSubscription =
+        cameraEventChannel.receiveBroadcastStream().listen(
+      (dynamic imageData) {
+        onAvailable(CameraImage.fromPlatformData(imageData));
+      },
+    );
   }
 
   /// Stop streaming images from platform camera.
@@ -422,6 +444,21 @@ class CameraController extends ValueNotifier<CameraValue> {
     try {
       await CameraPlatform.instance.resumeVideoRecording(_cameraId);
       value = value.copyWith(isRecordingPaused: false);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Returns a widget showing a live camera preview.
+  Widget buildView() {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'buildView() was called on uninitialized CameraController.',
+      );
+    }
+    try {
+      return CameraPlatform.instance.buildView(_cameraId);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
