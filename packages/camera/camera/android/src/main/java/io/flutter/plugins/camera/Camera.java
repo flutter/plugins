@@ -60,6 +60,7 @@ public class Camera {
     private CaptureRequest.Builder captureRequestBuilder;
     private MediaRecorder mediaRecorder;
     private boolean recordingVideo;
+    private File videoRecordingFile;
     private CamcorderProfile recordingProfile;
     private int currentOrientation = ORIENTATION_UNKNOWN;
     private Context applicationContext;
@@ -336,21 +337,22 @@ public class Camera {
 
     public void startVideoRecording(Result result) {
         final File outputDir = applicationContext.getCacheDir();
-        final File file;
         try {
-            file = File.createTempFile("REC", ".mp4", outputDir);
+            videoRecordingFile = File.createTempFile("REC", ".mp4", outputDir);
         } catch (IOException e) {
             result.error("cannotCreateFile", e.getMessage(), null);
             return;
         }
 
         try {
-            prepareMediaRecorder(file.getAbsolutePath());
+            prepareMediaRecorder(videoRecordingFile.getAbsolutePath());
             recordingVideo = true;
             createCaptureSession(
                     CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
-            result.success(file.getAbsolutePath());
+            result.success(null);
         } catch (CameraAccessException | IOException e) {
+            recordingVideo = false;
+            videoRecordingFile = null;
             result.error("videoRecordingFailed", e.getMessage(), null);
         }
     }
@@ -366,7 +368,8 @@ public class Camera {
             mediaRecorder.stop();
             mediaRecorder.reset();
             startPreview();
-            result.success(null);
+            result.success(videoRecordingFile.getAbsolutePath());
+            videoRecordingFile = null;
         } catch (CameraAccessException | IllegalStateException e) {
             result.error("videoRecordingFailed", e.getMessage(), null);
         }
