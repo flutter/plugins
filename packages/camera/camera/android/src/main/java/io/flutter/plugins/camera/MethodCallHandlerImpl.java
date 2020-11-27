@@ -74,22 +74,23 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
               });
           break;
         }
-      case "initialize": {
-        if (camera != null) {
-          try {
-            camera.open();
-            result.success(null);
-          } catch (Exception e) {
-            handleException(e, result);
+      case "initialize":
+        {
+          if (camera != null) {
+            try {
+              camera.open();
+              result.success(null);
+            } catch (Exception e) {
+              handleException(e, result);
+            }
+          } else {
+            result.error(
+                "cameraNotFound",
+                "Camera not found. Please call the 'create' method before calling 'initialize'.",
+                null);
           }
-        } else {
-          result.error(
-              "cameraNotFound",
-              "Camera not found. Please call the 'create' method before calling 'initialize'.",
-              null);
+          break;
         }
-        break;
-      }
       case "takePicture":
         {
           camera.takePicture(result);

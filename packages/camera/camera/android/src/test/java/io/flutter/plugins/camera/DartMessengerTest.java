@@ -30,8 +30,7 @@ public class DartMessengerTest {
     }
 
     @Override
-    public void setMessageHandler(@NonNull String channel, BinaryMessageHandler handler) {
-    }
+    public void setMessageHandler(@NonNull String channel, BinaryMessageHandler handler) {}
 
     List<ByteBuffer> getMessages() {
       return new ArrayList<>(sentMessages);
@@ -66,8 +65,8 @@ public class DartMessengerTest {
     assertEquals(1, sentMessages.size());
     MethodCall call = decodeSentMessage(sentMessages.get(0));
     assertEquals(EventType.INITIALIZED.toString().toLowerCase(), call.method);
-    assertEquals(0, (double)call.argument("previewWidth"), 0);
-    assertEquals(0, (double)call.argument("previewHeight"), 0);
+    assertEquals(0, (double) call.argument("previewWidth"), 0);
+    assertEquals(0, (double) call.argument("previewHeight"), 0);
   }
 
   @Test
@@ -77,8 +76,7 @@ public class DartMessengerTest {
     List<ByteBuffer> sentMessages = fakeBinaryMessenger.getMessages();
     assertEquals(1, sentMessages.size());
     MethodCall call = decodeSentMessage(sentMessages.get(0));
-    assertEquals(
-        DartMessenger.EventType.CAMERA_CLOSING.toString().toLowerCase(), call.method);
+    assertEquals(DartMessenger.EventType.CAMERA_CLOSING.toString().toLowerCase(), call.method);
     assertNull(call.argument("description"));
   }
 
