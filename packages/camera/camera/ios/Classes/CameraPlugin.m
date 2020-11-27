@@ -45,37 +45,18 @@ static FlutterError *getFlutterError(NSError *error) {
     FLTSavePhotoDelegate *selfReference;
 }
 
-- initForResult:(FlutterResult)result
+- initWithPath:(NSString *)path
+        result:(FlutterResult)result
   motionManager:(CMMotionManager *)motionManager
  cameraPosition:(AVCaptureDevicePosition)cameraPosition {
     self = [super init];
     NSAssert(self, @"super init cannot be nil");
-    _result = result;
+    _path = path;
     _motionManager = motionManager;
     _cameraPosition = cameraPosition;
     selfReference = self;
-    _path = [self getTemporaryFilePathWithExtension:@"jpg" prefix:@"CAP"];
+    _result = result;
     return self;
-}
-
-- (NSString*)getTemporaryFilePathWithExtension:(NSString*) extension prefix:(NSString*) prefix
-{
-    NSString *docDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-    NSString *fileDir = [[docDir stringByAppendingPathComponent:@"camera"] stringByAppendingPathComponent:@"pictures"];
-    NSString *fileName = [prefix stringByAppendingString:[[NSUUID UUID] UUIDString]];
-    NSString *file = [[fileDir stringByAppendingPathComponent:fileName] stringByAppendingPathExtension:extension];
-    
-    NSFileManager *fm = [NSFileManager defaultManager];
-    if(![fm fileExistsAtPath:fileDir]) {
-        NSError *error;
-        [[NSFileManager defaultManager] createDirectoryAtPath:fileDir withIntermediateDirectories:true attributes:nil error:&error];
-        if (error) {
-            _result(getFlutterError(error));
-            return nil;
-        }
-    }
-    
-    return file;
 }
 
 - (void)captureOutput:(AVCapturePhotoOutput *)output
@@ -193,6 +174,7 @@ AVCaptureAudioDataOutputSampleBufferDelegate
 @property(strong, nonatomic) AVAssetWriterInputPixelBufferAdaptor *assetWriterPixelBufferAdaptor;
 @property(strong, nonatomic) AVCaptureVideoDataOutput *videoOutput;
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
+@property(strong, nonatomic) NSString *videoRecordingPath;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isRecordingPaused;
 @property(assign, nonatomic) BOOL videoIsDisconnected;
@@ -281,12 +263,37 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     if (_resolutionPreset == max) {
         [settings setHighResolutionPhotoEnabled:YES];
     }
+    NSError *error;
+    NSString *path = [self getTemporaryFilePathWithExtension:@"jpg" subfolder:@"pictures" prefix:@"CAP_" error:error];
+    if (error) {
+        result(getFlutterError(error));
+        return;
+    }
     [_capturePhotoOutput
      capturePhotoWithSettings:settings
-     delegate:[[FLTSavePhotoDelegate alloc] initForResult:result
+     delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                  result:result
                                            motionManager:_motionManager
                                           cameraPosition:_captureDevice.position
                                         ]];
+}
+
+- (NSString*)getTemporaryFilePathWithExtension:(NSString*) extension subfolder:(NSString*) subfolder prefix:(NSString*) prefix error:(NSError *) error
+{
+    NSString *docDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *fileDir = [[docDir stringByAppendingPathComponent:@"camera"] stringByAppendingPathComponent:subfolder];
+    NSString *fileName = [prefix stringByAppendingString:[[NSUUID UUID] UUIDString]];
+    NSString *file = [[fileDir stringByAppendingPathComponent:fileName] stringByAppendingPathExtension:extension];
+    
+    NSFileManager *fm = [NSFileManager defaultManager];
+    if(![fm fileExistsAtPath:fileDir]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:fileDir withIntermediateDirectories:true attributes:nil error:&error];
+        if (error) {
+            return nil;
+        }
+    }
+    
+    return file;
 }
 
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
@@ -564,9 +571,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     return pixelBuffer;
 }
 
-- (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result {
+- (void)startVideoRecordingWithResult:(FlutterResult)result {
     if (!_isRecording) {
-        if (![self setupWriterForPath:path]) {
+        NSError *error;
+        _videoRecordingPath = [self getTemporaryFilePathWithExtension:@"mp4" subfolder:@"videos" prefix:@"CAP_" error:error];
+        if (error) {
+            result(getFlutterError(error));
+            return;
+        }
+        if (![self setupWriterForPath:_videoRecordingPath]) {
             [_methodChannel invokeMethod:@"error" arguments:@"Setup Writer Failed"];
             return;
         }
@@ -588,7 +601,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         if (_videoWriter.status != AVAssetWriterStatusUnknown) {
             [_videoWriter finishWritingWithCompletionHandler:^{
                 if (self->_videoWriter.status == AVAssetWriterStatusCompleted) {
-                    result(nil);
+                    result(self->_videoRecordingPath);
+                    self->_videoRecordingPath = nil;
                 } else {
                     [self->_methodChannel invokeMethod:@"error" arguments:@"AVAssetWriter could not finish writing!"];
                 }
@@ -868,7 +882,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             [_camera setUpCaptureSessionForAudio];
             result(nil);
         } else if ([@"startVideoRecording" isEqualToString:call.method]) {
-            [_camera startVideoRecordingAtPath:call.arguments[@"filePath"] result:result];
+            [_camera startVideoRecordingWithResult:result];
         } else if ([@"stopVideoRecording" isEqualToString:call.method]) {
             [_camera stopVideoRecordingWithResult:result];
         } else {
