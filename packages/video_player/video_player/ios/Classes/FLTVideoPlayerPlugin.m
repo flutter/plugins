@@ -47,12 +47,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
 @property(nonatomic) double requiredSpeed;
-@property(nonatomic) BOOL isAudio;
-
-- (instancetype)initWithURL:(NSURL*)url
-               frameUpdater:(FLTFrameUpdater*)frameUpdater
-                    isAudio:(BOOL)isAudio;
-
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
@@ -66,9 +61,9 @@ static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 @implementation FLTVideoPlayer
-- (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater isAudio:(BOOL)isAudio {
+- (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
   NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
-  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater isAudio:isAudio];
+  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
 }
 
 - (void)addObservers:(AVPlayerItem*)item {
@@ -168,9 +163,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = YES;
 }
 
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater isAudio:(BOOL)isAudio {
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
   AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
-  return [self initWithPlayerItem:item frameUpdater:frameUpdater isAudio:isAudio];
+  return [self initWithPlayerItem:item frameUpdater:frameUpdater];
 }
 
 - (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
@@ -196,9 +191,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return transform;
 }
 
-- (instancetype)initWithPlayerItem:(AVPlayerItem*)item frameUpdater:(FLTFrameUpdater*)frameUpdater isAudio:(BOOL)isAudio {
+- (instancetype)initWithPlayerItem:(AVPlayerItem*)item frameUpdater:(FLTFrameUpdater*)frameUpdater {
   self = [super init];
-    self.isAudio = isAudio;
   NSAssert(self, @"super init cannot be nil");
   _isInitialized = false;
   _isPlaying = false;
@@ -315,11 +309,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     CGSize size = [self.player currentItem].presentationSize;
     CGFloat width = size.width;
     CGFloat height = size.height;
-      
-    // The player has not yet initialized.
-    if (height == CGSizeZero.height && width == CGSizeZero.width && !_isAudio) {
-      return;
-    }
+
     // The player may be initialized but still needs to determine the duration.
     if ([self duration] == 0) {
       return;
@@ -533,12 +523,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     } else {
       assetPath = [_registrar lookupKeyForAsset:input.asset];
     }
-    player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater isAudio:input.isAudio];
+    player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
     return [self onPlayerSetup:player frameUpdater:frameUpdater];
   } else if (input.uri) {
     player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:input.uri]
-                                    frameUpdater:frameUpdater
-                                         isAudio:input.isAudio];
+                                    frameUpdater:frameUpdater];
     return [self onPlayerSetup:player frameUpdater:frameUpdater];
   } else {
     *error = [FlutterError errorWithCode:@"video_player" message:@"not implemented" details:nil];
