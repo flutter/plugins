@@ -17,7 +17,7 @@ class DartMessenger {
     enum EventType {
         ERROR,
         CAMERA_CLOSING,
-        CAMERA_INITIALIZED,
+        INITIALIZED,
     }
 
     DartMessenger(BinaryMessenger messenger, long cameraId) {
@@ -25,9 +25,9 @@ class DartMessenger {
     }
 
     void sendCameraInitializedEvent(Integer previewWidth, Integer previewHeight) {
-        this.send(EventType.CAMERA_INITIALIZED, new HashMap<String, Object>() {{
-            if (previewWidth != null) put("previewWidth", previewWidth);
-            if (previewHeight != null) put("previewHeight", previewHeight);
+        this.send(EventType.INITIALIZED, new HashMap<String, Object>() {{
+            if (previewWidth != null) put("previewWidth", previewWidth.doubleValue());
+            if (previewHeight != null) put("previewHeight", previewHeight.doubleValue());
         }});
     }
 

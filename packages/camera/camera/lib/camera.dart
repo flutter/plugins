@@ -189,11 +189,12 @@ class CameraController extends ValueNotifier<CameraValue> {
       unawaited(
         CameraPlatform.instance
             .onCameraInitialized(_cameraId)
-            .map((event) => Size(
-                  event.previewWidth,
-                  event.previewHeight,
-                ))
-
+            .map((event) {
+              return Size(
+                event.previewWidth,
+                event.previewHeight,
+              );
+            })
             .first
             .then((previewSize) => _resolutionCompleter.complete(previewSize)),
       );
