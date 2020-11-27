@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.StandardMethodCodec;
+import io.flutter.plugins.camera.DartMessenger.EventType;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,21 @@ public class DartMessengerTest {
     Map<String, String> event = decodeSentMessage(sentMessages.get(0));
     assertEquals(DartMessenger.EventType.ERROR.toString().toLowerCase(), event.get("eventType"));
     assertEquals("error description", event.get("errorDescription"));
+  }
+
+  @Test
+  public void sendCameraInitializedEvent() {
+    initializeEventSink();
+
+    dartMessenger.sendCameraInitializedEvent(0, 0);
+
+    List<ByteBuffer> sentMessages = fakeBinaryMessenger.getMessages();
+    assertEquals(1, sentMessages.size());
+    Map<String, String> event = decodeSentMessage(sentMessages.get(0));
+    assertEquals(
+        EventType.CAMERA_INITIALIZED.toString().toLowerCase(), event.get("eventType"));
+    assertNull(event.get("previewWidth"));
+    assertNull(event.get("previewHeight"));
   }
 
   @Test

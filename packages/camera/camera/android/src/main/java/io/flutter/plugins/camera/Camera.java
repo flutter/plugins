@@ -157,7 +157,7 @@ public class Camera {
                             return;
                         }
 
-                        dartMessenger.sendInitializedEvent(
+                        dartMessenger.sendCameraInitializedEvent(
                             previewSize.getWidth(),
                             previewSize.getHeight());
                     }
