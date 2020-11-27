@@ -580,7 +580,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             return;
         }
         if (![self setupWriterForPath:_videoRecordingPath]) {
-            [_methodChannel invokeMethod:@"error" arguments:@"Setup Writer Failed"];
+            result([FlutterError errorWithCode:@"IOError" message:@"Setup Writer Failed" details:nil]);
             return;
         }
         _isRecording = YES;
@@ -591,7 +591,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _audioIsDisconnected = NO;
         result(nil);
     } else {
-        [_methodChannel invokeMethod:@"error" arguments:@"Video is already recording"];
+        result([FlutterError errorWithCode:@"Error" message:@"Video is already recording" details:nil]);
     }
 }
 
@@ -604,7 +604,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     result(self->_videoRecordingPath);
                     self->_videoRecordingPath = nil;
                 } else {
-                    [self->_methodChannel invokeMethod:@"error" arguments:@"AVAssetWriter could not finish writing!"];
+                    result([FlutterError errorWithCode:@"IOError" message:@"AVAssetWriter could not finish writing!" details:nil]);
                 }
             }];
         }
@@ -617,14 +617,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 }
 
-- (void)pauseVideoRecording {
+- (void)pauseVideoRecordingWithResult:(FlutterResult)result {
     _isRecordingPaused = YES;
     _videoIsDisconnected = YES;
     _audioIsDisconnected = YES;
+    result(nil);
 }
 
-- (void)resumeVideoRecording {
+- (void)resumeVideoRecordingWithResult:(FlutterResult)result {
     _isRecordingPaused = NO;
+    result(nil);
 }
 
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
@@ -841,12 +843,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     } else if ([@"stopImageStream" isEqualToString:call.method]) {
         [_camera stopImageStream];
         result(nil);
-    } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {
-        [_camera pauseVideoRecording];
-        result(nil);
-    } else if ([@"resumeVideoRecording" isEqualToString:call.method]) {
-        [_camera resumeVideoRecording];
-        result(nil);
     } else {
         NSDictionary *argsMap = call.arguments;
         NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
@@ -885,6 +881,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             [_camera startVideoRecordingWithResult:result];
         } else if ([@"stopVideoRecording" isEqualToString:call.method]) {
             [_camera stopVideoRecordingWithResult:result];
+        } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {
+            [_camera pauseVideoRecordingWithResult:result];
+        } else if ([@"resumeVideoRecording" isEqualToString:call.method]) {
+            [_camera resumeVideoRecordingWithResult:result];
         } else {
             result(FlutterMethodNotImplemented);
         }
