@@ -393,6 +393,25 @@ class _GoogleMapState extends State<GoogleMap> {
       widget.onLongPress(position);
     }
   }
+
+  // Returns the [Tile] from an added [TileOverlay].
+  //
+  // If the TileOverlay or his TileProvider is not found,
+  // a [TileProvider.noTile] is returned.
+  Future<Tile> _onGetTile(
+      String tileOverlayIdRaw, int x, int y, int zoom) async {
+    assert(tileOverlayIdRaw != null);
+    final TileOverlayId tileOverlayId = TileOverlayId(tileOverlayIdRaw);
+    final TileOverlay tileOverlay = _tileOverlays[tileOverlayId];
+    Tile tile;
+    if (tileOverlay != null && tileOverlay.tileProvider != null) {
+      tile = await tileOverlay.tileProvider.getTile(x, y, zoom);
+    }
+    if (tile == null) {
+      tile = TileProvider.noTile;
+    }
+    return tile;
+  }
 }
 
 /// Configuration options for the GoogleMaps user interface.

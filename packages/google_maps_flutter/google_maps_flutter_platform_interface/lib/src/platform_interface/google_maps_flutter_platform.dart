@@ -15,6 +15,10 @@ import 'package:google_maps_flutter_platform_interface/src/method_channel/method
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+/// Callback method for when a [Tile] is requested from a [TileProvider]
+typedef Future<Tile> MapGetTileCallback(
+    String tileOverlayId, int x, int y, int zoom);
+
 /// The interface that platform-specific implementations of `google_maps_flutter` must extend.
 ///
 /// Avoid `implements` of this interface. Using `implements` makes adding any new
@@ -269,6 +273,12 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     @required int mapId,
   }) {
     throw UnimplementedError('takeSnapshot() has not been implemented.');
+  }
+
+  /// Set the [MapGetTileCallback] for the map, which will be called
+  /// when a [Tile] is requested for an added [TileProvider].
+  void setGetTileCallback({@required int mapId, MapGetTileCallback callback}) {
+    throw UnimplementedError('onGetTile() has not been implemented.');
   }
 
   // The following are the 11 possible streams of data from the native side

@@ -33,6 +33,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return _channels[mapId];
   }
 
+  // Keep a collection of id -> GetTileCallback
+  // Every method call passes the int mapId
+  final Map<int, MapGetTileCallback> _getTileCallbacks = {};
+
   /// Initializes the platform interface with [id].
   ///
   /// This method is called when the plugin is first initialized.
@@ -184,6 +188,15 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
           LatLng.fromJson(call.arguments['position']),
         ));
         break;
+      case 'tileOverlay#getTile':
+        final getTileCallback = _getTileCallbacks[mapId];
+        final Tile tile = await getTileCallback(
+          call.arguments['tileOverlayId'],
+          call.arguments['x'],
+          call.arguments['y'],
+          call.arguments['zoom'],
+        );
+        return tile.toJson();
       default:
         throw MissingPluginException();
     }
@@ -483,6 +496,11 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     @required int mapId,
   }) {
     return channel(mapId).invokeMethod<Uint8List>('map#takeSnapshot');
+  }
+
+  @override
+  void setGetTileCallback({@required int mapId, MapGetTileCallback callback}) {
+    _getTileCallbacks[mapId] = callback;
   }
 
   /// This method builds the appropriate platform view where the map

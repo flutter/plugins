@@ -18,6 +18,8 @@ class GoogleMapController {
     @required this.mapId,
   }) : assert(_googleMapsFlutterPlatform != null) {
     _connectStreams(mapId);
+    _googleMapsFlutterPlatform.setGetTileCallback(
+        mapId: mapId, callback: _googleMapState._onGetTile);
   }
 
   /// Initialize control of a [GoogleMap] with [id].
