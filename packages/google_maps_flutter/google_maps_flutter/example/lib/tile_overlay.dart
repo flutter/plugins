@@ -12,7 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
-class TileOverlayPage extends Page {
+class TileOverlayPage extends GoogleMapExampleAppPage {
   TileOverlayPage() : super(const Icon(Icons.map), 'Tile overlay');
 
   @override
