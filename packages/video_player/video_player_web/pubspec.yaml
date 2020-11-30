@@ -21,7 +21,7 @@ dependencies:
   meta: ^1.1.7
   video_player_platform_interface:
     git:
-      url: https://github.com/ragnor-rs/plugins.git
+      url: https://github.com/severgroup-tt/plugins.git
       path: packages/video_player/video_player_platform_interface
       ref: master
 
