@@ -41,55 +41,20 @@ void main() {
 
   // Make sure that the enum values are supported and that the converter call
   // does not fail
-  group('enumValues', () {
-    test('-3', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(-3);
-    });
-    test('-2', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(-2);
-    });
-    test('-1', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(-1);
-    });
-    test('0', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(0);
-    });
-    test('1', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(1);
-    });
-    test('2', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(2);
-    });
-    test('3', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(3);
-    });
-    test('4', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(4);
-    });
-    test('5', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(5);
-    });
-    test('6', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(6);
-    });
-    test('7', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(7);
-    });
-    test('8', () async {
-      BillingResponseConverter converter = BillingResponseConverter();
-      converter.fromJson(8);
-    });
+  test('response states', () async {
+    BillingResponseConverter converter = BillingResponseConverter();
+    converter.fromJson(-3);
+    converter.fromJson(-2);
+    converter.fromJson(-1);
+    converter.fromJson(0);
+    converter.fromJson(1);
+    converter.fromJson(2);
+    converter.fromJson(3);
+    converter.fromJson(4);
+    converter.fromJson(5);
+    converter.fromJson(6);
+    converter.fromJson(7);
+    converter.fromJson(8);
   });
 
   group('startConnection', () {
