@@ -211,7 +211,7 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   /// Converts messages received from the native platform into events.
-  /// 
+  ///
   /// This is only exposed for test purposes. It shouldn't be used by clients of
   /// the plugin as it may break or change at any time.
   @visibleForTesting
