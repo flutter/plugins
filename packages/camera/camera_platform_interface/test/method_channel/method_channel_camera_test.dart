@@ -515,7 +515,7 @@ void main() {
         final camera = MethodChannelCamera();
 
         expect(() => camera.handleMethodCall(MethodCall('unknown_method'), 1),
-         throwsA(isA<MissingPluginException>()));
+            throwsA(isA<MissingPluginException>()));
       });
     });
   });
