@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) NSString *uri;
 @property(nonatomic, copy, nullable) NSString *packageName;
 @property(nonatomic, copy, nullable) NSString *formatHint;
-@property(nonatomic) BOOL isAudio;
 @end
 
 @interface FLTLoopingMessage : NSObject
