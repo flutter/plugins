@@ -450,7 +450,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   /// Returns a widget showing a live camera preview.
-  Widget buildView() {
+  Widget buildPreview() {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -458,7 +458,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      return CameraPlatform.instance.buildView(_cameraId);
+      return CameraPlatform.instance.buildPreview(_cameraId);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

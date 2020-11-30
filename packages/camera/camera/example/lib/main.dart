@@ -131,7 +131,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     } else {
       return AspectRatio(
         aspectRatio: controller.value.aspectRatio,
-        child: controller.buildView(),
+        child: controller.buildPreview(),
       );
     }
   }
