@@ -1,3 +1,11 @@
+## 0.0.2
+
+* Update integration test examples to use `testWidgets` instead of `test`.
+
+## 0.0.1+3
+
+* Update Dart SDK constraint in example.
+
 ## 0.0.1+2
 
 * Check in windows/ directory for example/

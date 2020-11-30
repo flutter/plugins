@@ -5,18 +5,16 @@
 /// A set of allowed XTypes
 class XTypeGroup {
   /// Creates a new group with the given label and file extensions.
+  ///
+  /// A group with none of the type options provided indicates that any type is
+  /// allowed.
   XTypeGroup({
     this.label,
     this.extensions,
     this.mimeTypes,
     this.macUTIs,
     this.webWildCards,
-  }) : assert(
-            !((extensions == null || extensions.isEmpty) &&
-                (mimeTypes == null || mimeTypes.isEmpty) &&
-                (macUTIs == null || macUTIs.isEmpty) &&
-                (webWildCards == null || webWildCards.isEmpty)),
-            "At least one type must be provided for an XTypeGroup.");
+  });
 
   /// The 'name' or reference to this group of types
   final String label;

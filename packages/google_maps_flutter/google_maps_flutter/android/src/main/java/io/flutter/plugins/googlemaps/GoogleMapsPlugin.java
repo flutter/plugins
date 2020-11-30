@@ -4,25 +4,19 @@
 
 package io.flutter.plugins.googlemaps;
 
-import static androidx.lifecycle.Lifecycle.State.CREATED;
-import static androidx.lifecycle.Lifecycle.State.DESTROYED;
-import static androidx.lifecycle.Lifecycle.State.INITIALIZED;
-import static androidx.lifecycle.Lifecycle.State.RESUMED;
-import static androidx.lifecycle.Lifecycle.State.STARTED;
-
 import android.app.Activity;
-import android.app.Application;
+import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.Lifecycle.Event;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleRegistry;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Plugin for controlling a set of GoogleMap views to be shown as overlays on top of the Flutter
@@ -30,170 +24,162 @@ import java.util.concurrent.atomic.AtomicReference;
  * the map. A Texture drawn using GoogleMap bitmap snapshots can then be shown instead of the
  * overlay.
  */
-public class GoogleMapsPlugin
-    implements Application.ActivityLifecycleCallbacks,
-        FlutterPlugin,
-        ActivityAware,
-        DefaultLifecycleObserver {
-  private final AtomicReference<State> state = new AtomicReference<>(INITIALIZED);
-  private int registrarActivityHashCode;
-  private FlutterPluginBinding pluginBinding;
-  private Lifecycle lifecycle;
+public class GoogleMapsPlugin implements FlutterPlugin, ActivityAware {
+
+  @Nullable private Lifecycle lifecycle;
 
   private static final String VIEW_TYPE = "plugins.flutter.io/google_maps";
 
   @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    if (registrar.activity() == null) {
+  public static void registerWith(
+      final io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+    final Activity activity = registrar.activity();
+    if (activity == null) {
       // When a background flutter view tries to register the plugin, the registrar has no activity.
       // We stop the registration process as this plugin is foreground only.
       return;
     }
-    final GoogleMapsPlugin plugin = new GoogleMapsPlugin(registrar.activity());
-    registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
-    registrar
-        .platformViewRegistry()
-        .registerViewFactory(
-            VIEW_TYPE,
-            new GoogleMapFactory(plugin.state, registrar.messenger(), null, null, registrar));
+    if (activity instanceof LifecycleOwner) {
+      registrar
+          .platformViewRegistry()
+          .registerViewFactory(
+              VIEW_TYPE,
+              new GoogleMapFactory(
+                  registrar.messenger(),
+                  new LifecycleProvider() {
+                    @Override
+                    public Lifecycle getLifecycle() {
+                      return ((LifecycleOwner) activity).getLifecycle();
+                    }
+                  }));
+    } else {
+      registrar
+          .platformViewRegistry()
+          .registerViewFactory(
+              VIEW_TYPE,
+              new GoogleMapFactory(registrar.messenger(), new ProxyLifecycleProvider(activity)));
+    }
   }
 
   public GoogleMapsPlugin() {}
-
-  private GoogleMapsPlugin(Activity activity) {
-    this.registrarActivityHashCode = activity.hashCode();
-  }
 
   // FlutterPlugin
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    pluginBinding = binding;
+    binding
+        .getPlatformViewRegistry()
+        .registerViewFactory(
+            VIEW_TYPE,
+            new GoogleMapFactory(
+                binding.getBinaryMessenger(),
+                new LifecycleProvider() {
+                  @Nullable
+                  @Override
+                  public Lifecycle getLifecycle() {
+                    return lifecycle;
+                  }
+                }));
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
-    pluginBinding = null;
-  }
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
 
   // ActivityAware
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
     lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
-    lifecycle.addObserver(this);
-    pluginBinding
-        .getPlatformViewRegistry()
-        .registerViewFactory(
-            VIEW_TYPE,
-            new GoogleMapFactory(
-                state,
-                pluginBinding.getBinaryMessenger(),
-                binding.getActivity().getApplication(),
-                lifecycle,
-                null));
   }
 
   @Override
   public void onDetachedFromActivity() {
-    lifecycle.removeObserver(this);
     lifecycle = null;
   }
 
   @Override
-  public void onDetachedFromActivityForConfigChanges() {
-    this.onDetachedFromActivity();
-  }
-
-  @Override
   public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
-    lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
-    lifecycle.addObserver(this);
-  }
-
-  // DefaultLifecycleObserver methods
-
-  @Override
-  public void onCreate(@NonNull LifecycleOwner owner) {
-    state.set(CREATED);
+    onAttachedToActivity(binding);
   }
 
   @Override
-  public void onStart(@NonNull LifecycleOwner owner) {
-    state.set(STARTED);
+  public void onDetachedFromActivityForConfigChanges() {
+    onDetachedFromActivity();
   }
 
-  @Override
-  public void onResume(@NonNull LifecycleOwner owner) {
-    state.set(RESUMED);
-  }
+  /**
+   * This class provides a {@link LifecycleOwner} for the activity driven by {@link
+   * ActivityLifecycleCallbacks}.
+   *
+   * <p>This is used in the case where a direct Lifecycle/Owner is not available.
+   */
+  private static final class ProxyLifecycleProvider
+      implements ActivityLifecycleCallbacks, LifecycleOwner, LifecycleProvider {
 
-  @Override
-  public void onPause(@NonNull LifecycleOwner owner) {
-    state.set(STARTED);
-  }
+    private final LifecycleRegistry lifecycle = new LifecycleRegistry(this);
+    private final int registrarActivityHashCode;
 
-  @Override
-  public void onStop(@NonNull LifecycleOwner owner) {
-    state.set(CREATED);
-  }
-
-  @Override
-  public void onDestroy(@NonNull LifecycleOwner owner) {
-    state.set(DESTROYED);
-  }
-
-  // Application.ActivityLifecycleCallbacks methods
-
-  @Override
-  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (activity.hashCode() != registrarActivityHashCode) {
-      return;
+    private ProxyLifecycleProvider(Activity activity) {
+      this.registrarActivityHashCode = activity.hashCode();
+      activity.getApplication().registerActivityLifecycleCallbacks(this);
     }
-    state.set(CREATED);
-  }
 
-  @Override
-  public void onActivityStarted(Activity activity) {
-    if (activity.hashCode() != registrarActivityHashCode) {
-      return;
+    @Override
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+      if (activity.hashCode() != registrarActivityHashCode) {
+        return;
+      }
+      lifecycle.handleLifecycleEvent(Event.ON_CREATE);
     }
-    state.set(STARTED);
-  }
 
-  @Override
-  public void onActivityResumed(Activity activity) {
-    if (activity.hashCode() != registrarActivityHashCode) {
-      return;
+    @Override
+    public void onActivityStarted(Activity activity) {
+      if (activity.hashCode() != registrarActivityHashCode) {
+        return;
+      }
+      lifecycle.handleLifecycleEvent(Event.ON_START);
     }
-    state.set(RESUMED);
-  }
 
-  @Override
-  public void onActivityPaused(Activity activity) {
-    if (activity.hashCode() != registrarActivityHashCode) {
-      return;
+    @Override
+    public void onActivityResumed(Activity activity) {
+      if (activity.hashCode() != registrarActivityHashCode) {
+        return;
+      }
+      lifecycle.handleLifecycleEvent(Event.ON_RESUME);
     }
-    state.set(STARTED);
-  }
 
-  @Override
-  public void onActivityStopped(Activity activity) {
-    if (activity.hashCode() != registrarActivityHashCode) {
-      return;
+    @Override
+    public void onActivityPaused(Activity activity) {
+      if (activity.hashCode() != registrarActivityHashCode) {
+        return;
+      }
+      lifecycle.handleLifecycleEvent(Event.ON_PAUSE);
     }
-    state.set(CREATED);
-  }
 
-  @Override
-  public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
-
-  @Override
-  public void onActivityDestroyed(Activity activity) {
-    if (activity.hashCode() != registrarActivityHashCode) {
-      return;
+    @Override
+    public void onActivityStopped(Activity activity) {
+      if (activity.hashCode() != registrarActivityHashCode) {
+        return;
+      }
+      lifecycle.handleLifecycleEvent(Event.ON_STOP);
     }
-    activity.getApplication().unregisterActivityLifecycleCallbacks(this);
-    state.set(DESTROYED);
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
+      if (activity.hashCode() != registrarActivityHashCode) {
+        return;
+      }
+      activity.getApplication().unregisterActivityLifecycleCallbacks(this);
+      lifecycle.handleLifecycleEvent(Event.ON_DESTROY);
+    }
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+      return lifecycle;
+    }
   }
 }
