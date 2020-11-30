@@ -394,7 +394,7 @@ void main() {
 
       test('Should build a texture widget as view widget', () async {
         // Act
-        Widget widget = camera.buildView(cameraId);
+        Widget widget = camera.buildPreview(cameraId);
 
         // Act
         expect(widget is Texture, isTrue);
