@@ -29,11 +29,9 @@ class MethodChannelCamera extends CameraPlatform {
   final StreamController<CameraEvent> cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
 
-  Stream<CameraEvent> _events(int cameraId) => cameraEventStreamController
-      .stream
-      .tap((event) => print(
-          'Event received, EVENT TYPE: ${event.runtimeType}, STRING: ${event.toString()}'))
-      .where((event) => event.cameraId == cameraId);
+  Stream<CameraEvent> _events(int cameraId) =>
+      cameraEventStreamController.stream
+          .where((event) => event.cameraId == cameraId);
 
   @override
   Future<List<CameraDescription>> availableCameras() async {
