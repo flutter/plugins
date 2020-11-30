@@ -17,6 +17,13 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
 class MethodChannelCamera extends CameraPlatform {
   final Map<int, MethodChannel> _channels = {};
 
+  /// The controller we need to broadcast the different events coming
+  /// from handleMethodCall.
+  ///
+  /// It is a `broadcast` because multiple controllers will connect to
+  /// different stream views of this Controller.
+  /// This is only exposed for test purposes. It shouldn't be used by clients of
+  /// the plugin as it may break or change at any time.
   @visibleForTesting
   final StreamController<CameraEvent> cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
@@ -203,6 +210,10 @@ class MethodChannelCamera extends CameraPlatform {
     throw ArgumentError('Unknown CameraLensDirection value');
   }
 
+  /// Converts messages received from the native platform into events.
+  /// 
+  /// This is only exposed for test purposes. It shouldn't be used by clients of
+  /// the plugin as it may break or change at any time.
   @visibleForTesting
   Future<dynamic> handleMethodCall(MethodCall call, int cameraId) async {
     switch (call.method) {

@@ -52,11 +52,15 @@ class CameraInitializedEvent extends CameraEvent {
     this.previewHeight,
   ) : super(cameraId);
 
+  /// Converts the supplied [Map] to an instance of the [CameraInitializedEvent]
+  /// class.
   CameraInitializedEvent.fromJson(Map<String, dynamic> json)
       : previewWidth = json['previewWidth'],
         previewHeight = json['previewHeight'],
         super(json['cameraId']);
 
+  /// Converts the [CameraInitializedEvent] instance into a [Map] instance that
+  /// can be serialized to JSON.
   Map<String, dynamic> toJson() => {
         'cameraId': cameraId,
         'previewWidth': previewWidth,
@@ -96,11 +100,15 @@ class CameraResolutionChangedEvent extends CameraEvent {
     this.captureHeight,
   ) : super(cameraId);
 
+  /// Converts the supplied [Map] to an instance of the
+  /// [CameraResolutionChangedEvent] class.
   CameraResolutionChangedEvent.fromJson(Map<String, dynamic> json)
       : captureWidth = json['captureWidth'],
         captureHeight = json['captureHeight'],
         super(json['cameraId']);
 
+  /// Converts the [CameraResolutionChangedEvent] instance into a [Map] instance
+  /// that can be serialized to JSON.
   Map<String, dynamic> toJson() => {
         'cameraId': cameraId,
         'captureWidth': captureWidth,
@@ -127,9 +135,13 @@ class CameraClosingEvent extends CameraEvent {
   /// `cameraId`.
   CameraClosingEvent(int cameraId) : super(cameraId);
 
+  /// Converts the supplied [Map] to an instance of the [CameraClosingEvent]
+  /// class.
   CameraClosingEvent.fromJson(Map<String, dynamic> json)
       : super(json['cameraId']);
 
+  /// Converts the [CameraClosingEvent] instance into a [Map] instance that can
+  /// be serialized to JSON.
   Map<String, dynamic> toJson() => {
         'cameraId': cameraId,
       };
@@ -156,10 +168,14 @@ class CameraErrorEvent extends CameraEvent {
   /// The `description` represents the error occured on the camera.
   CameraErrorEvent(int cameraId, this.description) : super(cameraId);
 
+  /// Converts the supplied [Map] to an instance of the [CameraErrorEvent]
+  /// class.
   CameraErrorEvent.fromJson(Map<String, dynamic> json)
       : description = json['description'],
         super(json['cameraId']);
 
+  /// Converts the [CameraErrorEvent] instance into a [Map] instance that can be
+  /// serialized to JSON.
   Map<String, dynamic> toJson() => {
         'cameraId': cameraId,
         'description': description,
