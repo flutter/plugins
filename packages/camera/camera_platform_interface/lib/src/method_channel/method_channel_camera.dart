@@ -28,11 +28,9 @@ class MethodChannelCamera extends CameraPlatform {
   final StreamController<CameraEvent> cameraEventStreamController =
       StreamController<CameraEvent>.broadcast();
 
-  Stream<CameraEvent> _events(int cameraId) => cameraEventStreamController
-      .stream
-      .tap((event) => print(
-          'Event received, EVENT TYPE: ${event.runtimeType}, STRING: ${event.toString()}'))
-      .where((event) => event.cameraId == cameraId);
+  Stream<CameraEvent> _events(int cameraId) =>
+      cameraEventStreamController.stream
+          .where((event) => event.cameraId == cameraId);
 
   @override
   Future<List<CameraDescription>> availableCameras() async {
@@ -106,7 +104,11 @@ class MethodChannelCamera extends CameraPlatform {
       'dispose',
       <String, dynamic>{'cameraId': cameraId},
     );
-    _channels.remove(cameraId);
+
+    if (_channels.containsKey(cameraId)) {
+      _channels[cameraId].setMethodCallHandler(null);
+      _channels.remove(cameraId);
+    }
   }
 
   @override

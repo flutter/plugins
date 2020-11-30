@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'utils/method_channel_mock.dart';
+import '../utils/method_channel_mock.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -45,6 +45,60 @@ void main() {
           ),
         ]);
         expect(cameraId, 1);
+      });
+
+      test(
+          'Should throw CameraException when create throws a PlatformException',
+          () {
+        // Arrange
+        MethodChannelMock(channelName: 'plugins.flutter.io/camera', methods: {
+          'create': PlatformException(
+            code: 'TESTING_ERROR_CODE',
+            message: 'Mock error message used during testing.',
+          )
+        });
+        final camera = MethodChannelCamera();
+
+        // Act
+        expect(
+          () => camera.createCamera(
+            CameraDescription(name: 'Test'),
+            ResolutionPreset.high,
+          ),
+          throwsA(
+            isA<CameraException>()
+                .having((e) => e.code, 'code', 'TESTING_ERROR_CODE')
+                .having((e) => e.description, 'description',
+                    'Mock error message used during testing.'),
+          ),
+        );
+      });
+
+      test(
+          'Should throw CameraException when create throws a PlatformException',
+          () {
+        // Arrange
+        MethodChannelMock(channelName: 'plugins.flutter.io/camera', methods: {
+          'create': PlatformException(
+            code: 'TESTING_ERROR_CODE',
+            message: 'Mock error message used during testing.',
+          )
+        });
+        final camera = MethodChannelCamera();
+
+        // Act
+        expect(
+          () => camera.createCamera(
+            CameraDescription(name: 'Test'),
+            ResolutionPreset.high,
+          ),
+          throwsA(
+            isA<CameraException>()
+                .having((e) => e.code, 'code', 'TESTING_ERROR_CODE')
+                .having((e) => e.description, 'description',
+                    'Mock error message used during testing.'),
+          ),
+        );
       });
 
       test('Should send initialization data', () async {
@@ -285,6 +339,29 @@ void main() {
         }
       });
 
+      test(
+          'Should throw CameraException when availableCameras throws a PlatformException',
+          () {
+        // Arrange
+        MethodChannelMock(channelName: 'plugins.flutter.io/camera', methods: {
+          'availableCameras': PlatformException(
+            code: 'TESTING_ERROR_CODE',
+            message: 'Mock error message used during testing.',
+          )
+        });
+
+        // Act
+        expect(
+          camera.availableCameras,
+          throwsA(
+            isA<CameraException>()
+                .having((e) => e.code, 'code', 'TESTING_ERROR_CODE')
+                .having((e) => e.description, 'description',
+                    'Mock error message used during testing.'),
+          ),
+        );
+      });
+
       test('Should take a picture and return an XFile instance', () async {
         // Arrange
         MethodChannelMock channel = MethodChannelMock(
@@ -392,13 +469,53 @@ void main() {
         ]);
       });
 
-      test('Should build a texture widget as view widget', () async {
+      test('Should build a texture widget as preview widget', () async {
         // Act
         Widget widget = camera.buildPreview(cameraId);
 
         // Act
         expect(widget is Texture, isTrue);
         expect((widget as Texture).textureId, cameraId);
+      });
+    });
+
+    group('Utility methods', () {
+      test(
+          'Should return CameraLensDirection when valid value is supplied when parsing camera lens direction',
+          () {
+        final camera = MethodChannelCamera();
+
+        expect(
+          camera.parseCameraLensDirection('back'),
+          CameraLensDirection.back,
+        );
+        expect(
+          camera.parseCameraLensDirection('front'),
+          CameraLensDirection.front,
+        );
+        expect(
+          camera.parseCameraLensDirection('external'),
+          CameraLensDirection.external,
+        );
+      });
+
+      test(
+          'Should throw ArgumentException when invalid value is supplied when parsing camera lens direction',
+          () {
+        final camera = MethodChannelCamera();
+
+        expect(
+          () => camera.parseCameraLensDirection('test'),
+          throwsA(isArgumentError),
+        );
+      });
+
+      test('Should throw MissingPluginException when handling unknown method',
+          () {
+        final camera = MethodChannelCamera();
+
+        expect(() => camera.handleMethodCall(MethodCall('unknown_method'), 1),
+         throwsA(isA<MissingPluginException>()));
       });
     });
   });
