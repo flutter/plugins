@@ -110,7 +110,7 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Returns a widget showing a live camera preview.
-  Widget buildView(int cameraId) {
+  Widget buildPreview(int cameraId) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
 

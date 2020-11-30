@@ -173,7 +173,7 @@ class MethodChannelCamera extends CameraPlatform {
       );
 
   @override
-  Widget buildView(int cameraId) {
+  Widget buildPreview(int cameraId) {
     return Texture(textureId: cameraId);
   }
 
