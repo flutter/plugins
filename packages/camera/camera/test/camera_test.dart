@@ -257,7 +257,7 @@ void main() {
       expect(
           cameraController.startImageStream((image) => null),
           throwsA(isA<CameraException>().having(
-                (error) => error.description,
+            (error) => error.description,
             'Uninitialized CameraController.',
             'startImageStream was called on uninitialized CameraController.',
           )));
@@ -265,53 +265,50 @@ void main() {
 
     test('startImageStream() throws $CameraException when recording videos',
         () async {
-          CameraController cameraController = CameraController(
-              CameraDescription(
-                  name: 'cam',
-                  lensDirection: CameraLensDirection.back,
-                  sensorOrientation: 90),
-              ResolutionPreset.max);
-          await cameraController.initialize();
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
 
-          cameraController.value =
-              cameraController.value.copyWith(isRecordingVideo: true);
-          expect(
-              cameraController.startImageStream((image) => null),
-              throwsA(isA<CameraException>().having(
-                    (error) => error.description,
-                'A video recording is already started.',
-                'startImageStream was called while a video is being recorded.',
-              )));
+      cameraController.value =
+          cameraController.value.copyWith(isRecordingVideo: true);
+      expect(
+          cameraController.startImageStream((image) => null),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'A video recording is already started.',
+            'startImageStream was called while a video is being recorded.',
+          )));
     });
     test(
         'startImageStream() throws $CameraException when already streaming images',
         () async {
-          CameraController cameraController = CameraController(
-              CameraDescription(
-                  name: 'cam',
-                  lensDirection: CameraLensDirection.back,
-                  sensorOrientation: 90),
-              ResolutionPreset.max);
-          await cameraController.initialize();
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
 
-          cameraController.value =
-              cameraController.value.copyWith(isStreamingImages: true);
-          expect(
-              cameraController.startImageStream((image) => null),
-              throwsA(isA<CameraException>().having(
-                    (error) => error.description,
-                'A camera has started streaming images.',
-                'startImageStream was called while a camera was streaming images.',
-              )));
-        });
-
-
+      cameraController.value =
+          cameraController.value.copyWith(isStreamingImages: true);
+      expect(
+          cameraController.startImageStream((image) => null),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'A camera has started streaming images.',
+            'startImageStream was called while a camera was streaming images.',
+          )));
+    });
 
     test('startImageStream() calls CameraPlatform', () async {
-      MethodChannelMock methodChannelMock =
-          MethodChannelMock(channelName: 'plugins.flutter.io/camera', methods: {
-        'startImageStream': {}
-      });
+      MethodChannelMock methodChannelMock = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'startImageStream': {}});
       CameraController cameraController = CameraController(
           CameraDescription(
               name: 'cam',
@@ -337,13 +334,14 @@ void main() {
       expect(
           cameraController.stopImageStream(),
           throwsA(isA<CameraException>().having(
-                (error) => error.description,
+            (error) => error.description,
             'Uninitialized CameraController.',
             'stopImageStream was called on uninitialized CameraController.',
           )));
     });
 
-    test('stopImageStream() throws $CameraException when recording videos', () async {
+    test('stopImageStream() throws $CameraException when recording videos',
+        () async {
       CameraController cameraController = CameraController(
           CameraDescription(
               name: 'cam',
@@ -358,7 +356,7 @@ void main() {
       expect(
           cameraController.stopImageStream(),
           throwsA(isA<CameraException>().having(
-                (error) => error.description,
+            (error) => error.description,
             'A video recording is already started.',
             'stopImageStream was called while a video is being recorded.',
           )));
@@ -366,30 +364,27 @@ void main() {
 
     test('stopImageStream() throws $CameraException when not streaming images',
         () async {
-          CameraController cameraController = CameraController(
-              CameraDescription(
-                  name: 'cam',
-                  lensDirection: CameraLensDirection.back,
-                  sensorOrientation: 90),
-              ResolutionPreset.max);
-          await cameraController.initialize();
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
 
-          expect(
-              cameraController.stopImageStream(),
-              throwsA(isA<CameraException>().having(
-                    (error) => error.description,
-                'No camera is streaming images',
-                'stopImageStream was called when no camera is streaming images.',
-              )));
+      expect(
+          cameraController.stopImageStream(),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'No camera is streaming images',
+            'stopImageStream was called when no camera is streaming images.',
+          )));
     });
 
-
     test('stopImageStream() intended behaviour', () async {
-      MethodChannelMock methodChannelMock =
-      MethodChannelMock(channelName: 'plugins.flutter.io/camera', methods: {
-        'startImageStream': {},
-        'stopImageStream': {}
-      });
+      MethodChannelMock methodChannelMock = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'startImageStream': {}, 'stopImageStream': {}});
       CameraController cameraController = CameraController(
           CameraDescription(
               name: 'cam',
@@ -399,75 +394,74 @@ void main() {
       await cameraController.initialize();
       await cameraController.startImageStream((image) => null);
       await cameraController.stopImageStream();
-      expect(methodChannelMock.log,
-          <Matcher>[
-            isMethodCall('startImageStream', arguments: null),
-            isMethodCall('stopImageStream', arguments: null)
-          ]);
+      expect(methodChannelMock.log, <Matcher>[
+        isMethodCall('startImageStream', arguments: null),
+        isMethodCall('stopImageStream', arguments: null)
+      ]);
     });
 
     test('startVideoRecording() throws $CameraException when uninitialized',
         () async {
-          CameraController cameraController = CameraController(
-              CameraDescription(
-                  name: 'cam',
-                  lensDirection: CameraLensDirection.back,
-                  sensorOrientation: 90),
-              ResolutionPreset.max);
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
 
-          expect(
-              cameraController.startVideoRecording(),
-              throwsA(isA<CameraException>().having(
-                    (error) => error.description,
-                'Uninitialized CameraController',
-                'startVideoRecording was called on uninitialized CameraController',
-              )));
+      expect(
+          cameraController.startVideoRecording(),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'Uninitialized CameraController',
+            'startVideoRecording was called on uninitialized CameraController',
+          )));
     });
     test('startVideoRecording() throws $CameraException when recording videos',
         () async {
-          CameraController cameraController = CameraController(
-              CameraDescription(
-                  name: 'cam',
-                  lensDirection: CameraLensDirection.back,
-                  sensorOrientation: 90),
-              ResolutionPreset.max);
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
 
-          await cameraController.initialize();
+      await cameraController.initialize();
 
-          cameraController.value =
-              cameraController.value.copyWith(isRecordingVideo: true);
+      cameraController.value =
+          cameraController.value.copyWith(isRecordingVideo: true);
 
-          expect(
-              cameraController.startVideoRecording(),
-              throwsA(isA<CameraException>().having(
-                    (error) => error.description,
-                'A video recording is already started.',
-                'startVideoRecording was called when a recording is already started.',
-              )));
+      expect(
+          cameraController.startVideoRecording(),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'A video recording is already started.',
+            'startVideoRecording was called when a recording is already started.',
+          )));
     });
 
     test(
         'startVideoRecording() throws $CameraException when already streaming images',
         () async {
-          CameraController cameraController = CameraController(
-              CameraDescription(
-                  name: 'cam',
-                  lensDirection: CameraLensDirection.back,
-                  sensorOrientation: 90),
-              ResolutionPreset.max);
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
 
-          await cameraController.initialize();
+      await cameraController.initialize();
 
-          cameraController.value =
-              cameraController.value.copyWith(isStreamingImages: true);
+      cameraController.value =
+          cameraController.value.copyWith(isStreamingImages: true);
 
-          expect(
-              cameraController.startVideoRecording(),
-              throwsA(isA<CameraException>().having(
-                    (error) => error.description,
-                'A camera has started streaming images.',
-                'startVideoRecording was called while a camera was streaming images.',
-              )));
+      expect(
+          cameraController.startVideoRecording(),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'A camera has started streaming images.',
+            'startVideoRecording was called while a camera was streaming images.',
+          )));
     });
   });
 }
