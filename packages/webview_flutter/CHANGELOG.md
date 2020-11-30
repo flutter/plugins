@@ -1,3 +1,8 @@
+## 1.0.7+1
+
+* static html and baseUrl support. 
+=======
+
 ## 1.0.7
 
 * Minor documentation update to indicate known issue on iOS 13.4 and 13.5.

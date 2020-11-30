@@ -211,6 +211,8 @@ class WebView extends StatefulWidget {
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.html,
+    this.baseUrl,
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.navigationDelegate,
@@ -277,6 +279,11 @@ class WebView extends StatefulWidget {
   /// The initial URL to load.
   final String initialUrl;
 
+  /// The initial baseURL to load.
+  final String baseUrl;
+
+  /// The initial static html to load.
+  final String html;
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
 
@@ -612,7 +619,14 @@ class WebViewController {
     _validateUrlString(url);
     return _webViewPlatformController.loadUrl(url, headers);
   }
-
+  /// Loads the specified html.
+  ///
+  /// `html` must not be null.
+  ///
+  Future<void> loadHtml(String html) async {
+    assert(html != null);
+    return _webViewPlatformController.loadHtml(html);
+  }
   /// Accessor to the current URL that the WebView is displaying.
   ///
   /// If [WebView.initialUrl] was never specified, returns `null`.
