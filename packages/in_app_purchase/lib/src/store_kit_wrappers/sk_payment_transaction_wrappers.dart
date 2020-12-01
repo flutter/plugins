@@ -98,6 +98,7 @@ enum SKPaymentTransactionStateWrapper {
 /// [SKPaymentTransaction](https://developer.apple.com/documentation/storekit/skpaymenttransaction?language=objc).
 @JsonSerializable(nullable: true)
 class SKPaymentTransactionWrapper {
+  /// Creates a new [SKPaymentTransactionWrapper] with the provided information.
   SKPaymentTransactionWrapper({
     @required this.payment,
     @required this.transactionState,

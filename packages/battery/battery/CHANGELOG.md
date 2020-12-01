@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Update Dart SDK constraint in example.
+
 ## 1.0.7
 
 * Update android compileSdkVersion to 29.

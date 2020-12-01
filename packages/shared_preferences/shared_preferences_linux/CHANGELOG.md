@@ -1,3 +1,12 @@
+## 0.0.3
+
+* Update integration test examples to use `testWidgets` instead of `test`.
+
+## 0.0.2+4
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
 ## 0.0.2+3
 
 * Check in linux/ directory for example/

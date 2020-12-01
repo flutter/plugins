@@ -37,7 +37,7 @@ void main() {
       preferences.clear();
     });
 
-    test('reading', () async {
+    testWidgets('reading', (WidgetTester _) async {
       final Map<String, Object> values = await preferences.getAll();
       expect(values['String'], isNull);
       expect(values['bool'], isNull);
@@ -46,7 +46,7 @@ void main() {
       expect(values['List'], isNull);
     });
 
-    test('writing', () async {
+    testWidgets('writing', (WidgetTester _) async {
       await Future.wait(<Future<bool>>[
         preferences.setValue(
             'String', 'String', kTestValues2['flutter.String']),
@@ -64,7 +64,7 @@ void main() {
       expect(values['List'], kTestValues2['flutter.List']);
     });
 
-    test('removing', () async {
+    testWidgets('removing', (WidgetTester _) async {
       const String key = 'testKey';
       await preferences.setValue('String', key, kTestValues['flutter.String']);
       await preferences.setValue('Bool', key, kTestValues['flutter.bool']);
@@ -77,7 +77,7 @@ void main() {
       expect(values[key], isNull);
     });
 
-    test('clearing', () async {
+    testWidgets('clearing', (WidgetTester _) async {
       await preferences.setValue(
           'String', 'String', kTestValues['flutter.String']);
       await preferences.setValue('Bool', 'bool', kTestValues['flutter.bool']);

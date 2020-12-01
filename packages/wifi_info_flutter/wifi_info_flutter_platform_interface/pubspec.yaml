@@ -4,7 +4,6 @@ version: 1.0.0
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
 homepage: https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter_platform_interface
-publish_to: none
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

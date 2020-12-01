@@ -264,20 +264,25 @@ Set<Marker> _rawOptionsToInitialMarkers(Map<String, dynamic> rawOptions) {
         Offset offset;
         LatLng position;
         InfoWindow infoWindow;
+        BitmapDescriptor icon;
         if (rawMarker['anchor'] != null) {
           offset = Offset((rawMarker['anchor'][0]), (rawMarker['anchor'][1]));
         }
         if (rawMarker['position'] != null) {
           position = LatLng.fromJson(rawMarker['position']);
         }
-        if (rawMarker['infoWindow'] != null || rawMarker['snippet'] != null) {
-          String title = rawMarker['infoWindow'] != null
-              ? rawMarker['infoWindow']['title']
-              : null;
-          infoWindow = InfoWindow(
-            title: title ?? '',
-            snippet: rawMarker['snippet'] ?? '',
-          );
+        if (rawMarker['infoWindow'] != null) {
+          final String title = rawMarker['infoWindow']['title'];
+          final String snippet = rawMarker['infoWindow']['snippet'];
+          if (title != null || snippet != null) {
+            infoWindow = InfoWindow(
+              title: title ?? '',
+              snippet: snippet ?? '',
+            );
+          }
+        }
+        if (rawMarker['icon'] != null) {
+          icon = BitmapDescriptor.fromJson(rawMarker['icon']);
         }
         return Marker(
           markerId: MarkerId(rawMarker['markerId']),
@@ -286,8 +291,7 @@ Set<Marker> _rawOptionsToInitialMarkers(Map<String, dynamic> rawOptions) {
           consumeTapEvents: rawMarker['consumeTapEvents'],
           draggable: rawMarker['draggable'],
           flat: rawMarker['flat'],
-          // TODO: Doesn't this support custom icons?
-          icon: BitmapDescriptor.defaultMarker,
+          icon: icon,
           infoWindow: infoWindow,
           position: position ?? _nullLatLng,
           rotation: rawMarker['rotation'],
@@ -378,13 +382,28 @@ gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
     return null;
   }
 
-  final content = '<h3 class="infowindow-title">' +
-      sanitizeHtml(marker.infoWindow.title ?? "") +
-      '</h3>' +
-      sanitizeHtml(marker.infoWindow.snippet ?? "");
+  // Add an outer wrapper to the contents of the infowindow, we need it to listen
+  // to click events...
+  final HtmlElement container = DivElement()
+    ..id = 'gmaps-marker-${marker.markerId.value}-infowindow';
+  if (marker.infoWindow.title?.isNotEmpty ?? false) {
+    final HtmlElement title = HeadingElement.h3()
+      ..className = 'infowindow-title'
+      ..innerText = marker.infoWindow.title;
+    container.children.add(title);
+  }
+  if (marker.infoWindow.snippet?.isNotEmpty ?? false) {
+    final HtmlElement snippet = DivElement()
+      ..className = 'infowindow-snippet'
+      ..setInnerHtml(
+        sanitizeHtml(marker.infoWindow.snippet),
+        treeSanitizer: NodeTreeSanitizer.trusted,
+      );
+    container.children.add(snippet);
+  }
 
   return gmaps.InfoWindowOptions()
-    ..content = content
+    ..content = container
     ..zIndex = marker.zIndex;
   // TODO: Compute the pixelOffset of the infoWindow, from the size of the Marker,
   // and the marker.infoWindow.anchor property.
@@ -416,6 +435,11 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
           ..size = size
           ..scaledSize = size;
       }
+    } else if (iconConfig[0] == 'fromBytes') {
+      // Grab the bytes, and put them into a blob
+      List<int> bytes = iconConfig[1];
+      final blob = Blob([bytes]); // Let the browser figure out the encoding
+      icon = gmaps.Icon()..url = Url.createObjectUrlFromBlob(blob);
     }
   }
   return gmaps.MarkerOptions()
