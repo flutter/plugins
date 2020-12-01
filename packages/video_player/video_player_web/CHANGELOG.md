@@ -1,3 +1,11 @@
+## 0.1.4+1
+
+* Substitute `undefined_prefixed_name: ignore` analyzer setting by a `dart:ui` shim with conditional exports. [Issue](https://github.com/flutter/flutter/issues/69309).
+
+## 0.1.4
+
+* Added option to set the video playback speed on the video controller.
+
 ## 0.1.3+2
 
 * Allow users to set the 'muted' attribute on video elements by setting their volume to 0.

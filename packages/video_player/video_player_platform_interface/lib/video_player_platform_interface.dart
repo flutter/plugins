@@ -100,6 +100,11 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('seekTo() has not been implemented.');
   }
 
+  /// Sets the playback speed to a [speed] value indicating the playback rate.
+  Future<void> setPlaybackSpeed(int textureId, double speed) {
+    throw UnimplementedError('setPlaybackSpeed() has not been implemented.');
+  }
+
   /// Gets the video position as [Duration] from the start.
   Future<Duration> getPosition(int textureId) {
     throw UnimplementedError('getPosition() has not been implemented.');
@@ -184,7 +189,7 @@ enum DataSourceType {
   network,
 
   /// The video was loaded off of the local filesystem.
-  file
+  file,
 }
 
 /// The file format of the given video.
@@ -199,7 +204,7 @@ enum VideoFormat {
   ss,
 
   /// Any format other than the other ones defined in this enum.
-  other
+  other,
 }
 
 /// Event emitted from the platform implementation.

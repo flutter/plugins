@@ -92,7 +92,7 @@ void main() {
 
     test('queryPastPurchases should not block transaction updates', () async {
       fakeIOSPlatform.transactions
-          .add(fakeIOSPlatform.createPurchasedTransactionWithProductID('foo'));
+          .add(fakeIOSPlatform.createPurchasedTransaction('foo', 'bar'));
       Completer completer = Completer();
       Stream<List<PurchaseDetails>> stream =
           AppStoreConnection.instance.purchaseUpdatedStream;
@@ -348,7 +348,7 @@ class FakeIOSPlatform {
     testRestoredError = null;
   }
 
-  SKPaymentTransactionWrapper createPendingTransactionWithProductID(String id) {
+  SKPaymentTransactionWrapper createPendingTransaction(String id) {
     return SKPaymentTransactionWrapper(
         transactionIdentifier: null,
         payment: SKPaymentWrapper(productIdentifier: id),
@@ -358,21 +358,21 @@ class FakeIOSPlatform {
         originalTransaction: null);
   }
 
-  SKPaymentTransactionWrapper createPurchasedTransactionWithProductID(
-      String id) {
+  SKPaymentTransactionWrapper createPurchasedTransaction(
+      String productId, String transactionId) {
     return SKPaymentTransactionWrapper(
-        payment: SKPaymentWrapper(productIdentifier: id),
+        payment: SKPaymentWrapper(productIdentifier: productId),
         transactionState: SKPaymentTransactionStateWrapper.purchased,
         transactionTimeStamp: 123123.121,
-        transactionIdentifier: id,
+        transactionIdentifier: transactionId,
         error: null,
         originalTransaction: null);
   }
 
-  SKPaymentTransactionWrapper createFailedTransactionWithProductID(String id) {
+  SKPaymentTransactionWrapper createFailedTransaction(String productId) {
     return SKPaymentTransactionWrapper(
         transactionIdentifier: null,
-        payment: SKPaymentWrapper(productIdentifier: id),
+        payment: SKPaymentWrapper(productIdentifier: productId),
         transactionState: SKPaymentTransactionStateWrapper.failed,
         transactionTimeStamp: 123123.121,
         error: SKError(
@@ -434,26 +434,26 @@ class FakeIOSPlatform {
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin addPayment:result:]':
         String id = call.arguments['productIdentifier'];
-        SKPaymentTransactionWrapper transaction =
-            createPendingTransactionWithProductID(id);
+        SKPaymentTransactionWrapper transaction = createPendingTransaction(id);
         AppStoreConnection.observer
             .updatedTransactions(transactions: [transaction]);
         sleep(const Duration(milliseconds: 30));
         if (testTransactionFail) {
           SKPaymentTransactionWrapper transaction_failed =
-              createFailedTransactionWithProductID(id);
+              createFailedTransaction(id);
           AppStoreConnection.observer
               .updatedTransactions(transactions: [transaction_failed]);
         } else {
           SKPaymentTransactionWrapper transaction_finished =
-              createPurchasedTransactionWithProductID(id);
+              createPurchasedTransaction(id, transaction.transactionIdentifier);
           AppStoreConnection.observer
               .updatedTransactions(transactions: [transaction_finished]);
         }
         break;
       case '-[InAppPurchasePlugin finishTransaction:result:]':
-        finishedTransactions
-            .add(createPurchasedTransactionWithProductID(call.arguments));
+        finishedTransactions.add(createPurchasedTransaction(
+            call.arguments["productIdentifier"],
+            call.arguments["transactionIdentifier"]));
         break;
     }
     return Future<void>.sync(() {});

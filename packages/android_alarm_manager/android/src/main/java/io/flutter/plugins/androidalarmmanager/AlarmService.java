@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.util.Log;
 import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.JobIntentService;
-import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -91,15 +90,18 @@ public class AlarmService extends JobIntentService {
   }
 
   /**
-   * Sets the {@link PluginRegistrantCallback} used to register the plugins used by an application
-   * with the newly spawned background isolate.
+   * Sets the {@link io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback} used to
+   * register the plugins used by an application with the newly spawned background isolate.
    *
    * <p>This should be invoked in {@link Application.onCreate} with {@link
    * GeneratedPluginRegistrant} in applications using the V1 embedding API in order to use other
    * plugins in the background isolate. For applications using the V2 embedding API, it is not
-   * necessary to set a {@link PluginRegistrantCallback} as plugins are registered automatically.
+   * necessary to set a {@link io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback} as
+   * plugins are registered automatically.
    */
-  public static void setPluginRegistrant(PluginRegistrantCallback callback) {
+  @SuppressWarnings("deprecation")
+  public static void setPluginRegistrant(
+      io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback callback) {
     // Indirectly set in FlutterBackgroundExecutor for backwards compatibility.
     FlutterBackgroundExecutor.setPluginRegistrant(callback);
   }

@@ -17,6 +17,18 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class BitmapDescriptor {
   const BitmapDescriptor._(this._json);
 
+  static const String _defaultMarker = 'defaultMarker';
+  static const String _fromAsset = 'fromAsset';
+  static const String _fromAssetImage = 'fromAssetImage';
+  static const String _fromBytes = 'fromBytes';
+
+  static const Set<String> _validTypes = {
+    _defaultMarker,
+    _fromAsset,
+    _fromAssetImage,
+    _fromBytes,
+  };
+
   /// Convenience hue value representing red.
   static const double hueRed = 0.0;
 
@@ -49,14 +61,14 @@ class BitmapDescriptor {
 
   /// Creates a BitmapDescriptor that refers to the default marker image.
   static const BitmapDescriptor defaultMarker =
-      BitmapDescriptor._(<dynamic>['defaultMarker']);
+      BitmapDescriptor._(<dynamic>[_defaultMarker]);
 
   /// Creates a BitmapDescriptor that refers to a colorization of the default
   /// marker image. For convenience, there is a predefined set of hue values.
   /// See e.g. [hueYellow].
   static BitmapDescriptor defaultMarkerWithHue(double hue) {
     assert(0.0 <= hue && hue < 360.0);
-    return BitmapDescriptor._(<dynamic>['defaultMarker', hue]);
+    return BitmapDescriptor._(<dynamic>[_defaultMarker, hue]);
   }
 
   /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
@@ -67,9 +79,9 @@ class BitmapDescriptor {
   @Deprecated("Use fromAssetImage instead")
   static BitmapDescriptor fromAsset(String assetName, {String package}) {
     if (package == null) {
-      return BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
+      return BitmapDescriptor._(<dynamic>[_fromAsset, assetName]);
     } else {
-      return BitmapDescriptor._(<dynamic>['fromAsset', assetName, package]);
+      return BitmapDescriptor._(<dynamic>[_fromAsset, assetName, package]);
     }
   }
 
@@ -89,7 +101,7 @@ class BitmapDescriptor {
   }) async {
     if (!mipmaps && configuration.devicePixelRatio != null) {
       return BitmapDescriptor._(<dynamic>[
-        'fromAssetImage',
+        _fromAssetImage,
         assetName,
         configuration.devicePixelRatio,
       ]);
@@ -99,7 +111,7 @@ class BitmapDescriptor {
     final AssetBundleImageKey assetBundleImageKey =
         await assetImage.obtainKey(configuration);
     return BitmapDescriptor._(<dynamic>[
-      'fromAssetImage',
+      _fromAssetImage,
       assetBundleImageKey.name,
       assetBundleImageKey.scale,
       if (kIsWeb && configuration?.size != null)
@@ -113,7 +125,50 @@ class BitmapDescriptor {
   /// Creates a BitmapDescriptor using an array of bytes that must be encoded
   /// as PNG.
   static BitmapDescriptor fromBytes(Uint8List byteData) {
-    return BitmapDescriptor._(<dynamic>['fromBytes', byteData]);
+    return BitmapDescriptor._(<dynamic>[_fromBytes, byteData]);
+  }
+
+  /// The inverse of .toJson.
+  // This is needed in Web to re-hydrate BitmapDescriptors that have been
+  // transformed to JSON for transport.
+  // TODO(https://github.com/flutter/flutter/issues/70330): Clean this up.
+  BitmapDescriptor.fromJson(dynamic json) : _json = json {
+    assert(_validTypes.contains(_json[0]));
+    switch (_json[0]) {
+      case _defaultMarker:
+        assert(_json.length <= 2);
+        if (_json.length == 2) {
+          assert(_json[1] is num);
+          assert(0 <= _json[1] && _json[1] < 360);
+        }
+        break;
+      case _fromBytes:
+        assert(_json.length == 2);
+        assert(_json[1] != null && _json[1] is List<int>);
+        assert((_json[1] as List).isNotEmpty);
+        break;
+      case _fromAsset:
+        assert(_json.length <= 3);
+        assert(_json[1] != null && _json[1] is String);
+        assert((_json[1] as String).isNotEmpty);
+        if (_json.length == 3) {
+          assert(_json[2] != null && _json[2] is String);
+          assert((_json[2] as String).isNotEmpty);
+        }
+        break;
+      case _fromAssetImage:
+        assert(_json.length <= 4);
+        assert(_json[1] != null && _json[1] is String);
+        assert((_json[1] as String).isNotEmpty);
+        assert(_json[2] != null && _json[2] is double);
+        if (_json.length == 4) {
+          assert(_json[3] != null && _json[3] is List);
+          assert((_json[3] as List).length == 2);
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   final dynamic _json;

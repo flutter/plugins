@@ -1,6 +1,6 @@
 name: integration_test
 description: Runs tests that use the flutter_test API as integration tests.
-version: 0.9.0
+version: 0.9.3
 homepage: https://github.com/flutter/plugins/tree/master/packages/integration_test
 
 environment:
@@ -15,7 +15,10 @@ dependencies:
   flutter_test:
     sdk: flutter
   path: ^1.6.4
-  vm_service: ^4.2.0
+  # TODO(dnfield): This is a problem - flutter_driver and flutter_tools depend
+  # on this packkage, and so does integration_test. When this gets rev'd in the
+  # SDK, it has to be rev'd here too so integration tests in the SDK can use it.
+  vm_service: ">= 4.2.0 <6.0.0"
 
 dev_dependencies:
   pedantic: ^1.8.0

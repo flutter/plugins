@@ -17,8 +17,11 @@ dev_dependencies:
     path: ../../../integration_test
   flutter_driver:
     sdk: flutter
-  test: any
   pedantic: ^1.8.0
 
 flutter:
   uses-material-design: true
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.10.0 <2.0.0"

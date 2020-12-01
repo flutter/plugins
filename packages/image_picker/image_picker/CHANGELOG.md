@@ -1,3 +1,23 @@
+## 0.6.7+14
+
+* Set up XCUITests.
+
+## 0.6.7+13
+
+* Update documentation of `getImage()` about HEIC images.
+
+## 0.6.7+12
+
+* Update android compileSdkVersion to 29.
+
+## 0.6.7+11
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.6.7+10
+
+* Updated documentation with code that does not throw an error when image is not picked.
+
 ## 0.6.7+9
 
 * Updated the ExifInterface to the AndroidX version to support more file formats;

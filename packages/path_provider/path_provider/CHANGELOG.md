@@ -1,3 +1,37 @@
+## 1.6.24
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 1.6.23
+
+* Check in windows/ directory for example/
+
+## 1.6.22
+
+* Switch to guava-android dependency instead of full guava.
+
+## 1.6.21
+
+* Update android compileSdkVersion to 29.
+
+## 1.6.20
+
+* Check in linux/ directory for example/
+
+## 1.6.19
+
+* Android implementation does path queries in the background thread rather than UI thread.
+
+## 1.6.18
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 1.6.17
+
+* Update Windows endorsement verison again, to pick up the fix for
+  web compilation in projects that include path_provider.
+
 ## 1.6.16
 
 * Update Windows endorsement verison

@@ -1,3 +1,23 @@
+## 0.9.3
+
+* Update README to mention that only `testWidgets` is supported for declaring tests.
+
+## 0.9.2+2
+
+* Broaden the constraint on vm_service.
+
+## 0.9.2+1
+
+* Update android compileSdkVersion to 29.
+
+## 0.9.2
+
+* Add `watchPerformance` for performance test.
+
+## 0.9.1
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
 ## 0.9.0
 
 * Add screenshot capability to web tests.

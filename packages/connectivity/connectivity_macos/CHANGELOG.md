@@ -1,3 +1,12 @@
+## 0.1.0+7
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 0.1.0+6
+
+* Update license headers.
+
 ## 0.1.0+5
 
 * Update package:e2e reference to use the local version in the flutter/plugins
