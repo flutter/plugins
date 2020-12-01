@@ -1,3 +1,37 @@
+## 1.0.11
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 1.0.10
+
+* Update android compileSdkVersion to 29.
+
+## 1.0.9
+
+* Let the no-op plugin implement the `FlutterPlugin` interface.
+
+## 1.0.8
+
+* Post-v2 Android embedding cleanup.
+
+## 1.0.7
+
+* Update Gradle version. Fixes https://github.com/flutter/flutter/issues/48724.
+* Fix CocoaPods podspec lint warnings.
+
+## 1.0.6
+
+* Make the pedantic dev_dependency explicit.
+
+## 1.0.5
+
+* Add notice in example this plugin only provides Android Lifecycle API.
+
+## 1.0.4
+
+* Require Flutter SDK 1.12.13 or greater.
+* Change to avoid reflection.
+
 ## 1.0.3
 
 * Remove the deprecated `author:` field from pubspec.yaml

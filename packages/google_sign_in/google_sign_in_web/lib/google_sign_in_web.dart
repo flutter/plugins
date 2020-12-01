@@ -5,14 +5,13 @@
 import 'dart:async';
 import 'dart:html' as html;
 
+import 'package:flutter/services.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:js/js.dart';
 import 'package:meta/meta.dart';
 
 import 'src/generated/gapiauth2.dart' as auth2;
-// TODO: Remove once this lands https://github.com/dart-lang/language/issues/671
-import 'src/generated/gapiauth2.dart' show GoogleAuthExtensions;
 import 'src/load_gapi.dart' as gapi;
 import 'src/utils.dart' show gapiUserToPluginUserData;
 
@@ -39,14 +38,27 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   }
 
   Future<void> _isGapiInitialized;
+  Future<void> _isAuthInitialized;
+  bool _isInitCalled = false;
 
-  /// This is only exposed for testing. It shouldn't be accessed by users of the
-  /// plugin as it could break at any point.
+  // This method throws if init hasn't been called at some point in the past.
+  // It is used by the [initialized] getter to ensure that users can't await
+  // on a Future that will never resolve.
+  void _assertIsInitCalled() {
+    if (!_isInitCalled) {
+      throw StateError(
+          'GoogleSignInPlugin::init() must be called before any other method in this plugin.');
+    }
+  }
+
+  /// A future that resolves when both GAPI and Auth2 have been correctly initialized.
   @visibleForTesting
-  Future<void> get initialized => _isGapiInitialized;
+  Future<void> get initialized {
+    _assertIsInitCalled();
+    return Future.wait([_isGapiInitialized, _isAuthInitialized]);
+  }
 
   String _autoDetectedClientId;
-  FutureOr<auth2.GoogleUser> _lastSeenUser;
 
   /// Factory method that initializes the plugin with [GoogleSignInPlatform].
   static void registerWith(Registrar registrar) {
@@ -72,7 +84,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
         'Check https://developers.google.com/identity/protocols/googlescopes '
         'for a list of valid OAuth 2.0 scopes.');
 
-    await initialized;
+    await _isGapiInitialized;
 
     final auth2.GoogleAuth auth = auth2.init(auth2.ClientConfig(
       hosted_domain: hostedDomain,
@@ -81,35 +93,52 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       client_id: appClientId,
     ));
 
-    // Subscribe to changes in the auth instance returned by init,
-    // and cache the _lastSeenUser as we get notified of new values.
-    final Completer<auth2.GoogleUser> initUserCompleter =
-        Completer<auth2.GoogleUser>();
+    Completer<void> isAuthInitialized = Completer<void>();
+    _isAuthInitialized = isAuthInitialized.future;
+    _isInitCalled = true;
 
-    auth.currentUser.listen(allowInterop((auth2.GoogleUser nextUser) {
-      if (!initUserCompleter.isCompleted) {
-        initUserCompleter.complete(nextUser);
-      } else {
-        _lastSeenUser = nextUser;
-      }
+    auth.then(allowInterop((auth2.GoogleAuth initializedAuth) {
+      // onSuccess
+
+      // TODO: https://github.com/flutter/flutter/issues/48528
+      // This plugin doesn't notify the app of external changes to the
+      // state of the authentication, i.e: if you logout elsewhere...
+
+      isAuthInitialized.complete();
+    }), allowInterop((auth2.GoogleAuthInitFailureError reason) {
+      // onError
+      isAuthInitialized.completeError(PlatformException(
+        code: reason.error,
+        message: reason.details,
+        details:
+            'https://developers.google.com/identity/sign-in/web/reference#error_codes',
+      ));
     }));
-    _lastSeenUser = initUserCompleter.future;
 
-    return null;
+    return _isAuthInitialized;
   }
 
   @override
   Future<GoogleSignInUserData> signInSilently() async {
     await initialized;
 
-    return gapiUserToPluginUserData(await _lastSeenUser);
+    return gapiUserToPluginUserData(
+        await auth2.getAuthInstance().currentUser.get());
   }
 
   @override
   Future<GoogleSignInUserData> signIn() async {
     await initialized;
-
-    return gapiUserToPluginUserData(await auth2.getAuthInstance().signIn());
+    try {
+      return gapiUserToPluginUserData(await auth2.getAuthInstance().signIn());
+    } on auth2.GoogleAuthSignInError catch (reason) {
+      throw PlatformException(
+        code: reason.error,
+        message: 'Exception raised from GoogleAuth.signIn()',
+        details:
+            'https://developers.google.com/identity/sign-in/web/reference#error_codes_2',
+      );
+    }
   }
 
   @override
@@ -154,7 +183,25 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   Future<void> clearAuthCache({String token}) async {
     await initialized;
 
-    _lastSeenUser = null;
     return auth2.getAuthInstance().disconnect();
+  }
+
+  @override
+  Future<bool> requestScopes(List<String> scopes) async {
+    await initialized;
+
+    final currentUser = auth2.getAuthInstance()?.currentUser?.get();
+
+    if (currentUser == null) return false;
+
+    final grantedScopes = currentUser.getGrantedScopes();
+    final missingScopes =
+        scopes.where((scope) => !grantedScopes.contains(scope));
+
+    if (missingScopes.isEmpty) return true;
+
+    return currentUser
+            .grant(auth2.SigninOptions(scope: missingScopes.join(" "))) ??
+        false;
   }
 }

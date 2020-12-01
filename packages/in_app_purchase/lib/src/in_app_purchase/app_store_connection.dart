@@ -18,14 +18,25 @@ import '../../billing_client_wrappers.dart';
 /// This translates various `StoreKit` calls and responses into the
 /// generic plugin API.
 class AppStoreConnection implements InAppPurchaseConnection {
+  /// Returns the singleton instance of the [AppStoreConnection] that should be
+  /// used across the app.
   static AppStoreConnection get instance => _getOrCreateInstance();
   static AppStoreConnection _instance;
   static SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static _TransactionObserver _observer;
 
+  /// Creates an [AppStoreConnection] object.
+  ///
+  /// This constructor should only be used for testing, for any other purpose
+  /// get the connection from the [instance] getter.
+  @visibleForTesting
+  AppStoreConnection();
+
   Stream<List<PurchaseDetails>> get purchaseUpdatedStream =>
       _observer.purchaseUpdatedController.stream;
 
+  /// Callback handler for transaction status changes.
+  @visibleForTesting
   static SKTransactionObserverWrapper get observer => _observer;
 
   static AppStoreConnection _getOrCreateInstance() {
@@ -62,13 +73,16 @@ class AppStoreConnection implements InAppPurchaseConnection {
   }
 
   @override
-  Future<void> completePurchase(PurchaseDetails purchase) {
-    return _skPaymentQueueWrapper
+  Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
+      {String developerPayload}) async {
+    await _skPaymentQueueWrapper
         .finishTransaction(purchase.skPaymentTransaction);
+    return BillingResultWrapper(responseCode: BillingResponse.ok);
   }
 
   @override
-  Future<BillingResponse> consumePurchase(PurchaseDetails purchase) {
+  Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase,
+      {String developerPayload}) {
     throw UnsupportedError('consume purchase is not available on Android');
   }
 
@@ -205,24 +219,16 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
         return wrapper.transactionState ==
             SKPaymentTransactionStateWrapper.restored;
       }).map((SKPaymentTransactionWrapper wrapper) => wrapper));
-      return;
     }
 
     String receiptData = await getReceiptData();
     purchaseUpdatedController
-        .add(transactions.map((SKPaymentTransactionWrapper transaction) {
+        .add(transactions.where((SKPaymentTransactionWrapper wrapper) {
+      return wrapper.transactionState !=
+          SKPaymentTransactionStateWrapper.restored;
+    }).map((SKPaymentTransactionWrapper transaction) {
       PurchaseDetails purchaseDetails =
-          PurchaseDetails.fromSKTransaction(transaction, receiptData)
-            ..status = SKTransactionStatusConverter()
-                .toPurchaseStatus(transaction.transactionState)
-            ..error = transaction.error != null
-                ? IAPError(
-                    source: IAPSource.AppStore,
-                    code: kPurchaseErrorCode,
-                    message: transaction.error.domain,
-                    details: transaction.error.userInfo,
-                  )
-                : null;
+          PurchaseDetails.fromSKTransaction(transaction, receiptData);
       return purchaseDetails;
     }).toList());
   }

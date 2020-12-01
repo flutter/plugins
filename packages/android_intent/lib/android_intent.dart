@@ -27,8 +27,9 @@ class AndroidIntent {
   /// [package] refers to the package parameter of the intent, can be null.
   /// [componentName] refers to the component name of the intent, can be null.
   /// If not null, then [package] but also be provided.
+  /// [type] refers to the type of the intent, can be null.
   const AndroidIntent({
-    @required this.action,
+    this.action,
     this.flags,
     this.category,
     this.data,
@@ -36,7 +37,9 @@ class AndroidIntent {
     this.package,
     this.componentName,
     Platform platform,
-  })  : assert(action != null),
+    this.type,
+  })  : assert(action != null || componentName != null,
+            'action or component (or both) must be specified'),
         _channel = const MethodChannel(_kChannelName),
         _platform = platform ?? const LocalPlatform();
 
@@ -44,16 +47,19 @@ class AndroidIntent {
   /// app code, it may break without warning.
   @visibleForTesting
   AndroidIntent.private({
-    @required this.action,
     @required Platform platform,
     @required MethodChannel channel,
+    this.action,
     this.flags,
     this.category,
     this.data,
     this.arguments,
     this.package,
     this.componentName,
-  })  : _channel = channel,
+    this.type,
+  })  : assert(action != null || componentName != null,
+            'action or component (or both) must be specified'),
+        _channel = channel,
         _platform = platform;
 
   /// This is the general verb that the intent should attempt to do. This
@@ -97,6 +103,11 @@ class AndroidIntent {
   final MethodChannel _channel;
   final Platform _platform;
 
+  /// Set an explicit MIME data type.
+  ///
+  /// See https://developer.android.com/reference/android/content/Intent.html#intent-structure.
+  final String type;
+
   bool _isPowerOfTwo(int x) {
     /* First x in the below expression is for the case when x is 0 */
     return x != 0 && ((x & (x - 1)) == 0);
@@ -123,25 +134,37 @@ class AndroidIntent {
     if (!_platform.isAndroid) {
       return;
     }
-    final Map<String, dynamic> args = <String, dynamic>{'action': action};
-    if (flags != null) {
-      args['flags'] = convertFlags(flags);
+
+    await _channel.invokeMethod<void>('launch', _buildArguments());
+  }
+
+  /// Check whether the intent can be resolved to an activity.
+  ///
+  /// This works only on Android platforms.
+  Future<bool> canResolveActivity() async {
+    if (!_platform.isAndroid) {
+      return false;
     }
-    if (category != null) {
-      args['category'] = category;
-    }
-    if (data != null) {
-      args['data'] = data;
-    }
-    if (arguments != null) {
-      args['arguments'] = arguments;
-    }
-    if (package != null) {
-      args['package'] = package;
-      if (componentName != null) {
-        args['componentName'] = componentName;
-      }
-    }
-    await _channel.invokeMethod<void>('launch', args);
+
+    return await _channel.invokeMethod<bool>(
+      'canResolveActivity',
+      _buildArguments(),
+    );
+  }
+
+  /// Constructs the map of arguments which is passed to the plugin.
+  Map<String, dynamic> _buildArguments() {
+    return {
+      if (action != null) 'action': action,
+      if (flags != null) 'flags': convertFlags(flags),
+      if (category != null) 'category': category,
+      if (data != null) 'data': data,
+      if (arguments != null) 'arguments': arguments,
+      if (package != null) ...{
+        'package': package,
+        if (componentName != null) 'componentName': componentName,
+      },
+      if (type != null) 'type': type,
+    };
   }
 }

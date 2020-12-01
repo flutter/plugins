@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <OCMock/OCMock.h>
 #import <XCTest/XCTest.h>
 #import "FIAPaymentQueueHandler.h"
 #import "Stubs.h"
@@ -80,7 +81,7 @@
                                         arguments:@{
                                           @"productIdentifier" : @"123",
                                           @"quantity" : @(1),
-                                          @"simulatesAskToBuyInSandBox" : @YES,
+                                          @"simulatesAskToBuyInSandbox" : @YES,
                                         }];
   SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
   queue.testState = SKPaymentTransactionStateFailed;
@@ -117,7 +118,7 @@
                                         arguments:@{
                                           @"productIdentifier" : @"123",
                                           @"quantity" : @(1),
-                                          @"simulatesAskToBuyInSandBox" : @YES,
+                                          @"simulatesAskToBuyInSandbox" : @YES,
                                         }];
   SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
   queue.testState = SKPaymentTransactionStatePurchased;
@@ -142,6 +143,51 @@
                          result:^(id r){
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStatePurchased);
+}
+
+- (void)testAddPaymentWithNullSandboxArgument {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"result should return success state"];
+  XCTestExpectation* simulatesAskToBuyInSandboxExpectation =
+      [self expectationWithDescription:@"payment isn't simulatesAskToBuyInSandbox"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin addPayment:result:]"
+                                        arguments:@{
+                                          @"productIdentifier" : @"123",
+                                          @"quantity" : @(1),
+                                          @"simulatesAskToBuyInSandbox" : [NSNull null],
+                                        }];
+  SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
+  queue.testState = SKPaymentTransactionStatePurchased;
+  __block SKPaymentTransaction* transactionForUpdateBlock;
+  self.plugin.paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+      transactionsUpdated:^(NSArray<SKPaymentTransaction*>* _Nonnull transactions) {
+        SKPaymentTransaction* transaction = transactions[0];
+        if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
+          transactionForUpdateBlock = transaction;
+          [expectation fulfill];
+        }
+        if (@available(iOS 8.3, *)) {
+          if (!transaction.payment.simulatesAskToBuyInSandbox) {
+            [simulatesAskToBuyInSandboxExpectation fulfill];
+          }
+        } else {
+          [simulatesAskToBuyInSandboxExpectation fulfill];
+        }
+      }
+      transactionRemoved:nil
+      restoreTransactionFailed:nil
+      restoreCompletedTransactionsFinished:nil
+      shouldAddStorePayment:^BOOL(SKPayment* _Nonnull payment, SKProduct* _Nonnull product) {
+        return YES;
+      }
+      updatedDownloads:nil];
+  [queue addTransactionObserver:self.plugin.paymentQueueHandler];
+  [self.plugin handleMethodCall:call
+                         result:^(id r){
+                         }];
+  [self waitForExpectations:@[ expectation, simulatesAskToBuyInSandboxExpectation ] timeout:5];
   XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStatePurchased);
 }
 
@@ -202,6 +248,41 @@
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertTrue(result);
+}
+
+- (void)testGetPendingTransactions {
+  XCTestExpectation* expectation = [self expectationWithDescription:@"expect success"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue transactions]" arguments:nil];
+  SKPaymentQueue* mockQueue = OCMClassMock(SKPaymentQueue.class);
+  NSDictionary* transactionMap = @{
+    @"transactionIdentifier" : [NSNull null],
+    @"transactionState" : @(SKPaymentTransactionStatePurchasing),
+    @"payment" : [NSNull null],
+    @"error" : [FIAObjectTranslator getMapFromNSError:[NSError errorWithDomain:@"test_stub"
+                                                                          code:123
+                                                                      userInfo:@{}]],
+    @"transactionTimeStamp" : @([NSDate date].timeIntervalSince1970),
+    @"originalTransaction" : [NSNull null],
+  };
+  OCMStub(mockQueue.transactions).andReturn(@[ [[SKPaymentTransactionStub alloc]
+      initWithMap:transactionMap] ]);
+
+  __block NSArray* resultArray;
+  self.plugin.paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:mockQueue
+                                                              transactionsUpdated:nil
+                                                               transactionRemoved:nil
+                                                         restoreTransactionFailed:nil
+                                             restoreCompletedTransactionsFinished:nil
+                                                            shouldAddStorePayment:nil
+                                                                 updatedDownloads:nil];
+  [self.plugin handleMethodCall:call
+                         result:^(id r) {
+                           resultArray = r;
+                           [expectation fulfill];
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertEqualObjects(resultArray, @[ transactionMap ]);
 }
 
 @end

@@ -8,11 +8,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  e2e: "^0.2.1"
+  integration_test:
+    path: ../../integration_test
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  pedantic: ^1.8.0
 
   flutter_plugin_android_lifecycle:
     path: ../

@@ -6,11 +6,14 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'platform_interface.dart';
 import 'src/webview_android.dart';
 import 'src/webview_cupertino.dart';
+import 'src/webview_method_channel.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
@@ -64,6 +67,66 @@ enum NavigationDecision {
   navigate,
 }
 
+/// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
+///
+/// To use this, set [WebView.platform] to an instance of this class.
+///
+/// This implementation uses hybrid composition to render the [WebView] on
+/// Android. It solves multiple issues related to accessibility and interaction
+/// with the [WebView] at the cost of some performance on Android versions below
+/// 10. See https://github.com/flutter/flutter/wiki/Hybrid-Composition for more
+/// information.
+class SurfaceAndroidWebView extends AndroidWebView {
+  @override
+  Widget build({
+    BuildContext context,
+    CreationParams creationParams,
+    WebViewPlatformCreatedCallback onWebViewPlatformCreated,
+    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+  }) {
+    assert(webViewPlatformCallbacksHandler != null);
+    return PlatformViewLink(
+      viewType: 'plugins.flutter.io/webview',
+      surfaceFactory: (
+        BuildContext context,
+        PlatformViewController controller,
+      ) {
+        return AndroidViewSurface(
+          controller: controller,
+          gestureRecognizers: gestureRecognizers ??
+              const <Factory<OneSequenceGestureRecognizer>>{},
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+        );
+      },
+      onCreatePlatformView: (PlatformViewCreationParams params) {
+        return PlatformViewsService.initSurfaceAndroidView(
+          id: params.id,
+          viewType: 'plugins.flutter.io/webview',
+          // WebView content is not affected by the Android view's layout direction,
+          // we explicitly set it here so that the widget doesn't require an ambient
+          // directionality.
+          layoutDirection: TextDirection.rtl,
+          creationParams: MethodChannelWebViewPlatform.creationParamsToMap(
+            creationParams,
+          ),
+          creationParamsCodec: const StandardMessageCodec(),
+        )
+          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+          ..addOnPlatformViewCreatedListener((int id) {
+            if (onWebViewPlatformCreated == null) {
+              return;
+            }
+            onWebViewPlatformCreated(
+              MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler),
+            );
+          })
+          ..create();
+      },
+    );
+  }
+}
+
 /// Decides how to handle a specific navigation request.
 ///
 /// The returned [NavigationDecision] determines how the navigation described by
@@ -78,6 +141,9 @@ typedef void PageStartedCallback(String url);
 
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
+
+/// Signature for when a [WebView] has failed to load a resource.
+typedef void WebResourceErrorCallback(WebResourceError error);
 
 /// Specifies possible restrictions on automatic media playback.
 ///
@@ -130,6 +196,10 @@ class JavascriptChannel {
 }
 
 /// A web view widget for showing html content.
+///
+/// There is a known issue that on iOS 13.4 and 13.5, other flutter widgets covering
+/// the `WebView` is not able to block the `WebView` from receiving touch events.
+/// See https://github.com/flutter/flutter/issues/53490.
 class WebView extends StatefulWidget {
   /// Creates a new web view.
   ///
@@ -147,6 +217,7 @@ class WebView extends StatefulWidget {
     this.gestureRecognizers,
     this.onPageStarted,
     this.onPageFinished,
+    this.onWebResourceError,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
@@ -277,6 +348,12 @@ class WebView extends StatefulWidget {
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback onPageFinished;
 
+  /// Invoked when a web resource has failed to load.
+  ///
+  /// This can be called for any resource (iframe, image, etc.), not just for
+  /// the main page.
+  final WebResourceErrorCallback onWebResourceError;
+
   /// Controls whether WebView debugging is enabled.
   ///
   /// Setting this to true enables [WebView debugging on Android](https://developers.google.com/web/tools/chrome-devtools/remote-debugging/).
@@ -290,7 +367,6 @@ class WebView extends StatefulWidget {
   /// By default `debuggingEnabled` is false.
   final bool debuggingEnabled;
 
-  /// The value used for the HTTP User-Agent: request header.
   /// A Boolean value indicating whether horizontal swipe gestures will trigger back-forward list navigations.
   ///
   /// This only works on iOS.
@@ -298,6 +374,7 @@ class WebView extends StatefulWidget {
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
 
+  /// The value used for the HTTP User-Agent: request header.
   ///
   /// When null the platform's webview default is used for the User-Agent header.
   ///
@@ -435,9 +512,7 @@ WebSettings _clearUnchangedWebSettings(
 
 Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
   final Set<String> channelNames = channels == null
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // ignore: prefer_collection_literals
-      ? Set<String>()
+      ? <String>{}
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;
 }
@@ -479,6 +554,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   void onPageFinished(String url) {
     if (_widget.onPageFinished != null) {
       _widget.onPageFinished(url);
+    }
+  }
+
+  @override
+  void onWebResourceError(WebResourceError error) {
+    if (_widget.onWebResourceError != null) {
+      _widget.onWebResourceError(error);
     }
   }
 
@@ -658,6 +740,34 @@ class WebViewController {
   /// Returns the title of the currently loaded page.
   Future<String> getTitle() {
     return _webViewPlatformController.getTitle();
+  }
+
+  /// Sets the WebView's content scroll position.
+  ///
+  /// The parameters `x` and `y` specify the scroll position in WebView pixels.
+  Future<void> scrollTo(int x, int y) {
+    return _webViewPlatformController.scrollTo(x, y);
+  }
+
+  /// Move the scrolled position of this view.
+  ///
+  /// The parameters `x` and `y` specify the amount of WebView pixels to scroll by horizontally and vertically respectively.
+  Future<void> scrollBy(int x, int y) {
+    return _webViewPlatformController.scrollBy(x, y);
+  }
+
+  /// Return the horizontal scroll position, in WebView pixels, of this view.
+  ///
+  /// Scroll position is measured from left.
+  Future<int> getScrollX() {
+    return _webViewPlatformController.getScrollX();
+  }
+
+  /// Return the vertical scroll position, in WebView pixels, of this view.
+  ///
+  /// Scroll position is measured from top.
+  Future<int> getScrollY() {
+    return _webViewPlatformController.getScrollY();
   }
 }
 

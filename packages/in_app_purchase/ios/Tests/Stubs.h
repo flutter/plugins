@@ -41,6 +41,7 @@ API_AVAILABLE(ios(11.2), macos(10.13.2))
 @interface SKPaymentTransactionStub : SKPaymentTransaction
 - (instancetype)initWithMap:(NSDictionary *)map;
 - (instancetype)initWithState:(SKPaymentTransactionState)state;
+- (instancetype)initWithState:(SKPaymentTransactionState)state payment:(SKPayment *)payment;
 @end
 
 @interface SKMutablePaymentStub : SKMutablePayment

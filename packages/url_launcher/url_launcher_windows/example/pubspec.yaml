@@ -1,0 +1,23 @@
+name: url_launcher_example
+description: Demonstrates the Windows implementation of the url_launcher plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  url_launcher_platform_interface: any
+  url_launcher_windows:
+    path: ../
+
+dev_dependencies:
+  integration_test:
+    path: ../../../integration_test
+  flutter_driver:
+    sdk: flutter
+  pedantic: ^1.8.0
+
+flutter:
+  uses-material-design: true
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.12.8 <2.0.0"

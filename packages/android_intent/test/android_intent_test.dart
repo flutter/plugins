@@ -15,41 +15,133 @@ void main() {
   setUp(() {
     mockChannel = MockMethodChannel();
   });
+
   group('AndroidIntent', () {
-    test('pass right params', () async {
-      androidIntent = AndroidIntent.private(
-          action: 'action_view',
-          data: Uri.encodeFull('https://flutter.io'),
-          flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
-          channel: mockChannel,
-          platform: FakePlatform(operatingSystem: 'android'));
-      await androidIntent.launch();
-      verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
-        'action': 'action_view',
-        'data': Uri.encodeFull('https://flutter.io'),
-        'flags': androidIntent.convertFlags(<int>[Flag.FLAG_ACTIVITY_NEW_TASK]),
-      }));
-    });
-    test('pass null value to action param', () async {
-      androidIntent = AndroidIntent.private(
-          action: null,
-          channel: mockChannel,
-          platform: FakePlatform(operatingSystem: 'android'));
-      await androidIntent.launch();
-      verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
-        'action': null,
-      }));
+    test('raises error if neither an action nor a component is provided', () {
+      try {
+        androidIntent = AndroidIntent(data: 'https://flutter.io');
+        fail('should raise an AssertionError');
+      } on AssertionError catch (e) {
+        expect(e.message, 'action or component (or both) must be specified');
+      } catch (e) {
+        fail('should raise an AssertionError');
+      }
     });
 
-    test('call in ios platform', () async {
-      androidIntent = AndroidIntent.private(
-          action: null,
+    group('launch', () {
+      test('pass right params', () async {
+        androidIntent = AndroidIntent.private(
+            action: 'action_view',
+            data: Uri.encodeFull('https://flutter.io'),
+            flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+            channel: mockChannel,
+            platform: FakePlatform(operatingSystem: 'android'),
+            type: 'video/*');
+        await androidIntent.launch();
+        verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
+          'action': 'action_view',
+          'data': Uri.encodeFull('https://flutter.io'),
+          'flags':
+              androidIntent.convertFlags(<int>[Flag.FLAG_ACTIVITY_NEW_TASK]),
+          'type': 'video/*',
+        }));
+      });
+
+      test('can send Intent with an action and no component', () async {
+        androidIntent = AndroidIntent.private(
+          action: 'action_view',
           channel: mockChannel,
-          platform: FakePlatform(operatingSystem: 'ios'));
-      await androidIntent.launch();
-      verifyZeroInteractions(mockChannel);
+          platform: FakePlatform(operatingSystem: 'android'),
+        );
+        await androidIntent.launch();
+        verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
+          'action': 'action_view',
+        }));
+      });
+
+      test('can send Intent with a component and no action', () async {
+        androidIntent = AndroidIntent.private(
+          package: 'packageName',
+          componentName: 'componentName',
+          channel: mockChannel,
+          platform: FakePlatform(operatingSystem: 'android'),
+        );
+        await androidIntent.launch();
+        verify(mockChannel.invokeMethod<void>('launch', <String, Object>{
+          'package': 'packageName',
+          'componentName': 'componentName',
+        }));
+      });
+
+      test('call in ios platform', () async {
+        androidIntent = AndroidIntent.private(
+            action: 'action_view',
+            channel: mockChannel,
+            platform: FakePlatform(operatingSystem: 'ios'));
+        await androidIntent.launch();
+        verifyZeroInteractions(mockChannel);
+      });
+    });
+
+    group('canResolveActivity', () {
+      test('pass right params', () async {
+        androidIntent = AndroidIntent.private(
+            action: 'action_view',
+            data: Uri.encodeFull('https://flutter.io'),
+            flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+            channel: mockChannel,
+            platform: FakePlatform(operatingSystem: 'android'),
+            type: 'video/*');
+        await androidIntent.canResolveActivity();
+        verify(mockChannel
+            .invokeMethod<void>('canResolveActivity', <String, Object>{
+          'action': 'action_view',
+          'data': Uri.encodeFull('https://flutter.io'),
+          'flags':
+              androidIntent.convertFlags(<int>[Flag.FLAG_ACTIVITY_NEW_TASK]),
+          'type': 'video/*',
+        }));
+      });
+
+      test('can send Intent with an action and no component', () async {
+        androidIntent = AndroidIntent.private(
+          action: 'action_view',
+          channel: mockChannel,
+          platform: FakePlatform(operatingSystem: 'android'),
+        );
+        await androidIntent.canResolveActivity();
+        verify(mockChannel
+            .invokeMethod<void>('canResolveActivity', <String, Object>{
+          'action': 'action_view',
+        }));
+      });
+
+      test('can send Intent with a component and no action', () async {
+        androidIntent = AndroidIntent.private(
+          package: 'packageName',
+          componentName: 'componentName',
+          channel: mockChannel,
+          platform: FakePlatform(operatingSystem: 'android'),
+        );
+        await androidIntent.canResolveActivity();
+        verify(mockChannel
+            .invokeMethod<void>('canResolveActivity', <String, Object>{
+          'package': 'packageName',
+          'componentName': 'componentName',
+        }));
+      });
+
+      test('call in ios platform', () async {
+        androidIntent = AndroidIntent.private(
+            action: 'action_view',
+            channel: mockChannel,
+            platform: FakePlatform(operatingSystem: 'ios'));
+        await androidIntent.canResolveActivity();
+        verifyZeroInteractions(mockChannel);
+      });
     });
   });
+
   group('convertFlags ', () {
     androidIntent = const AndroidIntent(
       action: 'action_view',

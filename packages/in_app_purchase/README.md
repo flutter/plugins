@@ -52,6 +52,19 @@ use.
 ### Initializing the plugin
 
 ```dart
+void main() {
+  // Inform the plugin that this app supports pending purchases on Android.
+  // An error will occur on Android if you access the plugin `instance`
+  // without this call.
+  //
+  // On iOS this is a no-op.
+  InAppPurchaseConnection.enablePendingPurchases();
+  
+  runApp(MyApp());
+}
+```
+
+```dart
 // Subscribe to any incoming purchases at app initialization. These can
 // propagate from either storefront so it's important to listen as soon as
 // possible to avoid losing events.
@@ -90,7 +103,7 @@ if (!available) {
 // Set literals require Dart 2.2. Alternatively, use `Set<String> _kIds = <String>['product1', 'product2'].toSet()`.
 const Set<String> _kIds = {'product1', 'product2'};
 final ProductDetailsResponse response = await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
-if (!response.notFoundIDs.isEmpty) {
+if (response.notFoundIDs.isNotEmpty) {
     // Handle the error.
 }
 List<ProductDetails> products = response.productDetails;
@@ -114,15 +127,33 @@ for (PurchaseDetails purchase in response.pastPurchases) {
 }
 ```
 
-Note that the App Store does not have any APIs for querying consummable
-products, and Google Play considers consummable products to no longer be owned
+Note that the App Store does not have any APIs for querying consumable
+products, and Google Play considers consumable products to no longer be owned
 once they're marked as consumed and fails to return them here. For restoring
 these across devices you'll need to persist them on your own server and query
 that as well.
 
+### Listening to purchase updates
+
+You should always start listening to purchase update as early as possible to be able
+to catch all purchase updates, including the ones from the previous app session.
+To listen to the update:
+
+```dart
+  Stream purchaseUpdated =
+      InAppPurchaseConnection.instance.purchaseUpdatedStream;
+  _subscription = purchaseUpdated.listen((purchaseDetailsList) {
+    _listenToPurchaseUpdated(purchaseDetailsList);
+  }, onDone: () {
+    _subscription.cancel();
+  }, onError: (error) {
+    // handle error here.
+  });
+```
+
 ### Making a purchase
 
-Both storefronts handle consummable and non-consummable products differently. If
+Both storefronts handle consumable and non-consumable products differently. If
 you're using `InAppPurchaseConnection`, you need to make a distinction here and
 call the right purchase method for each type.
 
@@ -134,10 +165,18 @@ if (_isConsumable(productDetails)) {
 } else {
     InAppPurchaseConnection.instance.buyNonConsumable(purchaseParam: purchaseParam);
 }
-
 // From here the purchase flow will be handled by the underlying storefront.
 // Updates will be delivered to the `InAppPurchaseConnection.instance.purchaseUpdatedStream`.
 ```
+
+### Complete a purchase
+
+The `InAppPurchaseConnection.purchaseUpdatedStream` will send purchase updates after
+you initiate the purchase flow using `InAppPurchaseConnection.buyConsumable` or `InAppPurchaseConnection.buyNonConsumable`.
+After delivering the content to the user, you need to call `InAppPurchaseConnection.completePurchase` to tell the `GooglePlay`
+and `AppStore` that the purchase has been finished.
+
+WARNING! Failure to call `InAppPurchaseConnection.completePurchase` and get a successful response within 3 days of the purchase will result a refund.
 
 ## Development
 

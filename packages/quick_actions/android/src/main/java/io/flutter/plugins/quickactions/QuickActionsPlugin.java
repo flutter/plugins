@@ -11,7 +11,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** QuickActionsPlugin */
 public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
@@ -25,15 +24,15 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
    *
    * <p>Must be called when the application is created.
    */
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     final QuickActionsPlugin plugin = new QuickActionsPlugin();
     plugin.setupChannel(registrar.messenger(), registrar.context(), registrar.activity());
   }
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    setupChannel(
-        binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext(), null);
+    setupChannel(binding.getBinaryMessenger(), binding.getApplicationContext(), null);
   }
 
   @Override

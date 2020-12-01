@@ -9,13 +9,16 @@ part of 'enum_converters.dart';
 _SerializedEnums _$_SerializedEnumsFromJson(Map json) {
   return _SerializedEnums()
     ..response = _$enumDecode(_$BillingResponseEnumMap, json['response'])
-    ..type = _$enumDecode(_$SkuTypeEnumMap, json['type']);
+    ..type = _$enumDecode(_$SkuTypeEnumMap, json['type'])
+    ..purchaseState =
+        _$enumDecode(_$PurchaseStateWrapperEnumMap, json['purchaseState']);
 }
 
 Map<String, dynamic> _$_SerializedEnumsToJson(_SerializedEnums instance) =>
     <String, dynamic>{
       'response': _$BillingResponseEnumMap[instance.response],
       'type': _$SkuTypeEnumMap[instance.type],
+      'purchaseState': _$PurchaseStateWrapperEnumMap[instance.purchaseState],
     };
 
 T _$enumDecode<T>(
@@ -56,4 +59,10 @@ const _$BillingResponseEnumMap = {
 const _$SkuTypeEnumMap = {
   SkuType.inapp: 'inapp',
   SkuType.subs: 'subs',
+};
+
+const _$PurchaseStateWrapperEnumMap = {
+  PurchaseStateWrapper.unspecified_state: 0,
+  PurchaseStateWrapper.purchased: 1,
+  PurchaseStateWrapper.pending: 2,
 };
