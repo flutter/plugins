@@ -5,8 +5,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
-#ifndef DISABLE_CONNECTIVITY_LOCATION_CODE
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class FLTWifiInfoLocationDelegate;
@@ -23,5 +21,3 @@ typedef void (^FLTWifiInfoLocationCompletion)(CLAuthorizationStatus);
 @end
 
 NS_ASSUME_NONNULL_END
-
-#endif
