@@ -6,7 +6,6 @@ package io.flutter.plugins.sharedpreferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.util.Base64;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -38,12 +37,15 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private final android.content.SharedPreferences preferences;
 
+  private final AsyncHandler asyncHandler;
+
   /**
    * Constructs a {@link MethodCallHandlerImpl} instance. Creates a {@link
    * android.content.SharedPreferences} based on the {@code context}.
    */
   MethodCallHandlerImpl(Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    asyncHandler = new AsyncHandler();
   }
 
   @Override
@@ -118,17 +120,22 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private void commitAsync(
       final SharedPreferences.Editor editor, final MethodChannel.Result result) {
-    new AsyncTask<Void, Void, Boolean>() {
-      @Override
-      protected Boolean doInBackground(Void... voids) {
-        return editor.commit();
-      }
+      asyncHandler.executeAsync(new AsyncHandler.Callable<Boolean>() {
+          @Override
+          public Boolean call() {
+              return editor.commit();
+          }
+      }, new AsyncHandler.Callback<Boolean>() {
+          @Override
+          public void onError(Exception e) {
+              result.error(e.getClass().getName(), e.getLocalizedMessage(), e.getMessage());
+          }
 
-      @Override
-      protected void onPostExecute(Boolean value) {
-        result.success(value);
-      }
-    }.execute();
+          @Override
+          public void onComplete(Boolean resultValue) {
+              result.success(resultValue);
+          }
+      });
   }
 
   private List<String> decodeList(String encodedList) throws IOException {
