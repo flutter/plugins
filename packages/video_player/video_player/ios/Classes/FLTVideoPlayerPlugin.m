@@ -172,9 +172,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   CGRect transformedFrame = CGRectApplyAffineTransform(CGRectMake(0, 0, videoTrack.naturalSize.width, videoTrack.naturalSize.height), transform);
   CGAffineTransform translation = CGAffineTransformMakeTranslation(-transformedFrame.origin.x, -transformedFrame.origin.y);
   return CGAffineTransformConcat(transform, translation);
-    
-    
-    
+ 
   // TODO(@recastrodiaz): why do we need to do this? Why is the preferredTransform incorrect?
   // At least 2 user videos show a black screen when in portrait mode if we directly use the
   // videoTrack.preferredTransform Setting tx to the height of the video instead of 0, properly
