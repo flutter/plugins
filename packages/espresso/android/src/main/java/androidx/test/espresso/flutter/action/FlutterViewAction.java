@@ -205,7 +205,7 @@ public final class FlutterViewAction<T> implements ViewAction {
       if (flutterView instanceof FlutterView) {
         isIdle = ((FlutterView) flutterView).hasRenderedFirstFrame();
       } else //noinspection deprecation
-        if (flutterView instanceof io.flutter.view.FlutterView) {
+      if (flutterView instanceof io.flutter.view.FlutterView) {
         //noinspection deprecation
         isIdle = ((io.flutter.view.FlutterView) flutterView).hasRenderedFirstFrame();
       } else {
