@@ -120,22 +120,24 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private void commitAsync(
       final SharedPreferences.Editor editor, final MethodChannel.Result result) {
-      asyncHandler.executeAsync(new AsyncHandler.Callable<Boolean>() {
+    asyncHandler.executeAsync(
+        new AsyncHandler.Callable<Boolean>() {
           @Override
           public Boolean call() {
-              return editor.commit();
+            return editor.commit();
           }
-      }, new AsyncHandler.Callback<Boolean>() {
+        },
+        new AsyncHandler.Callback<Boolean>() {
           @Override
           public void onError(Exception e) {
-              result.error(e.getClass().getName(), e.getLocalizedMessage(), e.getMessage());
+            result.error(e.getClass().getName(), e.getLocalizedMessage(), e.getMessage());
           }
 
           @Override
           public void onComplete(Boolean resultValue) {
-              result.success(resultValue);
+            result.success(resultValue);
           }
-      });
+        });
   }
 
   private List<String> decodeList(String encodedList) throws IOException {
