@@ -1,3 +1,7 @@
+## 0.5.8+17
+
+* Suppress the deprecation warning for `createCaptureSession`.
+
 ## 0.5.8+16
 
 * Moved package to camera/camera subdir, to allow for federated implementations.

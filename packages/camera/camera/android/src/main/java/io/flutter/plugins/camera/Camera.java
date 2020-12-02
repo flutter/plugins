@@ -330,6 +330,7 @@ public class Camera {
     surfaceList.add(flutterSurface);
     surfaceList.addAll(remainingSurfaces);
     // Start the session
+    //noinspection deprecation
     cameraDevice.createCaptureSession(surfaceList, callback, null);
   }
 
