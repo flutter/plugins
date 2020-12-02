@@ -272,6 +272,7 @@ public class Camera {
     createCaptureSession(templateType, null, surfaces);
   }
 
+  @SuppressWarnings("deprecation")
   private void createCaptureSession(
       int templateType, Runnable onSuccessCallback, Surface... surfaces)
       throws CameraAccessException {
