@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.2
+
+* Dart null safety requires `2.12`.
+
 ## 2.0.0-nullsafety.1
 
 * Merge master.
