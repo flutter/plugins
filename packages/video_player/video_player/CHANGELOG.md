@@ -1,6 +1,10 @@
-## 2.0.0-nullsafety.2
+## 2.0.0-nullsafety.3
 
 * Dart null safety requires `2.12`.
+
+## 2.0.0-nullsafety.2
+
+* Bump SDK version.
 
 ## 2.0.0-nullsafety.1
 
