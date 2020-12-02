@@ -44,6 +44,9 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// [enableDomStorage] is an Android only setting. If true, WebView enable
 /// DOM storage.
 /// [headers] is an Android only setting that adds headers to the WebView.
+/// When not using a WebView, the header information is passed to the browser,
+/// some Android browsers do not support the [Browser.EXTRA_HEADERS](https://developer.android.com/reference/android/provider/Browser#EXTRA_HEADERS)
+/// intent extra and the header information will be lost.
 /// [webOnlyWindowName] is an Web only setting . _blank opens the new url in new tab ,
 /// _self opens the new url in current tab.
 /// Default behaviour is to open the url in new tab.

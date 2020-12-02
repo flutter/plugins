@@ -199,13 +199,14 @@ public final class FlutterViewAction<T> implements ViewAction {
       return FlutterViewRenderedIdlingResource.class.getSimpleName();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean isIdleNow() {
       boolean isIdle = false;
       if (flutterView instanceof FlutterView) {
         isIdle = ((FlutterView) flutterView).hasRenderedFirstFrame();
-      } else if (flutterView instanceof io.flutter.view.FlutterView) {
+      } else //noinspection deprecation
+        if (flutterView instanceof io.flutter.view.FlutterView) {
+        //noinspection deprecation
         isIdle = ((io.flutter.view.FlutterView) flutterView).hasRenderedFirstFrame();
       } else {
         throw new FlutterProtocolException(

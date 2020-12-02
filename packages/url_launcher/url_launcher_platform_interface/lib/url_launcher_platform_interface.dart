@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:meta/meta.dart' show required;
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:url_launcher_platform_interface/link.dart';
 
 import 'method_channel_url_launcher.dart';
 
@@ -37,6 +38,9 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }
+
+  /// The delegate used by the Link widget to build itself.
+  LinkDelegate get linkDelegate;
 
   /// Returns `true` if this platform is able to launch [url].
   Future<bool> canLaunch(String url) {

@@ -1,3 +1,11 @@
+## 1.0.8
+
+* Update Dart SDK constraint in example.
+
+## 1.0.7
+
+* Update android compileSdkVersion to 29.
+
 ## 1.0.6
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
