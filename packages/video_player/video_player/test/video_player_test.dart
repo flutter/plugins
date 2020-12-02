@@ -33,7 +33,7 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   DataSourceType get dataSourceType => DataSourceType.file;
 
   @override
-  String get package => null!;
+  String get package => '';
 
   @override
   Future<Duration> get position async => value.position;
