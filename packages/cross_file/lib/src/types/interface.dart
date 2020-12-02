@@ -1,13 +1,17 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:typed_data';
 import 'package:meta/meta.dart';
 
 import './base.dart';
 
-/// A XFile is a cross-platform, simplified File abstraction.
+/// A CrossFile is a cross-platform, simplified File abstraction.
 ///
 /// It wraps the bytes of a selected file, and its (platform-dependant) path.
 class XFile extends XFileBase {
-  /// Construct a XFile object from its path.
+  /// Construct a CrossFile object from its path.
   ///
   /// Optionally, this can be initialized with `bytes` and `length`
   /// so no http requests are performed to retrieve data later.
@@ -22,13 +26,13 @@ class XFile extends XFileBase {
     int length,
     Uint8List bytes,
     DateTime lastModified,
-    @visibleForTesting XFileTestOverrides overrides,
+    @visibleForTesting CrossFileTestOverrides overrides,
   }) : super(path) {
     throw UnimplementedError(
-        'XFile is not available in your current platform.');
+        'CrossFile is not available in your current platform.');
   }
 
-  /// Construct a XFile object from its data
+  /// Construct a CrossFile object from its data
   XFile.fromData(
     Uint8List bytes, {
     String mimeType,
@@ -36,19 +40,19 @@ class XFile extends XFileBase {
     int length,
     DateTime lastModified,
     String path,
-    @visibleForTesting XFileTestOverrides overrides,
+    @visibleForTesting CrossFileTestOverrides overrides,
   }) : super(path) {
     throw UnimplementedError(
-        'XFile is not available in your current platform.');
+        'CrossFile is not available in your current platform.');
   }
 }
 
-/// Overrides some functions of XFile for testing purposes
+/// Overrides some functions of CrossFile for testing purposes
 @visibleForTesting
-class XFileTestOverrides {
+class CrossFileTestOverrides {
   /// For overriding the creation of the file input element.
   dynamic Function(String href, String suggestedName) createAnchorElement;
 
   /// Default constructor for overrides
-  XFileTestOverrides({this.createAnchorElement});
+  CrossFileTestOverrides({this.createAnchorElement});
 }

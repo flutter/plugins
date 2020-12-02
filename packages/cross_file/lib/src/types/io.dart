@@ -1,10 +1,14 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import './base.dart';
 
-/// A XFile backed by a dart:io File.
+/// A CrossFile backed by a dart:io File.
 class XFile extends XFileBase {
   final File _file;
   final String mimeType;
@@ -13,7 +17,7 @@ class XFile extends XFileBase {
 
   final Uint8List _bytes;
 
-  /// Construct a XFile object backed by a dart:io File.
+  /// Construct a CrossFile object backed by a dart:io File.
   XFile(
     String path, {
     this.mimeType,
@@ -26,7 +30,7 @@ class XFile extends XFileBase {
         _lastModified = lastModified,
         super(path);
 
-  /// Construct an XFile from its data
+  /// Construct an CrossFile from its data
   XFile.fromData(
     Uint8List bytes, {
     this.mimeType,
