@@ -169,7 +169,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
   CGAffineTransform transform = videoTrack.preferredTransform;
-  CGRect transformedFrame = CGRectMake(0, 0, videoTrack.naturalSize.width, videoTrack.naturalSize.height);
+  CGRect transformedFrame = CGRectApplyAffineTransform(CGRectMake(0, 0, videoTrack.naturalSize.width, videoTrack.naturalSize.height), transform);
   CGAffineTransform translation = CGAffineTransformMakeTranslation(-transformedFrame.origin.x, -transformedFrame.origin.y);
   return CGAffineTransformConcat(transform, translation);
     
