@@ -169,6 +169,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
   CGAffineTransform transform = videoTrack.preferredTransform;
+  CGRect transformedFrame = CGRectApplyAffineTransform(CGRectMake(0, 0, videoTrack.naturalSize.width, videoTrack.naturalSize.height), transform);
+  CGAffineTransform translation = CGAffineTransformMakeTranslation(-transformedFrame.origin.x, -transformedFrame.origin.y);
+  return CGAffineTransformConcat(transform, translation);
+    
+    
+    
   // TODO(@recastrodiaz): why do we need to do this? Why is the preferredTransform incorrect?
   // At least 2 user videos show a black screen when in portrait mode if we directly use the
   // videoTrack.preferredTransform Setting tx to the height of the video instead of 0, properly
@@ -316,13 +322,20 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     if ([self duration] == 0) {
       return;
     }
+      
+      // Fetching the natural size and applying the preferredTransform
+      AVPlayerItemTrack *track = [self.player currentItem].tracks.firstObject;
 
+      CGSize naturalSize = track.assetTrack.naturalSize;
+      CGAffineTransform prefTrans = track.assetTrack.preferredTransform;
+      CGSize realSize = CGSizeApplyAffineTransform(naturalSize, prefTrans);
+      
     _isInitialized = true;
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
-      @"width" : @(width),
-      @"height" : @(height)
+      @"width" : @(fabs(realSize.width) ? : width),
+      @"height" : @(fabs(realSize.height) ? : height)
     });
   }
 }
