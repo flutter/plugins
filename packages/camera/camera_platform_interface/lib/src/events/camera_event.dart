@@ -24,7 +24,7 @@ abstract class CameraEvent {
   /// Build a Camera Event, that relates a `cameraId`.
   ///
   /// The `cameraId` is the ID of the camera that triggered the event.
-  CameraEvent(this.cameraId);
+  CameraEvent(this.cameraId) : assert(cameraId != null);
 
   @override
   bool operator ==(Object other) =>

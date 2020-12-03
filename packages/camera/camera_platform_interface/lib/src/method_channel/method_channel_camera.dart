@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -75,12 +76,12 @@ class MethodChannelCamera extends CameraPlatform {
 
   @override
   Future<void> initializeCamera(int cameraId) {
-    if (!_channels.containsKey(cameraId)) {
+    _channels.putIfAbsent(cameraId, () {
       final channel = MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
       channel.setMethodCallHandler(
           (MethodCall call) => handleMethodCall(call, cameraId));
-      _channels[cameraId] = channel;
-    }
+      return channel;
+    });
 
     Completer _completer = Completer();
 
@@ -204,22 +205,9 @@ class MethodChannelCamera extends CameraPlatform {
         return 'medium';
       case ResolutionPreset.low:
         return 'low';
+      default:
+        throw ArgumentError('Unknown ResolutionPreset value');
     }
-    throw ArgumentError('Unknown ResolutionPreset value');
-  }
-
-  /// Parses a string into a corresponding CameraLensDirection.
-  @visibleForTesting
-  CameraLensDirection parseCameraLensDirection(String string) {
-    switch (string) {
-      case 'front':
-        return CameraLensDirection.front;
-      case 'back':
-        return CameraLensDirection.back;
-      case 'external':
-        return CameraLensDirection.external;
-    }
-    throw ArgumentError('Unknown CameraLensDirection value');
   }
 
   /// Converts messages received from the native platform into events.

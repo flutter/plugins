@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of camera;
+import 'dart:async';
+
+import 'package:camera/camera.dart';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:pedantic/pedantic.dart';
 
 final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
@@ -163,6 +170,9 @@ class CameraController extends ValueNotifier<CameraValue> {
   void debugCheckIsDisposed() {
     assert(_isDisposed);
   }
+
+  /// The camera identifier with which the controller is associated.
+  int get cameraId => _cameraId;
 
   /// Initializes the camera on the device.
   ///
