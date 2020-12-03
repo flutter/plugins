@@ -7,5 +7,3 @@ export 'src/camera_image.dart';
 export 'src/camera_preview.dart';
 
 export 'package:camera_platform_interface/camera_platform_interface.dart';
-
-
