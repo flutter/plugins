@@ -16,13 +16,14 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.CaptureResult;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.util.Log;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -65,6 +66,7 @@ public class Camera {
   private int currentOrientation = ORIENTATION_UNKNOWN;
   private Context applicationContext;
   private FlashMode flashMode;
+  private PictureCaptureRequest pictureCaptureRequest;
 
   // Mirrors camera.dart
   public enum ResolutionPreset {
@@ -78,17 +80,9 @@ public class Camera {
 
   // Mirrors flash_mode.dart
   public enum FlashMode {
-    off(CaptureRequest.CONTROL_AE_MODE_ON, CaptureRequest.FLASH_MODE_OFF),
-    auto(CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH, CaptureRequest.FLASH_MODE_OFF),
-    always(CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH, CaptureRequest.FLASH_MODE_SINGLE);
-
-    int controlAEMode;
-    int flashMode;
-
-    FlashMode(int controlAEMode, int flashMode) {
-      this.controlAEMode = controlAEMode;
-      this.flashMode = flashMode;
-    }
+    off,
+    auto,
+    always;
 
     public static FlashMode getValueForString(String modeStr) {
       try {
@@ -96,11 +90,6 @@ public class Camera {
       } catch (IllegalArgumentException | NullPointerException e) {
         return null;
       }
-    }
-
-    @Override
-    public String toString() {
-      return "FlashMode{" + "controlAEMode=" + controlAEMode + ", flashMode=" + flashMode + '}';
     }
   }
 
@@ -245,62 +234,125 @@ public class Camera {
   }
 
   public void takePicture(@NonNull final Result result) {
+    // Only take 1 picture at a time
+    if (pictureCaptureRequest != null && !pictureCaptureRequest.isFinished()) {
+      result.error("captureAlreadyActive", "Picture is currently already being captured", null);
+      return;
+    }
+    // Store the result
+    this.pictureCaptureRequest = new PictureCaptureRequest(result);
+
+    // Create temporary file
     final File outputDir = applicationContext.getCacheDir();
     final File file;
     try {
       file = File.createTempFile("CAP", ".jpg", outputDir);
     } catch (IOException e) {
-      result.error("cannotCreateFile", e.getMessage(), null);
+      pictureCaptureRequest.error("cannotCreateFile", e.getMessage(), null);
       return;
     }
 
+    // Listen for picture being taken
     pictureImageReader.setOnImageAvailableListener(
         reader -> {
           try (Image image = reader.acquireLatestImage()) {
             ByteBuffer buffer = image.getPlanes()[0].getBuffer();
             writeToFile(buffer, file);
-            result.success(file.getAbsolutePath());
+            pictureCaptureRequest.finish(file.getAbsolutePath());
           } catch (IOException e) {
-            result.error("IOError", "Failed saving image", null);
+            pictureCaptureRequest.error("IOError", "Failed saving image", null);
           }
         },
         null);
 
+    runPicturePreCapture();
+  }
+
+  private final CameraCaptureSession.CaptureCallback pictureCaptureCallback =
+      new CameraCaptureSession.CaptureCallback() {
+        @Override
+        public void onCaptureCompleted(
+            @NonNull CameraCaptureSession session,
+            @NonNull CaptureRequest request,
+            @NonNull TotalCaptureResult result) {
+          assert (pictureCaptureRequest != null);
+          switch (pictureCaptureRequest.getState()) {
+            case awaitingPreCapture:
+              Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+              // Some devices might return null here, in which case we will also continue.
+              if (aeState == null
+                  || aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED
+                  || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
+                runPictureCapture();
+              }
+              break;
+          }
+        }
+
+        @Override
+        public void onCaptureFailed(
+            @NonNull CameraCaptureSession session,
+            @NonNull CaptureRequest request,
+            @NonNull CaptureFailure failure) {
+          assert (pictureCaptureRequest != null);
+          String reason;
+          switch (failure.getReason()) {
+            case CaptureFailure.REASON_ERROR:
+              reason = "An error happened in the framework";
+              break;
+            case CaptureFailure.REASON_FLUSHED:
+              reason = "The capture has failed due to an abortCaptures() call";
+              break;
+            default:
+              reason = "Unknown reason";
+          }
+          pictureCaptureRequest.error("captureFailure", reason, null);
+        }
+      };
+
+  private void runPicturePreCapture() {
+    assert (pictureCaptureRequest != null);
+    pictureCaptureRequest.setState(PictureCaptureRequest.State.awaitingPreCapture);
+
+    captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+        CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+    try {
+      cameraCaptureSession.capture(captureRequestBuilder.build(), pictureCaptureCallback, null);
+      captureRequestBuilder.set(
+          CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+          CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
+    } catch (CameraAccessException e) {
+      pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
+    }
+  }
+
+  private void runPictureCapture() {
+    assert (pictureCaptureRequest != null);
+    pictureCaptureRequest.setState(PictureCaptureRequest.State.capturing);
     try {
       final CaptureRequest.Builder captureBuilder =
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
       captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
-      captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-      captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, flashMode.controlAEMode);
-      captureBuilder.set(CaptureRequest.FLASH_MODE, flashMode.flashMode);
-      Log.d("FLASH_MODE", "SETTING FLASH MODE " + flashMode.toString());
-
-      cameraCaptureSession.capture(
-          captureBuilder.build(),
-          new CameraCaptureSession.CaptureCallback() {
-            @Override
-            public void onCaptureFailed(
-                @NonNull CameraCaptureSession session,
-                @NonNull CaptureRequest request,
-                @NonNull CaptureFailure failure) {
-              String reason;
-              switch (failure.getReason()) {
-                case CaptureFailure.REASON_ERROR:
-                  reason = "An error happened in the framework";
-                  break;
-                case CaptureFailure.REASON_FLUSHED:
-                  reason = "The capture has failed due to an abortCaptures() call";
-                  break;
-                default:
-                  reason = "Unknown reason";
-              }
-              result.error("captureFailure", reason, null);
-            }
-          },
-          null);
+      switch (flashMode) {
+        case off:
+          captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+          captureBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+          break;
+        case auto:
+          captureBuilder.set(
+              CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+          break;
+        case always:
+        default:
+          captureBuilder.set(
+              CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
+          break;
+      }
+      cameraCaptureSession.capture(captureBuilder.build(), pictureCaptureCallback, null);
     } catch (CameraAccessException e) {
-      result.error("cameraAccess", e.getMessage(), null);
+      pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
     }
   }
 
@@ -343,10 +395,7 @@ public class Camera {
                 return;
               }
               cameraCaptureSession = session;
-              captureRequestBuilder.set(
-                  CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-              captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, flashMode.controlAEMode);
-              captureRequestBuilder.set(CaptureRequest.FLASH_MODE, flashMode.flashMode);
+              initPreviewCaptureBuilder();
               cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               if (onSuccessCallback != null) {
                 onSuccessCallback.run();
@@ -453,7 +502,8 @@ public class Camera {
     result.success(null);
   }
 
-  public void setFlashMode(@NonNull final Result result, String modeStr) {
+  public void setFlashMode(@NonNull final Result result, String modeStr)
+      throws CameraAccessException {
     // Get the flash availability
     Boolean flashAvailable;
     try {
@@ -478,9 +528,31 @@ public class Camera {
       return;
     }
     this.flashMode = mode;
-    captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, mode.controlAEMode);
-    captureRequestBuilder.set(CaptureRequest.FLASH_MODE, mode.flashMode);
+    initPreviewCaptureBuilder();
+    this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
     result.success(null);
+  }
+
+  private void initPreviewCaptureBuilder() {
+    captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+    switch (flashMode) {
+      case off:
+        captureRequestBuilder.set(
+            CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+        break;
+      case auto:
+        captureRequestBuilder.set(
+            CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+        break;
+      case always:
+      default:
+        captureRequestBuilder.set(
+            CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
+        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+        break;
+    }
   }
 
   public void startPreview() throws CameraAccessException {
