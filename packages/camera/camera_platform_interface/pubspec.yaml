@@ -16,6 +16,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  async: ^2.4.2
   mockito: ^4.1.1
   pedantic: ^1.8.0
 
