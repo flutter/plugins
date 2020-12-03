@@ -348,6 +348,12 @@ class VideoPlayerOptions {
   /// The default value is false
   final bool mixWithOthers;
 
+  /// Set this to true to let plugin manage play/pause with app lifecycle changes,
+  /// Set this to fase to keep playing video in background, when app goes in background
+  /// The default value is true
+  final bool observeAppLifecycle;
+
   /// set additional optional player settings
-  VideoPlayerOptions({this.mixWithOthers = false});
+  VideoPlayerOptions(
+      {this.mixWithOthers = false, this.observeAppLifecycle = true});
 }
