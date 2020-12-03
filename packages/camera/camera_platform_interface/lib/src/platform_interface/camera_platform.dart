@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:cross_file/cross_file.dart';
