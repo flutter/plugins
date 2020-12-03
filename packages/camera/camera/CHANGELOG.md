@@ -6,7 +6,7 @@ Method changes in `CameraController`:
 - The `takePicture` method no longer accepts the `path` parameter, but instead returns the captured image as an instance of the `XFile` class;
 - The `startVideoRecording` method no longer accepts the `filePath`. Instead the recorded video is now returned as a `XFile` instance when the `stopVideoRecording` method completes; 
 - The `stopVideoRecording` method now returns the captured video when it completes;
-- Added the `buildPreview` method which replaces the seperate `CameraPreview` widget.
+- Added the `buildPreview` method which is now used to implement the CameraPreview widget.
 
 ## 0.5.8+19
 
