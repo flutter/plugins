@@ -16,5 +16,5 @@ class CameraException implements Exception {
   String description;
 
   @override
-  String toString() => '$runtimeType($code, $description)';
+  String toString() => 'CameraException($code, $description)';
 }
