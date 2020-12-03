@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:async/async.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
+import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -332,7 +333,7 @@ void main() {
           CameraDescription cameraDescription = CameraDescription(
             name: returnData[i]['name'],
             lensDirection:
-                camera.parseCameraLensDirection(returnData[i]['lensFacing']),
+                parseCameraLensDirection(returnData[i]['lensFacing']),
             sensorOrientation: returnData[i]['sensorOrientation'],
           );
           expect(cameras[i], cameraDescription);
@@ -476,38 +477,6 @@ void main() {
         // Act
         expect(widget is Texture, isTrue);
         expect((widget as Texture).textureId, cameraId);
-      });
-    });
-
-    group('Utility methods', () {
-      test(
-          'Should return CameraLensDirection when valid value is supplied when parsing camera lens direction',
-          () {
-        final camera = MethodChannelCamera();
-
-        expect(
-          camera.parseCameraLensDirection('back'),
-          CameraLensDirection.back,
-        );
-        expect(
-          camera.parseCameraLensDirection('front'),
-          CameraLensDirection.front,
-        );
-        expect(
-          camera.parseCameraLensDirection('external'),
-          CameraLensDirection.external,
-        );
-      });
-
-      test(
-          'Should throw ArgumentException when invalid value is supplied when parsing camera lens direction',
-          () {
-        final camera = MethodChannelCamera();
-
-        expect(
-          () => camera.parseCameraLensDirection('test'),
-          throwsA(isArgumentError),
-        );
       });
 
       test('Should throw MissingPluginException when handling unknown method',
