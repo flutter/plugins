@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of camera;
+import 'package:camera/camera.dart';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:flutter/material.dart';
 
 /// A widget showing a live camera preview.
 class CameraPreview extends StatelessWidget {
@@ -15,7 +17,7 @@ class CameraPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return controller.value.isInitialized
-        ? Texture(textureId: controller._cameraId)
+        ? CameraPlatform.instance.buildPreview(controller.cameraId)
         : Container();
   }
 }
