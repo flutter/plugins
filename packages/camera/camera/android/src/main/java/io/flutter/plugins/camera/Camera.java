@@ -22,6 +22,7 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.util.Log;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -63,6 +64,7 @@ public class Camera {
   private CamcorderProfile recordingProfile;
   private int currentOrientation = ORIENTATION_UNKNOWN;
   private Context applicationContext;
+  private FlashMode flashMode;
 
   // Mirrors camera.dart
   public enum ResolutionPreset {
@@ -72,6 +74,34 @@ public class Camera {
     veryHigh,
     ultraHigh,
     max,
+  }
+
+  // Mirrors flash_mode.dart
+  public enum FlashMode {
+    off(CaptureRequest.CONTROL_AE_MODE_ON, CaptureRequest.FLASH_MODE_OFF),
+    auto(CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH, CaptureRequest.FLASH_MODE_OFF),
+    always(CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH, CaptureRequest.FLASH_MODE_SINGLE);
+
+    int controlAEMode;
+    int flashMode;
+
+    FlashMode(int controlAEMode, int flashMode) {
+      this.controlAEMode = controlAEMode;
+      this.flashMode = flashMode;
+    }
+
+    public static FlashMode getValueForString(String modeStr) {
+      try {
+        return valueOf(modeStr);
+      } catch (IllegalArgumentException | NullPointerException e) {
+        return null;
+      }
+    }
+
+    @Override
+    public String toString() {
+      return "FlashMode{" + "controlAEMode=" + controlAEMode + ", flashMode=" + flashMode + '}';
+    }
   }
 
   public Camera(
@@ -91,6 +121,7 @@ public class Camera {
     this.dartMessenger = dartMessenger;
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     this.applicationContext = activity.getApplicationContext();
+    this.flashMode = FlashMode.auto;
     orientationEventListener =
         new OrientationEventListener(activity.getApplicationContext()) {
           @Override
@@ -240,6 +271,10 @@ public class Camera {
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
       captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+      captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+      captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, flashMode.controlAEMode);
+      captureBuilder.set(CaptureRequest.FLASH_MODE, flashMode.flashMode);
+      Log.d("FLASH_MODE", "SETTING FLASH MODE " + flashMode.toString());
 
       cameraCaptureSession.capture(
           captureBuilder.build(),
@@ -310,6 +345,8 @@ public class Camera {
               cameraCaptureSession = session;
               captureRequestBuilder.set(
                   CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+              captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, flashMode.controlAEMode);
+              captureRequestBuilder.set(CaptureRequest.FLASH_MODE, flashMode.flashMode);
               cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               if (onSuccessCallback != null) {
                 onSuccessCallback.run();
@@ -413,6 +450,36 @@ public class Camera {
       return;
     }
 
+    result.success(null);
+  }
+
+  public void setFlashMode(@NonNull final Result result, String modeStr) {
+    // Get the flash availability
+    Boolean flashAvailable;
+    try {
+      flashAvailable =
+          cameraManager
+              .getCameraCharacteristics(cameraDevice.getId())
+              .get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+      if (flashAvailable == null || !flashAvailable) flashAvailable = false;
+    } catch (CameraAccessException e) {
+      result.error("setFlashModeFailed", e.getMessage(), null);
+      return;
+    }
+    // Check if flash is available.
+    if (!flashAvailable) {
+      result.error("setFlashModeFailed", "Device does not have flash capabilities", null);
+      return;
+    }
+    // Get flash
+    FlashMode mode = FlashMode.getValueForString(modeStr);
+    if (mode == null) {
+      result.error("setFlashModeFailed", "Unknown flash mode " + modeStr, null);
+      return;
+    }
+    this.flashMode = mode;
+    captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, mode.controlAEMode);
+    captureRequestBuilder.set(CaptureRequest.FLASH_MODE, mode.flashMode);
     result.success(null);
   }
 
