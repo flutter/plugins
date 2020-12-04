@@ -1,3 +1,7 @@
+## 0.0.1+8
+
+* Android: Handle deprecation & unchecked warning as error.
+
 ## 0.0.1+7
 
 * Update android compileSdkVersion to 29.
