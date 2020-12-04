@@ -124,8 +124,14 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         }
       case "setFlashMode":
         {
+          String modeStr = call.argument("mode");
+          Camera.FlashMode mode = Camera.FlashMode.getValueForString(modeStr);
+          if (mode == null) {
+            result.error("setFlashModeFailed", "Unknown flash mode " + modeStr, null);
+            return;
+          }
           try {
-            camera.setFlashMode(result, call.argument("mode"));
+            camera.setFlashMode(result, mode);
           } catch (Exception e) {
             handleException(e, result);
           }

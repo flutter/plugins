@@ -502,7 +502,7 @@ public class Camera {
     result.success(null);
   }
 
-  public void setFlashMode(@NonNull final Result result, String modeStr)
+  public void setFlashMode(@NonNull final Result result, FlashMode mode)
       throws CameraAccessException {
     // Get the flash availability
     Boolean flashAvailable;
@@ -511,22 +511,17 @@ public class Camera {
           cameraManager
               .getCameraCharacteristics(cameraDevice.getId())
               .get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-      if (flashAvailable == null || !flashAvailable) flashAvailable = false;
     } catch (CameraAccessException e) {
       result.error("setFlashModeFailed", e.getMessage(), null);
       return;
     }
     // Check if flash is available.
-    if (!flashAvailable) {
+    if (flashAvailable == null || !flashAvailable) {
       result.error("setFlashModeFailed", "Device does not have flash capabilities", null);
       return;
     }
     // Get flash
-    FlashMode mode = FlashMode.getValueForString(modeStr);
-    if (mode == null) {
-      result.error("setFlashModeFailed", "Unknown flash mode " + modeStr, null);
-      return;
-    }
+
     this.flashMode = mode;
     initPreviewCaptureBuilder();
     this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
