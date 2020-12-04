@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Android: Cleanup the NetworkCallback object when a connectivity stream is cancelled
+
 ## 2.0.2
 
 * Android: Fix IllegalArgumentException.
