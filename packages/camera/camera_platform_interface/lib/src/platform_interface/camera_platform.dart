@@ -4,12 +4,11 @@
 
 import 'dart:async';
 
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
-import '../../camera_platform_interface.dart';
 
 /// The interface that implementations of camera must implement.
 ///

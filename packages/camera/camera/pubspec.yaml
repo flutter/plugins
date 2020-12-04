@@ -13,7 +13,10 @@ dependencies:
     sdk: flutter
   # TODO(mvanbeusekom): Update dependency to pub.dev version once camera_platform_interface is published
   camera_platform_interface:
-    path: ../camera_platform_interface
+    git:
+      url: https://github.com/flutter/plugins.git
+      path: packages/camera/camera_platform_interface
+      ref: master
 
 dev_dependencies:
   path_provider: ^0.5.0
