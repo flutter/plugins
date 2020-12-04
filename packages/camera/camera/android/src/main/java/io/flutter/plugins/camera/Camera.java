@@ -31,6 +31,8 @@ import androidx.annotation.NonNull;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
+import io.flutter.plugins.camera.types.FlashMode;
+import io.flutter.plugins.camera.types.ResolutionPreset;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,31 +69,6 @@ public class Camera {
   private Context applicationContext;
   private FlashMode flashMode;
   private PictureCaptureRequest pictureCaptureRequest;
-
-  // Mirrors camera.dart
-  public enum ResolutionPreset {
-    low,
-    medium,
-    high,
-    veryHigh,
-    ultraHigh,
-    max,
-  }
-
-  // Mirrors flash_mode.dart
-  public enum FlashMode {
-    off,
-    auto,
-    always;
-
-    public static FlashMode getValueForString(String modeStr) {
-      try {
-        return valueOf(modeStr);
-      } catch (IllegalArgumentException | NullPointerException e) {
-        return null;
-      }
-    }
-  }
 
   public Camera(
       final Activity activity,
