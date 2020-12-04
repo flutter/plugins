@@ -1,3 +1,16 @@
+## 1.6.24
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 1.6.23
+
+* Check in windows/ directory for example/
+
+## 1.6.22
+
+* Switch to guava-android dependency instead of full guava.
+
 ## 1.6.21
 
 * Update android compileSdkVersion to 29.

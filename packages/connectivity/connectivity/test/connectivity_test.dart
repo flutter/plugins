@@ -11,9 +11,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:mockito/mockito.dart';
 
 const ConnectivityResult kCheckConnectivityResult = ConnectivityResult.wifi;
-const String kWifiNameResult = '1337wifi';
-const String kWifiBSSIDResult = 'c0:ff:33:c0:d3:55';
-const String kWifiIpAddressResult = '127.0.0.1';
 const LocationAuthorizationStatus kRequestLocationResult =
     LocationAuthorizationStatus.authorizedAlways;
 const LocationAuthorizationStatus kGetLocationResult =
@@ -33,38 +30,6 @@ void main() {
       ConnectivityResult result = await connectivity.checkConnectivity();
       expect(result, kCheckConnectivityResult);
     });
-
-    test('getWifiName', () async {
-      // ignore: deprecated_member_use_from_same_package
-      String result = await connectivity.getWifiName();
-      expect(result, kWifiNameResult);
-    });
-
-    test('getWifiBSSID', () async {
-      // ignore: deprecated_member_use_from_same_package
-      String result = await connectivity.getWifiBSSID();
-      expect(result, kWifiBSSIDResult);
-    });
-
-    test('getWifiIP', () async {
-      // ignore: deprecated_member_use_from_same_package
-      String result = await connectivity.getWifiIP();
-      expect(result, kWifiIpAddressResult);
-    });
-
-    test('requestLocationServiceAuthorization', () async {
-      LocationAuthorizationStatus result =
-          // ignore: deprecated_member_use_from_same_package
-          await connectivity.requestLocationServiceAuthorization();
-      expect(result, kRequestLocationResult);
-    });
-
-    test('getLocationServiceAuthorization', () async {
-      LocationAuthorizationStatus result =
-          // ignore: deprecated_member_use_from_same_package
-          await connectivity.getLocationServiceAuthorization();
-      expect(result, kRequestLocationResult);
-    });
   });
 }
 
@@ -73,27 +38,5 @@ class MockConnectivityPlatform extends Mock
     implements ConnectivityPlatform {
   Future<ConnectivityResult> checkConnectivity() async {
     return kCheckConnectivityResult;
-  }
-
-  Future<String> getWifiName() async {
-    return kWifiNameResult;
-  }
-
-  Future<String> getWifiBSSID() async {
-    return kWifiBSSIDResult;
-  }
-
-  Future<String> getWifiIP() async {
-    return kWifiIpAddressResult;
-  }
-
-  Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
-    bool requestAlwaysLocationUsage = false,
-  }) async {
-    return kRequestLocationResult;
-  }
-
-  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
-    return kGetLocationResult;
   }
 }

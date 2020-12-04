@@ -24,6 +24,7 @@ part 'purchase_wrapper.g.dart';
 @JsonSerializable()
 @PurchaseStateConverter()
 class PurchaseWrapper {
+  /// Creates a purchase wrapper with the given purchase details.
   @visibleForTesting
   PurchaseWrapper(
       {@required this.orderId,
@@ -38,6 +39,7 @@ class PurchaseWrapper {
       @required this.isAcknowledged,
       @required this.purchaseState});
 
+  /// Factory for creating a [PurchaseWrapper] from a [Map] with the purchase details.
   factory PurchaseWrapper.fromJson(Map map) => _$PurchaseWrapperFromJson(map);
 
   @override
@@ -132,6 +134,7 @@ class PurchaseWrapper {
 // For now, we keep them separated classes to be consistent with Android's BillingClient implementation.
 @JsonSerializable()
 class PurchaseHistoryRecordWrapper {
+  /// Creates a [PurchaseHistoryRecordWrapper] with the given record details.
   @visibleForTesting
   PurchaseHistoryRecordWrapper({
     @required this.purchaseTime,
@@ -142,6 +145,7 @@ class PurchaseHistoryRecordWrapper {
     @required this.developerPayload,
   });
 
+  /// Factory for creating a [PurchaseHistoryRecordWrapper] from a [Map] with the record details.
   factory PurchaseHistoryRecordWrapper.fromJson(Map map) =>
       _$PurchaseHistoryRecordWrapperFromJson(map);
 
@@ -197,11 +201,13 @@ class PurchaseHistoryRecordWrapper {
 @JsonSerializable()
 @BillingResponseConverter()
 class PurchasesResultWrapper {
+  /// Creates a [PurchasesResultWrapper] with the given purchase result details.
   PurchasesResultWrapper(
       {@required this.responseCode,
       @required this.billingResult,
       @required this.purchasesList});
 
+  /// Factory for creating a [PurchaseResultWrapper] from a [Map] with the result details.
   factory PurchasesResultWrapper.fromJson(Map<String, dynamic> map) =>
       _$PurchasesResultWrapperFromJson(map);
 
@@ -240,9 +246,11 @@ class PurchasesResultWrapper {
 @JsonSerializable()
 @BillingResponseConverter()
 class PurchasesHistoryResult {
+  /// Creates a [PurchasesHistoryResult] with the provided history.
   PurchasesHistoryResult(
       {@required this.billingResult, @required this.purchaseHistoryRecordList});
 
+  /// Factory for creating a [PurchasesHistoryResult] from a [Map] with the history result details.
   factory PurchasesHistoryResult.fromJson(Map<String, dynamic> map) =>
       _$PurchasesHistoryResultFromJson(map);
 

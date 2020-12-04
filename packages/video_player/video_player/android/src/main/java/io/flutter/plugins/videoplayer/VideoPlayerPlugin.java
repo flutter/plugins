@@ -6,9 +6,9 @@ package io.flutter.plugins.videoplayer;
 
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 import android.util.LongSparseArray;
-import io.flutter.embedding.engine.loader.FlutterLoader;
+import io.flutter.FlutterInjector;
+import io.flutter.Log;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
@@ -60,6 +60,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
+
     if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       try {
         HttpsURLConnection.setDefaultSSLSocketFactory(new CustomSSLSocketFactory());
@@ -73,14 +74,13 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
       }
     }
 
-    @SuppressWarnings("deprecation")
-    final FlutterLoader flutterLoader = FlutterLoader.getInstance();
+    final FlutterInjector injector = FlutterInjector.instance();
     this.flutterState =
         new FlutterState(
             binding.getApplicationContext(),
             binding.getBinaryMessenger(),
-            flutterLoader::getLookupKeyForAsset,
-            flutterLoader::getLookupKeyForAsset,
+            injector.flutterLoader()::getLookupKeyForAsset,
+            injector.flutterLoader()::getLookupKeyForAsset,
             binding.getTextureRegistry());
     flutterState.startListening(this, binding.getBinaryMessenger());
   }
@@ -92,6 +92,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
     }
     flutterState.stopListening(binding.getBinaryMessenger());
     flutterState = null;
+    initialize();
   }
 
   private void disposeAllPlayers() {
@@ -138,7 +139,6 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               "asset:///" + assetLookupKey,
               null,
               options);
-      videoPlayers.put(handle.id(), player);
     } else {
       player =
           new VideoPlayer(
@@ -148,8 +148,8 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               arg.getUri(),
               arg.getFormatHint(),
               options);
-      videoPlayers.put(handle.id(), player);
     }
+    videoPlayers.put(handle.id(), player);
 
     TextureMessage result = new TextureMessage();
     result.setTextureId(handle.id());

@@ -1,3 +1,7 @@
+## 0.6.5+4
+
+* Fix iPad share window not showing when `origin` is null.
+
 ## 0.6.5+3
 
 * Replace deprecated `Environment.getExternalStorageDirectory()` call on Android.

@@ -1,3 +1,11 @@
+## 0.4.5+17
+
+* Update Dart SDK constraint in example.
+
+## 0.4.5+16
+
+* Remove unnecessary workaround from test.
+
 ## 0.4.5+15
 
 * Update android compileSdkVersion to 29.
