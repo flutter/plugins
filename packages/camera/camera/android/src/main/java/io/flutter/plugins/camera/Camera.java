@@ -4,6 +4,7 @@ import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
@@ -16,12 +17,16 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.params.OutputConfiguration;
+import android.hardware.camera2.params.SessionConfiguration;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -39,6 +44,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 public class Camera {
   private final SurfaceTextureEntry flutterTexture;
@@ -325,12 +331,42 @@ public class Camera {
           }
         };
 
-    // Collect all surfaces we want to render to.
-    List<Surface> surfaceList = new ArrayList<>();
-    surfaceList.add(flutterSurface);
-    surfaceList.addAll(remainingSurfaces);
     // Start the session
-    cameraDevice.createCaptureSession(surfaceList, callback, null);
+    if (VERSION.SDK_INT >= VERSION_CODES.P) {
+      // Collect all surfaces we want to render to.
+      List<OutputConfiguration> configs = new ArrayList<>();
+      configs.add(new OutputConfiguration(flutterSurface));
+      for (Surface surface : remainingSurfaces) {
+        configs.add(new OutputConfiguration(surface));
+      }
+      createCaptureSessionWithSessionConfig(configs, callback);
+    } else {
+      // Collect all surfaces we want to render to.
+      List<Surface> surfaceList = new ArrayList<>();
+      surfaceList.add(flutterSurface);
+      surfaceList.addAll(remainingSurfaces);
+      createCaptureSession(surfaceList, callback);
+    }
+  }
+
+  @TargetApi(VERSION_CODES.P)
+  private void createCaptureSessionWithSessionConfig(
+      List<OutputConfiguration> outputConfigs, CameraCaptureSession.StateCallback callback)
+      throws CameraAccessException {
+    cameraDevice.createCaptureSession(
+        new SessionConfiguration(
+            SessionConfiguration.SESSION_REGULAR,
+            outputConfigs,
+            Executors.newSingleThreadExecutor(),
+            callback));
+  }
+
+  @TargetApi(VERSION_CODES.LOLLIPOP)
+  @SuppressWarnings("deprecation")
+  private void createCaptureSession(
+      List<Surface> surfaces, CameraCaptureSession.StateCallback callback)
+      throws CameraAccessException {
+    cameraDevice.createCaptureSession(surfaces, callback, null);
   }
 
   public void startVideoRecording(Result result) {

@@ -1,3 +1,7 @@
+## 5.7.11
+
+* Update integration test examples to use `testWidgets` instead of `test`.
+
 ## 5.7.10
 
 * Update Dart SDK constraint in example.

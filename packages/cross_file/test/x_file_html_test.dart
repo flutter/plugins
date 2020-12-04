@@ -9,7 +9,7 @@ import 'dart:html' as html;
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:cross_file/cross_file.dart';
 
 import 'dart:html';
 
@@ -58,15 +58,15 @@ void main() {
   });
 
   group('saveTo(..)', () {
-    final String xFileDomElementId = '__x_file_dom_element';
+    final String CrossFileDomElementId = '__x_file_dom_element';
 
-    group('XFile saveTo(..)', () {
+    group('CrossFile saveTo(..)', () {
       test('creates a DOM container', () async {
         XFile file = XFile.fromData(bytes);
 
         await file.saveTo('');
 
-        final container = querySelector('#${xFileDomElementId}');
+        final container = querySelector('#${CrossFileDomElementId}');
 
         expect(container, isNotNull);
       });
@@ -76,7 +76,7 @@ void main() {
 
         await file.saveTo('path');
 
-        final container = querySelector('#${xFileDomElementId}');
+        final container = querySelector('#${CrossFileDomElementId}');
         final AnchorElement element = container?.children?.firstWhere(
             (element) => element.tagName == 'A',
             orElse: () => null);
@@ -89,7 +89,7 @@ void main() {
       test('anchor element is clicked', () async {
         final mockAnchor = AnchorElement();
 
-        XFileTestOverrides overrides = XFileTestOverrides(
+        CrossFileTestOverrides overrides = CrossFileTestOverrides(
           createAnchorElement: (_, __) => mockAnchor,
         );
 
