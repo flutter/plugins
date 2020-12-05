@@ -37,6 +37,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       case DataSourceType.network:
         message.uri = dataSource.uri;
         message.formatHint = _videoFormatStringMap[dataSource.formatHint];
+        message.cookies = dataSource.cookies;
         break;
       case DataSourceType.file:
         message.uri = dataSource.uri;
