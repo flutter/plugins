@@ -131,7 +131,6 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 
   @override
   Future<Duration> getPosition(int textureId) async {
-    _videoPlayers[textureId].sendBufferingUpdate();
     return _videoPlayers[textureId].getPosition();
   }
 
@@ -150,12 +149,13 @@ class _VideoPlayer {
   _VideoPlayer({this.uri, this.textureId});
 
   final StreamController<VideoEvent> eventController =
-      StreamController<VideoEvent>();
+      StreamController<VideoEvent>.broadcast();
 
   final String uri;
   final int textureId;
   VideoElement videoElement;
   bool isInitialized = false;
+  bool isBuffering = false;
 
   void initialize() {
     videoElement = VideoElement()
@@ -176,10 +176,38 @@ class _VideoPlayer {
         isInitialized = true;
         sendInitialized();
       }
+      if (isBuffering) {
+        isBuffering = false;
+        eventController.add(VideoEvent(eventType: VideoEventType.bufferingEnd));
+      }
+    });
+
+    videoElement.onCanPlayThrough.listen((dynamic _) {
+      if (isBuffering) {
+        isBuffering = false;
+        eventController.add(VideoEvent(eventType: VideoEventType.bufferingEnd));
+      }
+    });
+
+    videoElement.onPlaying.listen((dynamic _) {
+      if (isBuffering) {
+        isBuffering = false;
+        eventController.add(VideoEvent(eventType: VideoEventType.bufferingEnd));
+      }
+    });
+
+    videoElement.onWaiting.listen((dynamic _) {
+      if (!isBuffering) {
+        isBuffering = true;
+        eventController
+            .add(VideoEvent(eventType: VideoEventType.bufferingStart));
+        sendBufferingUpdate();
+      }
     });
 
     // The error event fires when some form of error occurs while attempting to load or perform the media.
     videoElement.onError.listen((Event _) {
+      isBuffering = false;
       // The Event itself (_) doesn't contain info about the actual error.
       // We need to look at the HTMLMediaElement.error.
       // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
@@ -192,6 +220,10 @@ class _VideoPlayer {
     });
 
     videoElement.onEnded.listen((dynamic _) {
+      if (isBuffering) {
+        isBuffering = false;
+        eventController.add(VideoEvent(eventType: VideoEventType.bufferingEnd));
+      }
       eventController.add(VideoEvent(eventType: VideoEventType.completed));
     });
   }
