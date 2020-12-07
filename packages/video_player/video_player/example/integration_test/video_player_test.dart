@@ -2,10 +2,15 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_player_platform_interface/video_player_platform_interface.dart'
+    show VideoEventType;
 
 const Duration _playDuration = Duration(seconds: 1);
 
@@ -30,9 +35,51 @@ void main() {
     });
 
     testWidgets(
+      'reports buffering status',
+      (WidgetTester tester) async {
+        VideoPlayerController networkController = VideoPlayerController.network(
+          'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+        );
+        await networkController.initialize();
+        // Mute to allow playing without DOM interaction on Web.
+        // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+        await networkController.setVolume(0);
+        List<VideoEventType> recordedEventTypes = [];
+        videoPlayerPlatform
+            // ignore: invalid_use_of_visible_for_testing_member
+            .videoEventsFor(networkController.textureId)
+            .listen((event) => recordedEventTypes.add(event.eventType));
+
+        await networkController.play();
+        await networkController.seekTo(const Duration(seconds: 5));
+        await tester.pumpAndSettle(_playDuration);
+        await networkController.pause();
+
+        expect(networkController.value.isPlaying, false);
+        expect(networkController.value.position,
+            (Duration position) => position > const Duration(seconds: 0));
+
+        expect(
+          recordedEventTypes,
+          orderedEquals(
+            [
+              VideoEventType.bufferingStart,
+              VideoEventType.bufferingUpdate,
+              VideoEventType.bufferingEnd,
+              VideoEventType.completed,
+            ],
+          ),
+        );
+      },
+    );
+
+    testWidgets(
       'can be played',
       (WidgetTester tester) async {
         await _controller.initialize();
+        // Mute to allow playing without DOM interaction on Web.
+        // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+        await _controller.setVolume(0);
 
         await _controller.play();
         await tester.pumpAndSettle(_playDuration);
@@ -58,6 +105,9 @@ void main() {
       'can be paused',
       (WidgetTester tester) async {
         await _controller.initialize();
+        // Mute to allow playing without DOM interaction on Web.
+        // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+        await _controller.setVolume(0);
 
         // Play for a second, then pause, and then wait a second.
         await _controller.play();
@@ -104,6 +154,6 @@ void main() {
 
       await tester.pumpAndSettle();
       expect(_controller.value.isPlaying, true);
-    });
+    }, skip: kIsWeb); // Web does not support local assets.
   });
 }
