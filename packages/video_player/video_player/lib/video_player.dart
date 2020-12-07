@@ -6,13 +6,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show DurationRange, DataSourceType, VideoFormat;
+    show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
 
 import 'src/closed_caption_file.dart';
 export 'src/closed_caption_file.dart';
@@ -37,6 +37,7 @@ class VideoPlayerValue {
     this.isLooping = false,
     this.isBuffering = false,
     this.volume = 1.0,
+    this.playbackSpeed = 1.0,
     this.errorDescription,
   });
 
@@ -76,6 +77,9 @@ class VideoPlayerValue {
 
   /// The current volume of the playback.
   final double volume;
+
+  /// The current speed of the playback.
+  final double playbackSpeed;
 
   /// A description of the error if present.
   ///
@@ -119,6 +123,7 @@ class VideoPlayerValue {
     bool isLooping,
     bool isBuffering,
     double volume,
+    double playbackSpeed,
     String errorDescription,
   }) {
     return VideoPlayerValue(
@@ -131,6 +136,7 @@ class VideoPlayerValue {
       isLooping: isLooping ?? this.isLooping,
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
+      playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       errorDescription: errorDescription ?? this.errorDescription,
     );
   }
@@ -145,8 +151,9 @@ class VideoPlayerValue {
         'buffered: [${buffered.join(', ')}], '
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
-        'isBuffering: $isBuffering'
+        'isBuffering: $isBuffering, '
         'volume: $volume, '
+        'playbackSpeed: $playbackSpeed, '
         'errorDescription: $errorDescription)';
   }
 }
@@ -168,7 +175,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
   VideoPlayerController.asset(this.dataSource,
-      {this.package, this.closedCaptionFile})
+      {this.package, this.closedCaptionFile, this.videoPlayerOptions})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
         super(VideoPlayerValue(duration: null));
@@ -181,7 +188,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// **Android only**: The [formatHint] option allows the caller to override
   /// the video format detection code.
   VideoPlayerController.network(this.dataSource,
-      {this.formatHint, this.closedCaptionFile})
+      {this.formatHint, this.closedCaptionFile, this.videoPlayerOptions})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: null));
@@ -190,7 +197,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
-  VideoPlayerController.file(File file, {this.closedCaptionFile})
+  VideoPlayerController.file(File file,
+      {this.closedCaptionFile, this.videoPlayerOptions})
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
@@ -210,6 +218,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Describes the type of data source this [VideoPlayerController]
   /// is constructed with.
   final DataSourceType dataSourceType;
+
+  /// Provide additional configuration options (optional). Like setting the audio mode to mix
+  final VideoPlayerOptions videoPlayerOptions;
 
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String package;
@@ -262,6 +273,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         );
         break;
     }
+
+    if (videoPlayerOptions?.mixWithOthers != null) {
+      await _videoPlayerPlatform
+          .setMixWithOthers(videoPlayerOptions.mixWithOthers);
+    }
+
     _textureId = await _videoPlayerPlatform.create(dataSourceDescription);
     _creatingCompleter.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
@@ -374,6 +391,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     if (value.isPlaying) {
       await _videoPlayerPlatform.play(_textureId);
+
+      // Cancel previous timer.
+      _timer?.cancel();
       _timer = Timer.periodic(
         const Duration(milliseconds: 500),
         (Timer timer) async {
@@ -387,6 +407,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _updatePosition(newPosition);
         },
       );
+
+      // This ensures that the correct playback speed is always applied when
+      // playing back. This is necessary because we do not set playback speed
+      // when paused.
+      await _applyPlaybackSpeed();
     } else {
       _timer?.cancel();
       await _videoPlayerPlatform.pause(_textureId);
@@ -398,6 +423,22 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     await _videoPlayerPlatform.setVolume(_textureId, value.volume);
+  }
+
+  Future<void> _applyPlaybackSpeed() async {
+    if (!value.initialized || _isDisposed) {
+      return;
+    }
+
+    // Setting the playback speed on iOS will trigger the video to play. We
+    // prevent this from happening by not applying the playback speed until
+    // the video is manually played from Flutter.
+    if (!value.isPlaying) return;
+
+    await _videoPlayerPlatform.setPlaybackSpeed(
+      _textureId,
+      value.playbackSpeed,
+    );
   }
 
   /// The position in the current video.
@@ -433,6 +474,40 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<void> setVolume(double volume) async {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
+  }
+
+  /// Sets the playback speed of [this].
+  ///
+  /// [speed] indicates a speed value with different platforms accepting
+  /// different ranges for speed values. The [speed] must be greater than 0.
+  ///
+  /// The values will be handled as follows:
+  /// * On web, the audio will be muted at some speed when the browser
+  ///   determines that the sound would not be useful anymore. For example,
+  ///   "Gecko mutes the sound outside the range `0.25` to `5.0`" (see https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/playbackRate).
+  /// * On Android, some very extreme speeds will not be played back accurately.
+  ///   Instead, your video will still be played back, but the speed will be
+  ///   clamped by ExoPlayer (but the values are allowed by the player, like on
+  ///   web).
+  /// * On iOS, you can sometimes not go above `2.0` playback speed on a video.
+  ///   An error will be thrown for if the option is unsupported. It is also
+  ///   possible that your specific video cannot be slowed down, in which case
+  ///   the plugin also reports errors.
+  Future<void> setPlaybackSpeed(double speed) async {
+    if (speed < 0) {
+      throw ArgumentError.value(
+        speed,
+        'Negative playback speeds are generally unsupported.',
+      );
+    } else if (speed == 0) {
+      throw ArgumentError.value(
+        speed,
+        'Zero playback speed is generally unsupported. Consider using [pause].',
+      );
+    }
+
+    value = value.copyWith(playbackSpeed: speed);
+    await _applyPlaybackSpeed();
   }
 
   /// The closed caption based on the current [position] in the video.

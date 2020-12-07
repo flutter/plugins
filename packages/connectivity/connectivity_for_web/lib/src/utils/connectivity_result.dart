@@ -1,26 +1,21 @@
+import 'dart:html' as html show NetworkInformation;
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 
 /// Converts an incoming NetworkInformation object into the correct ConnectivityResult.
-//
-// We can't be more specific on the signature of this method because the API is odd,
-// data can come from a static value in the DOM, or as the 'target' of a DOM Event.
-//
-// If we type info as `NetworkInformation`, Dart will complain with:
-// "Uncaught Error: Expected a value of type 'NetworkInformation',
-// but got one of type 'NetworkInformation'"
 ConnectivityResult networkInformationToConnectivityResult(
-    dynamic /* NetworkInformation */ info) {
+  html.NetworkInformation info,
+) {
   if (info == null) {
     return ConnectivityResult.none;
   }
   if (info.downlink == 0 && info.rtt == 0) {
     return ConnectivityResult.none;
   }
-  if (info.type != null) {
-    return _typeToConnectivityResult(info.type);
-  }
   if (info.effectiveType != null) {
     return _effectiveTypeToConnectivityResult(info.effectiveType);
+  }
+  if (info.type != null) {
+    return _typeToConnectivityResult(info.type);
   }
   return ConnectivityResult.none;
 }

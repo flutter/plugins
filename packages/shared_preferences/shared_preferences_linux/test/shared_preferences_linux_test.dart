@@ -4,19 +4,22 @@
 import 'package:file/memory.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
 
-MemoryFileSystem fs = MemoryFileSystem.test();
+MemoryFileSystem fs;
 
 void main() {
-  setUp(() {});
+  setUp(() {
+    fs = MemoryFileSystem.test();
+  });
 
   tearDown(() {});
 
   Future<String> _getFilePath() async {
-    var directory = await getApplicationSupportDirectory();
-    return path.join(directory.path, 'shared_preferences.json');
+    final pathProvider = PathProviderLinux();
+    final directory = await pathProvider.getApplicationSupportPath();
+    return path.join(directory, 'shared_preferences.json');
   }
 
   _writeTestFile(String value) async {

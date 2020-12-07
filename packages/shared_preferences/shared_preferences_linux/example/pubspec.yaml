@@ -4,12 +4,26 @@ description: Demonstrates how to use the shared_preferences_linux plugin.
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: any
   shared_preferences_linux: ^0.1.0
 
 dependency_overrides:
   shared_preferences_linux:
     path: ../
+  # Remove this override once the endorsement is published.
+  shared_preferences:
+    path: ../../shared_preferences/
+
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  integration_test:
+    path: ../../../integration_test
+  pedantic: ^1.8.0
 
 flutter:
   uses-material-design: true
 
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.12.8 <2.0.0"

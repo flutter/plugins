@@ -76,18 +76,23 @@ class ImagePicker {
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
+  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
+  /// in addition to a size modification, of which the usage is explained below.
+  ///
   /// If specified, the image will be at most `maxWidth` wide and
   /// `maxHeight` tall. Otherwise the image will be returned at it's
   /// original width and height.
   /// The `imageQuality` argument modifies the quality of the image, ranging from 0-100
   /// where 100 is the original/max quality. If `imageQuality` is null, the image with
-  /// the original quality will be returned. Compression is only supportted for certain
-  /// image types such as JPEG. If compression is not supported for the image that is picked,
-  /// an warning message will be logged.
+  /// the original quality will be returned. Compression is only supported for certain
+  /// image types such as JPEG and on Android PNG and WebP, too. If compression is not supported for the image that is picked,
+  /// a warning message will be logged.
   ///
   /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
   /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
-  /// Defaults to [CameraDevice.rear].
+  /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
+  /// the front or rear camera should be opened, this function is not guaranteed
+  /// to work on an Android device.
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
