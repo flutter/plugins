@@ -1,3 +1,7 @@
+## 0.1.4+2
+
+* Fix issue where `isBuffering` is not updating on Web.
+
 ## 0.1.4+1
 
 * Substitute `undefined_prefixed_name: ignore` analyzer setting by a `dart:ui` shim with conditional exports. [Issue](https://github.com/flutter/flutter/issues/69309).
