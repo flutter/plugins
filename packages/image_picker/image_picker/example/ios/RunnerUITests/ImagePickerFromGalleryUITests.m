@@ -10,7 +10,6 @@ const int kElementWaitingTime = 30;
 @interface ImagePickerFromGalleryUITests : XCTestCase
 
 @property(nonatomic, strong) XCUIApplication* app;
-@property(nonatomic, strong) XCTestExpectation *alertExpectation;
 
 @end
 
@@ -44,7 +43,17 @@ const int kElementWaitingTime = 30;
                                             }
                                             [ok tap];
                                           }
-                                          [self.alertExpectation fulfill];
+                                          // Find and tap on the `Cancel` button.
+                                          NSPredicate* predicateToFindCancelButton =
+                                              [NSPredicate predicateWithFormat:@"label == %@", @"Cancel"];
+                                          XCUIElement* cancelButton =
+                                              [self.app.buttons elementMatchingPredicate:predicateToFindCancelButton];
+
+                                          if (![cancelButton waitForExistenceWithTimeout:kElementWaitingTime]) {
+                                            os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+                                            XCTFail(@"Failed due to not able to find Cancel button with %@ seconds",
+                                                    @(kElementWaitingTime));
+                                          }
                                           return YES;
                                         }];
 }
@@ -82,12 +91,10 @@ const int kElementWaitingTime = 30;
 
   XCTAssertTrue(pickButton.exists);
   [pickButton tap];
-  self.alertExpectation = [self expectationWithDescription:@"Waiting for alert popup dismiss"];
 
   // There is a known bug where the permission popups interruption won't get fired until a tap
   // happened in the app. We expect a permission popup so we do a tap here.
   [self.app tap];
-  [self waitForExpectations:@[self.alertExpectation] timeout:kElementWaitingTime];
 
   // Find and tap on the `Cancel` button.
   NSPredicate* predicateToFindCancelButton =
@@ -96,7 +103,6 @@ const int kElementWaitingTime = 30;
   XCUIElement* cancelButton =
       [self.app.buttons elementMatchingPredicate:predicateToFindCancelButton];
 
-  [self.app activate];
   if (![cancelButton waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find Cancel button with %@ seconds",
