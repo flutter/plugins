@@ -17,7 +17,10 @@ export 'package:video_player_platform_interface/video_player_platform_interface.
 import 'src/closed_caption_file.dart';
 export 'src/closed_caption_file.dart';
 
-final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
+/// This is just exposed for testing. It shouldn't be used by anyone depending
+/// on the plugin.
+@visibleForTesting
+final VideoPlayerPlatform videoPlayerPlatform = VideoPlayerPlatform.instance
   // This will clear all open videos on the platform when a full restart is
   // performed.
   ..init();
@@ -275,11 +278,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     if (videoPlayerOptions?.mixWithOthers != null) {
-      await _videoPlayerPlatform
+      await videoPlayerPlatform
           .setMixWithOthers(videoPlayerOptions.mixWithOthers);
     }
 
-    _textureId = await _videoPlayerPlatform.create(dataSourceDescription);
+    _textureId = await videoPlayerPlatform.create(dataSourceDescription);
     _creatingCompleter.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
@@ -333,7 +336,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       }
     }
 
-    _eventSubscription = _videoPlayerPlatform
+    _eventSubscription = videoPlayerPlatform
         .videoEventsFor(_textureId)
         .listen(eventListener, onError: errorListener);
     return initializingCompleter.future;
@@ -347,7 +350,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         _isDisposed = true;
         _timer?.cancel();
         await _eventSubscription?.cancel();
-        await _videoPlayerPlatform.dispose(_textureId);
+        await videoPlayerPlatform.dispose(_textureId);
       }
       _lifeCycleObserver.dispose();
     }
@@ -382,7 +385,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    await _videoPlayerPlatform.setLooping(_textureId, value.isLooping);
+    await videoPlayerPlatform.setLooping(_textureId, value.isLooping);
   }
 
   Future<void> _applyPlayPause() async {
@@ -390,7 +393,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     if (value.isPlaying) {
-      await _videoPlayerPlatform.play(_textureId);
+      await videoPlayerPlatform.play(_textureId);
 
       // Cancel previous timer.
       _timer?.cancel();
@@ -414,7 +417,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       await _applyPlaybackSpeed();
     } else {
       _timer?.cancel();
-      await _videoPlayerPlatform.pause(_textureId);
+      await videoPlayerPlatform.pause(_textureId);
     }
   }
 
@@ -422,7 +425,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    await _videoPlayerPlatform.setVolume(_textureId, value.volume);
+    await videoPlayerPlatform.setVolume(_textureId, value.volume);
   }
 
   Future<void> _applyPlaybackSpeed() async {
@@ -435,7 +438,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     // the video is manually played from Flutter.
     if (!value.isPlaying) return;
 
-    await _videoPlayerPlatform.setPlaybackSpeed(
+    await videoPlayerPlatform.setPlaybackSpeed(
       _textureId,
       value.playbackSpeed,
     );
@@ -446,7 +449,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (_isDisposed) {
       return null;
     }
-    return await _videoPlayerPlatform.getPosition(_textureId);
+    return await videoPlayerPlatform.getPosition(_textureId);
   }
 
   /// Sets the video's current timestamp to be at [moment]. The next
@@ -463,7 +466,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     } else if (position < const Duration()) {
       position = const Duration();
     }
-    await _videoPlayerPlatform.seekTo(_textureId, position);
+    await videoPlayerPlatform.seekTo(_textureId, position);
     _updatePosition(position);
   }
 
@@ -624,7 +627,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == null
         ? Container()
-        : _videoPlayerPlatform.buildView(_textureId);
+        : videoPlayerPlatform.buildView(_textureId);
   }
 }
 
