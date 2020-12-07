@@ -168,7 +168,9 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
 
   @Override
   public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
-    completionHandler.onSuccess();
+    try {
+      completionHandler.onSuccess();
+    } catch (IllegalStateException ignored) {}
     stop();
   }
 
