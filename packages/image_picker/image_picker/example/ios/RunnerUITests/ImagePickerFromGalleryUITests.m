@@ -10,6 +10,7 @@ const int kElementWaitingTime = 30;
 @interface ImagePickerFromGalleryUITests : XCTestCase
 
 @property(nonatomic, strong) XCUIApplication* app;
+@property(nonatomic, strong) XCTestExpectation *alertExpectation;
 
 @end
 
@@ -21,17 +22,29 @@ const int kElementWaitingTime = 30;
   self.continueAfterFailure = NO;
   self.app = [[XCUIApplication alloc] init];
   [self.app launch];
+  __weak typeof(self) weakSelf = self;
   [self addUIInterruptionMonitorWithDescription:@"Permission popups"
                                         handler:^BOOL(XCUIElement* _Nonnull interruptingElement) {
                                           if (@available(iOS 14, *)) {
                                             XCUIElement* allPhotoPermission =
                                                 interruptingElement
                                                     .buttons[@"Allow Access to All Photos"];
+                                            if (![allPhotoPermission waitForExistenceWithTimeout:kElementWaitingTime]) {
+                                              os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+                                              XCTFail(@"Failed due to not able to find allPhotoPermission button with %@ seconds",
+                                                      @(kElementWaitingTime));
+                                            }
                                             [allPhotoPermission tap];
                                           } else {
                                             XCUIElement* ok = interruptingElement.buttons[@"OK"];
+                                            if (![ok waitForExistenceWithTimeout:kElementWaitingTime]) {
+                                              os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+                                              XCTFail(@"Failed due to not able to find ok button with %@ seconds",
+                                                      @(kElementWaitingTime));
+                                            }
                                             [ok tap];
                                           }
+                                          [self.alertExpectation fulfill];
                                           return YES;
                                         }];
 }
@@ -69,10 +82,12 @@ const int kElementWaitingTime = 30;
 
   XCTAssertTrue(pickButton.exists);
   [pickButton tap];
+  self.alertExpectation = [self expectationWithDescription:@"Waiting for alert popup dismiss"];
 
   // There is a known bug where the permission popups interruption won't get fired until a tap
   // happened in the app. We expect a permission popup so we do a tap here.
   [self.app tap];
+  [self waitForExpectations:@[self.alertExpectation] timeout:kElementWaitingTime];
 
   // Find and tap on the `Cancel` button.
   NSPredicate* predicateToFindCancelButton =
