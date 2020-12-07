@@ -71,6 +71,7 @@ void main() {
           ),
         );
       },
+      skip: !(kIsWeb || defaultTargetPlatform == TargetPlatform.android),
     );
 
     testWidgets(
