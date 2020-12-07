@@ -23,16 +23,14 @@ const int kElementWaitingTime = 30;
   [self.app launch];
   [self addUIInterruptionMonitorWithDescription:@"Permission popups"
                                         handler:^BOOL(XCUIElement* _Nonnull interruptingElement) {
-                                          XCUIElement* ok = interruptingElement.buttons[@"OK"];
-                                          if (ok.exists) {
-                                            [ok tap];
-                                          }
-                                          // iOS 14.
-                                          XCUIElement* allPhotoPermission =
-                                              interruptingElement
-                                                  .buttons[@"Allow Access to All Photos"];
-                                          if (allPhotoPermission.exists) {
+                                          if (@available(iOS 14, *)) {
+                                            XCUIElement* allPhotoPermission =
+                                                interruptingElement
+                                                    .buttons[@"Allow Access to All Photos"];
                                             [allPhotoPermission tap];
+                                          } else {
+                                            XCUIElement* ok = interruptingElement.buttons[@"OK"];
+                                            [ok tap];
                                           }
                                           return YES;
                                         }];
@@ -82,10 +80,15 @@ const int kElementWaitingTime = 30;
 
   XCUIElement* cancelButton =
       [self.app.buttons elementMatchingPredicate:predicateToFindCancelButton];
-  if (![cancelButton waitForExistenceWithTimeout:60]) {
-    os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
-    XCTFail(@"Failed due to not able to find Cancel button with %@ seconds",
-            @(kElementWaitingTime));
+  if (![cancelButton waitForExistenceWithTimeout:kElementWaitingTime]) {
+    // There is a known bug where the permission popups interruption won't get fired until a tap
+    // happened in the app. We expect a permission popup so we do a tap here.
+    [self.app tap];
+    if (![cancelButton waitForExistenceWithTimeout:kElementWaitingTime]) {
+      os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
+      XCTFail(@"Failed due to not able to find Cancel button with %@ seconds",
+              @(kElementWaitingTime));
+    }
   }
 
   XCTAssertTrue(cancelButton.exists);
