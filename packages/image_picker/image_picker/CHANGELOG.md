@@ -1,3 +1,8 @@
+## 0.6.7+15
+
+* iOS: Update XCUITests to handle some SDK changes related to accessibility.
+  * See https://github.com/flutter/flutter/issues/71927
+
 ## 0.6.7+14
 
 * Set up XCUITests.
