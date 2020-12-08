@@ -4,7 +4,6 @@ import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
@@ -17,16 +16,12 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.params.OutputConfiguration;
-import android.hardware.camera2.params.SessionConfiguration;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -44,7 +39,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
 public class Camera {
   private final SurfaceTextureEntry flutterTexture;
