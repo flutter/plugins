@@ -174,6 +174,19 @@ void main() {
     });
 
     test(
+        'Default implementation of setFlashMode() should throw unimplemented error',
+            () {
+          // Arrange
+          final cameraPlatform = ExtendsCameraPlatform();
+
+          // Act & Assert
+          expect(
+                () => cameraPlatform.setFlashMode(1, null),
+            throwsUnimplementedError,
+          );
+        });
+
+    test(
         'Default implementation of startVideoRecording() should throw unimplemented error',
         () {
       // Arrange

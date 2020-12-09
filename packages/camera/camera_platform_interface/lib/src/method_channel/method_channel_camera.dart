@@ -176,6 +176,16 @@ class MethodChannelCamera extends CameraPlatform {
       );
 
   @override
+  Future<void> setFlashMode(int cameraId, FlashMode mode) =>
+      _channel.invokeMethod<void>(
+        'setFlashMode',
+        <String, dynamic>{
+          'cameraId': cameraId,
+          'mode': mode.toString().split('.').last,
+        },
+      );
+
+  @override
   Widget buildPreview(int cameraId) {
     return Texture(textureId: cameraId);
   }
