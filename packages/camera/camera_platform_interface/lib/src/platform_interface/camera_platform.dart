@@ -113,6 +113,11 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('getMaxZoomLevel() is not implemented.');
   }
 
+  /// Gets the minimum supported zoom level for the selected camera.
+  Future<double> getMinZoomLevel(int cameraId) {
+    throw UnimplementedError('getMinZoomLevel() is not implemented.');
+  }
+
   /// Set the zoom level for the selected camera.
   ///
   /// The supplied [zoom] value should be between 1.0 and the maximum supported

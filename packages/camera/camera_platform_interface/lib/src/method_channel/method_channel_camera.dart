@@ -192,6 +192,12 @@ class MethodChannelCamera extends CameraPlatform {
       );
 
   @override
+  Future<double> getMinZoomLevel(int cameraId) => _channel.invokeMethod<double>(
+        'getMinZoomLevel',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+
+  @override
   Future<void> setZoomLevel(int cameraId, double zoom) async {
     try {
       await _channel.invokeMethod<double>(

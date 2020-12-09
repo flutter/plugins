@@ -529,6 +529,25 @@ void main() {
         ]);
       });
 
+      test('Should get the min zoom level', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'getMinZoomLevel': 1.0},
+        );
+
+        // Act
+        final maxZoomLevel = await camera.getMinZoomLevel(cameraId);
+
+        // Assert
+        expect(maxZoomLevel, 1.0);
+        expect(channel.log, <Matcher>[
+          isMethodCall('getMinZoomLevel', arguments: {
+            'cameraId': cameraId,
+          }),
+        ]);
+      });
+
       test('Should set the zoom level', () async {
         // Arrange
         MethodChannelMock channel = MethodChannelMock(
