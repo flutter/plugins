@@ -1,3 +1,5 @@
+## 1.1.4-dev
+
 ## 1.1.3
 
 * Update documentation of `pickImage()` regarding HEIC images.
