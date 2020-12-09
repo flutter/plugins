@@ -1,4 +1,6 @@
-## 1.1.4-dev
+## 1.1.4
+
+* Pass `Uri`s to `package:http` methods, instead of strings, in preparation for a major version update in `http`.
 
 ## 1.1.3
 
