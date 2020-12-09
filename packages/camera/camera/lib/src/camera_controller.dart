@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
@@ -272,8 +273,14 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if image streaming or video recording has
   /// already started.
+  ///
+  /// The `startImageStream` method is only available on Android and iOS (other
+  /// platforms won't be supported in current setup).
+  ///
   // TODO(bmparr): Add settings for resolution and fps.
   Future<void> startImageStream(onLatestImageAvailable onAvailable) async {
+    assert(!Platform.isIOS && !Platform.isAndroid);
+
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -313,7 +320,12 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if image streaming was not started or video
   /// recording was started.
+  ///
+  /// The `stopImageStream` method is only available on Android and iOS (other
+  /// platforms won't be supported in current setup).
   Future<void> stopImageStream() async {
+    assert(!Platform.isIOS && !Platform.isAndroid);
+
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
