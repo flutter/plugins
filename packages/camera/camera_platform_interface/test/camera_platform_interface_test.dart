@@ -224,6 +224,32 @@ void main() {
         throwsUnimplementedError,
       );
     });
+
+    test(
+        'Default implementation of getMaxZoomLevel() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.getMaxZoomLevel(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of setZoomLevel() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setZoomLevel(1, 1.0),
+        throwsUnimplementedError,
+      );
+    });
   });
 }
 

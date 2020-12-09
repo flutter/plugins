@@ -186,6 +186,27 @@ class MethodChannelCamera extends CameraPlatform {
       );
 
   @override
+  Future<double> getMaxZoomLevel(int cameraId) => _channel.invokeMethod<double>(
+        'getMaxZoomLevel',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+
+  @override
+  Future<void> setZoomLevel(int cameraId, double zoom) async {
+    try {
+      await _channel.invokeMethod<double>(
+        'setZoomLevel',
+        <String, dynamic>{
+          'cameraId': cameraId,
+          'zoom': zoom,
+        },
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  @override
   Widget buildPreview(int cameraId) {
     return Texture(textureId: cameraId);
   }
