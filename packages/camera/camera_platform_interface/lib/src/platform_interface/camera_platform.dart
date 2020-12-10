@@ -108,6 +108,11 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('resumeVideoRecording() is not implemented.');
   }
 
+  /// Sets the flash mode for taking pictures.
+  Future<void> setFlashMode(int cameraId, FlashMode mode) {
+    throw UnimplementedError('setFlashMode() is not implemented.');
+  }
+
   /// Gets the maximum supported zoom level for the selected camera.
   Future<double> getMaxZoomLevel(int cameraId) {
     throw UnimplementedError('getMaxZoomLevel() is not implemented.');
