@@ -28,17 +28,23 @@ const int kElementWaitingTime = 30;
                                             XCUIElement* allPhotoPermission =
                                                 interruptingElement
                                                     .buttons[@"Allow Access to All Photos"];
-                                            if (![allPhotoPermission waitForExistenceWithTimeout:kElementWaitingTime]) {
-                                              os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
-                                              XCTFail(@"Failed due to not able to find allPhotoPermission button with %@ seconds",
+                                            if (![allPhotoPermission waitForExistenceWithTimeout:
+                                                                         kElementWaitingTime]) {
+                                              os_log_error(OS_LOG_DEFAULT, "%@",
+                                                           self.app.debugDescription);
+                                              XCTFail(@"Failed due to not able to find "
+                                                      @"allPhotoPermission button with %@ seconds",
                                                       @(kElementWaitingTime));
                                             }
                                             [allPhotoPermission tap];
                                           } else {
                                             XCUIElement* ok = interruptingElement.buttons[@"OK"];
-                                            if (![ok waitForExistenceWithTimeout:kElementWaitingTime]) {
-                                              os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
-                                              XCTFail(@"Failed due to not able to find ok button with %@ seconds",
+                                            if (![ok waitForExistenceWithTimeout:
+                                                         kElementWaitingTime]) {
+                                              os_log_error(OS_LOG_DEFAULT, "%@",
+                                                           self.app.debugDescription);
+                                              XCTFail(@"Failed due to not able to find ok button "
+                                                      @"with %@ seconds",
                                                       @(kElementWaitingTime));
                                             }
                                             [ok tap];
@@ -106,8 +112,10 @@ const int kElementWaitingTime = 30;
                                    predicateWithFormat:@"label == %@",
                                                        @"You have not yet picked an image."]];
   if (![imageNotPickedText waitForExistenceWithTimeout:kElementWaitingTime]) {
-    // Before https://github.com/flutter/engine/pull/22811, the label's a11y type was otherElements.
-    // TODO(cyanglaz): Remove this after https://github.com/flutter/flutter/commit/057e8230743ec96f33b73948ccd6b80081e3615e rolled to stable
+    // Before https://github.com/flutter/engine/pull/22811 the label's a11y type was otherElements.
+    // TODO(cyanglaz): Remove this after
+    // https://github.com/flutter/flutter/commit/057e8230743ec96f33b73948ccd6b80081e3615e rolled to
+    // stable.
     // https://github.com/flutter/flutter/issues/71927
     imageNotPickedText = [self.app.otherElements
         elementMatchingPredicate:[NSPredicate

@@ -1,3 +1,11 @@
+## 0.5.8+18
+
+* Suppress unchecked warning in Android tests which prevented the tests to compile.
+
+## 0.5.8+17
+
+* Added Android 30 support.
+
 ## 0.5.8+16
 
 * Moved package to camera/camera subdir, to allow for federated implementations.
