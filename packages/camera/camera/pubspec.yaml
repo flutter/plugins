@@ -5,18 +5,12 @@ description: A Flutter plugin for getting information about and controlling the
 version: 0.6.0
 homepage: https://github.com/flutter/plugins/tree/master/packages/camera/camera
 
-# TODO(mvanbeusekom): Remove when camera_platform_interface package is published.
-publish_to: none
-
 dependencies:
   flutter:
     sdk: flutter
-  # TODO(mvanbeusekom): Update dependency to pub.dev version once camera_platform_interface is published
+  # TODO(BeMacized): Update dependency to pub.dev version once updated camera_platform_interface is published
   camera_platform_interface:
-    git:
-      url: https://github.com/flutter/plugins.git
-      path: packages/camera/camera_platform_interface
-      ref: master
+    path: ../camera_platform_interface
 
 dev_dependencies:
   path_provider: ^0.5.0

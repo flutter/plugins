@@ -104,7 +104,7 @@ class CameraValue {
     String errorDescription,
     Size previewSize,
     bool isRecordingPaused,
-    FlashMode cameraFlashMode,
+    FlashMode flashMode,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -114,7 +114,7 @@ class CameraValue {
       isTakingPicture: isTakingPicture ?? this.isTakingPicture,
       isStreamingImages: isStreamingImages ?? this.isStreamingImages,
       isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
-      flashMode: cameraFlashMode ?? this.flashMode,
+      flashMode: flashMode ?? this.flashMode,
     );
   }
 
@@ -125,8 +125,8 @@ class CameraValue {
         'isInitialized: $isInitialized, '
         'errorDescription: $errorDescription, '
         'previewSize: $previewSize, '
-        'isStreamingImages: $isStreamingImages'
-        'cameraFlashMode: $flashMode)';
+        'isStreamingImages: $isStreamingImages, '
+        'flashMode: $flashMode)';
   }
 }
 
@@ -476,7 +476,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> setFlashMode(FlashMode mode) async {
     try {
       await CameraPlatform.instance.setFlashMode(_cameraId, mode);
-      value = value.copyWith(cameraFlashMode: mode);
+      value = value.copyWith(flashMode: mode);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

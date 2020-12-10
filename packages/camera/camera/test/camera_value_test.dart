@@ -19,6 +19,7 @@ void main() {
         isRecordingVideo: false,
         isTakingPicture: false,
         isStreamingImages: false,
+        flashMode: FlashMode.auto,
       );
 
       expect(cameraValue, isA<CameraValue>());
@@ -56,6 +57,7 @@ void main() {
       expect(cameraValue.isRecordingVideo, isFalse);
       expect(cameraValue.isTakingPicture, isFalse);
       expect(cameraValue.isStreamingImages, isFalse);
+      expect(cameraValue.flashMode, FlashMode.auto);
     });
 
     test('Has aspectRatio after setting size', () {
@@ -93,10 +95,11 @@ void main() {
         isRecordingVideo: false,
         isTakingPicture: false,
         isStreamingImages: false,
+        flashMode: FlashMode.auto,
       );
 
       expect(cameraValue.toString(),
-          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false)');
+          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto)');
     });
   });
 }

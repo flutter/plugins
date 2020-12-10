@@ -11,7 +11,6 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.util.Size;
 import io.flutter.plugins.camera.types.ResolutionPreset;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
