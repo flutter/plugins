@@ -50,6 +50,8 @@ if [[ "$CHANNEL" -eq "stable" ]]; then
   ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_STABLE")
 fi
 
+echo "Excluding the following plugins: $ALL_EXCLUDED"
+
 (cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
 
 function error() {

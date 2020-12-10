@@ -18,6 +18,7 @@ ALL_EXCLUDED=("")
 # Exclude nnbd plugins from stable.
 if [[ "$CHANNEL" -eq "stable" ]]; then
   ALL_EXCLUDED=($EXCLUDED_PLUGINS_FROM_STABLE)
+  echo "Excluding the following plugins: $ALL_EXCLUDED"
 fi
 
 # Plugins that deliberately use their own analysis_options.yaml.
