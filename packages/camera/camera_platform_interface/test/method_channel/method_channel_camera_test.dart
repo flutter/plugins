@@ -470,6 +470,29 @@ void main() {
         ]);
       });
 
+      test('Should set the flash mode', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'setFlashMode': null},
+        );
+
+        // Act
+        await camera.setFlashMode(cameraId, FlashMode.always);
+        await camera.setFlashMode(cameraId, FlashMode.auto);
+        await camera.setFlashMode(cameraId, FlashMode.off);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('setFlashMode',
+              arguments: {'cameraId': cameraId, 'mode': 'always'}),
+          isMethodCall('setFlashMode',
+              arguments: {'cameraId': cameraId, 'mode': 'auto'}),
+          isMethodCall('setFlashMode',
+              arguments: {'cameraId': cameraId, 'mode': 'off'}),
+        ]);
+      });
+
       test('Should build a texture widget as preview widget', () async {
         // Act
         Widget widget = camera.buildPreview(cameraId);
