@@ -115,7 +115,8 @@ const int kElementWaitingTime = 30;
     // Before https://github.com/flutter/engine/pull/22811 the label's a11y type was otherElements.
     // TODO(cyanglaz): Remove this after
     // https://github.com/flutter/flutter/commit/057e8230743ec96f33b73948ccd6b80081e3615e rolled to
-    // stable https://github.com/flutter/flutter/issues/71927
+    // stable.
+    // https://github.com/flutter/flutter/issues/71927
     imageNotPickedText = [self.app.otherElements
         elementMatchingPredicate:[NSPredicate
                                      predicateWithFormat:@"label == %@",
