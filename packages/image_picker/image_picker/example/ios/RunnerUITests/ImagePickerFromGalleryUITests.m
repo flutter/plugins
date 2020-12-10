@@ -21,18 +21,33 @@ const int kElementWaitingTime = 30;
   self.continueAfterFailure = NO;
   self.app = [[XCUIApplication alloc] init];
   [self.app launch];
+  __weak typeof(self) weakSelf = self;
   [self addUIInterruptionMonitorWithDescription:@"Permission popups"
                                         handler:^BOOL(XCUIElement* _Nonnull interruptingElement) {
-                                          XCUIElement* ok = interruptingElement.buttons[@"OK"];
-                                          if (ok.exists) {
-                                            [ok tap];
-                                          }
-                                          // iOS 14.
-                                          XCUIElement* allPhotoPermission =
-                                              interruptingElement
-                                                  .buttons[@"Allow Access to All Photos"];
-                                          if (allPhotoPermission.exists) {
+                                          if (@available(iOS 14, *)) {
+                                            XCUIElement* allPhotoPermission =
+                                                interruptingElement
+                                                    .buttons[@"Allow Access to All Photos"];
+                                            if (![allPhotoPermission waitForExistenceWithTimeout:
+                                                                         kElementWaitingTime]) {
+                                              os_log_error(OS_LOG_DEFAULT, "%@",
+                                                           self.app.debugDescription);
+                                              XCTFail(@"Failed due to not able to find "
+                                                      @"allPhotoPermission button with %@ seconds",
+                                                      @(kElementWaitingTime));
+                                            }
                                             [allPhotoPermission tap];
+                                          } else {
+                                            XCUIElement* ok = interruptingElement.buttons[@"OK"];
+                                            if (![ok waitForExistenceWithTimeout:
+                                                         kElementWaitingTime]) {
+                                              os_log_error(OS_LOG_DEFAULT, "%@",
+                                                           self.app.debugDescription);
+                                              XCTFail(@"Failed due to not able to find ok button "
+                                                      @"with %@ seconds",
+                                                      @(kElementWaitingTime));
+                                            }
+                                            [ok tap];
                                           }
                                           return YES;
                                         }];
@@ -92,10 +107,21 @@ const int kElementWaitingTime = 30;
   [cancelButton tap];
 
   // Find the "not picked image text".
-  XCUIElement* imageNotPickedText = [self.app.otherElements
+  XCUIElement* imageNotPickedText = [self.app.staticTexts
       elementMatchingPredicate:[NSPredicate
                                    predicateWithFormat:@"label == %@",
                                                        @"You have not yet picked an image."]];
+  if (![imageNotPickedText waitForExistenceWithTimeout:kElementWaitingTime]) {
+    // Before https://github.com/flutter/engine/pull/22811 the label's a11y type was otherElements.
+    // TODO(cyanglaz): Remove this after
+    // https://github.com/flutter/flutter/commit/057e8230743ec96f33b73948ccd6b80081e3615e rolled to
+    // stable.
+    // https://github.com/flutter/flutter/issues/71927
+    imageNotPickedText = [self.app.otherElements
+        elementMatchingPredicate:[NSPredicate
+                                     predicateWithFormat:@"label == %@",
+                                                         @"You have not yet picked an image."]];
+  }
   if (![imageNotPickedText waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find imageNotPickedText with %@ seconds",
