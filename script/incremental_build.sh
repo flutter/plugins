@@ -16,7 +16,7 @@ fi
 # Plugins that are excluded from this task.
 ALL_EXCLUDED=("")
 # Exclude nnbd plugins from stable.
-if [[ "$CHANNEL" -eq "stable" ]] then
+if [[ "$CHANNEL" -eq "stable" ]]; then
   ALL_EXCLUDED=($EXCLUDED_PLUGINS_FROM_STABLE)
 fi
 
