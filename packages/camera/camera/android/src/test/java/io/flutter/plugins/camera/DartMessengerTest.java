@@ -93,9 +93,9 @@ public class DartMessengerTest {
     assertNull(event.get("errorDescription"));
   }
 
+  @SuppressWarnings("unchecked")
   private Map<String, String> decodeSentMessage(ByteBuffer sentMessage) {
     sentMessage.position(0);
-    //noinspection unchecked
     return (Map<String, String>) StandardMethodCodec.INSTANCE.decodeEnvelope(sentMessage);
   }
 
