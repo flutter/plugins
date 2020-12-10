@@ -1,3 +1,7 @@
+## 0.5.8+18
+
+* Suppress unchecked warning in Android tests which prevented the tests to compile.
+
 ## 0.5.8+17
 
 * Added Android 30 support.
