@@ -91,7 +91,6 @@ const int kElementWaitingTime = 30;
 
   XCUIElement* cancelButton =
       [self.app.buttons elementMatchingPredicate:predicateToFindCancelButton];
-
   if (![cancelButton waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find Cancel button with %@ seconds",
