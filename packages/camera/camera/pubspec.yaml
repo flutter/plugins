@@ -19,6 +19,7 @@ dev_dependencies:
     sdk: flutter
   pedantic: ^1.8.0
   mockito: ^4.1.3
+  plugin_platform_interface: ^1.0.3
 
 flutter:
   plugin:
