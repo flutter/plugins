@@ -127,7 +127,7 @@ abstract class CameraPlatform extends PlatformInterface {
   ///
   /// The supplied [zoom] value should be between 1.0 and the maximum supported
   /// zoom level returned by the `getMaxZoomLevel`. Throws an `CameraException`
-  /// when an illegal zoom level is suplied.
+  /// when an illegal zoom level is supplied.
   Future<void> setZoomLevel(int cameraId, double zoom) {
     throw UnimplementedError('setZoomLevel() is not implemented.');
   }
