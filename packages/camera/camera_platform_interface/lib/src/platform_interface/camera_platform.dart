@@ -108,6 +108,11 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('resumeVideoRecording() is not implemented.');
   }
 
+  /// Sets the flash mode for taking pictures.
+  Future<void> setFlashMode(int cameraId, FlashMode mode) {
+    throw UnimplementedError('setFlashMode() is not implemented.');
+  }
+
   /// Returns a widget showing a live camera preview.
   Widget buildPreview(int cameraId) {
     throw UnimplementedError('buildView() has not been implemented.');
