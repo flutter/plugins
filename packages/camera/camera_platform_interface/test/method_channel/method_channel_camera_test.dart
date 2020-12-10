@@ -485,11 +485,11 @@ void main() {
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('setFlashMode',
-              arguments: {'cameraId': cameraId, 'mode': 'ALWAYS'}),
+              arguments: {'cameraId': cameraId, 'mode': 'always'}),
           isMethodCall('setFlashMode',
-              arguments: {'cameraId': cameraId, 'mode': 'AUTO'}),
+              arguments: {'cameraId': cameraId, 'mode': 'auto'}),
           isMethodCall('setFlashMode',
-              arguments: {'cameraId': cameraId, 'mode': 'OFF'}),
+              arguments: {'cameraId': cameraId, 'mode': 'off'}),
         ]);
       });
 

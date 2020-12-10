@@ -181,13 +181,27 @@ class MethodChannelCamera extends CameraPlatform {
         'setFlashMode',
         <String, dynamic>{
           'cameraId': cameraId,
-          'mode': mode.toString().split('.').last,
+          'mode': _serializeFlashMode(mode),
         },
       );
 
   @override
   Widget buildPreview(int cameraId) {
     return Texture(textureId: cameraId);
+  }
+
+  /// Returns the flash mode as a String.
+  String _serializeFlashMode(FlashMode flashMode) {
+    switch (flashMode) {
+      case FlashMode.off:
+        return 'off';
+      case FlashMode.auto:
+        return 'auto';
+      case FlashMode.always:
+        return 'always';
+      default:
+        throw ArgumentError('Unknown FlashMode value');
+    }
   }
 
   /// Returns the resolution preset as a String.
