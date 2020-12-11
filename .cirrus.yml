@@ -172,7 +172,7 @@ task:
   activate_script: pub global activate flutter_plugin_tools
   create_simulator_script:
     - xcrun simctl list
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-2 | xargs xcrun simctl boot
+    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-1 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
       script:
