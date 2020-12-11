@@ -176,8 +176,59 @@ class MethodChannelCamera extends CameraPlatform {
       );
 
   @override
+  Future<void> setFlashMode(int cameraId, FlashMode mode) =>
+      _channel.invokeMethod<void>(
+        'setFlashMode',
+        <String, dynamic>{
+          'cameraId': cameraId,
+          'mode': _serializeFlashMode(mode),
+        },
+      );
+
+  @override
+  Future<double> getMaxZoomLevel(int cameraId) => _channel.invokeMethod<double>(
+        'getMaxZoomLevel',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+
+  @override
+  Future<double> getMinZoomLevel(int cameraId) => _channel.invokeMethod<double>(
+        'getMinZoomLevel',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+
+  @override
+  Future<void> setZoomLevel(int cameraId, double zoom) async {
+    try {
+      await _channel.invokeMethod<double>(
+        'setZoomLevel',
+        <String, dynamic>{
+          'cameraId': cameraId,
+          'zoom': zoom,
+        },
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  @override
   Widget buildPreview(int cameraId) {
     return Texture(textureId: cameraId);
+  }
+
+  /// Returns the flash mode as a String.
+  String _serializeFlashMode(FlashMode flashMode) {
+    switch (flashMode) {
+      case FlashMode.off:
+        return 'off';
+      case FlashMode.auto:
+        return 'auto';
+      case FlashMode.always:
+        return 'always';
+      default:
+        throw ArgumentError('Unknown FlashMode value');
+    }
   }
 
   /// Returns the resolution preset as a String.
