@@ -1,3 +1,7 @@
+## 0.1.4+2
+
+* Update Flutter SDK constraint.
+
 ## 0.1.4+1
 
 * Substitute `undefined_prefixed_name: ignore` analyzer setting by a `dart:ui` shim with conditional exports. [Issue](https://github.com/flutter/flutter/issues/69309).

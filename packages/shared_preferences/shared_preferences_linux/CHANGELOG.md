@@ -1,3 +1,7 @@
+## 0.0.3+1
+
+* Update Flutter SDK constraint.
+
 ## 0.0.3
 
 * Update integration test examples to use `testWidgets` instead of `test`.
