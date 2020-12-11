@@ -162,7 +162,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: catalina-xcode-12.1-flutter
+    image: catalina-xcode-12.0-flutter
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -201,7 +201,7 @@ task:
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --ipa
         # - ./script/incremental_build.sh drive-examples
-        - ./script/incremental_build.sh xctest --target RunnerUITests --ios-destination 'platform=iOS Simulator,name=iPhone 11,OS=14.2' --skip $PLUGINS_TO_SKIP_XCTESTS
+        - ./script/incremental_build.sh xctest --target RunnerUITests --ios-destination 'platform=iOS Simulator,name=iPhone 11,OS=14.1' --skip $PLUGINS_TO_SKIP_XCTESTS
 # task:
 #   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
 #   only_if: $CIRRUS_TAG == ''
