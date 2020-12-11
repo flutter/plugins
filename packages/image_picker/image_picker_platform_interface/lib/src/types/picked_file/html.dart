@@ -24,7 +24,7 @@ class PickedFile extends PickedFileBase {
     if (_initBytes != null) {
       return Future.value(UnmodifiableUint8ListView(_initBytes));
     }
-    return http.readBytes(path);
+    return http.readBytes(Uri.parse(path));
   }
 
   @override

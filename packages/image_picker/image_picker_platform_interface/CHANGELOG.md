@@ -1,6 +1,10 @@
-## 1.1.4
+## 1.1.5
 
 * Update Flutter SDK constraint.
+
+## 1.1.4
+
+* Pass `Uri`s to `package:http` methods, instead of strings, in preparation for a major version update in `http`.
 
 ## 1.1.3
 

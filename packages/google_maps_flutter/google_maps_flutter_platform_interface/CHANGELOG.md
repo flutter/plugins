@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Update Flutter SDK constraint.
+
 ## 1.0.5
 
 * Temporarily add a `fromJson` constructor to `BitmapDescriptor` so serialized descriptors can be synchronously re-hydrated. This will be removed when a fix for [this issue](https://github.com/flutter/flutter/issues/70330) lands.
