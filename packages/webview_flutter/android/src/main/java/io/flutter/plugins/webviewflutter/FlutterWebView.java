@@ -100,9 +100,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.setWebChromeClient(new FlutterWebChromeClient());
 
     webView.getSettings().setUseWideViewPort(true);
-    
+
     webView.getSettings().setSupportZoom(true);
-    webView.getSettings().setBuiltInZoomControls(false);
+    webView.getSettings().setBuiltInZoomControls(true);
+    webView.getSettings().setDisplayZoomControls(false);
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
