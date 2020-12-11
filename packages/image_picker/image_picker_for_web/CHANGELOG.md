@@ -1,3 +1,7 @@
+# 0.1.0+3
+
+* Update Flutter SDK constraint.
+
 # 0.1.0+2
 
 * Adds Video MIME Types for the safari browser for acception
