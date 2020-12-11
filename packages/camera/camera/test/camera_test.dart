@@ -40,7 +40,7 @@ bool mockPlatformException = false;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   group('camera', () {
     test('debugCheckIsDisposed should not throw assertion error when disposed',
         () {
