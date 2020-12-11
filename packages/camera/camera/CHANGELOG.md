@@ -1,5 +1,11 @@
 ## 0.6.0
 
+## 0.5.8+18
+
+* Suppress unchecked warning in Android tests which prevented the tests to compile.
+
+## 0.5.8+17
+
 As part of implementing federated architecture and making the interface compatible with the web this version contains the following **breaking changes**:
 
 Method changes in `CameraController`:

@@ -80,8 +80,16 @@ public class DartMessengerTest {
     assertNull(call.argument("description"));
   }
 
-  private MethodCall decodeSentMessage(ByteBuffer sentMessage) {
+  @SuppressWarnings("unchecked")
+  private Map<String, String> decodeSentMessage(ByteBuffer sentMessage) {
     sentMessage.position(0);
-    return StandardMethodCodec.INSTANCE.decodeMethodCall(sentMessage);
+    return (Map<String, String>) StandardMethodCodec.INSTANCE.decodeEnvelope(sentMessage);
+  }
+
+  private void initializeEventSink() {
+    MethodCall call = new MethodCall("listen", null);
+    ByteBuffer encodedCall = StandardMethodCodec.INSTANCE.encodeMethodCall(call);
+    encodedCall.position(0);
+    fakeBinaryMessenger.getMessageHandler().onMessage(encodedCall, reply -> {});
   }
 }
