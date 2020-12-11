@@ -1,3 +1,7 @@
+## 1.0.9
+
+* Update Flutter SDK constraint.
+
 ## 1.0.8
 
 * Update Dart SDK constraint in example.
