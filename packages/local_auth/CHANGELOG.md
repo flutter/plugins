@@ -2,6 +2,10 @@
 
 * Migrate to null safety.
 
+## 0.6.3+4
+
+* Update Dart SDK constraint in example.
+
 ## 0.6.3+3
 
 * Update android compileSdkVersion to 29.

@@ -1,3 +1,12 @@
+## 1.0.7
+
+* Android: Handle deprecation & unchecked warning as error.
+
+## 1.0.6
+
+* Update Dart SDK constraint in example.
+* Remove unused `test` dependency in the example app.
+
 ## 1.0.5
 
 Overhaul lifecycle management in GoogleMapsPlugin.
