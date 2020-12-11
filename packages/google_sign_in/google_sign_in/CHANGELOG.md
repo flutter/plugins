@@ -1,3 +1,7 @@
+## 4.5.7
+
+* Update Flutter SDK constraint.
+
 ## 4.5.6
 
 * Fix deprecated member warning in tests.
