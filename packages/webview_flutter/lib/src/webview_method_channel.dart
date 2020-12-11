@@ -182,6 +182,14 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull(
         'gestureNavigationEnabled', settings.gestureNavigationEnabled);
     _addSettingIfPresent('userAgent', settings.userAgent);
+    _addSettingIfPresent('setSupportZoom', settings.setSupportZoom);
+    _addSettingIfPresent(
+        'setBuiltInZoomControls', settings.setBuiltInZoomControls);
+    _addSettingIfPresent(
+        'setDisplayZoomControls', settings.setDisplayZoomControls);
+    _addSettingIfPresent('setUseWideViewPort', settings.setUseWideViewPort);
+    _addSettingIfPresent(
+        'setLoadWithOverviewMode', settings.setLoadWithOverviewMode);
     return map;
   }
 

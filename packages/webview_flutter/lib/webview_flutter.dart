@@ -221,6 +221,11 @@ class WebView extends StatefulWidget {
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
+    this.setSupportZoom = true,
+    this.setBuiltInZoomControls = true,
+    this.setDisplayZoomControls = false,
+    this.setUseWideViewPort,
+    this.setLoadWithOverviewMode,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
   })  : assert(javascriptMode != null),
@@ -388,6 +393,35 @@ class WebView extends StatefulWidget {
   /// By default `userAgent` is null.
   final String userAgent;
 
+  /// Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  ///
+  /// The particular zoom mechanisms that should be used can be set with setBuiltInZoomControls(boolean).
+  final bool setSupportZoom;
+
+  ///Sets whether the WebView should use its built-in zoom mechanisms.
+  ///
+  ///The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
+  final bool setBuiltInZoomControls;
+
+  ///Sets whether the WebView should use its built-in zoom mechanisms.
+  ///
+  ///The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
+  final bool setDisplayZoomControls;
+
+  /// Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
+  ///
+  /// When the value of the setting is false, the layout width is always set to the width of the WebView control in device-independent (CSS) pixels.
+  ///
+  /// When the value is true and the page contains the viewport meta tag, the value of the width specified in the tag is used.
+  ///
+  /// If the page does not contain the tag or does not provide a width, then a wide viewport will be used.
+  final bool setUseWideViewPort;
+
+  /// Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
+  ///
+  /// This setting is taken into account when the content width is greater than the width of the WebView control, for example, when getUseWideViewPort() is enabled.
+  final bool setLoadWithOverviewMode;
+
   /// Which restrictions apply on automatic media playback.
   ///
   /// This initial value is applied to the platform's webview upon creation. Any following
@@ -470,6 +504,12 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     userAgent: WebSetting<String>.of(widget.userAgent),
+    setSupportZoom: WebSetting<bool>.of(widget.setSupportZoom),
+    setBuiltInZoomControls: WebSetting<bool>.of(widget.setBuiltInZoomControls),
+    setDisplayZoomControls: WebSetting<bool>.of(widget.setDisplayZoomControls),
+    setUseWideViewPort: WebSetting<bool>.of(widget.setUseWideViewPort),
+    setLoadWithOverviewMode:
+        WebSetting<bool>.of(widget.setLoadWithOverviewMode),
   );
 }
 
@@ -489,6 +529,12 @@ WebSettings _clearUnchangedWebSettings(
   bool hasNavigationDelegate;
   bool debuggingEnabled;
   WebSetting<String> userAgent = WebSetting<String>.absent();
+  bool setSupportZoom;
+  bool setBuiltInZoomControls;
+  bool setDisplayZoomControls;
+  bool setUseWideViewPort;
+  bool setLoadWithOverviewMode;
+
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -501,12 +547,33 @@ WebSettings _clearUnchangedWebSettings(
   if (currentValue.userAgent != newValue.userAgent) {
     userAgent = newValue.userAgent;
   }
+  if (currentValue.setSupportZoom != newValue.setSupportZoom) {
+    setSupportZoom = newValue.setSupportZoom.value;
+  }
+  if (currentValue.setBuiltInZoomControls != newValue.setBuiltInZoomControls) {
+    setBuiltInZoomControls = newValue.setBuiltInZoomControls.value;
+  }
+  if (currentValue.setDisplayZoomControls != newValue.setDisplayZoomControls) {
+    setDisplayZoomControls = newValue.setDisplayZoomControls.value;
+  }
+  if (currentValue.setUseWideViewPort != newValue.setUseWideViewPort) {
+    setUseWideViewPort = newValue.setUseWideViewPort.value;
+  }
+  if (currentValue.setLoadWithOverviewMode !=
+      newValue.setLoadWithOverviewMode) {
+    setLoadWithOverviewMode = newValue.setLoadWithOverviewMode.value;
+  }
 
   return WebSettings(
     javascriptMode: javascriptMode,
     hasNavigationDelegate: hasNavigationDelegate,
     debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,
+    setSupportZoom: WebSetting<bool>.of(setSupportZoom),
+    setBuiltInZoomControls: WebSetting<bool>.of(setBuiltInZoomControls),
+    setDisplayZoomControls: WebSetting<bool>.of(setDisplayZoomControls),
+    setUseWideViewPort: WebSetting<bool>.of(setUseWideViewPort),
+    setLoadWithOverviewMode: WebSetting<bool>.of(setLoadWithOverviewMode),
   );
 }
 

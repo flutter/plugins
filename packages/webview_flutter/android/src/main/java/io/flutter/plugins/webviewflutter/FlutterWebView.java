@@ -99,16 +99,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.getSettings().setSupportMultipleWindows(true);
     webView.setWebChromeClient(new FlutterWebChromeClient());
 
-
-    // Allow pinch to zoom
-    webView.getSettings().setSupportZoom(true);
-    webView.getSettings().setBuiltInZoomControls(true);
-    webView.getSettings().setDisplayZoomControls(false);
-
-    // Set the content to zoom out and fit screen
-    webView.getSettings().setUseWideViewPort(true);
-    webView.getSettings().setLoadWithOverviewMode(true);
-
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
 
@@ -130,6 +120,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
+    }
+    if (params.containsKey("setBuiltInZoomControls")) {
+      boolean enable = (Boolean) params.get("setBuiltInZoomControls");
+      updatesetBuiltInZoomControls(enable);
+    }
+    if (params.containsKey("useWideViewPort")) {
+      boolean enable = (Boolean) params.get("useWideViewPort");
+      setUseWideViewPort(enable);
+    }
+    if (params.containsKey("loadWithOverviewMode")) {
+      boolean enable = (Boolean) params.get("loadWithOverviewMode");
+      setLoadWithOverviewMode(enable);
     }
   }
 
@@ -382,6 +384,21 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "userAgent":
           updateUserAgent((String) settings.get(key));
           break;
+        case "setSupportZoom":
+          setSupportZoom((boolean) settings.get(key));
+          break;
+        case "setBuiltInZoomControls":
+          setBuiltInZoomControls((boolean) settings.get(key));
+          break;
+        case "setDisplayZoomControls":
+          setDisplayZoomControls((boolean) settings.get(key));
+          break;
+        case "setUseWideViewPort":
+          setUseWideViewPort((boolean) settings.get(key));
+          break;
+        case "setLoadWithOverviewMode":
+          setLoadWithOverviewMode((boolean) settings.get(key));
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
@@ -419,6 +436,27 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void updateUserAgent(String userAgent) {
     webView.getSettings().setUserAgentString(userAgent);
+  }
+
+  private void setSupportZoom(boolean shouldEnable) {
+    webView.getSettings().setSupportZoom(shouldSupport);
+  }
+
+  private void setBuiltInZoomControls(boolean shouldEnable) {
+    webView.getSettings().setBuiltInZoomControls(shouldSupport);
+  }
+
+  private void setDisplayZoomControls(boolean shouldEnable) {
+    // oOn-screen zoom controls are deprecated in Android (see ZoomButtonsController) so it's recommended to set this to false.
+    webView.getSettings().setDisplayZoomControls(shouldEnable);
+  }
+
+  private void setUseWideViewPort(boolean shouldEnable) {
+    webView.getSettings().setUseWideViewPort(shouldEnable);
+  }
+
+  private void setLoadWithOverviewMode(boolean shouldEnable) {
+    webView.getSettings().setLoadWithOverviewMode(shouldEnable);
   }
 
   @Override
