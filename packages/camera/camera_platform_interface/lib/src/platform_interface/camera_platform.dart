@@ -113,6 +113,25 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('setFlashMode() is not implemented.');
   }
 
+  /// Gets the maximum supported zoom level for the selected camera.
+  Future<double> getMaxZoomLevel(int cameraId) {
+    throw UnimplementedError('getMaxZoomLevel() is not implemented.');
+  }
+
+  /// Gets the minimum supported zoom level for the selected camera.
+  Future<double> getMinZoomLevel(int cameraId) {
+    throw UnimplementedError('getMinZoomLevel() is not implemented.');
+  }
+
+  /// Set the zoom level for the selected camera.
+  ///
+  /// The supplied [zoom] value should be between 1.0 and the maximum supported
+  /// zoom level returned by the `getMaxZoomLevel`. Throws an `CameraException`
+  /// when an illegal zoom level is supplied.
+  Future<void> setZoomLevel(int cameraId, double zoom) {
+    throw UnimplementedError('setZoomLevel() is not implemented.');
+  }
+
   /// Returns a widget showing a live camera preview.
   Widget buildPreview(int cameraId) {
     throw UnimplementedError('buildView() has not been implemented.');

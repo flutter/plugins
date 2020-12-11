@@ -509,6 +509,84 @@ void main() {
         expect(() => camera.handleMethodCall(MethodCall('unknown_method'), 1),
             throwsA(isA<MissingPluginException>()));
       });
+
+      test('Should get the max zoom level', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'getMaxZoomLevel': 10.0},
+        );
+
+        // Act
+        final maxZoomLevel = await camera.getMaxZoomLevel(cameraId);
+
+        // Assert
+        expect(maxZoomLevel, 10.0);
+        expect(channel.log, <Matcher>[
+          isMethodCall('getMaxZoomLevel', arguments: {
+            'cameraId': cameraId,
+          }),
+        ]);
+      });
+
+      test('Should get the min zoom level', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'getMinZoomLevel': 1.0},
+        );
+
+        // Act
+        final maxZoomLevel = await camera.getMinZoomLevel(cameraId);
+
+        // Assert
+        expect(maxZoomLevel, 1.0);
+        expect(channel.log, <Matcher>[
+          isMethodCall('getMinZoomLevel', arguments: {
+            'cameraId': cameraId,
+          }),
+        ]);
+      });
+
+      test('Should set the zoom level', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'setZoomLevel': null},
+        );
+
+        // Act
+        await camera.setZoomLevel(cameraId, 2.0);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('setZoomLevel',
+              arguments: {'cameraId': cameraId, 'zoom': 2.0}),
+        ]);
+      });
+
+      test('Should throw CameraException when illegal zoom level is supplied',
+          () async {
+        // Arrange
+        MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {
+            'setZoomLevel': PlatformException(
+              code: 'ZOOM_ERROR',
+              message: 'Illegal zoom error',
+              details: null,
+            )
+          },
+        );
+
+        // Act & assert
+        expect(
+            () => camera.setZoomLevel(cameraId, -1.0),
+            throwsA(isA<CameraException>()
+                .having((e) => e.code, 'code', 'ZOOM_ERROR')
+                .having((e) => e.description, 'description',
+                    'Illegal zoom error')));
+      });
     });
   });
 }
