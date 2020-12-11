@@ -1,3 +1,7 @@
+## 0.4.0+11
+
+* Update Flutter SDK constraint.
+
 ## 0.4.0+10
 
 * Update android compileSdkVersion to 29.
