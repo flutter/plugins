@@ -29,20 +29,16 @@ fi
 #
 # TODO(mklim): Remove everything from this list. https://github.com/flutter/flutter/issues/45440
 CUSTOM_ANALYSIS_PLUGINS=(
-  "in_app_purchase"
-  "camera"
   "plugin_platform_interface"
   "video_player/video_player"
   "video_player/video_player_platform_interface"
   "video_player/video_player_web"
-  "google_maps_flutter/google_maps_flutter_web"
   "url_launcher/url_launcher_platform_interface"
   "url_launcher/url_launcher"
   "device_info/device_info_platform_interface"
   "device_info/device_info"
   "connectivity/connectivity_platform_interface"
   "connectivity/connectivity"
-  "url_launcher/url_launcher_web"
 )
 # Comma-separated string of the list above
 readonly CUSTOM_FLAG=$(IFS=, ; echo "${CUSTOM_ANALYSIS_PLUGINS[*]}")
