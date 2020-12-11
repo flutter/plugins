@@ -39,5 +39,5 @@ dev_dependencies:
   pigeon: 0.1.7
 
 environment:
-  sdk: '>=2.12.0-0 <3.0.0'
+  sdk: ">=2.12.0-0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5 <2.0.0"
