@@ -8,6 +8,8 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
+source "$SCRIPT_DIR/nnbd_plugins.sh"
+
 check_changed_packages > /dev/null
 
 readonly EXCLUDED_PLUGINS_LIST=(
@@ -42,7 +44,15 @@ readonly EXCLUDED_PLUGINS_LIST=(
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
 
-(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude $EXCLUDED)
+ALL_EXCLUDED=($EXCLUDED)
+# Exclude nnbd plugins from stable.
+if [[ "$CHANNEL" -eq "stable" ]]; then
+  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_STABLE")
+fi
+
+echo "Excluding the following plugins: $ALL_EXCLUDED"
+
+(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
 
 function error() {
   echo "$@" 1>&2
