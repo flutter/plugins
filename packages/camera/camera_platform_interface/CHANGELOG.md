@@ -1,3 +1,7 @@
+## 1.0.3
+
+- Update Flutter SDK constraint.
+
 ## 1.0.2
 
 - Added interface methods to support zoom features.
