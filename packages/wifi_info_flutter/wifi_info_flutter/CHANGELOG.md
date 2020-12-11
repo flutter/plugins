@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Update Flutter SDK constraint.
+
 ## 1.0.1
 
 * Fixed method channel name in android implementation. [Issue](https://github.com/flutter/flutter/issues/69073).

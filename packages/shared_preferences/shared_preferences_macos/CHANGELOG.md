@@ -1,3 +1,7 @@
+## 0.0.1+12
+
+* Update Flutter SDK constraint.
+
 ## 0.0.1+11
 
 * Remove unused `test` dependency.

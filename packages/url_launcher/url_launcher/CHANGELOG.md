@@ -1,3 +1,7 @@
+## 5.7.12
+
+* Update Flutter SDK constraint.
+
 ## 5.7.11
 
 * Update integration test examples to use `testWidgets` instead of `test`.
