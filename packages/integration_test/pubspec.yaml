@@ -1,11 +1,11 @@
 name: integration_test
 description: Runs tests that use the flutter_test API as integration tests.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/flutter/plugins/tree/master/packages/integration_test
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5"
 
 dependencies:
   flutter:

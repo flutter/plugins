@@ -1,3 +1,7 @@
+## 0.6.7+16
+
+* Update Flutter SDK constraint.
+
 ## 0.6.7+15
 
 * Fix element type in XCUITests to look for staticText type when searching for texts.
