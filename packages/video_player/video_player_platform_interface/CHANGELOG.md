@@ -1,3 +1,7 @@
+## 2.2.1
+
+* Update Flutter SDK constraint.
+
 ## 2.2.0
 
 * Added option to set the video playback speed on the video controller.

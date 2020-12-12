@@ -1,6 +1,6 @@
 name: url_launcher_linux
 description: Linux implementation of the url_launcher plugin.
-version: 0.0.2
+version: 0.0.2+1
 homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_linux
 
 flutter:
@@ -11,7 +11,7 @@ flutter:
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.8 <2.0.0"
+  flutter: ">=1.12.8"
 
 dependencies:
   flutter:

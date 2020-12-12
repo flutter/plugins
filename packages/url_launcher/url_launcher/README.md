@@ -14,26 +14,23 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() {
-  runApp(Scaffold(
-    body: Center(
-      child: RaisedButton(
-        onPressed: _launchURL,
-        child: Text('Show Flutter homepage'),
+const _url = 'https://flutter.dev';
+
+void main() => runApp(
+      const MaterialApp(
+        home: Material(
+          child: Center(
+            child: RaisedButton(
+              onPressed: _launchURL,
+              child: Text('Show Flutter homepage'),
+            ),
+          ),
+        ),
       ),
-    ),
-  ));
-}
+    );
 
-_launchURL() async {
-  const url = 'https://flutter.dev';
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Could not launch $url';
-  }
-}
-
+void _launchURL() async =>
+    await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 ```
 
 ## Supported URL schemes

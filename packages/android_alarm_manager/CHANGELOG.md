@@ -1,3 +1,7 @@
+## 0.4.5+18
+
+* Update Flutter SDK constraint.
+
 ## 0.4.5+17
 
 * Update Dart SDK constraint in example.

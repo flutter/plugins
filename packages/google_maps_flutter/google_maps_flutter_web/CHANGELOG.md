@@ -1,3 +1,7 @@
+## 0.1.0+9
+
+* Update Flutter SDK constraint.
+
 ## 0.1.0+8
 
 * Update `package:google_maps_flutter_platform_interface` to `^1.0.5`.

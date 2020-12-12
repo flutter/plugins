@@ -1,3 +1,7 @@
+## 0.0.1+9
+
+* Update Flutter SDK constraint.
+
 ## 0.0.1+8
 
 * Android: Handle deprecation & unchecked warning as error.
