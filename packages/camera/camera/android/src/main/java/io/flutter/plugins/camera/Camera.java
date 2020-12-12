@@ -224,7 +224,7 @@ public class Camera {
     final File file;
     try {
       file = File.createTempFile("CAP", ".jpg", outputDir);
-    } catch (IOException e) {
+    } catch (IOException | SecurityException e) {
       result.error("cannotCreateFile", e.getMessage(), null);
       return;
     }
@@ -373,7 +373,7 @@ public class Camera {
     final File outputDir = applicationContext.getCacheDir();
     try {
       videoRecordingFile = File.createTempFile("REC", ".mp4", outputDir);
-    } catch (IOException e) {
+    } catch (IOException | SecurityException e) {
       result.error("cannotCreateFile", e.getMessage(), null);
       return;
     }
