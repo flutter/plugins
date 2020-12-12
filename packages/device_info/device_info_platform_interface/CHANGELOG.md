@@ -11,6 +11,10 @@
 
 * Migrate to null safety.
 
+## 1.0.2
+
+- Update Flutter SDK constraint.
+
 ## 1.0.1
 
 - Documentation typo fixed.

@@ -6,6 +6,10 @@
 
 * Migrate to null safety.
 
+## 2.0.3
+
+* Update Flutter SDK constraint.
+
 ## 2.0.2
 
 * Android: Fix IllegalArgumentException.

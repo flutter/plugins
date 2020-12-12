@@ -14,6 +14,10 @@
 
 * Migration to null safety.
 
+## 1.0.2
+
+* Update Flutter SDK constraint.
+
 ## 1.0.1
 
 * Android: Dispose video players when app is closed.

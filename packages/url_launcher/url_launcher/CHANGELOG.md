@@ -6,6 +6,10 @@
 
 * Migrate to null safety.
 
+## 5.7.13
+
+* Update Flutter SDK constraint.
+
 ## 5.7.12
 
 * Updated code sample in `README.md`

@@ -6,6 +6,10 @@
 
 * Migrate to null-safety.
 
+## 0.0.2+1
+
+* Update Flutter SDK constraint.
+
 ## 0.0.2
 
 * Update integration test examples to use `testWidgets` instead of `test`.
