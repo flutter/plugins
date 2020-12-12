@@ -10,10 +10,10 @@ import android.net.NetworkCapabilities;
 import android.os.Build;
 
 /** Reports connectivity related information such as connectivity type and wifi information. */
-class Connectivity {
+public class Connectivity {
   private ConnectivityManager connectivityManager;
 
-  Connectivity(ConnectivityManager connectivityManager) {
+  public Connectivity(ConnectivityManager connectivityManager) {
     this.connectivityManager = connectivityManager;
   }
 
