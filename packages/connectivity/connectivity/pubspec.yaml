@@ -24,7 +24,7 @@ dependencies:
   connectivity_platform_interface: ^2.0.0-nullsafety.1
   #TODO(cyanglaz): re-endorse the below plugins when they have migrated to nnbd.
   # https://github.com/flutter/flutter/issues/68669
-  connectivity_macos: ^0.1.0
+  connectivity_macos: ^0.2.0-nullsafety
   # connectivity_for_web: ^0.3.0
 
 dev_dependencies:
