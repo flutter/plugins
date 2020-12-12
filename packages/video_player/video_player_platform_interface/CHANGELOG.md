@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.3
+
+* `messages.dart` sets Dart `2.12`.
+
 ## 3.0.0-nullsafety.2
 
 * Bump Dart SDK to support null safety.
