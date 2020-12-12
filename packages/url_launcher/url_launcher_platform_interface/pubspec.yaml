@@ -8,7 +8,7 @@ version: 2.0.0-nullsafety.1
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: 1.1.0-nullsafety.1
+  plugin_platform_interface: ^1.1.0-nullsafety.1
 
 dev_dependencies:
   flutter_test:

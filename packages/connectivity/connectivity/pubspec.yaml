@@ -36,7 +36,7 @@ dev_dependencies:
   integration_test:
     path: ../../integration_test
   mockito: ^4.1.1
-  plugin_platform_interface: 1.1.0-nullsafety.1
+  plugin_platform_interface: ^1.1.0-nullsafety.1
   pedantic: ^1.10.0-nullsafety.1
 
 environment:
