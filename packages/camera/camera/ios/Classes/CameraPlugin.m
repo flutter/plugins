@@ -383,7 +383,8 @@ NSString *const errorMethod = @"error";
     }
   }
   if (!CMSampleBufferDataIsReady(sampleBuffer)) {
-    [_methodChannel invokeMethod:errorMethod arguments:@"sample buffer is not ready. Skipping sample"];
+    [_methodChannel invokeMethod:errorMethod
+                       arguments:@"sample buffer is not ready. Skipping sample"];
     return;
   }
   if (_isStreamingImages) {
@@ -662,7 +663,8 @@ NSString *const errorMethod = @"error";
 
     _isStreamingImages = YES;
   } else {
-    [_methodChannel invokeMethod:errorMethod arguments:@"Images from camera are already streaming!"];
+    [_methodChannel invokeMethod:errorMethod
+                       arguments:@"Images from camera are already streaming!"];
   }
 }
 
