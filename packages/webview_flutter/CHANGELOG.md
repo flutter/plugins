@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Enable native double-tap to zoom, and pinch to zoom functionality on Android and default to setLoadWithOverviewMode
+
 ## 1.0.7
 
 * Minor documentation update to indicate known issue on iOS 13.4 and 13.5.
