@@ -393,22 +393,22 @@ class WebView extends StatefulWidget {
   /// By default `userAgent` is null.
   final String userAgent;
 
-  /// Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  /// (Android only) Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
   ///
   /// The particular zoom mechanisms that should be used can be set with setBuiltInZoomControls(boolean).
   final bool setSupportZoom;
 
-  ///Sets whether the WebView should use its built-in zoom mechanisms.
+  /// (Android only) Sets whether the WebView should use its built-in zoom mechanisms.
   ///
   ///The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
   final bool setBuiltInZoomControls;
 
-  ///Sets whether the WebView should use its built-in zoom mechanisms.
+  /// (Android only) Sets whether the WebView should use its built-in zoom mechanisms.
   ///
   ///The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
   final bool setDisplayZoomControls;
 
-  /// Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
+  /// (Android only) Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
   ///
   /// When the value of the setting is false, the layout width is always set to the width of the WebView control in device-independent (CSS) pixels.
   ///
@@ -417,7 +417,7 @@ class WebView extends StatefulWidget {
   /// If the page does not contain the tag or does not provide a width, then a wide viewport will be used.
   final bool setUseWideViewPort;
 
-  /// Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
+  /// (Android only) Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
   ///
   /// This setting is taken into account when the content width is greater than the width of the WebView control, for example, when getUseWideViewPort() is enabled.
   final bool setLoadWithOverviewMode;
