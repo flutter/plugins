@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -180,6 +181,18 @@ abstract class WebViewPlatformController {
   ) {
     throw UnimplementedError(
         "WebView loadUrl is not implemented on the current platform");
+  }
+
+  /// Post to the specified URL.
+  ///
+  /// `url` must not be null
+  /// `params` must not be null
+  ///
+  /// `params` have to be ascii encoded
+  /// Throws an ArgumentError if `url` is not a valid URL string.
+  Future<void> postUrl(String url, Uint8List params) {
+    throw UnimplementedError(
+        "Webview postUrl is not implemented on the current platform");
   }
 
   /// Updates the webview settings.

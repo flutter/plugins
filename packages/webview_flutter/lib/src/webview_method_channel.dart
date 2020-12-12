@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 
@@ -77,6 +78,16 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     return _channel.invokeMethod<void>('loadUrl', <String, dynamic>{
       'url': url,
       'headers': headers,
+    });
+  }
+
+  @override
+  Future<void> postUrl(String url, Uint8List params) async {
+    assert(url != null);
+    assert(params != null);
+    return _channel.invokeMethod('postUrl', <String, dynamic>{
+      'url': url,
+      'params': params,
     });
   }
 

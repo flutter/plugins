@@ -613,6 +613,20 @@ class WebViewController {
     return _webViewPlatformController.loadUrl(url, headers);
   }
 
+  /// Post to the specified URL.
+  ///
+  /// `url` must not be null
+  /// `params` must not be null
+  ///
+  /// `params` have to be ascii encoded
+  /// Throws an ArgumentError if `url` is not a valid URL string.
+  Future<void> postUrl(String url, List<int> params) async {
+    assert(url != null);
+    assert(params != null);
+    _validateUrlString(url);
+    return _webViewPlatformController.postUrl(url, params);
+  }
+
   /// Accessor to the current URL that the WebView is displaying.
   ///
   /// If [WebView.initialUrl] was never specified, returns `null`.

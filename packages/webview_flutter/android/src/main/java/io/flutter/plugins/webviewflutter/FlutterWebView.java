@@ -23,12 +23,15 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
+  private static final String TAG = "FlutterWebView";
   private final InputAwareWebView webView;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
@@ -174,6 +177,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "loadUrl":
         loadUrl(methodCall, result);
         break;
+      case "postUrl":
+        postUrl(methodCall, result);
+        break;
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
@@ -227,6 +233,20 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
+  private static String initialParametersToString(Map<String, Object> parameters)
+      throws UnsupportedEncodingException {
+    StringBuilder sb = new StringBuilder();
+    for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+      sb.append(
+          URLEncoder.encode(entry.getKey(), "UTF-8")
+              + "="
+              + URLEncoder.encode(entry.getValue().toString(), "UTF-8")
+              + "&");
+    }
+
+    return sb.deleteCharAt(sb.length() - 1).toString();
+  }
+
   @SuppressWarnings("unchecked")
   private void loadUrl(MethodCall methodCall, Result result) {
     Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
@@ -236,6 +256,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       headers = Collections.emptyMap();
     }
     webView.loadUrl(url, headers);
+    result.success(null);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void postUrl(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    String url = (String) request.get("url");
+
+    byte[] params = (byte[]) request.get("params");
+
+    webView.postUrl(url, params);
+
     result.success(null);
   }
 
