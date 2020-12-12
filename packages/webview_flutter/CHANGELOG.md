@@ -1,3 +1,7 @@
+## 1.0.9
+
+* Enable native double-tap to zoom, and pinch to zoom functionality on Android and default to setLoadWithOverviewMode
+
 ## 1.0.8
 
 * Update Flutter SDK constraint.
