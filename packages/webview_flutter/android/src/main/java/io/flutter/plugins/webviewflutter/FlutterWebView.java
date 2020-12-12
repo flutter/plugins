@@ -121,18 +121,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
-    if (params.containsKey("setBuiltInZoomControls")) {
-      boolean enable = (Boolean) params.get("setBuiltInZoomControls");
-      updatesetBuiltInZoomControls(enable);
-    }
-    if (params.containsKey("useWideViewPort")) {
-      boolean enable = (Boolean) params.get("useWideViewPort");
-      setUseWideViewPort(enable);
-    }
-    if (params.containsKey("loadWithOverviewMode")) {
-      boolean enable = (Boolean) params.get("loadWithOverviewMode");
-      setLoadWithOverviewMode(enable);
-    }
   }
 
   @Override
@@ -439,11 +427,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void setSupportZoom(boolean shouldEnable) {
-    webView.getSettings().setSupportZoom(shouldSupport);
+    webView.getSettings().setSupportZoom(shouldEnable);
   }
 
   private void setBuiltInZoomControls(boolean shouldEnable) {
-    webView.getSettings().setBuiltInZoomControls(shouldSupport);
+    webView.getSettings().setBuiltInZoomControls(shouldEnable);
   }
 
   private void setDisplayZoomControls(boolean shouldEnable) {

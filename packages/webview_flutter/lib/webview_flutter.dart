@@ -224,8 +224,8 @@ class WebView extends StatefulWidget {
     this.setSupportZoom = true,
     this.setBuiltInZoomControls = true,
     this.setDisplayZoomControls = false,
-    this.setUseWideViewPort,
-    this.setLoadWithOverviewMode,
+    this.setUseWideViewPort = true,
+    this.setLoadWithOverviewMode = true,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
   })  : assert(javascriptMode != null),

@@ -954,13 +954,13 @@ void main() {
       expect(platformWebView.setUseWideViewPort, isTrue);
     });
 
-    testWidgets('defaults to null', (WidgetTester tester) async {
+    testWidgets('defaults to true', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView());
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView;
 
-      expect(platformWebView.setUseWideViewPort, isNull);
+      expect(platformWebView.setUseWideViewPort, isTrue);
     });
 
     testWidgets('can be changed', (WidgetTester tester) async {
@@ -998,13 +998,13 @@ void main() {
       expect(platformWebView.setLoadWithOverviewMode, isTrue);
     });
 
-    testWidgets('defaults to null', (WidgetTester tester) async {
+    testWidgets('defaults to true', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView());
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView;
 
-      expect(platformWebView.setLoadWithOverviewMode, isNull);
+      expect(platformWebView.setLoadWithOverviewMode, isTrue);
     });
 
     testWidgets('can be changed', (WidgetTester tester) async {
@@ -1062,8 +1062,8 @@ void main() {
               setSupportZoom: WebSetting<bool>.of(true),
               setBuiltInZoomControls: WebSetting<bool>.of(true),
               setDisplayZoomControls: WebSetting<bool>.of(false),
-              setUseWideViewPort: WebSetting<bool>.of(null),
-              setLoadWithOverviewMode: WebSetting<bool>.of(null),
+              setUseWideViewPort: WebSetting<bool>.of(true),
+              setLoadWithOverviewMode: WebSetting<bool>.of(true),
             ),
             // TODO(iskakaushik): Remove this when collection literals makes it to stable.
             // ignore: prefer_collection_literals
