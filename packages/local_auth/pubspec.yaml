@@ -18,8 +18,8 @@ dependencies:
     sdk: flutter
   meta: ^1.3.0-nullsafety.3
   intl: ^0.17.0-nullsafety.2
-  platform: ">=2.0.0 <4.0.0"
-  flutter_plugin_android_lifecycle: ^1.0.2
+  platform: ^3.0.0-nullsafety.4
+  flutter_plugin_android_lifecycle: ^2.0.0-nullsafety
 
 dev_dependencies:
   integration_test:
