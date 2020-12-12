@@ -1,7 +1,3 @@
-## 1.0.0-nullsafety
-
-* Migrate to null safety.
-
 ## 0.1.1+1
 
 * Check in linux/ directory for example/
@@ -23,4 +19,3 @@
 ## 0.0.1
 * The initial implementation of path_provider for Linux
   * Implements getApplicationSupportPath, getApplicationDocumentsPath, getDownloadsPath, and getTemporaryPath
-
