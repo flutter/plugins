@@ -7,6 +7,7 @@
 readonly NNBD_PLUGINS_LIST=(
   "connectivity"
   "device_info"
+  "flutter_plugin_android_lifecycle"
   "flutter_webview"
   "google_sign_in"
   "local_auth"
