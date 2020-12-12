@@ -21,7 +21,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.0.5
-  connectivity_platform_interface: 2.0.0-nullsafety.1
+  connectivity_platform_interface: ^2.0.0-nullsafety.1
   #TODO(cyanglaz): re-endorse the below plugins when they have migrated to nnbd.
   # https://github.com/flutter/flutter/issues/68669
   connectivity_macos: ^0.1.0
