@@ -1,3 +1,7 @@
+## 0.6.5+5
+
+* Update Flutter SDK constraint.
+
 ## 0.6.5+4
 
 * Fix iPad share window not showing when `origin` is null.

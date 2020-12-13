@@ -1,3 +1,12 @@
+## 0.4.3+3
+
+* Update Flutter SDK constraint.
+
+## 0.4.3+2
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
 ## 0.4.3+1
 
 * Update android compileSdkVersion to 29.

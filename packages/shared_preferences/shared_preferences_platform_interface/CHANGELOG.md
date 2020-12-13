@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Update Flutter SDK constraint.
+
 ## 1.0.4
 
 * Update lower bound of dart dependency to 2.1.0.
