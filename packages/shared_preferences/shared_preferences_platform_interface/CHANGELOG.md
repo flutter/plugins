@@ -1,7 +1,3 @@
-## 2.0.0-nullsafety
-
-* Migrate to null safety.
-
 ## 1.0.4
 
 * Update lower bound of dart dependency to 2.1.0.
@@ -22,3 +18,4 @@
 
 * Initial release. Contains the interface and an implementation based on
   method channels.
+  
