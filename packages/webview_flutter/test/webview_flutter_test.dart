@@ -950,7 +950,7 @@ class FakePlatformWebView {
         amountOfReloadsOnCurrentUrl++;
         return Future<void>.sync(() {});
       case 'currentUrl':
-        return Future<String>.value(currentUrl);
+        return Future<String?>.value(currentUrl);
       case 'evaluateJavascript':
         return Future<dynamic>.value(call.arguments);
       case 'addJavascriptChannels':
