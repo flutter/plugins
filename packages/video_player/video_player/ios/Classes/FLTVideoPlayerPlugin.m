@@ -144,7 +144,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
   // TODO(@recastrodiaz): should we use videoTrack.nominalFrameRate ?
   // Currently set at a constant 30 FPS
-  videoComposition.frameDuration = CMTimeMake(1, 30);
+  videoComposition.frameDuration = CMTimeMake(1, videoTrack.nominalFrameRate);
 
   return videoComposition;
 }
