@@ -115,21 +115,21 @@ static FlutterError *getFlutterError(NSError *error) {
 @end
 
 static AVCaptureFlashMode getFlashModeForString(NSString *mode) {
-    if ([mode isEqualToString:@"off"]) {
-        return AVCaptureFlashModeOff;
-    } else if ([mode isEqualToString:@"auto"]) {
-        return AVCaptureFlashModeAuto;
-    } else if ([mode isEqualToString:@"always"]) {
-        return AVCaptureFlashModeOn;
-    } else {
-        NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                             code:NSURLErrorUnknown
-                                         userInfo:@{
-                                             NSLocalizedDescriptionKey : [NSString
-                                                                          stringWithFormat:@"Unknown flash mode %@", mode]
-                                         }];
-        @throw error;
-    }
+  if ([mode isEqualToString:@"off"]) {
+    return AVCaptureFlashModeOff;
+  } else if ([mode isEqualToString:@"auto"]) {
+    return AVCaptureFlashModeAuto;
+  } else if ([mode isEqualToString:@"always"]) {
+    return AVCaptureFlashModeOn;
+  } else {
+    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                         code:NSURLErrorUnknown
+                                     userInfo:@{
+                                       NSLocalizedDescriptionKey : [NSString
+                                           stringWithFormat:@"Unknown flash mode %@", mode]
+                                     }];
+    @throw error;
+  }
 }
 
 // Mirrors ResolutionPreset in camera.dart
@@ -673,24 +673,29 @@ NSString *const errorMethod = @"error";
   result(nil);
 }
 
-- (void)setFlashModeWithResult:(FlutterResult)result mode:(NSString *) modeStr {
-    AVCaptureFlashMode mode;
-    @try {
-        mode = getFlashModeForString(modeStr);
-    } @catch (NSError *e) {
-        result(getFlutterError(e));
-        return;
-    }
-    if (!_captureDevice.hasFlash) {
-        result([FlutterError errorWithCode:@"setFlashModeFailed" message:@"Device does not have flash capabilities" details:nil]);
-        return;
-    }
-    if (![_capturePhotoOutput.supportedFlashModes containsObject:[NSNumber numberWithInt:((int)mode)]]) {
-        result([FlutterError errorWithCode:@"setFlashModeFailed" message:@"Device does not support this specific flash mode" details:nil]);
-        return;
-    }
-    _flashMode = mode;
-    result(nil);
+- (void)setFlashModeWithResult:(FlutterResult)result mode:(NSString *)modeStr {
+  AVCaptureFlashMode mode;
+  @try {
+    mode = getFlashModeForString(modeStr);
+  } @catch (NSError *e) {
+    result(getFlutterError(e));
+    return;
+  }
+  if (!_captureDevice.hasFlash) {
+    result([FlutterError errorWithCode:@"setFlashModeFailed"
+                               message:@"Device does not have flash capabilities"
+                               details:nil]);
+    return;
+  }
+  if (![_capturePhotoOutput.supportedFlashModes
+          containsObject:[NSNumber numberWithInt:((int)mode)]]) {
+    result([FlutterError errorWithCode:@"setFlashModeFailed"
+                               message:@"Device does not support this specific flash mode"
+                               details:nil]);
+    return;
+  }
+  _flashMode = mode;
+  result(nil);
 }
 
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
@@ -952,7 +957,7 @@ NSString *const errorMethod = @"error";
     } else if ([@"resumeVideoRecording" isEqualToString:call.method]) {
       [_camera resumeVideoRecordingWithResult:result];
     } else if ([@"setFlashMode" isEqualToString:call.method]) {
-        [_camera setFlashModeWithResult:result mode:call.arguments[@"mode"]];
+      [_camera setFlashModeWithResult:result mode:call.arguments[@"mode"]];
     } else {
       result(FlutterMethodNotImplemented);
     }
