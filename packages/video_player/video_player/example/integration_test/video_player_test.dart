@@ -11,7 +11,7 @@ const Duration _playDuration = Duration(seconds: 1);
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  VideoPlayerController _controller;
+  late VideoPlayerController _controller;
   tearDown(() async => _controller.dispose());
 
   group('asset videos', () {
@@ -22,7 +22,7 @@ void main() {
     testWidgets('can be initialized', (WidgetTester tester) async {
       await _controller.initialize();
 
-      expect(_controller.value.initialized, true);
+      expect(_controller.value.isInitialized, true);
       expect(_controller.value.position, const Duration(seconds: 0));
       expect(_controller.value.isPlaying, false);
       expect(_controller.value.duration,
