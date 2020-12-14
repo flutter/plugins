@@ -1,3 +1,7 @@
+## 5.0.0-nullsafety
+
+* Migrate to nnbd.
+
 ## 4.5.9
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.

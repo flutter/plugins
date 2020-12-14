@@ -5,7 +5,7 @@
 import '../google_sign_in_platform_interface.dart';
 
 /// Converts user data coming from native code into the proper platform interface type.
-GoogleSignInUserData getUserDataFromMap(Map<String, dynamic> data) {
+GoogleSignInUserData? getUserDataFromMap(Map<String, dynamic>? data) {
   if (data == null) {
     return null;
   }
@@ -18,7 +18,7 @@ GoogleSignInUserData getUserDataFromMap(Map<String, dynamic> data) {
 }
 
 /// Converts token data coming from native code into the proper platform interface type.
-GoogleSignInTokenData getTokenDataFromMap(Map<String, dynamic> data) {
+GoogleSignInTokenData? getTokenDataFromMap(Map<String, dynamic>? data) {
   if (data == null) {
     return null;
   }

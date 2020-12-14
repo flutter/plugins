@@ -12,7 +12,7 @@ abstract class GoogleIdentity {
   /// currently signed in user to your backend server. Instead, send an ID token
   /// which can be securely validated on the server.
   /// `GoogleSignInAccount.authentication.idToken` provides such an ID token.
-  String get id;
+  String? get id;
 
   /// The email address of the signed in user.
   ///
@@ -23,15 +23,15 @@ abstract class GoogleIdentity {
   /// currently signed in user to your backend server. Instead, send an ID token
   /// which can be securely validated on the server.
   /// `GoogleSignInAccount.authentication.idToken` provides such an ID token.
-  String get email;
+  String? get email;
 
   /// The display name of the signed in user.
   ///
   /// Not guaranteed to be present for all users, even when configured.
-  String get displayName;
+  String? get displayName;
 
   /// The photo url of the signed in user if the user has a profile picture.
   ///
   /// Not guaranteed to be present for all users, even when configured.
-  String get photoUrl;
+  String? get photoUrl;
 }
