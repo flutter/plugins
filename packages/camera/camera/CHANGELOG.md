@@ -22,13 +22,7 @@ Method changes in `CameraController`:
 
 ## 0.5.8+17
 
-As part of implementing federated architecture and making the interface compatible with the web this version contains the following **breaking changes**:
-
-Method changes in `CameraController`:
-- The `takePicture` method no longer accepts the `path` parameter, but instead returns the captured image as an instance of the `XFile` class;
-- The `startVideoRecording` method no longer accepts the `filePath`. Instead the recorded video is now returned as a `XFile` instance when the `stopVideoRecording` method completes; 
-- The `stopVideoRecording` method now returns the captured video when it completes;
-- Added the `buildPreview` method which is now used to implement the CameraPreview widget.
+* Added Android 30 support.
 
 ## 0.5.8+16
 
