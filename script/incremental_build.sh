@@ -29,6 +29,16 @@ fi
 #
 # TODO(mklim): Remove everything from this list. https://github.com/flutter/flutter/issues/45440
 CUSTOM_ANALYSIS_PLUGINS=(
+  "plugin_platform_interface"
+  "video_player/video_player"
+  "video_player/video_player_platform_interface"
+  "video_player/video_player_web"
+  "url_launcher/url_launcher_platform_interface"
+  "url_launcher/url_launcher"
+  "device_info/device_info_platform_interface"
+  "device_info/device_info"
+  "connectivity/connectivity_platform_interface"
+  "connectivity/connectivity"
 )
 # Comma-separated string of the list above
 readonly CUSTOM_FLAG=$(IFS=, ; echo "${CUSTOM_ANALYSIS_PLUGINS[*]}")
@@ -61,6 +71,7 @@ else
     echo running "${ACTIONS[@]}"
     (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
     echo "Running version check for changed packages"
-    (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
+    # TODO(egarciad): Enable this check once in master.
+    # (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
   fi
 fi

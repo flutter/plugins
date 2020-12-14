@@ -31,7 +31,11 @@ class Caption {
   ///
   /// This is not recommended for direct use unless you are writing a parser for
   /// a new closed captioning file type.
-  const Caption({this.number, this.start, this.end, this.text});
+  const Caption(
+      {required this.number,
+      required this.start,
+      required this.end,
+      required this.text});
 
   /// The number that this caption was assigned.
   final int number;
@@ -45,6 +49,11 @@ class Caption {
   /// The actual text that should appear on screen to be read between [start]
   /// and [end].
   final String text;
+
+  /// A no caption object. This is a caption with [start] and [end] durations of zero,
+  /// and an empty [text] string.
+  static const Caption none =
+      Caption(number: 0, start: Duration.zero, end: Duration.zero, text: '');
 
   @override
   String toString() {

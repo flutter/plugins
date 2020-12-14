@@ -1,3 +1,11 @@
+## 2.0.0-nullsafety.1
+
+* Fix example app SDK.
+
+## 2.0.0-nullsafety
+
+* Bump Dart SDK.
+
 ## 1.0.12
 
 * Update Flutter SDK constraint.
