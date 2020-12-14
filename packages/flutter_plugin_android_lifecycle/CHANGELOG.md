@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.1
+
+* Fix example app SDK.
+
 ## 2.0.0-nullsafety
 
 * Bump Dart SDK.
