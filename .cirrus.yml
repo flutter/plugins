@@ -162,7 +162,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: catalina-xcode-12.0-flutter
+    image: catalina-xcode-12.1-flutter
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
