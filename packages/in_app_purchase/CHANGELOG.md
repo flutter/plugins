@@ -1,3 +1,7 @@
+## 0.3.4+17
+
+* Update Flutter SDK constraint.
+
 ## 0.3.4+16
 
 * Add Dartdocs to all public APIs.

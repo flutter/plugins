@@ -53,7 +53,7 @@ public class DartMessengerTest {
     List<ByteBuffer> sentMessages = fakeBinaryMessenger.getMessages();
     assertEquals(1, sentMessages.size());
     MethodCall call = decodeSentMessage(sentMessages.get(0));
-    assertEquals(DartMessenger.EventType.ERROR.toString().toLowerCase(), call.method);
+    assertEquals("error", call.method);
     assertEquals("error description", call.argument("description"));
   }
 
@@ -64,7 +64,7 @@ public class DartMessengerTest {
     List<ByteBuffer> sentMessages = fakeBinaryMessenger.getMessages();
     assertEquals(1, sentMessages.size());
     MethodCall call = decodeSentMessage(sentMessages.get(0));
-    assertEquals(EventType.INITIALIZED.toString().toLowerCase(), call.method);
+    assertEquals("initialized", call.method);
     assertEquals(0, (double) call.argument("previewWidth"), 0);
     assertEquals(0, (double) call.argument("previewHeight"), 0);
   }
@@ -76,20 +76,13 @@ public class DartMessengerTest {
     List<ByteBuffer> sentMessages = fakeBinaryMessenger.getMessages();
     assertEquals(1, sentMessages.size());
     MethodCall call = decodeSentMessage(sentMessages.get(0));
-    assertEquals(DartMessenger.EventType.CAMERA_CLOSING.toString().toLowerCase(), call.method);
+    assertEquals("camera_closing", call.method);
     assertNull(call.argument("description"));
   }
 
-  @SuppressWarnings("unchecked")
-  private Map<String, String> decodeSentMessage(ByteBuffer sentMessage) {
+  private MethodCall decodeSentMessage(ByteBuffer sentMessage) {
     sentMessage.position(0);
-    return (Map<String, String>) StandardMethodCodec.INSTANCE.decodeEnvelope(sentMessage);
-  }
 
-  private void initializeEventSink() {
-    MethodCall call = new MethodCall("listen", null);
-    ByteBuffer encodedCall = StandardMethodCodec.INSTANCE.encodeMethodCall(call);
-    encodedCall.position(0);
-    fakeBinaryMessenger.getMessageHandler().onMessage(encodedCall, reply -> {});
+    return StandardMethodCodec.INSTANCE.decodeMethodCall(sentMessage);
   }
 }

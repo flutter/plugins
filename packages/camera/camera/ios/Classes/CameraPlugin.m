@@ -213,6 +213,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 }
 // Format used for video and image streaming.
 FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
+NSString *const errorMethod = @"error";
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -403,7 +404,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
   }
   if (!CMSampleBufferDataIsReady(sampleBuffer)) {
-    [_methodChannel invokeMethod:@"error" arguments:@"sample buffer is not ready. Skipping sample"];
+    [_methodChannel invokeMethod:errorMethod
+                       arguments:@"sample buffer is not ready. Skipping sample"];
     return;
   }
   if (_isStreamingImages) {
@@ -467,7 +469,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
   if (_isRecording && !_isRecordingPaused) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
-      [_methodChannel invokeMethod:@"error"
+      [_methodChannel invokeMethod:errorMethod
                          arguments:[NSString stringWithFormat:@"%@", _videoWriter.error]];
       return;
     }
@@ -551,7 +553,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (void)newVideoSample:(CMSampleBufferRef)sampleBuffer {
   if (_videoWriter.status != AVAssetWriterStatusWriting) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
-      [_methodChannel invokeMethod:@"error"
+      [_methodChannel invokeMethod:errorMethod
                          arguments:[NSString stringWithFormat:@"%@", _videoWriter.error]];
     }
     return;
@@ -559,7 +561,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if (_videoWriterInput.readyForMoreMediaData) {
     if (![_videoWriterInput appendSampleBuffer:sampleBuffer]) {
       [_methodChannel
-          invokeMethod:@"error"
+          invokeMethod:errorMethod
              arguments:[NSString stringWithFormat:@"%@", @"Unable to write to video input"]];
     }
   }
@@ -568,7 +570,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (void)newAudioSample:(CMSampleBufferRef)sampleBuffer {
   if (_videoWriter.status != AVAssetWriterStatusWriting) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
-      [_methodChannel invokeMethod:@"error"
+      [_methodChannel invokeMethod:errorMethod
                          arguments:[NSString stringWithFormat:@"%@", _videoWriter.error]];
     }
     return;
@@ -576,7 +578,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if (_audioWriterInput.readyForMoreMediaData) {
     if (![_audioWriterInput appendSampleBuffer:sampleBuffer]) {
       [_methodChannel
-          invokeMethod:@"error"
+          invokeMethod:errorMethod
              arguments:[NSString stringWithFormat:@"%@", @"Unable to write to audio input"]];
     }
   }
@@ -702,7 +704,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
     _isStreamingImages = YES;
   } else {
-    [_methodChannel invokeMethod:@"error" arguments:@"Images from camera are already streaming!"];
+    [_methodChannel invokeMethod:errorMethod
+                       arguments:@"Images from camera are already streaming!"];
   }
 }
 
@@ -711,7 +714,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     _isStreamingImages = NO;
     _imageStreamHandler = nil;
   } else {
-    [_methodChannel invokeMethod:@"error" arguments:@"Images from camera are not streaming!"];
+    [_methodChannel invokeMethod:errorMethod arguments:@"Images from camera are not streaming!"];
   }
 }
 
@@ -731,7 +734,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                               error:&error];
   NSParameterAssert(_videoWriter);
   if (error) {
-    [_methodChannel invokeMethod:@"error" arguments:error.description];
+    [_methodChannel invokeMethod:errorMethod arguments:error.description];
     return NO;
   }
   NSDictionary *videoSettings = [NSDictionary
@@ -785,7 +788,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice
                                                                            error:&error];
   if (error) {
-    [_methodChannel invokeMethod:@"error" arguments:error.description];
+    [_methodChannel invokeMethod:errorMethod arguments:error.description];
   }
   // Setup the audio output.
   _audioOutput = [[AVCaptureAudioDataOutput alloc] init];
@@ -797,7 +800,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       [_captureSession addOutput:_audioOutput];
       _isAudioSetup = YES;
     } else {
-      [_methodChannel invokeMethod:@"error"
+      [_methodChannel invokeMethod:errorMethod
                          arguments:@"Unable to add Audio input/output to session capture"];
       _isAudioSetup = NO;
     }

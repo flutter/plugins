@@ -9,7 +9,6 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pedantic/pedantic.dart';
 
 final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
@@ -162,7 +161,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   int _cameraId;
   bool _isDisposed = false;
   StreamSubscription<dynamic> _imageStreamSubscription;
-  Completer<void> _creatingCompleter;
+  FutureOr<bool> _initCalled;
 
   /// Checks whether [CameraController.dispose] has completed successfully.
   ///
@@ -185,39 +184,31 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      _creatingCompleter = Completer<void>();
-      Completer _resolutionCompleter = Completer<Size>();
-
       _cameraId = await CameraPlatform.instance.createCamera(
         description,
         resolutionPreset,
         enableAudio: enableAudio,
       );
 
-      unawaited(
-        CameraPlatform.instance
-            .onCameraInitialized(_cameraId)
-            .map((event) {
-              return Size(
-                event.previewWidth,
-                event.previewHeight,
-              );
-            })
-            .first
-            .then((previewSize) => _resolutionCompleter.complete(previewSize)),
-      );
+      final previewSize =
+          CameraPlatform.instance.onCameraInitialized(_cameraId).map((event) {
+        return Size(
+          event.previewWidth,
+          event.previewHeight,
+        );
+      }).first;
 
       await CameraPlatform.instance.initializeCamera(_cameraId);
 
       value = value.copyWith(
         isInitialized: true,
-        previewSize: await _resolutionCompleter.future,
+        previewSize: await previewSize,
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
-    _creatingCompleter.complete();
-    return _creatingCompleter.future;
+
+    _initCalled = true;
   }
 
   /// Prepare the capture session for video recording.
@@ -280,8 +271,15 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if image streaming or video recording has
   /// already started.
+  ///
+  /// The `startImageStream` method is only available on Android and iOS (other
+  /// platforms won't be supported in current setup).
+  ///
   // TODO(bmparr): Add settings for resolution and fps.
   Future<void> startImageStream(onLatestImageAvailable onAvailable) async {
+    assert(defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS);
+
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -321,7 +319,13 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if image streaming was not started or video
   /// recording was started.
+  ///
+  /// The `stopImageStream` method is only available on Android and iOS (other
+  /// platforms won't be supported in current setup).
   Future<void> stopImageStream() async {
+    assert(defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS);
+
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -490,8 +494,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     _isDisposed = true;
     super.dispose();
-    if (_creatingCompleter != null) {
-      await _creatingCompleter.future;
+    if (_initCalled != null) {
+      await _initCalled;
       await CameraPlatform.instance.dispose(_cameraId);
     }
   }
