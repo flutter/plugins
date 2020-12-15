@@ -1,6 +1,6 @@
-## 1.0.9
+## 2.0.0-nullsafety
 
-* Enable native double-tap to zoom, and pinch to zoom functionality on Android and default to setLoadWithOverviewMode
+* Migration to null-safety.
 
 ## 1.0.8
 

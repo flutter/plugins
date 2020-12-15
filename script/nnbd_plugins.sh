@@ -5,6 +5,7 @@
 # null-safe is available on stable.
 
 readonly NNBD_PLUGINS_LIST=(
+  "android_intent"
   "connectivity"
   "device_info"
   "flutter_plugin_android_lifecycle"
@@ -13,8 +14,10 @@ readonly NNBD_PLUGINS_LIST=(
   "local_auth"
   "path_provider"
   "plugin_platform_interface"
+  "share"
   "url_launcher"
   "video_player"
+  "webview_flutter"
 )
 
 export EXCLUDED_PLUGINS_FROM_STABLE=$(IFS=, ; echo "${NNBD_PLUGINS_LIST[*]}")

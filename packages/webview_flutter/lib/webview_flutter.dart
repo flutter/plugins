@@ -44,7 +44,7 @@ typedef void JavascriptMessageHandler(JavascriptMessage message);
 
 /// Information about a navigation action that is about to be executed.
 class NavigationRequest {
-  NavigationRequest._({this.url, this.isForMainFrame});
+  NavigationRequest._({required this.url, required this.isForMainFrame});
 
   /// The URL that will be loaded if the navigation is executed.
   final String url;
@@ -79,11 +79,11 @@ enum NavigationDecision {
 class SurfaceAndroidWebView extends AndroidWebView {
   @override
   Widget build({
-    BuildContext context,
-    CreationParams creationParams,
-    WebViewPlatformCreatedCallback onWebViewPlatformCreated,
-    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
-    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+    required BuildContext context,
+    required CreationParams creationParams,
+    WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+    required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
   }) {
     assert(webViewPlatformCallbacksHandler != null);
     return PlatformViewLink(
@@ -93,7 +93,7 @@ class SurfaceAndroidWebView extends AndroidWebView {
         PlatformViewController controller,
       ) {
         return AndroidViewSurface(
-          controller: controller,
+          controller: controller as AndroidViewController,
           gestureRecognizers: gestureRecognizers ??
               const <Factory<OneSequenceGestureRecognizer>>{},
           hitTestBehavior: PlatformViewHitTestBehavior.opaque,
@@ -172,9 +172,9 @@ class JavascriptChannel {
   ///
   /// The parameters `name` and `onMessageReceived` must not be null.
   JavascriptChannel({
-    @required this.name,
-    @required this.onMessageReceived,
-  })  : assert(name != null),
+    required this.name,
+    required this.onMessageReceived,
+  })   : assert(name != null),
         assert(onMessageReceived != null),
         assert(_validChannelNames.hasMatch(name));
 
@@ -208,7 +208,7 @@ class WebView extends StatefulWidget {
   ///
   /// The `javascriptMode` and `autoMediaPlaybackPolicy` parameters must not be null.
   const WebView({
-    Key key,
+    Key? key,
     this.onWebViewCreated,
     this.initialUrl,
     this.javascriptMode = JavascriptMode.disabled,
@@ -232,7 +232,7 @@ class WebView extends StatefulWidget {
         assert(initialMediaPlaybackPolicy != null),
         super(key: key);
 
-  static WebViewPlatform _platform;
+  static WebViewPlatform? _platform;
 
   /// Sets a custom [WebViewPlatform].
   ///
@@ -241,7 +241,7 @@ class WebView extends StatefulWidget {
   /// Setting `platform` doesn't affect [WebView]s that were already created.
   ///
   /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
-  static set platform(WebViewPlatform platform) {
+  static set platform(WebViewPlatform? platform) {
     _platform = platform;
   }
 
@@ -262,11 +262,11 @@ class WebView extends StatefulWidget {
               "Trying to use the default webview implementation for $defaultTargetPlatform but there isn't a default one");
       }
     }
-    return _platform;
+    return _platform!;
   }
 
   /// If not null invoked once the web view is created.
-  final WebViewCreatedCallback onWebViewCreated;
+  final WebViewCreatedCallback? onWebViewCreated;
 
   /// Which gestures should be consumed by the web view.
   ///
@@ -277,10 +277,10 @@ class WebView extends StatefulWidget {
   ///
   /// When this set is empty or null, the web view will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
-  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+  final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
 
   /// The initial URL to load.
-  final String initialUrl;
+  final String? initialUrl;
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -312,7 +312,7 @@ class WebView extends StatefulWidget {
   /// channels in the list.
   ///
   /// A null value is equivalent to an empty set.
-  final Set<JavascriptChannel> javascriptChannels;
+  final Set<JavascriptChannel>? javascriptChannels;
 
   /// A delegate function that decides how to handle navigation actions.
   ///
@@ -336,10 +336,10 @@ class WebView extends StatefulWidget {
   ///     * When a navigationDelegate is set pages with frames are not properly handled by the
   ///       webview, and frames will be opened in the main frame.
   ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
-  final NavigationDelegate navigationDelegate;
+  final NavigationDelegate? navigationDelegate;
 
   /// Invoked when a page starts loading.
-  final PageStartedCallback onPageStarted;
+  final PageStartedCallback? onPageStarted;
 
   /// Invoked when a page has finished loading.
   ///
@@ -351,13 +351,13 @@ class WebView extends StatefulWidget {
   /// When invoked on iOS or Android, any Javascript code that is embedded
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
-  final PageFinishedCallback onPageFinished;
+  final PageFinishedCallback? onPageFinished;
 
   /// Invoked when a web resource has failed to load.
   ///
   /// This can be called for any resource (iframe, image, etc.), not just for
   /// the main page.
-  final WebResourceErrorCallback onWebResourceError;
+  final WebResourceErrorCallback? onWebResourceError;
 
   /// Controls whether WebView debugging is enabled.
   ///
@@ -391,21 +391,27 @@ class WebView extends StatefulWidget {
   /// user agent.
   ///
   /// By default `userAgent` is null.
-  final String userAgent;
+  final String? userAgent;
 
   /// (Android only) Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
   ///
   /// The particular zoom mechanisms that should be used can be set with setBuiltInZoomControls(boolean).
+  ///
+  /// By default 'setSupportZoom` is true
   final bool setSupportZoom;
 
   /// (Android only) Sets whether the WebView should use its built-in zoom mechanisms.
   ///
   ///The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
+  ///
+  /// By default 'setBuiltInZoomControls` is true
   final bool setBuiltInZoomControls;
 
   /// (Android only) Sets whether the WebView should use its built-in zoom mechanisms.
   ///
   ///The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
+  ///
+  /// By default 'setDisplayZoomControls` is false
   final bool setDisplayZoomControls;
 
   /// (Android only) Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
@@ -415,11 +421,15 @@ class WebView extends StatefulWidget {
   /// When the value is true and the page contains the viewport meta tag, the value of the width specified in the tag is used.
   ///
   /// If the page does not contain the tag or does not provide a width, then a wide viewport will be used.
+  ///
+  /// By default 'setUseWideViewPort` is true
   final bool setUseWideViewPort;
 
   /// (Android only) Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
   ///
   /// This setting is taken into account when the content width is greater than the width of the WebView control, for example, when getUseWideViewPort() is enabled.
+  ///
+  /// By default 'setLoadWithOverviewMode' is true
   final bool setLoadWithOverviewMode;
 
   /// Which restrictions apply on automatic media playback.
@@ -438,7 +448,7 @@ class _WebViewState extends State<WebView> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
-  _PlatformCallbacksHandler _platformCallbacksHandler;
+  late _PlatformCallbacksHandler _platformCallbacksHandler;
 
   @override
   Widget build(BuildContext context) {
@@ -468,22 +478,22 @@ class _WebViewState extends State<WebView> {
     });
   }
 
-  void _onWebViewPlatformCreated(WebViewPlatformController webViewPlatform) {
-    final WebViewController controller =
-        WebViewController._(widget, webViewPlatform, _platformCallbacksHandler);
+  void _onWebViewPlatformCreated(WebViewPlatformController? webViewPlatform) {
+    final WebViewController controller = WebViewController._(
+        widget, webViewPlatform!, _platformCallbacksHandler);
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
-      widget.onWebViewCreated(controller);
+      widget.onWebViewCreated!(controller);
     }
   }
 
   void _assertJavascriptChannelNamesAreUnique() {
     if (widget.javascriptChannels == null ||
-        widget.javascriptChannels.isEmpty) {
+        widget.javascriptChannels!.isEmpty) {
       return;
     }
     assert(_extractChannelNames(widget.javascriptChannels).length ==
-        widget.javascriptChannels.length);
+        widget.javascriptChannels!.length);
   }
 }
 
@@ -503,13 +513,13 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
-    userAgent: WebSetting<String>.of(widget.userAgent),
-    setSupportZoom: WebSetting<bool>.of(widget.setSupportZoom),
-    setBuiltInZoomControls: WebSetting<bool>.of(widget.setBuiltInZoomControls),
-    setDisplayZoomControls: WebSetting<bool>.of(widget.setDisplayZoomControls),
-    setUseWideViewPort: WebSetting<bool>.of(widget.setUseWideViewPort),
+    userAgent: WebSetting<String?>.of(widget.userAgent),
+    setSupportZoom: WebSetting<bool?>.of(widget.setSupportZoom),
+    setBuiltInZoomControls: WebSetting<bool?>.of(widget.setBuiltInZoomControls),
+    setDisplayZoomControls: WebSetting<bool?>.of(widget.setDisplayZoomControls),
+    setUseWideViewPort: WebSetting<bool?>.of(widget.setUseWideViewPort),
     setLoadWithOverviewMode:
-        WebSetting<bool>.of(widget.setLoadWithOverviewMode),
+        WebSetting<bool?>.of(widget.setLoadWithOverviewMode),
   );
 }
 
@@ -519,22 +529,25 @@ WebSettings _clearUnchangedWebSettings(
   assert(currentValue.javascriptMode != null);
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.debuggingEnabled != null);
-  assert(currentValue.userAgent.isPresent);
   assert(newValue.javascriptMode != null);
   assert(newValue.hasNavigationDelegate != null);
   assert(newValue.debuggingEnabled != null);
-  assert(newValue.userAgent.isPresent);
+  assert(newValue.userAgent != null);
+  assert(newValue.setSupportZoom != null);
+  assert(newValue.setBuiltInZoomControls != null);
+  assert(newValue.setDisplayZoomControls != null);
+  assert(newValue.setUseWideViewPort != null);
+  assert(newValue.setLoadWithOverviewMode != null);
 
-  JavascriptMode javascriptMode;
-  bool hasNavigationDelegate;
-  bool debuggingEnabled;
-  WebSetting<String> userAgent = WebSetting<String>.absent();
-  bool setSupportZoom;
-  bool setBuiltInZoomControls;
-  bool setDisplayZoomControls;
-  bool setUseWideViewPort;
-  bool setLoadWithOverviewMode;
-
+  JavascriptMode? javascriptMode;
+  bool? hasNavigationDelegate;
+  bool? debuggingEnabled;
+  WebSetting<String?> userAgent = WebSetting.absent();
+  WebSetting<bool?> setSupportZoom = WebSetting.absent();
+  WebSetting<bool?> setBuiltInZoomControls = WebSetting.absent();
+  WebSetting<bool?> setDisplayZoomControls = WebSetting.absent();
+  WebSetting<bool?> setUseWideViewPort = WebSetting.absent();
+  WebSetting<bool?> setLoadWithOverviewMode = WebSetting.absent();
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -548,20 +561,20 @@ WebSettings _clearUnchangedWebSettings(
     userAgent = newValue.userAgent;
   }
   if (currentValue.setSupportZoom != newValue.setSupportZoom) {
-    setSupportZoom = newValue.setSupportZoom.value;
+    setSupportZoom = newValue.setSupportZoom;
   }
   if (currentValue.setBuiltInZoomControls != newValue.setBuiltInZoomControls) {
-    setBuiltInZoomControls = newValue.setBuiltInZoomControls.value;
+    setBuiltInZoomControls = newValue.setBuiltInZoomControls;
   }
   if (currentValue.setDisplayZoomControls != newValue.setDisplayZoomControls) {
-    setDisplayZoomControls = newValue.setDisplayZoomControls.value;
+    setDisplayZoomControls = newValue.setDisplayZoomControls;
   }
   if (currentValue.setUseWideViewPort != newValue.setUseWideViewPort) {
-    setUseWideViewPort = newValue.setUseWideViewPort.value;
+    setUseWideViewPort = newValue.setUseWideViewPort;
   }
   if (currentValue.setLoadWithOverviewMode !=
       newValue.setLoadWithOverviewMode) {
-    setLoadWithOverviewMode = newValue.setLoadWithOverviewMode.value;
+    setLoadWithOverviewMode = newValue.setLoadWithOverviewMode;
   }
 
   return WebSettings(
@@ -569,15 +582,15 @@ WebSettings _clearUnchangedWebSettings(
     hasNavigationDelegate: hasNavigationDelegate,
     debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,
-    setSupportZoom: WebSetting<bool>.of(setSupportZoom),
-    setBuiltInZoomControls: WebSetting<bool>.of(setBuiltInZoomControls),
-    setDisplayZoomControls: WebSetting<bool>.of(setDisplayZoomControls),
-    setUseWideViewPort: WebSetting<bool>.of(setUseWideViewPort),
-    setLoadWithOverviewMode: WebSetting<bool>.of(setLoadWithOverviewMode),
+    setSupportZoom: setSupportZoom,
+    setBuiltInZoomControls: setBuiltInZoomControls,
+    setDisplayZoomControls: setDisplayZoomControls,
+    setUseWideViewPort: setUseWideViewPort,
+    setLoadWithOverviewMode: setLoadWithOverviewMode,
   );
 }
 
-Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
+Set<String> _extractChannelNames(Set<JavascriptChannel>? channels) {
   final Set<String> channelNames = channels == null
       ? <String>{}
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
@@ -597,15 +610,18 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
 
   @override
   void onJavaScriptChannelMessage(String channel, String message) {
-    _javascriptChannels[channel].onMessageReceived(JavascriptMessage(message));
+    _javascriptChannels[channel]!.onMessageReceived(JavascriptMessage(message));
   }
 
   @override
-  FutureOr<bool> onNavigationRequest({String url, bool isForMainFrame}) async {
+  FutureOr<bool> onNavigationRequest({
+    required String url,
+    required bool isForMainFrame,
+  }) async {
     final NavigationRequest request =
         NavigationRequest._(url: url, isForMainFrame: isForMainFrame);
     final bool allowNavigation = _widget.navigationDelegate == null ||
-        await _widget.navigationDelegate(request) ==
+        await _widget.navigationDelegate!(request) ==
             NavigationDecision.navigate;
     return allowNavigation;
   }
@@ -613,25 +629,25 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   @override
   void onPageStarted(String url) {
     if (_widget.onPageStarted != null) {
-      _widget.onPageStarted(url);
+      _widget.onPageStarted!(url);
     }
   }
 
   @override
   void onPageFinished(String url) {
     if (_widget.onPageFinished != null) {
-      _widget.onPageFinished(url);
+      _widget.onPageFinished!(url);
     }
   }
 
   @override
   void onWebResourceError(WebResourceError error) {
     if (_widget.onWebResourceError != null) {
-      _widget.onWebResourceError(error);
+      _widget.onWebResourceError!(error);
     }
   }
 
-  void _updateJavascriptChannelsFromSet(Set<JavascriptChannel> channels) {
+  void _updateJavascriptChannelsFromSet(Set<JavascriptChannel>? channels) {
     _javascriptChannels.clear();
     if (channels == null) {
       return;
@@ -659,7 +675,7 @@ class WebViewController {
 
   final _PlatformCallbacksHandler _platformCallbacksHandler;
 
-  WebSettings _settings;
+  late WebSettings _settings;
 
   WebView _widget;
 
@@ -673,7 +689,7 @@ class WebViewController {
   /// Throws an ArgumentError if `url` is not a valid URL string.
   Future<void> loadUrl(
     String url, {
-    Map<String, String> headers,
+    Map<String, String>? headers,
   }) async {
     assert(url != null);
     _validateUrlString(url);
@@ -687,7 +703,7 @@ class WebViewController {
   /// current URL changes again by the time this function returns (in other
   /// words, by the time this future completes, the WebView may be displaying a
   /// different URL).
-  Future<String> currentUrl() {
+  Future<String?> currentUrl() {
     return _webViewPlatformController.currentUrl();
   }
 
@@ -755,7 +771,7 @@ class WebViewController {
   }
 
   Future<void> _updateJavascriptChannels(
-      Set<JavascriptChannel> newChannels) async {
+      Set<JavascriptChannel>? newChannels) async {
     final Set<String> currentChannels =
         _platformCallbacksHandler._javascriptChannels.keys.toSet();
     final Set<String> newChannelNames = _extractChannelNames(newChannels);
@@ -794,10 +810,6 @@ class WebViewController {
       return Future<String>.error(FlutterError(
           'JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.'));
     }
-    if (javascriptString == null) {
-      return Future<String>.error(
-          ArgumentError('The argument javascriptString must not be null.'));
-    }
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
@@ -805,7 +817,7 @@ class WebViewController {
   }
 
   /// Returns the title of the currently loaded page.
-  Future<String> getTitle() {
+  Future<String?> getTitle() {
     return _webViewPlatformController.getTitle();
   }
 
@@ -847,7 +859,7 @@ class CookieManager {
 
   CookieManager._();
 
-  static CookieManager _instance;
+  static CookieManager? _instance;
 
   /// Clears all cookies for all [WebView] instances.
   ///
