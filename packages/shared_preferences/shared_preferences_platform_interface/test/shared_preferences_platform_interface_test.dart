@@ -27,12 +27,12 @@ class IllegalImplementation implements SharedPreferencesStorePlatform {
   bool get isMock => false;
 
   @override
-  Future<bool> clear() {
+  Future<bool?> clear() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Map<String, Object>> getAll() {
+  Future<Map<String, Object>?> getAll() {
     throw UnimplementedError();
   }
 
