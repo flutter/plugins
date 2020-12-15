@@ -544,12 +544,13 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   // TODO(cyanglaz): Remove this dispatch block when
   // https://github.com/flutter/flutter/commit/8159a9906095efc9af8b223f5e232cb63542ad0b is in
   // stable And update the min flutter version of the plugin to the stable version.
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
-                 dispatch_get_main_queue(), ^{
-                   if (!player.disposed) {
-                     [player dispose];
-                   }
-                 });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+        if (!player.disposed) {
+            [player dispose];
+        }
+        [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+    });
 }
 
 - (void)setLooping:(FLTLoopingMessage*)input error:(FlutterError**)error {
