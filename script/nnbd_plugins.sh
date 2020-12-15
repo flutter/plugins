@@ -5,6 +5,7 @@
 # null-safe is available on stable.
 
 readonly NNBD_PLUGINS_LIST=(
+  "android_intent"
   "connectivity"
   "device_info"
   "flutter_plugin_android_lifecycle"
