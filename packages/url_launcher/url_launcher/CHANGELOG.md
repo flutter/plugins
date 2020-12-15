@@ -1,3 +1,7 @@
+## 6.0.0-nullsafety.2
+
+* Fix PlatformException when not specifying `forceSafariVC` for non-web URLs
+
 ## 6.0.0-nullsafety.1
 
 * Bump Dart SDK to support null safety.
