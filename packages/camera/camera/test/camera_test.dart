@@ -310,6 +310,43 @@ void main() {
             'startVideoRecording was called while a camera was streaming images.',
           )));
     });
+
+    test('setFlashMode() calls $CameraPlatform', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      await cameraController.setFlashMode(FlashMode.always);
+
+      verify(CameraPlatform.instance
+              .setFlashMode(cameraController.cameraId, FlashMode.always))
+          .called(1);
+    });
+
+    test('setFlashMode() throws $CameraException on $PlatformException',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      mockPlatformException = true;
+      expect(
+          cameraController.setFlashMode(FlashMode.always),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'foo',
+            'bar',
+          )));
+      mockPlatformException = false;
+    });
   });
 }
 
@@ -329,6 +366,12 @@ class MockCameraPlatform extends Mock
       mockPlatformException
           ? throw PlatformException(code: 'foo', message: 'bar')
           : Future.value(mockInitializeCamera);
+
+  @override
+  Future<void> setFlashMode(int cameraId, FlashMode mode) =>
+      mockPlatformException
+          ? throw PlatformException(code: 'foo', message: 'bar')
+          : noSuchMethod(Invocation.method(#setFlashMode, [cameraId, mode]));
 
   @override
   Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) =>
