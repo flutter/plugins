@@ -3,49 +3,56 @@ package io.flutter.plugins.camera;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
 import java.util.Map;
 
 class DartMessenger {
-  @Nullable private EventChannel.EventSink eventSink;
+  @Nullable private MethodChannel channel;
 
   enum EventType {
     ERROR,
     CAMERA_CLOSING,
+    INITIALIZED,
   }
 
-  DartMessenger(BinaryMessenger messenger, long eventChannelId) {
-    new EventChannel(messenger, "flutter.io/cameraPlugin/cameraEvents" + eventChannelId)
-        .setStreamHandler(
-            new EventChannel.StreamHandler() {
-              @Override
-              public void onListen(Object arguments, EventChannel.EventSink sink) {
-                eventSink = sink;
-              }
+  DartMessenger(BinaryMessenger messenger, long cameraId) {
+    channel = new MethodChannel(messenger, "flutter.io/cameraPlugin/camera" + cameraId);
+  }
 
-              @Override
-              public void onCancel(Object arguments) {
-                eventSink = null;
-              }
-            });
+  void sendCameraInitializedEvent(Integer previewWidth, Integer previewHeight) {
+    this.send(
+        EventType.INITIALIZED,
+        new HashMap<String, Object>() {
+          {
+            if (previewWidth != null) put("previewWidth", previewWidth.doubleValue());
+            if (previewHeight != null) put("previewHeight", previewHeight.doubleValue());
+          }
+        });
   }
 
   void sendCameraClosingEvent() {
-    send(EventType.CAMERA_CLOSING, null);
+    send(EventType.CAMERA_CLOSING);
   }
 
-  void send(EventType eventType, @Nullable String description) {
-    if (eventSink == null) {
+  void sendCameraErrorEvent(@Nullable String description) {
+    this.send(
+        EventType.ERROR,
+        new HashMap<String, Object>() {
+          {
+            if (!TextUtils.isEmpty(description)) put("description", description);
+          }
+        });
+  }
+
+  void send(EventType eventType) {
+    send(eventType, new HashMap<>());
+  }
+
+  void send(EventType eventType, Map<String, Object> args) {
+    if (channel == null) {
       return;
     }
-
-    Map<String, String> event = new HashMap<>();
-    event.put("eventType", eventType.toString().toLowerCase());
-    // Only errors have a description.
-    if (eventType == EventType.ERROR && !TextUtils.isEmpty(description)) {
-      event.put("errorDescription", description);
-    }
-    eventSink.success(event);
+    channel.invokeMethod(eventType.toString().toLowerCase(), args);
   }
 }

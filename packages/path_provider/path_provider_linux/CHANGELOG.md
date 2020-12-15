@@ -1,3 +1,11 @@
+## 0.1.1+3
+
+* Update Flutter SDK constraint.
+
+## 0.1.1+2
+
+* Log errors in the example when calls to the `path_provider` fail.
+
 ## 0.1.1+1
 
 * Check in linux/ directory for example/
@@ -19,4 +27,3 @@
 ## 0.0.1
 * The initial implementation of path_provider for Linux
   * Implements getApplicationSupportPath, getApplicationDocumentsPath, getDownloadsPath, and getTemporaryPath
-
