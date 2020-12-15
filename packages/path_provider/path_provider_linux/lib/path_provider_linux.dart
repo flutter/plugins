@@ -18,12 +18,12 @@ class PathProviderLinux extends PathProviderPlatform {
   }
 
   @override
-  Future<String> getTemporaryPath() {
+  Future<String?> getTemporaryPath() {
     return Future.value("/tmp");
   }
 
   @override
-  Future<String> getApplicationSupportPath() async {
+  Future<String?> getApplicationSupportPath() async {
     final processName = path.basenameWithoutExtension(
         await File('/proc/self/exe').resolveSymbolicLinks());
     final directory = Directory(path.join(xdg.dataHome.path, processName));
@@ -35,12 +35,12 @@ class PathProviderLinux extends PathProviderPlatform {
   }
 
   @override
-  Future<String> getApplicationDocumentsPath() {
+  Future<String?> getApplicationDocumentsPath() {
     return Future.value(xdg.getUserDirectory('DOCUMENTS').path);
   }
 
   @override
-  Future<String> getDownloadsPath() {
+  Future<String?> getDownloadsPath() {
     return Future.value(xdg.getUserDirectory('DOWNLOAD').path);
   }
 }
