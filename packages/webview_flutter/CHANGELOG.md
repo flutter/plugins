@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.1
+
+* Fix keyboard issues link in the README.
+
 ## 2.0.0-nullsafety
 
 * Migration to null-safety.
