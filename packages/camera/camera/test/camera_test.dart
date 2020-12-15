@@ -337,15 +337,23 @@ void main() {
           ResolutionPreset.max);
       await cameraController.initialize();
 
-      mockPlatformException = true;
+      when(CameraPlatform.instance
+              .setFlashMode(cameraController.cameraId, FlashMode.always))
+          .thenThrow(
+        PlatformException(
+          code: 'TEST_ERROR',
+          message: 'This is a test error message',
+          details: null,
+        ),
+      );
+
       expect(
           cameraController.setFlashMode(FlashMode.always),
           throwsA(isA<CameraException>().having(
             (error) => error.description,
-            'foo',
-            'bar',
+            'TEST_ERROR',
+            'This is a test error message',
           )));
-      mockPlatformException = false;
     });
   });
 }
@@ -366,12 +374,6 @@ class MockCameraPlatform extends Mock
       mockPlatformException
           ? throw PlatformException(code: 'foo', message: 'bar')
           : Future.value(mockInitializeCamera);
-
-  @override
-  Future<void> setFlashMode(int cameraId, FlashMode mode) =>
-      mockPlatformException
-          ? throw PlatformException(code: 'foo', message: 'bar')
-          : noSuchMethod(Invocation.method(#setFlashMode, [cameraId, mode]));
 
   @override
   Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) =>
