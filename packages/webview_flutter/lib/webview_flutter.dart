@@ -402,14 +402,14 @@ class WebView extends StatefulWidget {
 
   /// (Android only) Sets whether the WebView should use its built-in zoom mechanisms.
   ///
-  ///The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
+  /// The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
   ///
   /// By default 'setBuiltInZoomControls` is true
   final bool setBuiltInZoomControls;
 
   /// (Android only) Sets whether the WebView should use its built-in zoom mechanisms.
   ///
-  ///The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
+  /// The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
   ///
   /// By default 'setDisplayZoomControls` is false
   final bool setDisplayZoomControls;
