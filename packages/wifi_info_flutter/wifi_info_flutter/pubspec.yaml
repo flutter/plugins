@@ -1,6 +1,6 @@
 name: wifi_info_flutter
 description: A new flutter plugin project.
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter
 
 environment:
