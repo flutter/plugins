@@ -337,7 +337,7 @@ class WebView extends StatefulWidget {
 
   /// Controls whether inline playback of HTML5 videos is allowed on iOS.
   ///
-  /// This field is ignored on Android.
+  /// This field is ignored on Android because Android allows it by default.
   ///
   /// By default `allowsInlineMediaPlayback` is false.
   final bool allowsInlineMediaPlayback;
