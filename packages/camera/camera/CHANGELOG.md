@@ -1,3 +1,8 @@
+## 0.6.1
+
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash
+
+
 ## 0.6.0
 
 As part of implementing federated architecture and making the interface compatible with the web this version contains the following **breaking changes**:
