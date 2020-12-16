@@ -14,7 +14,6 @@ readonly NNBD_PLUGINS_LIST=(
   "local_auth"
   "path_provider"
   "plugin_platform_interface"
-  "share"
   "url_launcher"
   "video_player"
   "webview_flutter"
