@@ -226,6 +226,8 @@ class MethodChannelCamera extends CameraPlatform {
         return 'auto';
       case FlashMode.always:
         return 'always';
+      case FlashMode.torch:
+        return 'torch';
       default:
         throw ArgumentError('Unknown FlashMode value');
     }

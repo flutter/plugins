@@ -12,4 +12,7 @@ enum FlashMode {
 
   /// Always use the flash when taking a picture.
   always,
+
+  /// Turns on the flash light and keeps it on until switched off.
+  torch,
 }
