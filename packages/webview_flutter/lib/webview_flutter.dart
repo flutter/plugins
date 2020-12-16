@@ -223,6 +223,7 @@ class WebView extends StatefulWidget {
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.allowsInlineMediaPlayback = false,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         super(key: key);
@@ -332,6 +333,13 @@ class WebView extends StatefulWidget {
   ///       webview, and frames will be opened in the main frame.
   ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
   final NavigationDelegate? navigationDelegate;
+
+  /// Controls whether inline playback of HTML5 videos is allowed on iOS.
+  ///
+  /// This field is ignored on Android.
+  ///
+  /// By default `allowsInlineMediaPlayback` is false.
+  final bool? allowsInlineMediaPlayback;
 
   /// Invoked when a page starts loading.
   final PageStartedCallback? onPageStarted;
@@ -469,6 +477,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
+    allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
   );
 }
