@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.1
+
+* Added `allowsInlineMediaPlayback` property.
+
 ## 2.0.0-nullsafety
 
 * Migration to null-safety.
