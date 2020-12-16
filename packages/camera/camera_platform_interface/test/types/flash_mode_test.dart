@@ -6,10 +6,10 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('FlashMode should contain 3 options', () {
+  test('FlashMode should contain 4 options', () {
     final values = FlashMode.values;
 
-    expect(values.length, 3);
+    expect(values.length, 4);
   });
 
   test("FlashMode enum should have items in correct index", () {
@@ -18,5 +18,6 @@ void main() {
     expect(values[0], FlashMode.off);
     expect(values[1], FlashMode.auto);
     expect(values[2], FlashMode.always);
+    expect(values[3], FlashMode.torch);
   });
 }
