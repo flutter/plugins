@@ -226,6 +226,7 @@ class WebView extends StatefulWidget {
     this.allowsInlineMediaPlayback = false,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
+        assert(allowsInlineMediaPlayback != null),
         super(key: key);
 
   static WebViewPlatform? _platform;
@@ -339,7 +340,7 @@ class WebView extends StatefulWidget {
   /// This field is ignored on Android.
   ///
   /// By default `allowsInlineMediaPlayback` is false.
-  final bool? allowsInlineMediaPlayback;
+  final bool allowsInlineMediaPlayback;
 
   /// Invoked when a page starts loading.
   final PageStartedCallback? onPageStarted;
