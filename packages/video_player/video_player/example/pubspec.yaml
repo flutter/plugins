@@ -27,5 +27,5 @@ flutter:
    - assets/bumble_bee_captions.srt
 
 environment:
-  sdk: ">=2.8.0 <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5 <2.0.0"
