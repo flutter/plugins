@@ -76,8 +76,28 @@ static FlutterError *getFlutterError(NSError *error) {
   UIImage *image = [UIImage imageWithCGImage:[UIImage imageWithData:data].CGImage
                                        scale:1.0
                                  orientation:[self getImageRotation]];
+
   // TODO(sigurdm): Consider writing file asynchronously.
   bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:_path atomically:YES];
+  if (!success) {
+    _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
+    return;
+  }
+  _result(_path);
+}
+
+- (void)captureOutput:(AVCapturePhotoOutput *)output
+    didFinishProcessingPhoto:(AVCapturePhoto *)photo
+                       error:(NSError *)error API_AVAILABLE(ios(11.0)) {
+  selfReference = nil;
+  if (error) {
+    _result(getFlutterError(error));
+    return;
+  }
+
+  NSData *photoData = [photo fileDataRepresentation];
+
+  bool success = [photoData writeToFile:_path atomically:YES];
   if (!success) {
     _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
     return;
