@@ -1,6 +1,10 @@
-## 2.0.0-nullsafety.1
+## 2.0.0-nullsafety.2
 
 * Fix keyboard issues link in the README.
+
+## 2.0.0-nullsafety.1
+
+* Added `allowsInlineMediaPlayback` property.
 
 ## 2.0.0-nullsafety
 
