@@ -222,9 +222,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getScrollY":
         getScrollY(result);
         break;
-      case "allowsInlineMediaPlayback":
-        // no-op inline media playback is always allowed on Android.
-        break;
       default:
         result.notImplemented();
     }
@@ -374,6 +371,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           break;
         case "userAgent":
           updateUserAgent((String) settings.get(key));
+          break;
+        case "allowsInlineMediaPlayback":
+          // no-op inline media playback is always allowed on Android.
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
