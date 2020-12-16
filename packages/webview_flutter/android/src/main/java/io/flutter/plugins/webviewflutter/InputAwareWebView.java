@@ -31,9 +31,12 @@ final class InputAwareWebView extends WebView {
   private ThreadedInputConnectionProxyAdapterView proxyAdapterView;
   private View containerView;
 
-  InputAwareWebView(Context context, View containerView) {
+  InputAwareWebView(Context context, View containerView, boolean opaque) {
     super(context);
     this.containerView = containerView;
+    if (!opaque) {
+      setBackgroundColor(0x00000000);
+    }
   }
 
   void setContainerView(View containerView) {
