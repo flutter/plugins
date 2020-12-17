@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// @dart = 2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -416,7 +418,8 @@ void main() {
       expect(isPaused, _webviewBool(true));
     });
 
-    testWidgets('Changes to initialMediaPlaybackPolicy are ignored', (WidgetTester tester) async {
+    testWidgets('Changes to initialMediaPlaybackPolicy are ignored',
+        (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
@@ -474,7 +477,8 @@ void main() {
       expect(isPaused, _webviewBool(false));
     });
 
-    testWidgets('Video plays inline when allowsInlineMediaPlayback is true', (WidgetTester tester) async {
+    testWidgets('Video plays inline when allowsInlineMediaPlayback is true',
+        (WidgetTester tester) async {
       Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
