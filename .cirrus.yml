@@ -213,7 +213,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       script:
-        - flutter channel master
+        - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh macos
     - name: build-apps+drive-examples
       env:
