@@ -514,7 +514,6 @@ public class Camera {
     startPreview();
   }
 
-
   private void closeCaptureSession() {
     if (cameraCaptureSession != null) {
       cameraCaptureSession.close();
