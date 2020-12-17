@@ -1,6 +1,10 @@
-## 2.0.1-nullsafety
+## 2.0.0-nullsafety.2
 
 * Enable native double-tap to zoom, and pinch to zoom functionality on Android and default to setLoadWithOverviewMode
+
+## 2.0.0-nullsafety.1
+
+* Added `allowsInlineMediaPlayback` property.
 
 ## 2.0.0-nullsafety
 

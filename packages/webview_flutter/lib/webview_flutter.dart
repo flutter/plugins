@@ -228,8 +228,10 @@ class WebView extends StatefulWidget {
     this.setLoadWithOverviewMode = true,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.allowsInlineMediaPlayback = false,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
+        assert(allowsInlineMediaPlayback != null),
         super(key: key);
 
   static WebViewPlatform? _platform;
@@ -337,6 +339,13 @@ class WebView extends StatefulWidget {
   ///       webview, and frames will be opened in the main frame.
   ///     * When a navigationDelegate is set HTTP requests do not include the HTTP referer header.
   final NavigationDelegate? navigationDelegate;
+
+  /// Controls whether inline playback of HTML5 videos is allowed on iOS.
+  ///
+  /// This field is ignored on Android because Android allows it by default.
+  ///
+  /// By default `allowsInlineMediaPlayback` is false.
+  final bool allowsInlineMediaPlayback;
 
   /// Invoked when a page starts loading.
   final PageStartedCallback? onPageStarted;
@@ -513,6 +522,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
+    allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
     setSupportZoom: WebSetting<bool?>.of(widget.setSupportZoom),
     setBuiltInZoomControls: WebSetting<bool?>.of(widget.setBuiltInZoomControls),

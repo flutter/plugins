@@ -423,14 +423,12 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
           JavascriptChannel(
               name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
 
@@ -463,14 +461,12 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
           JavascriptChannel(
               name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
     expect(tester.takeException(), isNot(null));
@@ -480,30 +476,26 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
           JavascriptChannel(
               name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
 
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
           JavascriptChannel(
               name: 'Alarm2', onMessageReceived: (JavascriptMessage msg) {}),
           JavascriptChannel(
               name: 'Alarm3', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
 
@@ -523,12 +515,10 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
 
@@ -541,12 +531,10 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
 
@@ -563,9 +551,7 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts',
               onMessageReceived: (JavascriptMessage msg) {
@@ -576,7 +562,7 @@ void main() {
               onMessageReceived: (JavascriptMessage msg) {
                 alarmMessagesReceived.add(msg.message);
               }),
-        ].toSet(),
+        },
       ),
     );
 
