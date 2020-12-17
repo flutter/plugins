@@ -1,6 +1,6 @@
 ## 0.1.4+2
 
-* Fix issue where `isBuffering` is not updating on Web.
+* Fix an issue where `isBuffering` is not updating on Web.
 
 ## 0.1.4+1
 

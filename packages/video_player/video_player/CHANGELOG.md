@@ -1,6 +1,6 @@
 ## 1.0.2
 
-* Fix issue where `isBuffering` is not updating on Android.
+* Fix an issue where `isBuffering` is not updating on Android.
 
 ## 1.0.1
 
