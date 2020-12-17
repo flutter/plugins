@@ -149,7 +149,7 @@ class _VideoPlayer {
   _VideoPlayer({this.uri, this.textureId});
 
   final StreamController<VideoEvent> eventController =
-      StreamController<VideoEvent>.broadcast();
+      StreamController<VideoEvent>();
 
   final String uri;
   final int textureId;
@@ -198,10 +198,8 @@ class _VideoPlayer {
     });
 
     videoElement.onWaiting.listen((dynamic _) {
-      if (!isBuffering) {
-        setBuffering(true);
-        sendBufferingUpdate();
-      }
+      setBuffering(true);
+      sendBufferingUpdate();
     });
 
     // The error event fires when some form of error occurs while attempting to load or perform the media.

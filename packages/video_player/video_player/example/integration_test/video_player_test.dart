@@ -9,8 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
-import 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show VideoEventType;
 
 const Duration _playDuration = Duration(seconds: 1);
 
@@ -44,11 +42,22 @@ void main() {
         // Mute to allow playing without DOM interaction on Web.
         // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
         await networkController.setVolume(0);
-        List<VideoEventType> recordedEventTypes = [];
-        videoPlayerPlatform
-            // ignore: invalid_use_of_visible_for_testing_member
-            .videoEventsFor(networkController.textureId)
-            .listen((event) => recordedEventTypes.add(event.eventType));
+        final Completer<void> started = Completer();
+        final Completer<void> ended = Completer();
+        bool startedBuffering = false;
+        bool endedBuffering = false;
+        networkController.addListener(() {
+          if (networkController.value.isBuffering && !startedBuffering) {
+            startedBuffering = true;
+            started.complete();
+          }
+          if (startedBuffering &&
+              !networkController.value.isBuffering &&
+              !endedBuffering) {
+            endedBuffering = true;
+            ended.complete();
+          }
+        });
 
         await networkController.play();
         await networkController.seekTo(const Duration(seconds: 5));
@@ -59,17 +68,11 @@ void main() {
         expect(networkController.value.position,
             (Duration position) => position > const Duration(seconds: 0));
 
-        expect(
-          recordedEventTypes,
-          orderedEquals(
-            [
-              VideoEventType.bufferingStart,
-              VideoEventType.bufferingUpdate,
-              VideoEventType.bufferingEnd,
-              VideoEventType.completed,
-            ],
-          ),
-        );
+        await started;
+        expect(startedBuffering, true);
+
+        await ended;
+        expect(endedBuffering, true);
       },
       skip: !(kIsWeb || defaultTargetPlatform == TargetPlatform.android),
     );
