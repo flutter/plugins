@@ -11,9 +11,11 @@ import 'package:platform/platform.dart';
 
 void main() {
   AndroidIntent androidIntent;
-  MockMethodChannel mockChannel;
+  late MockMethodChannel mockChannel;
   setUp(() {
     mockChannel = MockMethodChannel();
+    when(mockChannel.invokeMethod<bool>('canResolveActivity', any))
+        .thenAnswer((realInvocation) async => true);
   });
 
   group('AndroidIntent', () {

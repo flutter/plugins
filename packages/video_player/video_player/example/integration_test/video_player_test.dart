@@ -2,6 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+// TODO(amirh): Remove this once flutter_driver supports null safety.
+// https://github.com/flutter/flutter/issues/71379
+// @dart = 2.9
+
 import 'package:flutter/material.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,7 +27,7 @@ void main() {
     testWidgets('can be initialized', (WidgetTester tester) async {
       await _controller.initialize();
 
-      expect(_controller.value.initialized, true);
+      expect(_controller.value.isInitialized, true);
       expect(_controller.value.position, const Duration(seconds: 0));
       expect(_controller.value.isPlaying, false);
       expect(_controller.value.duration,
