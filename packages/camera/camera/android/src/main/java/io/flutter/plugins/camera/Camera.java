@@ -510,7 +510,9 @@ public class Camera {
   }
 
   public void stopImageStream() throws CameraAccessException {
-    imageStreamReader.setOnImageAvailableListener(null, null);
+    if(imageStreamReader != null) {
+      imageStreamReader.setOnImageAvailableListener(null, null);
+    }
     startPreview();
   }
 
