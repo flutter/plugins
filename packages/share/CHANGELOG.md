@@ -1,3 +1,7 @@
+## 2.0.1-nullsafety
+
+* Update README with the new documentation urls.
+
 ## 2.0.0-nullsafety
 
 * Migrate to null safety.
