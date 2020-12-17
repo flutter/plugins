@@ -390,6 +390,7 @@ class WebSettings {
     this.hasNavigationDelegate,
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
+    this.bouncesEnabled,
     this.allowsInlineMediaPlayback,
     required this.userAgent,
   }) : assert(userAgent != null);
@@ -424,6 +425,11 @@ class WebSettings {
   ///
   /// See also: [WebView.gestureNavigationEnabled]
   final bool? gestureNavigationEnabled;
+
+  /// Whether to allow swipe based navigation in iOS.
+  ///
+  /// See also: [WebView.bouncesEnabled]
+  final bool?  bouncesEnabled;
 
   @override
   String toString() {

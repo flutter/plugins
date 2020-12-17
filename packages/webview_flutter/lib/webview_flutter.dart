@@ -215,6 +215,7 @@ class WebView extends StatefulWidget {
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
+    this.bouncesEnabled,
     this.onPageStarted,
     this.onPageFinished,
     this.onWebResourceError,
@@ -383,6 +384,13 @@ class WebView extends StatefulWidget {
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
 
+  /// A Boolean value indicating whether vertical scrolling will use bounces mode.
+  ///
+  /// This only works on iOS.
+  ///
+  /// By default `bouncesEnabled` is true.
+  final bool bouncesEnabled;
+
   /// The value used for the HTTP User-Agent: request header.
   ///
   /// When null the platform's webview default is used for the User-Agent header.
@@ -478,6 +486,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasNavigationDelegate: widget.navigationDelegate != null,
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
+    bouncesEnabled: widget.bouncesEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
   );
