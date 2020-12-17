@@ -171,15 +171,19 @@ final class VideoPlayer {
         new EventListener() {
           private boolean isBuffering = false;
 
+          public void setBuffering(boolean buffering) {
+            if (isBuffering != buffering) {
+              isBuffering = buffering;
+              Map<String, Object> event = new HashMap<>();
+              event.put("event", isBuffering ? "bufferingStart" : "bufferingEnd");
+              eventSink.success(event);
+            }
+          }
+
           @Override
           public void onPlaybackStateChanged(final int playbackState) {
             if (playbackState == Player.STATE_BUFFERING) {
-              if (!isBuffering) {
-                isBuffering = true;
-                Map<String, Object> event = new HashMap<>();
-                event.put("event", "bufferingStart");
-                eventSink.success(event);
-              }
+              setBuffering(true);
               sendBufferingUpdate();
             } else if (playbackState == Player.STATE_READY) {
               if (!isInitialized) {
@@ -192,17 +196,14 @@ final class VideoPlayer {
               eventSink.success(event);
             }
 
-            if (isBuffering && playbackState != Player.STATE_BUFFERING) {
-              isBuffering = false;
-              Map<String, Object> event = new HashMap<>();
-              event.put("event", "bufferingEnd");
-              eventSink.success(event);
+            if (playbackState != Player.STATE_BUFFERING) {
+              setBuffering(false);
             }
           }
 
           @Override
           public void onPlayerError(final ExoPlaybackException error) {
-            isBuffering = false;
+            setBuffering(false);
             if (eventSink != null) {
               eventSink.error("VideoError", "Video player had error " + error, null);
             }
