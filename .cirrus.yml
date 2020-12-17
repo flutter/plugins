@@ -39,8 +39,16 @@ task:
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh test
     - name: analyze
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
@@ -143,6 +151,10 @@ task:
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
@@ -196,6 +208,10 @@ task:
   activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: build_all_plugins_app
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script:
         - flutter channel master
         - ./script/build_all_plugins_app.sh macos
