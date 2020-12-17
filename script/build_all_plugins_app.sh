@@ -1,10 +1,16 @@
 #!/bin/bash
 
+#  Usage:
+#
+#   ./script/build_all_plugins_app.sh apk
+#   ./script/build_all_plugins_app.sh ios
+
 # This script builds the app in flutter/plugins/example/all_plugins to make
 # sure all first party plugins can be compiled together.
 
 # So that users can run this script from anywhere and it will work as expected.
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
+
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
@@ -23,6 +29,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "google_sign_in_platform_interface"
   "google_sign_in_web"
   "image_picker_platform_interface"
+  "local_auth" # flutter_plugin_android_lifecycle conflict
   "instrumentation_adapter"
   "path_provider_linux"
   "path_provider_macos"
