@@ -1,3 +1,7 @@
+## 0.6.0+2
+
+Set ImageStreamReader listener to null to prevent stale images when streaming images. 
+
 ## 0.6.0+1
 
 Updated README to inform users that iOS 10.0+ is needed for use

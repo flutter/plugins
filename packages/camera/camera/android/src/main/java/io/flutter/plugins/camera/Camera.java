@@ -454,6 +454,9 @@ public class Camera {
 
   public void startPreview() throws CameraAccessException {
     if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
+    if (imageStreamReader != null) {
+      imageStreamReader.setOnImageAvailableListener(null, null);
+    }
 
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
