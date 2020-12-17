@@ -1,6 +1,18 @@
+## 2.0.0-nullsafety.2
+
+* Fixed an issue where `isBuffering` was not updating on Web.
+
+## 2.0.0-nullsafety.1
+
+* Bump Dart SDK to support null safety.
+
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
 ## 0.1.4+2
 
-* Fix an issue where `isBuffering` is not updating on Web.
+* Update Flutter SDK constraint.
 
 ## 0.1.4+1
 

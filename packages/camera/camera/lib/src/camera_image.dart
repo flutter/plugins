@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of 'camera.dart';
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 /// A single color plane of image data.
 ///
@@ -113,7 +116,8 @@ ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
 /// Although not all image formats are planar on iOS, we treat 1-dimensional
 /// images as single planar images.
 class CameraImage {
-  CameraImage._fromPlatformData(Map<dynamic, dynamic> data)
+  /// CameraImage Constructor
+  CameraImage.fromPlatformData(Map<dynamic, dynamic> data)
       : format = ImageFormat._fromPlatformData(data['format']),
         height = data['height'],
         width = data['width'],

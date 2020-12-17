@@ -50,7 +50,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 
   @override
   Future<void> dispose(int textureId) async {
-    _videoPlayers[textureId].dispose();
+    _videoPlayers[textureId]!.dispose();
     _videoPlayers.remove(textureId);
     return null;
   }
@@ -66,16 +66,16 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
     final int textureId = _textureCounter;
     _textureCounter++;
 
-    String uri;
+    late String uri;
     switch (dataSource.sourceType) {
       case DataSourceType.network:
         // Do NOT modify the incoming uri, it can be a Blob, and Safari doesn't
         // like blobs that have changed.
-        uri = dataSource.uri;
+        uri = dataSource.uri ?? '';
         break;
       case DataSourceType.asset:
-        String assetUrl = dataSource.asset;
-        if (dataSource.package != null && dataSource.package.isNotEmpty) {
+        String assetUrl = dataSource.asset!;
+        if (dataSource.package != null && dataSource.package!.isNotEmpty) {
           assetUrl = 'packages/${dataSource.package}/$assetUrl';
         }
         assetUrl = ui.webOnlyAssetManager.getAssetUrl(assetUrl);
@@ -99,45 +99,45 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 
   @override
   Future<void> setLooping(int textureId, bool looping) async {
-    return _videoPlayers[textureId].setLooping(looping);
+    return _videoPlayers[textureId]!.setLooping(looping);
   }
 
   @override
   Future<void> play(int textureId) async {
-    return _videoPlayers[textureId].play();
+    return _videoPlayers[textureId]!.play();
   }
 
   @override
   Future<void> pause(int textureId) async {
-    return _videoPlayers[textureId].pause();
+    return _videoPlayers[textureId]!.pause();
   }
 
   @override
   Future<void> setVolume(int textureId, double volume) async {
-    return _videoPlayers[textureId].setVolume(volume);
+    return _videoPlayers[textureId]!.setVolume(volume);
   }
 
   @override
   Future<void> setPlaybackSpeed(int textureId, double speed) async {
     assert(speed > 0);
 
-    return _videoPlayers[textureId].setPlaybackSpeed(speed);
+    return _videoPlayers[textureId]!.setPlaybackSpeed(speed);
   }
 
   @override
   Future<void> seekTo(int textureId, Duration position) async {
-    return _videoPlayers[textureId].seekTo(position);
+    return _videoPlayers[textureId]!.seekTo(position);
   }
 
   @override
   Future<Duration> getPosition(int textureId) async {
-    _videoPlayers[textureId].sendBufferingUpdate();
-    return _videoPlayers[textureId].getPosition();
+    _videoPlayers[textureId]!.sendBufferingUpdate();
+    return _videoPlayers[textureId]!.getPosition();
   }
 
   @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
-    return _videoPlayers[textureId].eventController.stream;
+    return _videoPlayers[textureId]!.eventController.stream;
   }
 
   @override
@@ -147,14 +147,14 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 }
 
 class _VideoPlayer {
-  _VideoPlayer({this.uri, this.textureId});
+  _VideoPlayer({required this.uri, required this.textureId});
 
   final StreamController<VideoEvent> eventController =
       StreamController<VideoEvent>();
 
   final String uri;
   final int textureId;
-  VideoElement videoElement;
+  late VideoElement videoElement;
   bool isInitialized = false;
   bool isBuffering = false;
 
@@ -209,9 +209,9 @@ class _VideoPlayer {
       // The Event itself (_) doesn't contain info about the actual error.
       // We need to look at the HTMLMediaElement.error.
       // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
-      MediaError error = videoElement.error;
+      MediaError error = videoElement.error!;
       eventController.addError(PlatformException(
-        code: _kErrorValueToErrorName[error.code],
+        code: _kErrorValueToErrorName[error.code]!,
         message: error.message != '' ? error.message : _kDefaultErrorMessage,
         details: _kErrorValueToErrorDescription[error.code],
       ));
@@ -285,8 +285,8 @@ class _VideoPlayer {
           milliseconds: (videoElement.duration * 1000).round(),
         ),
         size: Size(
-          videoElement.videoWidth.toDouble() ?? 0.0,
-          videoElement.videoHeight.toDouble() ?? 0.0,
+          videoElement.videoWidth.toDouble(),
+          videoElement.videoHeight.toDouble(),
         ),
       ),
     );

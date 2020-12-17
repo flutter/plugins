@@ -174,6 +174,19 @@ void main() {
     });
 
     test(
+        'Default implementation of setFlashMode() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setFlashMode(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
         'Default implementation of startVideoRecording() should throw unimplemented error',
         () {
       // Arrange
@@ -208,6 +221,45 @@ void main() {
       // Act & Assert
       expect(
         () => cameraPlatform.takePicture(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of getMaxZoomLevel() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.getMaxZoomLevel(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of getMinZoomLevel() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.getMinZoomLevel(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of setZoomLevel() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setZoomLevel(1, 1.0),
         throwsUnimplementedError,
       );
     });
