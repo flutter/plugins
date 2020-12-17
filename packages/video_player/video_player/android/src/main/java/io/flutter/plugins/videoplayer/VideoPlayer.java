@@ -54,8 +54,6 @@ final class VideoPlayer {
 
   private boolean isInitialized = false;
 
-  private boolean isBuffering = false;
-
   private final VideoPlayerOptions options;
 
   VideoPlayer(
@@ -171,6 +169,7 @@ final class VideoPlayer {
 
     exoPlayer.addListener(
         new EventListener() {
+          private boolean isBuffering = false;
 
           @Override
           public void onPlaybackStateChanged(final int playbackState) {
