@@ -131,6 +131,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 
   @override
   Future<Duration> getPosition(int textureId) async {
+    _videoPlayers[textureId].sendBufferingUpdate();
     return _videoPlayers[textureId].getPosition();
   }
 
