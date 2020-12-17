@@ -157,6 +157,16 @@ class _VideoPlayer {
   bool isInitialized = false;
   bool isBuffering = false;
 
+  void setBuffering(bool buffering) {
+    if (isBuffering != buffering) {
+      isBuffering = buffering;
+      eventController.add(VideoEvent(
+          eventType: isBuffering
+              ? VideoEventType.bufferingStart
+              : VideoEventType.bufferingEnd));
+    }
+  }
+
   void initialize() {
     videoElement = VideoElement()
       ..src = uri
@@ -176,38 +186,27 @@ class _VideoPlayer {
         isInitialized = true;
         sendInitialized();
       }
-      if (isBuffering) {
-        isBuffering = false;
-        eventController.add(VideoEvent(eventType: VideoEventType.bufferingEnd));
-      }
+      setBuffering(false);
     });
 
     videoElement.onCanPlayThrough.listen((dynamic _) {
-      if (isBuffering) {
-        isBuffering = false;
-        eventController.add(VideoEvent(eventType: VideoEventType.bufferingEnd));
-      }
+      setBuffering(false);
     });
 
     videoElement.onPlaying.listen((dynamic _) {
-      if (isBuffering) {
-        isBuffering = false;
-        eventController.add(VideoEvent(eventType: VideoEventType.bufferingEnd));
-      }
+      setBuffering(false);
     });
 
     videoElement.onWaiting.listen((dynamic _) {
       if (!isBuffering) {
-        isBuffering = true;
-        eventController
-            .add(VideoEvent(eventType: VideoEventType.bufferingStart));
+        setBuffering(true);
         sendBufferingUpdate();
       }
     });
 
     // The error event fires when some form of error occurs while attempting to load or perform the media.
     videoElement.onError.listen((Event _) {
-      isBuffering = false;
+      setBuffering(false);
       // The Event itself (_) doesn't contain info about the actual error.
       // We need to look at the HTMLMediaElement.error.
       // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
@@ -220,10 +219,7 @@ class _VideoPlayer {
     });
 
     videoElement.onEnded.listen((dynamic _) {
-      if (isBuffering) {
-        isBuffering = false;
-        eventController.add(VideoEvent(eventType: VideoEventType.bufferingEnd));
-      }
+      setBuffering(false);
       eventController.add(VideoEvent(eventType: VideoEventType.completed));
     });
   }
