@@ -11,9 +11,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -358,12 +358,12 @@ void main() {
       videoTestBase64 = base64Encode(const Utf8Encoder().convert(videoTest));
     });
 
-    test('Auto media playback', () async {
+    testWidgets('Auto media playback', (WidgetTester tester) async {
       Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
 
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -390,7 +390,7 @@ void main() {
       pageLoaded = Completer<void>();
 
       // We change the key to re-create a new webview as we change the initialMediaPlaybackPolicy
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -416,13 +416,14 @@ void main() {
       expect(isPaused, _webviewBool(true));
     });
 
-    test('Changes to initialMediaPlaybackPolicy are ignored', () async {
+    testWidgets('Changes to initialMediaPlaybackPolicy are ignored',
+        (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
 
       final GlobalKey key = GlobalKey();
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -447,7 +448,7 @@ void main() {
 
       pageLoaded = Completer<void>();
 
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -474,12 +475,13 @@ void main() {
       expect(isPaused, _webviewBool(false));
     });
 
-    test('Video plays inline when allowsInlineMediaPlayback is true', () async {
+    testWidgets('Video plays inline when allowsInlineMediaPlayback is true',
+        (WidgetTester tester) async {
       Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
 
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -507,7 +509,7 @@ void main() {
       controllerCompleter = Completer<WebViewController>();
       pageLoaded = Completer<void>();
 
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
