@@ -62,7 +62,7 @@ static const int SOURCE_GALLERY = 1;
 
   if ([@"pickImage" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
-    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    _imagePickerController.modalPresentationStyle = UIModalPresentationFormSheet;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
@@ -90,7 +90,7 @@ static const int SOURCE_GALLERY = 1;
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
-    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    _imagePickerController.modalPresentationStyle = UIModalPresentationFormSheet;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[
       (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
