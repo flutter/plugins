@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.2
+
+* Android: Cleanup the NetworkCallback object when a connectivity stream is cancelled
+
 ## 3.0.0-nullsafety.1
 
 * Bump Dart SDK to support null safety.
