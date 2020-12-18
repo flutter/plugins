@@ -1,3 +1,15 @@
+## 2.0.0-nullsafety.1
+
+* Added `allowsInlineMediaPlayback` property.
+
+## 2.0.0-nullsafety
+
+* Migration to null-safety.
+
+## 1.0.8
+
+* Update Flutter SDK constraint.
+
 ## 1.0.7
 
 * Minor documentation update to indicate known issue on iOS 13.4 and 13.5.

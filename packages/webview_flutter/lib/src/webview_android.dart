@@ -20,11 +20,11 @@ import 'webview_method_channel.dart';
 class AndroidWebView implements WebViewPlatform {
   @override
   Widget build({
-    BuildContext context,
-    CreationParams creationParams,
-    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
-    WebViewPlatformCreatedCallback onWebViewPlatformCreated,
-    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+    required BuildContext context,
+    required CreationParams creationParams,
+    required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+    WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
   }) {
     assert(webViewPlatformCallbacksHandler != null);
     return GestureDetector(

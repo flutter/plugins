@@ -1,3 +1,19 @@
+## 3.0.0-nullsafety.2
+
+* Android: Cleanup the NetworkCallback object when a connectivity stream is cancelled
+
+## 3.0.0-nullsafety.1
+
+* Bump Dart SDK to support null safety.
+
+## 3.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 2.0.3
+
+* Update Flutter SDK constraint.
+
 ## 2.0.2
 
 * Android: Fix IllegalArgumentException.

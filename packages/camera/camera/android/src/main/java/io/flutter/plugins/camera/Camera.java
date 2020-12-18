@@ -4,6 +4,7 @@ import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
@@ -16,12 +17,16 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.params.OutputConfiguration;
+import android.hardware.camera2.params.SessionConfiguration;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -39,6 +44,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 public class Camera {
   private final SurfaceTextureEntry flutterTexture;
@@ -59,8 +65,10 @@ public class Camera {
   private CaptureRequest.Builder captureRequestBuilder;
   private MediaRecorder mediaRecorder;
   private boolean recordingVideo;
+  private File videoRecordingFile;
   private CamcorderProfile recordingProfile;
   private int currentOrientation = ORIENTATION_UNKNOWN;
+  private Context applicationContext;
 
   // Mirrors camera.dart
   public enum ResolutionPreset {
@@ -88,6 +96,7 @@ public class Camera {
     this.flutterTexture = flutterTexture;
     this.dartMessenger = dartMessenger;
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+    this.applicationContext = activity.getApplicationContext();
     orientationEventListener =
         new OrientationEventListener(activity.getApplicationContext()) {
           @Override
@@ -129,7 +138,7 @@ public class Camera {
   }
 
   @SuppressLint("MissingPermission")
-  public void open(@NonNull final Result result) throws CameraAccessException {
+  public void open() throws CameraAccessException {
     pictureImageReader =
         ImageReader.newInstance(
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
@@ -148,15 +157,13 @@ public class Camera {
             try {
               startPreview();
             } catch (CameraAccessException e) {
-              result.error("CameraAccess", e.getMessage(), null);
+              dartMessenger.sendCameraErrorEvent(e.getMessage());
               close();
               return;
             }
-            Map<String, Object> reply = new HashMap<>();
-            reply.put("textureId", flutterTexture.id());
-            reply.put("previewWidth", previewSize.getWidth());
-            reply.put("previewHeight", previewSize.getHeight());
-            result.success(reply);
+
+            dartMessenger.sendCameraInitializedEvent(
+                previewSize.getWidth(), previewSize.getHeight());
           }
 
           @Override
@@ -168,7 +175,7 @@ public class Camera {
           @Override
           public void onDisconnected(@NonNull CameraDevice cameraDevice) {
             close();
-            dartMessenger.send(DartMessenger.EventType.ERROR, "The camera was disconnected.");
+            dartMessenger.sendCameraErrorEvent("The camera was disconnected.");
           }
 
           @Override
@@ -194,7 +201,7 @@ public class Camera {
               default:
                 errorDescription = "Unknown camera error";
             }
-            dartMessenger.send(DartMessenger.EventType.ERROR, errorDescription);
+            dartMessenger.sendCameraErrorEvent(errorDescription);
           }
         },
         null);
@@ -212,12 +219,13 @@ public class Camera {
     return flutterTexture;
   }
 
-  public void takePicture(String filePath, @NonNull final Result result) {
-    final File file = new File(filePath);
-
-    if (file.exists()) {
-      result.error(
-          "fileExists", "File at path '" + filePath + "' already exists. Cannot overwrite.", null);
+  public void takePicture(@NonNull final Result result) {
+    final File outputDir = applicationContext.getCacheDir();
+    final File file;
+    try {
+      file = File.createTempFile("CAP", ".jpg", outputDir);
+    } catch (IOException | SecurityException e) {
+      result.error("cannotCreateFile", e.getMessage(), null);
       return;
     }
 
@@ -226,7 +234,7 @@ public class Camera {
           try (Image image = reader.acquireLatestImage()) {
             ByteBuffer buffer = image.getPlanes()[0].getBuffer();
             writeToFile(buffer, file);
-            result.success(null);
+            result.success(file.getAbsolutePath());
           } catch (IOException e) {
             result.error("IOError", "Failed saving image", null);
           }
@@ -302,8 +310,7 @@ public class Camera {
           public void onConfigured(@NonNull CameraCaptureSession session) {
             try {
               if (cameraDevice == null) {
-                dartMessenger.send(
-                    DartMessenger.EventType.ERROR, "The camera was closed during configuration.");
+                dartMessenger.sendCameraErrorEvent("The camera was closed during configuration.");
                 return;
               }
               cameraCaptureSession = session;
@@ -314,37 +321,72 @@ public class Camera {
                 onSuccessCallback.run();
               }
             } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
-              dartMessenger.send(DartMessenger.EventType.ERROR, e.getMessage());
+              dartMessenger.sendCameraErrorEvent(e.getMessage());
             }
           }
 
           @Override
           public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-            dartMessenger.send(
-                DartMessenger.EventType.ERROR, "Failed to configure camera session.");
+            dartMessenger.sendCameraErrorEvent("Failed to configure camera session.");
           }
         };
 
-    // Collect all surfaces we want to render to.
-    List<Surface> surfaceList = new ArrayList<>();
-    surfaceList.add(flutterSurface);
-    surfaceList.addAll(remainingSurfaces);
     // Start the session
-    cameraDevice.createCaptureSession(surfaceList, callback, null);
+    if (VERSION.SDK_INT >= VERSION_CODES.P) {
+      // Collect all surfaces we want to render to.
+      List<OutputConfiguration> configs = new ArrayList<>();
+      configs.add(new OutputConfiguration(flutterSurface));
+      for (Surface surface : remainingSurfaces) {
+        configs.add(new OutputConfiguration(surface));
+      }
+      createCaptureSessionWithSessionConfig(configs, callback);
+    } else {
+      // Collect all surfaces we want to render to.
+      List<Surface> surfaceList = new ArrayList<>();
+      surfaceList.add(flutterSurface);
+      surfaceList.addAll(remainingSurfaces);
+      createCaptureSession(surfaceList, callback);
+    }
   }
 
-  public void startVideoRecording(String filePath, Result result) {
-    if (new File(filePath).exists()) {
-      result.error("fileExists", "File at path '" + filePath + "' already exists.", null);
+  @TargetApi(VERSION_CODES.P)
+  private void createCaptureSessionWithSessionConfig(
+      List<OutputConfiguration> outputConfigs, CameraCaptureSession.StateCallback callback)
+      throws CameraAccessException {
+    cameraDevice.createCaptureSession(
+        new SessionConfiguration(
+            SessionConfiguration.SESSION_REGULAR,
+            outputConfigs,
+            Executors.newSingleThreadExecutor(),
+            callback));
+  }
+
+  @TargetApi(VERSION_CODES.LOLLIPOP)
+  @SuppressWarnings("deprecation")
+  private void createCaptureSession(
+      List<Surface> surfaces, CameraCaptureSession.StateCallback callback)
+      throws CameraAccessException {
+    cameraDevice.createCaptureSession(surfaces, callback, null);
+  }
+
+  public void startVideoRecording(Result result) {
+    final File outputDir = applicationContext.getCacheDir();
+    try {
+      videoRecordingFile = File.createTempFile("REC", ".mp4", outputDir);
+    } catch (IOException | SecurityException e) {
+      result.error("cannotCreateFile", e.getMessage(), null);
       return;
     }
+
     try {
-      prepareMediaRecorder(filePath);
+      prepareMediaRecorder(videoRecordingFile.getAbsolutePath());
       recordingVideo = true;
       createCaptureSession(
           CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
       result.success(null);
     } catch (CameraAccessException | IOException e) {
+      recordingVideo = false;
+      videoRecordingFile = null;
       result.error("videoRecordingFailed", e.getMessage(), null);
     }
   }
@@ -360,7 +402,8 @@ public class Camera {
       mediaRecorder.stop();
       mediaRecorder.reset();
       startPreview();
-      result.success(null);
+      result.success(videoRecordingFile.getAbsolutePath());
+      videoRecordingFile = null;
     } catch (CameraAccessException | IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
     }

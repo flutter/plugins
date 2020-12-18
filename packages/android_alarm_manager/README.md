@@ -36,7 +36,7 @@ Next, within the `<application></application>` tags, add:
     android:name="io.flutter.plugins.androidalarmmanager.RebootBroadcastReceiver"
     android:enabled="false">
     <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
     </intent-filter>
 </receiver>
 

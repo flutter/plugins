@@ -1,3 +1,15 @@
+## 1.0.0-nullsafety.1
+
+* Update README for Android Integration.
+
+## 1.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 0.6.3+5
+
+* Update Flutter SDK constraint.
+
 ## 0.6.3+4
 
 * Update Dart SDK constraint in example.
