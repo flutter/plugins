@@ -536,7 +536,7 @@ void main() {
       isFullScreen = await controller.evaluateJavascript('isFullScreen();');
       expect(isFullScreen, _webviewBool(true));
     });
-  });
+  }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
 
   group('Audio playback policy', () {
     String audioTestBase64;
