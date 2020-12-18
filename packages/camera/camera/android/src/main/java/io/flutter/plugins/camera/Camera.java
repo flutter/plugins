@@ -470,9 +470,7 @@ public class Camera {
           }
 
           @Override
-          public void onCancel(Object o) {
-            imageStreamReader.setOnImageAvailableListener(null, null);
-          }
+          public void onCancel(Object o) {}
         });
   }
 
