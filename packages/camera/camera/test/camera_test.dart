@@ -310,6 +310,254 @@ void main() {
             'startVideoRecording was called while a camera was streaming images.',
           )));
     });
+
+    test('getMaxZoomLevel() throws $CameraException when uninitialized',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      expect(
+          cameraController.getMaxZoomLevel,
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'Uninitialized CameraController',
+            'getMaxZoomLevel was called on uninitialized CameraController',
+          )));
+    });
+
+    test('getMaxZoomLevel() throws $CameraException when disposed', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      await cameraController.initialize();
+      await cameraController.dispose();
+
+      expect(
+          cameraController.getMaxZoomLevel,
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'Uninitialized CameraController',
+            'getMaxZoomLevel was called on uninitialized CameraController',
+          )));
+    });
+
+    test(
+        'getMaxZoomLevel() throws $CameraException when a platform exception occured.',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      await cameraController.initialize();
+      when(CameraPlatform.instance.getMaxZoomLevel(mockInitializeCamera))
+          .thenThrow(PlatformException(
+              code: 'TEST_ERROR',
+              message: 'This is a test error messge',
+              details: null));
+
+      expect(
+          cameraController.getMaxZoomLevel,
+          throwsA(isA<CameraException>()
+              .having((error) => error.code, 'code', 'TEST_ERROR')
+              .having(
+                (error) => error.description,
+                'description',
+                'This is a test error messge',
+              )));
+    });
+
+    test('getMaxZoomLevel() returns max zoom level.', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      await cameraController.initialize();
+      when(CameraPlatform.instance.getMaxZoomLevel(mockInitializeCamera))
+          .thenAnswer((_) => Future.value(42.0));
+
+      final maxZoomLevel = await cameraController.getMaxZoomLevel();
+      expect(maxZoomLevel, 42.0);
+    });
+
+    test('getMinZoomLevel() throws $CameraException when uninitialized',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      expect(
+          cameraController.getMinZoomLevel,
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'Uninitialized CameraController',
+            'getMinZoomLevel was called on uninitialized CameraController',
+          )));
+    });
+
+    test('getMinZoomLevel() throws $CameraException when disposed', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      await cameraController.initialize();
+      await cameraController.dispose();
+
+      expect(
+          cameraController.getMinZoomLevel,
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'Uninitialized CameraController',
+            'getMinZoomLevel was called on uninitialized CameraController',
+          )));
+    });
+
+    test(
+        'getMinZoomLevel() throws $CameraException when a platform exception occured.',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      await cameraController.initialize();
+      when(CameraPlatform.instance.getMinZoomLevel(mockInitializeCamera))
+          .thenThrow(PlatformException(
+              code: 'TEST_ERROR',
+              message: 'This is a test error messge',
+              details: null));
+
+      expect(
+          cameraController.getMinZoomLevel,
+          throwsA(isA<CameraException>()
+              .having((error) => error.code, 'code', 'TEST_ERROR')
+              .having(
+                (error) => error.description,
+                'description',
+                'This is a test error messge',
+              )));
+    });
+
+    test('getMinZoomLevel() returns max zoom level.', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      await cameraController.initialize();
+      when(CameraPlatform.instance.getMinZoomLevel(mockInitializeCamera))
+          .thenAnswer((_) => Future.value(42.0));
+
+      final maxZoomLevel = await cameraController.getMinZoomLevel();
+      expect(maxZoomLevel, 42.0);
+    });
+
+    test('setZoomLevel() throws $CameraException when uninitialized', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      expect(
+          () => cameraController.setZoomLevel(42.0),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'Uninitialized CameraController',
+            'setZoomLevel was called on uninitialized CameraController',
+          )));
+    });
+
+    test('setZoomLevel() throws $CameraException when disposed', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      await cameraController.initialize();
+      await cameraController.dispose();
+
+      expect(
+          () => cameraController.setZoomLevel(42.0),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'Uninitialized CameraController',
+            'setZoomLevel was called on uninitialized CameraController',
+          )));
+    });
+
+    test(
+        'setZoomLevel() throws $CameraException when a platform exception occured.',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      await cameraController.initialize();
+      when(CameraPlatform.instance.setZoomLevel(mockInitializeCamera, 42.0))
+          .thenThrow(PlatformException(
+              code: 'TEST_ERROR',
+              message: 'This is a test error messge',
+              details: null));
+
+      expect(
+          () => cameraController.setZoomLevel(42),
+          throwsA(isA<CameraException>()
+              .having((error) => error.code, 'code', 'TEST_ERROR')
+              .having(
+                (error) => error.description,
+                'description',
+                'This is a test error messge',
+              )));
+
+      reset(CameraPlatform.instance);
+    });
+
+    test(
+        'setZoomLevel() completes and calls method channel with correct value.',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+
+      await cameraController.initialize();
+      await cameraController.setZoomLevel(42.0);
+
+      verify(CameraPlatform.instance.setZoomLevel(mockInitializeCamera, 42.0))
+          .called(1);
+    });
   });
 }
 

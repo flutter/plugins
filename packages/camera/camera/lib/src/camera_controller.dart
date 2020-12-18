@@ -468,6 +468,58 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  /// Gets the maximum supported zoom level for the selected camera.
+  Future<double> getMaxZoomLevel() {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'getMaxZoomLevel was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      return CameraPlatform.instance.getMaxZoomLevel(_cameraId);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Gets the minimum supported zoom level for the selected camera.
+  Future<double> getMinZoomLevel() {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'getMinZoomLevel was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      return CameraPlatform.instance.getMinZoomLevel(_cameraId);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Set the zoom level for the selected camera.
+  ///
+  /// The supplied [zoom] value should be between 1.0 and the maximum supported
+  /// zoom level returned by the `getMaxZoomLevel`. Throws an `CameraException`
+  /// when an illegal zoom level is suplied.
+  Future<void> setZoomLevel(double zoom) {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'setZoomLevel was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      return CameraPlatform.instance.setZoomLevel(_cameraId, zoom);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
   /// Releases the resources of this camera.
   @override
   Future<void> dispose() async {
