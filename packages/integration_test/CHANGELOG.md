@@ -1,3 +1,11 @@
+## 1.0.2
+
+* Update Flutter SDK constraint.
+
+## 1.0.1
+
+* Remove usages of deprecated `List` constructor.
+
 ## 1.0.0
 
 * Public stable release of plugin.

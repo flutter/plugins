@@ -1,11 +1,11 @@
 name: ios_platform_images
 description: A plugin to share images between Flutter and iOS in add-to-app setups.
-version: 0.1.2+3
+version: 0.1.2+4
 homepage: https://github.com/flutter/plugins/tree/master/packages/ios_platform_images/ios_platform_images
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5"
 
 dependencies:
   flutter:
@@ -29,7 +29,6 @@ flutter:
     platforms:
       ios:
         pluginClass: IosPlatformImagesPlugin
-
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg
@@ -40,7 +39,6 @@ flutter:
   #
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
-
   # To add custom fonts to your plugin package, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
