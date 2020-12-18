@@ -94,3 +94,9 @@ If you do this for a URL of a page containing JavaScript, make sure to pass in
 `enableJavaScript: true`, or else the launch method will not work properly. On
 iOS, the default behavior is to open all web URLs within the app. Everything
 else is redirected to the app handler.
+
+## Disclaimer
+The `url_launcher: 6.0.0-nullsafety.1` plugin is missing web support. 
+The web suppport is temporary disabled until web is migrated to nnbd.
+See comments in [`pubspec.yaml`](https://github.com/flutter/plugins/blob/34667d44cc1f8668e24058f02f823f119214e2ee/
+packages/url_launcher/url_launcher/pubspec.yaml#L37) file.
