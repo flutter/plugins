@@ -9,7 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  test('canLaunch', () async {
+  testWidgets('canLaunch', (WidgetTester _) async {
     expect(await canLaunch('randomstring'), false);
 
     // Generally all devices should have some default browser.

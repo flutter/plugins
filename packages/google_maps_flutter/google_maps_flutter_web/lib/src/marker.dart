@@ -46,6 +46,10 @@ class MarkerController {
   /// Returns the [gmaps.Marker] associated to this controller.
   gmaps.Marker get marker => _marker;
 
+  /// Returns the [gmaps.InfoWindow] associated to the marker.
+  @visibleForTesting
+  gmaps.InfoWindow get infoWindow => _infoWindow;
+
   /// Updates the options of the wrapped [gmaps.Marker] object.
   void update(
     gmaps.MarkerOptions options, {

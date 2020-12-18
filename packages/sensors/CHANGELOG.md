@@ -1,3 +1,11 @@
+## 0.4.2+7
+
+* Update Flutter SDK constraint.
+
+## 0.4.2+6
+
+* Update android compileSdkVersion to 29.
+
 ## 0.4.2+5
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

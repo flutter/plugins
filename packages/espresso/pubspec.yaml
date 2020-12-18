@@ -1,11 +1,11 @@
 name: espresso
 description: Java classes for testing Flutter apps using Espresso.
-version: 0.0.1+6
+version: 0.0.1+9
 homepage: https://github.com/flutter/plugins/espresso
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.10.0 <2.0.0"
+  flutter: ">=1.10.0"
 
 dependencies:
   flutter:

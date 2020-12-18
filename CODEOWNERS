@@ -9,6 +9,7 @@ packages/android_intent/**                     @mklim @matthew-carroll
 packages/battery/**                            @amirh @matthew-carroll
 packages/camera/**                             @bparrishMines
 packages/connectivity/**                       @cyanglaz @matthew-carroll
+packages/cross_file/**                         @ditman @mvanbeusekom
 packages/device_info/**                        @matthew-carroll
 packages/espresso/**                           @collinjackson @adazh
 packages/file_selector/**                      @ditman
