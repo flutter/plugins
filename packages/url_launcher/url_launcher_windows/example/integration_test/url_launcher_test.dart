@@ -9,7 +9,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  test('canLaunch', () async {
+  testWidgets('canLaunch', (WidgetTester _) async {
     UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
 
     expect(await launcher.canLaunch('randomstring'), false);

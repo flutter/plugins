@@ -8,14 +8,14 @@
 class IosDeviceInfo {
   /// IOS device info class.
   IosDeviceInfo({
-    this.name,
-    this.systemName,
-    this.systemVersion,
-    this.model,
-    this.localizedModel,
-    this.identifierForVendor,
-    this.isPhysicalDevice,
-    this.utsname,
+    required this.name,
+    required this.systemName,
+    required this.systemVersion,
+    required this.model,
+    required this.localizedModel,
+    required this.identifierForVendor,
+    required this.isPhysicalDevice,
+    required this.utsname,
   });
 
   /// Device name.
@@ -45,15 +45,14 @@ class IosDeviceInfo {
   /// Deserializes from the map message received from [_kChannel].
   static IosDeviceInfo fromMap(Map<String, dynamic> map) {
     return IosDeviceInfo(
-      name: map['name'],
-      systemName: map['systemName'],
-      systemVersion: map['systemVersion'],
-      model: map['model'],
-      localizedModel: map['localizedModel'],
-      identifierForVendor: map['identifierForVendor'],
+      name: map['name']!,
+      systemName: map['systemName']!,
+      systemVersion: map['systemVersion']!,
+      model: map['model']!,
+      localizedModel: map['localizedModel']!,
+      identifierForVendor: map['identifierForVendor']!,
       isPhysicalDevice: map['isPhysicalDevice'] == 'true',
-      utsname:
-          IosUtsname._fromMap(map['utsname']?.cast<String, dynamic>() ?? {}),
+      utsname: IosUtsname._fromMap(map['utsname']!.cast<String, dynamic>()),
     );
   }
 }
@@ -62,11 +61,11 @@ class IosDeviceInfo {
 /// See http://pubs.opengroup.org/onlinepubs/7908799/xsh/sysutsname.h.html for details.
 class IosUtsname {
   IosUtsname._({
-    this.sysname,
-    this.nodename,
-    this.release,
-    this.version,
-    this.machine,
+    required this.sysname,
+    required this.nodename,
+    required this.release,
+    required this.version,
+    required this.machine,
   });
 
   /// Operating system name.
@@ -87,11 +86,11 @@ class IosUtsname {
   /// Deserializes from the map message received from [_kChannel].
   static IosUtsname _fromMap(Map<String, dynamic> map) {
     return IosUtsname._(
-      sysname: map['sysname'],
-      nodename: map['nodename'],
-      release: map['release'],
-      version: map['version'],
-      machine: map['machine'],
+      sysname: map['sysname']!,
+      nodename: map['nodename']!,
+      release: map['release']!,
+      version: map['version']!,
+      machine: map['machine']!,
     );
   }
 }

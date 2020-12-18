@@ -7,10 +7,6 @@ import 'package:file_selector_platform_interface/file_selector_platform_interfac
 
 void main() {
   group('XTypeGroup', () {
-    test('fails assertion with no parameters set', () {
-      expect(() => XTypeGroup(), throwsAssertionError);
-    });
-
     test('toJSON() creates correct map', () {
       final label = 'test group';
       final extensions = ['.txt', '.jpg'];
@@ -32,6 +28,18 @@ void main() {
       expect(jsonMap['mimeTypes'], mimeTypes);
       expect(jsonMap['macUTIs'], macUTIs);
       expect(jsonMap['webWildCards'], webWildCards);
+    });
+
+    test('A wildcard group can be created', () {
+      final group = XTypeGroup(
+        label: 'Any',
+      );
+
+      final jsonMap = group.toJSON();
+      expect(jsonMap['extensions'], null);
+      expect(jsonMap['mimeTypes'], null);
+      expect(jsonMap['macUTIs'], null);
+      expect(jsonMap['webWildCards'], null);
     });
   });
 }

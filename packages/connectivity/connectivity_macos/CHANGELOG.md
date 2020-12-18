@@ -1,3 +1,11 @@
+## 0.2.0-nullsafety
+
+* Update Dart SDK constraint.
+
+## 0.1.0+8
+
+* Update Flutter SDK constraint.
+
 ## 0.1.0+7
 
 * Remove unused `test` dependency.
