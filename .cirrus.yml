@@ -140,6 +140,7 @@ task:
   osx_instance:
     image: catalina-xcode-11.3.1-flutter
   upgrade_script:
+    - sudo gem install cocoapods
     - flutter channel stable
     - flutter upgrade
     - flutter channel master
@@ -202,6 +203,7 @@ task:
   setup_script:
     - flutter config --enable-macos-desktop
   upgrade_script:
+    - sudo gem install cocoapods
     - flutter channel master
     - flutter upgrade
     - git fetch origin master

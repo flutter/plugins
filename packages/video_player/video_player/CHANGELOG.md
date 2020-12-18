@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.4
+
+* Fixed an issue where `isBuffering` was not updating on Android.
+
 ## 2.0.0-nullsafety.3
 
 * Dart null safety requires `2.12`.
