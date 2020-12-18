@@ -3,7 +3,7 @@
 
 [![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
 
-_See also: [Flutter's code of conduct](https://flutter.io/design-principles/#code-of-conduct)_
+_See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/master/CODE_OF_CONDUCT.md)_
 
 ## Things you will need
 
@@ -131,9 +131,8 @@ pub global run flutter_plugin_tools xctest --target RunnerUITests --skip <plugin
 We gladly accept contributions via GitHub pull requests.
 
 Please peruse our
-[style guide](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo) and
-[design principles](https://flutter.io/design-principles/) before
-working on anything non-trivial. These guidelines are intended to
+[style guide](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo)
+before working on anything non-trivial. These guidelines are intended to
 keep the code consistent and avoid common pitfalls.
 
 To start working on a patch:
@@ -141,7 +140,7 @@ To start working on a patch:
  * `git fetch upstream`
  * `git checkout upstream/master -b <name_of_your_branch>`
  * Hack away.
- * Verify changes with [flutter_plugin_tools](https://pub.dartlang.org/packages/flutter_plugin_tools)
+ * Verify changes with [flutter_plugin_tools](https://pub.dev/packages/flutter_plugin_tools)
 ```
 pub global activate flutter_plugin_tools
 pub global run flutter_plugin_tools format --plugins plugin_name
