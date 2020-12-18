@@ -1,3 +1,7 @@
+## 0.6.0+2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
 ## 0.6.0+1
 
 Updated README to inform users that iOS 10.0+ is needed for use
