@@ -1,3 +1,7 @@
+## 0.6.7+17
+
+* iOS: fix `User-facing text should use localized string macro` warning.
+
 ## 0.6.7+16
 
 * Update Flutter SDK constraint.

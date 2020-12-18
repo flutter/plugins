@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(egarciad): Remove once Mockito has been migrated to null safety.
+// @dart = 2.9
+
 import 'dart:ui';
 
 import 'package:mockito/mockito.dart';

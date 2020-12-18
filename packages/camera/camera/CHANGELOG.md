@@ -2,6 +2,10 @@
 
 * Add flash support for Android and iOS implementations.
 
+## 0.6.0+1
+
+Updated README to inform users that iOS 10.0+ is needed for use
+
 ## 0.6.0
 
 As part of implementing federated architecture and making the interface compatible with the web this version contains the following **breaking changes**:
