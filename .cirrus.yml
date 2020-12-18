@@ -208,12 +208,8 @@ task:
   activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: build_all_plugins_app
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
       script:
-        - flutter channel $CHANNEL
+        - flutter channel master
         - ./script/build_all_plugins_app.sh macos
     - name: build-apps+drive-examples
       env:
