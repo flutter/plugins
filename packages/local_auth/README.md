@@ -142,7 +142,8 @@ opposed to Activity. This can be easily done by switching to use
 `FlutterFragmentActivity` as opposed to `FlutterActivity` in your
 manifest (or your own Activity class if you are extending the base class).
 
-Update your MainActivity.java
+Update your MainActivity.java:
+
 ```java
 import android.os.Bundle;
 import io.flutter.app.FlutterFragmentActivity;
@@ -163,7 +164,8 @@ public class MainActivity extends FlutterFragmentActivity {
 
 OR
 
-Update your MainActivity.kt
+Update your MainActivity.kt:
+
 ```kotlin
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
