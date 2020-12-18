@@ -416,7 +416,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(true));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
 
     testWidgets('Changes to initialMediaPlaybackPolicy are ignored',
         (WidgetTester tester) async {
@@ -475,7 +475,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(false));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
 
     testWidgets('Video plays inline when allowsInlineMediaPlayback is true',
         (WidgetTester tester) async {
@@ -535,8 +535,8 @@ void main() {
 
       isFullScreen = await controller.evaluateJavascript('isFullScreen();');
       expect(isFullScreen, _webviewBool(true));
-    });
-  }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
+  });
 
   group('Audio playback policy', () {
     String audioTestBase64;
@@ -635,7 +635,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(true));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
 
     testWidgets('Changes to initialMediaPlaybackPolocy are ignored',
         (WidgetTester tester) async {
@@ -704,7 +704,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(false));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
   });
 
   testWidgets('getTitle', (WidgetTester tester) async {
