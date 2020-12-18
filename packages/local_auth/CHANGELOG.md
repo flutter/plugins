@@ -1,3 +1,6 @@
+## 1.0.1-nullsafety.1
+
+* Fix a crash in iOS on biometric lockout in the app
 ## 1.0.0-nullsafety
 
 * Migrate to null safety.
