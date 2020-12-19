@@ -29,7 +29,8 @@ void main() {
       log.clear();
     });
 
-    test('ImagePicker platform instance overrides the actual platform used', () {
+    test('ImagePicker platform instance overrides the actual platform used',
+        () {
       final ImagePickerPlatform savedPlatform = ImagePickerPlatform.instance;
       final MockPlatform mockPlatform = MockPlatform();
       ImagePickerPlatform.instance = mockPlatform;
@@ -348,5 +349,6 @@ void main() {
   });
 }
 
-class MockPlatform extends Mock with MockPlatformInterfaceMixin
+class MockPlatform extends Mock
+    with MockPlatformInterfaceMixin
     implements ImagePickerPlatform {}
