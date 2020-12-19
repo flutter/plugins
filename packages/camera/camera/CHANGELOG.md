@@ -1,6 +1,18 @@
-## 0.6.1
+## 0.6.2
 
 * Add zoom support for Android and iOS implementations.
+
+## 0.6.1+1
+
+* Added implementation of the `didFinishProcessingPhoto` on iOS which allows saving image metadata (EXIF) on iOS 11 and up.
+
+## 0.6.1
+
+* Add flash support for Android and iOS implementations.
+
+## 0.6.0+2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
 
 ## 0.6.0+1
 

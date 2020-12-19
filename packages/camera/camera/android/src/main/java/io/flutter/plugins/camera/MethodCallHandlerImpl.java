@@ -10,6 +10,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
+import io.flutter.plugins.camera.types.FlashMode;
 import io.flutter.view.TextureRegistry;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,6 +121,21 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       case "resumeVideoRecording":
         {
           camera.resumeVideoRecording(result);
+          break;
+        }
+      case "setFlashMode":
+        {
+          String modeStr = call.argument("mode");
+          FlashMode mode = FlashMode.getValueForString(modeStr);
+          if (mode == null) {
+            result.error("setFlashModeFailed", "Unknown flash mode " + modeStr, null);
+            return;
+          }
+          try {
+            camera.setFlashMode(result, mode);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
           break;
         }
       case "startImageStream":

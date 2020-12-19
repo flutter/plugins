@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.5
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
 ## 2.0.0-nullsafety.4
 
 * Fixed an issue where `isBuffering` was not updating on Android.

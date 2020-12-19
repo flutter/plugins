@@ -36,6 +36,7 @@ class CameraValue {
     this.isTakingPicture,
     this.isStreamingImages,
     bool isRecordingPaused,
+    this.flashMode,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -46,6 +47,7 @@ class CameraValue {
           isTakingPicture: false,
           isStreamingImages: false,
           isRecordingPaused: false,
+          flashMode: FlashMode.auto,
         );
 
   /// True after [CameraController.initialize] has completed successfully.
@@ -86,6 +88,9 @@ class CameraValue {
   /// When true [errorDescription] describes the error.
   bool get hasError => errorDescription != null;
 
+  /// The flash mode the camera is currently set to.
+  final FlashMode flashMode;
+
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
@@ -98,6 +103,7 @@ class CameraValue {
     String errorDescription,
     Size previewSize,
     bool isRecordingPaused,
+    FlashMode flashMode,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -107,6 +113,7 @@ class CameraValue {
       isTakingPicture: isTakingPicture ?? this.isTakingPicture,
       isStreamingImages: isStreamingImages ?? this.isStreamingImages,
       isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
+      flashMode: flashMode ?? this.flashMode,
     );
   }
 
@@ -117,7 +124,8 @@ class CameraValue {
         'isInitialized: $isInitialized, '
         'errorDescription: $errorDescription, '
         'previewSize: $previewSize, '
-        'isStreamingImages: $isStreamingImages)';
+        'isStreamingImages: $isStreamingImages, '
+        'flashMode: $flashMode)';
   }
 }
 
@@ -515,6 +523,16 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     try {
       return CameraPlatform.instance.setZoomLevel(_cameraId, zoom);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets the flash mode for taking pictures.
+  Future<void> setFlashMode(FlashMode mode) async {
+    try {
+      await CameraPlatform.instance.setFlashMode(_cameraId, mode);
+      value = value.copyWith(flashMode: mode);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.3
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
 ## 3.0.0-nullsafety.2
 
 * Android: Cleanup the NetworkCallback object when a connectivity stream is cancelled
