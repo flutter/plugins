@@ -1,3 +1,7 @@
+## 0.6.1
+
+* Add flash support for Android and iOS implementations.
+
 ## 0.6.0+2
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
