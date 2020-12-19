@@ -24,10 +24,14 @@ enum SignInOption {
 
 /// Holds information about the signed in user.
 class GoogleSignInUserData {
-  /// Uses the given data to construct an instance. Any of these parameters
-  /// could be null.
-  GoogleSignInUserData(
-      {this.displayName, this.email, this.id, this.photoUrl, this.idToken});
+  /// Uses the given data to construct an instance.
+  GoogleSignInUserData({
+    required this.email,
+    required this.id,
+    this.displayName,
+    this.photoUrl,
+    this.idToken,
+  });
 
   /// The display name of the signed in user.
   ///
@@ -42,7 +46,7 @@ class GoogleSignInUserData {
   /// _Important_: Do not use this returned email address to communicate the
   /// currently signed in user to your backend server. Instead, send an ID token
   /// which can be securely validated on the server. See [idToken].
-  String? email;
+  String email;
 
   /// The unique ID for the Google account.
   ///
@@ -51,7 +55,7 @@ class GoogleSignInUserData {
   /// _Important_: Do not use this returned Google ID to communicate the
   /// currently signed in user to your backend server. Instead, send an ID token
   /// which can be securely validated on the server. See [idToken].
-  String? id;
+  String id;
 
   /// The photo url of the signed in user if the user has a profile picture.
   ///
@@ -81,7 +85,6 @@ class GoogleSignInUserData {
 
 /// Holds authentication data after sign in.
 class GoogleSignInTokenData {
-  /// Either or both parameters may be null.
   GoogleSignInTokenData({
     this.idToken,
     this.accessToken,

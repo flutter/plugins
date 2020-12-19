@@ -48,13 +48,13 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
   }
 
   @override
-  Future<GoogleSignInTokenData?> getTokens(
+  Future<GoogleSignInTokenData> getTokens(
       {required String email, bool? shouldRecoverAuth = true}) {
     return channel
         .invokeMapMethod<String, dynamic>('getTokens', <String, dynamic>{
       'email': email,
       'shouldRecoverAuth': shouldRecoverAuth,
-    }).then(getTokenDataFromMap);
+    }).then((result) => getTokenDataFromMap(result!));
   }
 
   @override

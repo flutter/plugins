@@ -67,18 +67,6 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     );
   }
 
-  /// Adds correct sizing information to [photoUrl].
-  ///
-  /// Falls back to the default profile photo if [photoUrl] is [null].
-  static String _sizedProfileImageUrl(String photoUrl, double size) {
-    if (photoUrl == null) {
-      // If the user has no profile photo and no display name, fall back to
-      // the default profile photo as a last resort.
-      return 'https://lh3.googleusercontent.com/a/default-user=s${size.round()}-c';
-    }
-    return fife.addSizeDirectiveToUrl(photoUrl, size);
-  }
-
   Widget _buildClippedImage(BuildContext context, BoxConstraints constraints) {
     assert(constraints.maxWidth == constraints.maxHeight);
 
@@ -106,7 +94,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     // Add a sizing directive to the profile photo URL.
     final double size =
         MediaQuery.of(context).devicePixelRatio * constraints.maxWidth;
-    final String sizedPhotoUrl = _sizedProfileImageUrl(photoUrl, size);
+    final String sizedPhotoUrl = fife.addSizeDirectiveToUrl(photoUrl, size);
 
     // Fade the photo in over the top of the placeholder.
     return SizedBox(

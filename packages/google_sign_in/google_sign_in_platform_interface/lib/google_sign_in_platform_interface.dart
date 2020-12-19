@@ -98,7 +98,7 @@ abstract class GoogleSignInPlatform {
   }
 
   /// Returns the Tokens used to authenticate other API calls.
-  Future<GoogleSignInTokenData?> getTokens(
+  Future<GoogleSignInTokenData> getTokens(
       {required String email, bool? shouldRecoverAuth}) async {
     throw UnimplementedError('getTokens() has not been implemented.');
   }

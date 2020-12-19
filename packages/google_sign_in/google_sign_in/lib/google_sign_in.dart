@@ -60,10 +60,10 @@ class GoogleSignInAccount implements GoogleIdentity {
   final String? displayName;
 
   @override
-  final String? email;
+  final String email;
 
   @override
-  final String? id;
+  final String id;
 
   @override
   final String? photoUrl;
@@ -86,16 +86,15 @@ class GoogleSignInAccount implements GoogleIdentity {
       throw StateError('User is no longer signed in.');
     }
 
-    final GoogleSignInTokenData? response =
+    final GoogleSignInTokenData response =
         await GoogleSignInPlatform.instance.getTokens(
-      email: email!,
+      email: email,
       shouldRecoverAuth: true,
     );
-    assert(response != null);
 
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
-    if (response!.idToken == null) {
+    if (response.idToken == null) {
       response.idToken = _idToken;
     }
     return GoogleSignInAuthentication._(response);
