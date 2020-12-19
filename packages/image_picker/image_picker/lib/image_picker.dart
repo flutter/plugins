@@ -27,7 +27,7 @@ export 'package:image_picker_platform_interface/image_picker_platform_interface.
 class ImagePicker {
   /// The platform interface that drives this plugin
   @visibleForTesting
-  static ImagePickerPlatform platform = ImagePickerPlatform.instance;
+  static ImagePickerPlatform get platform => ImagePickerPlatform.instance;
 
   /// Returns a [File] object pointing to the image that was picked.
   ///
