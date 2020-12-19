@@ -310,6 +310,51 @@ void main() {
             'startVideoRecording was called while a camera was streaming images.',
           )));
     });
+
+    test('setFlashMode() calls $CameraPlatform', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      await cameraController.setFlashMode(FlashMode.always);
+
+      verify(CameraPlatform.instance
+              .setFlashMode(cameraController.cameraId, FlashMode.always))
+          .called(1);
+    });
+
+    test('setFlashMode() throws $CameraException on $PlatformException',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      when(CameraPlatform.instance
+              .setFlashMode(cameraController.cameraId, FlashMode.always))
+          .thenThrow(
+        PlatformException(
+          code: 'TEST_ERROR',
+          message: 'This is a test error message',
+          details: null,
+        ),
+      );
+
+      expect(
+          cameraController.setFlashMode(FlashMode.always),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'TEST_ERROR',
+            'This is a test error message',
+          )));
+    });
   });
 }
 

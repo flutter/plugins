@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.1
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
 ## 2.0.0-nullsafety
 
 * Migrate to null safety.

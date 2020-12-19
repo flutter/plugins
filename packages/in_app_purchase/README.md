@@ -181,7 +181,7 @@ WARNING! Failure to call `InAppPurchaseConnection.completePurchase` and get a su
 ## Development
 
 This plugin uses
-[json_serializable](https://pub.dartlang.org/packages/json_serializable) for the
+[json_serializable](https://pub.dev/packages/json_serializable) for the
 many data structs passed between the underlying platform layers and Dart. After
 editing any of the serialized data structs, rebuild the serializers by running
 `flutter packages pub run build_runner build --delete-conflicting-outputs`.
