@@ -101,6 +101,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
           ),
           _captureControlRowWidget(),
+          _flashModeRowWidget(),
           _toggleAudioWidget(),
           Padding(
             padding: const EdgeInsets.all(5.0),
@@ -188,6 +189,43 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           ],
         ),
       ),
+    );
+  }
+
+  /// Display a bar with buttons to change the flash mode
+  Widget _flashModeRowWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.flash_off),
+          color: controller?.value?.flashMode == FlashMode.off
+              ? Colors.orange
+              : Colors.blue,
+          onPressed: controller != null
+              ? () => onFlashModeButtonPressed(FlashMode.off)
+              : null,
+        ),
+        IconButton(
+          icon: const Icon(Icons.flash_auto),
+          color: controller?.value?.flashMode == FlashMode.auto
+              ? Colors.orange
+              : Colors.blue,
+          onPressed: controller != null
+              ? () => onFlashModeButtonPressed(FlashMode.auto)
+              : null,
+        ),
+        IconButton(
+          icon: const Icon(Icons.flash_on),
+          color: controller?.value?.flashMode == FlashMode.always
+              ? Colors.orange
+              : Colors.blue,
+          onPressed: controller != null
+              ? () => onFlashModeButtonPressed(FlashMode.always)
+              : null,
+        ),
+      ],
     );
   }
 
@@ -317,6 +355,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
+  void onFlashModeButtonPressed(FlashMode mode) {
+    setFlashMode(mode).then((_) {
+      if (mounted) setState(() {});
+      showInSnackBar('Flash mode set to ${mode.toString().split('.').last}');
+    });
+  }
+
   void onVideoRecordButtonPressed() {
     startVideoRecording().then((_) {
       if (mounted) setState(() {});
@@ -400,6 +445,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.resumeVideoRecording();
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      rethrow;
+    }
+  }
+
+  Future<void> setFlashMode(FlashMode mode) async {
+    try {
+      await controller.setFlashMode(mode);
     } on CameraException catch (e) {
       _showCameraException(e);
       rethrow;
