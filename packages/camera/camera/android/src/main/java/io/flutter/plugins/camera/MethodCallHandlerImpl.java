@@ -158,6 +158,49 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           }
           break;
         }
+      case "getMaxZoomLevel":
+        {
+          assert camera != null;
+
+          try {
+            float maxZoomLevel = camera.getMaxZoomLevel();
+            result.success(maxZoomLevel);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getMinZoomLevel":
+        {
+          assert camera != null;
+
+          try {
+            float minZoomLevel = camera.getMinZoomLevel();
+            result.success(minZoomLevel);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setZoomLevel":
+        {
+          assert camera != null;
+
+          Double zoom = call.argument("zoom");
+
+          if (zoom == null) {
+            result.error(
+                "ZOOM_ERROR", "setZoomLevel is called without specifying a zoom level.", null);
+            return;
+          }
+
+          try {
+            camera.setZoomLevel(result, zoom.floatValue());
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
       case "dispose":
         {
           if (camera != null) {

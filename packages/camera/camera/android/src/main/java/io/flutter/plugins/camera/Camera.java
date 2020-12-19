@@ -8,6 +8,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -21,7 +22,6 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.OutputConfiguration;
 import android.hardware.camera2.params.SessionConfiguration;
-import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
@@ -60,19 +61,20 @@ public class Camera {
   private final Size captureSize;
   private final Size previewSize;
   private final boolean enableAudio;
+  private final Context applicationContext;
+  private final CamcorderProfile recordingProfile;
+  private final DartMessenger dartMessenger;
+  private final CameraZoom cameraZoom;
 
   private CameraDevice cameraDevice;
   private CameraCaptureSession cameraCaptureSession;
   private ImageReader pictureImageReader;
   private ImageReader imageStreamReader;
-  private DartMessenger dartMessenger;
   private CaptureRequest.Builder captureRequestBuilder;
   private MediaRecorder mediaRecorder;
   private boolean recordingVideo;
   private File videoRecordingFile;
-  private CamcorderProfile recordingProfile;
   private int currentOrientation = ORIENTATION_UNKNOWN;
-  private Context applicationContext;
   private FlashMode flashMode;
   private PictureCaptureRequest pictureCaptureRequest;
 
@@ -108,11 +110,7 @@ public class Camera {
     orientationEventListener.enable();
 
     CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
-    StreamConfigurationMap streamConfigurationMap =
-        characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-    //noinspection ConstantConditions
     sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-    //noinspection ConstantConditions
     isFrontFacing =
         characteristics.get(CameraCharacteristics.LENS_FACING) == CameraMetadata.LENS_FACING_FRONT;
     ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
@@ -120,6 +118,10 @@ public class Camera {
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     previewSize = computeBestPreviewSize(cameraName, preset);
+    cameraZoom =
+        new CameraZoom(
+            characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE),
+            characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM));
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
@@ -210,10 +212,6 @@ public class Camera {
         outputStream.getChannel().write(buffer);
       }
     }
-  }
-
-  SurfaceTextureEntry getFlutterTexture() {
-    return flutterTexture;
   }
 
   public void takePicture(@NonNull final Result result) {
@@ -618,6 +616,39 @@ public class Camera {
           img.close();
         },
         null);
+  }
+
+  public float getMaxZoomLevel() {
+    return cameraZoom.maxZoom;
+  }
+
+  public float getMinZoomLevel() {
+    return CameraZoom.DEFAULT_ZOOM_FACTOR;
+  }
+
+  public void setZoomLevel(@NonNull final Result result, float zoom) throws CameraAccessException {
+    float maxZoom = cameraZoom.maxZoom;
+    float minZoom = CameraZoom.DEFAULT_ZOOM_FACTOR;
+
+    if (zoom > maxZoom || zoom < minZoom) {
+      String errorMessage =
+          String.format(
+              Locale.ENGLISH,
+              "Zoom level out of bounds (zoom level should be between %f and %f).",
+              minZoom,
+              maxZoom);
+      result.error("ZOOM_ERROR", errorMessage, null);
+      return;
+    }
+
+    //Zoom area is calculated relative to sensor area (activeRect)
+    if (captureRequestBuilder != null) {
+      final Rect computedZoom = cameraZoom.computeZoom(zoom);
+      captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, computedZoom);
+      cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+    }
+
+    result.success(null);
   }
 
   private void closeCaptureSession() {
