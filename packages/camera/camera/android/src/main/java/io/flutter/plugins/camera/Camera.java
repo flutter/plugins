@@ -75,7 +75,6 @@ public class Camera {
   private boolean recordingVideo;
   private File videoRecordingFile;
   private int currentOrientation = ORIENTATION_UNKNOWN;
-  private Context applicationContext;
   private FlashMode flashMode;
   private PictureCaptureRequest pictureCaptureRequest;
 
