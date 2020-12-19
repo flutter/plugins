@@ -5,6 +5,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:mockito/mockito.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +27,14 @@ void main() {
       });
 
       log.clear();
+    });
+
+    test('ImagePicker platform instance overrides the actual platform used', () {
+      final ImagePickerPlatform savedPlatform = ImagePickerPlatform.instance;
+      final MockPlatform mockPlatform = MockPlatform();
+      ImagePickerPlatform.instance = mockPlatform;
+      expect(ImagePicker.platform, mockPlatform);
+      ImagePickerPlatform.instance = savedPlatform;
     });
 
     group('#pickImage', () {
@@ -336,3 +347,6 @@ void main() {
     });
   });
 }
+
+class MockPlatform extends Mock with MockPlatformInterfaceMixin
+    implements ImagePickerPlatform {}
