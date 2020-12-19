@@ -42,6 +42,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
+  double _minAvailableZoom;
+  double _maxAvailableZoom;
+  double _currentScale = 1.0;
+  double _baseScale = 1.0;
+
+  // Counting pointers (number of user fingers on screen)
+  int _pointers = 0;
 
   @override
   void initState() {
@@ -132,9 +139,33 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     } else {
       return AspectRatio(
         aspectRatio: controller.value.aspectRatio,
-        child: CameraPreview(controller),
+        child: Listener(
+          onPointerDown: (_) => _pointers++,
+          onPointerUp: (_) => _pointers--,
+          child: GestureDetector(
+            onScaleStart: _handleScaleStart,
+            onScaleUpdate: _handleScaleUpdate,
+            child: CameraPreview(controller),
+          ),
+        ),
       );
     }
+  }
+
+  void _handleScaleStart(ScaleStartDetails details) {
+    _baseScale = _currentScale;
+  }
+
+  Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
+    // When there are not exactly two fingers on screen don't scale
+    if (_pointers != 2) {
+      return;
+    }
+
+    _currentScale = (_baseScale * details.scale)
+        .clamp(_minAvailableZoom, _maxAvailableZoom);
+
+    await controller.setZoomLevel(_currentScale);
   }
 
   /// Toggle recording audio
@@ -333,6 +364,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.initialize();
+      _maxAvailableZoom = await controller.getMaxZoomLevel();
+      _minAvailableZoom = await controller.getMinZoomLevel();
     } on CameraException catch (e) {
       _showCameraException(e);
     }
