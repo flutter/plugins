@@ -1,3 +1,7 @@
+## 0.6.1+1
+
+* Added implementation of the `didFinishProcessingPhoto` on iOS which allows saving image metadata (EXIF) on iOS 11 and up.
+
 ## 0.6.1
 
 * Add flash support for Android and iOS implementations.
