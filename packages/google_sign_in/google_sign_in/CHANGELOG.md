@@ -1,3 +1,7 @@
+## 4.5.9
+
+* Add `force_code_for_refresh_token` option for Android
+
 ## 4.5.8
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
