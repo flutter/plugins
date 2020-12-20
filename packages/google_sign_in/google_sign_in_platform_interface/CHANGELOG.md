@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Add serverAuthCode to GoogleSignInUserData
+
 ## 1.1.3
 
 * Update Flutter SDK constraint.
