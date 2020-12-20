@@ -42,6 +42,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
+  double _minAvailableZoom;
+  double _maxAvailableZoom;
+  double _currentScale = 1.0;
+  double _baseScale = 1.0;
+
+  // Counting pointers (number of user fingers on screen)
+  int _pointers = 0;
 
   @override
   void initState() {
@@ -101,6 +108,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
           ),
           _captureControlRowWidget(),
+          _flashModeRowWidget(),
           _toggleAudioWidget(),
           Padding(
             padding: const EdgeInsets.all(5.0),
@@ -131,9 +139,33 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     } else {
       return AspectRatio(
         aspectRatio: controller.value.aspectRatio,
-        child: CameraPreview(controller),
+        child: Listener(
+          onPointerDown: (_) => _pointers++,
+          onPointerUp: (_) => _pointers--,
+          child: GestureDetector(
+            onScaleStart: _handleScaleStart,
+            onScaleUpdate: _handleScaleUpdate,
+            child: CameraPreview(controller),
+          ),
+        ),
       );
     }
+  }
+
+  void _handleScaleStart(ScaleStartDetails details) {
+    _baseScale = _currentScale;
+  }
+
+  Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
+    // When there are not exactly two fingers on screen don't scale
+    if (_pointers != 2) {
+      return;
+    }
+
+    _currentScale = (_baseScale * details.scale)
+        .clamp(_minAvailableZoom, _maxAvailableZoom);
+
+    await controller.setZoomLevel(_currentScale);
   }
 
   /// Toggle recording audio
@@ -188,6 +220,43 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           ],
         ),
       ),
+    );
+  }
+
+  /// Display a bar with buttons to change the flash mode
+  Widget _flashModeRowWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.flash_off),
+          color: controller?.value?.flashMode == FlashMode.off
+              ? Colors.orange
+              : Colors.blue,
+          onPressed: controller != null
+              ? () => onFlashModeButtonPressed(FlashMode.off)
+              : null,
+        ),
+        IconButton(
+          icon: const Icon(Icons.flash_auto),
+          color: controller?.value?.flashMode == FlashMode.auto
+              ? Colors.orange
+              : Colors.blue,
+          onPressed: controller != null
+              ? () => onFlashModeButtonPressed(FlashMode.auto)
+              : null,
+        ),
+        IconButton(
+          icon: const Icon(Icons.flash_on),
+          color: controller?.value?.flashMode == FlashMode.always
+              ? Colors.orange
+              : Colors.blue,
+          onPressed: controller != null
+              ? () => onFlashModeButtonPressed(FlashMode.always)
+              : null,
+        ),
+      ],
     );
   }
 
@@ -295,6 +364,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.initialize();
+      _maxAvailableZoom = await controller.getMaxZoomLevel();
+      _minAvailableZoom = await controller.getMinZoomLevel();
     } on CameraException catch (e) {
       _showCameraException(e);
     }
@@ -314,6 +385,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         });
         if (file != null) showInSnackBar('Picture saved to ${file.path}');
       }
+    });
+  }
+
+  void onFlashModeButtonPressed(FlashMode mode) {
+    setFlashMode(mode).then((_) {
+      if (mounted) setState(() {});
+      showInSnackBar('Flash mode set to ${mode.toString().split('.').last}');
     });
   }
 
@@ -400,6 +478,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.resumeVideoRecording();
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      rethrow;
+    }
+  }
+
+  Future<void> setFlashMode(FlashMode mode) async {
+    try {
+      await controller.setFlashMode(mode);
     } on CameraException catch (e) {
       _showCameraException(e);
       rethrow;

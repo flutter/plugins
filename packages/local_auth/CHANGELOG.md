@@ -1,3 +1,11 @@
+## 1.0.0-nullsafety.2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 1.0.0-nullsafety.1
+
+* Update README for Android Integration.
+
 ## 1.0.0-nullsafety
 
 * Migrate to null safety.

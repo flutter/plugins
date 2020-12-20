@@ -76,8 +76,28 @@ static FlutterError *getFlutterError(NSError *error) {
   UIImage *image = [UIImage imageWithCGImage:[UIImage imageWithData:data].CGImage
                                        scale:1.0
                                  orientation:[self getImageRotation]];
+
   // TODO(sigurdm): Consider writing file asynchronously.
   bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:_path atomically:YES];
+  if (!success) {
+    _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
+    return;
+  }
+  _result(_path);
+}
+
+- (void)captureOutput:(AVCapturePhotoOutput *)output
+    didFinishProcessingPhoto:(AVCapturePhoto *)photo
+                       error:(NSError *)error API_AVAILABLE(ios(11.0)) {
+  selfReference = nil;
+  if (error) {
+    _result(getFlutterError(error));
+    return;
+  }
+
+  NSData *photoData = [photo fileDataRepresentation];
+
+  bool success = [photoData writeToFile:_path atomically:YES];
   if (!success) {
     _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
     return;
@@ -113,6 +133,24 @@ static FlutterError *getFlutterError(NSError *error) {
   return UIImageOrientationUp;
 }
 @end
+
+static AVCaptureFlashMode getFlashModeForString(NSString *mode) {
+  if ([mode isEqualToString:@"off"]) {
+    return AVCaptureFlashModeOff;
+  } else if ([mode isEqualToString:@"auto"]) {
+    return AVCaptureFlashModeAuto;
+  } else if ([mode isEqualToString:@"always"]) {
+    return AVCaptureFlashModeOn;
+  } else {
+    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                         code:NSURLErrorUnknown
+                                     userInfo:@{
+                                       NSLocalizedDescriptionKey : [NSString
+                                           stringWithFormat:@"Unknown flash mode %@", mode]
+                                     }];
+    @throw error;
+  }
+}
 
 // Mirrors ResolutionPreset in camera.dart
 typedef enum {
@@ -181,6 +219,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
+@property(assign, nonatomic) AVCaptureFlashMode flashMode;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
 @property(assign, nonatomic) CMTime videoTimeOffset;
@@ -211,6 +250,7 @@ NSString *const errorMethod = @"error";
   _enableAudio = enableAudio;
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
+  _flashMode = AVCaptureFlashModeAuto;
 
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
@@ -263,6 +303,7 @@ NSString *const errorMethod = @"error";
   if (_resolutionPreset == max) {
     [settings setHighResolutionPhotoEnabled:YES];
   }
+  [settings setFlashMode:_flashMode];
   NSError *error;
   NSString *path = [self getTemporaryFilePathWithExtension:@"jpg"
                                                  subfolder:@"pictures"
@@ -652,6 +693,31 @@ NSString *const errorMethod = @"error";
   result(nil);
 }
 
+- (void)setFlashModeWithResult:(FlutterResult)result mode:(NSString *)modeStr {
+  AVCaptureFlashMode mode;
+  @try {
+    mode = getFlashModeForString(modeStr);
+  } @catch (NSError *e) {
+    result(getFlutterError(e));
+    return;
+  }
+  if (!_captureDevice.hasFlash) {
+    result([FlutterError errorWithCode:@"setFlashModeFailed"
+                               message:@"Device does not have flash capabilities"
+                               details:nil]);
+    return;
+  }
+  if (![_capturePhotoOutput.supportedFlashModes
+          containsObject:[NSNumber numberWithInt:((int)mode)]]) {
+    result([FlutterError errorWithCode:@"setFlashModeFailed"
+                               message:@"Device does not support this specific flash mode"
+                               details:nil]);
+    return;
+  }
+  _flashMode = mode;
+  result(nil);
+}
+
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
   if (!_isStreamingImages) {
     FlutterEventChannel *eventChannel =
@@ -674,6 +740,60 @@ NSString *const errorMethod = @"error";
     _imageStreamHandler = nil;
   } else {
     [_methodChannel invokeMethod:errorMethod arguments:@"Images from camera are not streaming!"];
+  }
+}
+
+- (void)getMaxZoomLevelWithResult:(FlutterResult)result {
+  CGFloat maxZoomFactor = [self getMaxAvailableZoomFactor];
+
+  result([NSNumber numberWithFloat:maxZoomFactor]);
+}
+
+- (void)getMinZoomLevelWithResult:(FlutterResult)result {
+  CGFloat minZoomFactor = [self getMinAvailableZoomFactor];
+
+  result([NSNumber numberWithFloat:minZoomFactor]);
+}
+
+- (void)setZoomLevel:(CGFloat)zoom Result:(FlutterResult)result {
+  CGFloat maxAvailableZoomFactor = [self getMaxAvailableZoomFactor];
+  CGFloat minAvailableZoomFactor = [self getMinAvailableZoomFactor];
+
+  if (maxAvailableZoomFactor < zoom || minAvailableZoomFactor > zoom) {
+    NSString *errorMessage = [NSString
+        stringWithFormat:@"Zoom level out of bounds (zoom level should be between %f and %f).",
+                         minAvailableZoomFactor, maxAvailableZoomFactor];
+    FlutterError *error = [FlutterError errorWithCode:@"ZOOM_ERROR"
+                                              message:errorMessage
+                                              details:nil];
+    result(error);
+    return;
+  }
+
+  NSError *error = nil;
+  if (![_captureDevice lockForConfiguration:&error]) {
+    result(getFlutterError(error));
+    return;
+  }
+  [_captureDevice rampToVideoZoomFactor:zoom withRate:1];
+  [_captureDevice unlockForConfiguration];
+
+  result(nil);
+}
+
+- (CGFloat)getMinAvailableZoomFactor {
+  if (@available(iOS 11.0, *)) {
+    return _captureDevice.minAvailableVideoZoomFactor;
+  } else {
+    return 1.0;
+  }
+}
+
+- (CGFloat)getMaxAvailableZoomFactor {
+  if (@available(iOS 11.0, *)) {
+    return _captureDevice.maxAvailableVideoZoomFactor;
+  } else {
+    return _captureDevice.activeFormat.videoMaxZoomFactor;
   }
 }
 
@@ -910,6 +1030,15 @@ NSString *const errorMethod = @"error";
       [_camera pauseVideoRecordingWithResult:result];
     } else if ([@"resumeVideoRecording" isEqualToString:call.method]) {
       [_camera resumeVideoRecordingWithResult:result];
+    } else if ([@"getMaxZoomLevel" isEqualToString:call.method]) {
+      [_camera getMaxZoomLevelWithResult:result];
+    } else if ([@"getMinZoomLevel" isEqualToString:call.method]) {
+      [_camera getMinZoomLevelWithResult:result];
+    } else if ([@"setZoomLevel" isEqualToString:call.method]) {
+      CGFloat zoom = ((NSNumber *)argsMap[@"zoom"]).floatValue;
+      [_camera setZoomLevel:zoom Result:result];
+    } else if ([@"setFlashMode" isEqualToString:call.method]) {
+      [_camera setFlashModeWithResult:result mode:call.arguments[@"mode"]];
     } else {
       result(FlutterMethodNotImplemented);
     }
