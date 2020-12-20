@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.2
+
+* Fix `onWebResourceError` on iOS.
+
 ## 2.0.0-nullsafety.1
 
 * Added `allowsInlineMediaPlayback` property.

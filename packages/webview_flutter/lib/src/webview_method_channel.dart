@@ -48,7 +48,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
           WebResourceError(
             errorCode: call.arguments['errorCode']!,
             description: call.arguments['description']!,
-            failingUrl: call.arguments['failingUrl']!,
+            // iOS doesn't support `failingUrl`.
+            failingUrl: call.arguments['failingUrl'],
             domain: call.arguments['domain'],
             errorType: call.arguments['errorType'] == null
                 ? null
