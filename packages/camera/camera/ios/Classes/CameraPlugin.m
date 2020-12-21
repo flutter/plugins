@@ -722,53 +722,53 @@ NSString *const errorMethod = @"error";
 
 - (void)setFlashModeWithResult:(FlutterResult)result mode:(NSString *)modeStr {
   FlashMode mode;
-    @try {
-      mode = getFlashModeForString(modeStr);
-    } @catch (NSError *e) {
-      result(getFlutterError(e));
+  @try {
+    mode = getFlashModeForString(modeStr);
+  } @catch (NSError *e) {
+    result(getFlutterError(e));
+    return;
+  }
+  if (mode == FlashModeTorch) {
+    if (!_captureDevice.hasTorch) {
+      result([FlutterError errorWithCode:@"setFlashModeFailed"
+                                 message:@"Device does not support torch mode"
+                                 details:nil]);
       return;
     }
-    if (mode == FlashModeTorch) {
-      if (!_captureDevice.hasTorch) {
-        result([FlutterError errorWithCode:@"setFlashModeFailed"
-                                   message:@"Device does not support torch mode"
-                                   details:nil]);
-        return;
-      }
-      if (!_captureDevice.isTorchAvailable) {
-        result([FlutterError errorWithCode:@"setFlashModeFailed"
-                                   message:@"Torch mode is currently not available"
-                                   details:nil]);
-        return;
-      }
-      if (_captureDevice.torchMode != AVCaptureTorchModeOn) {
-        [_captureDevice lockForConfiguration:nil];
-        [_captureDevice setTorchMode:AVCaptureTorchModeOn];
-        [_captureDevice unlockForConfiguration];
-      }
-    } else {
-      if (!_captureDevice.hasFlash) {
-        result([FlutterError errorWithCode:@"setFlashModeFailed"
-                                   message:@"Device does not have flash capabilities"
-                                   details:nil]);
-        return;
-      }
-      AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFlashMode(mode);
-      if (![_capturePhotoOutput.supportedFlashModes
-              containsObject:[NSNumber numberWithInt:((int)avFlashMode)]]) {
-        result([FlutterError errorWithCode:@"setFlashModeFailed"
-                                   message:@"Device does not support this specific flash mode"
-                                   details:nil]);
-        return;
-      }
-      if (_captureDevice.torchMode != AVCaptureTorchModeOff) {
-        [_captureDevice lockForConfiguration:nil];
-        [_captureDevice setTorchMode:AVCaptureTorchModeOff];
-        [_captureDevice unlockForConfiguration];
-      }
+    if (!_captureDevice.isTorchAvailable) {
+      result([FlutterError errorWithCode:@"setFlashModeFailed"
+                                 message:@"Torch mode is currently not available"
+                                 details:nil]);
+      return;
     }
-    _flashMode = mode;
-    result(nil);
+    if (_captureDevice.torchMode != AVCaptureTorchModeOn) {
+      [_captureDevice lockForConfiguration:nil];
+      [_captureDevice setTorchMode:AVCaptureTorchModeOn];
+      [_captureDevice unlockForConfiguration];
+    }
+  } else {
+    if (!_captureDevice.hasFlash) {
+      result([FlutterError errorWithCode:@"setFlashModeFailed"
+                                 message:@"Device does not have flash capabilities"
+                                 details:nil]);
+      return;
+    }
+    AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFlashMode(mode);
+    if (![_capturePhotoOutput.supportedFlashModes
+            containsObject:[NSNumber numberWithInt:((int)avFlashMode)]]) {
+      result([FlutterError errorWithCode:@"setFlashModeFailed"
+                                 message:@"Device does not support this specific flash mode"
+                                 details:nil]);
+      return;
+    }
+    if (_captureDevice.torchMode != AVCaptureTorchModeOff) {
+      [_captureDevice lockForConfiguration:nil];
+      [_captureDevice setTorchMode:AVCaptureTorchModeOff];
+      [_captureDevice unlockForConfiguration];
+    }
+  }
+  _flashMode = mode;
+  result(nil);
 }
 
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
