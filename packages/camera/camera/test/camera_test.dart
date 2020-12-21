@@ -326,9 +326,6 @@ void main() {
     expect(cameraController.value.imageStreamImageFormat, ImageFormatGroup.jpeg);
   });
 
-  // test('imageFormat throws $CameraException when uninitialized', () {
-  //   //TODO
-  // });
 }
 
 class MockCameraPlatform extends Mock
