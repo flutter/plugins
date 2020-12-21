@@ -98,7 +98,6 @@ class CameraValue {
     String errorDescription,
     Size previewSize,
     bool isRecordingPaused,
-    ImageFormatGroup imageStreamImageFormat,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -204,9 +203,9 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
 
       value = value.copyWith(
-          isInitialized: true,
-          previewSize: await previewSize,
-          imageStreamImageFormat: imageStreamImageFormat);
+        isInitialized: true,
+        previewSize: await previewSize,
+      );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
