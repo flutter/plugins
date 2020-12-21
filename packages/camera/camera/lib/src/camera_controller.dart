@@ -96,24 +96,27 @@ class CameraValue {
   ///
   /// Explicitly specified fields get the specified value, all other fields get
   /// the same value of the current object.
-  CameraValue copyWith(
-      {bool isInitialized,
-      bool isRecordingVideo,
-      bool isTakingPicture,
-      bool isStreamingImages,
-      String errorDescription,
-      Size previewSize,
-      bool isRecordingPaused,
-      ImageFormatGroup imageStreamImageFormat}) {
+  CameraValue copyWith({
+    bool isInitialized,
+    bool isRecordingVideo,
+    bool isTakingPicture,
+    bool isStreamingImages,
+    String errorDescription,
+    Size previewSize,
+    bool isRecordingPaused,
+    ImageFormatGroup imageStreamImageFormat,
+  }) {
     return CameraValue(
-        isInitialized: isInitialized ?? this.isInitialized,
-        errorDescription: errorDescription,
-        previewSize: previewSize ?? this.previewSize,
-        isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
-        isTakingPicture: isTakingPicture ?? this.isTakingPicture,
-        isStreamingImages: isStreamingImages ?? this.isStreamingImages,
-        isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
-        imageStreamImageFormat: imageStreamImageFormat ?? this.imageStreamImageFormat);
+      isInitialized: isInitialized ?? this.isInitialized,
+      errorDescription: errorDescription,
+      previewSize: previewSize ?? this.previewSize,
+      isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
+      isTakingPicture: isTakingPicture ?? this.isTakingPicture,
+      isStreamingImages: isStreamingImages ?? this.isStreamingImages,
+      isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
+      imageStreamImageFormat:
+          imageStreamImageFormat ?? this.imageStreamImageFormat,
+    );
   }
 
   @override
@@ -205,14 +208,14 @@ class CameraController extends ValueNotifier<CameraValue> {
 
       await CameraPlatform.instance.initializeCamera(
         _cameraId,
-        imageStreamImageFormat: imageFormatGroupAsIntegerValue(imageStreamImageFormat),
+        imageStreamImageFormat:
+            imageFormatGroupAsIntegerValue(imageStreamImageFormat),
       );
 
       value = value.copyWith(
-        isInitialized: true,
-        previewSize: await previewSize,
-        imageStreamImageFormat: imageStreamImageFormat
-      );
+          isInitialized: true,
+          previewSize: await previewSize,
+          imageStreamImageFormat: imageStreamImageFormat);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
