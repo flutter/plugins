@@ -193,7 +193,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
   dispatch_queue_t _dispatchQueue;
 }
 // Format used for video and image streaming.
-FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
+FourCharCode videoFormat = kCVPixelFormatType_32BGRA;
 NSString *const errorMethod = @"error";
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
@@ -872,6 +872,8 @@ NSString *const errorMethod = @"error";
     NSDictionary *argsMap = call.arguments;
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
     if ([@"initialize" isEqualToString:call.method]) {
+    // TODO: Set actual videoFormat? Or is it possible to set an integer
+    videoFormat = ((NSNumber *)argsMap[@"imageStreamImageFormat"]).unsignedIntegerValue;
       __weak CameraPlugin *weakSelf = self;
       _camera.onFrameAvailable = ^{
         [weakSelf.registry textureFrameAvailable:cameraId];
