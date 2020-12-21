@@ -102,6 +102,7 @@ API_AVAILABLE(ios(9.0))
 
 - (BOOL)canLaunchURL:(NSString *)urlString {
   NSURL *url = [NSURL URLWithString:urlString];
+  if(!url) return NO;
   UIApplication *application = [UIApplication sharedApplication];
   return [application canOpenURL:url];
 }
@@ -110,6 +111,7 @@ API_AVAILABLE(ios(9.0))
              call:(FlutterMethodCall *)call
            result:(FlutterResult)result {
   NSURL *url = [NSURL URLWithString:urlString];
+  if(!url) return;
   UIApplication *application = [UIApplication sharedApplication];
 
   if (@available(iOS 10.0, *)) {
