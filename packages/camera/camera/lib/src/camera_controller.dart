@@ -36,7 +36,6 @@ class CameraValue {
     this.isTakingPicture,
     this.isStreamingImages,
     bool isRecordingPaused,
-    this.imageStreamImageFormat,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -87,11 +86,6 @@ class CameraValue {
   /// When true [errorDescription] describes the error.
   bool get hasError => errorDescription != null;
 
-  /// The [ImageFormatGroup] describes the output of the raw image format.
-  ///
-  /// When null the imageFormat will fallback to the platforms default
-  final ImageFormatGroup imageStreamImageFormat;
-
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
@@ -114,8 +108,6 @@ class CameraValue {
       isTakingPicture: isTakingPicture ?? this.isTakingPicture,
       isStreamingImages: isStreamingImages ?? this.isStreamingImages,
       isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
-      imageStreamImageFormat:
-          imageStreamImageFormat ?? this.imageStreamImageFormat,
     );
   }
 
@@ -126,8 +118,7 @@ class CameraValue {
         'isInitialized: $isInitialized, '
         'errorDescription: $errorDescription, '
         'previewSize: $previewSize, '
-        'isStreamingImages: $isStreamingImages, '
-        'imageStreamImageFormat: $imageStreamImageFormat)';
+        'isStreamingImages: $isStreamingImages)';
   }
 }
 

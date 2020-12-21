@@ -96,7 +96,7 @@ void main() {
       );
 
       expect(cameraValue.toString(),
-          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, imageStreamImageFormat: null)');
+          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false)');
     });
   });
 }
