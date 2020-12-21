@@ -311,21 +311,6 @@ void main() {
           )));
     });
   });
-
-  test('imageFormat can be set', () async {
-    CameraController cameraController = CameraController(
-      CameraDescription(
-          name: 'cam',
-          lensDirection: CameraLensDirection.back,
-          sensorOrientation: 90),
-      ResolutionPreset.max,
-      imageStreamImageFormat: ImageFormatGroup.jpeg,
-    );
-
-    await cameraController.initialize();
-    expect(cameraController.value.imageStreamImageFormat, ImageFormatGroup.jpeg);
-  });
-
 }
 
 class MockCameraPlatform extends Mock
