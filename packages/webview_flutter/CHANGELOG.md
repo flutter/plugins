@@ -1,6 +1,10 @@
-## 2.0.0-nullsafety.3
+## 2.0.0-nullsafety.4
 
 * Enable native double-tap to zoom, and pinch to zoom functionality on Android and default to setLoadWithOverviewMode
+
+## 2.0.0-nullsafety.3
+
+* Fix `onWebResourceError` on iOS.
 
 ## 2.0.0-nullsafety.2
 

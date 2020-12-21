@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// @dart = 2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -414,7 +416,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(true));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
 
     testWidgets('Changes to initialMediaPlaybackPolicy are ignored',
         (WidgetTester tester) async {
@@ -473,7 +475,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(false));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
 
     testWidgets('Video plays inline when allowsInlineMediaPlayback is true',
         (WidgetTester tester) async {
@@ -533,7 +535,7 @@ void main() {
 
       isFullScreen = await controller.evaluateJavascript('isFullScreen();');
       expect(isFullScreen, _webviewBool(true));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
   });
 
   group('Audio playback policy', () {
@@ -633,7 +635,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(true));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
 
     testWidgets('Changes to initialMediaPlaybackPolocy are ignored',
         (WidgetTester tester) async {
@@ -702,7 +704,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(false));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
   });
 
   testWidgets('getTitle', (WidgetTester tester) async {
