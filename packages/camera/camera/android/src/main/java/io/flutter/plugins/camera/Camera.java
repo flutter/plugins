@@ -142,6 +142,7 @@ public class Camera {
     pictureImageReader =
             ImageReader.newInstance(
                     captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+
     // Used to steam image byte data to dart side.
     imageStreamReader =
             ImageReader.newInstance(
