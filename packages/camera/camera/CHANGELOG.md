@@ -1,3 +1,7 @@
+## 0.6.3
+
+* Adds torch mode as a flash mode for Android and iOS implementations.
+
 ## 0.6.2
 
 * Add zoom support for Android and iOS implementations.

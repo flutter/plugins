@@ -4,7 +4,8 @@ package io.flutter.plugins.camera.types;
 public enum FlashMode {
   off,
   auto,
-  always;
+  always,
+  torch;
 
   public static FlashMode getValueForString(String modeStr) {
     try {
