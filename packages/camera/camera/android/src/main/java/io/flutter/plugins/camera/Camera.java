@@ -141,12 +141,12 @@ public class Camera {
   public void open(Integer imageStreamImageFormat) throws CameraAccessException {
     pictureImageReader =
         ImageReader.newInstance(
-                captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+            captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
 
     // Used to steam image byte data to dart side.
     imageStreamReader =
         ImageReader.newInstance(
-                previewSize.getWidth(), previewSize.getHeight(), imageStreamImageFormat != null? imageStreamImageFormat : ImageFormat.YUV_420_888, 2);
+            previewSize.getWidth(), previewSize.getHeight(), imageStreamImageFormat != null? imageStreamImageFormat : ImageFormat.YUV_420_888, 2);
 
     cameraManager.openCamera(
         cameraName,
