@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:cross_file/cross_file.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -75,7 +76,7 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<void> initializeCamera(int cameraId) {
+  Future<void> initializeCamera(int cameraId, {int imageStreamImageFormat}) {
     _channels.putIfAbsent(cameraId, () {
       final channel = MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
       channel.setMethodCallHandler(
@@ -93,6 +94,7 @@ class MethodChannelCamera extends CameraPlatform {
       'initialize',
       <String, dynamic>{
         'cameraId': cameraId,
+        'imageStreamImageFormat': imageStreamImageFormat,
       },
     );
 

@@ -36,6 +36,7 @@ class CameraValue {
     this.isTakingPicture,
     this.isStreamingImages,
     bool isRecordingPaused,
+    this.imageStreamImageFormat,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -86,28 +87,33 @@ class CameraValue {
   /// When true [errorDescription] describes the error.
   bool get hasError => errorDescription != null;
 
+  /// The [ImageFormatGroup] describes the output of the raw image format.
+  ///
+  /// When null the imageFormat will fallback to the platforms default
+  final ImageFormatGroup imageStreamImageFormat;
+
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
   /// the same value of the current object.
-  CameraValue copyWith({
-    bool isInitialized,
-    bool isRecordingVideo,
-    bool isTakingPicture,
-    bool isStreamingImages,
-    String errorDescription,
-    Size previewSize,
-    bool isRecordingPaused,
-  }) {
+  CameraValue copyWith(
+      {bool isInitialized,
+      bool isRecordingVideo,
+      bool isTakingPicture,
+      bool isStreamingImages,
+      String errorDescription,
+      Size previewSize,
+      bool isRecordingPaused,
+      ImageFormatGroup imageStreamImageFormat}) {
     return CameraValue(
-      isInitialized: isInitialized ?? this.isInitialized,
-      errorDescription: errorDescription,
-      previewSize: previewSize ?? this.previewSize,
-      isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
-      isTakingPicture: isTakingPicture ?? this.isTakingPicture,
-      isStreamingImages: isStreamingImages ?? this.isStreamingImages,
-      isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
-    );
+        isInitialized: isInitialized ?? this.isInitialized,
+        errorDescription: errorDescription,
+        previewSize: previewSize ?? this.previewSize,
+        isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
+        isTakingPicture: isTakingPicture ?? this.isTakingPicture,
+        isStreamingImages: isStreamingImages ?? this.isStreamingImages,
+        isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
+        imageStreamImageFormat: imageStreamImageFormat ?? this.imageStreamImageFormat);
   }
 
   @override
@@ -117,7 +123,8 @@ class CameraValue {
         'isInitialized: $isInitialized, '
         'errorDescription: $errorDescription, '
         'previewSize: $previewSize, '
-        'isStreamingImages: $isStreamingImages)';
+        'isStreamingImages: $isStreamingImages, '
+        'imageStreamImageFormat: $imageStreamImageFormat)';
   }
 }
 
@@ -134,6 +141,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
+    this.imageStreamImageFormat,
   }) : super(const CameraValue.uninitialized());
 
   /// The properties of the camera device controlled by this controller.
@@ -149,6 +157,11 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
+
+  /// The [ImageFormatGroup] describes the output of the raw image format.
+  ///
+  /// When null the imageFormat will fallback to the platforms default
+  final ImageFormatGroup imageStreamImageFormat;
 
   int _cameraId;
   bool _isDisposed = false;
@@ -190,11 +203,15 @@ class CameraController extends ValueNotifier<CameraValue> {
         );
       }).first;
 
-      await CameraPlatform.instance.initializeCamera(_cameraId);
+      await CameraPlatform.instance.initializeCamera(
+        _cameraId,
+        imageStreamImageFormat: imageFormatGroupAsIntegerValue(imageStreamImageFormat),
+      );
 
       value = value.copyWith(
         isInitialized: true,
         previewSize: await previewSize,
+        imageStreamImageFormat: imageStreamImageFormat
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);

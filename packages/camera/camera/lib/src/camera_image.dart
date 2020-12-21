@@ -65,6 +65,12 @@ enum ImageFormatGroup {
   /// On iOS, this is `kCVPixelFormatType_32BGRA`. See
   /// https://developer.apple.com/documentation/corevideo/1563591-pixel_format_identifiers/kcvpixelformattype_32bgra?language=objc
   bgra8888,
+
+  /// 32-big RGB image encoded into JPEG bytes.
+  ///
+  /// On Android, this is `android.graphics.ImageFormat.JPEG`. See
+  /// https://developer.android.com/reference/android/graphics/ImageFormat#JPEG
+  jpeg,
 }
 
 /// Describes how pixels are represented in an image.
@@ -86,9 +92,13 @@ class ImageFormat {
 
 ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
   if (defaultTargetPlatform == TargetPlatform.android) {
+    switch (rawFormat) {
     // android.graphics.ImageFormat.YUV_420_888
-    if (rawFormat == 35) {
-      return ImageFormatGroup.yuv420;
+      case 35:
+        return ImageFormatGroup.yuv420;
+    // android.graphics.ImageFormat.JPEG
+      case 256:
+        return ImageFormatGroup.jpeg;
     }
   }
 
@@ -104,6 +114,37 @@ ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
   }
 
   return ImageFormatGroup.unknown;
+}
+
+/// Converts [ImageFormatGroup] to integer definition of the raw format
+int imageFormatGroupAsIntegerValue(ImageFormatGroup imageFormatGroup) {
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    switch (imageFormatGroup) {
+      // kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+      case ImageFormatGroup.yuv420:
+        return 875704438;
+      // kCVPixelFormatType_32BGRA
+      case ImageFormatGroup.bgra8888:
+        return 1111970369;
+      case ImageFormatGroup.jpeg:
+      case ImageFormatGroup.unknown:
+        return 0;
+    }
+  } else if (defaultTargetPlatform == TargetPlatform.android) {
+    switch (imageFormatGroup) {
+    // kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+      case ImageFormatGroup.yuv420:
+        return 35;
+    // kCVPixelFormatType_32BGRA
+      case ImageFormatGroup.bgra8888:
+      case ImageFormatGroup.unknown:
+        return 0;
+      case ImageFormatGroup.jpeg:
+        return 256;
+    }
+  }
+  // unknown ImageFormatGroup or unsupported platform
+  return 0;
 }
 
 /// A single complete image buffer from the platform camera.

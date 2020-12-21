@@ -52,7 +52,7 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Initializes the camera on the device.
-  Future<void> initializeCamera(int cameraId) {
+  Future<void> initializeCamera(int cameraId, {int imageStreamImageFormat}) {
     throw UnimplementedError('initializeCamera() is not implemented.');
   }
 
