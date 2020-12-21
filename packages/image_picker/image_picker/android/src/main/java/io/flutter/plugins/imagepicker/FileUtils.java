@@ -23,8 +23,11 @@
 
 package io.flutter.plugins.imagepicker;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
+import android.webkit.MimeTypeMap;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,9 +42,12 @@ class FileUtils {
     OutputStream outputStream = null;
     boolean success = false;
     try {
-      String extension = getImageExtension(uri);
+      System.out.println("getPathFromUri: uri"+ uri.toString());
+
+      String extension = getImageExtension(context, uri);
       inputStream = context.getContentResolver().openInputStream(uri);
       file = File.createTempFile("image_picker", extension, context.getCacheDir());
+
       file.deleteOnExit();
       outputStream = new FileOutputStream(file);
       if (inputStream != null) {
@@ -67,14 +73,11 @@ class FileUtils {
   }
 
   /** @return extension of image with dot, or default .jpg if it none. */
-  private static String getImageExtension(Uri uriImage) {
+  private static String getImageExtension(Context context, Uri uriImage) {
     String extension = null;
 
     try {
-      String imagePath = uriImage.getPath();
-      if (imagePath != null && imagePath.lastIndexOf(".") != -1) {
-        extension = imagePath.substring(imagePath.lastIndexOf(".") + 1);
-      }
+      extension = getMimeType(context, uriImage);
     } catch (Exception e) {
       extension = null;
     }
@@ -85,6 +88,24 @@ class FileUtils {
     }
 
     return "." + extension;
+  }
+
+  public static String getMimeType(Context context, Uri uri) {
+    String extension;
+
+    //Check uri format to avoid null
+    if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+      //If scheme is a content
+      final MimeTypeMap mime = MimeTypeMap.getSingleton();
+      extension = mime.getExtensionFromMimeType(context.getContentResolver().getType(uri));
+    } else {
+      //If scheme is a File
+      //This will replace white spaces with %20 and also other special characters. This will avoid returning null values on file name with spaces and special characters.
+      extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(uri.getPath())).toString());
+
+    }
+
+    return extension;
   }
 
   private static void copy(InputStream in, OutputStream out) throws IOException {
