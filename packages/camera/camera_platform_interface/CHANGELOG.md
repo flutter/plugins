@@ -1,6 +1,6 @@
 ## 1.1.0
 
-- Introduces option to set ImageFormat when initializing
+- Introduces an option to set the image format when initializing.
 
 ## 1.0.4
 
