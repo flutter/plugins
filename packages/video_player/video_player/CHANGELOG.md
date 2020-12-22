@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.6
+
+* Fix `VideoPlayerValue toString()` test.
+
 ## 2.0.0-nullsafety.5
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
