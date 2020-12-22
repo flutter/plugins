@@ -2,13 +2,6 @@
 
 The web implementation of [`file_picker`][1].
 
-**Please set your constraint to `file_picker_web: '>=0.1.y+x <2.0.0'`**
-
-## Backward compatible 1.0.0 version is coming
-The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.1.y+z`.
-Please use `file_picker_web: '>=0.1.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
-For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-
 ## Usage
 
 ### Import the package
@@ -25,8 +18,8 @@ This is what the above means to your `pubspec.yaml`:
 ...
 dependencies:
   ...
-  file_picker: ^0.1.0
-  file_picker_web: ^0.1.0
+  file_picker: ^0.7.0
+  file_picker_web: ^0.7.0
   ...
 ```
 
