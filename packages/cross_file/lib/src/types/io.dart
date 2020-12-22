@@ -57,7 +57,7 @@ class XFile extends XFileBase {
   }
 
   @override
-  void saveTo(String path) async {
+  Future<void> saveTo(String path) async {
     File fileToSave = File(path);
     await fileToSave.writeAsBytes(_bytes ?? (await readAsBytes()));
     await fileToSave.create();

@@ -1,3 +1,7 @@
+## 0.6.7+19
+
+* Do not copy static field to another static field.
+
 ## 0.6.7+18
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
