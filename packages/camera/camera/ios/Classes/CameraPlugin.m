@@ -134,13 +134,23 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 @end
 
-static AVCaptureFlashMode getFlashModeForString(NSString *mode) {
+// Mirrors FlashMode in flash_mode.dart
+typedef enum {
+  FlashModeOff,
+  FlashModeAuto,
+  FlashModeAlways,
+  FlashModeTorch,
+} FlashMode;
+
+static FlashMode getFlashModeForString(NSString *mode) {
   if ([mode isEqualToString:@"off"]) {
-    return AVCaptureFlashModeOff;
+    return FlashModeOff;
   } else if ([mode isEqualToString:@"auto"]) {
-    return AVCaptureFlashModeAuto;
+    return FlashModeAuto;
   } else if ([mode isEqualToString:@"always"]) {
-    return AVCaptureFlashModeOn;
+    return FlashModeAlways;
+  } else if ([mode isEqualToString:@"torch"]) {
+    return FlashModeTorch;
   } else {
     NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
                                          code:NSURLErrorUnknown
@@ -149,6 +159,20 @@ static AVCaptureFlashMode getFlashModeForString(NSString *mode) {
                                            stringWithFormat:@"Unknown flash mode %@", mode]
                                      }];
     @throw error;
+  }
+}
+
+static AVCaptureFlashMode getAVCaptureFlashModeForFlashMode(FlashMode mode) {
+  switch (mode) {
+    case FlashModeOff:
+      return AVCaptureFlashModeOff;
+    case FlashModeAuto:
+      return AVCaptureFlashModeAuto;
+    case FlashModeAlways:
+      return AVCaptureFlashModeOn;
+    case FlashModeTorch:
+    default:
+      return -1;
   }
 }
 
@@ -219,7 +243,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
-@property(assign, nonatomic) AVCaptureFlashMode flashMode;
+@property(assign, nonatomic) FlashMode flashMode;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
 @property(assign, nonatomic) CMTime videoTimeOffset;
@@ -250,7 +274,7 @@ NSString *const errorMethod = @"error";
   _enableAudio = enableAudio;
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
-  _flashMode = AVCaptureFlashModeAuto;
+  _flashMode = FlashModeAuto;
 
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
@@ -303,7 +327,10 @@ NSString *const errorMethod = @"error";
   if (_resolutionPreset == max) {
     [settings setHighResolutionPhotoEnabled:YES];
   }
-  [settings setFlashMode:_flashMode];
+  AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFlashMode(_flashMode);
+  if (avFlashMode != -1) {
+    [settings setFlashMode:avFlashMode];
+  }
   NSError *error;
   NSString *path = [self getTemporaryFilePathWithExtension:@"jpg"
                                                  subfolder:@"pictures"
@@ -694,25 +721,51 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)setFlashModeWithResult:(FlutterResult)result mode:(NSString *)modeStr {
-  AVCaptureFlashMode mode;
+  FlashMode mode;
   @try {
     mode = getFlashModeForString(modeStr);
   } @catch (NSError *e) {
     result(getFlutterError(e));
     return;
   }
-  if (!_captureDevice.hasFlash) {
-    result([FlutterError errorWithCode:@"setFlashModeFailed"
-                               message:@"Device does not have flash capabilities"
-                               details:nil]);
-    return;
-  }
-  if (![_capturePhotoOutput.supportedFlashModes
-          containsObject:[NSNumber numberWithInt:((int)mode)]]) {
-    result([FlutterError errorWithCode:@"setFlashModeFailed"
-                               message:@"Device does not support this specific flash mode"
-                               details:nil]);
-    return;
+  if (mode == FlashModeTorch) {
+    if (!_captureDevice.hasTorch) {
+      result([FlutterError errorWithCode:@"setFlashModeFailed"
+                                 message:@"Device does not support torch mode"
+                                 details:nil]);
+      return;
+    }
+    if (!_captureDevice.isTorchAvailable) {
+      result([FlutterError errorWithCode:@"setFlashModeFailed"
+                                 message:@"Torch mode is currently not available"
+                                 details:nil]);
+      return;
+    }
+    if (_captureDevice.torchMode != AVCaptureTorchModeOn) {
+      [_captureDevice lockForConfiguration:nil];
+      [_captureDevice setTorchMode:AVCaptureTorchModeOn];
+      [_captureDevice unlockForConfiguration];
+    }
+  } else {
+    if (!_captureDevice.hasFlash) {
+      result([FlutterError errorWithCode:@"setFlashModeFailed"
+                                 message:@"Device does not have flash capabilities"
+                                 details:nil]);
+      return;
+    }
+    AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFlashMode(mode);
+    if (![_capturePhotoOutput.supportedFlashModes
+            containsObject:[NSNumber numberWithInt:((int)avFlashMode)]]) {
+      result([FlutterError errorWithCode:@"setFlashModeFailed"
+                                 message:@"Device does not support this specific flash mode"
+                                 details:nil]);
+      return;
+    }
+    if (_captureDevice.torchMode != AVCaptureTorchModeOff) {
+      [_captureDevice lockForConfiguration:nil];
+      [_captureDevice setTorchMode:AVCaptureTorchModeOff];
+      [_captureDevice unlockForConfiguration];
+    }
   }
   _flashMode = mode;
   result(nil);
@@ -852,6 +905,12 @@ NSString *const errorMethod = @"error";
 
     [_videoWriter addInput:_audioWriterInput];
     [_audioOutput setSampleBufferDelegate:self queue:_dispatchQueue];
+  }
+
+  if (_flashMode == FlashModeTorch) {
+    [self.captureDevice lockForConfiguration:nil];
+    [self.captureDevice setTorchMode:AVCaptureTorchModeOn];
+    [self.captureDevice unlockForConfiguration];
   }
 
   [_videoWriter addInput:_videoWriterInput];
