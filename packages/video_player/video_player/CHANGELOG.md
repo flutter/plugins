@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.7
+
+* Added isDurationIndefinite to support indefinite streams
+
 ## 2.0.0-nullsafety.6
 
 * Fix `VideoPlayerValue toString()` test.
