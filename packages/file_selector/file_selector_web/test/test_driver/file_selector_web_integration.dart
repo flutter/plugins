@@ -6,19 +6,21 @@
 
 import 'dart:html';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_web/file_selector_web.dart';
+import 'package:file_selector_web/src/dom_helper.dart';
 
 void main() {
   group('FileSelectorWeb', () {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+    MockDomHelper mockDomHelper;
     FileSelectorWeb plugin;
-    Element container;
 
     setUp(() {
-      container = Element.div();
-      plugin = FileSelectorWeb(container: container);
+      mockDomHelper = MockDomHelper();
+      plugin = FileSelectorWeb(domHelper: mockDomHelper);
     });
 
     group('openFile', () {
@@ -32,69 +34,20 @@ void main() {
           webWildCards: ['image/*'],
         );
 
-        final futureFile = plugin.openFile(acceptedTypeGroups: [typeGroup]);
+        when(mockDomHelper.getFilesFromInput(
+          accept: '.jpg,.jpeg,image/png,image/*',
+          multiple: false,
+        )).thenAnswer((_) async => [mockFile]);
 
-        setFilesAndTriggerChange(container, [mockFile]);
+        final file = await plugin.openFile(acceptedTypeGroups: [typeGroup]);
 
-        final file = await futureFile;
-        final input = getInput(container);
-
-        expect(input.accept, '.jpg,.jpeg,image/png,image/*');
-        expect(input.multiple, false);
         expect(file.name, mockFile.name);
         expect(await file.length(), 14);
         expect(await file.readAsString(), 'random content');
         expect(await file.lastModified(), isNotNull);
       });
     });
-
-    group('openFiles', () {
-      final mockFile = File(['123456'], 'log.txt');
-
-      testWidgets('works', (WidgetTester _) async {
-        final txts = XTypeGroup(
-          label: 'txt',
-          mimeTypes: ['file/txt'],
-        );
-
-        final jsons = XTypeGroup(
-          label: 'JSON',
-          extensions: ['json'],
-        );
-
-        final futureFiles = plugin.openFiles(acceptedTypeGroups: [txts, jsons]);
-
-        setFilesAndTriggerChange(container, [mockFile]);
-
-        final files = await futureFiles;
-        final input = getInput(container);
-
-        expect(input.accept, 'file/txt,.json');
-        expect(input.multiple, true);
-        expect(files.length, 1);
-        expect(files[0].name, 'log.txt');
-        expect(await files[0].length(), 6);
-        expect(await files[0].readAsString(), '123456');
-        expect(await files[0].lastModified(), isNotNull);
-      });
-    });
   });
 }
 
-void setFilesAndTriggerChange(Element container, List<File> files) {
-  final input = getInput(container);
-  input.files = FileListItems(files);
-  input.dispatchEvent(Event('change'));
-}
-
-FileUploadInputElement getInput(Element container) {
-  final input = container.children.first as FileUploadInputElement;
-  assert(input != null);
-  return input;
-}
-
-FileList FileListItems(List<File> files) {
-  final dt = DataTransfer();
-  files.forEach((file) => dt.items.add(file));
-  return dt.files;
-}
+class MockDomHelper extends Mock implements DomHelper {}
