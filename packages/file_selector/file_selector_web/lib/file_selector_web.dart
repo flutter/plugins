@@ -8,6 +8,7 @@ import 'package:meta/meta.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_web/src/dom_helper.dart';
+import 'package:file_selector_web/src/utils.dart';
 
 /// The web implementation of [FileSelectorPlatform].
 ///
@@ -65,52 +66,11 @@ class FileSelectorWeb extends FileSelectorPlatform {
     List<XTypeGroup> acceptedTypeGroups,
     bool multiple = false,
   }) async {
-    final accept = _acceptedTypesToString(acceptedTypeGroups);
+    final accept = acceptedTypesToString(acceptedTypeGroups);
     final List<File> files = await _domHelper.getFilesFromInput(
       accept: accept,
       multiple: multiple,
     );
-    return files.map(_convertFileToXFile).toList();
-  }
-
-  /// Convert list of XTypeGroups to a comma-separated string
-  static String _acceptedTypesToString(List<XTypeGroup> acceptedTypes) {
-    if (acceptedTypes == null) return '';
-    final List<String> allTypes = [];
-    for (final group in acceptedTypes) {
-      _assertTypeGroupIsValid(group);
-      if (group.extensions != null) {
-        allTypes.addAll(group.extensions.map(_normalizeExtension));
-      }
-      if (group.mimeTypes != null) {
-        allTypes.addAll(group.mimeTypes);
-      }
-      if (group.webWildCards != null) {
-        allTypes.addAll(group.webWildCards);
-      }
-    }
-    return allTypes.join(',');
-  }
-
-  /// Make sure that at least one of its fields is populated.
-  static void _assertTypeGroupIsValid(XTypeGroup group) {
-    assert(
-        !((group.extensions == null || group.extensions.isEmpty) &&
-            (group.mimeTypes == null || group.mimeTypes.isEmpty) &&
-            (group.webWildCards == null || group.webWildCards.isEmpty)),
-        'At least one of extensions / mimeTypes / webWildCards is required for web.');
-  }
-
-  /// Helper to convert an html.File to an XFile
-  static XFile _convertFileToXFile(File file) => XFile(
-        Url.createObjectUrl(file),
-        name: file.name,
-        length: file.size,
-        lastModified: DateTime.fromMillisecondsSinceEpoch(file.lastModified),
-      );
-
-  /// Append a dot at the beggining if it is not there png -> .png
-  static String _normalizeExtension(String ext) {
-    return ext.isNotEmpty && ext[0] != '.' ? '.' + ext : ext;
+    return files.map(convertFileToXFile).toList();
   }
 }
