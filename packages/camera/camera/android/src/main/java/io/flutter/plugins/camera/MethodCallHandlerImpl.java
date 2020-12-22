@@ -78,7 +78,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         {
           if (camera != null) {
             try {
-              camera.open(call.argument("imageStreamImageFormat"));
+              camera.open(call.argument("imageFormatGroup"));
               result.success(null);
             } catch (Exception e) {
               handleException(e, result);

@@ -6,7 +6,9 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
+import 'package:camera/utils/image_format_utils.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -82,6 +84,11 @@ void main() {
     setUpAll(() {
       CameraPlatform.instance = MockCameraPlatform();
     });
+
+    tearDown(() {
+      (CameraPlatform.instance as MockCameraPlatform).log.clear();
+    });
+
 
     test('Can be initialized', () async {
       CameraController cameraController = CameraController(
@@ -160,6 +167,26 @@ void main() {
             'bar',
           )));
       mockPlatformException = false;
+    });
+
+    test('initialize() sets imageFormat', () async {
+
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      CameraController cameraController = CameraController(
+        CameraDescription(
+            name: 'cam',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 90),
+        ResolutionPreset.max,
+        imageFormatGroup: ImageFormatGroup.yuv420,
+      );
+      await cameraController.initialize();
+
+      expect((CameraPlatform.instance as MockCameraPlatform).log.first, {
+        'method': 'initializeCamera',
+        'cameraId': 13,
+        'imageFormatGroup': imageFormatGroupAsIntegerValue(ImageFormatGroup.yuv420),
+      });
     });
 
     test('prepareForVideoRecording() calls $CameraPlatform ', () async {
@@ -316,6 +343,18 @@ void main() {
 class MockCameraPlatform extends Mock
     with MockPlatformInterfaceMixin
     implements CameraPlatform {
+  final log = <dynamic>[];
+
+  @override
+  Future<void> initializeCamera(int cameraId, {int imageFormatGroup}) {
+    log.add({
+      'method': 'initializeCamera',
+      'cameraId': cameraId,
+      'imageFormatGroup': imageFormatGroup,
+    });
+    return null;
+  }
+
   @override
   Future<List<CameraDescription>> availableCameras() =>
       Future.value(mockAvailableCameras);

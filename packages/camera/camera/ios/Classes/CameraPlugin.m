@@ -873,7 +873,7 @@ NSString *const errorMethod = @"error";
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
     if ([@"initialize" isEqualToString:call.method]) {
     // TODO: Set actual videoFormat? Or is it possible to set an integer
-    videoFormat = ((NSNumber *)argsMap[@"imageStreamImageFormat"]).unsignedIntegerValue;
+    videoFormat = ((NSNumber *)argsMap[@"imageFormatGroup"]).unsignedIntegerValue;
       __weak CameraPlugin *weakSelf = self;
       _camera.onFrameAvailable = ^{
         [weakSelf.registry textureFrameAvailable:cameraId];

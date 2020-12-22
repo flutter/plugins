@@ -10,6 +10,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../utils/image_format_utils.dart';
+
 final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
 /// Signature for a callback receiving the a camera image.
@@ -134,7 +136,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
-    this.imageStreamImageFormat,
+    this.imageFormatGroup,
   }) : super(const CameraValue.uninitialized());
 
   /// The properties of the camera device controlled by this controller.
@@ -154,7 +156,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The [ImageFormatGroup] describes the output of the raw image format.
   ///
   /// When null the imageFormat will fallback to the platforms default
-  final ImageFormatGroup imageStreamImageFormat;
+  final ImageFormatGroup imageFormatGroup;
 
   int _cameraId;
   bool _isDisposed = false;
@@ -198,8 +200,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
       await CameraPlatform.instance.initializeCamera(
         _cameraId,
-        imageStreamImageFormat:
-            imageFormatGroupAsIntegerValue(imageStreamImageFormat),
+        imageFormatGroup: imageFormatGroupAsIntegerValue(imageFormatGroup),
       );
 
       value = value.copyWith(

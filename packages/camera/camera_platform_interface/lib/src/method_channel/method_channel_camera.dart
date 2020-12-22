@@ -76,7 +76,7 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<void> initializeCamera(int cameraId, {int imageStreamImageFormat}) {
+  Future<void> initializeCamera(int cameraId, {int imageFormatGroup}) {
     _channels.putIfAbsent(cameraId, () {
       final channel = MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
       channel.setMethodCallHandler(
@@ -94,7 +94,7 @@ class MethodChannelCamera extends CameraPlatform {
       'initialize',
       <String, dynamic>{
         'cameraId': cameraId,
-        'imageStreamImageFormat': imageStreamImageFormat,
+        'imageFormatGroup': imageFormatGroup,
       },
     );
 

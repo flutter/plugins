@@ -138,15 +138,17 @@ public class Camera {
   }
 
   @SuppressLint("MissingPermission")
-  public void open(Integer imageStreamImageFormat) throws CameraAccessException {
+  public void open(Integer imageFormatGroup) throws CameraAccessException {
     pictureImageReader =
         ImageReader.newInstance(
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
 
+    imageFormatGroup = imageFormatGroup != null? imageFormatGroup : ImageFormat.YUV_420_888;
+
     // Used to steam image byte data to dart side.
     imageStreamReader =
         ImageReader.newInstance(
-            previewSize.getWidth(), previewSize.getHeight(), imageStreamImageFormat != null? imageStreamImageFormat : ImageFormat.YUV_420_888, 2);
+            previewSize.getWidth(), previewSize.getHeight(), imageFormatGroup, 2);
 
     cameraManager.openCamera(
         cameraName,
