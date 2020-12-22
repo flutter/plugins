@@ -22,6 +22,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mockito: ^4.1.1
   pedantic: ^1.8.0
   integration_test:
     path: ../../integration_test
