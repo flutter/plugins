@@ -26,7 +26,7 @@ void main() {
             methods: {
               'create': {
                 'cameraId': 1,
-                'imageFormatGroup': null,
+                'imageFormatGroup': 'UNKNOWN',
               }
             });
         final camera = MethodChannelCamera();
@@ -112,7 +112,7 @@ void main() {
             methods: {
               'create': {
                 'cameraId': 1,
-                'imageFormatGroup': null,
+                'imageFormatGroup': 'UNKNOWN',
               },
               'initialize': null
             });
@@ -136,7 +136,7 @@ void main() {
             'initialize',
             arguments: {
               'cameraId': 1,
-              'imageFormatGroup': null,
+              'imageFormatGroup': 'UNKNOWN',
             },
           ),
         ]);
