@@ -11,11 +11,11 @@ import '../battery_platform_interface.dart';
 class MethodChannelBattery extends BatteryPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  MethodChannel channel = MethodChannel('plugins.flutter.io/battery');
+  final MethodChannel channel = MethodChannel('plugins.flutter.io/battery');
 
   /// The event channel used to interact with the native platform.
   @visibleForTesting
-  EventChannel eventChannel = EventChannel('plugins.flutter.io/charging');
+  final EventChannel eventChannel = EventChannel('plugins.flutter.io/charging');
 
   /// Method channel for getting battery level.
   Future<int> batteryLevel() async {
@@ -23,15 +23,14 @@ class MethodChannelBattery extends BatteryPlatform {
   }
 
   /// Stream variable for storing battery state.
-  Stream<BatteryState> _onBatteryStateChanged;
+  late final Stream<BatteryState> _onBatteryStateChanged;
 
   /// Event channel for getting battery change state.
   Stream<BatteryState> onBatteryStateChanged() {
-    if (_onBatteryStateChanged == null) {
-      _onBatteryStateChanged = eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _parseBatteryState(event));
-    }
+    _onBatteryStateChanged = eventChannel
+        .receiveBroadcastStream()
+        .map((dynamic event) => _parseBatteryState(event));
+
     return _onBatteryStateChanged;
   }
 }
