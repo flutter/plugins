@@ -34,7 +34,7 @@ void main() {
           webWildCards: ['image/*'],
         );
 
-        when(mockDomHelper.getFilesFromInput(
+        when(mockDomHelper.getFiles(
           accept: '.jpg,.jpeg,image/png,image/*',
           multiple: false,
         )).thenAnswer((_) async => [mockFile]);
@@ -43,7 +43,7 @@ void main() {
 
         expect(file.name, mockFile.name);
         expect(await file.length(), 4);
-        expect(await file.readAsString(), 'random content');
+        expect(await file.readAsString(), '1001');
         expect(await file.lastModified(), isNotNull);
       });
     });
@@ -58,7 +58,7 @@ void main() {
           extensions: ['.txt'],
         );
 
-        when(mockDomHelper.getFilesFromInput(
+        when(mockDomHelper.getFiles(
           accept: '.txt',
           multiple: true,
         )).thenAnswer((_) async => [mockFile1, mockFile2]);

@@ -5,47 +5,44 @@ import 'package:flutter/services.dart';
 
 /// Class to manipulate the DOM with the intention of reading files from it.
 class DomHelper {
-  final FileUploadInputElement _input;
+  final _container = Element.tag('file-selector');
 
-  /// Default constructor, initializes _input (an html <input /> element).
-  DomHelper({@visibleForTesting FileUploadInputElement input})
-      : _input = input ?? FileUploadInputElement() {
+  DomHelper() {
     final body = querySelector('body');
-    final container = Element.tag('file-selector');
-    body.children.add(container);
-    container.children.add(_input);
+    body.children.add(_container);
   }
 
   /// Sets the <input /> attributes and waits for a file to be selected.
-  Future<List<File>> getFilesFromInput({
+  Future<List<File>> getFiles({
     String accept = '',
     bool multiple = false,
+    @visibleForTesting FileUploadInputElement input,
   }) {
     final Completer<List<File>> _completer = Completer();
-    StreamSubscription<Event> onChangeSubscription;
-    StreamSubscription<Event> onErrorSubscription;
 
-    _input
-      ..accept = accept
-      ..multiple = multiple;
+    _container.children.add(
+      (input ?? FileUploadInputElement())
+        ..accept = accept
+        ..multiple = multiple,
+    );
 
-    onChangeSubscription = _input.onChange.listen((_) {
-      final List<File> files = _input.files;
-      onChangeSubscription.cancel();
+    input.onChange.first.then((_) {
+      final List<File> files = input.files;
+      input.remove();
       _completer.complete(files);
     });
 
-    onErrorSubscription = _input.onError.listen((event) {
+    input.onError.first.then((event) {
       final ErrorEvent error = event;
       final platformException = PlatformException(
         code: error.type,
         message: error.message,
       );
-      onErrorSubscription.cancel();
+      input.remove();
       _completer.completeError(platformException);
     });
 
-    _input.click();
+    input.click();
 
     return _completer.future;
   }

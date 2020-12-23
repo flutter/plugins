@@ -67,7 +67,7 @@ class FileSelectorWeb extends FileSelectorPlatform {
     bool multiple = false,
   }) async {
     final accept = acceptedTypesToString(acceptedTypeGroups);
-    final List<File> files = await _domHelper.getFilesFromInput(
+    final List<File> files = await _domHelper.getFiles(
       accept: accept,
       multiple: multiple,
     );
