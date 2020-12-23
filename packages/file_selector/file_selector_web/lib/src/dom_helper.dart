@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 class DomHelper {
   final _container = Element.tag('file-selector');
 
+  ///
   DomHelper() {
     final body = querySelector('body');
     body.children.add(_container);
@@ -19,9 +20,10 @@ class DomHelper {
     @visibleForTesting FileUploadInputElement input,
   }) {
     final Completer<List<File>> _completer = Completer();
+    input = input ?? FileUploadInputElement();
 
     _container.children.add(
-      (input ?? FileUploadInputElement())
+      input
         ..accept = accept
         ..multiple = multiple,
     );
