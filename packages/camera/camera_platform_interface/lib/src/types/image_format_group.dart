@@ -34,6 +34,8 @@ enum ImageFormatGroup {
 /// Extension on [ImageFormatGroup] to stringify the enum
 extension ImageFormatGroupName on ImageFormatGroup {
   /// returns a String value for [ImageFormatGroup]
+  /// returns 'UNKNOWN' if platform is not supported
+  /// or if [ImageFormatGroup] is not supported for the platform
   String name() {
     if (defaultTargetPlatform == TargetPlatform.android) {
       switch (this) {
