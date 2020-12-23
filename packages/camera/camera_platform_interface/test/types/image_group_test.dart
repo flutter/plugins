@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:camera_platform_interface/src/types/types.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
