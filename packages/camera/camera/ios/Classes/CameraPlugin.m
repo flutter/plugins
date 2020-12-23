@@ -1001,7 +1001,7 @@ NSString *const errorMethod = @"error";
             videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
             break;
         default:
-            NSLog(@"Unsupported ImageFormatGroup, defaulting to bgra8888");
+            NSLog(@"The selected imageFormatGroup is not supported by iOS. Defaulting to brga8888");
             videoFormat = kCVPixelFormatType_32BGRA;
 
     }
