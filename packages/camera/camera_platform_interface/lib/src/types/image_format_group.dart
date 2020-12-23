@@ -34,33 +34,33 @@ enum ImageFormatGroup {
 /// Extension on [ImageFormatGroup] to stringify the enum
 extension ImageFormatGroupName on ImageFormatGroup {
   /// returns a String value for [ImageFormatGroup]
-  /// returns 'UNKNOWN' if platform is not supported
+  /// returns 'unknown' if platform is not supported
   /// or if [ImageFormatGroup] is not supported for the platform
   String name() {
     if (defaultTargetPlatform == TargetPlatform.android) {
       switch (this) {
         case ImageFormatGroup.jpeg:
-          return 'JPEG';
+          return 'jpeg';
         case ImageFormatGroup.yuv420:
-          return 'YUV420';
+          return 'yuv420';
         case ImageFormatGroup.bgra8888:
         case ImageFormatGroup.unknown:
         default:
-          return 'UNKNOWN';
+          return 'unknown';
       }
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       switch (this) {
         case ImageFormatGroup.bgra8888:
-          return 'BGRA888';
+          return 'bgra8888';
         case ImageFormatGroup.yuv420:
-          return 'YUV420';
+          return 'yuv420';
         case ImageFormatGroup.jpeg:
         case ImageFormatGroup.unknown:
         default:
-          return 'UNKNOWN';
+          return 'unknown';
       }
     }
     // unsupported platform
-    return 'UNKNOWN';
+    return 'unknown';
   }
 }
