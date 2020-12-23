@@ -24,7 +24,7 @@ void main() {
     });
 
     group('openFile', () {
-      final mockFile = File(['random content'], 'image.png');
+      final mockFile = File(['1001'], 'identity.png');
 
       testWidgets('works', (WidgetTester _) async {
         final typeGroup = XTypeGroup(
@@ -42,9 +42,40 @@ void main() {
         final file = await plugin.openFile(acceptedTypeGroups: [typeGroup]);
 
         expect(file.name, mockFile.name);
-        expect(await file.length(), 14);
+        expect(await file.length(), 4);
         expect(await file.readAsString(), 'random content');
         expect(await file.lastModified(), isNotNull);
+      });
+    });
+
+    group('openFiles', () {
+      final mockFile1 = File(['123456'], 'file1.txt');
+      final mockFile2 = File([''], 'file2.txt');
+
+      testWidgets('works', (WidgetTester _) async {
+        final typeGroup = XTypeGroup(
+          label: 'files',
+          extensions: ['.txt'],
+        );
+
+        when(mockDomHelper.getFilesFromInput(
+          accept: '.txt',
+          multiple: true,
+        )).thenAnswer((_) async => [mockFile1, mockFile2]);
+
+        final files = await plugin.openFiles(acceptedTypeGroups: [typeGroup]);
+
+        expect(files.length, 2);
+
+        expect(files[0].name, mockFile1.name);
+        expect(await files[0].length(), 6);
+        expect(await files[0].readAsString(), '123456');
+        expect(await files[0].lastModified(), isNotNull);
+
+        expect(files[1].name, mockFile2.name);
+        expect(await files[1].length(), 0);
+        expect(await files[1].readAsString(), '');
+        expect(await files[1].lastModified(), isNotNull);
       });
     });
   });
