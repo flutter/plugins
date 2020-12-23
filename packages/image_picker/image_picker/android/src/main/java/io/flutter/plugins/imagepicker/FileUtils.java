@@ -42,8 +42,6 @@ class FileUtils {
     OutputStream outputStream = null;
     boolean success = false;
     try {
-      System.out.println("getPathFromUri: uri"+ uri.toString());
-
       String extension = getImageExtension(context, uri);
       inputStream = context.getContentResolver().openInputStream(uri);
       file = File.createTempFile("image_picker", extension, context.getCacheDir());
