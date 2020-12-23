@@ -992,15 +992,16 @@ NSString *const errorMethod = @"error";
     NSDictionary *argsMap = call.arguments;
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
     if ([@"initialize" isEqualToString:call.method]) {
-    int videoFormatValue = ((NSNumber *)argsMap[@"imageFormatGroup"]).unsignedIntegerValue;
+    NSString *videoFormatValue = ((NSString *)argsMap[@"imageFormatGroup"]);
     switch (videoFormatValue) {
-        case 1111970369:
+        case "bgra8888":
             videoFormat = kCVPixelFormatType_32BGRA;
             break;
-        case 875704438:
+        case "yuv420":
             videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
             break;
         default:
+            NSLog(@"Unsupported ImageFormatGroup, defaulting to bgra8888");
             videoFormat = kCVPixelFormatType_32BGRA;
 
     }
