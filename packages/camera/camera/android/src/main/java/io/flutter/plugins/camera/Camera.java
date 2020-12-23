@@ -141,8 +141,8 @@ public class Camera {
   public void open(String imageFormatGroup) throws CameraAccessException {
     HashMap<String, Integer> imageFormatMap = new HashMap<>();
     // Current supported outputs
-    imageFormatMap.put("YUV420", 35);
-    imageFormatMap.put("JPEG", 256);
+    imageFormatMap.put("yuv420", 35);
+    imageFormatMap.put("jpeg", 256);
 
     pictureImageReader =
         ImageReader.newInstance(
