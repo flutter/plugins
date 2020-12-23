@@ -149,7 +149,6 @@ public class Camera {
         ImageReader.newInstance(
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
 
-
     Integer imageFormat = imageFormatMap.get(imageFormatGroup);
     if (imageFormat == null) imageFormat = ImageFormat.YUV_420_888;
 

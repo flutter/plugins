@@ -10,8 +10,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../utils/image_format_utils.dart';
-
 final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
 /// Signature for a callback receiving the a camera image.
@@ -208,7 +206,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
       await CameraPlatform.instance.initializeCamera(
         _cameraId,
-        imageFormatGroup: imageFormatGroupAsIntegerValue(imageFormatGroup),
+        imageFormatGroup: imageFormatGroup,
       );
 
       value = value.copyWith(

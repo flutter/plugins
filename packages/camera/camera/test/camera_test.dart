@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
-import 'package:camera/utils/image_format_utils.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -84,11 +83,6 @@ void main() {
     setUpAll(() {
       CameraPlatform.instance = MockCameraPlatform();
     });
-
-    tearDown(() {
-      (CameraPlatform.instance as MockCameraPlatform).log.clear();
-    });
-
 
     test('Can be initialized', () async {
       CameraController cameraController = CameraController(
@@ -170,7 +164,6 @@ void main() {
     });
 
     test('initialize() sets imageFormat', () async {
-
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       CameraController cameraController = CameraController(
         CameraDescription(
@@ -181,12 +174,9 @@ void main() {
         imageFormatGroup: ImageFormatGroup.yuv420,
       );
       await cameraController.initialize();
-
-      expect((CameraPlatform.instance as MockCameraPlatform).log.first, {
-        'method': 'initializeCamera',
-        'cameraId': 13,
-        'imageFormatGroup': imageFormatGroupAsIntegerValue(ImageFormatGroup.yuv420),
-      });
+      verify(CameraPlatform.instance
+              .initializeCamera(13, imageFormatGroup: ImageFormatGroup.yuv420))
+          .called(1);
     });
 
     test('prepareForVideoRecording() calls $CameraPlatform ', () async {
@@ -636,17 +626,9 @@ void main() {
 class MockCameraPlatform extends Mock
     with MockPlatformInterfaceMixin
     implements CameraPlatform {
-  final log = <dynamic>[];
-
   @override
-  Future<void> initializeCamera(int cameraId, {int imageFormatGroup}) {
-    log.add({
-      'method': 'initializeCamera',
-      'cameraId': cameraId,
-      'imageFormatGroup': imageFormatGroup,
-    });
-    return null;
-  }
+  Future<void> initializeCamera(int cameraId,
+      {ImageFormatGroup imageFormatGroup});
 
   @override
   Future<List<CameraDescription>> availableCameras() =>
