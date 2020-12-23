@@ -1,4 +1,4 @@
-// TODO:(bmparr) Turn [ImageFormatGroup] to a class with int values.
+import 'package:flutter/foundation.dart';
 
 /// Group of image formats that are comparable across Android and iOS platforms.
 enum ImageFormatGroup {
@@ -35,17 +35,30 @@ enum ImageFormatGroup {
 extension ImageFormatGroupName on ImageFormatGroup {
   /// returns a String value for [ImageFormatGroup]
   String name() {
-    switch (this) {
-      case ImageFormatGroup.jpeg:
-        return 'JPEG';
-      case ImageFormatGroup.yuv420:
-        return 'YUV420';
-      case ImageFormatGroup.bgra8888:
-        return 'BGRA888';
-      case ImageFormatGroup.unknown:
-        return 'UNKNOWN';
-      default:
-        return 'UNKNOWN';
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      switch (this) {
+        case ImageFormatGroup.jpeg:
+          return 'JPEG';
+        case ImageFormatGroup.yuv420:
+          return 'YUV420';
+        case ImageFormatGroup.bgra8888:
+        case ImageFormatGroup.unknown:
+        default:
+          return 'UNKNOWN';
+      }
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      switch (this) {
+        case ImageFormatGroup.bgra8888:
+          return 'BGRA888';
+        case ImageFormatGroup.yuv420:
+          return 'YUV420';
+        case ImageFormatGroup.jpeg:
+        case ImageFormatGroup.unknown:
+        default:
+          return 'UNKNOWN';
+      }
     }
+    // unsupported platform
+    return 'UNKNOWN';
   }
 }
