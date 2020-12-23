@@ -33,6 +33,8 @@ import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
@@ -137,17 +139,28 @@ public class Camera {
   }
 
   @SuppressLint("MissingPermission")
-  public void open(Integer imageFormatGroup) throws CameraAccessException {
+  public void open(String imageFormatGroup) throws CameraAccessException {
+    Integer imageFormat;
+    HashMap<String, Integer> imageFormatMap = new HashMap<>();
+    // Current supported outputs
+    imageFormatMap.put("YUV420", 35);
+    imageFormatMap.put("JPEG", 256);
+
     pictureImageReader =
         ImageReader.newInstance(
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
 
-    imageFormatGroup = imageFormatGroup != null? imageFormatGroup : ImageFormat.YUV_420_888;
+    if (VERSION.SDK_INT >= VERSION_CODES.N){
+      imageFormat = imageFormatMap.getOrDefault(imageFormatGroup, ImageFormat.YUV_420_888);
+    } else {
+      imageFormat = imageFormatMap.get(imageFormatGroup);
+      if (imageFormat == null) imageFormat = ImageFormat.YUV_420_888;
+    }
 
     // Used to steam image byte data to dart side.
     imageStreamReader =
         ImageReader.newInstance(
-            previewSize.getWidth(), previewSize.getHeight(), imageFormatGroup, 2);
+            previewSize.getWidth(), previewSize.getHeight(), imageFormat, 2);
 
     cameraManager.openCamera(
         cameraName,
