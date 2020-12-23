@@ -140,7 +140,6 @@ public class Camera {
 
   @SuppressLint("MissingPermission")
   public void open(String imageFormatGroup) throws CameraAccessException {
-    Integer imageFormat;
     HashMap<String, Integer> imageFormatMap = new HashMap<>();
     // Current supported outputs
     imageFormatMap.put("YUV420", 35);
@@ -150,12 +149,9 @@ public class Camera {
         ImageReader.newInstance(
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
 
-    if (VERSION.SDK_INT >= VERSION_CODES.N){
-      imageFormat = imageFormatMap.getOrDefault(imageFormatGroup, ImageFormat.YUV_420_888);
-    } else {
-      imageFormat = imageFormatMap.get(imageFormatGroup);
-      if (imageFormat == null) imageFormat = ImageFormat.YUV_420_888;
-    }
+
+    Integer imageFormat = imageFormatMap.get(imageFormatGroup);
+    if (imageFormat == null) imageFormat = ImageFormat.YUV_420_888;
 
     // Used to steam image byte data to dart side.
     imageStreamReader =
