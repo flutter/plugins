@@ -993,17 +993,13 @@ NSString *const errorMethod = @"error";
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
     if ([@"initialize" isEqualToString:call.method]) {
     NSString *videoFormatValue = ((NSString *)argsMap[@"imageFormatGroup"]);
-    switch (videoFormatValue) {
-        case "bgra8888":
-            videoFormat = kCVPixelFormatType_32BGRA;
-            break;
-        case "yuv420":
-            videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
-            break;
-        default:
-            NSLog(@"The selected imageFormatGroup is not supported by iOS. Defaulting to brga8888");
-            videoFormat = kCVPixelFormatType_32BGRA;
-
+    if ([videoFormatValue isEqualToString:@"bgra8888"]) {
+        videoFormat = kCVPixelFormatType_32BGRA;
+    } else if ([videoFormatValue isEqualToString:@"yuv420"]) {
+        videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+    } else {
+        NSLog(@"The selected imageFormatGroup is not supported by iOS. Defaulting to brga8888");
+        videoFormat = kCVPixelFormatType_32BGRA;
     }
       __weak CameraPlugin *weakSelf = self;
       _camera.onFrameAvailable = ^{
