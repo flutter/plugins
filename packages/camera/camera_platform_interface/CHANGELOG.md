@@ -1,6 +1,6 @@
 ## 1.1.0
 
-- Added maxVideoDuration to startVideoRecording for implementation of a limitation to the duration of a video recording
+- Added an optional `maxVideoDuration` parameter to the `startVideoRecording` method, which allows implementations to limit the duration of a video recording.
 
 ## 1.0.4
 
