@@ -80,6 +80,7 @@ public class Camera {
   private int currentOrientation = ORIENTATION_UNKNOWN;
   private FlashMode flashMode;
   private PictureCaptureRequest pictureCaptureRequest;
+  private static HashMap<String, Integer> supportedImageFormats;
 
   public Camera(
       final Activity activity,
@@ -125,6 +126,12 @@ public class Camera {
         new CameraZoom(
             characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE),
             characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM));
+    supportedImageFormats = new HashMap<>();
+    // Current supported outputs
+    {
+      supportedImageFormats.put("yuv420", 35);
+      supportedImageFormats.put("jpeg", 256);
+    };
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
@@ -141,16 +148,11 @@ public class Camera {
 
   @SuppressLint("MissingPermission")
   public void open(String imageFormatGroup) throws CameraAccessException {
-    HashMap<String, Integer> imageFormatMap = new HashMap<>();
-    // Current supported outputs
-    imageFormatMap.put("yuv420", 35);
-    imageFormatMap.put("jpeg", 256);
-
     pictureImageReader =
         ImageReader.newInstance(
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
 
-    Integer imageFormat = imageFormatMap.get(imageFormatGroup);
+    Integer imageFormat = supportedImageFormats.get(imageFormatGroup);
     if (imageFormat == null) {
       Log.w(TAG,
               "The selected imageFormatGroup is not supported by Android. Defaulting to yuv420");
