@@ -411,12 +411,13 @@ void main() {
         expect(channel.log, <Matcher>[
           isMethodCall('startVideoRecording', arguments: {
             'cameraId': cameraId,
-              'maxVideoDuration': null,
+            'maxVideoDuration': null,
           }),
         ]);
       });
 
-      test('Should pass maxVideoDuration when starting recording a video', () async {
+      test('Should pass maxVideoDuration when starting recording a video',
+          () async {
         // Arrange
         MethodChannelMock channel = MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
@@ -431,10 +432,8 @@ void main() {
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('startVideoRecording', arguments: {
-            'cameraId': cameraId,
-            'maxVideoDuration': 10000
-          }),
+          isMethodCall('startVideoRecording',
+              arguments: {'cameraId': cameraId, 'maxVideoDuration': 10000}),
         ]);
       });
 
