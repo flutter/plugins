@@ -1,3 +1,11 @@
+## 2.0.0-nullsafety.3
+
+* Fix `onWebResourceError` on iOS.
+
+## 2.0.0-nullsafety.2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
 ## 2.0.0-nullsafety.1
 
 * Added `allowsInlineMediaPlayback` property.
