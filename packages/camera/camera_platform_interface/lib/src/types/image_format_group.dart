@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 /// Group of image formats that are comparable across Android and iOS platforms.
 enum ImageFormatGroup {
   /// The image format does not fit into any specific group.
@@ -37,30 +35,16 @@ extension ImageFormatGroupName on ImageFormatGroup {
   /// returns 'unknown' if platform is not supported
   /// or if [ImageFormatGroup] is not supported for the platform
   String name() {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      switch (this) {
-        case ImageFormatGroup.jpeg:
-          return 'jpeg';
-        case ImageFormatGroup.yuv420:
-          return 'yuv420';
-        case ImageFormatGroup.bgra8888:
-        case ImageFormatGroup.unknown:
-        default:
-          return 'unknown';
-      }
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      switch (this) {
-        case ImageFormatGroup.bgra8888:
-          return 'bgra8888';
-        case ImageFormatGroup.yuv420:
-          return 'yuv420';
-        case ImageFormatGroup.jpeg:
-        case ImageFormatGroup.unknown:
-        default:
-          return 'unknown';
-      }
+    switch (this) {
+      case ImageFormatGroup.bgra8888:
+        return 'bgra8888';
+      case ImageFormatGroup.yuv420:
+        return 'yuv420';
+      case ImageFormatGroup.jpeg:
+        return 'jpeg';
+      case ImageFormatGroup.unknown:
+      default:
+        return 'unknown';
     }
-    // unsupported platform
-    return 'unknown';
   }
 }
