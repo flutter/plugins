@@ -161,7 +161,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// The [ImageFormatGroup] describes the output of the raw image format.
   ///
-  /// When null the imageFormat will fallback to the platforms default
+  /// When null the imageFormat will fallback to the platforms default.
   final ImageFormatGroup imageFormatGroup;
 
   int _cameraId;
