@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Added maxVideoDuration to startVideoRecording for implementation of a limitation to the duration of a video recording
+
 ## 1.0.4
 
 - Added the torch option to the FlashMode enum, which when implemented indicates the flash light should be turned on continuously.
