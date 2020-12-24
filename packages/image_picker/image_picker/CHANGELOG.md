@@ -1,3 +1,7 @@
+## 0.6.7+20
+
+* iOS: fix `'UIAlertView' is deprecated: first deprecated in iOS 9.0`
+
 ## 0.6.7+19
 
 * Do not copy static field to another static field.
