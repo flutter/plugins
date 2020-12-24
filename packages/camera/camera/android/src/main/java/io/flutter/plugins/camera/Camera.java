@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCaptureSession.CaptureCallback;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
@@ -603,11 +604,55 @@ public class Camera {
             result.error("setFlashModeFailed", "Device does not have flash capabilities", null);
             return;
         }
-        // Get flash
-        this.flashMode = mode;
-        initPreviewCaptureBuilder();
-        this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), pictureCaptureCallback, null);
-        result.success(null);
+
+        // If switching directly from torch to auto or on, make sure we turn off the torch.
+        if (flashMode == FlashMode.torch && mode != FlashMode.torch && mode != FlashMode.off) {
+          this.flashMode = FlashMode.off;
+          initPreviewCaptureBuilder();
+          this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(),
+              new CaptureCallback() {
+                private boolean isFinished = false;
+
+                @Override
+                public void onCaptureCompleted(@NonNull CameraCaptureSession session,
+                    @NonNull CaptureRequest request, @NonNull TotalCaptureResult captureResult) {
+                  if (isFinished) {
+                    return;
+                  }
+
+                  updateFlash(mode);
+                  result.success(null);
+                  isFinished = true;
+                }
+
+                @Override
+                public void onCaptureFailed(@NonNull CameraCaptureSession session,
+                    @NonNull CaptureRequest request, @NonNull CaptureFailure failure) {
+                  if (isFinished) {
+                    return;
+                  }
+
+                  result.error("setFlashModeFailed", "Could not set flash mode.", null);
+                  isFinished = true;
+                }
+              }, null);
+        } else {
+          updateFlash(mode);
+          result.success(null);
+        }
+
+    }
+
+    private void updateFlash(FlashMode mode) {
+      // Get flash
+      flashMode = mode;
+      initPreviewCaptureBuilder();
+      try {
+        cameraCaptureSession.setRepeatingRequest(
+            captureRequestBuilder.build(), pictureCaptureCallback, null);
+      } catch (CameraAccessException e) {
+        pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
+      }
     }
 
     private void initPreviewCaptureBuilder() {
