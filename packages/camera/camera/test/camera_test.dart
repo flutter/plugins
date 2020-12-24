@@ -641,7 +641,8 @@ class MockCameraPlatform extends Mock
       : Future.value(mockTakePicture);
 
   @override
-  Future<XFile> startVideoRecording(int cameraId) =>
+  Future<XFile> startVideoRecording(int cameraId,
+          {Duration maxVideoDuration}) =>
       Future.value(mockVideoRecordingXFile);
 }
 

@@ -21,6 +21,7 @@ public class MediaRecorderBuilder {
 
   private boolean enableAudio;
   private int mediaOrientation;
+  private int maxVideoDuration;
 
   public MediaRecorderBuilder(
       @NonNull CamcorderProfile recordingProfile, @NonNull String outputFilePath) {
@@ -46,6 +47,11 @@ public class MediaRecorderBuilder {
     return this;
   }
 
+  public MediaRecorderBuilder setMaxVideoDuration(int maxVideoDuration) {
+    this.maxVideoDuration = maxVideoDuration;
+    return this;
+  }
+
   public MediaRecorder build() throws IOException {
     MediaRecorder mediaRecorder = recorderFactory.makeMediaRecorder();
 
@@ -65,6 +71,8 @@ public class MediaRecorderBuilder {
     mediaRecorder.setVideoSize(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     mediaRecorder.setOutputFile(outputFilePath);
     mediaRecorder.setOrientationHint(this.mediaOrientation);
+
+    mediaRecorder.setMaxDuration(maxVideoDuration);
 
     mediaRecorder.prepare();
 

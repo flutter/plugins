@@ -124,7 +124,7 @@ public class Camera {
             characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM));
   }
 
-  private void prepareMediaRecorder(String outputFilePath) throws IOException {
+  private void prepareMediaRecorder(String outputFilePath, int maxVideoDuration) throws IOException {
     if (mediaRecorder != null) {
       mediaRecorder.release();
     }
@@ -133,6 +133,7 @@ public class Camera {
         new MediaRecorderBuilder(recordingProfile, outputFilePath)
             .setEnableAudio(enableAudio)
             .setMediaOrientation(getMediaOrientation())
+            .setMaxVideoDuration(maxVideoDuration)
             .build();
   }
 
@@ -430,7 +431,7 @@ public class Camera {
     cameraDevice.createCaptureSession(surfaces, callback, null);
   }
 
-  public void startVideoRecording(Result result) {
+  public void startVideoRecording(Result result, Integer maxVideoDuration) {
     final File outputDir = applicationContext.getCacheDir();
     try {
       videoRecordingFile = File.createTempFile("REC", ".mp4", outputDir);
@@ -440,7 +441,7 @@ public class Camera {
     }
 
     try {
-      prepareMediaRecorder(videoRecordingFile.getAbsolutePath());
+      prepareMediaRecorder(videoRecordingFile.getAbsolutePath(), maxVideoDuration);
       recordingVideo = true;
       createCaptureSession(
           CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());

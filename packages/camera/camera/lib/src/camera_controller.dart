@@ -360,7 +360,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
-  Future<void> startVideoRecording() async {
+  Future<void> startVideoRecording({Duration maxVideoDuration}) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -381,7 +381,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      await CameraPlatform.instance.startVideoRecording(_cameraId);
+      await CameraPlatform.instance
+          .startVideoRecording(_cameraId, maxVideoDuration: maxVideoDuration);
       value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
