@@ -23,15 +23,17 @@ class MethodChannelBattery extends BatteryPlatform {
   }
 
   /// Stream variable for storing battery state.
-  late final Stream<BatteryState> _onBatteryStateChanged;
+  Stream<BatteryState>? _onBatteryStateChanged;
 
   /// Event channel for getting battery change state.
   Stream<BatteryState> onBatteryStateChanged() {
-    _onBatteryStateChanged = eventChannel
-        .receiveBroadcastStream()
-        .map((dynamic event) => _parseBatteryState(event));
+    if (_onBatteryStateChanged == null) {
+      _onBatteryStateChanged = eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic event) => _parseBatteryState(event));
+    }
 
-    return _onBatteryStateChanged;
+    return _onBatteryStateChanged!;
   }
 }
 
