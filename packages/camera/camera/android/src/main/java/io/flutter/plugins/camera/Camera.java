@@ -29,12 +29,14 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.util.Log;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugins.camera.PictureCaptureRequest.State;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
 import io.flutter.plugins.camera.types.FlashMode;
 import io.flutter.plugins.camera.types.ResolutionPreset;
@@ -240,6 +242,9 @@ public class Camera {
             ByteBuffer buffer = image.getPlanes()[0].getBuffer();
             writeToFile(buffer, file);
             pictureCaptureRequest.finish(file.getAbsolutePath());
+            cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), pictureCaptureCallback, null);
+          } catch (CameraAccessException e ) {
+            pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
           } catch (IOException e) {
             pictureCaptureRequest.error("IOError", "Failed saving image", null);
           }
@@ -256,18 +261,13 @@ public class Camera {
             @NonNull CameraCaptureSession session,
             @NonNull CaptureRequest request,
             @NonNull TotalCaptureResult result) {
-          assert (pictureCaptureRequest != null);
-          switch (pictureCaptureRequest.getState()) {
-            case awaitingPreCapture:
-              Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-              // Some devices might return null here, in which case we will also continue.
-              if (aeState == null
-                  || aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED
-                  || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
-                runPictureCapture();
-              }
-              break;
-          }
+          processCapture(result);
+        }
+
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session,
+            @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
+          processCapture(partialResult);
         }
 
         @Override
@@ -289,11 +289,35 @@ public class Camera {
           }
           pictureCaptureRequest.error("captureFailure", reason, null);
         }
+
+        private void processCapture(CaptureResult result) {
+          if (pictureCaptureRequest == null) {
+            return;
+          }
+
+          Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+          switch (pictureCaptureRequest.getState()) {
+            case preCapture:
+              // Some devices might return null here, in which case we will also continue.
+              if (aeState == null
+                  || aeState == CaptureRequest.CONTROL_AE_STATE_PRECAPTURE
+                  || aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED
+                  || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
+                pictureCaptureRequest.setState(State.waitingPreCaptureReady);
+              }
+              break;
+            case waitingPreCaptureReady:
+              if (aeState == null
+                  || aeState != CaptureRequest.CONTROL_AE_STATE_PRECAPTURE) {
+                runPictureCapture();
+              }
+          }
+        }
       };
 
   private void runPicturePreCapture() {
     assert (pictureCaptureRequest != null);
-    pictureCaptureRequest.setState(PictureCaptureRequest.State.awaitingPreCapture);
+    pictureCaptureRequest.setState(PictureCaptureRequest.State.preCapture);
 
     captureRequestBuilder.set(
         CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
@@ -331,7 +355,8 @@ public class Camera {
               CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
           break;
       }
-      cameraCaptureSession.capture(captureBuilder.build(), pictureCaptureCallback, null);
+      cameraCaptureSession.stopRepeating();
+      cameraCaptureSession.capture(captureBuilder.build(), null, null);
     } catch (CameraAccessException e) {
       pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
     }
@@ -377,7 +402,7 @@ public class Camera {
               }
               cameraCaptureSession = session;
               initPreviewCaptureBuilder();
-              cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+              cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), pictureCaptureCallback, null);
               if (onSuccessCallback != null) {
                 onSuccessCallback.run();
               }
@@ -534,7 +559,7 @@ public class Camera {
     // Get flash
     this.flashMode = mode;
     initPreviewCaptureBuilder();
-    this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+    this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), pictureCaptureCallback, null);
     result.success(null);
   }
 
