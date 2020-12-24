@@ -16,6 +16,10 @@ public class FlashModeTest {
         "Returns FlashMode.always for 'always'",
         FlashMode.getValueForString("always"),
         FlashMode.always);
+    assertEquals(
+        "Returns FlashMode.torch for 'torch'",
+        FlashMode.getValueForString("torch"),
+        FlashMode.torch);
   }
 
   @Test

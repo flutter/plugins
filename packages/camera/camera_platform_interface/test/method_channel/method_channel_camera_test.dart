@@ -485,12 +485,15 @@ void main() {
         );
 
         // Act
+        await camera.setFlashMode(cameraId, FlashMode.torch);
         await camera.setFlashMode(cameraId, FlashMode.always);
         await camera.setFlashMode(cameraId, FlashMode.auto);
         await camera.setFlashMode(cameraId, FlashMode.off);
 
         // Assert
         expect(channel.log, <Matcher>[
+          isMethodCall('setFlashMode',
+              arguments: {'cameraId': cameraId, 'mode': 'torch'}),
           isMethodCall('setFlashMode',
               arguments: {'cameraId': cameraId, 'mode': 'always'}),
           isMethodCall('setFlashMode',

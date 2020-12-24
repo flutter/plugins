@@ -549,7 +549,6 @@ public class Camera {
       return;
     }
     // Get flash
-
     this.flashMode = mode;
     initPreviewCaptureBuilder();
     this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
@@ -570,10 +569,15 @@ public class Camera {
         captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
         break;
       case always:
-      default:
         captureRequestBuilder.set(
             CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
         captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+        break;
+      case torch:
+      default:
+        captureRequestBuilder.set(
+            CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
         break;
     }
   }
