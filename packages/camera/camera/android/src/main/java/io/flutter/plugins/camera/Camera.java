@@ -247,9 +247,6 @@ public class Camera {
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                         writeToFile(buffer, file);
                         pictureCaptureRequest.finish(file.getAbsolutePath());
-                        cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), pictureCaptureCallback, null);
-                    } catch (CameraAccessException e) {
-                        pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
                     } catch (IOException e) {
                         pictureCaptureRequest.error("IOError", "Failed saving image", null);
                     }
@@ -343,9 +340,6 @@ public class Camera {
                 CaptureRequest.CONTROL_AF_TRIGGER_START);
         try {
             cameraCaptureSession.capture(captureRequestBuilder.build(), pictureCaptureCallback, null);
-            captureRequestBuilder.set(
-                    CaptureRequest.CONTROL_AF_TRIGGER,
-                    CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
         } catch (CameraAccessException e) {
             pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
         }
@@ -392,7 +386,22 @@ public class Camera {
                     break;
             }
             cameraCaptureSession.stopRepeating();
-            cameraCaptureSession.capture(captureBuilder.build(), null, null);
+            cameraCaptureSession.capture(captureBuilder.build(), new CameraCaptureSession.CaptureCallback() {
+                @Override
+                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                    captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+                    initPreviewCaptureBuilder();
+                    try {
+                        cameraCaptureSession.capture(captureRequestBuilder.build(), null, null);
+                    } catch (CameraAccessException ignored) { }
+                    captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
+                    try {
+                        cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), pictureCaptureCallback, null);
+                    } catch (CameraAccessException e) {
+                        pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
+                    }
+                }
+            }, null);
         } catch (CameraAccessException e) {
             pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
         }
