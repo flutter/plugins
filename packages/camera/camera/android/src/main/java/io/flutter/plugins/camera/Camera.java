@@ -470,8 +470,6 @@ public class Camera {
                 onSuccessCallback.run();
               }
             } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
-              e.printStackTrace();
-              Log.d("WOOPS", e.getMessage());
               dartMessenger.sendCameraErrorEvent(e.getMessage());
             }
           }
