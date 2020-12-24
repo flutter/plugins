@@ -184,6 +184,7 @@ static AVCaptureFlashMode getAVCaptureFlashModeForFlashMode(FlashMode mode) {
     case FlashModeTorch:
     default:
       return -1;
+  }
 }
 
 // Mirrors ResolutionPreset in camera.dart
