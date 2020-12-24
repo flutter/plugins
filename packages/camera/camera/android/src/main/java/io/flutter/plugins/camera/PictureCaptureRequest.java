@@ -1,6 +1,5 @@
 package io.flutter.plugins.camera;
 
-import android.util.Log;
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.MethodChannel;
 
