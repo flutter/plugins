@@ -25,7 +25,6 @@ class PictureCaptureRequest {
   }
 
   public void setState(State state) {
-    Log.d("PictureCaptureRequest", "State changed to: " + state.toString());
     if (isFinished()) throw new IllegalStateException("Request has already been finished");
     this.state = state;
   }
