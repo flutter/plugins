@@ -1,4 +1,4 @@
-## 0.6.4
+## 0.6.3+1
 
 * Fixes flash & torch modes not working on some Android devices.
 
