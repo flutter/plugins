@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Added interface to support automatic exposure.
+
 ## 1.0.4
 
 - Added the torch option to the FlashMode enum, which when implemented indicates the flash light should be turned on continuously.

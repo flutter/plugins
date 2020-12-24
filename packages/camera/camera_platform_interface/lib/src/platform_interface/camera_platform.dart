@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
+import 'package:camera_platform_interface/src/types/exposure_mode.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -113,6 +115,48 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('setFlashMode() is not implemented.');
   }
 
+  /// Sets the exposure mode for taking pictures.
+  Future<void> setExposureMode(int cameraId, ExposureMode mode) {
+    throw UnimplementedError('setExposureMode() is not implemented.');
+  }
+
+  /// Sets the exposure point for automatically determining the exposure value.
+  Future<void> setExposurePoint(int cameraId, Point<double> point) {
+    throw UnimplementedError('setExposurePoint() is not implemented.');
+  }
+
+  /// Gets the minimum supported exposure offset for the selected camera in EV units.
+  Future<double> getMinExposureOffset(int cameraId) {
+    throw UnimplementedError('getMinExposureOffset() is not implemented.');
+  }
+
+  /// Gets the maximum supported exposure offset for the selected camera in EV units.
+  Future<double> getMaxExposureOffset(int cameraId) {
+    throw UnimplementedError('getMaxExposureOffset() is not implemented.');
+  }
+
+  /// Gets the supported step size for exposure offset for the selected camera in EV units.
+  ///
+  /// Returns 0 when the camera supports using a free value without stepping.
+  Future<double> getExposureOffsetStepSize(int cameraId) {
+    throw UnimplementedError('getMinExposureOffset() is not implemented.');
+  }
+
+  /// Sets the exposure offset for the selected camera.
+  ///
+  /// The supplied [offset] value should be in EV units. 1 EV unit represents a
+  /// doubling in brightness. It should be between the minimum and maximum offsets
+  /// obtained through `getMinExposureOffset` and `getMaxExposureOffset` respectively.
+  /// Throws a `CameraException` when an illegal offset is supplied.
+  ///
+  /// When the supplied [offset] value does not align with the step size obtained
+  /// through `getExposureStepSize`, it will automatically be rounded to the nearest step.
+  ///
+  /// Returns the (rounded) offset value that was set.
+  Future<double> setExposureOffset(int cameraId, double offset) {
+    throw UnimplementedError('setExposureOffset() is not implemented.');
+  }
+
   /// Gets the maximum supported zoom level for the selected camera.
   Future<double> getMaxZoomLevel(int cameraId) {
     throw UnimplementedError('getMaxZoomLevel() is not implemented.');
@@ -126,7 +170,7 @@ abstract class CameraPlatform extends PlatformInterface {
   /// Set the zoom level for the selected camera.
   ///
   /// The supplied [zoom] value should be between 1.0 and the maximum supported
-  /// zoom level returned by the `getMaxZoomLevel`. Throws an `CameraException`
+  /// zoom level returned by the `getMaxZoomLevel`. Throws a `CameraException`
   /// when an illegal zoom level is supplied.
   Future<void> setZoomLevel(int cameraId, double zoom) {
     throw UnimplementedError('setZoomLevel() is not implemented.');
