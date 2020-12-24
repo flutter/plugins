@@ -348,8 +348,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (controller != null) {
       await controller.dispose();
     }
-    controller = CameraController(cameraDescription, ResolutionPreset.medium,
-        enableAudio: enableAudio, imageFormatGroup: ImageFormatGroup.jpeg);
+    controller = CameraController(
+      cameraDescription,
+      ResolutionPreset.medium,
+      enableAudio: enableAudio,
+      imageFormatGroup: ImageFormatGroup.jpeg,
+    );
 
     // If the controller is updated then update the UI.
     controller.addListener(() {

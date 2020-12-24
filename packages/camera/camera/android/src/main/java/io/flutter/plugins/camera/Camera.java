@@ -81,6 +81,12 @@ public class Camera {
   private FlashMode flashMode;
   private PictureCaptureRequest pictureCaptureRequest;
   private static HashMap<String, Integer> supportedImageFormats;
+  // Current supported outputs
+  static {
+    supportedImageFormats = new HashMap<>();
+    supportedImageFormats.put("yuv420", 35);
+    supportedImageFormats.put("jpeg", 256);
+  };
 
   public Camera(
       final Activity activity,
@@ -126,12 +132,6 @@ public class Camera {
         new CameraZoom(
             characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE),
             characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM));
-    supportedImageFormats = new HashMap<>();
-    // Current supported outputs
-    {
-      supportedImageFormats.put("yuv420", 35);
-      supportedImageFormats.put("jpeg", 256);
-    };
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
