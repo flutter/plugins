@@ -153,14 +153,14 @@ static AVCaptureFlashMode getFlashModeForString(NSString *mode) {
 }
 
 static OSType getVideoFormatFromString(NSString *videoFormatString) {
-    if([videoFormatString isEqualToString:@"bgra8888"]){
-        return kCVPixelFormatType_32BGRA;
-    } else if([videoFormatString isEqualToString:@"yuv420"]) {
-        return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
-    } else {
-        NSLog(@"The selected imageFormatGroup is not supported by iOS. Defaulting to brga8888");
-        return kCVPixelFormatType_32BGRA;
-    }
+  if([videoFormatString isEqualToString:@"bgra8888"]){
+      return kCVPixelFormatType_32BGRA;
+  } else if([videoFormatString isEqualToString:@"yuv420"]) {
+      return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+  } else {
+      NSLog(@"The selected imageFormatGroup is not supported by iOS. Defaulting to brga8888");
+      return kCVPixelFormatType_32BGRA;
+  }
 }
 
 // Mirrors ResolutionPreset in camera.dart
@@ -1003,8 +1003,8 @@ NSString *const errorMethod = @"error";
     NSDictionary *argsMap = call.arguments;
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
     if ([@"initialize" isEqualToString:call.method]) {
-    NSString *videoFormatValue = ((NSString *)argsMap[@"imageFormatGroup"]);
-    videoFormat = getVideoFormatFromString(videoFormatValue);
+      NSString *videoFormatValue = ((NSString *)argsMap[@"imageFormatGroup"]);
+      videoFormat = getVideoFormatFromString(videoFormatValue);
    
       __weak CameraPlugin *weakSelf = self;
       _camera.onFrameAvailable = ^{
