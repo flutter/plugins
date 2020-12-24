@@ -35,7 +35,6 @@ import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import androidx.annotation.NonNull;
-
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
@@ -154,15 +153,13 @@ public class Camera {
 
     Integer imageFormat = supportedImageFormats.get(imageFormatGroup);
     if (imageFormat == null) {
-      Log.w(TAG,
-              "The selected imageFormatGroup is not supported by Android. Defaulting to yuv420");
+      Log.w(TAG, "The selected imageFormatGroup is not supported by Android. Defaulting to yuv420");
       imageFormat = ImageFormat.YUV_420_888;
     }
 
     // Used to steam image byte data to dart side.
     imageStreamReader =
-        ImageReader.newInstance(
-            previewSize.getWidth(), previewSize.getHeight(), imageFormat, 2);
+        ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), imageFormat, 2);
 
     cameraManager.openCamera(
         cameraName,
