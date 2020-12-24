@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:camera_platform_interface/camera_platform_interface.dart';
+
 /// Generic Event coming from the native side of Camera.
 ///
 /// All [CameraEvent]s contain the `cameraId` that originated the event. This
@@ -195,4 +197,35 @@ class CameraErrorEvent extends CameraEvent {
 
   @override
   int get hashCode => super.hashCode ^ description.hashCode;
+}
+
+class CameraTimeLimitReachedEvent extends CameraEvent {
+  final String path;
+
+  CameraTimeLimitReachedEvent(int cameraId, this.path) : super(cameraId);
+
+  /// Converts the supplied [Map] to an instance of the [CameraTimeLimitReachedEvent]
+  /// class.
+  CameraTimeLimitReachedEvent.fromJson(Map<String, dynamic> json)
+      : path = json['path'],
+        super(json['cameraId']);
+
+  /// Converts the [CameraTimeLimitReachedEvent] instance into a [Map] instance that can be
+  /// serialized to JSON.
+  Map<String, dynamic> toJson() => {
+    'cameraId': cameraId,
+    'path': path,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          super == other &&
+              other is CameraTimeLimitReachedEvent &&
+              runtimeType == other.runtimeType &&
+              path == other.path;
+
+  @override
+  int get hashCode => super.hashCode ^ path.hashCode;
+
 }

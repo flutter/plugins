@@ -1,5 +1,6 @@
 package io.flutter.plugins.camera;
 
+import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED;
 import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
@@ -445,6 +446,11 @@ public class Camera {
       recordingVideo = true;
       createCaptureSession(
           CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
+      mediaRecorder.setOnInfoListener((mr, what, extra) -> {
+        if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+          dartMessenger.sendTimeLimitReachedEvent(videoRecordingFile.getPath());
+        }
+      });
       result.success(null);
     } catch (CameraAccessException | IOException e) {
       recordingVideo = false;

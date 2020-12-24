@@ -133,6 +133,11 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
+  Stream<CameraTimeLimitReachedEvent> onCameraTimeLimitReached(int cameraId) {
+    return _events(cameraId).whereType<CameraTimeLimitReachedEvent>();
+  }
+
+  @override
   Future<XFile> takePicture(int cameraId) async {
     String path = await _channel.invokeMethod<String>(
       'takePicture',
@@ -155,6 +160,12 @@ class MethodChannelCamera extends CameraPlatform {
         'maxVideoDuration': maxVideoDuration?.inMilliseconds,
       },
     );
+
+    if (maxVideoDuration != null) {
+      await onCameraTimeLimitReached(cameraId).first.then((value) {
+        debugPrint('received event');
+      });
+    }
   }
 
   @override
@@ -269,6 +280,12 @@ class MethodChannelCamera extends CameraPlatform {
           cameraId,
           call.arguments['previewWidth'],
           call.arguments['previewHeight'],
+        ));
+        break;
+      case 'max_time_limit_reached':
+        cameraEventStreamController.add(CameraTimeLimitReachedEvent(
+          cameraId,
+          call.arguments['path'],
         ));
         break;
       case 'resolution_changed':

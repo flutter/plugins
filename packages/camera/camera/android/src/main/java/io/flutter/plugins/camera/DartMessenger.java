@@ -14,6 +14,7 @@ class DartMessenger {
     ERROR,
     CAMERA_CLOSING,
     INITIALIZED,
+    MAX_TIME_LIMIT_REACHED,
   }
 
   DartMessenger(BinaryMessenger messenger, long cameraId) {
@@ -27,6 +28,16 @@ class DartMessenger {
           {
             if (previewWidth != null) put("previewWidth", previewWidth.doubleValue());
             if (previewHeight != null) put("previewHeight", previewHeight.doubleValue());
+          }
+        });
+  }
+
+  void sendTimeLimitReachedEvent(String path) {
+    this.send(
+        EventType.MAX_TIME_LIMIT_REACHED,
+        new HashMap<String, Object>() {
+          {
+            if (path != null) put("path", path);
           }
         });
   }
