@@ -1,3 +1,7 @@
+## 0.6.4
+
+* Fixes flash & torch modes not working on some Android devices.
+
 ## 0.6.3
 
 * Adds torch mode as a flash mode for Android and iOS implementations.
