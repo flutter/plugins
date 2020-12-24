@@ -145,12 +145,39 @@ static const int SOURCE_GALLERY = 1;
     [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
                                                       animated:YES
                                                     completion:nil];
+  } else if (@available(iOS 9, *)){
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", nil) message:NSLocalizedString(@"Camera not available.", nil) preferredStyle:UIAlertControllerStyleAlert];
+      
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:cancel];
+    
+    UIViewController *viewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    if ( viewController.presentedViewController && !viewController.presentedViewController.isBeingDismissed ) {
+      viewController = viewController.presentedViewController;
+    }
+
+    NSLayoutConstraint *constraint = [NSLayoutConstraint
+      constraintWithItem:alert.view
+      attribute:NSLayoutAttributeHeight
+      relatedBy:NSLayoutRelationLessThanOrEqual
+      toItem:nil
+      attribute:NSLayoutAttributeNotAnAttribute
+      multiplier:1
+      constant:viewController.view.frame.size.height*2.0f];
+
+    [alert.view addConstraint:constraint];
+    [viewController presentViewController:alert animated:YES completion:^{}];
+
+      
+    self.result(nil);
+    self.result = nil;
+    _arguments = nil;
   } else {
     [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
-                                message:NSLocalizedString(@"Camera not available.", nil)
-                               delegate:nil
-                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                      otherButtonTitles:nil] show];
+                              message:NSLocalizedString(@"Camera not available.", nil)
+                             delegate:nil
+                    cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                    otherButtonTitles:nil] show];
     self.result(nil);
     self.result = nil;
     _arguments = nil;
