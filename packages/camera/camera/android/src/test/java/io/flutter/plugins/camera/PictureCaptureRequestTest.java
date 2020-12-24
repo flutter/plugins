@@ -22,9 +22,7 @@ public class PictureCaptureRequestTest {
     PictureCaptureRequest req = new PictureCaptureRequest(null);
     req.setState(PictureCaptureRequest.State.preCapture);
     assertEquals(
-        "State is awaitingPreCapture",
-        req.getState(),
-        PictureCaptureRequest.State.preCapture);
+        "State is awaitingPreCapture", req.getState(), PictureCaptureRequest.State.preCapture);
     req.setState(PictureCaptureRequest.State.capturing);
     assertEquals(
         "State is awaitingPreCapture", req.getState(), PictureCaptureRequest.State.capturing);
