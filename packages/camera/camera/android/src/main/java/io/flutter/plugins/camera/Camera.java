@@ -726,8 +726,12 @@ public class Camera {
     aeMeteringRectangle = new MeteringRectangle(targetX, targetY, targetWidth, targetHeight, 1);
     // Apply it
     initPreviewCaptureBuilder();
-    this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
-    result.success(null);
+    try {
+      cameraCaptureSession.setRepeatingRequest(
+          captureRequestBuilder.build(), pictureCaptureCallback, null);
+    } catch (CameraAccessException e) {
+      pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
+    }
   }
 
   @SuppressLint("NewApi")
