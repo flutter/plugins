@@ -1,3 +1,7 @@
+## 0.6.5
+
+* Adds auto focus support for Android and iOS implementations.
+
 ## 0.6.4
 
 * Adds auto exposure support for Android and iOS implementations.
