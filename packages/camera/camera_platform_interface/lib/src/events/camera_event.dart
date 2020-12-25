@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:camera_platform_interface/src/types/focus_mode.dart';
+
 import '../../camera_platform_interface.dart';
 
 /// Generic Event coming from the native side of Camera.
@@ -30,10 +32,7 @@ abstract class CameraEvent {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CameraEvent &&
-          runtimeType == other.runtimeType &&
-          cameraId == other.cameraId;
+      identical(this, other) || other is CameraEvent && runtimeType == other.runtimeType && cameraId == other.cameraId;
 
   @override
   int get hashCode => cameraId.hashCode;
@@ -50,8 +49,14 @@ class CameraInitializedEvent extends CameraEvent {
   /// The default exposure mode
   final ExposureMode exposureMode;
 
+  /// The default focus mode
+  final FocusMode focusMode;
+
   /// Whether setting exposure points is supported.
   final bool exposurePointSupported;
+
+  /// Whether setting focus points is supported.
+  final bool focusPointSupported;
 
   /// Build a CameraInitialized event triggered from the camera represented by
   /// `cameraId`.
@@ -63,7 +68,9 @@ class CameraInitializedEvent extends CameraEvent {
     this.previewWidth,
     this.previewHeight,
     this.exposureMode,
+    this.focusMode,
     this.exposurePointSupported,
+    this.focusPointSupported,
   ) : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [CameraInitializedEvent]
@@ -72,7 +79,9 @@ class CameraInitializedEvent extends CameraEvent {
       : previewWidth = json['previewWidth'],
         previewHeight = json['previewHeight'],
         exposureMode = deserializeExposureMode(json['exposureMode']),
+        focusMode = deserializeFocusMode(json['focusMode']),
         exposurePointSupported = json['exposurePointSupported'],
+        focusPointSupported = json['focusPointSupported'],
         super(json['cameraId']);
 
   /// Converts the [CameraInitializedEvent] instance into a [Map] instance that
@@ -82,7 +91,9 @@ class CameraInitializedEvent extends CameraEvent {
         'previewWidth': previewWidth,
         'previewHeight': previewHeight,
         'exposureMode': serializeExposureMode(exposureMode),
+        'focusMode': serializeFocusMode(focusMode),
         'exposurePointSupported': exposurePointSupported,
+        'focusPointSupported': focusPointSupported,
       };
 
   @override
@@ -94,7 +105,9 @@ class CameraInitializedEvent extends CameraEvent {
           previewWidth == other.previewWidth &&
           previewHeight == other.previewHeight &&
           exposureMode == other.exposureMode &&
-          exposurePointSupported == other.exposurePointSupported;
+          focusMode == other.focusMode &&
+          exposurePointSupported == other.exposurePointSupported &&
+          focusPointSupported == other.focusPointSupported;
 
   @override
   int get hashCode =>
@@ -102,7 +115,9 @@ class CameraInitializedEvent extends CameraEvent {
       previewWidth.hashCode ^
       previewHeight.hashCode ^
       exposureMode.hashCode ^
-      exposurePointSupported.hashCode;
+      focusMode.hashCode ^
+      exposurePointSupported.hashCode ^
+      focusPointSupported.hashCode;
 }
 
 /// An event fired when the resolution preset of the camera has changed.
@@ -149,8 +164,7 @@ class CameraResolutionChangedEvent extends CameraEvent {
           captureHeight == other.captureHeight;
 
   @override
-  int get hashCode =>
-      super.hashCode ^ captureWidth.hashCode ^ captureHeight.hashCode;
+  int get hashCode => super.hashCode ^ captureWidth.hashCode ^ captureHeight.hashCode;
 }
 
 /// An event fired when the camera is going to close.
@@ -161,8 +175,7 @@ class CameraClosingEvent extends CameraEvent {
 
   /// Converts the supplied [Map] to an instance of the [CameraClosingEvent]
   /// class.
-  CameraClosingEvent.fromJson(Map<String, dynamic> json)
-      : super(json['cameraId']);
+  CameraClosingEvent.fromJson(Map<String, dynamic> json) : super(json['cameraId']);
 
   /// Converts the [CameraClosingEvent] instance into a [Map] instance that can
   /// be serialized to JSON.
@@ -172,10 +185,7 @@ class CameraClosingEvent extends CameraEvent {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      super == (other) &&
-          other is CameraClosingEvent &&
-          runtimeType == other.runtimeType;
+      identical(this, other) || super == (other) && other is CameraClosingEvent && runtimeType == other.runtimeType;
 
   @override
   int get hashCode => super.hashCode;
