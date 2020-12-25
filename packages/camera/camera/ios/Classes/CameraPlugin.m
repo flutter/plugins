@@ -824,19 +824,15 @@ NSString *const errorMethod = @"error";
     return;
   }
   _exposureMode = mode;
-  [self applyExposureMode:mode];
+  [self applyExposureMode];
   result(nil);
 }
 
-- (void)applyExposureMode:(ExposureMode)mode {
+- (void)applyExposureMode {
   [_captureDevice lockForConfiguration:nil];
-  switch (mode) {
+  switch (_exposureMode) {
     case ExposureModeLocked:
-      if (mode == _exposureMode) {
-        [_captureDevice setExposureMode:AVCaptureExposureModeAutoExpose];
-      } else {
-        [_captureDevice setExposureMode:AVCaptureExposureModeLocked];
-      }
+      [_captureDevice setExposureMode:AVCaptureExposureModeAutoExpose];
       break;
     case ExposureModeAuto:
       if ([_captureDevice isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
@@ -860,7 +856,7 @@ NSString *const errorMethod = @"error";
   [_captureDevice setExposurePointOfInterest:CGPointMake(y, 1 - x)];
   [_captureDevice unlockForConfiguration];
   // Retrigger auto exposure
-  [self applyExposureMode:_exposureMode];
+  [self applyExposureMode];
   result(nil);
 }
 
