@@ -168,7 +168,6 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('setFocusPoint() is not implemented.');
   }
 
-
   /// Gets the maximum supported zoom level for the selected camera.
   Future<double> getMaxZoomLevel(int cameraId) {
     throw UnimplementedError('getMaxZoomLevel() is not implemented.');

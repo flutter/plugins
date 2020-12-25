@@ -32,7 +32,10 @@ abstract class CameraEvent {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is CameraEvent && runtimeType == other.runtimeType && cameraId == other.cameraId;
+      identical(this, other) ||
+      other is CameraEvent &&
+          runtimeType == other.runtimeType &&
+          cameraId == other.cameraId;
 
   @override
   int get hashCode => cameraId.hashCode;
@@ -164,7 +167,8 @@ class CameraResolutionChangedEvent extends CameraEvent {
           captureHeight == other.captureHeight;
 
   @override
-  int get hashCode => super.hashCode ^ captureWidth.hashCode ^ captureHeight.hashCode;
+  int get hashCode =>
+      super.hashCode ^ captureWidth.hashCode ^ captureHeight.hashCode;
 }
 
 /// An event fired when the camera is going to close.
@@ -175,7 +179,8 @@ class CameraClosingEvent extends CameraEvent {
 
   /// Converts the supplied [Map] to an instance of the [CameraClosingEvent]
   /// class.
-  CameraClosingEvent.fromJson(Map<String, dynamic> json) : super(json['cameraId']);
+  CameraClosingEvent.fromJson(Map<String, dynamic> json)
+      : super(json['cameraId']);
 
   /// Converts the [CameraClosingEvent] instance into a [Map] instance that can
   /// be serialized to JSON.
@@ -185,7 +190,10 @@ class CameraClosingEvent extends CameraEvent {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || super == (other) && other is CameraClosingEvent && runtimeType == other.runtimeType;
+      identical(this, other) ||
+      super == (other) &&
+          other is CameraClosingEvent &&
+          runtimeType == other.runtimeType;
 
   @override
   int get hashCode => super.hashCode;
