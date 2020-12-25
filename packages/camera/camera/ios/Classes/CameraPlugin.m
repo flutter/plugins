@@ -215,6 +215,44 @@ static ExposureMode getExposureModeForString(NSString *mode) {
   }
 }
 
+// Mirrors FocusMode in camera.dart
+typedef enum {
+  FocusModeAuto,
+  FocusModeLocked,
+} FocusMode;
+
+static NSString *getStringForFocusMode(FocusMode mode) {
+  switch (mode) {
+    case FocusModeAuto:
+      return @"auto";
+    case FocusModeLocked:
+      return @"locked";
+  }
+  NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                       code:NSURLErrorUnknown
+                                   userInfo:@{
+                                     NSLocalizedDescriptionKey : [NSString
+                                         stringWithFormat:@"Unknown string for focus mode"]
+                                   }];
+  @throw error;
+}
+
+static FocusMode getFocusModeForString(NSString *mode) {
+  if ([mode isEqualToString:@"auto"]) {
+    return FocusModeAuto;
+  } else if ([mode isEqualToString:@"locked"]) {
+    return FocusModeLocked;
+  } else {
+    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                         code:NSURLErrorUnknown
+                                     userInfo:@{
+                                       NSLocalizedDescriptionKey : [NSString
+                                           stringWithFormat:@"Unknown focus mode %@", mode]
+                                     }];
+    @throw error;
+  }
+}
+
 // Mirrors ResolutionPreset in camera.dart
 typedef enum {
   veryLow,
@@ -283,6 +321,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
 @property(assign, nonatomic) ExposureMode exposureMode;
+@property(assign, nonatomic) FocusMode focusMode;
 @property(assign, nonatomic) FlashMode flashMode;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
@@ -315,6 +354,8 @@ NSString *const errorMethod = @"error";
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
   _flashMode = FlashModeAuto;
+  _exposureMode = ExposureModeAuto;
+  _focusMode = FocusModeAuto;
 
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
@@ -325,8 +366,6 @@ NSString *const errorMethod = @"error";
     *error = localError;
     return nil;
   }
-
-  _exposureMode = ExposureModeAuto;
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
@@ -845,6 +884,36 @@ NSString *const errorMethod = @"error";
   [_captureDevice unlockForConfiguration];
 }
 
+- (void)setFocusModeWithResult:(FlutterResult)result mode:(NSString *)modeStr {
+  FocusMode mode;
+  @try {
+    mode = getFocusModeForString(modeStr);
+  } @catch (NSError *e) {
+    result(getFlutterError(e));
+    return;
+  }
+  _focusMode = mode;
+  [self applyFocusMode];
+  result(nil);
+}
+
+- (void)applyFocusMode {
+  [_captureDevice lockForConfiguration:nil];
+  switch (_focusMode) {
+    case FocusModeLocked:
+      [_captureDevice setFocusMode:AVCaptureFocusModeLocked];
+      break;
+    case FocusModeAuto:
+      if ([_captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+        [_captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+      } else {
+        [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      }
+      break;
+  }
+  [_captureDevice unlockForConfiguration];
+}
+
 - (void)setExposurePointWithResult:(FlutterResult)result x:(double)x y:(double)y {
   if (!_captureDevice.isExposurePointOfInterestSupported) {
     result([FlutterError errorWithCode:@"setExposurePointFailed"
@@ -857,6 +926,21 @@ NSString *const errorMethod = @"error";
   [_captureDevice unlockForConfiguration];
   // Retrigger auto exposure
   [self applyExposureMode];
+  result(nil);
+}
+
+- (void)setFocusPointWithResult:(FlutterResult)result x:(double)x y:(double)y {
+  if (!_captureDevice.isFocusPointOfInterestSupported) {
+    result([FlutterError errorWithCode:@"setFocusPointFailed"
+                               message:@"Device does not have focus point capabilities"
+                               details:nil]);
+    return;
+  }
+  [_captureDevice lockForConfiguration:nil];
+  [_captureDevice setFocusPointOfInterest:CGPointMake(x, y)];
+  [_captureDevice unlockForConfiguration];
+  // Retrigger auto focus
+  [self applyFocusMode];
   result(nil);
 }
 
@@ -1156,14 +1240,17 @@ NSString *const errorMethod = @"error";
                                                            (unsigned long)cameraId]
                 binaryMessenger:_messenger];
       _camera.methodChannel = methodChannel;
-      [methodChannel invokeMethod:@"initialized"
-                        arguments:@{
-                          @"previewWidth" : @(_camera.previewSize.width),
-                          @"previewHeight" : @(_camera.previewSize.height),
-                          @"exposureMode" : getStringForExposureMode([_camera exposureMode]),
-                          @"exposurePointSupported" :
-                              @([_camera.captureDevice isExposurePointOfInterestSupported]),
-                        }];
+      [methodChannel
+          invokeMethod:@"initialized"
+             arguments:@{
+               @"previewWidth" : @(_camera.previewSize.width),
+               @"previewHeight" : @(_camera.previewSize.height),
+               @"exposureMode" : getStringForExposureMode([_camera exposureMode]),
+               @"focusMode" : getStringForFocusMode([_camera focusMode]),
+               @"exposurePointSupported" :
+                   @([_camera.captureDevice isExposurePointOfInterestSupported]),
+               @"focusPointSupported" : @([_camera.captureDevice isFocusPointOfInterestSupported]),
+             }];
       [_camera start];
       result(nil);
     } else if ([@"takePicture" isEqualToString:call.method]) {
@@ -1217,6 +1304,17 @@ NSString *const errorMethod = @"error";
     } else if ([@"setExposureOffset" isEqualToString:call.method]) {
       [_camera setExposureOffsetWithResult:result
                                     offset:((NSNumber *)call.arguments[@"offset"]).doubleValue];
+    } else if ([@"setFocusMode" isEqualToString:call.method]) {
+      [_camera setFocusModeWithResult:result mode:call.arguments[@"mode"]];
+    } else if ([@"setFocusPoint" isEqualToString:call.method]) {
+      BOOL reset = ((NSNumber *)call.arguments[@"reset"]).boolValue;
+      double x = 0.5;
+      double y = 0.5;
+      if (!reset) {
+        x = ((NSNumber *)call.arguments[@"x"]).doubleValue;
+        y = ((NSNumber *)call.arguments[@"y"]).doubleValue;
+      }
+      [_camera setFocusPointWithResult:result x:x y:y];
     } else {
       result(FlutterMethodNotImplemented);
     }

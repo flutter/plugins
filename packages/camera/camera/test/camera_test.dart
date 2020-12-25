@@ -32,6 +32,8 @@ get mockOnCameraInitializedEvent => CameraInitializedEvent(
       75,
       75,
       ExposureMode.auto,
+      FocusMode.auto,
+      true,
       true,
     );
 

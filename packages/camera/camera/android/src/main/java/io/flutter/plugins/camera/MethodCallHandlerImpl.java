@@ -12,6 +12,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.plugins.camera.types.ExposureMode;
 import io.flutter.plugins.camera.types.FlashMode;
+import io.flutter.plugins.camera.types.FocusMode;
 import io.flutter.view.TextureRegistry;
 import java.util.HashMap;
 import java.util.Map;
@@ -201,6 +202,37 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         {
           try {
             camera.setExposureOffset(result, call.argument("offset"));
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setFocusMode":
+        {
+          String modeStr = call.argument("mode");
+          FocusMode mode = FocusMode.getValueForString(modeStr);
+          if (mode == null) {
+            result.error("setFocusModeFailed", "Unknown focus mode " + modeStr, null);
+            return;
+          }
+          try {
+            camera.setFocusMode(result, mode);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setFocusPoint":
+        {
+          Boolean reset = call.argument("reset");
+          Double x = null;
+          Double y = null;
+          if (reset == null || !reset) {
+            x = call.argument("x");
+            y = call.argument("y");
+          }
+          try {
+            camera.setFocusPoint(result, x, y);
           } catch (Exception e) {
             handleException(e, result);
           }

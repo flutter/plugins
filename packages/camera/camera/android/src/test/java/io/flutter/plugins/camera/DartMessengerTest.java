@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.StandardMethodCodec;
+import io.flutter.plugins.camera.types.ExposureMode;
+import io.flutter.plugins.camera.types.FocusMode;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +60,7 @@ public class DartMessengerTest {
 
   @Test
   public void sendCameraInitializedEvent_includesPreviewSize() {
-    dartMessenger.sendCameraInitializedEvent(0, 0, ExposureMode.auto, true);
+    dartMessenger.sendCameraInitializedEvent(0, 0, ExposureMode.auto, FocusMode.continuous, true, true);
 
     List<ByteBuffer> sentMessages = fakeBinaryMessenger.getMessages();
     assertEquals(1, sentMessages.size());
@@ -67,7 +69,9 @@ public class DartMessengerTest {
     assertEquals(0, (double) call.argument("previewWidth"), 0);
     assertEquals(0, (double) call.argument("previewHeight"), 0);
     assertEquals("ExposureMode auto", call.argument("exposureMode"), "auto");
+    assertEquals("FocusMode continuous", call.argument("focusMode"), "continuous");
     assertEquals("exposurePointSupported", call.argument("exposurePointSupported"), true);
+    assertEquals("focusPointSupported", call.argument("focusPointSupported"), true);
   }
 
   @Test

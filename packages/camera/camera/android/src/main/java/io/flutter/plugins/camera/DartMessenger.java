@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.types.ExposureMode;
+import io.flutter.plugins.camera.types.FocusMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,11 +26,15 @@ class DartMessenger {
       Integer previewWidth,
       Integer previewHeight,
       ExposureMode exposureMode,
-      Boolean exposurePointSupported) {
+      FocusMode focusMode,
+      Boolean exposurePointSupported,
+      Boolean focusPointSupported) {
     assert (previewWidth != null);
     assert (previewHeight != null);
     assert (exposureMode != null);
+    assert (focusMode != null);
     assert (exposurePointSupported != null);
+    assert (focusPointSupported != null);
     this.send(
         EventType.INITIALIZED,
         new HashMap<String, Object>() {
@@ -37,7 +42,9 @@ class DartMessenger {
             put("previewWidth", previewWidth.doubleValue());
             put("previewHeight", previewHeight.doubleValue());
             put("exposureMode", exposureMode.toString());
+            put("focusMode", focusMode.toString());
             put("exposurePointSupported", exposurePointSupported);
+            put("focusPointSupported", focusPointSupported);
           }
         });
   }
