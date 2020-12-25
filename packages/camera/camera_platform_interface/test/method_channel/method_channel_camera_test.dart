@@ -125,7 +125,7 @@ void main() {
           1920,
           1080,
           ExposureMode.auto,
-          FocusMode.auto,
+          FocusMode.continuous,
           true,
           true,
         ));
@@ -165,7 +165,7 @@ void main() {
           1920,
           1080,
           ExposureMode.auto,
-          FocusMode.auto,
+          FocusMode.continuous,
           true,
           true,
         ));
@@ -209,7 +209,7 @@ void main() {
           1920,
           1080,
           ExposureMode.auto,
-          FocusMode.auto,
+          FocusMode.continuous,
           true,
           true,
         ));
@@ -228,7 +228,7 @@ void main() {
           3840,
           2160,
           ExposureMode.auto,
-          FocusMode.auto,
+          FocusMode.continuous,
           true,
           true,
         );
@@ -341,7 +341,7 @@ void main() {
             1920,
             1080,
             ExposureMode.auto,
-            FocusMode.auto,
+            FocusMode.continuous,
             true,
             true,
           ),
@@ -669,15 +669,15 @@ void main() {
         );
 
         // Act
+        await camera.setFocusMode(cameraId, FocusMode.continuous);
         await camera.setFocusMode(cameraId, FocusMode.auto);
-        await camera.setFocusMode(cameraId, FocusMode.locked);
 
         // Assert
         expect(channel.log, <Matcher>[
           isMethodCall('setFocusMode',
-              arguments: {'cameraId': cameraId, 'mode': 'auto'}),
+              arguments: {'cameraId': cameraId, 'mode': 'continuous'}),
           isMethodCall('setFocusMode',
-              arguments: {'cameraId': cameraId, 'mode': 'locked'}),
+              arguments: {'cameraId': cameraId, 'mode': 'auto'}),
         ]);
       });
 
