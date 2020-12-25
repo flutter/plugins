@@ -1,3 +1,7 @@
+## 1.0.6
+
+- Added interface methods to support auto focus.
+
 ## 1.0.5
 
 - Added interface to support automatic exposure.
