@@ -1,3 +1,7 @@
+## 0.6.7+20
+
+* Added compatibility for iOS 9 and up
+
 ## 0.6.7+19
 
 * Do not copy static field to another static field.
