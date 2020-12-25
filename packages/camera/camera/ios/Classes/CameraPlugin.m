@@ -871,7 +871,7 @@ NSString *const errorMethod = @"error";
   [_captureDevice lockForConfiguration:nil];
   switch (_exposureMode) {
     case ExposureModeLocked:
-      [_captureDevice setExposureMode:AVCaptureExposureModeLocked];
+      [_captureDevice setExposureMode:AVCaptureExposureModeAutoExpose];
       break;
     case ExposureModeAuto:
       if ([_captureDevice isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
@@ -901,7 +901,7 @@ NSString *const errorMethod = @"error";
   [_captureDevice lockForConfiguration:nil];
   switch (_focusMode) {
     case FocusModeLocked:
-      [_captureDevice setFocusMode:AVCaptureFocusModeLocked];
+      [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
       break;
     case FocusModeAuto:
       if ([_captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
@@ -922,7 +922,7 @@ NSString *const errorMethod = @"error";
     return;
   }
   [_captureDevice lockForConfiguration:nil];
-  [_captureDevice setExposurePointOfInterest:CGPointMake(x, y)];
+  [_captureDevice setExposurePointOfInterest:CGPointMake(y, 1-x)];
   [_captureDevice unlockForConfiguration];
   // Retrigger auto exposure
   [self applyExposureMode];
@@ -937,7 +937,7 @@ NSString *const errorMethod = @"error";
     return;
   }
   [_captureDevice lockForConfiguration:nil];
-  [_captureDevice setFocusPointOfInterest:CGPointMake(x, y)];
+  [_captureDevice setFocusPointOfInterest:CGPointMake(y, 1-x)];
   [_captureDevice unlockForConfiguration];
   // Retrigger auto focus
   [self applyFocusMode];
