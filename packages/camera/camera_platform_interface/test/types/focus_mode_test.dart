@@ -15,17 +15,17 @@ void main() {
   test("FocusMode enum should have items in correct index", () {
     final values = FocusMode.values;
 
-    expect(values[0], FocusMode.auto);
-    expect(values[1], FocusMode.locked);
+    expect(values[0], FocusMode.continuous);
+    expect(values[1], FocusMode.auto);
   });
 
   test("serializeFocusMode() should serialize correctly", () {
+    expect(serializeFocusMode(FocusMode.continuous), "continuous");
     expect(serializeFocusMode(FocusMode.auto), "auto");
-    expect(serializeFocusMode(FocusMode.locked), "locked");
   });
 
   test("deserializeFocusMode() should deserialize correctly", () {
+    expect(deserializeFocusMode('continuous'), FocusMode.continuous);
     expect(deserializeFocusMode('auto'), FocusMode.auto);
-    expect(deserializeFocusMode('locked'), FocusMode.locked);
   });
 }
