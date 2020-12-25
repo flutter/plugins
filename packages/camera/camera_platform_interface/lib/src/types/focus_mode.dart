@@ -4,18 +4,18 @@
 
 /// The possible focus modes that can be set for a camera.
 enum FocusMode {
-  /// Continuously automatically adjust the focus settings.
-  continuous,
-
-  /// Automatically determine the focus settings once upon setting this mode or the focus point.
+  /// Automatically determine focus settings.
   auto,
+
+  /// Lock the currently determined focus settings.
+  locked,
 }
 
 /// Returns the focus mode as a String.
 String serializeFocusMode(FocusMode focusMode) {
   switch (focusMode) {
-    case FocusMode.continuous:
-      return 'continuous';
+    case FocusMode.locked:
+      return 'locked';
     case FocusMode.auto:
       return 'auto';
     default:
@@ -26,8 +26,8 @@ String serializeFocusMode(FocusMode focusMode) {
 /// Returns the focus mode for a given String.
 FocusMode deserializeFocusMode(String str) {
   switch (str) {
-    case "continuous":
-      return FocusMode.continuous;
+    case "locked":
+      return FocusMode.locked;
     case "auto":
       return FocusMode.auto;
     default:
