@@ -729,8 +729,10 @@ public class Camera {
             throws CameraAccessException {
         this.focusMode = mode;
         initPreviewCaptureBuilder();
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
         cameraCaptureSession.setRepeatingRequest(
                 captureRequestBuilder.build(), pictureCaptureCallback, null);
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
         result.success(null);
     }
 
@@ -756,8 +758,10 @@ public class Camera {
         afMeteringRectangle = getMeteringRectangleForPoint(maxBoundaries, x, y);
         // Apply it
         initPreviewCaptureBuilder();
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
         this.cameraCaptureSession.setRepeatingRequest(
                 captureRequestBuilder.build(), pictureCaptureCallback, null);
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
         result.success(null);
     }
 
