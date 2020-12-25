@@ -60,7 +60,7 @@ public class DartMessengerTest {
 
   @Test
   public void sendCameraInitializedEvent_includesPreviewSize() {
-    dartMessenger.sendCameraInitializedEvent(0, 0, ExposureMode.auto, FocusMode.continuous, true, true);
+    dartMessenger.sendCameraInitializedEvent(0, 0, ExposureMode.auto, FocusMode.auto, true, true);
 
     List<ByteBuffer> sentMessages = fakeBinaryMessenger.getMessages();
     assertEquals(1, sentMessages.size());
@@ -69,7 +69,7 @@ public class DartMessengerTest {
     assertEquals(0, (double) call.argument("previewWidth"), 0);
     assertEquals(0, (double) call.argument("previewHeight"), 0);
     assertEquals("ExposureMode auto", call.argument("exposureMode"), "auto");
-    assertEquals("FocusMode continuous", call.argument("focusMode"), "continuous");
+    assertEquals("FocusMode continuous", call.argument("focusMode"), "auto");
     assertEquals("exposurePointSupported", call.argument("exposurePointSupported"), true);
     assertEquals("focusPointSupported", call.argument("focusPointSupported"), true);
   }

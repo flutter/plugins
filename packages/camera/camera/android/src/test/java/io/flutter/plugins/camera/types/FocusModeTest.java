@@ -9,11 +9,11 @@ public class FocusModeTest {
   @Test
   public void getValueForString_returns_correct_values() {
     assertEquals(
-        "Returns FocusMode.continuous for 'continuous'", FocusMode.getValueForString("continuous"), FocusMode.continuous);
+        "Returns FocusMode.auto for 'auto'", FocusMode.getValueForString("auto"), FocusMode.auto);
     assertEquals(
-        "Returns FocusMode.auto for 'auto'",
-        FocusMode.getValueForString("auto"),
-        FocusMode.auto);
+        "Returns FocusMode.locked for 'locked'",
+        FocusMode.getValueForString("locked"),
+        FocusMode.locked);
   }
 
   @Test
@@ -24,7 +24,7 @@ public class FocusModeTest {
 
   @Test
   public void toString_returns_correct_value() {
-    assertEquals("Returns 'continuous' for FocusMode.continuous", FocusMode.continuous.toString(), "continuous");
     assertEquals("Returns 'auto' for FocusMode.auto", FocusMode.auto.toString(), "auto");
+    assertEquals("Returns 'locked' for FocusMode.locked", FocusMode.locked.toString(), "locked");
   }
 }

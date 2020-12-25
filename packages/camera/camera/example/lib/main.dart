@@ -534,7 +534,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       details.localPosition.dx / constraints.maxWidth,
       details.localPosition.dy / constraints.maxHeight,
     );
-    controller.setExposurePoint(offset);
+    // controller.setExposurePoint(offset);
     controller.setFocusPoint(offset);
   }
 

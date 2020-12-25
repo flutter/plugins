@@ -114,7 +114,7 @@ public class Camera {
         this.applicationContext = activity.getApplicationContext();
         this.flashMode = FlashMode.auto;
         this.exposureMode = ExposureMode.auto;
-        this.focusMode = FocusMode.continuous;
+        this.focusMode = FocusMode.auto;
         this.exposureOffset = 0;
         orientationEventListener =
                 new OrientationEventListener(activity.getApplicationContext()) {
@@ -351,7 +351,7 @@ public class Camera {
     private void runPictureAutoFocus() {
         assert (pictureCaptureRequest != null);
         pictureCaptureRequest.setState(PictureCaptureRequest.State.focusing);
-        lockAutoFocus();
+        lockAutoFocus(pictureCaptureCallback);
     }
 
     private void runPicturePreCapture() {
@@ -412,11 +412,11 @@ public class Camera {
         }
     }
 
-    private void lockAutoFocus() {
+    private void lockAutoFocus(CaptureCallback callback) {
         captureRequestBuilder.set(
                 CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
         try {
-            cameraCaptureSession.capture(captureRequestBuilder.build(), pictureCaptureCallback, null);
+            cameraCaptureSession.capture(captureRequestBuilder.build(), callback, null);
         } catch (CameraAccessException e) {
             pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
         }
@@ -729,10 +729,20 @@ public class Camera {
             throws CameraAccessException {
         this.focusMode = mode;
         initPreviewCaptureBuilder();
-        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
-        cameraCaptureSession.setRepeatingRequest(
-                captureRequestBuilder.build(), pictureCaptureCallback, null);
-        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
+        switch (mode) {
+            case auto:
+                cameraCaptureSession.setRepeatingRequest(
+                        captureRequestBuilder.build(), pictureCaptureCallback, null);
+                break;
+            case locked:
+                lockAutoFocus(new CaptureCallback() {
+                    @Override
+                    public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                        unlockAutoFocus();
+                    }
+                });
+                break;
+        }
         result.success(null);
     }
 
@@ -756,12 +766,22 @@ public class Camera {
         }
         // Set the metering rectangle
         afMeteringRectangle = getMeteringRectangleForPoint(maxBoundaries, x, y);
-        // Apply it
+        // Apply the new metering rectangle
         initPreviewCaptureBuilder();
-        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
-        this.cameraCaptureSession.setRepeatingRequest(
-                captureRequestBuilder.build(), pictureCaptureCallback, null);
-        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
+        switch (focusMode) {
+            case auto:
+                cameraCaptureSession.setRepeatingRequest(
+                        captureRequestBuilder.build(), pictureCaptureCallback, null);
+                break;
+            case locked:
+                lockAutoFocus(new CaptureCallback() {
+                    @Override
+                    public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                        unlockAutoFocus();
+                    }
+                });
+                break;
+        }
         result.success(null);
     }
 
@@ -927,10 +947,10 @@ public class Camera {
         captureRequestBuilder.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, exposureOffset);
         // Applying auto focus
         switch (focusMode) {
-            case auto:
+            case locked:
                 captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
                 break;
-            case continuous:
+            case auto:
                 captureRequestBuilder.set(
                         CaptureRequest.CONTROL_AF_MODE, recordingVideo ? CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO : CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             default:

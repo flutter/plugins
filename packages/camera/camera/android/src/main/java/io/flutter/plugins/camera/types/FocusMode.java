@@ -2,8 +2,8 @@ package io.flutter.plugins.camera.types;
 
 // Mirrors focus_mode.dart
 public enum FocusMode {
-  continuous("continuous"),
-  auto("auto");
+  auto("auto"),
+  locked("locked");
 
   private final String strValue;
 
