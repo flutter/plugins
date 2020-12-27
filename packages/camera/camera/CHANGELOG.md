@@ -1,6 +1,6 @@
 ## 0.6.3+2
 
-* Fixes stopping video recordings not working on Android before a picture has been taken.
+* Fixes crash on Android which occurs after video recording has stopped just before taking a picture.
 
 ## 0.6.3+1
 
