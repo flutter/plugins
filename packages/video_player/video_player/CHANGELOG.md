@@ -1,6 +1,38 @@
-## 1.0.2
+## 2.0.0-nullsafety.7
 
 * Introduce setCaptionOffset to offset the caption display based on a Duration.
+
+## 2.0.0-nullsafety.6
+
+* Fix `VideoPlayerValue toString()` test.
+
+## 2.0.0-nullsafety.5
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 2.0.0-nullsafety.4
+
+* Fixed an issue where `isBuffering` was not updating on Android.
+
+## 2.0.0-nullsafety.3
+
+* Dart null safety requires `2.12`.
+
+## 2.0.0-nullsafety.2
+
+* Bump SDK version.
+
+## 2.0.0-nullsafety.1
+
+* Merge master.
+
+## 2.0.0-nullsafety
+
+* Migration to null safety.
+
+## 1.0.2
+
+* Update Flutter SDK constraint.
 
 ## 1.0.1
 

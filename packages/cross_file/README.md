@@ -24,7 +24,7 @@ final fileContent = await file.readAsString();
 print('Content of the file: ${fileContent}');  // e.g. "Moto G (4)"
 ```
 
-You will find links to the API docs on the [pub page](https://pub.dartlang.org/packages/cross_file).
+You will find links to the API docs on the [pub page](https://pub.dev/packages/cross_file).
 
 ## Getting Started
 

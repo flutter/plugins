@@ -1,3 +1,25 @@
+## 0.6.7+19
+
+* Do not copy static field to another static field.
+
+## 0.6.7+18
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.6.7+17
+
+* iOS: fix `User-facing text should use localized string macro` warning.
+
+## 0.6.7+16
+
+* Update Flutter SDK constraint.
+
+## 0.6.7+15
+
+* Fix element type in XCUITests to look for staticText type when searching for texts.
+  * See https://github.com/flutter/flutter/issues/71927
+* Minor update in XCUITests to search for different elements on iOS 14 and above.
+
 ## 0.6.7+14
 
 * Set up XCUITests.

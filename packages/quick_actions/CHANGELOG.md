@@ -1,3 +1,11 @@
+## 0.4.0+12
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.4.0+11
+
+* Update Flutter SDK constraint.
+
 ## 0.4.0+10
 
 * Update android compileSdkVersion to 29.
