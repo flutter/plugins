@@ -1,3 +1,7 @@
+## 0.6.3+2
+
+* Fixes crash on Android which occurs after video recording has stopped just before taking a picture.
+
 ## 0.6.3+1
 
 * Fixes flash & torch modes not working on some Android devices.
