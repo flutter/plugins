@@ -1,3 +1,7 @@
+## 0.6.3+2
+
+* Fixes stopping video recordings not working on Android before a picture has been taken.
+
 ## 0.6.3+1
 
 * Fixes flash & torch modes not working on some Android devices.
