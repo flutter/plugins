@@ -3,7 +3,7 @@ description: A common platform interface for the google_maps_flutter plugin.
 homepage: https://github.com/flutter/plugins/tree/master/packages/google_maps_flutter/google_maps_flutter_platform_interface
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
-version: 1.0.5
+version: 1.0.6
 
 dependencies:
   flutter:
@@ -20,4 +20,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
-  flutter: ">=1.9.1+hotfix.4 <2.0.0"
+  flutter: ">=1.9.1+hotfix.4"

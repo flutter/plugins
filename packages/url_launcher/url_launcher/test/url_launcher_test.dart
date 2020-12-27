@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.8
+// TODO(mvanbeusekom): Remove once Mockito is migrated to null safety.
+// @dart = 2.9
 
 import 'dart:async';
 import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter/foundation.dart';
@@ -41,10 +43,6 @@ void main() {
     });
   });
   group('launch', () {
-    test('requires a non-null urlString', () {
-      expect(() => launch(null), throwsAssertionError);
-    });
-
     test('default behavior', () async {
       await launch('http://flutter.dev/');
       expect(

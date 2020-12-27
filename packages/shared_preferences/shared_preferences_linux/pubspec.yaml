@@ -1,6 +1,6 @@
 name: shared_preferences_linux
 description: Linux implementation of the shared_preferences plugin
-version: 0.0.2+4
+version: 0.0.3+1
 homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences_linux
 
 flutter:
@@ -12,7 +12,7 @@ flutter:
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.8 <2.0.0"
+  flutter: ">=1.12.8"
 
 dependencies:
   file: ">=5.1.0 <7.0.0"
