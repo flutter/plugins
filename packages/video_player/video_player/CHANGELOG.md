@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.7
+
+* Fix empty caption text still showing caption widget
+
 ## 2.0.0-nullsafety.6
 
 * Fix `VideoPlayerValue toString()` test.
