@@ -913,9 +913,9 @@ class ClosedCaption extends StatelessWidget {
 
     final TextStyle effectiveTextStyle = textStyle ??
         DefaultTextStyle.of(context).style.copyWith(
-          fontSize: 36.0,
-          color: Colors.white,
-        );
+              fontSize: 36.0,
+              color: Colors.white,
+            );
 
     return Align(
       alignment: Alignment.bottomCenter,
