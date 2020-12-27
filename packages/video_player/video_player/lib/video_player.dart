@@ -890,11 +890,12 @@ class ClosedCaption extends StatelessWidget {
   /// Creates a a new closed caption, designed to be used with
   /// [VideoPlayerValue.caption].
   ///
-  /// If [text] is null, nothing will be displayed.
+  /// If [text] is null or empty, nothing will be displayed.
   const ClosedCaption({Key? key, this.text, this.textStyle}) : super(key: key);
 
   /// The text that will be shown in the closed caption, or null if no caption
   /// should be shown.
+  /// If the text is empty the caption will not be shown as well
   final String? text;
 
   /// Specifies how the text in the closed caption should look.
