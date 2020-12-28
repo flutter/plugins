@@ -5,7 +5,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/package_info
 # 0.4.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.4.2
+version: 0.4.3+3
 
 flutter:
   plugin:
@@ -27,11 +27,10 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  test: any
-  e2e:
-    path: ../e2e
+  integration_test:
+    path: ../integration_test
   pedantic: ^1.8.0
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5"

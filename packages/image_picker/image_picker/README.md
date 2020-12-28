@@ -1,13 +1,13 @@
 # Image Picker plugin for Flutter
 
-[![pub package](https://img.shields.io/pub/v/image_picker.svg)](https://pub.dartlang.org/packages/image_picker)
+[![pub package](https://img.shields.io/pub/v/image_picker.svg)](https://pub.dev/packages/image_picker)
 
 A Flutter plugin for iOS and Android for picking images from the image library,
 and taking new pictures with the camera.
 
 ## Installation
 
-First, add `image_picker` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+First, add `image_picker` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 
 ### iOS
 
@@ -29,7 +29,21 @@ Add `android:requestLegacyExternalStorage="true"` as an attribute to the `<appli
 ### Example
 
 ``` dart
+import 'dart:io';
+
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyHomePage(),
+    );
+  }
+}
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -44,7 +58,11 @@ class _MyHomePageState extends State<MyHomePage> {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
 
     setState(() {
-      _image = File(pickedFile.path);
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
     });
   }
 
@@ -77,7 +95,7 @@ Android system -- although very rarely -- sometimes kills the MainActivity after
 Future<void> retrieveLostData() async {
   final LostData response =
       await picker.getLostData();
-  if (response == null) {
+  if (response.isEmpty) {
     return;
   }
   if (response.file != null) {

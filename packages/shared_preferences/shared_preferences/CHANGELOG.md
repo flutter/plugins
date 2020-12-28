@@ -1,3 +1,43 @@
+## 0.5.13+2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.5.13+1
+
+* Update Flutter SDK constraint.
+
+## 0.5.13
+
+* Update integration test examples to use `testWidgets` instead of `test`.
+
+## 0.5.12+4
+
+* Remove unused `test` dependency.
+
+## 0.5.12+3
+
+* Check in windows/ directory for example/
+
+## 0.5.12+2
+
+* Update android compileSdkVersion to 29.
+
+## 0.5.12+1
+
+* Check in linux/ directory for example/
+
+## 0.5.12
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.5.11
+
+* Support Windows by default.
+
+## 0.5.10
+
+* Update package:e2e -> package:integration_test
+
 ## 0.5.9
 
 * Update package:e2e reference to use the local version in the flutter/plugins

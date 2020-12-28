@@ -1,10 +1,14 @@
-# e2e
+# e2e (deprecated)
+
+## DEPRECATED
+
+This package has been moved to [integration_test](https://github.com/flutter/plugins/tree/master/packages/integration_test).
+
+## Old instructions
 
 This package enables self-driving testing of Flutter code on devices and emulators.
 It adapts flutter_test results into a format that is compatible with `flutter drive`
 and native Android instrumentation testing.
-
-iOS support is not available yet, but is planned in the future.
 
 ## Usage
 

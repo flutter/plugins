@@ -5,8 +5,8 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
@@ -206,7 +206,7 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _myLocationToggler() {
     return FlatButton(
       child: Text(
-          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+          '${_myLocationEnabled ? 'disable' : 'enable'} my location marker'),
       onPressed: () {
         setState(() {
           _myLocationEnabled = !_myLocationEnabled;

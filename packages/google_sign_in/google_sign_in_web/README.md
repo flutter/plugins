@@ -98,11 +98,7 @@ See the [google_sign_in.dart](https://github.com/flutter/plugins/blob/master/pac
 
 Tests are a crucial to contributions to this package. All new contributions should be reasonably tested.
 
-In order to run tests in this package, do:
-
-```
-flutter test --platform chrome -j1
-```
+**Check the [`test/README.md` file](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in_web/test/README.md)** for more information on how to run tests on this package.
 
 Contributions to this package are welcome. Read the [Contributing to Flutter Plugins](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md) guide to get started.
 

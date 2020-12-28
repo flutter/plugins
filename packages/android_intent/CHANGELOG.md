@@ -1,3 +1,35 @@
+## 2.0.0-nullsafety.1
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 0.3.7+8
+
+* Update Flutter SDK constraint.
+
+## 0.3.7+7
+
+* Update Dart SDK constraint in example.
+
+## 0.3.7+6
+
+* Update android compileSdkVersion to 29.
+
+## 0.3.7+5
+
+* Android Code Inspection and Clean up.
+
+## 0.3.7+4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.3.7+3
+
+* Update the `platform` package dependency to resolve the conflict with the latest flutter.
+
 ## 0.3.7+2
 
 * Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
@@ -8,8 +40,8 @@
 
 ## 0.3.7
 
-* Add a `Future<bool> canResolveActivity` method to the AndroidIntent class. It 
-  can be used to determine whether a device supports a particular intent or has 
+* Add a `Future<bool> canResolveActivity` method to the AndroidIntent class. It
+  can be used to determine whether a device supports a particular intent or has
   an app installed that can resolve it. It is based on PackageManager
   [resolveActivity](https://developer.android.com/reference/android/content/pm/PackageManager#resolveActivity(android.content.Intent,%20int)).
 
@@ -32,7 +64,7 @@
 
 ## 0.3.5
 
-* Add support for [setType](https://developer.android.com/reference/android/content/Intent.html#setType(java.lang.String)) and [setDataAndType](https://developer.android.com/reference/android/content/Intent.html#setDataAndType(android.net.Uri,%20java.lang.String)) parameters. 
+* Add support for [setType](https://developer.android.com/reference/android/content/Intent.html#setType(java.lang.String)) and [setDataAndType](https://developer.android.com/reference/android/content/Intent.html#setDataAndType(android.net.Uri,%20java.lang.String)) parameters.
 
 ##  0.3.4+8
 

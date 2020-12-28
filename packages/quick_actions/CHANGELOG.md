@@ -1,3 +1,23 @@
+## 0.4.0+12
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.4.0+11
+
+* Update Flutter SDK constraint.
+
+## 0.4.0+10
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.0+9
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.4.0+8
+
+* Update package:e2e -> package:integration_test
+
 ## 0.4.0+7
 
 * Update package:e2e reference to use the local version in the flutter/plugins

@@ -1,3 +1,15 @@
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 1.0.5
+
+* Update Flutter SDK constraint.
+
+## 1.0.4
+
+* Remove unused `test` dependency.
+
 ## 1.0.3
 
 * Increase upper range of `package:platform` constraint to allow 3.X versions.

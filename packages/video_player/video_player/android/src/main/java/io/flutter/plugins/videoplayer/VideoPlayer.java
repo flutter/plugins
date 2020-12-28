@@ -9,22 +9,20 @@ import android.os.Build;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
@@ -69,8 +67,7 @@ final class VideoPlayer {
     this.textureEntry = textureEntry;
     this.options = options;
 
-    TrackSelector trackSelector = new DefaultTrackSelector();
-    exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+    exoPlayer = new SimpleExoPlayer.Builder(context).build();
 
     Uri uri = Uri.parse(dataSource);
 
@@ -88,7 +85,8 @@ final class VideoPlayer {
     }
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
-    exoPlayer.prepare(mediaSource);
+    exoPlayer.setMediaSource(mediaSource);
+    exoPlayer.prepare();
 
     setupVideoPlayer(eventChannel, textureEntry);
   }
@@ -130,18 +128,18 @@ final class VideoPlayer {
         return new SsMediaSource.Factory(
                 new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
                 new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
-            .createMediaSource(uri);
+            .createMediaSource(MediaItem.fromUri(uri));
       case C.TYPE_DASH:
         return new DashMediaSource.Factory(
                 new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
                 new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
-            .createMediaSource(uri);
+            .createMediaSource(MediaItem.fromUri(uri));
       case C.TYPE_HLS:
-        return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
+        return new HlsMediaSource.Factory(mediaDataSourceFactory)
+            .createMediaSource(MediaItem.fromUri(uri));
       case C.TYPE_OTHER:
-        return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
-            .setExtractorsFactory(new DefaultExtractorsFactory())
-            .createMediaSource(uri);
+        return new ProgressiveMediaSource.Factory(mediaDataSourceFactory)
+            .createMediaSource(MediaItem.fromUri(uri));
       default:
         {
           throw new IllegalStateException("Unsupported type: " + type);
@@ -171,10 +169,21 @@ final class VideoPlayer {
 
     exoPlayer.addListener(
         new EventListener() {
+          private boolean isBuffering = false;
+
+          public void setBuffering(boolean buffering) {
+            if (isBuffering != buffering) {
+              isBuffering = buffering;
+              Map<String, Object> event = new HashMap<>();
+              event.put("event", isBuffering ? "bufferingStart" : "bufferingEnd");
+              eventSink.success(event);
+            }
+          }
 
           @Override
-          public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
+          public void onPlaybackStateChanged(final int playbackState) {
             if (playbackState == Player.STATE_BUFFERING) {
+              setBuffering(true);
               sendBufferingUpdate();
             } else if (playbackState == Player.STATE_READY) {
               if (!isInitialized) {
@@ -186,10 +195,15 @@ final class VideoPlayer {
               event.put("event", "completed");
               eventSink.success(event);
             }
+
+            if (playbackState != Player.STATE_BUFFERING) {
+              setBuffering(false);
+            }
           }
 
           @Override
           public void onPlayerError(final ExoPlaybackException error) {
+            setBuffering(false);
             if (eventSink != null) {
               eventSink.error("VideoError", "Video player had error " + error, null);
             }
@@ -231,6 +245,14 @@ final class VideoPlayer {
   void setVolume(double value) {
     float bracketedValue = (float) Math.max(0.0, Math.min(1.0, value));
     exoPlayer.setVolume(bracketedValue);
+  }
+
+  void setPlaybackSpeed(double value) {
+    // We do not need to consider pitch and skipSilence for now as we do not handle them and
+    // therefore never diverge from the default values.
+    final PlaybackParameters playbackParameters = new PlaybackParameters(((float) value));
+
+    exoPlayer.setPlaybackParameters(playbackParameters);
   }
 
   void seekTo(int location) {

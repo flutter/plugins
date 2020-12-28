@@ -10,9 +10,13 @@ dependencies:
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-  e2e:
-    path: ../../../e2e
-  pedantic: ^1.8.0
+  integration_test:
+    path: ../../../integration_test
+  pedantic: ^1.10.0-nullsafety.1
 
 flutter:
   uses-material-design: true
+
+environment:
+  sdk: ">=2.10.0-56.0.dev <3.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"

@@ -8,8 +8,8 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  e2e:
-    path: ../../e2e
+  integration_test:
+    path: ../../integration_test
   flutter_driver:
     sdk: flutter
   pedantic: ^1.8.0
@@ -17,3 +17,7 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
   uses-material-design: true
+
+environment:
+  sdk: ">=2.3.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"
