@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 class DomHelper {
   final _container = Element.tag('file-selector');
 
-  ///
+  /// Default constructor, initializes the container DOM element.
   DomHelper() {
     final body = querySelector('body');
     body.children.add(_container);
