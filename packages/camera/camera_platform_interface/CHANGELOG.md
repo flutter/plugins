@@ -1,3 +1,7 @@
+## 1.2.0
+
+- Added interface to support automatic exposure.
+
 ## 1.1.0
 
 - Added an optional `maxVideoDuration` parameter to the `startVideoRecording` method, which allows implementations to limit the duration of a video recording.
