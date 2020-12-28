@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/utils/utils.dart';
@@ -190,6 +191,62 @@ class MethodChannelCamera extends CameraPlatform {
       );
 
   @override
+  Future<void> setExposureMode(int cameraId, ExposureMode mode) =>
+      _channel.invokeMethod<void>(
+        'setExposureMode',
+        <String, dynamic>{
+          'cameraId': cameraId,
+          'mode': serializeExposureMode(mode),
+        },
+      );
+
+  @override
+  Future<void> setExposurePoint(int cameraId, Point<double> point) {
+    assert(point == null || point.x >= 0 && point.x <= 1);
+    assert(point == null || point.y >= 0 && point.y <= 1);
+    return _channel.invokeMethod<void>(
+      'setExposurePoint',
+      <String, dynamic>{
+        'cameraId': cameraId,
+        'reset': point == null,
+        'x': point?.x,
+        'y': point?.y,
+      },
+    );
+  }
+
+  @override
+  Future<double> getMinExposureOffset(int cameraId) =>
+      _channel.invokeMethod<double>(
+        'getMinExposureOffset',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+
+  @override
+  Future<double> getMaxExposureOffset(int cameraId) =>
+      _channel.invokeMethod<double>(
+        'getMaxExposureOffset',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+
+  @override
+  Future<double> getExposureOffsetStepSize(int cameraId) =>
+      _channel.invokeMethod<double>(
+        'getExposureOffsetStepSize',
+        <String, dynamic>{'cameraId': cameraId},
+      );
+
+  @override
+  Future<double> setExposureOffset(int cameraId, double offset) =>
+      _channel.invokeMethod<double>(
+        'setExposureOffset',
+        <String, dynamic>{
+          'cameraId': cameraId,
+          'offset': offset,
+        },
+      );
+
+  @override
   Future<double> getMaxZoomLevel(int cameraId) => _channel.invokeMethod<double>(
         'getMaxZoomLevel',
         <String, dynamic>{'cameraId': cameraId},
@@ -269,6 +326,8 @@ class MethodChannelCamera extends CameraPlatform {
           cameraId,
           call.arguments['previewWidth'],
           call.arguments['previewHeight'],
+          deserializeExposureMode(call.arguments['exposureMode']),
+          call.arguments['exposurePointSupported'],
         ));
         break;
       case 'resolution_changed':
