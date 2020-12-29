@@ -59,7 +59,7 @@ requires the Xcode build folder to be rebuilt after changes to the version strin
 Clean the Xcode build folder with: 
 `XCode Menu -> Product -> (Holding Option Key) Clean build folder`. 
 
-- If you Android application `targetSdkVersion` >= 30, by default, you can only get information about system applications.For specific applications or all applications, please refer to: [Package visibility in Android 11](https://developer.android.com/about/versions/11/privacy/package-visibility)
+- If you Android application `targetSdkVersion` >= 30, by default, you can only get information about system applications and self.For specific applications or all user applications, please refer to: [Package visibility in Android 11](https://developer.android.com/about/versions/11/privacy/package-visibility)
 
 ## Issues and feedback
 
