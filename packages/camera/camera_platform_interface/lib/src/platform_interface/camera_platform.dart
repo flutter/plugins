@@ -91,8 +91,11 @@ abstract class CameraPlatform extends PlatformInterface {
 
   /// Starts a video recording.
   ///
+  /// The length of the recording can be limited by specifying the [maxVideoDuration].
+  /// By default no maximum duration is specified,
+  /// meaning the recording will continue until manually stopped.
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
-  Future<void> startVideoRecording(int cameraId) {
+  Future<void> startVideoRecording(int cameraId, {Duration maxVideoDuration}) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 

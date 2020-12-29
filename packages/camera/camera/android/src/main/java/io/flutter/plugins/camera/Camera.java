@@ -292,7 +292,9 @@ public class Camera {
             @NonNull CameraCaptureSession session,
             @NonNull CaptureRequest request,
             @NonNull CaptureFailure failure) {
-          assert (pictureCaptureRequest != null);
+          if (pictureCaptureRequest == null || pictureCaptureRequest.isFinished()) {
+            return;
+          }
           String reason;
           switch (failure.getReason()) {
             case CaptureFailure.REASON_ERROR:

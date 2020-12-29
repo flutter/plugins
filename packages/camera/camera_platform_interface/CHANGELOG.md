@@ -1,10 +1,14 @@
-## 1.0.6
+## 1.3.0
 
 - Added interface methods to support auto focus.
 
-## 1.0.5
+## 1.2.0
 
 - Added interface to support automatic exposure.
+
+## 1.1.0
+
+- Added an optional `maxVideoDuration` parameter to the `startVideoRecording` method, which allows implementations to limit the duration of a video recording.
 
 ## 1.0.4
 
