@@ -60,7 +60,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
         productIdentifier: purchaseParam.productDetails.id,
         quantity: 1,
         applicationUsername: purchaseParam.applicationUserName,
-        simulatesAskToBuyInSandbox: purchaseParam.sandboxTesting,
+        simulatesAskToBuyInSandbox: false, //purchaseParam.sandboxTesting,
         requestData: null));
     return true; // There's no error feedback from iOS here to return.
   }
