@@ -728,7 +728,8 @@ public class Camera {
     aeMeteringRectangle = new MeteringRectangle(targetX, targetY, targetWidth, targetHeight, 1);
     // Apply it
     initPreviewCaptureBuilder();
-    this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), pictureCaptureCallback, null);
+    this.cameraCaptureSession.setRepeatingRequest(
+        captureRequestBuilder.build(), pictureCaptureCallback, null);
     result.success(null);
   }
 

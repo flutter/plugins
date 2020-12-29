@@ -2,6 +2,10 @@
 
 * Adds auto exposure support for Android and iOS implementations.
 
+## 0.6.3+3
+
+* Updated dependency on camera_platform_interface to ^1.2.0.
+
 ## 0.6.3+2
 
 * Fixes crash on Android which occurs after video recording has stopped just before taking a picture.
