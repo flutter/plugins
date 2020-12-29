@@ -1,3 +1,7 @@
+## 0.4.4
+
+* Added get packageInfo by package name
+
 ## 0.4.3+3
 
 * Update Flutter SDK constraint.
