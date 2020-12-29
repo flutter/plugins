@@ -30,6 +30,16 @@ class PackageInfo {
     this.buildNumber,
   });
 
+  /// Make a map data to [PackageInfo]
+  factory PackageInfo._formMap(Map<String, dynamic> map) {
+    return PackageInfo(
+      appName: map["appName"],
+      packageName: map["packageName"],
+      version: map["version"],
+      buildNumber: map["buildNumber"],
+    );
+  }
+
   static PackageInfo _fromPlatform;
 
   /// Retrieves package information from the platform.
@@ -41,12 +51,7 @@ class PackageInfo {
 
     final Map<String, dynamic> map =
         await _kChannel.invokeMapMethod<String, dynamic>('getAll');
-    _fromPlatform = PackageInfo(
-      appName: map["appName"],
-      packageName: map["packageName"],
-      version: map["version"],
-      buildNumber: map["buildNumber"],
-    );
+    _fromPlatform = PackageInfo._formMap(map);
     return _fromPlatform;
   }
 
@@ -59,12 +64,7 @@ class PackageInfo {
     final Map<String, dynamic> map = await _kChannel
         .invokeMapMethod<String, dynamic>(
             'getAllByPackageName', {"packageName": packageName});
-    return PackageInfo(
-      appName: map["appName"],
-      packageName: map["packageName"],
-      version: map["version"],
-      buildNumber: map["buildNumber"],
-    );
+    return PackageInfo._formMap(map);
   }
 
   /// The app name. `CFBundleDisplayName` on iOS, `application/label` on Android.
