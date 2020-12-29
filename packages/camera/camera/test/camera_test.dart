@@ -26,8 +26,7 @@ get mockAvailableCameras => [
 
 get mockInitializeCamera => 13;
 
-get mockOnCameraInitializedEvent =>
-    CameraInitializedEvent(13, 75, 75, ExposureMode.auto, false);
+get mockOnCameraInitializedEvent => CameraInitializedEvent(13, 75, 75);
 
 get mockOnCameraClosingEvent => null;
 
@@ -642,8 +641,7 @@ class MockCameraPlatform extends Mock
       : Future.value(mockTakePicture);
 
   @override
-  Future<XFile> startVideoRecording(int cameraId,
-          {Duration maxVideoDuration}) =>
+  Future<XFile> startVideoRecording(int cameraId) =>
       Future.value(mockVideoRecordingXFile);
 }
 
