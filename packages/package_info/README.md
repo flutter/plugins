@@ -54,10 +54,12 @@ PackageInfo.fromPlatformByPackageName("com.packagename").then((PackageInfo packa
 
 ## Known Issue
 
-As noted on [issue 20761](https://github.com/flutter/flutter/issues/20761#issuecomment-493434578), package_info on iOS 
+- As noted on [issue 20761](https://github.com/flutter/flutter/issues/20761#issuecomment-493434578), package_info on iOS 
 requires the Xcode build folder to be rebuilt after changes to the version string in `pubspec.yaml`. 
 Clean the Xcode build folder with: 
 `XCode Menu -> Product -> (Holding Option Key) Clean build folder`. 
+
+- If you Android application `targetSdkVersion` >= 30, by default, you can only get information about system applications.For specific applications or all applications, please refer to: [Package visibility in Android 11](https://developer.android.com/about/versions/11/privacy/package-visibility)
 
 ## Issues and feedback
 
