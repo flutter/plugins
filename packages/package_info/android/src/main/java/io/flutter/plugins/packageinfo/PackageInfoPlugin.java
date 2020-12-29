@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -41,33 +44,49 @@ public class PackageInfoPlugin implements MethodCallHandler, FlutterPlugin {
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     applicationContext = null;
     methodChannel.setMethodCallHandler(null);
     methodChannel = null;
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, @NonNull Result result) {
     try {
-      if (call.method.equals("getAll")) {
-        PackageManager pm = applicationContext.getPackageManager();
-        PackageInfo info = pm.getPackageInfo(applicationContext.getPackageName(), 0);
-
-        Map<String, String> map = new HashMap<>();
-        map.put("appName", info.applicationInfo.loadLabel(pm).toString());
-        map.put("packageName", applicationContext.getPackageName());
-        map.put("version", info.versionName);
-        map.put("buildNumber", String.valueOf(getLongVersionCode(info)));
-
-        result.success(map);
-      } else {
-        result.notImplemented();
+      switch (call.method){
+        case "getAll":{
+          String packageName = applicationContext.getPackageName();
+          assert packageName != null;
+          Map<String, String> map = getApplicationInfoByPackageName(packageName);
+          result.success(map);
+          break;
+        }
+        case "getAllByPackageName":{
+          String packageName = call.argument("packageName");
+          assert packageName != null;
+          Map<String, String> map = getApplicationInfoByPackageName(packageName);
+          result.success(map);
+          break;
+        }
+        default:
+          result.notImplemented();
       }
     } catch (PackageManager.NameNotFoundException ex) {
       result.error("Name not found", ex.getMessage(), null);
     }
   }
+
+  private Map<String, String> getApplicationInfoByPackageName(@NonNull String packageName) throws PackageManager.NameNotFoundException {
+    PackageManager pm = applicationContext.getPackageManager();
+    PackageInfo info = pm.getPackageInfo(packageName, 0);
+    Map<String, String> map = new HashMap<>();
+    map.put("appName", info.applicationInfo.loadLabel(pm).toString());
+    map.put("packageName", applicationContext.getPackageName());
+    map.put("version", info.versionName);
+    map.put("buildNumber", String.valueOf(getLongVersionCode(info)));
+    return map;
+  }
+
 
   @SuppressWarnings("deprecation")
   private static long getLongVersionCode(PackageInfo info) {

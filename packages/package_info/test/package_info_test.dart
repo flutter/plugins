@@ -23,6 +23,18 @@ void main() {
           'packageName': 'io.flutter.plugins.packageinfoexample',
           'version': '1.0',
         };
+      case 'getAllByPackageName':
+        String packageName = methodCall.arguments["packageName"];
+        if (packageName == "io.flutter.plugins.packageinfoexample") {
+          return <String, dynamic>{
+            'appName': 'package_info_example',
+            'buildNumber': '1',
+            'packageName': 'io.flutter.plugins.packageinfoexample',
+            'version': '1.0',
+          };
+        }
+        assert(false);
+        return null;
       default:
         assert(false);
         return null;
@@ -46,4 +58,19 @@ void main() {
       ],
     );
   });
+
+  test('fromPlatformByPackageName', () async {
+    final PackageInfo info = await PackageInfo.fromPlatformByPackageName("io.flutter.plugins.packageinfoexample");
+    expect(info.appName, 'package_info_example');
+    expect(info.buildNumber, '1');
+    expect(info.packageName, 'io.flutter.plugins.packageinfoexample');
+    expect(info.version, '1.0');
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('getAllByPackageName', arguments: {"packageName":"io.flutter.plugins.packageinfoexample"}),
+      ],
+    );
+  });
+
 }

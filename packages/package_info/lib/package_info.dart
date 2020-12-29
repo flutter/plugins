@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
@@ -48,6 +49,22 @@ class PackageInfo {
       buildNumber: map["buildNumber"],
     );
     return _fromPlatform;
+  }
+
+  /// Retrieves package information from the platform With PackageName.
+  /// Currently only support Android Platform
+  static Future<PackageInfo> fromPlatformByPackageName(
+      String packageName) async {
+    assert(packageName != null);
+    final Map<String, dynamic> map = await _kChannel
+        .invokeMapMethod<String, dynamic>(
+            'getAllByPackageName', {"packageName": packageName});
+    return PackageInfo(
+      appName: map["appName"],
+      packageName: map["packageName"],
+      version: map["version"],
+      buildNumber: map["buildNumber"],
+    );
   }
 
   /// The app name. `CFBundleDisplayName` on iOS, `application/label` on Android.
