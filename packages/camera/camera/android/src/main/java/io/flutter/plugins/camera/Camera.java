@@ -286,7 +286,9 @@ public class Camera {
             @NonNull CameraCaptureSession session,
             @NonNull CaptureRequest request,
             @NonNull CaptureFailure failure) {
-          assert (pictureCaptureRequest != null);
+          if (pictureCaptureRequest == null || pictureCaptureRequest.isFinished()) {
+            return;
+          }
           String reason;
           switch (failure.getReason()) {
             case CaptureFailure.REASON_ERROR:
@@ -726,12 +728,8 @@ public class Camera {
     aeMeteringRectangle = new MeteringRectangle(targetX, targetY, targetWidth, targetHeight, 1);
     // Apply it
     initPreviewCaptureBuilder();
-    try {
-      cameraCaptureSession.setRepeatingRequest(
-          captureRequestBuilder.build(), pictureCaptureCallback, null);
-    } catch (CameraAccessException e) {
-      pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
-    }
+    this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), pictureCaptureCallback, null);
+    result.success(null);
   }
 
   @SuppressLint("NewApi")
