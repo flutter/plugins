@@ -51,7 +51,8 @@ class PackageInfo {
   }
 
   /// Retrieves package information from the platform With PackageName.
-  /// Currently only support Android Platform
+  /// The [packageName] argument must not be null.
+  /// Currently only support Android Platform.
   static Future<PackageInfo> fromPlatformByPackageName(
       String packageName) async {
     assert(packageName != null);

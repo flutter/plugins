@@ -18,18 +18,43 @@ application package. This works both on iOS and Android.
 ```dart
 import 'package:package_info/package_info.dart';
 
+/// Get this application packageInfo
+
 PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
 String appName = packageInfo.appName;
 String packageName = packageInfo.packageName;
 String version = packageInfo.version;
 String buildNumber = packageInfo.buildNumber;
+
+/// Get application packageInfo by packageName
+/// Currently Only Support Android
+
+PackageInfo packageInfo = await PackageInfo.fromPlatformByPackageName("com.packagename");
+
+String appName = packageInfo.appName;
+String packageName = packageInfo.packageName;
+String version = packageInfo.version;
+String buildNumber = packageInfo.buildNumber;
+
 ```
 
 Or in async mode:
 
 ```dart
+/// Get this application packageInfo
+
 PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+  String appName = packageInfo.appName;
+  String packageName = packageInfo.packageName;
+  String version = packageInfo.version;
+  String buildNumber = packageInfo.buildNumber;
+});
+
+/// Get application packageInfo by packageName
+/// Currently Only Support Android
+
+PackageInfo.fromPlatformByPackageName("com.packagename").then((PackageInfo packageInfo) {
   String appName = packageInfo.appName;
   String packageName = packageInfo.packageName;
   String version = packageInfo.version;
