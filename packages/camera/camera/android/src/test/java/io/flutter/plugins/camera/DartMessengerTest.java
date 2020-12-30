@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.StandardMethodCodec;
+import io.flutter.plugins.camera.types.ExposureMode;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;

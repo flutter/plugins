@@ -86,7 +86,7 @@ public class Camera {
   private FlashMode flashMode;
   private ExposureMode exposureMode;
   private PictureCaptureRequest pictureCaptureRequest;
-  private MeteringRectangle aeMeteringRectangle;
+  private CameraRegions cameraRegions;
   private int exposureOffset;
 
   public Camera(
@@ -167,6 +167,7 @@ public class Camera {
           public void onOpened(@NonNull CameraDevice device) {
             cameraDevice = device;
             try {
+              cameraRegions = new CameraRegions(getRegionBoundaries());
               startPreview();
               dartMessenger.sendCameraInitializedEvent(
                   previewSize.getWidth(),
@@ -702,30 +703,14 @@ public class Camera {
       x = 0.5;
       y = 0.5;
     }
-    // Get the current exposure point boundaries.
-    Size maxBoundaries = getExposureBoundaries();
+    // Get the current region boundaries.
+    Size maxBoundaries = getRegionBoundaries();
     if (maxBoundaries == null) {
       result.error("setExposurePointFailed", "Could not determine max region boundaries", null);
       return;
     }
-    // Interpolate the target coordinate
-    int targetX = (int) Math.round(x * ((double) (maxBoundaries.getWidth() - 1)));
-    int targetY = (int) Math.round(y * ((double) (maxBoundaries.getHeight() - 1)));
-    // Determine the dimensions of the metering triangle (1th of the viewport)
-    int targetWidth = (int) Math.round(((double) maxBoundaries.getWidth()) / 10d);
-    int targetHeight = (int) Math.round(((double) maxBoundaries.getHeight()) / 10d);
-    // Adjust target coordinate to represent top-left corner of metering rectangle
-    targetX -= targetWidth / 2;
-    targetY -= targetHeight / 2;
-    // Adjust target coordinate as to not fall out of bounds
-    if (targetX < 0) targetX = 0;
-    if (targetY < 0) targetY = 0;
-    int maxTargetX = maxBoundaries.getWidth() - 1 - targetWidth;
-    int maxTargetY = maxBoundaries.getHeight() - 1 - targetHeight;
-    if (targetX > maxTargetX) targetX = maxTargetX;
-    if (targetY > maxTargetY) targetY = maxTargetY;
     // Set the metering rectangle
-    aeMeteringRectangle = new MeteringRectangle(targetX, targetY, targetWidth, targetHeight, 1);
+    cameraRegions.setAutoExposureMeteringRectangleFromPoint(x, y);
     // Apply it
     initPreviewCaptureBuilder();
     this.cameraCaptureSession.setRepeatingRequest(
@@ -733,25 +718,23 @@ public class Camera {
     result.success(null);
   }
 
-  @SuppressLint("NewApi")
-  private Size getExposureBoundaries() throws CameraAccessException {
-    // Check if the device supports distortion correction
-    boolean supportsDistortionCorrection = false;
-    if (android.os.Build.VERSION.SDK_INT >= VERSION_CODES.P) {
-      int[] availableDistortionCorrectionModes =
-          cameraManager
-              .getCameraCharacteristics(cameraDevice.getId())
-              .get(CameraCharacteristics.DISTORTION_CORRECTION_AVAILABLE_MODES);
-      if (availableDistortionCorrectionModes == null)
-        availableDistortionCorrectionModes = new int[0];
-      long nonOffModesSupported =
-          Arrays.stream(availableDistortionCorrectionModes)
-              .filter((value) -> value != CaptureRequest.DISTORTION_CORRECTION_MODE_OFF)
-              .count();
-      supportsDistortionCorrection = nonOffModesSupported > 0;
-    }
+  @TargetApi(VERSION_CODES.P)
+  private boolean supportsDistortionCorrection() throws CameraAccessException {
+    int[] availableDistortionCorrectionModes =
+        cameraManager
+            .getCameraCharacteristics(cameraDevice.getId())
+            .get(CameraCharacteristics.DISTORTION_CORRECTION_AVAILABLE_MODES);
+    if (availableDistortionCorrectionModes == null) availableDistortionCorrectionModes = new int[0];
+    long nonOffModesSupported =
+        Arrays.stream(availableDistortionCorrectionModes)
+            .filter((value) -> value != CaptureRequest.DISTORTION_CORRECTION_MODE_OFF)
+            .count();
+    return nonOffModesSupported > 0;
+  }
+
+  private Size getRegionBoundaries() throws CameraAccessException {
     // No distortion correction support
-    if (!supportsDistortionCorrection) {
+    if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.P || !supportsDistortionCorrection()) {
       return cameraManager
           .getCameraCharacteristics(cameraDevice.getId())
           .get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
@@ -850,10 +833,10 @@ public class Camera {
         break;
     }
     // Applying auto exposure
-    if (aeMeteringRectangle != null) {
-      captureRequestBuilder.set(
-          CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[] {aeMeteringRectangle});
-    }
+    MeteringRectangle aeRect = cameraRegions.getAEMeteringRectangle();
+    captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AE_REGIONS,
+        new MeteringRectangle[] {cameraRegions.getAEMeteringRectangle()});
     switch (exposureMode) {
       case locked:
         captureRequestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
