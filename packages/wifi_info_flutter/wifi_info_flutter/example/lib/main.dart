@@ -42,9 +42,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _connectionStatus = 'Unknown';
   final Connectivity _connectivity = Connectivity();
   final WifiInfo _wifiInfo = WifiInfo();
-  StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
   void initState() {
@@ -72,12 +72,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initConnectivity() async {
-    ConnectivityResult result;
+    late final ConnectivityResult result;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       result = await _connectivity.checkConnectivity();
     } on PlatformException catch (e) {
       print(e.toString());
+      return;
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -103,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
     switch (result) {
       case ConnectivityResult.wifi:
-        String wifiName, wifiBSSID, wifiIP;
+        String? wifiName, wifiBSSID, wifiIP;
 
         try {
           if (!kIsWeb && Platform.isIOS) {
@@ -114,12 +115,12 @@ class _MyHomePageState extends State<MyHomePage> {
             }
             if (status == LocationAuthorizationStatus.authorizedAlways ||
                 status == LocationAuthorizationStatus.authorizedWhenInUse) {
-              wifiName = await _connectivity.getWifiName();
+              wifiName = await _wifiInfo.getWifiName();
             } else {
-              wifiName = await _connectivity.getWifiName();
+              wifiName = await _wifiInfo.getWifiName();
             }
           } else {
-            wifiName = await _connectivity.getWifiName();
+            wifiName = await _wifiInfo.getWifiName();
           }
         } on PlatformException catch (e) {
           print(e.toString());
@@ -135,12 +136,12 @@ class _MyHomePageState extends State<MyHomePage> {
             }
             if (status == LocationAuthorizationStatus.authorizedAlways ||
                 status == LocationAuthorizationStatus.authorizedWhenInUse) {
-              wifiBSSID = await _connectivity.getWifiBSSID();
+              wifiBSSID = await _wifiInfo.getWifiBSSID();
             } else {
-              wifiBSSID = await _connectivity.getWifiBSSID();
+              wifiBSSID = await _wifiInfo.getWifiBSSID();
             }
           } else {
-            wifiBSSID = await _connectivity.getWifiBSSID();
+            wifiBSSID = await _wifiInfo.getWifiBSSID();
           }
         } on PlatformException catch (e) {
           print(e.toString());
@@ -148,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         try {
-          wifiIP = await _connectivity.getWifiIP();
+          wifiIP = await _wifiInfo.getWifiIP();
         } on PlatformException catch (e) {
           print(e.toString());
           wifiIP = "Failed to get Wifi IP";
