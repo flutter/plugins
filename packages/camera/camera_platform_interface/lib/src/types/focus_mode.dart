@@ -13,6 +13,7 @@ enum FocusMode {
 
 /// Returns the focus mode as a String.
 String serializeFocusMode(FocusMode focusMode) {
+  if (focusMode == null) return null;
   switch (focusMode) {
     case FocusMode.locked:
       return 'locked';
@@ -25,6 +26,7 @@ String serializeFocusMode(FocusMode focusMode) {
 
 /// Returns the focus mode for a given String.
 FocusMode deserializeFocusMode(String str) {
+  if (str == null) return null;
   switch (str) {
     case "locked":
       return FocusMode.locked;

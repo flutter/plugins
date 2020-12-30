@@ -69,12 +69,12 @@ class CameraInitializedEvent extends CameraEvent {
   CameraInitializedEvent(
     int cameraId,
     this.previewWidth,
-    this.previewHeight,
+    this.previewHeight, [
     this.exposureMode,
+    this.exposurePointSupported = false,
     this.focusMode,
-    this.exposurePointSupported,
-    this.focusPointSupported,
-  ) : super(cameraId);
+    this.focusPointSupported = false,
+  ]) : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [CameraInitializedEvent]
   /// class.
@@ -82,9 +82,9 @@ class CameraInitializedEvent extends CameraEvent {
       : previewWidth = json['previewWidth'],
         previewHeight = json['previewHeight'],
         exposureMode = deserializeExposureMode(json['exposureMode']),
+        exposurePointSupported = json['exposurePointSupported'] ?? false,
         focusMode = deserializeFocusMode(json['focusMode']),
-        exposurePointSupported = json['exposurePointSupported'],
-        focusPointSupported = json['focusPointSupported'],
+        focusPointSupported = json['focusPointSupported'] ?? false,
         super(json['cameraId']);
 
   /// Converts the [CameraInitializedEvent] instance into a [Map] instance that
@@ -94,8 +94,8 @@ class CameraInitializedEvent extends CameraEvent {
         'previewWidth': previewWidth,
         'previewHeight': previewHeight,
         'exposureMode': serializeExposureMode(exposureMode),
-        'focusMode': serializeFocusMode(focusMode),
         'exposurePointSupported': exposurePointSupported,
+        'focusMode': serializeFocusMode(focusMode),
         'focusPointSupported': focusPointSupported,
       };
 
@@ -108,8 +108,8 @@ class CameraInitializedEvent extends CameraEvent {
           previewWidth == other.previewWidth &&
           previewHeight == other.previewHeight &&
           exposureMode == other.exposureMode &&
-          focusMode == other.focusMode &&
           exposurePointSupported == other.exposurePointSupported &&
+          focusMode == other.focusMode &&
           focusPointSupported == other.focusPointSupported;
 
   @override
@@ -118,8 +118,8 @@ class CameraInitializedEvent extends CameraEvent {
       previewWidth.hashCode ^
       previewHeight.hashCode ^
       exposureMode.hashCode ^
-      focusMode.hashCode ^
       exposurePointSupported.hashCode ^
+      focusMode.hashCode ^
       focusPointSupported.hashCode;
 }
 

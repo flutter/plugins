@@ -125,8 +125,8 @@ void main() {
           1920,
           1080,
           ExposureMode.auto,
-          FocusMode.auto,
           true,
+          FocusMode.auto,
           true,
         ));
         await initializeFuture;
@@ -165,8 +165,8 @@ void main() {
           1920,
           1080,
           ExposureMode.auto,
-          FocusMode.auto,
           true,
+          FocusMode.auto,
           true,
         ));
         await initializeFuture;
@@ -209,8 +209,8 @@ void main() {
           1920,
           1080,
           ExposureMode.auto,
-          FocusMode.auto,
           true,
+          FocusMode.auto,
           true,
         ));
         await initializeFuture;
@@ -228,8 +228,8 @@ void main() {
           3840,
           2160,
           ExposureMode.auto,
-          FocusMode.auto,
           true,
+          FocusMode.auto,
           true,
         );
         await camera.handleMethodCall(
@@ -341,8 +341,8 @@ void main() {
             1920,
             1080,
             ExposureMode.auto,
-            FocusMode.auto,
             true,
+            FocusMode.auto,
             true,
           ),
         );
