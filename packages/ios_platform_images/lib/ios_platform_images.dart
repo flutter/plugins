@@ -135,6 +135,6 @@ class IosPlatformImages {
   ///
   /// See [https://developer.apple.com/documentation/foundation/nsbundle/1411540-urlforresource?language=objc]
   static Future<String?> resolveURL(String name, [String? ext]) {
-    return _channel.invokeMethod<String>('resolveURL', [name, ext]);
+    return _channel.invokeMethod<String?>('resolveURL', [name, ext]);
   }
 }
