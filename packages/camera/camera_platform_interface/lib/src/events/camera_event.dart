@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../../camera_platform_interface.dart';
+
 /// Generic Event coming from the native side of Camera.
 ///
 /// All [CameraEvent]s contain the `cameraId` that originated the event. This
@@ -45,6 +47,12 @@ class CameraInitializedEvent extends CameraEvent {
   /// The height of the preview in pixels.
   final double previewHeight;
 
+  /// The default exposure mode
+  final ExposureMode exposureMode;
+
+  /// Whether setting exposure points is supported.
+  final bool exposurePointSupported;
+
   /// Build a CameraInitialized event triggered from the camera represented by
   /// `cameraId`.
   ///
@@ -54,6 +62,8 @@ class CameraInitializedEvent extends CameraEvent {
     int cameraId,
     this.previewWidth,
     this.previewHeight,
+    this.exposureMode,
+    this.exposurePointSupported,
   ) : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [CameraInitializedEvent]
@@ -61,6 +71,8 @@ class CameraInitializedEvent extends CameraEvent {
   CameraInitializedEvent.fromJson(Map<String, dynamic> json)
       : previewWidth = json['previewWidth'],
         previewHeight = json['previewHeight'],
+        exposureMode = deserializeExposureMode(json['exposureMode']),
+        exposurePointSupported = json['exposurePointSupported'],
         super(json['cameraId']);
 
   /// Converts the [CameraInitializedEvent] instance into a [Map] instance that
@@ -69,6 +81,8 @@ class CameraInitializedEvent extends CameraEvent {
         'cameraId': cameraId,
         'previewWidth': previewWidth,
         'previewHeight': previewHeight,
+        'exposureMode': serializeExposureMode(exposureMode),
+        'exposurePointSupported': exposurePointSupported,
       };
 
   @override
@@ -78,11 +92,17 @@ class CameraInitializedEvent extends CameraEvent {
           other is CameraInitializedEvent &&
           runtimeType == other.runtimeType &&
           previewWidth == other.previewWidth &&
-          previewHeight == other.previewHeight;
+          previewHeight == other.previewHeight &&
+          exposureMode == other.exposureMode &&
+          exposurePointSupported == other.exposurePointSupported;
 
   @override
   int get hashCode =>
-      super.hashCode ^ previewWidth.hashCode ^ previewHeight.hashCode;
+      super.hashCode ^
+      previewWidth.hashCode ^
+      previewHeight.hashCode ^
+      exposureMode.hashCode ^
+      exposurePointSupported.hashCode;
 }
 
 /// An event fired when the resolution preset of the camera has changed.

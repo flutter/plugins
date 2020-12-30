@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCaptureSession.CaptureCallback;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
@@ -29,12 +30,15 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugins.camera.PictureCaptureRequest.State;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
 import io.flutter.plugins.camera.types.FlashMode;
 import io.flutter.plugins.camera.types.ResolutionPreset;
@@ -246,7 +250,7 @@ public class Camera {
         },
         null);
 
-    runPicturePreCapture();
+    runPictureAutoFocus();
   }
 
   private final CameraCaptureSession.CaptureCallback pictureCaptureCallback =
@@ -256,18 +260,15 @@ public class Camera {
             @NonNull CameraCaptureSession session,
             @NonNull CaptureRequest request,
             @NonNull TotalCaptureResult result) {
-          assert (pictureCaptureRequest != null);
-          switch (pictureCaptureRequest.getState()) {
-            case awaitingPreCapture:
-              Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-              // Some devices might return null here, in which case we will also continue.
-              if (aeState == null
-                  || aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED
-                  || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
-                runPictureCapture();
-              }
-              break;
-          }
+          processCapture(result);
+        }
+
+        @Override
+        public void onCaptureProgressed(
+            @NonNull CameraCaptureSession session,
+            @NonNull CaptureRequest request,
+            @NonNull CaptureResult partialResult) {
+          processCapture(partialResult);
         }
 
         @Override
@@ -275,7 +276,9 @@ public class Camera {
             @NonNull CameraCaptureSession session,
             @NonNull CaptureRequest request,
             @NonNull CaptureFailure failure) {
-          assert (pictureCaptureRequest != null);
+          if (pictureCaptureRequest == null || pictureCaptureRequest.isFinished()) {
+            return;
+          }
           String reason;
           switch (failure.getReason()) {
             case CaptureFailure.REASON_ERROR:
@@ -289,11 +292,54 @@ public class Camera {
           }
           pictureCaptureRequest.error("captureFailure", reason, null);
         }
+
+        private void processCapture(CaptureResult result) {
+          if (pictureCaptureRequest == null) {
+            return;
+          }
+
+          Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+          Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+          switch (pictureCaptureRequest.getState()) {
+            case focusing:
+              if (afState == null) {
+                return;
+              } else if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED
+                  || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+                // Some devices might return null here, in which case we will also continue.
+                if (aeState == null || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
+                  runPictureCapture();
+                } else {
+                  runPicturePreCapture();
+                }
+              }
+              break;
+            case preCapture:
+              // Some devices might return null here, in which case we will also continue.
+              if (aeState == null
+                  || aeState == CaptureRequest.CONTROL_AE_STATE_PRECAPTURE
+                  || aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED
+                  || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
+                pictureCaptureRequest.setState(State.waitingPreCaptureReady);
+              }
+              break;
+            case waitingPreCaptureReady:
+              if (aeState == null || aeState != CaptureRequest.CONTROL_AE_STATE_PRECAPTURE) {
+                runPictureCapture();
+              }
+          }
+        }
       };
+
+  private void runPictureAutoFocus() {
+    assert (pictureCaptureRequest != null);
+    pictureCaptureRequest.setState(PictureCaptureRequest.State.focusing);
+    lockAutoFocus();
+  }
 
   private void runPicturePreCapture() {
     assert (pictureCaptureRequest != null);
-    pictureCaptureRequest.setState(PictureCaptureRequest.State.awaitingPreCapture);
+    pictureCaptureRequest.setState(PictureCaptureRequest.State.preCapture);
 
     captureRequestBuilder.set(
         CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
@@ -331,7 +377,47 @@ public class Camera {
               CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
           break;
       }
-      cameraCaptureSession.capture(captureBuilder.build(), pictureCaptureCallback, null);
+      cameraCaptureSession.stopRepeating();
+      cameraCaptureSession.capture(
+          captureBuilder.build(),
+          new CameraCaptureSession.CaptureCallback() {
+            @Override
+            public void onCaptureCompleted(
+                @NonNull CameraCaptureSession session,
+                @NonNull CaptureRequest request,
+                @NonNull TotalCaptureResult result) {
+              unlockAutoFocus();
+            }
+          },
+          null);
+    } catch (CameraAccessException e) {
+      pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
+    }
+  }
+
+  private void lockAutoFocus() {
+    captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
+    try {
+      cameraCaptureSession.capture(captureRequestBuilder.build(), pictureCaptureCallback, null);
+    } catch (CameraAccessException e) {
+      pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
+    }
+  }
+
+  private void unlockAutoFocus() {
+    captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+    initPreviewCaptureBuilder();
+    try {
+      cameraCaptureSession.capture(captureRequestBuilder.build(), null, null);
+    } catch (CameraAccessException ignored) {
+    }
+    captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
+    try {
+      cameraCaptureSession.setRepeatingRequest(
+          captureRequestBuilder.build(), pictureCaptureCallback, null);
     } catch (CameraAccessException e) {
       pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
     }
@@ -377,7 +463,10 @@ public class Camera {
               }
               cameraCaptureSession = session;
               initPreviewCaptureBuilder();
-              cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+              cameraCaptureSession.setRepeatingRequest(
+                  captureRequestBuilder.build(),
+                  pictureCaptureCallback,
+                  new Handler(Looper.getMainLooper()));
               if (onSuccessCallback != null) {
                 onSuccessCallback.run();
               }
@@ -531,11 +620,60 @@ public class Camera {
       result.error("setFlashModeFailed", "Device does not have flash capabilities", null);
       return;
     }
+
+    // If switching directly from torch to auto or on, make sure we turn off the torch.
+    if (flashMode == FlashMode.torch && mode != FlashMode.torch && mode != FlashMode.off) {
+      this.flashMode = FlashMode.off;
+      initPreviewCaptureBuilder();
+      this.cameraCaptureSession.setRepeatingRequest(
+          captureRequestBuilder.build(),
+          new CaptureCallback() {
+            private boolean isFinished = false;
+
+            @Override
+            public void onCaptureCompleted(
+                @NonNull CameraCaptureSession session,
+                @NonNull CaptureRequest request,
+                @NonNull TotalCaptureResult captureResult) {
+              if (isFinished) {
+                return;
+              }
+
+              updateFlash(mode);
+              result.success(null);
+              isFinished = true;
+            }
+
+            @Override
+            public void onCaptureFailed(
+                @NonNull CameraCaptureSession session,
+                @NonNull CaptureRequest request,
+                @NonNull CaptureFailure failure) {
+              if (isFinished) {
+                return;
+              }
+
+              result.error("setFlashModeFailed", "Could not set flash mode.", null);
+              isFinished = true;
+            }
+          },
+          null);
+    } else {
+      updateFlash(mode);
+      result.success(null);
+    }
+  }
+
+  private void updateFlash(FlashMode mode) {
     // Get flash
-    this.flashMode = mode;
+    flashMode = mode;
     initPreviewCaptureBuilder();
-    this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
-    result.success(null);
+    try {
+      cameraCaptureSession.setRepeatingRequest(
+          captureRequestBuilder.build(), pictureCaptureCallback, null);
+    } catch (CameraAccessException e) {
+      pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
+    }
   }
 
   private void initPreviewCaptureBuilder() {
@@ -563,6 +701,8 @@ public class Camera {
         captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
         break;
     }
+    captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
   }
 
   public void startPreview() throws CameraAccessException {

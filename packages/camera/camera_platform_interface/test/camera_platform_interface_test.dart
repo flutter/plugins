@@ -187,6 +187,84 @@ void main() {
     });
 
     test(
+        'Default implementation of setExposureMode() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setExposureMode(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of setExposurePoint() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setExposurePoint(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of getMinExposureOffset() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.getMinExposureOffset(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of getMaxExposureOffset() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.getMaxExposureOffset(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of getExposureOffsetStepSize() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.getExposureOffsetStepSize(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of setExposureOffset() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setExposureOffset(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
         'Default implementation of startVideoRecording() should throw unimplemented error',
         () {
       // Arrange
