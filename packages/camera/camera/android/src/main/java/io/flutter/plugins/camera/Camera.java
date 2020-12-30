@@ -88,8 +88,7 @@ public class Camera {
   private ExposureMode exposureMode;
   private FocusMode focusMode;
   private PictureCaptureRequest pictureCaptureRequest;
-  private MeteringRectangle aeMeteringRectangle;
-  private MeteringRectangle afMeteringRectangle;
+  private CameraRegions cameraRegions;
   private int exposureOffset;
 
   public Camera(
@@ -171,6 +170,7 @@ public class Camera {
           public void onOpened(@NonNull CameraDevice device) {
             cameraDevice = device;
             try {
+              cameraRegions = new CameraRegions(getRegionBoundaries());
               startPreview();
               dartMessenger.sendCameraInitializedEvent(
                   previewSize.getWidth(),
@@ -704,19 +704,14 @@ public class Camera {
           "setExposurePointFailed", "Device does not have exposure point capabilities", null);
       return;
     }
-    // Check if we are doing a reset or not
-    if (x == null || y == null) {
-      x = 0.5;
-      y = 0.5;
-    }
-    // Get the current region boundaries.
-    Size maxBoundaries = getRegionBoundaries();
-    if (maxBoundaries == null) {
+    // Check if the current region boundaries are known
+    if (cameraRegions.getMaxBoundaries() == null) {
       result.error("setExposurePointFailed", "Could not determine max region boundaries", null);
       return;
     }
     // Set the metering rectangle
-    aeMeteringRectangle = getMeteringRectangleForPoint(maxBoundaries, x, y);
+    if (x == null || y == null) cameraRegions.resetAutoExposureMeteringRectangle();
+    else cameraRegions.setAutoExposureMeteringRectangleFromPoint(x, y);
     // Apply it
     initPreviewCaptureBuilder();
     this.cameraCaptureSession.setRepeatingRequest(
@@ -756,19 +751,14 @@ public class Camera {
       result.error("setFocusPointFailed", "Device does not have focus point capabilities", null);
       return;
     }
-    // Check if we are doing a reset or not
-    if (x == null || y == null) {
-      x = 0.5;
-      y = 0.5;
-    }
-    // Get the current region boundaries.
-    Size maxBoundaries = getRegionBoundaries();
-    if (maxBoundaries == null) {
+    // Check if the current region boundaries are known
+    if (cameraRegions.getMaxBoundaries() == null) {
       result.error("setFocusPointFailed", "Could not determine max region boundaries", null);
       return;
     }
     // Set the metering rectangle
-    afMeteringRectangle = getMeteringRectangleForPoint(maxBoundaries, x, y);
+    if (x == null || y == null) cameraRegions.resetAutoFocusMeteringRectangle();
+    else cameraRegions.setAutoFocusMeteringRectangleFromPoint(x, y);
     // Apply the new metering rectangle
     initPreviewCaptureBuilder();
     switch (focusMode) {
@@ -792,46 +782,23 @@ public class Camera {
     result.success(null);
   }
 
-  private MeteringRectangle getMeteringRectangleForPoint(Size maxBoundaries, double x, double y) {
-    // Interpolate the target coordinate
-    int targetX = (int) Math.round(x * ((double) (maxBoundaries.getWidth() - 1)));
-    int targetY = (int) Math.round(y * ((double) (maxBoundaries.getHeight() - 1)));
-    // Determine the dimensions of the metering triangle (1th of the viewport)
-    int targetWidth = (int) Math.round(((double) maxBoundaries.getWidth()) / 10d);
-    int targetHeight = (int) Math.round(((double) maxBoundaries.getHeight()) / 10d);
-    // Adjust target coordinate to represent top-left corner of metering rectangle
-    targetX -= targetWidth / 2;
-    targetY -= targetHeight / 2;
-    // Adjust target coordinate as to not fall out of bounds
-    if (targetX < 0) targetX = 0;
-    if (targetY < 0) targetY = 0;
-    int maxTargetX = maxBoundaries.getWidth() - 1 - targetWidth;
-    int maxTargetY = maxBoundaries.getHeight() - 1 - targetHeight;
-    if (targetX > maxTargetX) targetX = maxTargetX;
-    if (targetY > maxTargetY) targetY = maxTargetY;
-    // Build the metering rectangle
-    return new MeteringRectangle(targetX, targetY, targetWidth, targetHeight, 1);
+  @TargetApi(VERSION_CODES.P)
+  private boolean supportsDistortionCorrection() throws CameraAccessException {
+    int[] availableDistortionCorrectionModes =
+        cameraManager
+            .getCameraCharacteristics(cameraDevice.getId())
+            .get(CameraCharacteristics.DISTORTION_CORRECTION_AVAILABLE_MODES);
+    if (availableDistortionCorrectionModes == null) availableDistortionCorrectionModes = new int[0];
+    long nonOffModesSupported =
+        Arrays.stream(availableDistortionCorrectionModes)
+            .filter((value) -> value != CaptureRequest.DISTORTION_CORRECTION_MODE_OFF)
+            .count();
+    return nonOffModesSupported > 0;
   }
 
-  @SuppressLint("NewApi")
   private Size getRegionBoundaries() throws CameraAccessException {
-    // Check if the device supports distortion correction
-    boolean supportsDistortionCorrection = false;
-    if (android.os.Build.VERSION.SDK_INT >= VERSION_CODES.P) {
-      int[] availableDistortionCorrectionModes =
-          cameraManager
-              .getCameraCharacteristics(cameraDevice.getId())
-              .get(CameraCharacteristics.DISTORTION_CORRECTION_AVAILABLE_MODES);
-      if (availableDistortionCorrectionModes == null)
-        availableDistortionCorrectionModes = new int[0];
-      long nonOffModesSupported =
-          Arrays.stream(availableDistortionCorrectionModes)
-              .filter((value) -> value != CaptureRequest.DISTORTION_CORRECTION_MODE_OFF)
-              .count();
-      supportsDistortionCorrection = nonOffModesSupported > 0;
-    }
     // No distortion correction support
-    if (!supportsDistortionCorrection) {
+    if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.P || !supportsDistortionCorrection()) {
       return cameraManager
           .getCameraCharacteristics(cameraDevice.getId())
           .get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
@@ -938,10 +905,10 @@ public class Camera {
         break;
     }
     // Applying auto exposure
-    if (aeMeteringRectangle != null) {
-      captureRequestBuilder.set(
-          CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[] {aeMeteringRectangle});
-    }
+    MeteringRectangle aeRect = cameraRegions.getAEMeteringRectangle();
+    captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AE_REGIONS,
+        aeRect == null ? new MeteringRectangle[0] : new MeteringRectangle[] {aeRect});
     switch (exposureMode) {
       case locked:
         captureRequestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
@@ -967,10 +934,10 @@ public class Camera {
       default:
         break;
     }
-    if (afMeteringRectangle != null) {
-      captureRequestBuilder.set(
-          CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[] {afMeteringRectangle});
-    }
+    MeteringRectangle afRect = cameraRegions.getAFMeteringRectangle();
+    captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AF_REGIONS,
+        afRect == null ? new MeteringRectangle[0] : new MeteringRectangle[] {afRect});
   }
 
   public void startPreview() throws CameraAccessException {
