@@ -138,14 +138,16 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       );
     } else {
       return AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: Listener(
-          onPointerDown: (_) => _pointers++,
-          onPointerUp: (_) => _pointers--,
-          child: GestureDetector(
-            onScaleStart: _handleScaleStart,
-            onScaleUpdate: _handleScaleUpdate,
-            child: CameraPreview(controller),
+        aspectRatio: 1 / controller.value.aspectRatio,
+        child: CameraPreview(
+          controller,
+          child: Listener(
+            onPointerDown: (_) => _pointers++,
+            onPointerUp: (_) => _pointers--,
+            child: GestureDetector(
+              onScaleStart: _handleScaleStart,
+              onScaleUpdate: _handleScaleUpdate,
+            ),
           ),
         ),
       );
