@@ -1,16 +1,15 @@
 package io.flutter.plugins.camera;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Size;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class CameraRegionsTest {
@@ -42,7 +41,7 @@ public class CameraRegionsTest {
     cameraRegions.getMeteringRectangleForPoint(new Size(10, 10), 0, -0.5);
   }
 
- @Test(expected = IllegalStateException.class)
+  @Test(expected = IllegalStateException.class)
   public void getMeteringRectangleForPoint_should_throw_for_null_boundaries() {
     cameraRegions.getMeteringRectangleForPoint(null, 0, -0);
   }
@@ -89,35 +88,35 @@ public class CameraRegionsTest {
     assertNull(cr.getAFMeteringRectangle());
   }
 
-    @Test
-    public void setAutoExposureMeteringRectangleFromPoint_should_set_aeMeteringRectangle_for_point() {
-        CameraRegions cr = new CameraRegions(new Size(100, 50));
-        cr.setAutoExposureMeteringRectangleFromPoint(0, 0);
-        assertEquals(new MeteringRectangle(0, 0, 10, 5, 1), cr.getAEMeteringRectangle());
-    }
+  @Test
+  public void setAutoExposureMeteringRectangleFromPoint_should_set_aeMeteringRectangle_for_point() {
+    CameraRegions cr = new CameraRegions(new Size(100, 50));
+    cr.setAutoExposureMeteringRectangleFromPoint(0, 0);
+    assertEquals(new MeteringRectangle(0, 0, 10, 5, 1), cr.getAEMeteringRectangle());
+  }
 
-    @Test
-    public void resetAutoExposureMeteringRectangle_should_reset_aeMeteringRectangle() {
-        CameraRegions cr = new CameraRegions(new Size(100, 50));
-        cr.setAutoExposureMeteringRectangleFromPoint(0, 0);
-        assertNotNull(cr.getAEMeteringRectangle());
-        cr.resetAutoExposureMeteringRectangle();
-        assertNull(cr.getAEMeteringRectangle());
-    }
+  @Test
+  public void resetAutoExposureMeteringRectangle_should_reset_aeMeteringRectangle() {
+    CameraRegions cr = new CameraRegions(new Size(100, 50));
+    cr.setAutoExposureMeteringRectangleFromPoint(0, 0);
+    assertNotNull(cr.getAEMeteringRectangle());
+    cr.resetAutoExposureMeteringRectangle();
+    assertNull(cr.getAEMeteringRectangle());
+  }
 
-    @Test
-    public void setAutoFocusMeteringRectangleFromPoint_should_set_afMeteringRectangle_for_point() {
-        CameraRegions cr = new CameraRegions(new Size(100, 50));
-        cr.setAutoFocusMeteringRectangleFromPoint(0, 0);
-        assertEquals(new MeteringRectangle(0, 0, 10, 5, 1), cr.getAFMeteringRectangle());
-    }
+  @Test
+  public void setAutoFocusMeteringRectangleFromPoint_should_set_afMeteringRectangle_for_point() {
+    CameraRegions cr = new CameraRegions(new Size(100, 50));
+    cr.setAutoFocusMeteringRectangleFromPoint(0, 0);
+    assertEquals(new MeteringRectangle(0, 0, 10, 5, 1), cr.getAFMeteringRectangle());
+  }
 
-    @Test
-    public void resetAutoFocusMeteringRectangle_should_reset_afMeteringRectangle() {
-        CameraRegions cr = new CameraRegions(new Size(100, 50));
-        cr.setAutoFocusMeteringRectangleFromPoint(0, 0);
-        assertNotNull(cr.getAFMeteringRectangle());
-        cr.resetAutoFocusMeteringRectangle();
-        assertNull(cr.getAFMeteringRectangle());
-    }
+  @Test
+  public void resetAutoFocusMeteringRectangle_should_reset_afMeteringRectangle() {
+    CameraRegions cr = new CameraRegions(new Size(100, 50));
+    cr.setAutoFocusMeteringRectangleFromPoint(0, 0);
+    assertNotNull(cr.getAFMeteringRectangle());
+    cr.resetAutoFocusMeteringRectangle();
+    assertNull(cr.getAFMeteringRectangle());
+  }
 }
