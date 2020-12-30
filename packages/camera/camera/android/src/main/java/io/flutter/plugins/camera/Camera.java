@@ -21,6 +21,7 @@ import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.MeteringRectangle;
 import android.hardware.camera2.params.OutputConfiguration;
 import android.hardware.camera2.params.SessionConfiguration;
 import android.media.CamcorderProfile;
@@ -32,6 +33,8 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Range;
+import android.util.Rational;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -40,6 +43,7 @@ import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.PictureCaptureRequest.State;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
+import io.flutter.plugins.camera.types.ExposureMode;
 import io.flutter.plugins.camera.types.FlashMode;
 import io.flutter.plugins.camera.types.ResolutionPreset;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
@@ -80,7 +84,10 @@ public class Camera {
   private File videoRecordingFile;
   private int currentOrientation = ORIENTATION_UNKNOWN;
   private FlashMode flashMode;
+  private ExposureMode exposureMode;
   private PictureCaptureRequest pictureCaptureRequest;
+  private CameraRegions cameraRegions;
+  private int exposureOffset;
 
   public Camera(
       final Activity activity,
@@ -100,6 +107,8 @@ public class Camera {
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     this.applicationContext = activity.getApplicationContext();
     this.flashMode = FlashMode.auto;
+    this.exposureMode = ExposureMode.auto;
+    this.exposureOffset = 0;
     orientationEventListener =
         new OrientationEventListener(activity.getApplicationContext()) {
           @Override
@@ -158,15 +167,17 @@ public class Camera {
           public void onOpened(@NonNull CameraDevice device) {
             cameraDevice = device;
             try {
+              cameraRegions = new CameraRegions(getRegionBoundaries());
               startPreview();
+              dartMessenger.sendCameraInitializedEvent(
+                  previewSize.getWidth(),
+                  previewSize.getHeight(),
+                  exposureMode,
+                  isExposurePointSupported());
             } catch (CameraAccessException e) {
               dartMessenger.sendCameraErrorEvent(e.getMessage());
               close();
-              return;
             }
-
-            dartMessenger.sendCameraInitializedEvent(
-                previewSize.getWidth(), previewSize.getHeight());
           }
 
           @Override
@@ -605,16 +616,11 @@ public class Camera {
   public void setFlashMode(@NonNull final Result result, FlashMode mode)
       throws CameraAccessException {
     // Get the flash availability
-    Boolean flashAvailable;
-    try {
-      flashAvailable =
-          cameraManager
-              .getCameraCharacteristics(cameraDevice.getId())
-              .get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-    } catch (CameraAccessException e) {
-      result.error("setFlashModeFailed", e.getMessage(), null);
-      return;
-    }
+    Boolean flashAvailable =
+        cameraManager
+            .getCameraCharacteristics(cameraDevice.getId())
+            .get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+
     // Check if flash is available.
     if (flashAvailable == null || !flashAvailable) {
       result.error("setFlashModeFailed", "Device does not have flash capabilities", null);
@@ -676,8 +682,133 @@ public class Camera {
     }
   }
 
+  public void setExposureMode(@NonNull final Result result, ExposureMode mode)
+      throws CameraAccessException {
+    this.exposureMode = mode;
+    initPreviewCaptureBuilder();
+    cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+    result.success(null);
+  }
+
+  public void setExposurePoint(@NonNull final Result result, Double x, Double y)
+      throws CameraAccessException {
+    // Check if exposure point functionality is available.
+    if (!isExposurePointSupported()) {
+      result.error(
+          "setExposurePointFailed", "Device does not have exposure point capabilities", null);
+      return;
+    }
+    // Check if we are doing a reset or not
+    if (x == null || y == null) {
+      x = 0.5;
+      y = 0.5;
+    }
+    // Get the current region boundaries.
+    Size maxBoundaries = getRegionBoundaries();
+    if (maxBoundaries == null) {
+      result.error("setExposurePointFailed", "Could not determine max region boundaries", null);
+      return;
+    }
+    // Set the metering rectangle
+    cameraRegions.setAutoExposureMeteringRectangleFromPoint(x, y);
+    // Apply it
+    initPreviewCaptureBuilder();
+    this.cameraCaptureSession.setRepeatingRequest(
+        captureRequestBuilder.build(), pictureCaptureCallback, null);
+    result.success(null);
+  }
+
+  @TargetApi(VERSION_CODES.P)
+  private boolean supportsDistortionCorrection() throws CameraAccessException {
+    int[] availableDistortionCorrectionModes =
+        cameraManager
+            .getCameraCharacteristics(cameraDevice.getId())
+            .get(CameraCharacteristics.DISTORTION_CORRECTION_AVAILABLE_MODES);
+    if (availableDistortionCorrectionModes == null) availableDistortionCorrectionModes = new int[0];
+    long nonOffModesSupported =
+        Arrays.stream(availableDistortionCorrectionModes)
+            .filter((value) -> value != CaptureRequest.DISTORTION_CORRECTION_MODE_OFF)
+            .count();
+    return nonOffModesSupported > 0;
+  }
+
+  private Size getRegionBoundaries() throws CameraAccessException {
+    // No distortion correction support
+    if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.P || !supportsDistortionCorrection()) {
+      return cameraManager
+          .getCameraCharacteristics(cameraDevice.getId())
+          .get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
+    }
+    // Get the current distortion correction mode
+    Integer distortionCorrectionMode =
+        captureRequestBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE);
+    // Return the correct boundaries depending on the mode
+    android.graphics.Rect rect;
+    if (distortionCorrectionMode == null
+        || distortionCorrectionMode == CaptureRequest.DISTORTION_CORRECTION_MODE_OFF) {
+      rect =
+          cameraManager
+              .getCameraCharacteristics(cameraDevice.getId())
+              .get(CameraCharacteristics.SENSOR_INFO_PRE_CORRECTION_ACTIVE_ARRAY_SIZE);
+    } else {
+      rect =
+          cameraManager
+              .getCameraCharacteristics(cameraDevice.getId())
+              .get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+    }
+    return rect == null ? null : new Size(rect.width(), rect.height());
+  }
+
+  private boolean isExposurePointSupported() throws CameraAccessException {
+    Integer supportedRegions =
+        cameraManager
+            .getCameraCharacteristics(cameraDevice.getId())
+            .get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE);
+    return supportedRegions != null && supportedRegions > 0;
+  }
+
+  public double getMinExposureOffset() throws CameraAccessException {
+    Range<Integer> range =
+        cameraManager
+            .getCameraCharacteristics(cameraDevice.getId())
+            .get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
+    double minStepped = range == null ? 0 : range.getLower();
+    double stepSize = getExposureOffsetStepSize();
+    return minStepped * stepSize;
+  }
+
+  public double getMaxExposureOffset() throws CameraAccessException {
+    Range<Integer> range =
+        cameraManager
+            .getCameraCharacteristics(cameraDevice.getId())
+            .get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
+    double maxStepped = range == null ? 0 : range.getUpper();
+    double stepSize = getExposureOffsetStepSize();
+    return maxStepped * stepSize;
+  }
+
+  public double getExposureOffsetStepSize() throws CameraAccessException {
+    Rational stepSize =
+        cameraManager
+            .getCameraCharacteristics(cameraDevice.getId())
+            .get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
+    return stepSize == null ? 0.0 : stepSize.doubleValue();
+  }
+
+  public void setExposureOffset(@NonNull final Result result, double offset)
+      throws CameraAccessException {
+    // Set the exposure offset
+    double stepSize = getExposureOffsetStepSize();
+    exposureOffset = (int) (offset / stepSize);
+    // Apply it
+    initPreviewCaptureBuilder();
+    this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+    result.success(offset);
+  }
+
   private void initPreviewCaptureBuilder() {
     captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+    // Applying flash modes
     switch (flashMode) {
       case off:
         captureRequestBuilder.set(
@@ -701,6 +832,22 @@ public class Camera {
         captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
         break;
     }
+    // Applying auto exposure
+    MeteringRectangle aeRect = cameraRegions.getAEMeteringRectangle();
+    captureRequestBuilder.set(
+        CaptureRequest.CONTROL_AE_REGIONS,
+        aeRect == null ? null : new MeteringRectangle[] {cameraRegions.getAEMeteringRectangle()});
+    switch (exposureMode) {
+      case locked:
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
+        break;
+      case auto:
+      default:
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, false);
+        break;
+    }
+    captureRequestBuilder.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, exposureOffset);
+    // Applying auto focus
     captureRequestBuilder.set(
         CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
   }

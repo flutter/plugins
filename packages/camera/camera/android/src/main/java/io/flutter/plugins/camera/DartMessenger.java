@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugins.camera.types.ExposureMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,13 +21,23 @@ class DartMessenger {
     channel = new MethodChannel(messenger, "flutter.io/cameraPlugin/camera" + cameraId);
   }
 
-  void sendCameraInitializedEvent(Integer previewWidth, Integer previewHeight) {
+  void sendCameraInitializedEvent(
+      Integer previewWidth,
+      Integer previewHeight,
+      ExposureMode exposureMode,
+      Boolean exposurePointSupported) {
+    assert (previewWidth != null);
+    assert (previewHeight != null);
+    assert (exposureMode != null);
+    assert (exposurePointSupported != null);
     this.send(
         EventType.INITIALIZED,
         new HashMap<String, Object>() {
           {
-            if (previewWidth != null) put("previewWidth", previewWidth.doubleValue());
-            if (previewHeight != null) put("previewHeight", previewHeight.doubleValue());
+            put("previewWidth", previewWidth.doubleValue());
+            put("previewHeight", previewHeight.doubleValue());
+            put("exposureMode", exposureMode.toString());
+            put("exposurePointSupported", exposurePointSupported);
           }
         });
   }
