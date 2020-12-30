@@ -8,11 +8,9 @@ public final class CameraRegions {
   private Size maxBoundaries;
 
   public CameraRegions(Size maxBoundaries) {
-    assert (maxBoundaries != null);
-    assert (maxBoundaries.getWidth() > 0);
-    assert (maxBoundaries.getHeight() > 0);
+    assert (maxBoundaries == null || maxBoundaries.getWidth() > 0);
+    assert (maxBoundaries == null || maxBoundaries.getHeight() > 0);
     this.maxBoundaries = maxBoundaries;
-    setAutoExposureMeteringRectangleFromPoint(0.5, 0.5);
   }
 
   public MeteringRectangle getAEMeteringRectangle() {
@@ -23,6 +21,10 @@ public final class CameraRegions {
     return this.maxBoundaries;
   }
 
+  public void resetAutoExposureMeteringRectangle() {
+    this.aeMeteringRectangle = null;
+  }
+
   public void setAutoExposureMeteringRectangleFromPoint(double x, double y) {
     this.aeMeteringRectangle = getMeteringRectangleForPoint(maxBoundaries, x, y);
   }
@@ -30,7 +32,9 @@ public final class CameraRegions {
   public MeteringRectangle getMeteringRectangleForPoint(Size maxBoundaries, double x, double y) {
     assert (x >= 0 && x <= 1);
     assert (y >= 0 && y <= 1);
-    assert (maxBoundaries != null);
+    if (maxBoundaries == null)
+      throw new IllegalStateException(
+          "Functionality for managing metering rectangles is unavailable as this CameraRegions instance was initialized with null boundaries.");
 
     // Interpolate the target coordinate
     int targetX = (int) Math.round(x * ((double) (maxBoundaries.getWidth() - 1)));

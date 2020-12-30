@@ -1,6 +1,8 @@
 package io.flutter.plugins.camera;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Size;
@@ -39,7 +41,7 @@ public class CameraRegionsTest {
     cameraRegions.getMeteringRectangleForPoint(new Size(10, 10), 0, -0.5);
   }
 
-  @Test(expected = AssertionError.class)
+  @Test(expected = IllegalStateException.class)
   public void getMeteringRectangleForPoint_should_throw_for_null_boundaries() {
     cameraRegions.getMeteringRectangleForPoint(null, 0, -0);
   }
@@ -69,11 +71,6 @@ public class CameraRegionsTest {
   }
 
   @Test(expected = AssertionError.class)
-  public void constructor_should_throw_for_null_boundaries() {
-    new CameraRegions(null);
-  }
-
-  @Test(expected = AssertionError.class)
   public void constructor_should_throw_for_0_width_boundary() {
     new CameraRegions(new Size(0, 50));
   }
@@ -87,13 +84,22 @@ public class CameraRegionsTest {
   public void constructor_should_initialize() {
     CameraRegions cr = new CameraRegions(new Size(100, 50));
     assertEquals(new Size(100, 50), cr.getMaxBoundaries());
-    assertEquals(new MeteringRectangle(45, 23, 10, 5, 1), cr.getAEMeteringRectangle());
+    assertNull(cr.getAEMeteringRectangle());
   }
 
   @Test
-  public void setAutoExposureMeteringRectangleFromPoin_should_set_aeMeteringRectangle_for_point() {
+  public void setAutoExposureMeteringRectangleFromPoint_should_set_aeMeteringRectangle_for_point() {
     CameraRegions cr = new CameraRegions(new Size(100, 50));
     cr.setAutoExposureMeteringRectangleFromPoint(0, 0);
     assertEquals(new MeteringRectangle(0, 0, 10, 5, 1), cr.getAEMeteringRectangle());
+  }
+
+  @Test
+  public void resetAutoExposureMeteringRectangle_should_reset_aeMeteringRectangle() {
+    CameraRegions cr = new CameraRegions(new Size(100, 50));
+    cr.setAutoExposureMeteringRectangleFromPoint(0, 0);
+    assertNotNull(cr.getAEMeteringRectangle());
+    cr.resetAutoExposureMeteringRectangle();
+    assertNull(cr.getAEMeteringRectangle());
   }
 }

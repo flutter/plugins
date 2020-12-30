@@ -836,7 +836,7 @@ public class Camera {
     MeteringRectangle aeRect = cameraRegions.getAEMeteringRectangle();
     captureRequestBuilder.set(
         CaptureRequest.CONTROL_AE_REGIONS,
-        new MeteringRectangle[] {cameraRegions.getAEMeteringRectangle()});
+        aeRect == null ? null : new MeteringRectangle[] {cameraRegions.getAEMeteringRectangle()});
     switch (exposureMode) {
       case locked:
         captureRequestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
