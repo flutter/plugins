@@ -28,7 +28,7 @@ get mockAvailableCameras => [
 get mockInitializeCamera => 13;
 
 get mockOnCameraInitializedEvent =>
-    CameraInitializedEvent(13, 75, 75, ExposureMode.auto, true);
+    CameraInitializedEvent(13, 75, 75, ExposureMode.auto, false);
 
 get mockOnCameraClosingEvent => null;
 
