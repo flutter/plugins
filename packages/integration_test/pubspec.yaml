@@ -23,12 +23,3 @@ dependencies:
 dev_dependencies:
   pedantic: ^1.8.0
   mockito: ^4.1.1
-
-flutter:
-  plugin:
-    platforms:
-      android:
-        package: dev.flutter.plugins.integration_test
-        pluginClass: IntegrationTestPlugin
-      ios:
-        pluginClass: IntegrationTestPlugin
