@@ -13,7 +13,7 @@ void main() {
   group('CameraInitializedEvent tests', () {
     test('Constructor should initialize all properties', () {
       final event = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
 
       expect(event.cameraId, 1);
       expect(event.previewWidth, 1024);
@@ -30,8 +30,8 @@ void main() {
         'previewWidth': 1024.0,
         'previewHeight': 640.0,
         'exposureMode': 'auto',
-        'focusMode': 'auto',
         'exposurePointSupported': true,
+        'focusMode': 'auto',
         'focusPointSupported': true
       });
 
@@ -39,14 +39,14 @@ void main() {
       expect(event.previewWidth, 1024);
       expect(event.previewHeight, 640);
       expect(event.exposureMode, ExposureMode.auto);
-      expect(event.focusMode, FocusMode.auto);
       expect(event.exposurePointSupported, true);
+      expect(event.focusMode, FocusMode.auto);
       expect(event.focusPointSupported, true);
     });
 
     test('toJson should return a map with all fields', () {
       final event = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
 
       final jsonMap = event.toJson();
 
@@ -55,52 +55,52 @@ void main() {
       expect(jsonMap['previewWidth'], 1024);
       expect(jsonMap['previewHeight'], 640);
       expect(jsonMap['exposureMode'], 'auto');
-      expect(jsonMap['focusMode'], 'auto');
       expect(jsonMap['exposurePointSupported'], true);
+      expect(jsonMap['focusMode'], 'auto');
       expect(jsonMap['focusPointSupported'], true);
     });
 
     test('equals should return true if objects are the same', () {
       final firstEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
       final secondEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
 
       expect(firstEvent == secondEvent, true);
     });
 
     test('equals should return false if cameraId is different', () {
       final firstEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
       final secondEvent = CameraInitializedEvent(
-          2, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          2, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
 
       expect(firstEvent == secondEvent, false);
     });
 
     test('equals should return false if previewWidth is different', () {
       final firstEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
       final secondEvent = CameraInitializedEvent(
-          1, 2048, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 2048, 640, ExposureMode.auto, true, FocusMode.auto, true);
 
       expect(firstEvent == secondEvent, false);
     });
 
     test('equals should return false if previewHeight is different', () {
       final firstEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
       final secondEvent = CameraInitializedEvent(
-          1, 1024, 980, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 980, ExposureMode.auto, true, FocusMode.auto, true);
 
       expect(firstEvent == secondEvent, false);
     });
 
     test('equals should return false if exposureMode is different', () {
       final firstEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
       final secondEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.locked, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.locked, true, FocusMode.auto, true);
 
       expect(firstEvent == secondEvent, false);
     });
@@ -108,40 +108,40 @@ void main() {
     test('equals should return false if exposurePointSupported is different',
         () {
       final firstEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
       final secondEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, false, true);
+          1, 1024, 640, ExposureMode.auto, false, FocusMode.auto, true);
 
       expect(firstEvent == secondEvent, false);
     });
 
     test('equals should return false if focusMode is different', () {
       final firstEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
       final secondEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.locked, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.locked, true);
 
       expect(firstEvent == secondEvent, false);
     });
 
     test('equals should return false if focusPointSupported is different', () {
       final firstEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
       final secondEvent = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, false);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, false);
 
       expect(firstEvent == secondEvent, false);
     });
 
     test('hashCode should match hashCode of all properties', () {
       final event = CameraInitializedEvent(
-          1, 1024, 640, ExposureMode.auto, FocusMode.auto, true, true);
+          1, 1024, 640, ExposureMode.auto, true, FocusMode.auto, true);
       final expectedHashCode = event.cameraId.hashCode ^
           event.previewWidth.hashCode ^
           event.previewHeight.hashCode ^
           event.exposureMode.hashCode ^
-          event.focusMode.hashCode ^
           event.exposurePointSupported.hashCode ^
+          event.focusMode.hashCode ^
           event.focusPointSupported.hashCode;
 
       expect(event.hashCode, expectedHashCode);

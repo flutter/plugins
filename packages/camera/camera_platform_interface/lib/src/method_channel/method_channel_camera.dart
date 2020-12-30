@@ -353,8 +353,8 @@ class MethodChannelCamera extends CameraPlatform {
           call.arguments['previewWidth'],
           call.arguments['previewHeight'],
           deserializeExposureMode(call.arguments['exposureMode']),
-          deserializeFocusMode(call.arguments['focusMode']),
           call.arguments['exposurePointSupported'],
+          deserializeFocusMode(call.arguments['focusMode']),
           call.arguments['focusPointSupported'],
         ));
         break;
