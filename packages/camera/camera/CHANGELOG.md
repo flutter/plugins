@@ -1,3 +1,7 @@
+## 0.6.4+1
+
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash
+
 ## 0.6.4
 
 * Adds auto exposure support for Android and iOS implementations.
