@@ -560,6 +560,7 @@ public class Camera {
 
     try {
       recordingVideo = false;
+      closeCaptureSession();
       mediaRecorder.stop();
       mediaRecorder.reset();
       startPreview();
