@@ -5,6 +5,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share/share.dart';
 
@@ -118,15 +119,21 @@ class DemoAppState extends State<DemoApp> {
     // has its position and size after it's built.
     final RenderBox box = context.findRenderObject();
 
-    if (imagePaths.isNotEmpty) {
-      await Share.shareFiles(imagePaths,
-          text: text,
-          subject: subject,
-          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
-    } else {
-      await Share.share(text,
-          subject: subject,
-          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+    try {
+      if (imagePaths.isNotEmpty) {
+        final result = await Share.shareFiles(imagePaths,
+            text: text,
+            subject: subject,
+            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+        print("Result from this: $result");
+      } else {
+        final result = await Share.share(text,
+            subject: subject,
+            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+        print("Result from this: $result");
+      }
+    } on PlatformException catch (exception) {
+      debugPrint(exception.message);
     }
   }
 
