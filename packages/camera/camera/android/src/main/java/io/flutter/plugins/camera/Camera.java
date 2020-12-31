@@ -136,7 +136,8 @@ public class Camera {
     initFps(cameraCharacteristics);
     sensorOrientation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
     isFrontFacing =
-        cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == CameraMetadata.LENS_FACING_FRONT;
+        cameraCharacteristics.get(CameraCharacteristics.LENS_FACING)
+            == CameraMetadata.LENS_FACING_FRONT;
     ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
     recordingProfile =
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
@@ -148,10 +149,11 @@ public class Camera {
             cameraCharacteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM));
   }
 
-  private void initFps(CameraCharacteristics cameraCharacteristics){
+  private void initFps(CameraCharacteristics cameraCharacteristics) {
     try {
-      Range<Integer>[] ranges = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
-      if(ranges != null) {
+      Range<Integer>[] ranges =
+          cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+      if (ranges != null) {
         for (Range<Integer> range : ranges) {
           int upper = range.getUpper();
           Log.i("Camera", "[FPS Range Available] is:" + range);
@@ -285,21 +287,19 @@ public class Camera {
         new CameraCaptureSession.StateCallback() {
           @Override
           public void onConfigured(@NonNull CameraCaptureSession session) {
-              if (cameraDevice == null) {
-                dartMessenger.sendCameraErrorEvent("The camera was closed during configuration.");
-                return;
-              }
-              cameraCaptureSession = session;
+            if (cameraDevice == null) {
+              dartMessenger.sendCameraErrorEvent("The camera was closed during configuration.");
+              return;
+            }
+            cameraCaptureSession = session;
 
-              updateFpsRange();
-              updateAutoFocus();
-              updateFlash(flashMode);
-              updateExposure(exposureMode);
+            updateFpsRange();
+            updateAutoFocus();
+            updateFlash(flashMode);
+            updateExposure(exposureMode);
 
-              refreshPreviewCaptureSession(
-                  onSuccessCallback,
-                  (code, message) ->dartMessenger.sendCameraErrorEvent(message)
-              );
+            refreshPreviewCaptureSession(
+                onSuccessCallback, (code, message) -> dartMessenger.sendCameraErrorEvent(message));
           }
 
           @Override
@@ -347,9 +347,7 @@ public class Camera {
   }
 
   private void refreshPreviewCaptureSession(
-      @Nullable Runnable onSuccessCallback,
-      @NonNull ErrorCallback onErrorCallback
-  ) {
+      @Nullable Runnable onSuccessCallback, @NonNull ErrorCallback onErrorCallback) {
     if (cameraCaptureSession == null) {
       return;
     }
@@ -509,11 +507,11 @@ public class Camera {
         CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
 
     refreshPreviewCaptureSession(
-        () -> captureRequestBuilder.set(
-            CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-            CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE),
-        (code, message) -> pictureCaptureRequest.error(code, message, null)
-    );
+        () ->
+            captureRequestBuilder.set(
+                CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+                CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE),
+        (code, message) -> pictureCaptureRequest.error(code, message, null));
   }
 
   private void runPictureCapture() {
@@ -562,9 +560,7 @@ public class Camera {
         CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
 
     refreshPreviewCaptureSession(
-        null,
-        (code, message) ->pictureCaptureRequest.error(code, message, null)
-    );
+        null, (code, message) -> pictureCaptureRequest.error(code, message, null));
   }
 
   private void unlockAutoFocus() {
@@ -709,9 +705,10 @@ public class Camera {
               refreshPreviewCaptureSession(
                   () -> {
                     result.success(null);
-                    isFinished = true; },
-                  (code, message) -> result.error("setFlashModeFailed", "Could not set flash mode.", null)
-              );
+                    isFinished = true;
+                  },
+                  (code, message) ->
+                      result.error("setFlashModeFailed", "Could not set flash mode.", null));
             }
 
             @Override
@@ -732,9 +729,8 @@ public class Camera {
       updateFlash(mode);
 
       refreshPreviewCaptureSession(
-          () -> result.success(null) ,
-          (code, message) -> result.error("setFlashModeFailed", "Could not set flash mode.", null)
-      );
+          () -> result.success(null),
+          (code, message) -> result.error("setFlashModeFailed", "Could not set flash mode.", null));
     }
   }
 
@@ -769,9 +765,7 @@ public class Camera {
     // Apply it
     updateExposure(exposureMode);
     refreshPreviewCaptureSession(
-        () -> result.success(null),
-        (code, message) -> result.error("CameraAccess", message, null)
-    );
+        () -> result.success(null), (code, message) -> result.error("CameraAccess", message, null));
   }
 
   @TargetApi(VERSION_CODES.P)
@@ -905,21 +899,20 @@ public class Camera {
 
   private void updateAutoFocus() {
     if (useAutoFocus) {
-      int[] modes = cameraCharacteristics.get(
-          CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
+      int[] modes = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
       // Auto focus is not supported
-      if (modes == null || modes.length == 0 ||
-          (modes.length == 1 && modes[0] == CameraCharacteristics.CONTROL_AF_MODE_OFF)) {
+      if (modes == null
+          || modes.length == 0
+          || (modes.length == 1 && modes[0] == CameraCharacteristics.CONTROL_AF_MODE_OFF)) {
         useAutoFocus = false;
-        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-            CaptureRequest.CONTROL_AF_MODE_OFF);
+        captureRequestBuilder.set(
+            CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
       } else {
-        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-            CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+        captureRequestBuilder.set(
+            CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
       }
     } else {
-      captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-          CaptureRequest.CONTROL_AF_MODE_OFF);
+      captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
     }
   }
 
