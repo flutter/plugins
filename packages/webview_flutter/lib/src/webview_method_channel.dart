@@ -48,7 +48,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
           WebResourceError(
             errorCode: call.arguments['errorCode']!,
             description: call.arguments['description']!,
-            failingUrl: call.arguments['failingUrl']!,
+            // iOS doesn't support `failingUrl`.
+            failingUrl: call.arguments['failingUrl'],
             domain: call.arguments['domain'],
             errorType: call.arguments['errorType'] == null
                 ? null
@@ -185,6 +186,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
     _addIfNonNull(
         'gestureNavigationEnabled', settings.gestureNavigationEnabled);
+    _addIfNonNull(
+        'allowsInlineMediaPlayback', settings.allowsInlineMediaPlayback);
     _addSettingIfPresent('userAgent', settings.userAgent);
     return map;
   }
