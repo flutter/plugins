@@ -28,7 +28,6 @@ import androidx.lifecycle.LifecycleOwner;
 import io.flutter.plugin.common.MethodCall;
 import java.util.concurrent.Executor;
 
-
 /**
  * Authenticates the user with fingerprint and sends corresponding response back to Flutter.
  *
