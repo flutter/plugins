@@ -136,39 +136,43 @@
 - (void)authenticate:(NSDictionary *)arguments withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
-  lastCallArgs = nil;
-  lastResult = nil;
+  _lastCallArgs = nil;
+  _lastResult = nil;
   context.localizedFallbackTitle = @"";
 
-  if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&authError]) {
-    [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
-            localizedReason:arguments[@"localizedReason"]
-                      reply:^(BOOL success, NSError *error) {
-                        if (success) {
-                          result(@YES);
-                        } else {
-                          switch (error.code) {
-                            case LAErrorPasscodeNotSet:
-                            case LAErrorTouchIDNotAvailable:
-                            case LAErrorTouchIDNotEnrolled:
-                            case LAErrorTouchIDLockout:
-                              [self handleErrors:error
-                                   flutterArguments:arguments
-                                  withFlutterResult:result];
-                              return;
-                            case LAErrorSystemCancel:
-                              if ([arguments[@"stickyAuth"] boolValue]) {
-                                lastCallArgs = arguments;
-                                lastResult = result;
+    if (@available(iOS 9.0, *)) {
+        if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&authError]) {
+            [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
+                    localizedReason:arguments[@"localizedReason"]
+                              reply:^(BOOL success, NSError *error) {
+                if (success) {
+                    result(@YES);
+                } else {
+                    switch (error.code) {
+                        case LAErrorPasscodeNotSet:
+                        case LAErrorTouchIDNotAvailable:
+                        case LAErrorTouchIDNotEnrolled:
+                        case LAErrorTouchIDLockout:
+                            [self handleErrors:error
+                              flutterArguments:arguments
+                             withFlutterResult:result];
+                            return;
+                        case LAErrorSystemCancel:
+                            if ([arguments[@"stickyAuth"] boolValue]) {
+                                self->_lastCallArgs = arguments;
+                                self->_lastResult = result;
                                 return;
-                              }
-                          }
-                          result(@NO);
-                        }
-                      }];
-  } else {
-    [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
-  }
+                            }
+                    }
+                    result(@NO);
+                }
+            }];
+        } else {
+            [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
+        }
+    } else {
+        // Fallback on earlier versions
+    }
 }
 
 - (void)handleErrors:(NSError *)authError
