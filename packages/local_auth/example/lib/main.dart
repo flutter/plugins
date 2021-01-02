@@ -22,7 +22,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final LocalAuthentication auth = LocalAuthentication();
 
-  late bool _isSupported;
+  bool? _isSupported;
   bool? _canCheckBiometrics;
   List<BiometricType>? _availableBiometrics;
   String _authorized = 'Not Authorized';
@@ -138,7 +138,7 @@ class _MyAppState extends State<MyApp> {
               children: [
                 if (_isSupported == null)
                   CircularProgressIndicator()
-                else if (_isSupported)
+                else if (_isSupported == true)
                   Text("This device is supported")
                 else
                   Text("This device is not supported"),

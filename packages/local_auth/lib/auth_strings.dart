@@ -15,35 +15,35 @@ import 'package:intl/intl.dart';
 /// Provides default values for all messages.
 class AndroidAuthMessages {
   const AndroidAuthMessages({
-    this.fingerprintHint,
-    this.fingerprintNotRecognized,
-    this.fingerprintSuccess,
+    this.biometricHint,
+    this.biometricNotRecognized,
+    this.biometricSuccess,
     this.cancelButton,
     this.signInTitle,
-    this.fingerprintRequiredTitle,
+    this.biometricRequiredTitle,
     this.goToSettingsButton,
     this.goToSettingsDescription,
   });
 
-  final String? fingerprintHint;
-  final String? fingerprintNotRecognized;
-  final String? fingerprintSuccess;
+  final String? biometricHint;
+  final String? biometricNotRecognized;
+  final String? biometricSuccess;
   final String? cancelButton;
   final String? signInTitle;
-  final String? fingerprintRequiredTitle;
+  final String? biometricRequiredTitle;
   final String? goToSettingsButton;
   final String? goToSettingsDescription;
 
   Map<String, String> get args {
     return <String, String>{
-      'fingerprintHint': fingerprintHint ?? androidFingerprintHint,
-      'fingerprintNotRecognized':
-          fingerprintNotRecognized ?? androidFingerprintNotRecognized,
-      'fingerprintSuccess': fingerprintSuccess ?? androidFingerprintSuccess,
+      'biometricHint': biometricHint ?? androidBiometricHint,
+      'biometricNotRecognized':
+          biometricNotRecognized ?? androidBiometricNotRecognized,
+      'biometricSuccess': biometricSuccess ?? androidBiometricSuccess,
       'cancelButton': cancelButton ?? androidCancelButton,
       'signInTitle': signInTitle ?? androidSignInTitle,
-      'fingerprintRequired':
-          fingerprintRequiredTitle ?? androidFingerprintRequiredTitle,
+      'biometricRequired':
+          biometricRequiredTitle ?? androidBiometricRequiredTitle,
       'goToSetting': goToSettingsButton ?? goToSettings,
       'goToSettingDescription':
           goToSettingsDescription ?? androidGoToSettingsDescription,
@@ -80,16 +80,17 @@ class IOSAuthMessages {
 
 // Strings for local_authentication plugin. Currently supports English.
 // Intl.message must be string literals.
-String get androidFingerprintHint => Intl.message('Touch sensor',
-    desc: 'Hint message advising the user how to scan their fingerprint. It is '
+String get androidBiometricHint => Intl.message('Verify identity',
+    desc:
+        'Hint message advising the user how to authenticate with biometrics. It is '
         'used on Android side. Maximum 60 characters.');
 
-String get androidFingerprintNotRecognized =>
-    Intl.message('Fingerprint not recognized. Try again.',
+String get androidBiometricNotRecognized =>
+    Intl.message('Not recognized. Try again.',
         desc: 'Message to let the user know that authentication was failed. It '
             'is used on Android side. Maximum 60 characters.');
 
-String get androidFingerprintSuccess => Intl.message('Fingerprint recognized.',
+String get androidBiometricSuccess => Intl.message('Success',
     desc: 'Message to let the user know that authentication was successful. It '
         'is used on Android side. Maximum 60 characters.');
 
@@ -97,15 +98,15 @@ String get androidCancelButton => Intl.message('Cancel',
     desc: 'Message showed on a button that the user can click to leave the '
         'current dialog. It is used on Android side. Maximum 30 characters.');
 
-String get androidSignInTitle => Intl.message('Fingerprint Authentication',
+String get androidSignInTitle => Intl.message('Authentication required',
     desc: 'Message showed as a title in a dialog which indicates the user '
-        'that they need to scan fingerprint to continue. It is used on '
+        'that they need to scan biometric to continue. It is used on '
         'Android side. Maximum 60 characters.');
 
-String get androidFingerprintRequiredTitle {
-  return Intl.message('Fingerprint required',
+String get androidBiometricRequiredTitle {
+  return Intl.message('Biometric required',
       desc: 'Message showed as a title in a dialog which indicates the user '
-          'fingerprint is not set up yet on their device. It is used on Android'
+          'has not set up biometric authentication on their device. It is used on Android'
           ' side. Maximum 60 characters.');
 }
 
@@ -115,10 +116,10 @@ String get goToSettings => Intl.message('Go to settings',
         'and iOS side. Maximum 30 characters.');
 
 String get androidGoToSettingsDescription => Intl.message(
-    'Fingerprint is not set up on your device. Go to '
-    '\'Settings > Security\' to add your fingerprint.',
+    'Biometric authentication is not set up on your device. Go to '
+    '\'Settings > Security\' to add biometric authentication.',
     desc: 'Message advising the user to go to the settings and configure '
-        'fingerprint on their device. It shows in a dialog on Android side.');
+        'biometric on their device. It shows in a dialog on Android side.');
 
 String get iOSLockOut => Intl.message(
     'Biometric authentication is disabled. Please lock and unlock your screen to '

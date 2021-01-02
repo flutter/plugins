@@ -29,7 +29,7 @@ import io.flutter.plugin.common.MethodCall;
 import java.util.concurrent.Executor;
 
 /**
- * Authenticates the user with fingerprint and sends corresponding response back to Flutter.
+ * Authenticates the user with biometrics and sends corresponding response back to Flutter.
  *
  * <p>One instance per call is generated to ensure readable separation of executable paths across
  * method calls.
@@ -37,10 +37,8 @@ import java.util.concurrent.Executor;
 @SuppressWarnings("deprecation")
 class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     implements Application.ActivityLifecycleCallbacks, DefaultLifecycleObserver {
-
   /** The callback that handles the result of this authentication process. */
   interface AuthCompletionHandler {
-
     /** Called when authentication was successful. */
     void onSuccess();
 
@@ -89,7 +87,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
           new BiometricPrompt.PromptInfo.Builder()
               .setDescription((String) call.argument("localizedReason"))
               .setTitle((String) call.argument("signInTitle"))
-              .setSubtitle((String) call.argument("fingerprintHint"))
+              .setSubtitle((String) call.argument("biometricHint"))
               .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
               .setDeviceCredentialAllowed(true)
               .build();
@@ -99,14 +97,14 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
           new BiometricPrompt.PromptInfo.Builder()
               .setDescription((String) call.argument("localizedReason"))
               .setTitle((String) call.argument("signInTitle"))
-              .setSubtitle((String) call.argument("fingerprintHint"))
+              .setSubtitle((String) call.argument("biometricHint"))
               .setNegativeButtonText((String) call.argument("cancelButton"))
               .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
               .build();
     }
   }
 
-  /** Start the fingerprint listener. */
+  /** Start the biometric listener. */
   void authenticate() {
     if (lifecycle != null) {
       lifecycle.addObserver(this);
@@ -117,7 +115,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     biometricPrompt.authenticate(promptInfo);
   }
 
-  /** Cancels the fingerprint authentication. */
+  /** Cancels the biometric authentication. */
   void stopAuthentication() {
     if (biometricPrompt != null) {
       biometricPrompt.cancelAuthentication();
@@ -125,7 +123,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     }
   }
 
-  /** Stops the fingerprint listener. */
+  /** Stops the biometric listener. */
   private void stop() {
     if (lifecycle != null) {
       lifecycle.removeObserver(this);
@@ -151,7 +149,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         if (promptInfo.isDeviceCredentialAllowed()) return;
         if (call.argument("useErrorDialogs")) {
           showGoToSettingsDialog(
-              (String) call.argument("fingerprintRequired"),
+              (String) call.argument("biometricRequired"),
               (String) call.argument("goToSettingDescription"));
           return;
         }
@@ -196,7 +194,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   public void onAuthenticationFailed() {}
 
   /**
-   * If the activity is paused, we keep track because fingerprint dialog simply returns "User
+   * If the activity is paused, we keep track because biometric dialog simply returns "User
    * cancelled" when the activity is paused.
    */
   @Override
@@ -233,7 +231,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     onActivityResumed(null);
   }
 
-  //hack: dialog opens twice on Android 8
+  // hack: dialog opens twice on Android 8
   private boolean isSettingsDialogOpen = false;
   // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
   @SuppressLint("InflateParams")

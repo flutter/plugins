@@ -172,9 +172,7 @@ class LocalAuthentication {
   /// Returns [Future] bool true or false:
   Future<bool> stopAuthentication() async {
     if (_platform.isAndroid) {
-      final bool? result =
-          await _channel.invokeMethod<bool>('stopAuthentication');
-      return result!;
+      return await _channel.invokeMethod<bool>('stopAuthentication') ?? false;
     }
     return true;
   }
