@@ -62,7 +62,7 @@ users to use pin, pattern, or passcode.
 var localAuth = LocalAuthentication();
 bool didAuthenticate =
     await localAuth.authenticate(
-        localizedReason: 'Please authenticate to show  account balance');
+        localizedReason: 'Please authenticate to show account balance');
 ```
 
 The `authenticateWithBiometrics()` method uses biometric authentication only.
@@ -71,7 +71,7 @@ The `authenticateWithBiometrics()` method uses biometric authentication only.
 var localAuth = LocalAuthentication();
 bool didAuthenticate =
     await localAuth.authenticateWithBiometrics(
-        localizedReason: 'Please authenticate to show  account balance');
+        localizedReason: 'Please authenticate to show account balance');
 ```
 
 Note that `authenticate()` and `authenticateWithBiometrics()` methods have
