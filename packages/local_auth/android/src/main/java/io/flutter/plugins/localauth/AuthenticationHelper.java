@@ -7,12 +7,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
-import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -31,7 +28,6 @@ import androidx.lifecycle.LifecycleOwner;
 import io.flutter.plugin.common.MethodCall;
 import java.util.concurrent.Executor;
 
-import static android.content.Context.KEYGUARD_SERVICE;
 
 /**
  * Authenticates the user with fingerprint and sends corresponding response back to Flutter.
@@ -153,9 +149,11 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         completionHandler.onError("NotAvailable", "Security credentials not available.");
       case BiometricPrompt.ERROR_NO_SPACE:
       case BiometricPrompt.ERROR_NO_BIOMETRICS:
-        if(promptInfo.isDeviceCredentialAllowed())return;
+        if (promptInfo.isDeviceCredentialAllowed()) return;
         if (call.argument("useErrorDialogs")) {
-          showGoToSettingsDialog((String) call.argument("fingerprintRequired"), (String) call.argument("goToSettingDescription"));
+          showGoToSettingsDialog(
+              (String) call.argument("fingerprintRequired"),
+              (String) call.argument("goToSettingDescription"));
           return;
         }
         completionHandler.onError("NotEnrolled", "No Biometrics enrolled on this device.");
@@ -241,7 +239,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
   @SuppressLint("InflateParams")
   private void showGoToSettingsDialog(String title, String descriptionText) {
-    if(isSettingsDialogOpen) return;
+    if (isSettingsDialogOpen) return;
     View view = LayoutInflater.from(activity).inflate(R.layout.go_to_setting, null, false);
     TextView message = (TextView) view.findViewById(R.id.fingerprint_required);
     TextView description = (TextView) view.findViewById(R.id.go_to_setting_description);

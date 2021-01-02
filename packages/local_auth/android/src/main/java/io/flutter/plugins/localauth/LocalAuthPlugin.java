@@ -4,6 +4,9 @@
 
 package io.flutter.plugins.localauth;
 
+import static android.app.Activity.RESULT_OK;
+import static android.content.Context.KEYGUARD_SERVICE;
+
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -11,10 +14,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
-
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -26,19 +27,13 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
-
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static android.app.Activity.RESULT_OK;
-import static android.content.Context.KEYGUARD_SERVICE;
 
 /**
  * Flutter plugin providing access to local authentication.
  *
- * <p>
- * Instantiate this in an add to app scenario to gracefully handle activity and
- * context changes.
+ * <p>Instantiate this in an add to app scenario to gracefully handle activity and context changes.
  */
 @SuppressWarnings("deprecation")
 public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
@@ -67,33 +62,27 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   private Result result;
 
   /**
-   * Registers a plugin with the v1 embedding api
-   * {@code io.flutter.plugin.common}.
+   * Registers a plugin with the v1 embedding api {@code io.flutter.plugin.common}.
    *
-   * <p>
-   * Calling this will register the plugin with the passed registrar. However,
-   * plugins initialized this way won't react to changes in activity or context.
+   * <p>Calling this will register the plugin with the passed registrar. However, plugins
+   * initialized this way won't react to changes in activity or context.
    *
-   * @param registrar attaches this plugin's
-   *                  {@link io.flutter.plugin.common.MethodChannel.MethodCallHandler}
-   *                  to the registrar's
-   *                  {@link io.flutter.plugin.common.BinaryMessenger}.
+   * @param registrar attaches this plugin's {@link
+   *     io.flutter.plugin.common.MethodChannel.MethodCallHandler} to the registrar's {@link
+   *     io.flutter.plugin.common.BinaryMessenger}.
    */
   @SuppressWarnings("deprecation")
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
     channel.setMethodCallHandler(new LocalAuthPlugin(registrar));
-
   }
 
   /**
    * Default constructor for LocalAuthPlugin.
    *
-   * <p>
-   * Use this constructor when adding this plugin to an app with v2 embedding.
+   * <p>Use this constructor when adding this plugin to an app with v2 embedding.
    */
-  public LocalAuthPlugin() {
-  }
+  public LocalAuthPlugin() {}
 
   private LocalAuthPlugin(Registrar registrar) {
     this.registrar = registrar;
@@ -140,7 +129,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
 
     if (!(activity instanceof FragmentActivity)) {
-      result.error("no_fragment_activity", "local_auth plugin requires activity to be a FragmentActivity.", null);
+      result.error(
+          "no_fragment_activity",
+          "local_auth plugin requires activity to be a FragmentActivity.",
+          null);
       return;
     }
 
@@ -151,35 +143,40 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     }
 
     authInProgress.set(true);
-    AuthCompletionHandler completionHandler = new AuthCompletionHandler() {
-      @Override
-      public void onSuccess() {
-        authenticateSuccess();
-      }
+    AuthCompletionHandler completionHandler =
+        new AuthCompletionHandler() {
+          @Override
+          public void onSuccess() {
+            authenticateSuccess();
+          }
 
-      @Override
-      public void onFailure() {
-        authenticateFail();
-      }
+          @Override
+          public void onFailure() {
+            authenticateFail();
+          }
 
-      @Override
-      public void onError(String code, String error) {
-        if (authInProgress.compareAndSet(true, false)) {
-          result.error(code, error, null);
-        }
-      }
-    };
+          @Override
+          public void onError(String code, String error) {
+            if (authInProgress.compareAndSet(true, false)) {
+              result.error(code, error, null);
+            }
+          }
+        };
 
     // let authenticateWithBiometrics try biometric prompt - might not work
     if (call.method.equals("authenticateWithBiometrics")) {
-      authHelper = new AuthenticationHelper(lifecycle, (FragmentActivity) activity, call, completionHandler, false);
+      authHelper =
+          new AuthenticationHelper(
+              lifecycle, (FragmentActivity) activity, call, completionHandler, false);
       authHelper.authenticate();
       return;
     }
 
     // API 29 and above
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      authHelper = new AuthenticationHelper(lifecycle, (FragmentActivity) activity, call, completionHandler, true);
+      authHelper =
+          new AuthenticationHelper(
+              lifecycle, (FragmentActivity) activity, call, completionHandler, true);
       authHelper.authenticate();
       return;
     }
@@ -188,11 +185,12 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
     // API 23 - 28 with fingerprint
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      FingerprintManager fingerprintManager = (FingerprintManager) context
-          .getSystemService(Context.FINGERPRINT_SERVICE);
+      FingerprintManager fingerprintManager =
+          (FingerprintManager) context.getSystemService(Context.FINGERPRINT_SERVICE);
       if (fingerprintManager.hasEnrolledFingerprints()) {
-        authHelper = new AuthenticationHelper(lifecycle, (FragmentActivity) activity, call, completionHandler,
-            false);
+        authHelper =
+            new AuthenticationHelper(
+                lifecycle, (FragmentActivity) activity, call, completionHandler, false);
         authHelper.authenticate();
         return;
       }
@@ -284,7 +282,8 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   }
 
   private boolean isDeviceSupported() {
-    KeyguardManager keyguardManager = (KeyguardManager) getActivity().getBaseContext().getSystemService(KEYGUARD_SERVICE);
+    KeyguardManager keyguardManager =
+        (KeyguardManager) getActivity().getBaseContext().getSystemService(KEYGUARD_SERVICE);
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && keyguardManager.isDeviceSecure());
   }
 
@@ -298,22 +297,22 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
-  }
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {}
 
-  final PluginRegistry.ActivityResultListener resultListener = new PluginRegistry.ActivityResultListener() {
-    @Override
-    public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-      if (requestCode == LOCK_REQUEST_CODE) {
-        if (resultCode == RESULT_OK) {
-          authenticateSuccess();
-        } else {
-          authenticateFail();
+  final PluginRegistry.ActivityResultListener resultListener =
+      new PluginRegistry.ActivityResultListener() {
+        @Override
+        public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+          if (requestCode == LOCK_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+              authenticateSuccess();
+            } else {
+              authenticateFail();
+            }
+          }
+          return false;
         }
-      }
-      return false;
-    }
-  };
+      };
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
