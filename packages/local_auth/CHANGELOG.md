@@ -1,3 +1,7 @@
+## 1.1.0-nullsafety
+
+* Allow pin, passcode, and pattern authentication
+
 ## 1.0.0-nullsafety.2
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
