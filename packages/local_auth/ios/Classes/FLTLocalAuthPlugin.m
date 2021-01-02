@@ -140,39 +140,39 @@
   _lastResult = nil;
   context.localizedFallbackTitle = @"";
 
-    if (@available(iOS 9.0, *)) {
-        if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&authError]) {
-            [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
-                    localizedReason:arguments[@"localizedReason"]
-                              reply:^(BOOL success, NSError *error) {
-                if (success) {
-                    result(@YES);
-                } else {
-                    switch (error.code) {
-                        case LAErrorPasscodeNotSet:
-                        case LAErrorTouchIDNotAvailable:
-                        case LAErrorTouchIDNotEnrolled:
-                        case LAErrorTouchIDLockout:
-                            [self handleErrors:error
-                              flutterArguments:arguments
-                             withFlutterResult:result];
-                            return;
-                        case LAErrorSystemCancel:
-                            if ([arguments[@"stickyAuth"] boolValue]) {
-                                self->_lastCallArgs = arguments;
-                                self->_lastResult = result;
+  if (@available(iOS 9.0, *)) {
+    if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&authError]) {
+      [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
+              localizedReason:arguments[@"localizedReason"]
+                        reply:^(BOOL success, NSError *error) {
+                          if (success) {
+                            result(@YES);
+                          } else {
+                            switch (error.code) {
+                              case LAErrorPasscodeNotSet:
+                              case LAErrorTouchIDNotAvailable:
+                              case LAErrorTouchIDNotEnrolled:
+                              case LAErrorTouchIDLockout:
+                                [self handleErrors:error
+                                     flutterArguments:arguments
+                                    withFlutterResult:result];
                                 return;
+                              case LAErrorSystemCancel:
+                                if ([arguments[@"stickyAuth"] boolValue]) {
+                                  self->_lastCallArgs = arguments;
+                                  self->_lastResult = result;
+                                  return;
+                                }
                             }
-                    }
-                    result(@NO);
-                }
-            }];
-        } else {
-            [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
-        }
+                            result(@NO);
+                          }
+                        }];
     } else {
-        // Fallback on earlier versions
+      [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
     }
+  } else {
+    // Fallback on earlier versions
+  }
 }
 
 - (void)handleErrors:(NSError *)authError
