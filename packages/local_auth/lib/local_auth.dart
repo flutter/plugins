@@ -66,8 +66,8 @@ class LocalAuthentication {
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
   /// simulator.
-  Future<bool> authenticateWithBiometrics({
-    @required String localizedReason,
+  Future<bool?> authenticateWithBiometrics({
+    required String localizedReason,
     bool useErrorDialogs = true,
     bool stickyAuth = false,
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
@@ -135,8 +135,8 @@ class LocalAuthentication {
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
   /// simulator.
-  Future<bool> authenticate({
-    @required String localizedReason,
+  Future<bool?> authenticate({
+    required String localizedReason,
     bool useErrorDialogs = true,
     bool stickyAuth = false,
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
@@ -170,26 +170,28 @@ class LocalAuthentication {
   /// Returns false if there was some error or no auth in progress.
   ///
   /// Returns [Future] bool true or false:
-  Future<bool> stopAuthentication() {
+  Future<bool> stopAuthentication() async {
     if (_platform.isAndroid) {
-      return _channel.invokeMethod<bool>('stopAuthentication');
+      final bool? result =
+          await _channel.invokeMethod<bool>('stopAuthentication');
+      return result!;
     }
-    return Future<bool>.sync(() => true);
+    return true;
   }
 
   /// Returns true if device is capable of checking biometrics
   ///
   /// Returns a [Future] bool true or false:
   Future<bool> get canCheckBiometrics async =>
-      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))
+      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))!
           .isNotEmpty;
 
   /// Returns true if device is capable of checking biometrics or is able to
   /// fail over to device credentials.
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> isDeviceSupported() =>
-      _channel.invokeMethod<bool>('isDeviceSupported');
+  Future<bool> isDeviceSupported() async =>
+      (await _channel.invokeMethod<bool>('isDeviceSupported')) ?? false;
 
   /// Returns a list of enrolled biometrics
   ///
@@ -199,8 +201,9 @@ class LocalAuthentication {
   /// - BiometricType.iris (not yet implemented)
   Future<List<BiometricType>> getAvailableBiometrics() async {
     final List<String> result = (await _channel.invokeListMethod<String>(
-      'getAvailableBiometrics',
-    ));
+          'getAvailableBiometrics',
+        )) ??
+        [];
     final List<BiometricType> biometrics = <BiometricType>[];
     result.forEach((String value) {
       switch (value) {

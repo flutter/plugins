@@ -1,3 +1,27 @@
+## 2.0.0-nullsafety.2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 2.0.0-nullsafety.1
+
+* Fix example app SDK.
+
+## 2.0.0-nullsafety
+
+* Bump Dart SDK.
+
+## 1.0.12
+
+* Update Flutter SDK constraint.
+
+## 1.0.11
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 1.0.10
+
+* Update android compileSdkVersion to 29.
+
 ## 1.0.9
 
 * Let the no-op plugin implement the `FlutterPlugin` interface.

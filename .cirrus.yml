@@ -39,8 +39,16 @@ task:
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh test
     - name: analyze
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
@@ -59,7 +67,7 @@ task:
         - ./chromedriver/chromedriver --port=4444 &
       test_script:
         - cd $INTEGRATION_TEST_PATH/example/
-        - flutter drive -v --driver=test_driver/integration_test_driver.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
+        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
@@ -132,6 +140,7 @@ task:
   osx_instance:
     image: catalina-xcode-11.3.1-flutter
   upgrade_script:
+    - sudo gem install cocoapods
     - flutter channel stable
     - flutter upgrade
     - flutter channel master
@@ -143,6 +152,10 @@ task:
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
@@ -163,6 +176,7 @@ task:
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
+        PLUGINS_TO_SKIP_XCTESTS: "battery/battery,camera/camera,connectivity/connectivity,device_info/device_info,espresso,google_maps_flutter/google_maps_flutter,google_sign_in/google_sign_in,in_app_purchase,integration_test,ios_platform_images,local_auth,package_info,path_provider/path_provider,quick_actions,sensors,shared_preferences/shared_preferences,url_launcher/url_launcher,video_player/video_player,webview_flutter,wifi_info_flutter/wifi_info_flutter"
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
@@ -179,6 +193,7 @@ task:
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples
+        - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''
@@ -188,6 +203,7 @@ task:
   setup_script:
     - flutter config --enable-macos-desktop
   upgrade_script:
+    - sudo gem install cocoapods
     - flutter channel master
     - flutter upgrade
     - git fetch origin master

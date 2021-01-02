@@ -79,7 +79,8 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
    *                  to the registrar's
    *                  {@link io.flutter.plugin.common.BinaryMessenger}.
    */
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
     channel.setMethodCallHandler(new LocalAuthPlugin(registrar));
 

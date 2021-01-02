@@ -8,7 +8,7 @@ Android / iOS:
 
 ```sh
 flutter drive \
-  --driver=test_driver/integration_test_driver.dart \
+  --driver=test_driver/integration_test.dart \
   --target=integration_test/example_test.dart
 ```
 
@@ -16,7 +16,7 @@ Web:
 
 ```sh
 flutter drive \
-  --driver=test_driver/integration_test_driver.dart \
+  --driver=test_driver/integration_test.dart \
   --target=integration_test/example_test.dart \
   -d web-server
 ```

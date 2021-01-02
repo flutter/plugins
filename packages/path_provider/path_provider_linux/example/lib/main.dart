@@ -35,25 +35,29 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       tempDirectory = (await getTemporaryDirectory()).path;
-    } on PlatformException {
+    } on PlatformException catch (e, stackTrace) {
       tempDirectory = 'Failed to get temp directory.';
+      print('$tempDirectory $e $stackTrace');
     }
     try {
       downloadsDirectory = (await getDownloadsDirectory()).path;
-    } on PlatformException {
+    } on PlatformException catch (e, stackTrace) {
       downloadsDirectory = 'Failed to get downloads directory.';
+      print('$downloadsDirectory $e $stackTrace');
     }
 
     try {
       documentsDirectory = (await getApplicationDocumentsDirectory()).path;
-    } on PlatformException {
+    } on PlatformException catch (e, stackTrace) {
       documentsDirectory = 'Failed to get documents directory.';
+      print('$documentsDirectory $e $stackTrace');
     }
 
     try {
       appSupportDirectory = (await getApplicationSupportDirectory()).path;
-    } on PlatformException {
+    } on PlatformException catch (e, stackTrace) {
       appSupportDirectory = 'Failed to get documents directory.';
+      print('$appSupportDirectory $e $stackTrace');
     }
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
