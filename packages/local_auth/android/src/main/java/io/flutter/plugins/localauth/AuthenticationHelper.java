@@ -81,27 +81,21 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     this.call = call;
     this.isAuthSticky = call.argument("stickyAuth");
     this.uiThreadExecutor = new UiThreadExecutor();
+    
+    BiometricPrompt.PromptInfo.Builder promptBuilder =
+        new BiometricPrompt.PromptInfo.Builder()
+            .setDescription((String) call.argument("localizedReason"))
+            .setTitle((String) call.argument("signInTitle"))
+            .setSubtitle((String) call.argument("biometricHint"))
+            .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
+            .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"));
 
     if (allowCredentials) {
-      this.promptInfo =
-          new BiometricPrompt.PromptInfo.Builder()
-              .setDescription((String) call.argument("localizedReason"))
-              .setTitle((String) call.argument("signInTitle"))
-              .setSubtitle((String) call.argument("biometricHint"))
-              .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
-              .setDeviceCredentialAllowed(true)
-              .build();
-
+      promptBuilder.setDeviceCredentialAllowed(true);
     } else {
-      this.promptInfo =
-          new BiometricPrompt.PromptInfo.Builder()
-              .setDescription((String) call.argument("localizedReason"))
-              .setTitle((String) call.argument("signInTitle"))
-              .setSubtitle((String) call.argument("biometricHint"))
-              .setNegativeButtonText((String) call.argument("cancelButton"))
-              .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
-              .build();
+      promptBuilder.setNegativeButtonText((String) call.argument("cancelButton"));
     }
+    this.promptInfo = promptBuilder.build();
   }
 
   /** Start the biometric listener. */
