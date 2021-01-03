@@ -17,22 +17,26 @@ class AndroidAuthMessages {
   const AndroidAuthMessages({
     this.biometricHint,
     this.biometricNotRecognized,
+    this.biometricRequiredTitle,
     this.biometricSuccess,
     this.cancelButton,
-    this.signInTitle,
-    this.biometricRequiredTitle,
+    this.deviceCredentialsRequiredTitle,
+    this.deviceCredentialsSetupDescription,
     this.goToSettingsButton,
     this.goToSettingsDescription,
+    this.signInTitle,
   });
 
   final String? biometricHint;
   final String? biometricNotRecognized;
+  final String? biometricRequiredTitle;
   final String? biometricSuccess;
   final String? cancelButton;
-  final String? signInTitle;
-  final String? biometricRequiredTitle;
+  final String? deviceCredentialsRequiredTitle;
+  final String? deviceCredentialsSetupDescription;
   final String? goToSettingsButton;
   final String? goToSettingsDescription;
+  final String? signInTitle;
 
   Map<String, String> get args {
     return <String, String>{
@@ -40,13 +44,17 @@ class AndroidAuthMessages {
       'biometricNotRecognized':
           biometricNotRecognized ?? androidBiometricNotRecognized,
       'biometricSuccess': biometricSuccess ?? androidBiometricSuccess,
-      'cancelButton': cancelButton ?? androidCancelButton,
-      'signInTitle': signInTitle ?? androidSignInTitle,
       'biometricRequired':
           biometricRequiredTitle ?? androidBiometricRequiredTitle,
+      'cancelButton': cancelButton ?? androidCancelButton,
+      'deviceCredentialsRequired': deviceCredentialsRequiredTitle ??
+          androidDeviceCredentialsRequiredTitle,
+      'deviceCredentialsSetupDescription': deviceCredentialsSetupDescription ??
+          androidDeviceCredentialsSetupDescription,
       'goToSetting': goToSettingsButton ?? goToSettings,
       'goToSettingDescription':
           goToSettingsDescription ?? androidGoToSettingsDescription,
+      'signInTitle': signInTitle ?? androidSignInTitle,
     };
   }
 }
@@ -103,12 +111,21 @@ String get androidSignInTitle => Intl.message('Authentication required',
         'that they need to scan biometric to continue. It is used on '
         'Android side. Maximum 60 characters.');
 
-String get androidBiometricRequiredTitle {
-  return Intl.message('Biometric required',
-      desc: 'Message showed as a title in a dialog which indicates the user '
-          'has not set up biometric authentication on their device. It is used on Android'
-          ' side. Maximum 60 characters.');
-}
+String get androidBiometricRequiredTitle => Intl.message('Biometric required',
+    desc: 'Message showed as a title in a dialog which indicates the user '
+        'has not set up biometric authentication on their device. It is used on Android'
+        ' side. Maximum 60 characters.');
+
+String get androidDeviceCredentialsRequiredTitle => Intl.message(
+    'Device credentials required',
+    desc: 'Message showed as a title in a dialog which indicates the user '
+        'has not set up credentials authentication on their device. It is used on Android'
+        ' side. Maximum 60 characters.');
+
+String get androidDeviceCredentialsSetupDescription => Intl.message(
+    'Device credentials required',
+    desc: 'Message advising the user to go to the settings and configure '
+        'device credentials on their device. It shows in a dialog on Android side.');
 
 String get goToSettings => Intl.message('Go to settings',
     desc: 'Message showed on a button that the user can click to go to '

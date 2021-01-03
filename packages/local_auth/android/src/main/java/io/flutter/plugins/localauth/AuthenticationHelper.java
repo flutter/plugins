@@ -81,7 +81,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     this.call = call;
     this.isAuthSticky = call.argument("stickyAuth");
     this.uiThreadExecutor = new UiThreadExecutor();
-    
+
     BiometricPrompt.PromptInfo.Builder promptBuilder =
         new BiometricPrompt.PromptInfo.Builder()
             .setDescription((String) call.argument("localizedReason"))
@@ -133,8 +133,8 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
       case BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL:
         if (call.argument("useErrorDialogs")) {
           showGoToSettingsDialog(
-              "Device credentials required",
-              "Device credentials security does not appear to be set up. Go to \'Settings > Security\' to add credentials.");
+              (String) call.argument("deviceCredentialsRequired"),
+              (String) call.argument("deviceCredentialsSetupDescription"));
           return;
         }
         completionHandler.onError("NotAvailable", "Security credentials not available.");
