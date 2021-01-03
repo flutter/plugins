@@ -62,6 +62,21 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   private Lifecycle lifecycle;
   private Result result;
 
+  final PluginRegistry.ActivityResultListener resultListener =
+      new PluginRegistry.ActivityResultListener() {
+        @Override
+        public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+          if (requestCode == LOCK_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+              authenticateSuccess();
+            } else {
+              authenticateFail();
+            }
+          }
+          return false;
+        }
+      };
+
   /**
    * Registers a plugin with the v1 embedding api {@code io.flutter.plugin.common}.
    *
@@ -314,21 +329,6 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   @Override
   public void onDetachedFromEngine(FlutterPluginBinding binding) {}
-
-  final PluginRegistry.ActivityResultListener resultListener =
-      new PluginRegistry.ActivityResultListener() {
-        @Override
-        public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-          if (requestCode == LOCK_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-              authenticateSuccess();
-            } else {
-              authenticateFail();
-            }
-          }
-          return false;
-        }
-      };
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
