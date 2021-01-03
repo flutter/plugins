@@ -66,7 +66,7 @@ class LocalAuthentication {
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
   /// simulator.
-  Future<bool?> authenticateWithBiometrics({
+  Future<bool> authenticateWithBiometrics({
     required String localizedReason,
     bool useErrorDialogs = true,
     bool stickyAuth = false,
@@ -92,10 +92,9 @@ class LocalAuthentication {
               'operating systems.',
           details: 'Your operating system is ${_platform.operatingSystem}');
     }
-    return await _channel.invokeMethod<bool>(
-      'authenticateWithBiometrics',
-      args,
-    );
+    return (await _channel.invokeMethod<bool>(
+            'authenticateWithBiometrics', args)) ??
+        false;
   }
 
   /// Authenticates the user with biometrics available on the device while also
@@ -135,7 +134,7 @@ class LocalAuthentication {
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
   /// simulator.
-  Future<bool?> authenticate({
+  Future<bool> authenticate({
     required String localizedReason,
     bool useErrorDialogs = true,
     bool stickyAuth = false,
@@ -162,7 +161,7 @@ class LocalAuthentication {
         details: 'Your operating system is ${_platform.operatingSystem}',
       );
     }
-    return await _channel.invokeMethod<bool>('authenticate', args);
+    return (await _channel.invokeMethod<bool>('authenticate', args)) ?? false;
   }
 
   /// Returns true if auth was cancelled successfully.
