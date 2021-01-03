@@ -22,7 +22,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final LocalAuthentication auth = LocalAuthentication();
 
-  bool? _isSupported;
+  _SupportState _supportState = _SupportState.unknown;
   bool? _canCheckBiometrics;
   List<BiometricType>? _availableBiometrics;
   String _authorized = 'Not Authorized';
@@ -31,9 +31,11 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    auth
-        .isDeviceSupported()
-        .then((isSupported) => setState(() => _isSupported = isSupported));
+    auth.isDeviceSupported().then(
+          (isSupported) => setState(() => _supportState = isSupported
+              ? _SupportState.supported
+              : _SupportState.unsupported),
+        );
   }
 
   Future<void> _checkBiometrics() async {
@@ -136,9 +138,9 @@ class _MyAppState extends State<MyApp> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (_isSupported == null)
+                if (_supportState == _SupportState.unknown)
                   CircularProgressIndicator()
-                else if (_isSupported == true)
+                else if (_supportState == _SupportState.supported)
                   Text("This device is supported")
                 else
                   Text("This device is not supported"),
@@ -200,4 +202,10 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+}
+
+enum _SupportState {
+  unknown,
+  supported,
+  unsupported,
 }
