@@ -1086,6 +1086,7 @@ NSString *const errorMethod = @"error";
 @property(readonly, nonatomic) NSObject<FlutterTextureRegistry> *registry;
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
 @property(readonly, nonatomic) FLTCam *camera;
+@property(readonly, nonatomic) FlutterMethodChannel *deviceEventMethodChannel;
 @end
 
 @implementation CameraPlugin {
@@ -1106,7 +1107,48 @@ NSString *const errorMethod = @"error";
   NSAssert(self, @"super init cannot be nil");
   _registry = registry;
   _messenger = messenger;
+  [self initDeviceEventMethodChannel];
+  [self startOrientationListener];
   return self;
+}
+
+- (void)initDeviceEventMethodChannel {
+  _deviceEventMethodChannel =
+      [FlutterMethodChannel methodChannelWithName:@"flutter.io/cameraPlugin/device"
+                                  binaryMessenger:_messenger];
+}
+
+- (void)startOrientationListener {
+  [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(orientationChanged:)
+                                               name:UIDeviceOrientationDidChangeNotification
+                                             object:[UIDevice currentDevice]];
+}
+
+- (void)orientationChanged:(NSNotification *)note {
+  UIDevice *device = note.object;
+
+  switch (device.orientation) {
+    case UIDeviceOrientationPortrait:
+      [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
+                                    arguments:@{@"orientation" : @"portraitUp"}];
+      break;
+    case UIDeviceOrientationPortraitUpsideDown:
+      [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
+                                    arguments:@{@"orientation" : @"portraitDown"}];
+      break;
+    case UIDeviceOrientationLandscapeRight:
+      [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
+                                    arguments:@{@"orientation" : @"landscapeLeft"}];
+      break;
+    case UIDeviceOrientationLandscapeLeft:
+      [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
+                                    arguments:@{@"orientation" : @"landscapeRight"}];
+      break;
+    default:
+      break;
+  };
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

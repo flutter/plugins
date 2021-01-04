@@ -41,6 +41,7 @@ class CameraValue {
     this.flashMode,
     this.exposureMode,
     this.exposurePointSupported,
+    this.deviceOrientation,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -53,6 +54,7 @@ class CameraValue {
           isRecordingPaused: false,
           flashMode: FlashMode.auto,
           exposurePointSupported: false,
+          deviceOrientation: DeviceOrientation.portraitUp,
         );
 
   /// True after [CameraController.initialize] has completed successfully.
@@ -102,6 +104,9 @@ class CameraValue {
   /// Whether setting the exposure point is supported.
   final bool exposurePointSupported;
 
+  /// The current device orientation.
+  final DeviceOrientation deviceOrientation;
+
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
@@ -117,6 +122,7 @@ class CameraValue {
     FlashMode flashMode,
     ExposureMode exposureMode,
     bool exposurePointSupported,
+    DeviceOrientation deviceOrientation,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -128,8 +134,8 @@ class CameraValue {
       isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
       flashMode: flashMode ?? this.flashMode,
       exposureMode: exposureMode ?? this.exposureMode,
-      exposurePointSupported:
-          exposurePointSupported ?? this.exposurePointSupported,
+      exposurePointSupported: exposurePointSupported ?? this.exposurePointSupported,
+      deviceOrientation: deviceOrientation ?? this.deviceOrientation,
     );
   }
 
@@ -143,7 +149,8 @@ class CameraValue {
         'isStreamingImages: $isStreamingImages, '
         'flashMode: $flashMode, '
         'exposureMode: $exposureMode, '
-        'exposurePointSupported: $exposurePointSupported)';
+        'exposurePointSupported: $exposurePointSupported, '
+        'deviceOrientation: $deviceOrientation)';
   }
 }
 
@@ -180,6 +187,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   bool _isDisposed = false;
   StreamSubscription<dynamic> _imageStreamSubscription;
   FutureOr<bool> _initCalled;
+  StreamSubscription _deviceOrientationSubscription;
 
   /// Checks whether [CameraController.dispose] has completed successfully.
   ///
@@ -204,16 +212,19 @@ class CameraController extends ValueNotifier<CameraValue> {
     try {
       Completer<CameraInitializedEvent> _initializeCompleter = Completer();
 
+      _deviceOrientationSubscription = CameraPlatform.instance.onDeviceOrientationChanged().listen((event) {
+        value = value.copyWith(
+          deviceOrientation: event.orientation,
+        );
+      });
+
       _cameraId = await CameraPlatform.instance.createCamera(
         description,
         resolutionPreset,
         enableAudio: enableAudio,
       );
 
-      unawaited(CameraPlatform.instance
-          .onCameraInitialized(_cameraId)
-          .first
-          .then((event) {
+      unawaited(CameraPlatform.instance.onCameraInitialized(_cameraId).first.then((event) {
         _initializeCompleter.complete(event);
       }));
 
@@ -221,15 +232,12 @@ class CameraController extends ValueNotifier<CameraValue> {
 
       value = value.copyWith(
         isInitialized: true,
-        previewSize: await _initializeCompleter.future
-            .then((CameraInitializedEvent event) => Size(
-                  event.previewWidth,
-                  event.previewHeight,
-                )),
-        exposureMode: await _initializeCompleter.future
-            .then((event) => event.exposureMode),
-        exposurePointSupported: await _initializeCompleter.future
-            .then((event) => event.exposurePointSupported),
+        previewSize: await _initializeCompleter.future.then((CameraInitializedEvent event) => Size(
+              event.previewWidth,
+              event.previewHeight,
+            )),
+        exposureMode: await _initializeCompleter.future.then((event) => event.exposureMode),
+        exposurePointSupported: await _initializeCompleter.future.then((event) => event.exposurePointSupported),
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -298,8 +306,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   // TODO(bmparr): Add settings for resolution and fps.
   Future<void> startImageStream(onLatestImageAvailable onAvailable) async {
-    assert(defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS);
+    assert(defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS);
 
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
@@ -326,10 +333,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
-    const EventChannel cameraEventChannel =
-        EventChannel('plugins.flutter.io/camera/imageStream');
-    _imageStreamSubscription =
-        cameraEventChannel.receiveBroadcastStream().listen(
+    const EventChannel cameraEventChannel = EventChannel('plugins.flutter.io/camera/imageStream');
+    _imageStreamSubscription = cameraEventChannel.receiveBroadcastStream().listen(
       (dynamic imageData) {
         onAvailable(CameraImage.fromPlatformData(imageData));
       },
@@ -344,8 +349,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The `stopImageStream` method is only available on Android and iOS (other
   /// platforms won't be supported in current setup).
   Future<void> stopImageStream() async {
-    assert(defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS);
+    assert(defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS);
 
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
@@ -571,10 +575,8 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Sets the exposure point for automatically determining the exposure value.
   Future<void> setExposurePoint(Offset point) async {
-    if (point != null &&
-        (point.dx < 0 || point.dx > 1 || point.dy < 0 || point.dy > 1)) {
-      throw ArgumentError(
-          'The values of point should be anywhere between (0,0) and (1,1).');
+    if (point != null && (point.dx < 0 || point.dx > 1 || point.dy < 0 || point.dy > 1)) {
+      throw ArgumentError('The values of point should be anywhere between (0,0) and (1,1).');
     }
     try {
       await CameraPlatform.instance.setExposurePoint(
@@ -661,8 +663,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     // Check if offset is in range
-    List<double> range =
-        await Future.wait([getMinExposureOffset(), getMaxExposureOffset()]);
+    List<double> range = await Future.wait([getMinExposureOffset(), getMaxExposureOffset()]);
     if (offset < range[0] || offset > range[1]) {
       throw CameraException(
         "exposureOffsetOutOfBounds",
@@ -696,6 +697,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     if (_isDisposed) {
       return;
     }
+    unawaited(_deviceOrientationSubscription?.cancel());
     _isDisposed = true;
     super.dispose();
     if (_initCalled != null) {

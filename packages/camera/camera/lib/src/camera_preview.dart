@@ -6,6 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// A widget showing a live camera preview.
 class CameraPreview extends StatelessWidget {
@@ -21,18 +22,35 @@ class CameraPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return controller.value.isInitialized
-        ? RotatedBox(
-            quarterTurns: _getQuarterTurns(),
-            child: AspectRatio(
-              aspectRatio: 1 / controller.value.aspectRatio,
-              child: CameraPlatform.instance.buildPreview(controller.cameraId),
-            ),
-          )
+        ? AspectRatio(
+          aspectRatio: _isLandscape() ? controller.value.aspectRatio : (1 / controller.value.aspectRatio),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              RotatedBox(
+                quarterTurns: _getQuarterTurns(),
+                child: CameraPlatform.instance.buildPreview(controller.cameraId),
+              ),
+              child ?? Container(),
+            ],
+          ),
+        )
         : Container();
+  }
+
+  bool _isLandscape() {
+    return [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]
+        .contains(controller.value.deviceOrientation);
   }
 
   int _getQuarterTurns() {
     int platformOffset = defaultTargetPlatform == TargetPlatform.iOS ? 1 : 0;
-    return platformOffset;
+    Map<DeviceOrientation, int> turns = {
+      DeviceOrientation.portraitUp: 0,
+      DeviceOrientation.portraitDown: 2,
+      DeviceOrientation.landscapeRight: 3,
+      DeviceOrientation.landscapeLeft: 1
+    };
+    return turns[controller.value.deviceOrientation] + platformOffset;
   }
 }
