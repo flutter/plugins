@@ -1,6 +1,10 @@
+## 0.6.5
+
+* Adds ImageFormat selection for ImageStream and Video(iOS only).
+
 ## 0.6.4+1
 
-* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash.
 
 ## 0.6.4
 
