@@ -4,7 +4,6 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
 
@@ -38,14 +37,16 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'allowsEditing': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 1,
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'allowsEditing': false,
             }),
           ],
         );
@@ -91,49 +92,56 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'allowsEditing': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'allowsEditing': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'allowsEditing': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': null,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'allowsEditing': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': 70,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'allowsEditing': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': 70,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'allowsEditing': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': 70,
-              'cameraDevice': 0
+              'cameraDevice': 0,
+              'allowsEditing': false,
             }),
           ],
         );
@@ -171,6 +179,7 @@ void main() {
               'maxHeight': null,
               'imageQuality': null,
               'cameraDevice': 0,
+              'allowsEditing': false,
             }),
           ],
         );
@@ -190,6 +199,7 @@ void main() {
               'maxHeight': null,
               'imageQuality': null,
               'cameraDevice': 1,
+              'allowsEditing': false,
             }),
           ],
         );
