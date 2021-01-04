@@ -1,20 +1,18 @@
 package io.flutter.plugins.camera.types;
 
-// Mirrors flash_mode.dart
-public enum FlashMode {
-  off("off"),
+// Mirrors exposure_mode.dart
+public enum ExposureMode {
   auto("auto"),
-  always("always"),
-  torch("torch");
+  locked("locked");
 
   private final String strValue;
 
-  FlashMode(String strValue) {
+  ExposureMode(String strValue) {
     this.strValue = strValue;
   }
 
-  public static FlashMode getValueForString(String modeStr) {
-    for (FlashMode value : values()) {
+  public static ExposureMode getValueForString(String modeStr) {
+    for (ExposureMode value : values()) {
       if (value.strValue.equals(modeStr)) return value;
     }
     return null;
