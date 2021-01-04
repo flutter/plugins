@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_platform_interface/src/events/device_event.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:camera_platform_interface/src/types/exposure_mode.dart';
 import 'package:cross_file/cross_file.dart';
@@ -76,6 +77,12 @@ abstract class CameraPlatform extends PlatformInterface {
   /// The camera experienced an error.
   Stream<CameraErrorEvent> onCameraError(int cameraId) {
     throw UnimplementedError('onCameraError() is not implemented.');
+  }
+
+  /// The device orientation changed.
+  Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
+    throw UnimplementedError(
+        'onDeviceOrientationChanged() is not implemented.');
   }
 
   /// Captures an image and returns the file where it was saved.

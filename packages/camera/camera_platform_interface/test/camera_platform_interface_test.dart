@@ -96,6 +96,19 @@ void main() {
       );
     });
 
+    test(
+        'Default implementation of onDeviceOrientationChanged() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.onDeviceOrientationChanged(),
+        throwsUnimplementedError,
+      );
+    });
+
     test('Default implementation of dispose() should throw unimplemented error',
         () {
       // Arrange
