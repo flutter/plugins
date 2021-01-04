@@ -20,11 +20,15 @@ public class PictureCaptureRequestTest {
   @Test
   public void setState_sets_state() {
     PictureCaptureRequest req = new PictureCaptureRequest(null);
-    req.setState(PictureCaptureRequest.State.awaitingPreCapture);
+    req.setState(PictureCaptureRequest.State.focusing);
+    assertEquals("State is focusing", req.getState(), PictureCaptureRequest.State.focusing);
+    req.setState(PictureCaptureRequest.State.preCapture);
+    assertEquals("State is preCapture", req.getState(), PictureCaptureRequest.State.preCapture);
+    req.setState(PictureCaptureRequest.State.waitingPreCaptureReady);
     assertEquals(
-        "State is awaitingPreCapture",
+        "State is waitingPreCaptureReady",
         req.getState(),
-        PictureCaptureRequest.State.awaitingPreCapture);
+        PictureCaptureRequest.State.waitingPreCaptureReady);
     req.setState(PictureCaptureRequest.State.capturing);
     assertEquals(
         "State is awaitingPreCapture", req.getState(), PictureCaptureRequest.State.capturing);
@@ -49,7 +53,7 @@ public class PictureCaptureRequestTest {
     // Test false states
     req.setState(PictureCaptureRequest.State.idle);
     assertFalse(req.isFinished());
-    req.setState(PictureCaptureRequest.State.awaitingPreCapture);
+    req.setState(PictureCaptureRequest.State.preCapture);
     assertFalse(req.isFinished());
     req.setState(PictureCaptureRequest.State.capturing);
     assertFalse(req.isFinished());

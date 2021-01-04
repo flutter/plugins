@@ -1,3 +1,35 @@
+## 0.6.4+1
+
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash
+
+## 0.6.4
+
+* Adds auto exposure support for Android and iOS implementations.
+
+## 0.6.3+4
+
+* Revert previous dependency update: Changed dependency on camera_platform_interface to >=1.04 <1.1.0.
+
+## 0.6.3+3
+
+* Updated dependency on camera_platform_interface to ^1.2.0.
+
+## 0.6.3+2
+
+* Fixes crash on Android which occurs after video recording has stopped just before taking a picture.
+
+## 0.6.3+1
+
+* Fixes flash & torch modes not working on some Android devices.
+
+## 0.6.3
+
+* Adds torch mode as a flash mode for Android and iOS implementations.
+
+## 0.6.2+1
+
+* Fix the API documentation for the `CameraController.takePicture` method.
+
 ## 0.6.2
 
 * Add zoom support for Android and iOS implementations.

@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pedantic/pedantic.dart';
 
 final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
@@ -37,6 +39,8 @@ class CameraValue {
     this.isStreamingImages,
     bool isRecordingPaused,
     this.flashMode,
+    this.exposureMode,
+    this.exposurePointSupported,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -48,6 +52,7 @@ class CameraValue {
           isStreamingImages: false,
           isRecordingPaused: false,
           flashMode: FlashMode.auto,
+          exposurePointSupported: false,
         );
 
   /// True after [CameraController.initialize] has completed successfully.
@@ -91,6 +96,12 @@ class CameraValue {
   /// The flash mode the camera is currently set to.
   final FlashMode flashMode;
 
+  /// The exposure mode the camera is currently set to.
+  final ExposureMode exposureMode;
+
+  /// Whether setting the exposure point is supported.
+  final bool exposurePointSupported;
+
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
@@ -104,6 +115,8 @@ class CameraValue {
     Size previewSize,
     bool isRecordingPaused,
     FlashMode flashMode,
+    ExposureMode exposureMode,
+    bool exposurePointSupported,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -114,6 +127,9 @@ class CameraValue {
       isStreamingImages: isStreamingImages ?? this.isStreamingImages,
       isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
       flashMode: flashMode ?? this.flashMode,
+      exposureMode: exposureMode ?? this.exposureMode,
+      exposurePointSupported:
+          exposurePointSupported ?? this.exposurePointSupported,
     );
   }
 
@@ -125,7 +141,9 @@ class CameraValue {
         'errorDescription: $errorDescription, '
         'previewSize: $previewSize, '
         'isStreamingImages: $isStreamingImages, '
-        'flashMode: $flashMode)';
+        'flashMode: $flashMode, '
+        'exposureMode: $exposureMode, '
+        'exposurePointSupported: $exposurePointSupported)';
   }
 }
 
@@ -184,25 +202,34 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
+      Completer<CameraInitializedEvent> _initializeCompleter = Completer();
+
       _cameraId = await CameraPlatform.instance.createCamera(
         description,
         resolutionPreset,
         enableAudio: enableAudio,
       );
 
-      final previewSize =
-          CameraPlatform.instance.onCameraInitialized(_cameraId).map((event) {
-        return Size(
-          event.previewWidth,
-          event.previewHeight,
-        );
-      }).first;
+      unawaited(CameraPlatform.instance
+          .onCameraInitialized(_cameraId)
+          .first
+          .then((event) {
+        _initializeCompleter.complete(event);
+      }));
 
       await CameraPlatform.instance.initializeCamera(_cameraId);
 
       value = value.copyWith(
         isInitialized: true,
-        previewSize: await previewSize,
+        previewSize: await _initializeCompleter.future
+            .then((CameraInitializedEvent event) => Size(
+                  event.previewWidth,
+                  event.previewHeight,
+                )),
+        exposureMode: await _initializeCompleter.future
+            .then((event) => event.exposureMode),
+        exposurePointSupported: await _initializeCompleter.future
+            .then((event) => event.exposurePointSupported),
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -226,13 +253,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     await CameraPlatform.instance.prepareForVideoRecording();
   }
 
-  /// Captures an image and saves it to [path].
-  ///
-  /// A path can for example be obtained using
-  /// [path_provider](https://pub.dartlang.org/packages/path_provider).
-  ///
-  /// If a file already exists at the provided path an error will be thrown.
-  /// The file can be read as this function returns.
+  /// Captures an image and returns the file where it was saved.
   ///
   /// Throws a [CameraException] if the capture fails.
   Future<XFile> takePicture() async {
@@ -533,6 +554,137 @@ class CameraController extends ValueNotifier<CameraValue> {
     try {
       await CameraPlatform.instance.setFlashMode(_cameraId, mode);
       value = value.copyWith(flashMode: mode);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets the exposure mode for taking pictures.
+  Future<void> setExposureMode(ExposureMode mode) async {
+    try {
+      await CameraPlatform.instance.setExposureMode(_cameraId, mode);
+      value = value.copyWith(exposureMode: mode);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets the exposure point for automatically determining the exposure value.
+  Future<void> setExposurePoint(Offset point) async {
+    if (point != null &&
+        (point.dx < 0 || point.dx > 1 || point.dy < 0 || point.dy > 1)) {
+      throw ArgumentError(
+          'The values of point should be anywhere between (0,0) and (1,1).');
+    }
+    try {
+      await CameraPlatform.instance.setExposurePoint(
+        _cameraId,
+        point == null
+            ? null
+            : Point<double>(
+                point.dx,
+                point.dy,
+              ),
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Gets the minimum supported exposure offset for the selected camera in EV units.
+  Future<double> getMinExposureOffset() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'getMinExposureOffset was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      return CameraPlatform.instance.getMinExposureOffset(_cameraId);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Gets the maximum supported exposure offset for the selected camera in EV units.
+  Future<double> getMaxExposureOffset() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'getMaxExposureOffset was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      return CameraPlatform.instance.getMaxExposureOffset(_cameraId);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Gets the supported step size for exposure offset for the selected camera in EV units.
+  ///
+  /// Returns 0 when the camera supports using a free value without stepping.
+  Future<double> getExposureOffsetStepSize() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'getExposureOffsetStepSize was called on uninitialized CameraController',
+      );
+    }
+
+    try {
+      return CameraPlatform.instance.getExposureOffsetStepSize(_cameraId);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets the exposure offset for the selected camera.
+  ///
+  /// The supplied [offset] value should be in EV units. 1 EV unit represents a
+  /// doubling in brightness. It should be between the minimum and maximum offsets
+  /// obtained through `getMinExposureOffset` and `getMaxExposureOffset` respectively.
+  /// Throws a `CameraException` when an illegal offset is supplied.
+  ///
+  /// When the supplied [offset] value does not align with the step size obtained
+  /// through `getExposureStepSize`, it will automatically be rounded to the nearest step.
+  ///
+  /// Returns the (rounded) offset value that was set.
+  Future<double> setExposureOffset(double offset) async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'setExposureOffset was called on uninitialized CameraController',
+      );
+    }
+
+    // Check if offset is in range
+    List<double> range =
+        await Future.wait([getMinExposureOffset(), getMaxExposureOffset()]);
+    if (offset < range[0] || offset > range[1]) {
+      throw CameraException(
+        "exposureOffsetOutOfBounds",
+        "The provided exposure offset was outside the supported range for this device.",
+      );
+    }
+
+    // Round to the closest step if needed
+    double stepSize = await getExposureOffsetStepSize();
+    if (stepSize > 0) {
+      double inv = 1.0 / stepSize;
+      double roundedOffset = (offset * inv).roundToDouble() / inv;
+      if (roundedOffset > range[1]) {
+        roundedOffset = (offset * inv).floorToDouble() / inv;
+      } else if (roundedOffset < range[0]) {
+        roundedOffset = (offset * inv).ceilToDouble() / inv;
+      }
+      offset = roundedOffset;
+    }
+
+    try {
+      return CameraPlatform.instance.setExposureOffset(_cameraId, offset);
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
