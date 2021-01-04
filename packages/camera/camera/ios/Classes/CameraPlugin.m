@@ -1128,8 +1128,11 @@ NSString *const errorMethod = @"error";
 
 - (void)orientationChanged:(NSNotification *)note {
   UIDevice *device = note.object;
+  [self sendDeviceOrientation:device.orientation];
+}
 
-  switch (device.orientation) {
+- (void)sendDeviceOrientation:(UIDeviceOrientation)orientation {
+  switch (orientation) {
     case UIDeviceOrientationPortrait:
       [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
                                     arguments:@{@"orientation" : @"portraitUp"}];
@@ -1246,6 +1249,7 @@ NSString *const errorMethod = @"error";
                           @"exposurePointSupported" :
                               @([_camera.captureDevice isExposurePointOfInterestSupported]),
                         }];
+      [self sendDeviceOrientation:[UIDevice currentDevice].orientation];
       [_camera start];
       result(nil);
     } else if ([@"takePicture" isEqualToString:call.method]) {

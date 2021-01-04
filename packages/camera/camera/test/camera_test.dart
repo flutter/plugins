@@ -31,7 +31,7 @@ get mockOnCameraInitializedEvent =>
     CameraInitializedEvent(13, 75, 75, ExposureMode.auto, true);
 
 get mockOnDeviceOrientationChangedEvent =>
-  DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
+    DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
 
 get mockOnCameraClosingEvent => null;
 

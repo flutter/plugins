@@ -38,6 +38,8 @@ class DeviceOrientationListener {
         };
 
     context.registerReceiver(broadcastReceiver, orientationIntentFilter);
+    // Trigger initial value
+    broadcastReceiver.onReceive(context, null);
   }
 
   public void stop() {
