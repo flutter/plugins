@@ -1,4 +1,5 @@
-import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_platform_interface/src/utils/utils.dart';
+import 'package:flutter/services.dart';
 
 /// Generic Event coming from the native side of Camera, that are not related to a specific camera module.
 ///
