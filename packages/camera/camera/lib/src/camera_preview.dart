@@ -23,18 +23,21 @@ class CameraPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return controller.value.isInitialized
         ? AspectRatio(
-          aspectRatio: _isLandscape() ? controller.value.aspectRatio : (1 / controller.value.aspectRatio),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              RotatedBox(
-                quarterTurns: _getQuarterTurns(),
-                child: CameraPlatform.instance.buildPreview(controller.cameraId),
-              ),
-              child ?? Container(),
-            ],
-          ),
-        )
+            aspectRatio: _isLandscape()
+                ? controller.value.aspectRatio
+                : (1 / controller.value.aspectRatio),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                RotatedBox(
+                  quarterTurns: _getQuarterTurns(),
+                  child:
+                      CameraPlatform.instance.buildPreview(controller.cameraId),
+                ),
+                child ?? Container(),
+              ],
+            ),
+          )
         : Container();
   }
 
@@ -48,8 +51,8 @@ class CameraPreview extends StatelessWidget {
     Map<DeviceOrientation, int> turns = {
       DeviceOrientation.portraitUp: 0,
       DeviceOrientation.portraitDown: 2,
-      DeviceOrientation.landscapeRight: 3,
-      DeviceOrientation.landscapeLeft: 1
+      DeviceOrientation.landscapeRight: 1,
+      DeviceOrientation.landscapeLeft: 3
     };
     return turns[controller.value.deviceOrientation] + platformOffset;
   }

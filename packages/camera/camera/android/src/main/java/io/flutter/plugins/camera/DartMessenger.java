@@ -2,6 +2,7 @@ package io.flutter.plugins.camera;
 
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.types.ExposureMode;
@@ -9,16 +10,44 @@ import java.util.HashMap;
 import java.util.Map;
 
 class DartMessenger {
-  @Nullable private MethodChannel channel;
+  @Nullable private MethodChannel cameraChannel;
+  @Nullable private MethodChannel deviceChannel;
 
-  enum EventType {
-    ERROR,
-    CAMERA_CLOSING,
-    INITIALIZED,
+  enum DeviceEventType {
+    ORIENTATION_CHANGED("orientation_changed");
+    private final String method;
+
+    DeviceEventType(String method) {
+      this.method = method;
+    }
+  }
+
+  enum CameraEventType {
+    ERROR("error"),
+    CLOSING("camera_closing"),
+    INITIALIZED("initialized");
+
+    private final String method;
+
+    CameraEventType(String method) {
+      this.method = method;
+    }
   }
 
   DartMessenger(BinaryMessenger messenger, long cameraId) {
-    channel = new MethodChannel(messenger, "flutter.io/cameraPlugin/camera" + cameraId);
+    cameraChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/camera" + cameraId);
+    deviceChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/device");
+  }
+
+  void sendDeviceOrientationChangeEvent(PlatformChannel.DeviceOrientation orientation) {
+    assert (orientation != null);
+    this.send(
+        DeviceEventType.ORIENTATION_CHANGED,
+        new HashMap<String, Object>() {
+          {
+            put("orientation", CameraUtils.serializeDeviceOrientation(orientation));
+          }
+        });
   }
 
   void sendCameraInitializedEvent(
@@ -31,7 +60,7 @@ class DartMessenger {
     assert (exposureMode != null);
     assert (exposurePointSupported != null);
     this.send(
-        EventType.INITIALIZED,
+        CameraEventType.INITIALIZED,
         new HashMap<String, Object>() {
           {
             put("previewWidth", previewWidth.doubleValue());
@@ -43,12 +72,12 @@ class DartMessenger {
   }
 
   void sendCameraClosingEvent() {
-    send(EventType.CAMERA_CLOSING);
+    send(CameraEventType.CLOSING);
   }
 
   void sendCameraErrorEvent(@Nullable String description) {
     this.send(
-        EventType.ERROR,
+        CameraEventType.ERROR,
         new HashMap<String, Object>() {
           {
             if (!TextUtils.isEmpty(description)) put("description", description);
@@ -56,14 +85,25 @@ class DartMessenger {
         });
   }
 
-  void send(EventType eventType) {
+  void send(CameraEventType eventType) {
     send(eventType, new HashMap<>());
   }
 
-  void send(EventType eventType, Map<String, Object> args) {
-    if (channel == null) {
+  void send(CameraEventType eventType, Map<String, Object> args) {
+    if (cameraChannel == null) {
       return;
     }
-    channel.invokeMethod(eventType.toString().toLowerCase(), args);
+    cameraChannel.invokeMethod(eventType.method, args);
+  }
+
+  void send(DeviceEventType eventType) {
+    send(eventType, new HashMap<>());
+  }
+
+  void send(DeviceEventType eventType, Map<String, Object> args) {
+    if (deviceChannel == null) {
+      return;
+    }
+    deviceChannel.invokeMethod(eventType.method, args);
   }
 }

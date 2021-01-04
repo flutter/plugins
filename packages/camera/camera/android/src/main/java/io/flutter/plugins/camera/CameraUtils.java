@@ -10,6 +10,7 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.util.Size;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.types.ResolutionPreset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,40 @@ import java.util.Map;
 public final class CameraUtils {
 
   private CameraUtils() {}
+
+  static PlatformChannel.DeviceOrientation getDeviceOrientationFromDegrees(int degrees) {
+    // Round to the nearest 90 degrees.
+    degrees = (int) (Math.round(degrees / 90.0) * 90) % 360;
+    // Determine the corresponding device orientation.
+    switch (degrees) {
+      case 90:
+        return PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT;
+      case 180:
+        return PlatformChannel.DeviceOrientation.PORTRAIT_DOWN;
+      case 270:
+        return PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT;
+      case 0:
+      default:
+        return PlatformChannel.DeviceOrientation.PORTRAIT_UP;
+    }
+  }
+
+  static String serializeDeviceOrientation(PlatformChannel.DeviceOrientation orientation) {
+    assert (orientation != null);
+    switch (orientation) {
+      case PORTRAIT_UP:
+        return "portraitUp";
+      case PORTRAIT_DOWN:
+        return "portraitDown";
+      case LANDSCAPE_LEFT:
+        return "landscapeLeft";
+      case LANDSCAPE_RIGHT:
+        return "landscapeRight";
+      default:
+        throw new UnsupportedOperationException(
+            "Could not serialize device orientation: " + orientation.toString());
+    }
+  }
 
   static Size computeBestPreviewSize(String cameraName, ResolutionPreset preset) {
     if (preset.ordinal() > ResolutionPreset.high.ordinal()) {

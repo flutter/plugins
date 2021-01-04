@@ -63,6 +63,7 @@ public class Camera {
   private final SurfaceTextureEntry flutterTexture;
   private final CameraManager cameraManager;
   private final OrientationEventListener orientationEventListener;
+  private final DeviceOrientationListener deviceOrientationListener;
   private final boolean isFrontFacing;
   private final int sensorOrientation;
   private final String cameraName;
@@ -117,10 +118,13 @@ public class Camera {
               return;
             }
             // Convert the raw deg angle to the nearest multiple of 90.
-            currentOrientation = (int) Math.round(i / 90.0) * 90;
+            currentOrientation = (int) (Math.round(i / 90.0) * 90) % 360;
           }
         };
     orientationEventListener.enable();
+    deviceOrientationListener =
+        new DeviceOrientationListener(activity.getApplicationContext(), dartMessenger);
+    deviceOrientationListener.start();
 
     CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
     sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
@@ -976,6 +980,7 @@ public class Camera {
     close();
     flutterTexture.release();
     orientationEventListener.disable();
+    deviceOrientationListener.stop();
   }
 
   private int getMediaOrientation() {

@@ -1140,11 +1140,11 @@ NSString *const errorMethod = @"error";
       break;
     case UIDeviceOrientationLandscapeRight:
       [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
-                                    arguments:@{@"orientation" : @"landscapeLeft"}];
+                                    arguments:@{@"orientation" : @"landscapeRight"}];
       break;
     case UIDeviceOrientationLandscapeLeft:
       [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
-                                    arguments:@{@"orientation" : @"landscapeRight"}];
+                                    arguments:@{@"orientation" : @"landscapeLeft"}];
       break;
     default:
       break;
