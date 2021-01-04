@@ -1,3 +1,7 @@
+## 0.6.7+20
+
+* iOS: Expose allowsEditing field.
+
 ## 0.6.7+19
 
 * Do not copy static field to another static field.
