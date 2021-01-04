@@ -1,6 +1,14 @@
-## 1.1.0
+## 1.3.0
 
 - Introduces an option to set the image format when initializing.
+
+## 1.2.0
+
+- Added interface to support automatic exposure.
+
+## 1.1.0
+
+- Added an optional `maxVideoDuration` parameter to the `startVideoRecording` method, which allows implementations to limit the duration of a video recording.
 
 ## 1.0.4
 

@@ -7,7 +7,9 @@ class PictureCaptureRequest {
 
   enum State {
     idle,
-    awaitingPreCapture,
+    focusing,
+    preCapture,
+    waitingPreCaptureReady,
     capturing,
     finished,
     error,

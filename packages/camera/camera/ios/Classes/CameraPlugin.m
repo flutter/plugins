@@ -187,6 +187,45 @@ static AVCaptureFlashMode getAVCaptureFlashModeForFlashMode(FlashMode mode) {
   }
 }
 
+// Mirrors ExposureMode in camera.dart
+typedef enum {
+  ExposureModeAuto,
+  ExposureModeLocked,
+
+} ExposureMode;
+
+static NSString *getStringForExposureMode(ExposureMode mode) {
+  switch (mode) {
+    case ExposureModeAuto:
+      return @"auto";
+    case ExposureModeLocked:
+      return @"locked";
+  }
+  NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                       code:NSURLErrorUnknown
+                                   userInfo:@{
+                                     NSLocalizedDescriptionKey : [NSString
+                                         stringWithFormat:@"Unknown string for exposure mode"]
+                                   }];
+  @throw error;
+}
+
+static ExposureMode getExposureModeForString(NSString *mode) {
+  if ([mode isEqualToString:@"auto"]) {
+    return ExposureModeAuto;
+  } else if ([mode isEqualToString:@"locked"]) {
+    return ExposureModeLocked;
+  } else {
+    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                         code:NSURLErrorUnknown
+                                     userInfo:@{
+                                       NSLocalizedDescriptionKey : [NSString
+                                           stringWithFormat:@"Unknown exposure mode %@", mode]
+                                     }];
+    @throw error;
+  }
+}
+
 // Mirrors ResolutionPreset in camera.dart
 typedef enum {
   veryLow,
@@ -254,6 +293,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
+@property(assign, nonatomic) ExposureMode exposureMode;
 @property(assign, nonatomic) FlashMode flashMode;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
@@ -291,10 +331,13 @@ NSString *const errorMethod = @"error";
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
                                                              error:&localError];
+
   if (localError) {
     *error = localError;
     return nil;
   }
+
+  _exposureMode = ExposureModeAuto;
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
@@ -351,6 +394,7 @@ NSString *const errorMethod = @"error";
     result(getFlutterError(error));
     return;
   }
+
   [_capturePhotoOutput
       capturePhotoWithSettings:settings
                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
@@ -782,6 +826,58 @@ NSString *const errorMethod = @"error";
   result(nil);
 }
 
+- (void)setExposureModeWithResult:(FlutterResult)result mode:(NSString *)modeStr {
+  ExposureMode mode;
+  @try {
+    mode = getExposureModeForString(modeStr);
+  } @catch (NSError *e) {
+    result(getFlutterError(e));
+    return;
+  }
+  _exposureMode = mode;
+  [self applyExposureMode];
+  result(nil);
+}
+
+- (void)applyExposureMode {
+  [_captureDevice lockForConfiguration:nil];
+  switch (_exposureMode) {
+    case ExposureModeLocked:
+      [_captureDevice setExposureMode:AVCaptureExposureModeAutoExpose];
+      break;
+    case ExposureModeAuto:
+      if ([_captureDevice isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
+        [_captureDevice setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+      } else {
+        [_captureDevice setExposureMode:AVCaptureExposureModeAutoExpose];
+      }
+      break;
+  }
+  [_captureDevice unlockForConfiguration];
+}
+
+- (void)setExposurePointWithResult:(FlutterResult)result x:(double)x y:(double)y {
+  if (!_captureDevice.isExposurePointOfInterestSupported) {
+    result([FlutterError errorWithCode:@"setExposurePointFailed"
+                               message:@"Device does not have exposure point capabilities"
+                               details:nil]);
+    return;
+  }
+  [_captureDevice lockForConfiguration:nil];
+  [_captureDevice setExposurePointOfInterest:CGPointMake(y, 1 - x)];
+  [_captureDevice unlockForConfiguration];
+  // Retrigger auto exposure
+  [self applyExposureMode];
+  result(nil);
+}
+
+- (void)setExposureOffsetWithResult:(FlutterResult)result offset:(double)offset {
+  [_captureDevice lockForConfiguration:nil];
+  [_captureDevice setExposureTargetBias:offset completionHandler:nil];
+  [_captureDevice unlockForConfiguration];
+  result(@(offset));
+}
+
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
   if (!_isStreamingImages) {
     FlutterEventChannel *eventChannel =
@@ -1077,7 +1173,10 @@ NSString *const errorMethod = @"error";
       [methodChannel invokeMethod:@"initialized"
                         arguments:@{
                           @"previewWidth" : @(_camera.previewSize.width),
-                          @"previewHeight" : @(_camera.previewSize.height)
+                          @"previewHeight" : @(_camera.previewSize.height),
+                          @"exposureMode" : getStringForExposureMode([_camera exposureMode]),
+                          @"exposurePointSupported" :
+                              @([_camera.captureDevice isExposurePointOfInterestSupported]),
                         }];
       [_camera start];
       result(nil);
@@ -1112,6 +1211,26 @@ NSString *const errorMethod = @"error";
       [_camera setZoomLevel:zoom Result:result];
     } else if ([@"setFlashMode" isEqualToString:call.method]) {
       [_camera setFlashModeWithResult:result mode:call.arguments[@"mode"]];
+    } else if ([@"setExposureMode" isEqualToString:call.method]) {
+      [_camera setExposureModeWithResult:result mode:call.arguments[@"mode"]];
+    } else if ([@"setExposurePoint" isEqualToString:call.method]) {
+      BOOL reset = ((NSNumber *)call.arguments[@"reset"]).boolValue;
+      double x = 0.5;
+      double y = 0.5;
+      if (!reset) {
+        x = ((NSNumber *)call.arguments[@"x"]).doubleValue;
+        y = ((NSNumber *)call.arguments[@"y"]).doubleValue;
+      }
+      [_camera setExposurePointWithResult:result x:x y:y];
+    } else if ([@"getMinExposureOffset" isEqualToString:call.method]) {
+      result(@(_camera.captureDevice.minExposureTargetBias));
+    } else if ([@"getMaxExposureOffset" isEqualToString:call.method]) {
+      result(@(_camera.captureDevice.maxExposureTargetBias));
+    } else if ([@"getExposureOffsetStepSize" isEqualToString:call.method]) {
+      result(@(0.0));
+    } else if ([@"setExposureOffset" isEqualToString:call.method]) {
+      [_camera setExposureOffsetWithResult:result
+                                    offset:((NSNumber *)call.arguments[@"offset"]).doubleValue];
     } else {
       result(FlutterMethodNotImplemented);
     }
