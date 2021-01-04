@@ -8,15 +8,65 @@ import org.junit.Test;
 public class CameraUtilsTest {
 
   @Test
+  public void serializeDeviceOrientation_serializes_correctly() {
+    assertEquals(
+        "portraitUp",
+        CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.PORTRAIT_UP));
+    assertEquals(
+        "portraitDown",
+        CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.PORTRAIT_DOWN));
+    assertEquals(
+        "landscapeLeft",
+        CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT));
+    assertEquals(
+        "landscapeRight",
+        CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT));
+  }
+
+  @Test
   public void getDeviceOrientationFromDegrees_converts_correctly() {
+    // Portrait UP
     assertEquals(
         PlatformChannel.DeviceOrientation.PORTRAIT_UP,
         CameraUtils.getDeviceOrientationFromDegrees(0));
     assertEquals(
         PlatformChannel.DeviceOrientation.PORTRAIT_UP,
-        CameraUtils.getDeviceOrientationFromDegrees(-45));
+        CameraUtils.getDeviceOrientationFromDegrees(315));
     assertEquals(
         PlatformChannel.DeviceOrientation.PORTRAIT_UP,
         CameraUtils.getDeviceOrientationFromDegrees(44));
+    assertEquals(
+        PlatformChannel.DeviceOrientation.PORTRAIT_UP,
+        CameraUtils.getDeviceOrientationFromDegrees(-45));
+    // Portrait DOWN
+    assertEquals(
+        PlatformChannel.DeviceOrientation.PORTRAIT_DOWN,
+        CameraUtils.getDeviceOrientationFromDegrees(180));
+    assertEquals(
+        PlatformChannel.DeviceOrientation.PORTRAIT_DOWN,
+        CameraUtils.getDeviceOrientationFromDegrees(135));
+    assertEquals(
+        PlatformChannel.DeviceOrientation.PORTRAIT_DOWN,
+        CameraUtils.getDeviceOrientationFromDegrees(224));
+    // Landscape LEFT
+    assertEquals(
+        PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT,
+        CameraUtils.getDeviceOrientationFromDegrees(90));
+    assertEquals(
+        PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT,
+        CameraUtils.getDeviceOrientationFromDegrees(45));
+    assertEquals(
+        PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT,
+        CameraUtils.getDeviceOrientationFromDegrees(134));
+    // Landscape RIGHT
+    assertEquals(
+        PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT,
+        CameraUtils.getDeviceOrientationFromDegrees(270));
+    assertEquals(
+        PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT,
+        CameraUtils.getDeviceOrientationFromDegrees(225));
+    assertEquals(
+        PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT,
+        CameraUtils.getDeviceOrientationFromDegrees(314));
   }
 }

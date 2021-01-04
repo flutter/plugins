@@ -30,6 +30,9 @@ get mockInitializeCamera => 13;
 get mockOnCameraInitializedEvent =>
     CameraInitializedEvent(13, 75, 75, ExposureMode.auto, true);
 
+get mockOnDeviceOrientationChangedEvent =>
+  DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
+
 get mockOnCameraClosingEvent => null;
 
 get mockOnCameraErrorEvent => CameraErrorEvent(13, 'closing');
@@ -1028,6 +1031,10 @@ class MockCameraPlatform extends Mock
   @override
   Stream<CameraErrorEvent> onCameraError(int cameraId) =>
       Stream.value(mockOnCameraErrorEvent);
+
+  @override
+  Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() =>
+      Stream.value(mockOnDeviceOrientationChangedEvent);
 
   @override
   Future<XFile> takePicture(int cameraId) => mockPlatformException

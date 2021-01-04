@@ -7,6 +7,7 @@ import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -75,7 +76,7 @@ void main() {
       var cameraValue =
           cv.copyWith(isInitialized: true, previewSize: Size(20, 10));
 
-      expect(cameraValue.aspectRatio, 0.5);
+      expect(cameraValue.aspectRatio, 2.0);
     });
 
     test('hasError is true after setting errorDescription', () {
@@ -107,10 +108,11 @@ void main() {
         isStreamingImages: false,
         flashMode: FlashMode.auto,
         exposurePointSupported: true,
+        deviceOrientation: DeviceOrientation.portraitUp,
       );
 
       expect(cameraValue.toString(),
-          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: null, exposurePointSupported: true)');
+          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: null, exposurePointSupported: true, deviceOrientation: DeviceOrientation.portraitUp)');
     });
   });
 }
