@@ -22,7 +22,7 @@ class CameraPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return controller.value.isInitialized
         ? RotatedBox(
-            quarterTurns: _getQuarterTurns(MediaQuery.of(context).orientation),
+            quarterTurns: _getQuarterTurns(),
             child: AspectRatio(
               aspectRatio: 1 / controller.value.aspectRatio,
               child: CameraPlatform.instance.buildPreview(controller.cameraId),
@@ -31,7 +31,7 @@ class CameraPreview extends StatelessWidget {
         : Container();
   }
 
-  int _getQuarterTurns(Orientation orientation) {
+  int _getQuarterTurns() {
     int platformOffset = defaultTargetPlatform == TargetPlatform.iOS ? 1 : 0;
     return platformOffset;
   }
