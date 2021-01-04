@@ -7,9 +7,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart' show required, visibleForTesting;
-
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:meta/meta.dart' show required, visibleForTesting;
 
 final MethodChannel _channel = MethodChannel('plugins.flutter.io/image_picker');
 
@@ -26,6 +25,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double maxHeight,
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
+    bool allowsEditing = false,
   }) async {
     String path = await pickImagePath(
       source: source,
@@ -33,6 +33,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxHeight: maxHeight,
       imageQuality: imageQuality,
       preferredCameraDevice: preferredCameraDevice,
+      allowsEditing: allowsEditing,
     );
     return path != null ? PickedFile(path) : null;
   }
@@ -44,6 +45,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double maxHeight,
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
+    bool allowsEditing = false,
   }) {
     assert(source != null);
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
@@ -66,7 +68,8 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
         'imageQuality': imageQuality,
-        'cameraDevice': preferredCameraDevice.index
+        'cameraDevice': preferredCameraDevice.index,
+        'allowsEditing': allowsEditing,
       },
     );
   }
