@@ -90,7 +90,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   @SuppressWarnings("deprecation")
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-    channel.setMethodCallHandler(new LocalAuthPlugin(registrar));
+    final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    registrar.addActivityResultListener(plugin.resultListener);
+    channel.setMethodCallHandler(plugin);
   }
 
   /**
@@ -99,12 +101,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
    * <p>Use this constructor when adding this plugin to an app with v2 embedding.
    */
   public LocalAuthPlugin() {}
-
-  private LocalAuthPlugin(Registrar registrar) {
-    this.registrar = registrar;
-    this.registrar.addActivityResultListener(resultListener);
-  }
-
+  
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
     this.result = result;
