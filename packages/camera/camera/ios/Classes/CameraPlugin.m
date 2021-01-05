@@ -390,11 +390,13 @@ NSString *const errorMethod = @"error";
   AVCaptureConnection *connection = [_capturePhotoOutput connectionWithMediaType:AVMediaTypeVideo];
 
   if (connection) {
-      if (_lockedCaptureOrientation != UIDeviceOrientationUnknown) {
-          connection.videoOrientation = [self getVideoOrientationForDeviceOrientation:_lockedCaptureOrientation];
-      } else {
-          connection.videoOrientation = [self getVideoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]];
-      }
+    if (_lockedCaptureOrientation != UIDeviceOrientationUnknown) {
+      connection.videoOrientation =
+          [self getVideoOrientationForDeviceOrientation:_lockedCaptureOrientation];
+    } else {
+      connection.videoOrientation =
+          [self getVideoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]];
+    }
   }
 
   [_capturePhotoOutput capturePhotoWithSettings:settings
@@ -402,7 +404,8 @@ NSString *const errorMethod = @"error";
                                                                                     result:result]];
 }
 
-- (AVCaptureVideoOrientation)getVideoOrientationForDeviceOrientation:(UIDeviceOrientation) deviceOrientation {
+- (AVCaptureVideoOrientation)getVideoOrientationForDeviceOrientation:
+    (UIDeviceOrientation)deviceOrientation {
   if (deviceOrientation == UIDeviceOrientationPortrait) {
     return AVCaptureVideoOrientationPortrait;
   } else if (deviceOrientation == UIDeviceOrientationLandscapeLeft) {
@@ -794,20 +797,20 @@ NSString *const errorMethod = @"error";
 
 - (void)lockCaptureOrientationWithResult:(FlutterResult)result
                              orientation:(NSString *)orientationStr {
-    UIDeviceOrientation orientation;
-    @try {
-      orientation = getUIDeviceOrientationForString(orientationStr);
-    } @catch (NSError *e) {
-      result(getFlutterError(e));
-      return;
-    }
-    _lockedCaptureOrientation = orientation;
-    result(nil);
+  UIDeviceOrientation orientation;
+  @try {
+    orientation = getUIDeviceOrientationForString(orientationStr);
+  } @catch (NSError *e) {
+    result(getFlutterError(e));
+    return;
+  }
+  _lockedCaptureOrientation = orientation;
+  result(nil);
 }
 
 - (void)unlockCaptureOrientationWithResult:(FlutterResult)result {
-    _lockedCaptureOrientation = UIDeviceOrientationUnknown;
-    result(nil);
+  _lockedCaptureOrientation = UIDeviceOrientationUnknown;
+  result(nil);
 }
 
 - (void)setFlashModeWithResult:(FlutterResult)result mode:(NSString *)modeStr {
@@ -1026,15 +1029,13 @@ NSString *const errorMethod = @"error";
                                  }];
 
   NSParameterAssert(_videoWriterInput);
-    CGFloat rotationDegrees;
-    if (_lockedCaptureOrientation != UIDeviceOrientationUnknown) {
-        rotationDegrees =
-          [self getRotationFromDeviceOrientation:_lockedCaptureOrientation];
-    } else {
-        rotationDegrees =
-        [self getRotationFromDeviceOrientation:[UIDevice currentDevice].orientation];
-    }
-        
+  CGFloat rotationDegrees;
+  if (_lockedCaptureOrientation != UIDeviceOrientationUnknown) {
+    rotationDegrees = [self getRotationFromDeviceOrientation:_lockedCaptureOrientation];
+  } else {
+    rotationDegrees = [self getRotationFromDeviceOrientation:[UIDevice currentDevice].orientation];
+  }
+
   _videoWriterInput.transform = CGAffineTransformMakeRotation(rotationDegrees * M_PI / 180);
   _videoWriterInput.expectsMediaDataInRealTime = YES;
 

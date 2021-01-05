@@ -10,142 +10,149 @@ import android.provider.Settings;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.WindowManager;
-
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 
 class DeviceOrientationListener {
 
-    private static final IntentFilter orientationIntentFilter = new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED);
+  private static final IntentFilter orientationIntentFilter =
+      new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED);
 
-    private final Context context;
-    private final DartMessenger messenger;
-    private PlatformChannel.DeviceOrientation lastOrientation;
-    private OrientationEventListener orientationEventListener;
-    private BroadcastReceiver broadcastReceiver;
+  private final Context context;
+  private final DartMessenger messenger;
+  private PlatformChannel.DeviceOrientation lastOrientation;
+  private OrientationEventListener orientationEventListener;
+  private BroadcastReceiver broadcastReceiver;
 
+  public DeviceOrientationListener(Context context, DartMessenger messenger) {
+    this.context = context;
+    this.messenger = messenger;
+  }
 
-    public DeviceOrientationListener(Context context, DartMessenger messenger) {
-        this.context = context;
-        this.messenger = messenger;
-    }
+  public void start() {
+    startSensorListener();
+    startUIListener();
+  }
 
-    public void start() {
-        startSensorListener();
-        startUIListener();
-    }
+  public void stop() {
+    stopSensorListener();
+    stopUIListener();
+  }
 
-    public void stop() {
-        stopSensorListener();
-        stopUIListener();
-    }
-
-    private void startSensorListener() {
-        if (orientationEventListener != null) return;
-        orientationEventListener = new OrientationEventListener(context, SensorManager.SENSOR_DELAY_NORMAL) {
-            @Override
-            public void onOrientationChanged(int angle) {
-                if (!isSystemAutoRotationLocked()) {
-                    PlatformChannel.DeviceOrientation newOrientation = calculateSensorOrientation(angle);
-                    if (!newOrientation.equals(lastOrientation)) {
-                        lastOrientation = newOrientation;
-                        messenger.sendDeviceOrientationChangeEvent(newOrientation);
-                    }
-                }
+  private void startSensorListener() {
+    if (orientationEventListener != null) return;
+    orientationEventListener =
+        new OrientationEventListener(context, SensorManager.SENSOR_DELAY_NORMAL) {
+          @Override
+          public void onOrientationChanged(int angle) {
+            if (!isSystemAutoRotationLocked()) {
+              PlatformChannel.DeviceOrientation newOrientation = calculateSensorOrientation(angle);
+              if (!newOrientation.equals(lastOrientation)) {
+                lastOrientation = newOrientation;
+                messenger.sendDeviceOrientationChangeEvent(newOrientation);
+              }
             }
+          }
         };
-        if (orientationEventListener.canDetectOrientation()) {
-            orientationEventListener.enable();
-        }
+    if (orientationEventListener.canDetectOrientation()) {
+      orientationEventListener.enable();
     }
+  }
 
-    private void startUIListener() {
-        if (broadcastReceiver != null) return;
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (isSystemAutoRotationLocked()) {
-                    PlatformChannel.DeviceOrientation orientation = getUIOrientation();
-                    if (!orientation.equals(lastOrientation)) {
-                        lastOrientation = orientation;
-                        messenger.sendDeviceOrientationChangeEvent(orientation);
-                    }
-                }
+  private void startUIListener() {
+    if (broadcastReceiver != null) return;
+    broadcastReceiver =
+        new BroadcastReceiver() {
+          @Override
+          public void onReceive(Context context, Intent intent) {
+            if (isSystemAutoRotationLocked()) {
+              PlatformChannel.DeviceOrientation orientation = getUIOrientation();
+              if (!orientation.equals(lastOrientation)) {
+                lastOrientation = orientation;
+                messenger.sendDeviceOrientationChangeEvent(orientation);
+              }
             }
+          }
         };
-        context.registerReceiver(broadcastReceiver, orientationIntentFilter);
-        broadcastReceiver.onReceive(context, null);
-    }
+    context.registerReceiver(broadcastReceiver, orientationIntentFilter);
+    broadcastReceiver.onReceive(context, null);
+  }
 
-    private void stopSensorListener() {
-        if (orientationEventListener == null) return;
-        orientationEventListener.disable();
-        orientationEventListener = null;
-    }
+  private void stopSensorListener() {
+    if (orientationEventListener == null) return;
+    orientationEventListener.disable();
+    orientationEventListener = null;
+  }
 
-    private void stopUIListener() {
-        if (broadcastReceiver == null) return;
-        context.unregisterReceiver(broadcastReceiver);
-        broadcastReceiver = null;
-    }
+  private void stopUIListener() {
+    if (broadcastReceiver == null) return;
+    context.unregisterReceiver(broadcastReceiver);
+    broadcastReceiver = null;
+  }
 
-    private boolean isSystemAutoRotationLocked() {
-        return android.provider.Settings.System.getInt(context.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0) != 1;
-    }
+  private boolean isSystemAutoRotationLocked() {
+    return android.provider.Settings.System.getInt(
+            context.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0)
+        != 1;
+  }
 
-    private PlatformChannel.DeviceOrientation getUIOrientation() {
-        final int rotation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
-        final int orientation = context.getResources().getConfiguration().orientation;
+  private PlatformChannel.DeviceOrientation getUIOrientation() {
+    final int rotation =
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+            .getDefaultDisplay()
+            .getRotation();
+    final int orientation = context.getResources().getConfiguration().orientation;
 
-        switch (orientation) {
-            case Configuration.ORIENTATION_PORTRAIT:
-                if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90) {
-                    return PlatformChannel.DeviceOrientation.PORTRAIT_UP;
-                } else {
-                    return PlatformChannel.DeviceOrientation.PORTRAIT_DOWN;
-                }
-            case Configuration.ORIENTATION_LANDSCAPE:
-                if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90) {
-                    return PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT;
-                } else {
-                    return PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT;
-                }
-            default:
-                return PlatformChannel.DeviceOrientation.PORTRAIT_UP;
-        }
-    }
-
-    private PlatformChannel.DeviceOrientation calculateSensorOrientation(int angle) {
-        final int tolerance = 45;
-        angle += tolerance;
-
-        // Orientation is 0 in the default orientation mode. This is portait-mode for phones
-        // and landscape for tablets. We have to compensate for this by calculating the default
-        // orientation, and apply an offset accordingly.
-        int defaultDeviceOrientation = getDeviceDefaultOrientation();
-        if (defaultDeviceOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-            angle += 90;
-        }
-        // Determine the orientation
-        angle = angle % 360;
-        return new PlatformChannel.DeviceOrientation[]{
-                PlatformChannel.DeviceOrientation.PORTRAIT_UP,
-                PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT,
-                PlatformChannel.DeviceOrientation.PORTRAIT_DOWN,
-                PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT,
-        }[angle / 90];
-    }
-
-    private int getDeviceDefaultOrientation() {
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Configuration config = context.getResources().getConfiguration();
-        int rotation = windowManager.getDefaultDisplay().getRotation();
-        if (((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) &&
-                config.orientation == Configuration.ORIENTATION_LANDSCAPE)
-                || ((rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&
-                config.orientation == Configuration.ORIENTATION_PORTRAIT)) {
-            return Configuration.ORIENTATION_LANDSCAPE;
+    switch (orientation) {
+      case Configuration.ORIENTATION_PORTRAIT:
+        if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90) {
+          return PlatformChannel.DeviceOrientation.PORTRAIT_UP;
         } else {
-            return Configuration.ORIENTATION_PORTRAIT;
+          return PlatformChannel.DeviceOrientation.PORTRAIT_DOWN;
         }
+      case Configuration.ORIENTATION_LANDSCAPE:
+        if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90) {
+          return PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT;
+        } else {
+          return PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT;
+        }
+      default:
+        return PlatformChannel.DeviceOrientation.PORTRAIT_UP;
     }
+  }
+
+  private PlatformChannel.DeviceOrientation calculateSensorOrientation(int angle) {
+    final int tolerance = 45;
+    angle += tolerance;
+
+    // Orientation is 0 in the default orientation mode. This is portait-mode for phones
+    // and landscape for tablets. We have to compensate for this by calculating the default
+    // orientation, and apply an offset accordingly.
+    int defaultDeviceOrientation = getDeviceDefaultOrientation();
+    if (defaultDeviceOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+      angle += 90;
+    }
+    // Determine the orientation
+    angle = angle % 360;
+    return new PlatformChannel.DeviceOrientation[] {
+          PlatformChannel.DeviceOrientation.PORTRAIT_UP,
+          PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT,
+          PlatformChannel.DeviceOrientation.PORTRAIT_DOWN,
+          PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT,
+        }
+        [angle / 90];
+  }
+
+  private int getDeviceDefaultOrientation() {
+    WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    Configuration config = context.getResources().getConfiguration();
+    int rotation = windowManager.getDefaultDisplay().getRotation();
+    if (((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180)
+            && config.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        || ((rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)
+            && config.orientation == Configuration.ORIENTATION_PORTRAIT)) {
+      return Configuration.ORIENTATION_LANDSCAPE;
+    } else {
+      return Configuration.ORIENTATION_PORTRAIT;
+    }
+  }
 }
