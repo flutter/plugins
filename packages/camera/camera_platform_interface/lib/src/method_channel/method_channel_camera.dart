@@ -162,6 +162,26 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
+  Future<void> lockCaptureOrientation(int cameraId,
+      [DeviceOrientation orientation]) async {
+    await _channel.invokeMethod<String>(
+      'lockCaptureOrientation',
+      <String, dynamic>{
+        'cameraId': cameraId,
+        'orientation': serializeDeviceOrientation(orientation)
+      },
+    );
+  }
+
+  @override
+  Future<void> unlockCaptureOrientation(int cameraId) async {
+    await _channel.invokeMethod<String>(
+      'unlockCaptureOrientation',
+      <String, dynamic>{'cameraId': cameraId},
+    );
+  }
+
+  @override
   Future<XFile> takePicture(int cameraId) async {
     String path = await _channel.invokeMethod<String>(
       'takePicture',
