@@ -23,7 +23,8 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"authenticate" isEqualToString:call.method]) {
-    if (call.arguments[@"biometricOnly"]) {
+    bool isBiometricOnly = [call.arguments[@"biometricOnly"] boolValue] ;
+    if (isBiometricOnly) {
       [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
     } else {
       [self authenticate:call.arguments withFlutterResult:result];
@@ -144,7 +145,8 @@
 
   if (@available(iOS 9.0, *)) {
     if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&authError]) {
-      [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
+      
+      [context evaluatePolicy:kLAPolicyDeviceOwnerAuthentication
               localizedReason:arguments[@"localizedReason"]
                         reply:^(BOOL success, NSError *error) {
                           if (success) {
