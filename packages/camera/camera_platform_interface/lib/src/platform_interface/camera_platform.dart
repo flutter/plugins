@@ -9,6 +9,7 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/events/device_event.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:camera_platform_interface/src/types/exposure_mode.dart';
+import 'package:camera_platform_interface/src/types/image_format_group.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -56,7 +57,12 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Initializes the camera on the device.
-  Future<void> initializeCamera(int cameraId) {
+  ///
+  /// [imageFormatGroup] is used to specify the image formatting used.
+  /// On Android this defaults to ImageFormat.YUV_420_888 and applies only to the imageStream.
+  /// On iOS this defaults to kCVPixelFormatType_32BGRA.
+  Future<void> initializeCamera(int cameraId,
+      {ImageFormatGroup imageFormatGroup}) {
     throw UnimplementedError('initializeCamera() is not implemented.');
   }
 
