@@ -10,6 +10,8 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
+import io.flutter.plugins.camera.types.ExposureMode;
+import io.flutter.plugins.camera.types.FlashMode;
 import io.flutter.view.TextureRegistry;
 import java.util.HashMap;
 import java.util.Map;
@@ -122,6 +124,88 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           camera.resumeVideoRecording(result);
           break;
         }
+      case "setFlashMode":
+        {
+          String modeStr = call.argument("mode");
+          FlashMode mode = FlashMode.getValueForString(modeStr);
+          if (mode == null) {
+            result.error("setFlashModeFailed", "Unknown flash mode " + modeStr, null);
+            return;
+          }
+          try {
+            camera.setFlashMode(result, mode);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setExposureMode":
+        {
+          String modeStr = call.argument("mode");
+          ExposureMode mode = ExposureMode.getValueForString(modeStr);
+          if (mode == null) {
+            result.error("setExposureModeFailed", "Unknown exposure mode " + modeStr, null);
+            return;
+          }
+          try {
+            camera.setExposureMode(result, mode);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setExposurePoint":
+        {
+          Boolean reset = call.argument("reset");
+          Double x = null;
+          Double y = null;
+          if (reset == null || !reset) {
+            x = call.argument("x");
+            y = call.argument("y");
+          }
+          try {
+            camera.setExposurePoint(result, x, y);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getMinExposureOffset":
+        {
+          try {
+            result.success(camera.getMinExposureOffset());
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getMaxExposureOffset":
+        {
+          try {
+            result.success(camera.getMaxExposureOffset());
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getExposureOffsetStepSize":
+        {
+          try {
+            result.success(camera.getExposureOffsetStepSize());
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setExposureOffset":
+        {
+          try {
+            camera.setExposureOffset(result, call.argument("offset"));
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
       case "startImageStream":
         {
           try {
@@ -137,6 +221,49 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           try {
             camera.stopImageStream();
             result.success(null);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getMaxZoomLevel":
+        {
+          assert camera != null;
+
+          try {
+            float maxZoomLevel = camera.getMaxZoomLevel();
+            result.success(maxZoomLevel);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getMinZoomLevel":
+        {
+          assert camera != null;
+
+          try {
+            float minZoomLevel = camera.getMinZoomLevel();
+            result.success(minZoomLevel);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setZoomLevel":
+        {
+          assert camera != null;
+
+          Double zoom = call.argument("zoom");
+
+          if (zoom == null) {
+            result.error(
+                "ZOOM_ERROR", "setZoomLevel is called without specifying a zoom level.", null);
+            return;
+          }
+
+          try {
+            camera.setZoomLevel(result, zoom.floatValue());
           } catch (Exception e) {
             handleException(e, result);
           }
