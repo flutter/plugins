@@ -102,7 +102,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
    * <p>Use this constructor when adding this plugin to an app with v2 embedding.
    */
   public LocalAuthPlugin() {}
-  
+
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
     this.result = result;
