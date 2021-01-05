@@ -1,3 +1,52 @@
+## 2.0.0-nullsafety.3
+
+* Fix `onWebResourceError` on iOS.
+
+## 2.0.0-nullsafety.2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 2.0.0-nullsafety.1
+
+* Added `allowsInlineMediaPlayback` property.
+
+## 2.0.0-nullsafety
+
+* Migration to null-safety.
+
+## 1.0.8
+
+* Update Flutter SDK constraint.
+
+## 1.0.7
+
+* Minor documentation update to indicate known issue on iOS 13.4 and 13.5.
+  * See: https://github.com/flutter/flutter/issues/53490
+
+## 1.0.6
+
+* Invoke the WebView.onWebResourceError on iOS when the webview content process crashes.
+
+## 1.0.5
+
+* Fix example in the readme.
+
+## 1.0.4
+
+* Suppress the `deprecated_member_use` warning in the example app for `ScaffoldMessenger.showSnackBar`.
+
+## 1.0.3
+
+* Update android compileSdkVersion to 29.
+
+## 1.0.2
+
+* Android Code Inspection and Clean up.
+
+## 1.0.1
+
+* Add documentation for `WebViewPlatformCreatedCallback`.
+
 ## 1.0.0 - Out of developer preview 🎉.
 
 * Bumped the minimal Flutter SDK to 1.22 where platform views are out of developer preview, and

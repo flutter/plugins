@@ -1,7 +1,7 @@
 name: shared_preferences_platform_interface
 description: A common platform interface for the shared_preferences plugin.
 homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences_platform_interface
-version: 1.0.4
+version: 1.0.5
 
 dependencies:
   meta: ^1.0.4
@@ -15,4 +15,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.8 <2.0.0"
+  flutter: ">=1.12.8"
