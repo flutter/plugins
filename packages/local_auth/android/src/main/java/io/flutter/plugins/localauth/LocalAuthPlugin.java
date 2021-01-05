@@ -301,18 +301,27 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   }
 
   private boolean isDeviceSupported() {
+    Activity activity = getActivity();
+    if (activity == null) return false;
+
     KeyguardManager keyguardManager =
-        (KeyguardManager) getActivity().getBaseContext().getSystemService(KEYGUARD_SERVICE);
+        (KeyguardManager) activity.getBaseContext().getSystemService(KEYGUARD_SERVICE);
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && keyguardManager.isDeviceSecure());
   }
 
   private boolean canAuthenticateWithBiometrics() {
-    BiometricManager biometricManager = BiometricManager.from(getActivity());
+    Activity activity = getActivity();
+    if (activity == null) return false;
+
+    BiometricManager biometricManager = BiometricManager.from(activity);
     return biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS;
   }
 
   private boolean hasBiometricHardware() {
-    BiometricManager biometricManager = BiometricManager.from(getActivity());
+    Activity activity = getActivity();
+    if (activity == null) return false;
+
+    BiometricManager biometricManager = BiometricManager.from(activity);
     return biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
   }
 
