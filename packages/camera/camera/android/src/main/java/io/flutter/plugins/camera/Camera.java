@@ -957,6 +957,13 @@ public class Camera {
     result.success(null);
   }
 
+  public void stopImageStream() throws CameraAccessException {
+    if (imageStreamReader != null) {
+      imageStreamReader.setOnImageAvailableListener(null, null);
+    }
+    startPreview();
+  }
+
   private void closeCaptureSession() {
     if (cameraCaptureSession != null) {
       cameraCaptureSession.close();
