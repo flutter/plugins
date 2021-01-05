@@ -1,3 +1,15 @@
+## 0.6.4+1
+
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash
+
+## 0.6.4
+
+* Adds auto exposure support for Android and iOS implementations.
+
+## 0.6.3+4
+
+* Revert previous dependency update: Changed dependency on camera_platform_interface to >=1.04 <1.1.0.
+
 ## 0.6.3+3
 
 * Updated dependency on camera_platform_interface to ^1.2.0.

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
@@ -27,7 +28,7 @@ get mockAvailableCameras => [
 get mockInitializeCamera => 13;
 
 get mockOnCameraInitializedEvent =>
-    CameraInitializedEvent(13, 75, 75, ExposureMode.auto, false);
+    CameraInitializedEvent(13, 75, 75, ExposureMode.auto, true);
 
 get mockOnCameraClosingEvent => null;
 
@@ -603,6 +604,398 @@ void main() {
             'TEST_ERROR',
             'This is a test error message',
           )));
+    });
+
+    test('setExposureMode() calls $CameraPlatform', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      await cameraController.setExposureMode(ExposureMode.auto);
+
+      verify(CameraPlatform.instance
+              .setExposureMode(cameraController.cameraId, ExposureMode.auto))
+          .called(1);
+    });
+
+    test('setExposureMode() throws $CameraException on $PlatformException',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      when(CameraPlatform.instance
+              .setExposureMode(cameraController.cameraId, ExposureMode.auto))
+          .thenThrow(
+        PlatformException(
+          code: 'TEST_ERROR',
+          message: 'This is a test error message',
+          details: null,
+        ),
+      );
+
+      expect(
+          cameraController.setExposureMode(ExposureMode.auto),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'TEST_ERROR',
+            'This is a test error message',
+          )));
+    });
+
+    test('setExposurePoint() calls $CameraPlatform', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      await cameraController.setExposurePoint(Offset(0.5, 0.5));
+
+      verify(CameraPlatform.instance.setExposurePoint(
+              cameraController.cameraId, Point<double>(0.5, 0.5)))
+          .called(1);
+    });
+
+    test('setExposurePoint() throws $CameraException on $PlatformException',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      when(CameraPlatform.instance.setExposurePoint(
+              cameraController.cameraId, Point<double>(0.5, 0.5)))
+          .thenThrow(
+        PlatformException(
+          code: 'TEST_ERROR',
+          message: 'This is a test error message',
+          details: null,
+        ),
+      );
+
+      expect(
+          cameraController.setExposurePoint(Offset(0.5, 0.5)),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'TEST_ERROR',
+            'This is a test error message',
+          )));
+    });
+
+    test('getMinExposureOffset() calls $CameraPlatform', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      await cameraController.getMinExposureOffset();
+
+      verify(CameraPlatform.instance
+              .getMinExposureOffset(cameraController.cameraId))
+          .called(1);
+    });
+
+    test('getMinExposureOffset() throws $CameraException on $PlatformException',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      when(CameraPlatform.instance
+              .getMinExposureOffset(cameraController.cameraId))
+          .thenThrow(
+        PlatformException(
+          code: 'TEST_ERROR',
+          message: 'This is a test error message',
+          details: null,
+        ),
+      );
+
+      expect(
+          cameraController.getMinExposureOffset(),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'TEST_ERROR',
+            'This is a test error message',
+          )));
+    });
+
+    test('getMaxExposureOffset() calls $CameraPlatform', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      await cameraController.getMaxExposureOffset();
+
+      verify(CameraPlatform.instance
+              .getMaxExposureOffset(cameraController.cameraId))
+          .called(1);
+    });
+
+    test('getMaxExposureOffset() throws $CameraException on $PlatformException',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      when(CameraPlatform.instance
+              .getMaxExposureOffset(cameraController.cameraId))
+          .thenThrow(
+        PlatformException(
+          code: 'TEST_ERROR',
+          message: 'This is a test error message',
+          details: null,
+        ),
+      );
+
+      expect(
+          cameraController.getMaxExposureOffset(),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'TEST_ERROR',
+            'This is a test error message',
+          )));
+    });
+
+    test('getExposureOffsetStepSize() calls $CameraPlatform', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      await cameraController.getExposureOffsetStepSize();
+
+      verify(CameraPlatform.instance
+              .getMinExposureOffset(cameraController.cameraId))
+          .called(1);
+    });
+
+    test(
+        'getExposureOffsetStepSize() throws $CameraException on $PlatformException',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+
+      when(CameraPlatform.instance
+              .getExposureOffsetStepSize(cameraController.cameraId))
+          .thenThrow(
+        PlatformException(
+          code: 'TEST_ERROR',
+          message: 'This is a test error message',
+          details: null,
+        ),
+      );
+
+      expect(
+          cameraController.getExposureOffsetStepSize(),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'TEST_ERROR',
+            'This is a test error message',
+          )));
+    });
+
+    test('setExposureOffset() calls $CameraPlatform', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      when(CameraPlatform.instance
+              .getMinExposureOffset(cameraController.cameraId))
+          .thenAnswer((_) async => -1.0);
+      when(CameraPlatform.instance
+              .getMaxExposureOffset(cameraController.cameraId))
+          .thenAnswer((_) async => 2.0);
+      when(CameraPlatform.instance
+              .getExposureOffsetStepSize(cameraController.cameraId))
+          .thenAnswer((_) async => 1.0);
+
+      await cameraController.setExposureOffset(1.0);
+
+      verify(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 1.0))
+          .called(1);
+    });
+
+    test('setExposureOffset() throws $CameraException on $PlatformException',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      when(CameraPlatform.instance
+              .getMinExposureOffset(cameraController.cameraId))
+          .thenAnswer((_) async => -1.0);
+      when(CameraPlatform.instance
+              .getMaxExposureOffset(cameraController.cameraId))
+          .thenAnswer((_) async => 2.0);
+      when(CameraPlatform.instance
+              .getExposureOffsetStepSize(cameraController.cameraId))
+          .thenAnswer((_) async => 1.0);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 1.0))
+          .thenThrow(
+        PlatformException(
+          code: 'TEST_ERROR',
+          message: 'This is a test error message',
+          details: null,
+        ),
+      );
+
+      expect(
+          cameraController.setExposureOffset(1.0),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'TEST_ERROR',
+            'This is a test error message',
+          )));
+    });
+
+    test(
+        'setExposureOffset() throws $CameraException when offset is out of bounds',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      when(CameraPlatform.instance
+              .getMinExposureOffset(cameraController.cameraId))
+          .thenAnswer((_) async => -1.0);
+      when(CameraPlatform.instance
+              .getMaxExposureOffset(cameraController.cameraId))
+          .thenAnswer((_) async => 2.0);
+      when(CameraPlatform.instance
+              .getExposureOffsetStepSize(cameraController.cameraId))
+          .thenAnswer((_) async => 1.0);
+
+      expect(
+          cameraController.setExposureOffset(3.0),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'exposureOffsetOutOfBounds',
+            'The provided exposure offset was outside the supported range for this device.',
+          )));
+      expect(
+          cameraController.setExposureOffset(-2.0),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'exposureOffsetOutOfBounds',
+            'The provided exposure offset was outside the supported range for this device.',
+          )));
+
+      await cameraController.setExposureOffset(2.0);
+      await cameraController.setExposureOffset(-1.0);
+      await cameraController.setExposureOffset(-0.0);
+      verify(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 2.0))
+          .called(1);
+      verify(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, -1.0))
+          .called(1);
+      verify(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 0.0))
+          .called(1);
+    });
+
+    test('setExposureOffset() rounds offset to nearest step', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      when(CameraPlatform.instance
+              .getMinExposureOffset(cameraController.cameraId))
+          .thenAnswer((_) async => -1.0);
+      when(CameraPlatform.instance
+              .getMaxExposureOffset(cameraController.cameraId))
+          .thenAnswer((_) async => 1.0);
+      when(CameraPlatform.instance
+              .getExposureOffsetStepSize(cameraController.cameraId))
+          .thenAnswer((_) async => 0.4);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 1.0))
+          .thenAnswer((_) async => 1.0);
+
+      await cameraController.setExposureOffset(1.0);
+      await cameraController.setExposureOffset(-1.0);
+      await cameraController.setExposureOffset(0.1);
+      await cameraController.setExposureOffset(0.2);
+      await cameraController.setExposureOffset(0.3);
+      await cameraController.setExposureOffset(0.4);
+      await cameraController.setExposureOffset(0.5);
+      await cameraController.setExposureOffset(0.6);
+      await cameraController.setExposureOffset(0.7);
+      await cameraController.setExposureOffset(-0.1);
+      await cameraController.setExposureOffset(-0.2);
+      await cameraController.setExposureOffset(-0.3);
+      await cameraController.setExposureOffset(-0.4);
+      await cameraController.setExposureOffset(-0.5);
+      await cameraController.setExposureOffset(-0.6);
+      await cameraController.setExposureOffset(-0.7);
+
+      verify(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 0.8))
+          .called(3);
+      verify(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, -0.8))
+          .called(3);
+      verify(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 0.0))
+          .called(2);
+      verify(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 0.4))
+          .called(4);
+      verify(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, -0.4))
+          .called(4);
     });
   });
 }
