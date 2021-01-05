@@ -1,6 +1,9 @@
 ## 1.2.0
 
-* Use XFile instead of PickedFile
+****breaking changes**:
+- pickImage now returns XFile instead of PickedFile
+- pickVideo now returns XFile instead of PickedFile
+- changed LostData file parameter type to XFile
 
 ## 1.1.5
 
