@@ -39,12 +39,13 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('authenticateWithBiometrics',
+            isMethodCall('authenticate',
                 arguments: <String, dynamic>{
                   'localizedReason': 'Needs secure',
                   'useErrorDialogs': true,
                   'stickyAuth': false,
                   'sensitiveTransaction': true,
+                  'biometricOnly': true,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
@@ -58,12 +59,13 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('authenticateWithBiometrics',
+            isMethodCall('authenticate',
                 arguments: <String, dynamic>{
                   'localizedReason': 'Needs secure',
                   'useErrorDialogs': true,
                   'stickyAuth': false,
                   'sensitiveTransaction': true,
+                  'biometricOnly': true,
                 }..addAll(const IOSAuthMessages().args)),
           ],
         );
@@ -79,12 +81,13 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('authenticateWithBiometrics',
+            isMethodCall('authenticate',
                 arguments: <String, dynamic>{
                   'localizedReason': 'Insecure',
                   'useErrorDialogs': false,
                   'stickyAuth': false,
                   'sensitiveTransaction': false,
+                  'biometricOnly': true,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
@@ -106,6 +109,7 @@ void main() {
                   'useErrorDialogs': true,
                   'stickyAuth': false,
                   'sensitiveTransaction': true,
+                  'biometricOnly': false,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
@@ -125,6 +129,7 @@ void main() {
                   'useErrorDialogs': true,
                   'stickyAuth': false,
                   'sensitiveTransaction': true,
+                  'biometricOnly': false,
                 }..addAll(const IOSAuthMessages().args)),
           ],
         );
@@ -146,6 +151,7 @@ void main() {
                   'useErrorDialogs': false,
                   'stickyAuth': false,
                   'sensitiveTransaction': false,
+                  'biometricOnly': false,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
