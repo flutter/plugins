@@ -91,6 +91,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
+    plugin.registrar = registrar;
     registrar.addActivityResultListener(plugin.resultListener);
     channel.setMethodCallHandler(plugin);
   }
@@ -107,7 +108,6 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     this.result = result;
     switch (call.method) {
       case "authenticate":
-      case "authenticateWithBiometrics":
         this.authenticate(call, result);
         break;
       case "getAvailableBiometrics":
@@ -176,8 +176,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
           }
         };
 
-    // let authenticateWithBiometrics try biometric prompt - might not work
-    if (call.method.equals("authenticateWithBiometrics")) {
+    // if is biometricOnly try biometric prompt - might not work
+    boolean isBiometricOnly = call.argument("biometricOnly");
+    if (isBiometricOnly) {
       if (!canAuthenticateWithBiometrics()) {
         if (!hasBiometricHardware()) {
           completionHandler.onError("NoHardware", "No biometric hardware found");

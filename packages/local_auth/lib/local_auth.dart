@@ -73,29 +73,16 @@ class LocalAuthentication {
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
     IOSAuthMessages iOSAuthStrings = const IOSAuthMessages(),
     bool sensitiveTransaction = true,
-  }) async {
-    assert(localizedReason != null);
-    final Map<String, Object> args = <String, Object>{
-      'localizedReason': localizedReason,
-      'useErrorDialogs': useErrorDialogs,
-      'stickyAuth': stickyAuth,
-      'sensitiveTransaction': sensitiveTransaction,
-    };
-    if (_platform.isIOS) {
-      args.addAll(iOSAuthStrings.args);
-    } else if (_platform.isAndroid) {
-      args.addAll(androidAuthStrings.args);
-    } else {
-      throw PlatformException(
-          code: otherOperatingSystem,
-          message: 'Local authentication does not support non-Android/iOS '
-              'operating systems.',
-          details: 'Your operating system is ${_platform.operatingSystem}');
-    }
-    return (await _channel.invokeMethod<bool>(
-            'authenticateWithBiometrics', args)) ??
-        false;
-  }
+  }) =>
+      authenticate(
+        localizedReason: localizedReason,
+        useErrorDialogs: useErrorDialogs,
+        stickyAuth: stickyAuth,
+        androidAuthStrings: androidAuthStrings,
+        iOSAuthStrings: iOSAuthStrings,
+        sensitiveTransaction: sensitiveTransaction,
+        biometricOnly: true,
+      );
 
   /// Authenticates the user with biometrics available on the device while also
   /// allowing the user to use device authentication - pin, pattern, passcode.
@@ -130,6 +117,9 @@ class LocalAuthentication {
   /// dialog after the face is recognized to make sure the user meant to unlock
   /// their phone.
   ///
+  /// Setting [biometricOnly] to true prevents authenticates from using non-biometric
+  /// local authentication such as pin, passcode, and passcode.
+  ///
   /// Throws an [PlatformException] if there were technical problems with local
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
@@ -141,6 +131,7 @@ class LocalAuthentication {
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
     IOSAuthMessages iOSAuthStrings = const IOSAuthMessages(),
     bool sensitiveTransaction = true,
+    bool biometricOnly = false,
   }) async {
     assert(localizedReason != null);
     final Map<String, Object> args = <String, Object>{
@@ -148,6 +139,7 @@ class LocalAuthentication {
       'useErrorDialogs': useErrorDialogs,
       'stickyAuth': stickyAuth,
       'sensitiveTransaction': sensitiveTransaction,
+      'biometricOnly': biometricOnly,
     };
     if (_platform.isIOS) {
       args.addAll(iOSAuthStrings.args);
@@ -179,16 +171,13 @@ class LocalAuthentication {
   /// Returns true if device is capable of checking biometrics
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> get canCheckBiometrics async =>
-      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))!
-          .isNotEmpty;
+  Future<bool> get canCheckBiometrics async => (await _channel.invokeListMethod<String>('getAvailableBiometrics'))!.isNotEmpty;
 
   /// Returns true if device is capable of checking biometrics or is able to
   /// fail over to device credentials.
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> isDeviceSupported() async =>
-      (await _channel.invokeMethod<bool>('isDeviceSupported')) ?? false;
+  Future<bool> isDeviceSupported() async => (await _channel.invokeMethod<bool>('isDeviceSupported')) ?? false;
 
   /// Returns a list of enrolled biometrics
   ///
