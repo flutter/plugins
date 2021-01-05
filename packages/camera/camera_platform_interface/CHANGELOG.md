@@ -1,3 +1,7 @@
+## 1.3.0
+
+- Introduces an option to set the image format when initializing.
+
 ## 1.2.0
 
 - Added interface to support automatic exposure.
