@@ -44,6 +44,7 @@ class CameraValue {
     this.exposurePointSupported,
     this.deviceOrientation,
     this.lockedCaptureOrientation,
+    this.recordingOrientation,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -115,6 +116,9 @@ class CameraValue {
   /// Whether the capture orientation is currently locked.
   bool get isCaptureOrientationLocked => lockedCaptureOrientation != null;
 
+  /// The orientation of the currently running video recording.
+  final DeviceOrientation recordingOrientation;
+
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
@@ -132,6 +136,7 @@ class CameraValue {
     bool exposurePointSupported,
     DeviceOrientation deviceOrientation,
     Optional<DeviceOrientation> lockedCaptureOrientation,
+    Optional<DeviceOrientation> recordingOrientation,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -149,6 +154,9 @@ class CameraValue {
       lockedCaptureOrientation: lockedCaptureOrientation == null
           ? this.lockedCaptureOrientation
           : lockedCaptureOrientation.orNull,
+      recordingOrientation: recordingOrientation == null
+          ? this.recordingOrientation
+          : recordingOrientation.orNull,
     );
   }
 
@@ -164,7 +172,8 @@ class CameraValue {
         'exposureMode: $exposureMode, '
         'exposurePointSupported: $exposurePointSupported, '
         'deviceOrientation: $deviceOrientation, '
-        'lockedCaptureOrientation: $lockedCaptureOrientation)';
+        'lockedCaptureOrientation: $lockedCaptureOrientation, '
+        'recordingOrientation: $recordingOrientation)';
   }
 }
 
@@ -432,7 +441,11 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     try {
       await CameraPlatform.instance.startVideoRecording(_cameraId);
-      value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
+      value = value.copyWith(
+          isRecordingVideo: true,
+          isRecordingPaused: false,
+          recordingOrientation: Optional.fromNullable(
+              value.lockedCaptureOrientation ?? value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -456,7 +469,10 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       XFile file = await CameraPlatform.instance.stopVideoRecording(_cameraId);
-      value = value.copyWith(isRecordingVideo: false);
+      value = value.copyWith(
+        isRecordingVideo: false,
+        recordingOrientation: Optional.absent(),
+      );
       return file;
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);

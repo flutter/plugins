@@ -26,6 +26,7 @@ void main() {
         exposurePointSupported: true,
         deviceOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation: DeviceOrientation.portraitUp,
+        recordingOrientation: DeviceOrientation.portraitUp,
       );
 
       expect(cameraValue, isA<CameraValue>());
@@ -42,6 +43,7 @@ void main() {
       expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
       expect(
           cameraValue.lockedCaptureOrientation, DeviceOrientation.portraitUp);
+      expect(cameraValue.recordingOrientation, DeviceOrientation.portraitUp);
     });
 
     test('Can be created as uninitialized', () {
@@ -60,6 +62,7 @@ void main() {
       expect(cameraValue.exposurePointSupported, false);
       expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
       expect(cameraValue.lockedCaptureOrientation, null);
+      expect(cameraValue.recordingOrientation, null);
     });
 
     test('Can be copied with isInitialized', () {
@@ -77,6 +80,9 @@ void main() {
       expect(cameraValue.flashMode, FlashMode.auto);
       expect(cameraValue.exposureMode, null);
       expect(cameraValue.exposurePointSupported, false);
+      expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
+      expect(cameraValue.lockedCaptureOrientation, null);
+      expect(cameraValue.recordingOrientation, null);
     });
 
     test('Has aspectRatio after setting size', () {
@@ -118,10 +124,11 @@ void main() {
         exposurePointSupported: true,
         deviceOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation: DeviceOrientation.portraitUp,
+        recordingOrientation: DeviceOrientation.portraitUp,
       );
 
       expect(cameraValue.toString(),
-          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: null, exposurePointSupported: true, deviceOrientation: DeviceOrientation.portraitUp, lockedCaptureOrientation: DeviceOrientation.portraitUp)');
+          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: null, exposurePointSupported: true, deviceOrientation: DeviceOrientation.portraitUp, lockedCaptureOrientation: DeviceOrientation.portraitUp, recordingOrientation: DeviceOrientation.portraitUp)');
     });
   });
 }

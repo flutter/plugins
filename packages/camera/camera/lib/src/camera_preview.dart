@@ -35,28 +35,22 @@ class CameraPreview extends StatelessWidget {
                       CameraPlatform.instance.buildPreview(controller.cameraId),
                 ),
                 child ?? Container(),
-                Container(color: Colors.white.withOpacity(0.5)),
-                Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(controller.value.deviceOrientation.toString()),
-                      Text(controller.value.lockedCaptureOrientation
-                              ?.toString() ??
-                          'NO LOCK'),
-                    ],
-                  ),
-                ),
               ],
             ),
           )
         : Container();
   }
 
+  DeviceOrientation _getApplicableOrientation() {
+    return controller.value.isRecordingVideo
+        ? controller.value.recordingOrientation
+        : (controller.value.lockedCaptureOrientation ??
+            controller.value.deviceOrientation);
+  }
+
   bool _isLandscape() {
     return [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]
-        .contains(controller.value.lockedCaptureOrientation ??
-            controller.value.deviceOrientation);
+        .contains(_getApplicableOrientation());
   }
 
   int _getQuarterTurns() {
@@ -67,8 +61,6 @@ class CameraPreview extends StatelessWidget {
       DeviceOrientation.portraitDown: 2,
       DeviceOrientation.landscapeRight: 3,
     };
-    return turns[controller.value.lockedCaptureOrientation ??
-            controller.value.deviceOrientation] +
-        platformOffset;
+    return turns[_getApplicableOrientation()] + platformOffset;
   }
 }
