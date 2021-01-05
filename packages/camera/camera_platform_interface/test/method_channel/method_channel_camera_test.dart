@@ -810,14 +810,11 @@ void main() {
         );
 
         // Act
-        await camera.lockCaptureOrientation(cameraId);
         await camera.lockCaptureOrientation(
             cameraId, DeviceOrientation.portraitUp);
 
         // Assert
         expect(channel.log, <Matcher>[
-          isMethodCall('lockCaptureOrientation',
-              arguments: {'cameraId': cameraId, 'orientation': null}),
           isMethodCall('lockCaptureOrientation',
               arguments: {'cameraId': cameraId, 'orientation': 'portraitUp'}),
         ]);

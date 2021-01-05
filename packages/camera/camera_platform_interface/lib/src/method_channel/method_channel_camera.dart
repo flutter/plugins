@@ -162,8 +162,8 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<void> lockCaptureOrientation(int cameraId,
-      [DeviceOrientation orientation]) async {
+  Future<void> lockCaptureOrientation(
+      int cameraId, DeviceOrientation orientation) async {
     await _channel.invokeMethod<String>(
       'lockCaptureOrientation',
       <String, dynamic>{

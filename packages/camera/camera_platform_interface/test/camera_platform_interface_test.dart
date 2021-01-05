@@ -117,7 +117,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.lockCaptureOrientation(1),
+        () => cameraPlatform.lockCaptureOrientation(1, null),
         throwsUnimplementedError,
       );
     });

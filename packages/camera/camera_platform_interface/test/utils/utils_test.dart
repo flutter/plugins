@@ -32,7 +32,6 @@ void main() {
     });
 
     test("serializeDeviceOrientation() should serialize correctly", () {
-      expect(serializeDeviceOrientation(null), null);
       expect(serializeDeviceOrientation(DeviceOrientation.portraitUp),
           "portraitUp");
       expect(serializeDeviceOrientation(DeviceOrientation.portraitDown),
@@ -44,7 +43,6 @@ void main() {
     });
 
     test("deserializeDeviceOrientation() should deserialize correctly", () {
-      expect(deserializeDeviceOrientation(null), null);
       expect(deserializeDeviceOrientation('portraitUp'),
           DeviceOrientation.portraitUp);
       expect(deserializeDeviceOrientation('portraitDown'),

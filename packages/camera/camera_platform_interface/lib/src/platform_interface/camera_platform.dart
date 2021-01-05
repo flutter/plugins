@@ -93,10 +93,8 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Locks the capture orientation.
-  ///
-  /// If [orientation] is omitted, the current device orientation is used.
-  Future<void> lockCaptureOrientation(int cameraId,
-      [DeviceOrientation orientation]) {
+  Future<void> lockCaptureOrientation(
+      int cameraId, DeviceOrientation orientation) {
     throw UnimplementedError('lockCaptureOrientation() is not implemented.');
   }
 
