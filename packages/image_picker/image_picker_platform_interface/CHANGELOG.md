@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Use XFile instead of PickedFile
+
 ## 1.1.5
 
 * Update Flutter SDK constraint.

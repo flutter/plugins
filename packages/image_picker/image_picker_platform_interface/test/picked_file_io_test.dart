@@ -8,8 +8,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
 final String expectedStringContents = 'Hello, world!';
 final Uint8List bytes = utf8.encode(expectedStringContents);
@@ -18,7 +18,7 @@ final String textFilePath = textFile.path;
 
 void main() {
   group('Create with an objectUrl', () {
-    final pickedFile = PickedFile(textFilePath);
+    final pickedFile = XFile(textFilePath);
 
     test('Can be read as a string', () async {
       expect(await pickedFile.readAsString(), equals(expectedStringContents));

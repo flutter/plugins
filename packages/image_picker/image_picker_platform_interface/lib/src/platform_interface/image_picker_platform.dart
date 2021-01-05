@@ -10,6 +10,8 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
 import 'package:image_picker_platform_interface/src/types/types.dart';
 
+import '../../image_picker_platform_interface.dart';
+
 /// The interface that implementations of image_picker must implement.
 ///
 /// Platform implementations should extend this class rather than implement it as `image_picker`
@@ -115,7 +117,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
 
   // Next version of the API.
 
-  /// Returns a [PickedFile] with the image that was picked.
+  /// Returns a [XFile] with the image that was picked.
   ///
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -141,7 +143,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  Future<PickedFile> pickImage({
+  Future<XFile> pickImage({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
@@ -151,7 +153,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('pickImage() has not been implemented.');
   }
 
-  /// Returns a [PickedFile] containing the video that was picked.
+  /// Returns a [XFile] containing the video that was picked.
   ///
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -165,7 +167,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  Future<PickedFile> pickVideo({
+  Future<XFile> pickVideo({
     @required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration maxDuration,

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker_platform_interface/src/types/types.dart';
 
@@ -31,7 +32,7 @@ class LostData {
   /// The file that was lost in a previous [pickImage] or [pickVideo] call due to MainActivity being destroyed.
   ///
   /// Can be null if [exception] exists.
-  final PickedFile file;
+  final XFile file;
 
   /// The exception of the last [pickImage] or [pickVideo].
   ///
