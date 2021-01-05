@@ -1,6 +1,5 @@
 package io.flutter.plugins.camera;
 
-import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 import android.annotation.SuppressLint;
@@ -36,7 +35,6 @@ import android.os.Looper;
 import android.util.Range;
 import android.util.Rational;
 import android.util.Size;
-import android.view.OrientationEventListener;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
@@ -63,8 +61,7 @@ import java.util.concurrent.Executors;
 public class Camera {
   private final SurfaceTextureEntry flutterTexture;
   private final CameraManager cameraManager;
-  private final OrientationEventListener orientationEventListener;
-  private final DeviceOrientationListener deviceOrientationListener;
+  private final DeviceOrientationManager deviceOrientationListener;
   private final boolean isFrontFacing;
   private final int sensorOrientation;
   private final String cameraName;
@@ -84,7 +81,6 @@ public class Camera {
   private MediaRecorder mediaRecorder;
   private boolean recordingVideo;
   private File videoRecordingFile;
-  private int currentOrientation = ORIENTATION_UNKNOWN;
   private FlashMode flashMode;
   private ExposureMode exposureMode;
   private PictureCaptureRequest pictureCaptureRequest;
@@ -112,21 +108,6 @@ public class Camera {
     this.flashMode = FlashMode.auto;
     this.exposureMode = ExposureMode.auto;
     this.exposureOffset = 0;
-    orientationEventListener =
-        new OrientationEventListener(activity.getApplicationContext()) {
-          @Override
-          public void onOrientationChanged(int i) {
-            if (i == ORIENTATION_UNKNOWN) {
-              return;
-            }
-            // Convert the raw deg angle to the nearest multiple of 90.
-            currentOrientation = (int) (Math.round(i / 90.0) * 90) % 360;
-          }
-        };
-    orientationEventListener.enable();
-    deviceOrientationListener =
-        new DeviceOrientationListener(activity.getApplicationContext(), dartMessenger);
-    deviceOrientationListener.start();
 
     CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
     sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
@@ -141,6 +122,10 @@ public class Camera {
         new CameraZoom(
             characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE),
             characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM));
+    deviceOrientationListener =
+        new DeviceOrientationManager(
+            activity.getApplicationContext(), dartMessenger, isFrontFacing, sensorOrientation);
+    deviceOrientationListener.start();
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
@@ -151,7 +136,10 @@ public class Camera {
     mediaRecorder =
         new MediaRecorderBuilder(recordingProfile, outputFilePath)
             .setEnableAudio(enableAudio)
-            .setMediaOrientation(getMediaOrientation())
+            .setMediaOrientation(
+                lockedCaptureOrientation == null
+                    ? deviceOrientationListener.getMediaOrientation()
+                    : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation))
             .build();
   }
 
@@ -378,7 +366,11 @@ public class Camera {
       final CaptureRequest.Builder captureBuilder =
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
-      captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+      captureBuilder.set(
+          CaptureRequest.JPEG_ORIENTATION,
+          lockedCaptureOrientation == null
+              ? deviceOrientationListener.getMediaOrientation()
+              : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation));
       switch (flashMode) {
         case off:
           captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
@@ -989,15 +981,6 @@ public class Camera {
   public void dispose() {
     close();
     flutterTexture.release();
-    orientationEventListener.disable();
     deviceOrientationListener.stop();
-  }
-
-  private int getMediaOrientation() {
-    final int sensorOrientationOffset =
-        (currentOrientation == ORIENTATION_UNKNOWN)
-            ? 0
-            : (isFrontFacing) ? -currentOrientation : currentOrientation;
-    return (sensorOrientationOffset + sensorOrientation + 360) % 360;
   }
 }

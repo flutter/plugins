@@ -12,20 +12,25 @@ import android.view.Surface;
 import android.view.WindowManager;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 
-class DeviceOrientationListener {
+class DeviceOrientationManager {
 
   private static final IntentFilter orientationIntentFilter =
       new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED);
 
   private final Context context;
   private final DartMessenger messenger;
+  private final boolean isFrontFacing;
+  private final int sensorOrientation;
   private PlatformChannel.DeviceOrientation lastOrientation;
   private OrientationEventListener orientationEventListener;
   private BroadcastReceiver broadcastReceiver;
 
-  public DeviceOrientationListener(Context context, DartMessenger messenger) {
+  public DeviceOrientationManager(
+      Context context, DartMessenger messenger, boolean isFrontFacing, int sensorOrientation) {
     this.context = context;
     this.messenger = messenger;
+    this.isFrontFacing = isFrontFacing;
+    this.sensorOrientation = sensorOrientation;
   }
 
   public void start() {
@@ -36,6 +41,30 @@ class DeviceOrientationListener {
   public void stop() {
     stopSensorListener();
     stopUIListener();
+  }
+
+  public int getMediaOrientation() {
+    return this.getMediaOrientation(this.lastOrientation);
+  }
+
+  public int getMediaOrientation(PlatformChannel.DeviceOrientation orientation) {
+    int angle = 0;
+    switch (orientation) {
+      case PORTRAIT_UP:
+        angle = 0;
+        break;
+      case PORTRAIT_DOWN:
+        angle = 180;
+        break;
+      case LANDSCAPE_LEFT:
+        angle = 90;
+        break;
+      case LANDSCAPE_RIGHT:
+        angle = 270;
+        break;
+    }
+    if (isFrontFacing) angle *= -1;
+    return (angle + sensorOrientation + 360) % 360;
   }
 
   private void startSensorListener() {
