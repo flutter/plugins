@@ -87,6 +87,10 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// The device orientation changed.
+  ///
+  /// Implementations for this:
+  /// - Should support all 4 orientations.
+  /// - Should not emit new values when the screen orientation is locked.
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
     throw UnimplementedError(
         'onDeviceOrientationChanged() is not implemented.');
