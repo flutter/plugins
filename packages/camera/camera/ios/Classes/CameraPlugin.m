@@ -70,16 +70,14 @@ static FlutterError *getFlutterError(NSError *error) {
     _result(getFlutterError(error));
     return;
   }
+
   NSData *data = [AVCapturePhotoOutput
       JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
                             previewPhotoSampleBuffer:previewPhotoSampleBuffer];
 
-  UIImage *image = [UIImage imageWithCGImage:[UIImage imageWithData:data].CGImage
-                                       scale:1.0
-                                 orientation:[self getImageRotation:_cameraPosition
-                                                     deviceRotation:_deviceRotation]];
   // TODO(sigurdm): Consider writing file asynchronously.
-  bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:_path atomically:YES];
+  bool success = [data writeToFile:_path atomically:YES];
+
   if (!success) {
     _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
     return;
@@ -104,24 +102,6 @@ static FlutterError *getFlutterError(NSError *error) {
     return;
   }
   _result(_path);
-}
-
-- (UIImageOrientation)getImageRotation:(AVCaptureDevicePosition)_cameraPosition
-                        deviceRotation:(int)deviceRotation {
-  switch (deviceRotation) {
-    case 90:
-      return UIImageOrientationRight;
-    case 180:
-      return _cameraPosition == AVCaptureDevicePositionBack
-                 ? UIImageOrientationDown /*rotate 180* */
-                 : UIImageOrientationUp /*do not rotate*/;
-    case 270:
-      return UIImageOrientationLeft;
-    case 0:
-    default:
-      return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationUp
-                                                            : UIImageOrientationDown;
-  }
 }
 @end
 
@@ -376,31 +356,38 @@ NSString *const errorMethod = @"error";
     return;
   }
 
-  [_capturePhotoOutput capturePhotoWithSettings:settings
-                                       delegate:[[FLTSavePhotoDelegate alloc]
-                                                      initWithPath:path
-                                                            result:result
-                                                    cameraPosition:_captureDevice.position
-                                                    deviceRotation:[self getDeviceRotation]]];
+  AVCaptureConnection *connection = [_capturePhotoOutput connectionWithMediaType:AVMediaTypeVideo];
+
+  if (connection) {
+    connection.videoOrientation = [self getVideoOrientation];
+  }
+
+  [_capturePhotoOutput
+      capturePhotoWithSettings:settings
+                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                                   result:result
+                                                            motionManager:_motionManager
+                                                           cameraPosition:_captureDevice.position]];
 }
 
-- (AVCaptureVideoOrientation)getVideoOrientation:(AVCaptureDevicePosition)_cameraPosition
-                                  deviceRotation:(int)deviceRotation {
-  switch (deviceRotation) {
-    case 90:
-      return AVCaptureVideoOrientationLandscapeRight;
-    case 180:
-      return _cameraPosition == AVCaptureDevicePositionBack
-                 ? AVCaptureVideoOrientationPortraitUpsideDown /*rotate 180* */
-                 : AVCaptureVideoOrientationPortrait /*do not rotate*/;
-    case 270:
-      return AVCaptureVideoOrientationLandscapeLeft;
-    case 0:
-    default:
-      return _cameraPosition == AVCaptureDevicePositionBack
-                 ? AVCaptureVideoOrientationPortrait
-                 : AVCaptureVideoOrientationPortraitUpsideDown;
-  }
+- (AVCaptureVideoOrientation)getVideoOrientation {
+    UIDeviceOrientation deviceOrientation = [[Ution];
+    
+    if (deviceOrientation == UIDeviceOrientationPortrait) {
+    return AVCaptureVideoOrientationPortrait;
+    } else if (deviceOrientation == UIDeviceOrientationLandscapeLeft) {
+    // Note: device orientation is flipped compared to video orientation. When UIDeviceOrientation
+    // is landscape left the video orientation should be landscape right.
+    return AVCaptureVideoOrientationLandscapeRight;
+    } else if (deviceOrientation == UIDeviceOrientationLandscapeRight) {
+    // Note: device orientation is flipped compared to video orientation. When UIDeviceOrientation
+    // is landscape right the video orientation should be landscape left.
+    return AVCaptureVideoOrientationLandscapeLeft;
+    } else if (deviceOrientation == UIDeviceOrientationPortraitUpsideDown) {
+    return AVCaptureVideoOrientationPortraitUpsideDown;
+    } else {
+    return AVCaptureVideoOrientationPortrait;
+    }
 }
 
 - (NSString *)getTemporaryFilePathWithExtension:(NSString *)extension
@@ -717,7 +704,7 @@ NSString *const errorMethod = @"error";
     NSError *error;
     _videoRecordingPath = [self getTemporaryFilePathWithExtension:@"mp4"
                                                         subfolder:@"videos"
-                                                           prefix:@"CAP_"
+                                                           prefix:@"REC_"
                                                             error:error];
     if (error) {
       result(getFlutterError(error));
@@ -1023,6 +1010,7 @@ NSString *const errorMethod = @"error";
   }
 
   [_videoWriter addInput:_videoWriterInput];
+
   [_captureVideoOutput setSampleBufferDelegate:self queue:_dispatchQueue];
 
   return YES;
