@@ -23,7 +23,7 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"authenticate" isEqualToString:call.method]) {
-    if (arguments[@"biometricOnly"]) {
+    if (call.arguments[@"biometricOnly"]) {
       [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
     } else {
       [self authenticate:call.arguments withFlutterResult:result];
