@@ -4,6 +4,7 @@
 
 import 'dart:html' as html;
 import 'dart:js_util';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
