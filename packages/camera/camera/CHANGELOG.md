@@ -1,3 +1,7 @@
+## 0.6.4+2
+
+* Set ImageStreamReader listener to null to prevent stale images when streaming images. 
+
 ## 0.6.4+1
 
 * Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash
