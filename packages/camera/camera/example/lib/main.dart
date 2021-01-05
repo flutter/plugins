@@ -254,6 +254,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               color: Colors.blue,
               onPressed: controller != null ? onAudioModeButtonPressed : null,
             ),
+            IconButton(
+              icon: Icon(controller?.value?.isCaptureOrientationLocked ?? false
+                  ? Icons.screen_lock_rotation
+                  : Icons.screen_rotation),
+              color: Colors.blue,
+              onPressed: controller != null
+                  ? onCaptureOrientationLockButtonPressed
+                  : null,
+            ),
           ],
         ),
         _flashModeControlRowWidget(),
@@ -542,6 +551,19 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     enableAudio = !enableAudio;
     if (controller != null) {
       onNewCameraSelected(controller.description);
+    }
+  }
+
+  void onCaptureOrientationLockButtonPressed() async {
+    if (controller != null) {
+      if (controller.value.isCaptureOrientationLocked) {
+        await controller.unlockCaptureOrientation();
+        showInSnackBar('Capture orientation unlocked');
+      } else {
+        await controller.lockCaptureOrientation();
+        showInSnackBar(
+            'Capture orientation locked to ${controller.value.lockedCaptureOrientation.toString().split('.').last}');
+      }
     }
   }
 

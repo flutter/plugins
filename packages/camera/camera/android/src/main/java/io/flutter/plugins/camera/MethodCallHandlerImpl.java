@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.hardware.camera2.CameraAccessException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -269,6 +271,28 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           }
           break;
         }
+      case "lockCaptureOrientation":
+      {
+        PlatformChannel.DeviceOrientation orientation = CameraUtils.deserializeDeviceOrientation(call.argument("orientation"));
+
+        try {
+          camera.lockCaptureOrientation(orientation);
+          result.success(null);
+        } catch (Exception e) {
+          handleException(e, result);
+        }
+        break;
+      }
+      case "unlockCaptureOrientation":
+      {
+        try {
+          camera.unlockCaptureOrientation();
+          result.success(null);
+        } catch (Exception e) {
+          handleException(e, result);
+        }
+        break;
+      }
       case "dispose":
         {
           if (camera != null) {

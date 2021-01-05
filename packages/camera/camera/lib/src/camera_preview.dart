@@ -23,18 +23,25 @@ class CameraPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return controller.value.isInitialized
         ? AspectRatio(
-            aspectRatio: _isLandscape()
-                ? controller.value.aspectRatio
-                : (1 / controller.value.aspectRatio),
+            aspectRatio: _isLandscape() ? controller.value.aspectRatio : (1 / controller.value.aspectRatio),
             child: Stack(
               fit: StackFit.expand,
               children: [
                 RotatedBox(
                   quarterTurns: _getQuarterTurns(),
-                  child:
-                      CameraPlatform.instance.buildPreview(controller.cameraId),
+                  child: CameraPlatform.instance.buildPreview(controller.cameraId),
                 ),
                 child ?? Container(),
+                Container(color: Colors.white.withOpacity(0.5)),
+                Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(controller.value.deviceOrientation.toString()),
+                      Text(controller.value.lockedCaptureOrientation?.toString() ?? 'NO LOCK'),
+                    ],
+                  ),
+                ),
               ],
             ),
           )
@@ -43,17 +50,17 @@ class CameraPreview extends StatelessWidget {
 
   bool _isLandscape() {
     return [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]
-        .contains(controller.value.deviceOrientation);
+        .contains(controller.value.lockedCaptureOrientation ?? controller.value.deviceOrientation);
   }
 
   int _getQuarterTurns() {
     int platformOffset = defaultTargetPlatform == TargetPlatform.iOS ? 1 : 0;
     Map<DeviceOrientation, int> turns = {
       DeviceOrientation.portraitUp: 0,
+      DeviceOrientation.landscapeLeft: 1,
       DeviceOrientation.portraitDown: 2,
-      DeviceOrientation.landscapeRight: 1,
-      DeviceOrientation.landscapeLeft: 3
+      DeviceOrientation.landscapeRight: 3,
     };
-    return turns[controller.value.deviceOrientation] + platformOffset;
+    return turns[controller.value.lockedCaptureOrientation ?? controller.value.deviceOrientation] + platformOffset;
   }
 }

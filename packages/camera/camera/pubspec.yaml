@@ -12,6 +12,7 @@ dependencies:
   camera_platform_interface:
     path: ../camera_platform_interface
   pedantic: ^1.8.0
+  quiver: ^2.1.5
 
 dev_dependencies:
   path_provider: ^0.5.0

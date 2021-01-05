@@ -18,8 +18,6 @@ static FlutterError *getFlutterError(NSError *error) {
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
 @property(readonly, nonatomic) FlutterResult result;
-@property(readonly, nonatomic) AVCaptureDevicePosition cameraPosition;
-@property(readonly, nonatomic) int deviceRotation;
 @end
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
@@ -45,15 +43,10 @@ static FlutterError *getFlutterError(NSError *error) {
   FLTSavePhotoDelegate *selfReference;
 }
 
-- initWithPath:(NSString *)path
-            result:(FlutterResult)result
-    cameraPosition:(AVCaptureDevicePosition)cameraPosition
-    deviceRotation:(int)deviceRotation {
+- initWithPath:(NSString *)path result:(FlutterResult)result {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _path = path;
-  _cameraPosition = cameraPosition;
-  _deviceRotation = deviceRotation;
   selfReference = self;
   _result = result;
   return self;
@@ -186,6 +179,42 @@ static ExposureMode getExposureModeForString(NSString *mode) {
   }
 }
 
+static UIDeviceOrientation getUIDeviceOrientationForString(NSString *orientation) {
+  if ([orientation isEqualToString:@"portraitDown"]) {
+    return UIDeviceOrientationPortraitUpsideDown;
+  } else if ([orientation isEqualToString:@"landscapeLeft"]) {
+    return UIDeviceOrientationLandscapeRight;
+  } else if ([orientation isEqualToString:@"landscapeRight"]) {
+    return UIDeviceOrientationLandscapeLeft;
+  } else if ([orientation isEqualToString:@"portraitUp"]) {
+    return UIDeviceOrientationPortrait;
+  } else {
+    NSError *error = [NSError
+        errorWithDomain:NSCocoaErrorDomain
+                   code:NSURLErrorUnknown
+               userInfo:@{
+                 NSLocalizedDescriptionKey :
+                     [NSString stringWithFormat:@"Unknown device orientation %@", orientation]
+               }];
+    @throw error;
+  }
+}
+
+static NSString *getStringForUIDeviceOrientation(UIDeviceOrientation orientation) {
+  switch (orientation) {
+    case UIDeviceOrientationPortraitUpsideDown:
+      return @"portraitDown";
+    case UIDeviceOrientationLandscapeRight:
+      return @"landscapeLeft";
+    case UIDeviceOrientationLandscapeLeft:
+      return @"landscapeRight";
+    case UIDeviceOrientationPortrait:
+    default:
+      return @"portraitUp";
+      break;
+  };
+}
+
 // Mirrors ResolutionPreset in camera.dart
 typedef enum {
   veryLow,
@@ -255,6 +284,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
 @property(assign, nonatomic) ExposureMode exposureMode;
 @property(assign, nonatomic) FlashMode flashMode;
+@property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
 @property(assign, nonatomic) CMTime videoTimeOffset;
@@ -286,6 +316,7 @@ NSString *const errorMethod = @"error";
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
   _flashMode = FlashModeAuto;
+  _lockedCaptureOrientation = UIDeviceOrientationUnknown;
 
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
@@ -359,35 +390,34 @@ NSString *const errorMethod = @"error";
   AVCaptureConnection *connection = [_capturePhotoOutput connectionWithMediaType:AVMediaTypeVideo];
 
   if (connection) {
-    connection.videoOrientation = [self getVideoOrientation];
+      if (_lockedCaptureOrientation != UIDeviceOrientationUnknown) {
+          connection.videoOrientation = [self getVideoOrientationForDeviceOrientation:_lockedCaptureOrientation];
+      } else {
+          connection.videoOrientation = [self getVideoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]];
+      }
   }
 
-  [_capturePhotoOutput
-      capturePhotoWithSettings:settings
-                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                   result:result
-                                                            motionManager:_motionManager
-                                                           cameraPosition:_captureDevice.position]];
+  [_capturePhotoOutput capturePhotoWithSettings:settings
+                                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                                                    result:result]];
 }
 
-- (AVCaptureVideoOrientation)getVideoOrientation {
-    UIDeviceOrientation deviceOrientation = [[Ution];
-    
-    if (deviceOrientation == UIDeviceOrientationPortrait) {
+- (AVCaptureVideoOrientation)getVideoOrientationForDeviceOrientation:(UIDeviceOrientation) deviceOrientation {
+  if (deviceOrientation == UIDeviceOrientationPortrait) {
     return AVCaptureVideoOrientationPortrait;
-    } else if (deviceOrientation == UIDeviceOrientationLandscapeLeft) {
+  } else if (deviceOrientation == UIDeviceOrientationLandscapeLeft) {
     // Note: device orientation is flipped compared to video orientation. When UIDeviceOrientation
     // is landscape left the video orientation should be landscape right.
     return AVCaptureVideoOrientationLandscapeRight;
-    } else if (deviceOrientation == UIDeviceOrientationLandscapeRight) {
+  } else if (deviceOrientation == UIDeviceOrientationLandscapeRight) {
     // Note: device orientation is flipped compared to video orientation. When UIDeviceOrientation
     // is landscape right the video orientation should be landscape left.
     return AVCaptureVideoOrientationLandscapeLeft;
-    } else if (deviceOrientation == UIDeviceOrientationPortraitUpsideDown) {
+  } else if (deviceOrientation == UIDeviceOrientationPortraitUpsideDown) {
     return AVCaptureVideoOrientationPortraitUpsideDown;
-    } else {
+  } else {
     return AVCaptureVideoOrientationPortrait;
-    }
+  }
 }
 
 - (NSString *)getTemporaryFilePathWithExtension:(NSString *)extension
@@ -762,6 +792,24 @@ NSString *const errorMethod = @"error";
   result(nil);
 }
 
+- (void)lockCaptureOrientationWithResult:(FlutterResult)result
+                             orientation:(NSString *)orientationStr {
+    UIDeviceOrientation orientation;
+    @try {
+      orientation = getUIDeviceOrientationForString(orientationStr);
+    } @catch (NSError *e) {
+      result(getFlutterError(e));
+      return;
+    }
+    _lockedCaptureOrientation = orientation;
+    result(nil);
+}
+
+- (void)unlockCaptureOrientationWithResult:(FlutterResult)result {
+    _lockedCaptureOrientation = UIDeviceOrientationUnknown;
+    result(nil);
+}
+
 - (void)setFlashModeWithResult:(FlutterResult)result mode:(NSString *)modeStr {
   FlashMode mode;
   @try {
@@ -978,7 +1026,15 @@ NSString *const errorMethod = @"error";
                                  }];
 
   NSParameterAssert(_videoWriterInput);
-  CGFloat rotationDegrees = [self getDeviceRotation];
+    CGFloat rotationDegrees;
+    if (_lockedCaptureOrientation != UIDeviceOrientationUnknown) {
+        rotationDegrees =
+          [self getRotationFromDeviceOrientation:_lockedCaptureOrientation];
+    } else {
+        rotationDegrees =
+        [self getRotationFromDeviceOrientation:[UIDevice currentDevice].orientation];
+    }
+        
   _videoWriterInput.transform = CGAffineTransformMakeRotation(rotationDegrees * M_PI / 180);
   _videoWriterInput.expectsMediaDataInRealTime = YES;
 
@@ -1043,29 +1099,18 @@ NSString *const errorMethod = @"error";
   }
 }
 
-- (int)getDeviceRotation {
-  float const threshold = 45.0;
-  BOOL (^isNearValue)(float value1, float value2) = ^BOOL(float value1, float value2) {
-    return fabsf(value1 - value2) < threshold;
+- (int)getRotationFromDeviceOrientation:(UIDeviceOrientation)orientation {
+  switch (orientation) {
+    case UIDeviceOrientationPortraitUpsideDown:
+      return 270;
+    case UIDeviceOrientationLandscapeRight:
+      return 180;
+    case UIDeviceOrientationLandscapeLeft:
+      return 0;
+    case UIDeviceOrientationPortrait:
+    default:
+      return 90;
   };
-  BOOL (^isNearValueABS)(float value1, float value2) = ^BOOL(float value1, float value2) {
-    return isNearValue(fabsf(value1), fabsf(value2));
-  };
-  float yxAtan = (atan2(_motionManager.accelerometerData.acceleration.y,
-                        _motionManager.accelerometerData.acceleration.x)) *
-                 180 / M_PI;
-  if (isNearValue(-90.0, yxAtan)) {
-    return 90;
-  } else if (isNearValueABS(180.0, yxAtan)) {
-    return 0;
-  } else if (isNearValueABS(0.0, yxAtan)) {
-    return 180;
-  } else if (isNearValue(90.0, yxAtan)) {
-    return 270;
-  }
-  // If none of the above, then the device is likely facing straight down or straight up -- just
-  // pick something arbitrary
-  return 0;
 }
 
 @end
@@ -1120,26 +1165,9 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)sendDeviceOrientation:(UIDeviceOrientation)orientation {
-  switch (orientation) {
-    case UIDeviceOrientationPortrait:
-      [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
-                                    arguments:@{@"orientation" : @"portraitUp"}];
-      break;
-    case UIDeviceOrientationPortraitUpsideDown:
-      [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
-                                    arguments:@{@"orientation" : @"portraitDown"}];
-      break;
-    case UIDeviceOrientationLandscapeRight:
-      [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
-                                    arguments:@{@"orientation" : @"landscapeRight"}];
-      break;
-    case UIDeviceOrientationLandscapeLeft:
-      [_deviceEventMethodChannel invokeMethod:@"orientation_changed"
-                                    arguments:@{@"orientation" : @"landscapeLeft"}];
-      break;
-    default:
-      break;
-  };
+  [_deviceEventMethodChannel
+      invokeMethod:@"orientation_changed"
+         arguments:@{@"orientation" : getStringForUIDeviceOrientation(orientation)}];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -1291,6 +1319,10 @@ NSString *const errorMethod = @"error";
     } else if ([@"setExposureOffset" isEqualToString:call.method]) {
       [_camera setExposureOffsetWithResult:result
                                     offset:((NSNumber *)call.arguments[@"offset"]).doubleValue];
+    } else if ([@"lockCaptureOrientation" isEqualToString:call.method]) {
+      [_camera lockCaptureOrientationWithResult:result orientation:call.arguments[@"orientation"]];
+    } else if ([@"unlockCaptureOrientation" isEqualToString:call.method]) {
+      [_camera unlockCaptureOrientationWithResult:result];
     } else {
       result(FlutterMethodNotImplemented);
     }
