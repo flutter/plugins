@@ -10,6 +10,7 @@ import 'package:camera_platform_interface/src/events/device_event.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:camera_platform_interface/src/types/exposure_mode.dart';
 import 'package:cross_file/cross_file.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -83,6 +84,18 @@ abstract class CameraPlatform extends PlatformInterface {
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
     throw UnimplementedError(
         'onDeviceOrientationChanged() is not implemented.');
+  }
+
+  /// Locks the capture orientation.
+  ///
+  /// If [orientation] is omitted, the current device orientation is used.
+  Future<void> lockCaptureOrientation([DeviceOrientation orientation]) {
+    throw UnimplementedError('lockCaptureOrientation() is not implemented.');
+  }
+
+  /// Unlocks the capture orientation.
+  Future<void> unlockCaptureOrientation() {
+    throw UnimplementedError('unlockCaptureOrientation() is not implemented.');
   }
 
   /// Captures an image and returns the file where it was saved.

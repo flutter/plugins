@@ -109,6 +109,32 @@ void main() {
       );
     });
 
+    test(
+        'Default implementation of lockCaptureOrientation() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.lockCaptureOrientation(),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of unlockCaptureOrientation() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.unlockCaptureOrientation(),
+        throwsUnimplementedError,
+      );
+    });
+
     test('Default implementation of dispose() should throw unimplemented error',
         () {
       // Arrange
