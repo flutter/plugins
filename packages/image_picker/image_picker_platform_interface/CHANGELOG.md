@@ -1,3 +1,7 @@
+## 1.1.6
+
+* iOS: Expose allowsEditing field.
+
 ## 1.1.5
 
 * Update Flutter SDK constraint.

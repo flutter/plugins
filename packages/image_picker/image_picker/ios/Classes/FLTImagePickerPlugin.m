@@ -72,6 +72,9 @@ static const int SOURCE_GALLERY = 1;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
+    BOOL allowsEditing = [[_arguments objectForKey:@"allowsEditing"] isEqual:@YES];
+    _imagePickerController.allowsEditing = allowsEditing;
+
     self.result = result;
     _arguments = call.arguments;
 

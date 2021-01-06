@@ -4,11 +4,10 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart' show required;
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
 import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
 import 'package:image_picker_platform_interface/src/types/types.dart';
+import 'package:meta/meta.dart' show required;
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// The interface that implementations of image_picker must implement.
 ///
@@ -67,6 +66,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     double maxHeight,
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
+    bool allowsEditing = false,
   }) {
     throw UnimplementedError('legacyPickImage() has not been implemented.');
   }
