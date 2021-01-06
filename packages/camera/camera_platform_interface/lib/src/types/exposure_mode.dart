@@ -13,6 +13,7 @@ enum ExposureMode {
 
 /// Returns the exposure mode as a String.
 String serializeExposureMode(ExposureMode exposureMode) {
+  if (exposureMode == null) return null;
   switch (exposureMode) {
     case ExposureMode.locked:
       return 'locked';
@@ -25,6 +26,7 @@ String serializeExposureMode(ExposureMode exposureMode) {
 
 /// Returns the exposure mode for a given String.
 ExposureMode deserializeExposureMode(String str) {
+  if (str == null) return null;
   switch (str) {
     case "locked":
       return ExposureMode.locked;
