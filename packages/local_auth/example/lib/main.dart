@@ -21,7 +21,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final LocalAuthentication auth = LocalAuthentication();
-
   _SupportState _supportState = _SupportState.unknown;
   bool? _canCheckBiometrics;
   List<BiometricType>? _availableBiometrics;
@@ -85,6 +84,11 @@ class _MyAppState extends State<MyApp> {
       });
     } on PlatformException catch (e) {
       print(e);
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = "Error - ${e.message}";
+      });
+      return;
     }
     if (!mounted) return;
 
@@ -100,7 +104,8 @@ class _MyAppState extends State<MyApp> {
         _authorized = 'Authenticating';
       });
       authenticated = await auth.authenticateWithBiometrics(
-          localizedReason: 'Scan your fingerprint to authenticate',
+          localizedReason:
+              'Scan your fingerprint (or face or whatever) to authenticate',
           useErrorDialogs: true,
           stickyAuth: true);
       setState(() {
@@ -109,6 +114,11 @@ class _MyAppState extends State<MyApp> {
       });
     } on PlatformException catch (e) {
       print(e);
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = "Error - ${e.message}";
+      });
+      return;
     }
     if (!mounted) return;
 
