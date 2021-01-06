@@ -854,7 +854,7 @@ public class Camera {
     this.cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
     result.success(offset);
   }
-  
+
   public float getMaxZoomLevel() {
     return cameraZoom.maxZoom;
   }
