@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 /// This class is used as a base class for all the events that might be
 /// triggered from a device, but it is never used directly as an event type.
 ///
-/// Do NOT instantiate new events like `DeviceEvent(cameraId)` directly,
+/// Do NOT instantiate new events like `DeviceEvent()` directly,
 /// use a specific class instead:
 ///
 /// Do `class NewEvent extend DeviceEvent` when creating your own events.
