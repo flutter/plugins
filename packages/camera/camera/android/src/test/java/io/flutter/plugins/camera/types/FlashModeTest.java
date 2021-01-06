@@ -27,4 +27,12 @@ public class FlashModeTest {
     assertEquals(
         "Returns null for 'nonexistant'", FlashMode.getValueForString("nonexistant"), null);
   }
+
+  @Test
+  public void toString_returns_correct_value() {
+    assertEquals("Returns 'off' for FlashMode.off", FlashMode.off.toString(), "off");
+    assertEquals("Returns 'auto' for FlashMode.auto", FlashMode.auto.toString(), "auto");
+    assertEquals("Returns 'always' for FlashMode.always", FlashMode.always.toString(), "always");
+    assertEquals("Returns 'torch' for FlashMode.torch", FlashMode.torch.toString(), "torch");
+  }
 }
