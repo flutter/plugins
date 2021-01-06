@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: new AlertDialog(
               content: new Text('Battery: ${await _battery.batteryLevel}%'),
               actions: <Widget>[
-                new FlatButton(
+                new TextButton(
                   child: const Text('OK'),
                   onPressed: () {
                     Navigator.pop(context);

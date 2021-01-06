@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: const EdgeInsets.all(16.0),
                   child: const Text('https://flutter.io'),
                 ),
-                new RaisedButton(
+                new ElevatedButton(
                   onPressed: _launchUrl,
                   child: const Text('Go'),
                 ),

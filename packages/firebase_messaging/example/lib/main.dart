@@ -101,12 +101,12 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
         child: new AlertDialog(
           content: new Text("Item ${item.itemId} has been updated"),
           actions: <Widget>[
-            new FlatButton(
+            new TextButton(
                 child: const Text('CLOSE'),
                 onPressed: () {
                   Navigator.pop(context, false);
                 }),
-            new FlatButton(
+            new TextButton(
                 child: const Text('SHOW'),
                 onPressed: () {
                   Navigator.pop(context, true);
@@ -191,7 +191,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
                         });
                       }),
                 ),
-                new FlatButton(
+                new TextButton(
                   child: const Text("subscribe"),
                   onPressed: _topicButtonsDisabled
                       ? null
@@ -201,7 +201,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
                           _clearTopicText();
                         },
                 ),
-                new FlatButton(
+                new TextButton(
                   child: const Text("unsubscribe"),
                   onPressed: _topicButtonsDisabled
                       ? null

@@ -40,7 +40,7 @@ class DemoAppState extends State<DemoApp> {
                         text = value;
                       }),
                 ),
-                new RaisedButton(
+                new ElevatedButton(
                   child: const Text('Share'),
                   onPressed: text.isNotEmpty
                       ? () {
