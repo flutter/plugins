@@ -23,7 +23,7 @@ abstract class DeviceEvent {}
 /// The [DeviceOrientationChangedEvent] is fired every time the user changes the
 /// physical orientation of the device.
 class DeviceOrientationChangedEvent extends DeviceEvent {
-  /// The new orientation the device
+  /// The new orientation of the device
   final DeviceOrientation orientation;
 
   /// Build a new orientation changed event.
