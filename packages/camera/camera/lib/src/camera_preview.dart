@@ -41,19 +41,26 @@ class CameraPreview extends StatelessWidget {
         : Container();
   }
 
+  DeviceOrientation _getApplicableOrientation() {
+    return controller.value.isRecordingVideo
+        ? controller.value.recordingOrientation
+        : (controller.value.lockedCaptureOrientation ??
+            controller.value.deviceOrientation);
+  }
+
   bool _isLandscape() {
     return [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]
-        .contains(controller.value.deviceOrientation);
+        .contains(_getApplicableOrientation());
   }
 
   int _getQuarterTurns() {
     int platformOffset = defaultTargetPlatform == TargetPlatform.iOS ? 1 : 0;
     Map<DeviceOrientation, int> turns = {
       DeviceOrientation.portraitUp: 0,
+      DeviceOrientation.landscapeLeft: 1,
       DeviceOrientation.portraitDown: 2,
-      DeviceOrientation.landscapeRight: 1,
-      DeviceOrientation.landscapeLeft: 3
+      DeviceOrientation.landscapeRight: 3,
     };
-    return turns[controller.value.deviceOrientation] + platformOffset;
+    return turns[_getApplicableOrientation()] + platformOffset;
   }
 }

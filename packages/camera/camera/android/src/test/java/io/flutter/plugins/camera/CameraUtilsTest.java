@@ -23,6 +23,32 @@ public class CameraUtilsTest {
         CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT));
   }
 
+  @Test(expected = UnsupportedOperationException.class)
+  public void serializeDeviceOrientation_throws_for_null() {
+    CameraUtils.serializeDeviceOrientation(null);
+  }
+
+  @Test
+  public void deserializeDeviceOrientation_deserializes_correctly() {
+    assertEquals(
+        PlatformChannel.DeviceOrientation.PORTRAIT_UP,
+        CameraUtils.deserializeDeviceOrientation("portraitUp"));
+    assertEquals(
+        PlatformChannel.DeviceOrientation.PORTRAIT_DOWN,
+        CameraUtils.deserializeDeviceOrientation("portraitDown"));
+    assertEquals(
+        PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT,
+        CameraUtils.deserializeDeviceOrientation("landscapeLeft"));
+    assertEquals(
+        PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT,
+        CameraUtils.deserializeDeviceOrientation("landscapeRight"));
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void deserializeDeviceOrientation_throws_for_null() {
+    CameraUtils.deserializeDeviceOrientation(null);
+  }
+
   @Test
   public void getDeviceOrientationFromDegrees_converts_correctly() {
     // Portrait UP

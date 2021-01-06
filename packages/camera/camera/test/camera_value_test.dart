@@ -14,16 +14,20 @@ void main() {
   group('camera_value', () {
     test('Can be created', () {
       var cameraValue = const CameraValue(
-          isInitialized: false,
-          errorDescription: null,
-          previewSize: Size(10, 10),
-          isRecordingPaused: false,
-          isRecordingVideo: false,
-          isTakingPicture: false,
-          isStreamingImages: false,
-          flashMode: FlashMode.auto,
-          exposureMode: ExposureMode.auto,
-          exposurePointSupported: true);
+        isInitialized: false,
+        errorDescription: null,
+        previewSize: Size(10, 10),
+        isRecordingPaused: false,
+        isRecordingVideo: false,
+        isTakingPicture: false,
+        isStreamingImages: false,
+        flashMode: FlashMode.auto,
+        exposureMode: ExposureMode.auto,
+        exposurePointSupported: true,
+        deviceOrientation: DeviceOrientation.portraitUp,
+        lockedCaptureOrientation: DeviceOrientation.portraitUp,
+        recordingOrientation: DeviceOrientation.portraitUp,
+      );
 
       expect(cameraValue, isA<CameraValue>());
       expect(cameraValue.isInitialized, isFalse);
@@ -36,6 +40,10 @@ void main() {
       expect(cameraValue.flashMode, FlashMode.auto);
       expect(cameraValue.exposureMode, ExposureMode.auto);
       expect(cameraValue.exposurePointSupported, true);
+      expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
+      expect(
+          cameraValue.lockedCaptureOrientation, DeviceOrientation.portraitUp);
+      expect(cameraValue.recordingOrientation, DeviceOrientation.portraitUp);
     });
 
     test('Can be created as uninitialized', () {
@@ -52,6 +60,9 @@ void main() {
       expect(cameraValue.flashMode, FlashMode.auto);
       expect(cameraValue.exposureMode, null);
       expect(cameraValue.exposurePointSupported, false);
+      expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
+      expect(cameraValue.lockedCaptureOrientation, null);
+      expect(cameraValue.recordingOrientation, null);
     });
 
     test('Can be copied with isInitialized', () {
@@ -69,6 +80,9 @@ void main() {
       expect(cameraValue.flashMode, FlashMode.auto);
       expect(cameraValue.exposureMode, null);
       expect(cameraValue.exposurePointSupported, false);
+      expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
+      expect(cameraValue.lockedCaptureOrientation, null);
+      expect(cameraValue.recordingOrientation, null);
     });
 
     test('Has aspectRatio after setting size', () {
@@ -109,10 +123,12 @@ void main() {
         flashMode: FlashMode.auto,
         exposurePointSupported: true,
         deviceOrientation: DeviceOrientation.portraitUp,
+        lockedCaptureOrientation: DeviceOrientation.portraitUp,
+        recordingOrientation: DeviceOrientation.portraitUp,
       );
 
       expect(cameraValue.toString(),
-          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: null, exposurePointSupported: true, deviceOrientation: DeviceOrientation.portraitUp)');
+          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: null, exposurePointSupported: true, deviceOrientation: DeviceOrientation.portraitUp, lockedCaptureOrientation: DeviceOrientation.portraitUp, recordingOrientation: DeviceOrientation.portraitUp)');
     });
   });
 }

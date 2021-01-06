@@ -43,7 +43,8 @@ public final class CameraUtils {
   }
 
   static String serializeDeviceOrientation(PlatformChannel.DeviceOrientation orientation) {
-    assert (orientation != null);
+    if (orientation == null)
+      throw new UnsupportedOperationException("Could not serialize null device orientation.");
     switch (orientation) {
       case PORTRAIT_UP:
         return "portraitUp";
@@ -56,6 +57,24 @@ public final class CameraUtils {
       default:
         throw new UnsupportedOperationException(
             "Could not serialize device orientation: " + orientation.toString());
+    }
+  }
+
+  static PlatformChannel.DeviceOrientation deserializeDeviceOrientation(String orientation) {
+    if (orientation == null)
+      throw new UnsupportedOperationException("Could not deserialize null device orientation.");
+    switch (orientation) {
+      case "portraitUp":
+        return PlatformChannel.DeviceOrientation.PORTRAIT_UP;
+      case "portraitDown":
+        return PlatformChannel.DeviceOrientation.PORTRAIT_DOWN;
+      case "landscapeLeft":
+        return PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT;
+      case "landscapeRight":
+        return PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT;
+      default:
+        throw new UnsupportedOperationException(
+            "Could not deserialize device orientation: " + orientation);
     }
   }
 

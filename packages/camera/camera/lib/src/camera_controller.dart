@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:quiver/core.dart';
 
 final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
@@ -42,6 +43,8 @@ class CameraValue {
     this.exposureMode,
     this.exposurePointSupported,
     this.deviceOrientation,
+    this.lockedCaptureOrientation,
+    this.recordingOrientation,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -107,6 +110,15 @@ class CameraValue {
   /// The current device orientation.
   final DeviceOrientation deviceOrientation;
 
+  /// The currently locked capture orientation.
+  final DeviceOrientation lockedCaptureOrientation;
+
+  /// Whether the capture orientation is currently locked.
+  bool get isCaptureOrientationLocked => lockedCaptureOrientation != null;
+
+  /// The orientation of the currently running video recording.
+  final DeviceOrientation recordingOrientation;
+
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
@@ -123,6 +135,8 @@ class CameraValue {
     ExposureMode exposureMode,
     bool exposurePointSupported,
     DeviceOrientation deviceOrientation,
+    Optional<DeviceOrientation> lockedCaptureOrientation,
+    Optional<DeviceOrientation> recordingOrientation,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -137,6 +151,12 @@ class CameraValue {
       exposurePointSupported:
           exposurePointSupported ?? this.exposurePointSupported,
       deviceOrientation: deviceOrientation ?? this.deviceOrientation,
+      lockedCaptureOrientation: lockedCaptureOrientation == null
+          ? this.lockedCaptureOrientation
+          : lockedCaptureOrientation.orNull,
+      recordingOrientation: recordingOrientation == null
+          ? this.recordingOrientation
+          : recordingOrientation.orNull,
     );
   }
 
@@ -151,7 +171,9 @@ class CameraValue {
         'flashMode: $flashMode, '
         'exposureMode: $exposureMode, '
         'exposurePointSupported: $exposurePointSupported, '
-        'deviceOrientation: $deviceOrientation)';
+        'deviceOrientation: $deviceOrientation, '
+        'lockedCaptureOrientation: $lockedCaptureOrientation, '
+        'recordingOrientation: $recordingOrientation)';
   }
 }
 
@@ -419,7 +441,11 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     try {
       await CameraPlatform.instance.startVideoRecording(_cameraId);
-      value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
+      value = value.copyWith(
+          isRecordingVideo: true,
+          isRecordingPaused: false,
+          recordingOrientation: Optional.fromNullable(
+              value.lockedCaptureOrientation ?? value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -443,7 +469,10 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       XFile file = await CameraPlatform.instance.stopVideoRecording(_cameraId);
-      value = value.copyWith(isRecordingVideo: false);
+      value = value.copyWith(
+        isRecordingVideo: false,
+        recordingOrientation: Optional.absent(),
+      );
       return file;
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -701,6 +730,31 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     try {
       return CameraPlatform.instance.setExposureOffset(_cameraId, offset);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Locks the capture orientation.
+  ///
+  /// If [orientation] is omitted, the current device orientation is used.
+  Future<void> lockCaptureOrientation([DeviceOrientation orientation]) async {
+    try {
+      await CameraPlatform.instance.lockCaptureOrientation(
+          _cameraId, orientation ?? value.deviceOrientation);
+      value = value.copyWith(
+          lockedCaptureOrientation:
+              Optional.fromNullable(orientation ?? value.deviceOrientation));
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Unlocks the capture orientation.
+  Future<void> unlockCaptureOrientation() async {
+    try {
+      await CameraPlatform.instance.unlockCaptureOrientation(_cameraId);
+      value = value.copyWith(lockedCaptureOrientation: Optional.absent());
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
