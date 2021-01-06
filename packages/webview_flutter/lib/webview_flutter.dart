@@ -223,6 +223,7 @@ class WebView extends StatefulWidget {
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.hostsToBlock,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         super(key: key);
@@ -396,6 +397,9 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
+  /// Provides a list of hosts which will be blocked.
+  final Set<String> hostsToBlock;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -460,6 +464,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
     userAgent: widget.userAgent,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
+    hostsToBlock: _formatHostsToBlock(widget.hostsToBlock),
   );
 }
 
@@ -515,6 +520,10 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
       ? <String>{}
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;
+}
+
+Set<String> _formatHostsToBlock(Set<String> hosts) {
+  return hosts == null ? <String>{} : hosts;
 }
 
 class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {

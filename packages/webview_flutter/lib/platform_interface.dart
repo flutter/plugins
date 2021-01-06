@@ -432,6 +432,7 @@ class CreationParams {
     this.userAgent,
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.hostsToBlock,
   }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
@@ -464,6 +465,9 @@ class CreationParams {
 
   /// Which restrictions apply on automatic media playback.
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
+
+  /// Which hosts will be blocked from loading.
+  final Set<String> hostsToBlock;
 
   @override
   String toString() {
