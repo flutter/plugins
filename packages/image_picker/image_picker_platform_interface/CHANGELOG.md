@@ -4,7 +4,7 @@
 - pickImage now returns XFile instead of PickedFile
 - pickVideo now returns XFile instead of PickedFile
 - changed LostData file parameter type to XFile
-- removed PickedFile class and its test
+- removed PickedFile class and its tests
 
 ## 1.1.5
 
