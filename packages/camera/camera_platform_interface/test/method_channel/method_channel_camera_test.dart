@@ -801,6 +801,41 @@ void main() {
                 .having((e) => e.description, 'description',
                     'Illegal zoom error')));
       });
+
+      test('Should lock the capture orientation', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'lockCaptureOrientation': null},
+        );
+
+        // Act
+        await camera.lockCaptureOrientation(
+            cameraId, DeviceOrientation.portraitUp);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('lockCaptureOrientation',
+              arguments: {'cameraId': cameraId, 'orientation': 'portraitUp'}),
+        ]);
+      });
+
+      test('Should unlock the capture orientation', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'unlockCaptureOrientation': null},
+        );
+
+        // Act
+        await camera.unlockCaptureOrientation(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('unlockCaptureOrientation',
+              arguments: {'cameraId': cameraId}),
+        ]);
+      });
     });
   });
 }

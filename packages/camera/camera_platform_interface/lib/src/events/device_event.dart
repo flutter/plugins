@@ -1,7 +1,12 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:flutter/services.dart';
 
-/// Generic Event coming from the native side of Camera, that are not related to a specific camera module.
+/// Generic Event coming from the native side of Camera,
+/// not related to a specific camera module.
 ///
 /// This class is used as a base class for all the events that might be
 /// triggered from a device, but it is never used directly as an event type.
