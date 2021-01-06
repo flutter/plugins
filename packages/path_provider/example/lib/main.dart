@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 new Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: new RaisedButton(
+                  child: new ElevatedButton(
                     child: const Text('Get Temporary Directory'),
                     onPressed: _requestTempDirectory,
                   ),
@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 new Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: new RaisedButton(
+                  child: new ElevatedButton(
                     child: const Text('Get Application Documents Directory'),
                     onPressed: _requestAppDocumentsDirectory,
                   ),
@@ -114,9 +114,9 @@ class _MyHomePageState extends State<MyHomePage> {
             new Column(children: <Widget>[
               new Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: new RaisedButton(
+                child: new ElevatedButton(
                   child: new Text('${Platform.isIOS ?
-                                    "External directories are unavailable " 
+                                    "External directories are unavailable "
                                     "on iOS":
                                     "Get External Storage Directory" }'),
                   onPressed:
