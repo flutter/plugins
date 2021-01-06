@@ -33,7 +33,7 @@ class MethodChannelCamera extends CameraPlatform {
       StreamController<CameraEvent>.broadcast();
 
   /// The controller we need to broadcast the different events coming
-  /// from handleMethodCall. Specific to general device events.
+  /// from handleMethodCall, specific to general device events.
   ///
   /// It is a `broadcast` because multiple controllers will connect to
   /// different stream views of this Controller.
