@@ -22,7 +22,7 @@ class MethodChannelCamera extends CameraPlatform {
   final Map<int, MethodChannel> _channels = {};
 
   /// The controller we need to broadcast the different events coming
-  /// from handleMethodCall. Specific to camera events.
+  /// from handleMethodCall, specific to camera events.
   ///
   /// It is a `broadcast` because multiple controllers will connect to
   /// different stream views of this Controller.
