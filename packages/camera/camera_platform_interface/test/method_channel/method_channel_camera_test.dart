@@ -26,7 +26,10 @@ void main() {
         MethodChannelMock cameraMockChannel = MethodChannelMock(
             channelName: 'plugins.flutter.io/camera',
             methods: {
-              'create': {'cameraId': 1}
+              'create': {
+                'cameraId': 1,
+                'imageFormatGroup': 'unknown',
+              }
             });
         final camera = MethodChannelCamera();
 
@@ -109,7 +112,10 @@ void main() {
         MethodChannelMock cameraMockChannel = MethodChannelMock(
             channelName: 'plugins.flutter.io/camera',
             methods: {
-              'create': {'cameraId': 1},
+              'create': {
+                'cameraId': 1,
+                'imageFormatGroup': 'unknown',
+              },
               'initialize': null
             });
         final camera = MethodChannelCamera();
@@ -139,6 +145,7 @@ void main() {
             'initialize',
             arguments: {
               'cameraId': 1,
+              'imageFormatGroup': 'unknown',
             },
           ),
         ]);
