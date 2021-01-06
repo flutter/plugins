@@ -1,12 +1,16 @@
 package io.flutter.plugins.camera;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.hardware.SensorManager;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.provider.Settings;
+import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.WindowManager;
@@ -17,7 +21,7 @@ class DeviceOrientationManager {
   private static final IntentFilter orientationIntentFilter =
       new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED);
 
-  private final Context context;
+  private final Activity activity;
   private final DartMessenger messenger;
   private final boolean isFrontFacing;
   private final int sensorOrientation;
@@ -26,8 +30,8 @@ class DeviceOrientationManager {
   private BroadcastReceiver broadcastReceiver;
 
   public DeviceOrientationManager(
-      Context context, DartMessenger messenger, boolean isFrontFacing, int sensorOrientation) {
-    this.context = context;
+      Activity activity, DartMessenger messenger, boolean isFrontFacing, int sensorOrientation) {
+    this.activity = activity;
     this.messenger = messenger;
     this.isFrontFacing = isFrontFacing;
     this.sensorOrientation = sensorOrientation;
@@ -70,7 +74,7 @@ class DeviceOrientationManager {
   private void startSensorListener() {
     if (orientationEventListener != null) return;
     orientationEventListener =
-        new OrientationEventListener(context, SensorManager.SENSOR_DELAY_NORMAL) {
+        new OrientationEventListener(activity, SensorManager.SENSOR_DELAY_NORMAL) {
           @Override
           public void onOrientationChanged(int angle) {
             if (!isSystemAutoRotationLocked()) {
@@ -102,8 +106,8 @@ class DeviceOrientationManager {
             }
           }
         };
-    context.registerReceiver(broadcastReceiver, orientationIntentFilter);
-    broadcastReceiver.onReceive(context, null);
+    activity.registerReceiver(broadcastReceiver, orientationIntentFilter);
+    broadcastReceiver.onReceive(activity, null);
   }
 
   private void stopSensorListener() {
@@ -114,22 +118,19 @@ class DeviceOrientationManager {
 
   private void stopUIListener() {
     if (broadcastReceiver == null) return;
-    context.unregisterReceiver(broadcastReceiver);
+    activity.unregisterReceiver(broadcastReceiver);
     broadcastReceiver = null;
   }
 
   private boolean isSystemAutoRotationLocked() {
     return android.provider.Settings.System.getInt(
-            context.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0)
+            activity.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0)
         != 1;
   }
 
   private PlatformChannel.DeviceOrientation getUIOrientation() {
-    final int rotation =
-        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-            .getDefaultDisplay()
-            .getRotation();
-    final int orientation = context.getResources().getConfiguration().orientation;
+    final int rotation = getDisplay().getRotation();
+    final int orientation = activity.getResources().getConfiguration().orientation;
 
     switch (orientation) {
       case Configuration.ORIENTATION_PORTRAIT:
@@ -172,9 +173,8 @@ class DeviceOrientationManager {
   }
 
   private int getDeviceDefaultOrientation() {
-    WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    Configuration config = context.getResources().getConfiguration();
-    int rotation = windowManager.getDefaultDisplay().getRotation();
+    Configuration config = activity.getResources().getConfiguration();
+    int rotation = getDisplay().getRotation();
     if (((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180)
             && config.orientation == Configuration.ORIENTATION_LANDSCAPE)
         || ((rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)
@@ -182,6 +182,16 @@ class DeviceOrientationManager {
       return Configuration.ORIENTATION_LANDSCAPE;
     } else {
       return Configuration.ORIENTATION_PORTRAIT;
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  private Display getDisplay() {
+    if (VERSION.SDK_INT >= VERSION_CODES.R) {
+      return activity.getDisplay();
+    } else {
+      return ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE))
+          .getDefaultDisplay();
     }
   }
 }

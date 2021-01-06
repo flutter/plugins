@@ -136,8 +136,7 @@ public class Camera {
             cameraCharacteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM));
 
     deviceOrientationListener =
-        new DeviceOrientationManager(
-            activity.getApplicationContext(), dartMessenger, isFrontFacing, sensorOrientation);
+        new DeviceOrientationManager(activity, dartMessenger, isFrontFacing, sensorOrientation);
     deviceOrientationListener.start();
   }
 
