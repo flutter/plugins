@@ -315,8 +315,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     this.activity = activity;
     Context context = activity.getBaseContext();
     biometricManager = BiometricManager.from(activity);
-    keyguardManager =
-        (KeyguardManager) context.getSystemService(KEYGUARD_SERVICE);
+    keyguardManager = (KeyguardManager) context.getSystemService(KEYGUARD_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       fingerprintManager =
           (FingerprintManager) context.getSystemService(Context.FINGERPRINT_SERVICE);
