@@ -1,3 +1,7 @@
+## 0.6.7+20
+
+* Updated README.md to show the new Android API requirements.
+
 ## 0.6.7+19
 
 * Do not copy static field to another static field.
