@@ -24,7 +24,7 @@ class GetDirectoryPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
+            ElevatedButton(
               color: Colors.blue,
               textColor: Colors.white,
               child: Text('Press to ask user to choose a directory'),
@@ -55,7 +55,7 @@ class TextDisplay extends StatelessWidget {
         ),
       ),
       actions: [
-        FlatButton(
+        TextButton(
           child: const Text('Close'),
           onPressed: () => Navigator.pop(context),
         ),

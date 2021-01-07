@@ -34,7 +34,7 @@ class OpenMultipleImagesPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
+            ElevatedButton(
               color: Colors.blue,
               textColor: Colors.white,
               child: Text('Press to open multiple images (png, jpg)'),
@@ -74,7 +74,7 @@ class MultipleImagesDisplay extends StatelessWidget {
         ),
       ),
       actions: [
-        FlatButton(
+        TextButton(
           child: const Text('Close'),
           onPressed: () {
             Navigator.pop(context);

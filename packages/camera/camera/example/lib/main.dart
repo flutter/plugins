@@ -327,12 +327,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  FlatButton(
+                  TextButton(
                     child: Text('AUTO'),
-                    textColor:
-                        controller?.value?.exposureMode == ExposureMode.auto
-                            ? Colors.orange
-                            : Colors.blue,
+                    style: TextButton.styleFrom(
+                      primary: controller?.value?.exposureMode == ExposureMode.auto
+                          ? Colors.orange
+                          : Colors.blue,
+                    ),
                     onPressed: controller != null
                         ? () =>
                             onSetExposureModeButtonPressed(ExposureMode.auto)
@@ -342,12 +343,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                       showInSnackBar('Resetting exposure point');
                     },
                   ),
-                  FlatButton(
+                  TextButton(
                     child: Text('LOCKED'),
-                    textColor:
-                        controller?.value?.exposureMode == ExposureMode.locked
-                            ? Colors.orange
-                            : Colors.blue,
+                    style: TextButton.styleFrom(
+                      primary: controller?.value?.exposureMode == ExposureMode.auto
+                          ? Colors.orange
+                          : Colors.blue,
+                    ),
                     onPressed: controller != null
                         ? () =>
                             onSetExposureModeButtonPressed(ExposureMode.locked)

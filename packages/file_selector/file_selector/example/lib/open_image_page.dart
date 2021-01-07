@@ -31,7 +31,7 @@ class OpenImagePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
+            ElevatedButton(
               color: Colors.blue,
               textColor: Colors.white,
               child: Text('Press to open an image file(png, jpg)'),
@@ -63,7 +63,7 @@ class ImageDisplay extends StatelessWidget {
       // while on other platforms it is a system path.
       content: kIsWeb ? Image.network(filePath) : Image.file(File(filePath)),
       actions: [
-        FlatButton(
+        TextButton(
           child: const Text('Close'),
           onPressed: () {
             Navigator.pop(context);

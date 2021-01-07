@@ -28,7 +28,7 @@ class OpenTextPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
+            ElevatedButton(
               color: Colors.blue,
               textColor: Colors.white,
               child: Text('Press to open a text file (json, txt)'),
@@ -62,7 +62,7 @@ class TextDisplay extends StatelessWidget {
         ),
       ),
       actions: [
-        FlatButton(
+        TextButton(
           child: const Text('Close'),
           onPressed: () => Navigator.pop(context),
         ),

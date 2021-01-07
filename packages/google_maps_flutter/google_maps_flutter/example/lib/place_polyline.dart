@@ -232,22 +232,22 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('add'),
                           onPressed: _add,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('remove'),
                           onPressed:
                               (selectedPolyline == null) ? null : _remove,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle visible'),
                           onPressed: (selectedPolyline == null)
                               ? null
                               : _toggleVisible,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle geodesic'),
                           onPressed: (selectedPolyline == null)
                               ? null
@@ -257,29 +257,29 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                     ),
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('change width'),
                           onPressed:
                               (selectedPolyline == null) ? null : _changeWidth,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change color'),
                           onPressed:
                               (selectedPolyline == null) ? null : _changeColor,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change start cap [Android only]'),
                           onPressed: iOSorNotSelected ? null : _changeStartCap,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change end cap [Android only]'),
                           onPressed: iOSorNotSelected ? null : _changeEndCap,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change joint type [Android only]'),
                           onPressed: iOSorNotSelected ? null : _changeJointType,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change pattern [Android only]'),
                           onPressed: iOSorNotSelected ? null : _changePattern,
                         ),
