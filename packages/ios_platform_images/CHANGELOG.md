@@ -1,3 +1,7 @@
+## 0.1.2+4
+
+* Update Flutter SDK constraint.
+
 ## 0.1.2+3
 
 * Remove no-op android folder in the example app.

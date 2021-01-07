@@ -25,14 +25,14 @@ class AndroidAuthMessages {
     this.goToSettingsDescription,
   });
 
-  final String fingerprintHint;
-  final String fingerprintNotRecognized;
-  final String fingerprintSuccess;
-  final String cancelButton;
-  final String signInTitle;
-  final String fingerprintRequiredTitle;
-  final String goToSettingsButton;
-  final String goToSettingsDescription;
+  final String? fingerprintHint;
+  final String? fingerprintNotRecognized;
+  final String? fingerprintSuccess;
+  final String? cancelButton;
+  final String? signInTitle;
+  final String? fingerprintRequiredTitle;
+  final String? goToSettingsButton;
+  final String? goToSettingsDescription;
 
   Map<String, String> get args {
     return <String, String>{
@@ -62,10 +62,10 @@ class IOSAuthMessages {
     this.cancelButton,
   });
 
-  final String lockOut;
-  final String goToSettingsButton;
-  final String goToSettingsDescription;
-  final String cancelButton;
+  final String? lockOut;
+  final String? goToSettingsButton;
+  final String? goToSettingsDescription;
+  final String? cancelButton;
 
   Map<String, String> get args {
     return <String, String>{

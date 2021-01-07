@@ -1,3 +1,23 @@
+## 0.3.4+18
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.3.4+17
+
+* Update Flutter SDK constraint.
+
+## 0.3.4+16
+
+* Add Dartdocs to all public APIs.
+
+## 0.3.4+15
+
+* Update android compileSdkVersion to 29.
+
+## 0.3.4+14
+
+* Add test target to iOS example app Podfile
+
 ## 0.3.4+13
 
 * Android Code Inspection and Clean up.

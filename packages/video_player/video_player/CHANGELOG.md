@@ -1,3 +1,67 @@
+## 2.0.0-nullsafety.6
+
+* Fix `VideoPlayerValue toString()` test.
+
+## 2.0.0-nullsafety.5
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 2.0.0-nullsafety.4
+
+* Fixed an issue where `isBuffering` was not updating on Android.
+
+## 2.0.0-nullsafety.3
+
+* Dart null safety requires `2.12`.
+
+## 2.0.0-nullsafety.2
+
+* Bump SDK version.
+
+## 2.0.0-nullsafety.1
+
+* Merge master.
+
+## 2.0.0-nullsafety
+
+* Migration to null safety.
+
+## 1.0.2
+
+* Update Flutter SDK constraint.
+
+## 1.0.1
+
+* Android: Dispose video players when app is closed.
+
+## 1.0.0
+
+* Announce 1.0.0.
+
+## 0.11.1+5
+
+* Update Dart SDK constraint in example.
+* Remove `test` dependency.
+* Convert disabled driver test to integration_test.
+
+## 0.11.1+4
+
+* Add `toString()` to `Caption`.
+* Fix a bug on Android when loading videos from assets would crash.
+
+## 0.11.1+3
+
+* Android: Upgrade ExoPlayer to 2.12.1.
+
+## 0.11.1+2
+
+* Update android compileSdkVersion to 29.
+
+## 0.11.1+1
+
+* Fixed uncanceled timers when calling `play` on the controller multiple times before `pause`, which
+  caused value listeners to be called indefinitely (after `pause`) and more often than needed.
+
 ## 0.11.1
 
 * Enable TLSv1.1 & TLSv1.2 for API 19 and below.

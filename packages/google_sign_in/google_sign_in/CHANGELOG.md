@@ -1,3 +1,19 @@
+## 4.5.8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 4.5.7
+
+* Update Flutter SDK constraint.
+
+## 4.5.6
+
+* Fix deprecated member warning in tests.
+
+## 4.5.5
+
+* Update android compileSdkVersion to 29.
+
 ## 4.5.4
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

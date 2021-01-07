@@ -18,6 +18,7 @@ part 'sk_product_wrapper.g.dart';
 /// Contains information about a list of products and a list of invalid product identifiers.
 @JsonSerializable()
 class SkProductResponseWrapper {
+  /// Creates an [SkProductResponseWrapper] with the given product details.
   SkProductResponseWrapper(
       {@required this.products, @required this.invalidProductIdentifiers});
 
@@ -67,12 +68,21 @@ class SkProductResponseWrapper {
 // The values of the enum options are matching the [SKProductPeriodUnit]'s values. Should there be an update or addition
 // in the [SKProductPeriodUnit], this need to be updated to match.
 enum SKSubscriptionPeriodUnit {
+  /// An interval lasting one day.
   @JsonValue(0)
   day,
+
+  /// An interval lasting one month.
   @JsonValue(1)
+
+  /// An interval lasting one week.
   week,
   @JsonValue(2)
+
+  /// An interval lasting one month.
   month,
+
+  /// An interval lasting one year.
   @JsonValue(3)
   year,
 }
@@ -83,6 +93,7 @@ enum SKSubscriptionPeriodUnit {
 /// It is used as a property in [SKProductDiscountWrapper] and [SKProductWrapper].
 @JsonSerializable(nullable: true)
 class SKProductSubscriptionPeriodWrapper {
+  /// Creates an [SKProductSubscriptionPeriodWrapper] for a `numberOfUnits`x`unit` period.
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
 
@@ -143,6 +154,7 @@ enum SKProductDiscountPaymentMode {
 /// It is used as a property in [SKProductWrapper].
 @JsonSerializable(nullable: true)
 class SKProductDiscountWrapper {
+  /// Creates an [SKProductDiscountWrapper] with the given discount details.
   SKProductDiscountWrapper(
       {@required this.price,
       @required this.priceLocale,
@@ -206,6 +218,7 @@ class SKProductDiscountWrapper {
 /// should be stored for use when making a payment.
 @JsonSerializable(nullable: true)
 class SKProductWrapper {
+  /// Creates an [SKProductWrapper] with the given product details.
   SKProductWrapper({
     @required this.productIdentifier,
     @required this.localizedTitle,
@@ -304,6 +317,7 @@ class SKProductWrapper {
 //                 https://github.com/flutter/flutter/issues/26610
 @JsonSerializable()
 class SKPriceLocaleWrapper {
+  /// Creates a new price locale for `currencySymbol` and `currencyCode`.
   SKPriceLocaleWrapper(
       {@required this.currencySymbol, @required this.currencyCode});
 

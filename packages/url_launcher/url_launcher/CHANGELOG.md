@@ -1,3 +1,63 @@
+## 6.0.0-nullsafety.3
+
+* forceSafariVC should be nullable.
+
+## 6.0.0-nullsafety.2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 6.0.0-nullsafety.1
+
+* Bump Dart SDK to support null safety.
+
+## 6.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 5.7.13
+
+* Update Flutter SDK constraint.
+
+## 5.7.12
+
+* Updated code sample in `README.md`
+
+## 5.7.11
+
+* Update integration test examples to use `testWidgets` instead of `test`.
+
+## 5.7.10
+
+* Update Dart SDK constraint in example.
+
+## 5.7.9
+
+* Check in windows/ directory for example/
+
+## 5.7.8
+
+* Fixed a situation where an app would crash if the url_launcher’s `launch` method can’t find an app to open the provided url. It will now throw a clear Dart PlatformException.
+
+## 5.7.7
+
+* Introduce the Link widget with an implementation for native platforms.
+
+## 5.7.6
+
+* Suppress deprecation warning on the `shouldOverrideUrlLoading` method on Android of the `FlutterWebChromeClient` class.
+
+## 5.7.5
+
+* Improved documentation of the `headers` parameter.
+
+## 5.7.4
+
+* Update android compileSdkVersion to 29.
+
+## 5.7.3
+
+* Check in linux/ directory for example/
+
 ## 5.7.2
 
 * Add API documentation explaining the [canLaunch] method returns `false` if package visibility (Android API 30) is not managed correctly.

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart = 2.9
+
 import 'dart:io';
 import 'dart:ui';
 
@@ -26,14 +28,6 @@ void main() {
     });
   });
 
-  test('sharing null fails', () {
-    expect(
-      () => Share.share(null),
-      throwsA(const TypeMatcher<AssertionError>()),
-    );
-    verifyZeroInteractions(mockChannel);
-  });
-
   test('sharing empty fails', () {
     expect(
       () => Share.share(''),
@@ -56,14 +50,6 @@ void main() {
       'originWidth': 3.0,
       'originHeight': 4.0,
     }));
-  });
-
-  test('sharing null file fails', () {
-    expect(
-      () => Share.shareFiles([null]),
-      throwsA(const TypeMatcher<AssertionError>()),
-    );
-    verifyZeroInteractions(mockChannel);
   });
 
   test('sharing empty file fails', () {

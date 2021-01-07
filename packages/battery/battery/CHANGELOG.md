@@ -1,3 +1,19 @@
+## 1.0.10
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 1.0.9
+
+* Update Flutter SDK constraint.
+
+## 1.0.8
+
+* Update Dart SDK constraint in example.
+
+## 1.0.7
+
+* Update android compileSdkVersion to 29.
+
 ## 1.0.6
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

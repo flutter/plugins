@@ -1,15 +1,8 @@
 # Video Player plugin for Flutter
 
-[![pub package](https://img.shields.io/pub/v/video_player.svg)](https://pub.dartlang.org/packages/video_player)
+[![pub package](https://img.shields.io/pub/v/video_player.svg)](https://pub.dev/packages/video_player)
 
 A Flutter plugin for iOS, Android and Web for playing back video on a Widget surface.
-
-**Please set your constraint to `video_player: '>=0.10.y+x <2.0.0'`**
-
-## Backward compatible 1.0.0 version is coming
-The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.10.y+z`.
-Please use `video_player: '>=0.10.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
-For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
 
 ![The example app running in iOS](https://github.com/flutter/plugins/blob/master/packages/video_player/video_player/doc/demo_ipod.gif?raw=true)
 
@@ -19,7 +12,7 @@ For more details see: https://github.com/flutter/flutter/wiki/Package-migration-
 
 ## Installation
 
-First, add `video_player` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
+First, add `video_player` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
 
 ### iOS
 
