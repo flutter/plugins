@@ -314,7 +314,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   Widget _exposureModeControlRowWidget() {
     final ButtonStyle style = TextButton.styleFrom(
-      primary: controller?.value?.exposureMode == ExposureMode.auto ? Colors.orange : Colors.blue,
+      primary: controller?.value?.exposureMode == ExposureMode.auto
+          ? Colors.orange
+          : Colors.blue,
     );
     return SizeTransition(
       sizeFactor: _exposureModeControlRowAnimation,
