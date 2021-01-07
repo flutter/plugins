@@ -1,3 +1,7 @@
+## 0.6.7+20
+
+* Update the example app: remove the depreciated `RaisedButton` and `FlatButton` widgets.
+
 ## 0.6.7+19
 
 * Do not copy static field to another static field.

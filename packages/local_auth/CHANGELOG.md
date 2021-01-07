@@ -1,3 +1,7 @@
+## 1.0.0-nullsafety.3
+
+* Update the example app: remove the depreciated `RaisedButton` and `FlatButton` widgets.
+
 ## 1.0.0-nullsafety.2
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))

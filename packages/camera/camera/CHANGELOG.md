@@ -1,3 +1,7 @@
+## 0.6.4+4
+
+* Update the example app: remove the depreciated `RaisedButton` and `FlatButton` widgets.
+
 ## 0.6.4+3
 
 * Detect if selected camera supports auto focus and act accordingly on Android. This solves a problem where front facing cameras are not capturing the picture because auto focus is not supported.
