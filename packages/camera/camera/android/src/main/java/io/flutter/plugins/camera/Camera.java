@@ -777,8 +777,7 @@ public class Camera {
     switch (mode) {
       case auto:
         refreshPreviewCaptureSession(
-            null,
-            (code, message) -> result.error("setFocusMode", message, null));
+            null, (code, message) -> result.error("setFocusMode", message, null));
         break;
       case locked:
         lockAutoFocus(
