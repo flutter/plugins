@@ -7,9 +7,11 @@ import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_platform_interface/src/events/device_event.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:camera_platform_interface/src/types/focus_mode.dart';
 import 'package:camera_platform_interface/src/utils/utils.dart';
+import 'package:flutter/services.dart' hide DeviceOrientation;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -239,7 +241,7 @@ void main() {
           FocusMode.auto,
           true,
         );
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('initialized', event.toJson()), cameraId);
 
         // Assert
@@ -258,13 +260,13 @@ void main() {
         // Emit test events
         final fhdEvent = CameraResolutionChangedEvent(cameraId, 1920, 1080);
         final uhdEvent = CameraResolutionChangedEvent(cameraId, 3840, 2160);
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('resolution_changed', fhdEvent.toJson()), cameraId);
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('resolution_changed', uhdEvent.toJson()), cameraId);
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('resolution_changed', fhdEvent.toJson()), cameraId);
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('resolution_changed', uhdEvent.toJson()), cameraId);
 
         // Assert
@@ -285,11 +287,11 @@ void main() {
 
         // Emit test events
         final event = CameraClosingEvent(cameraId);
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('camera_closing', event.toJson()), cameraId);
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('camera_closing', event.toJson()), cameraId);
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('camera_closing', event.toJson()), cameraId);
 
         // Assert
@@ -308,12 +310,36 @@ void main() {
 
         // Emit test events
         final event = CameraErrorEvent(cameraId, 'Error Description');
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('error', event.toJson()), cameraId);
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('error', event.toJson()), cameraId);
-        await camera.handleMethodCall(
+        await camera.handleCameraMethodCall(
             MethodCall('error', event.toJson()), cameraId);
+
+        // Assert
+        expect(await streamQueue.next, event);
+        expect(await streamQueue.next, event);
+        expect(await streamQueue.next, event);
+
+        // Clean up
+        await streamQueue.cancel();
+      });
+
+      test('Should receive device orientation change events', () async {
+        // Act
+        final eventStream = camera.onDeviceOrientationChanged();
+        final streamQueue = StreamQueue(eventStream);
+
+        // Emit test events
+        final event =
+            DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
+        await camera.handleDeviceMethodCall(
+            MethodCall('orientation_changed', event.toJson()));
+        await camera.handleDeviceMethodCall(
+            MethodCall('orientation_changed', event.toJson()));
+        await camera.handleDeviceMethodCall(
+            MethodCall('orientation_changed', event.toJson()));
 
         // Assert
         expect(await streamQueue.next, event);
@@ -751,7 +777,9 @@ void main() {
           () {
         final camera = MethodChannelCamera();
 
-        expect(() => camera.handleMethodCall(MethodCall('unknown_method'), 1),
+        expect(
+            () =>
+                camera.handleCameraMethodCall(MethodCall('unknown_method'), 1),
             throwsA(isA<MissingPluginException>()));
       });
 
@@ -831,6 +859,41 @@ void main() {
                 .having((e) => e.code, 'code', 'ZOOM_ERROR')
                 .having((e) => e.description, 'description',
                     'Illegal zoom error')));
+      });
+
+      test('Should lock the capture orientation', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'lockCaptureOrientation': null},
+        );
+
+        // Act
+        await camera.lockCaptureOrientation(
+            cameraId, DeviceOrientation.portraitUp);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('lockCaptureOrientation',
+              arguments: {'cameraId': cameraId, 'orientation': 'portraitUp'}),
+        ]);
+      });
+
+      test('Should unlock the capture orientation', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'unlockCaptureOrientation': null},
+        );
+
+        // Act
+        await camera.unlockCaptureOrientation(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('unlockCaptureOrientation',
+              arguments: {'cameraId': cameraId}),
+        ]);
       });
     });
   });

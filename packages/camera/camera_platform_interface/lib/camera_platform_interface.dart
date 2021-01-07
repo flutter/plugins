@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 export 'src/events/camera_event.dart';
+export 'src/events/device_event.dart';
 export 'src/platform_interface/camera_platform.dart';
 export 'src/types/types.dart';
 
