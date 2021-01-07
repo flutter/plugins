@@ -8,6 +8,8 @@ import 'dart:math';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:camera_platform_interface/src/types/exposure_mode.dart';
+import 'package:camera_platform_interface/src/types/focus_mode.dart';
+import 'package:camera_platform_interface/src/types/image_format_group.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -54,7 +56,12 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Initializes the camera on the device.
-  Future<void> initializeCamera(int cameraId) {
+  ///
+  /// [imageFormatGroup] is used to specify the image formatting used.
+  /// On Android this defaults to ImageFormat.YUV_420_888 and applies only to the imageStream.
+  /// On iOS this defaults to kCVPixelFormatType_32BGRA.
+  Future<void> initializeCamera(int cameraId,
+      {ImageFormatGroup imageFormatGroup}) {
     throw UnimplementedError('initializeCamera() is not implemented.');
   }
 
@@ -123,7 +130,7 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('setExposureMode() is not implemented.');
   }
 
-  /// Sets the exposure point for automatically determining the exposure value.
+  /// Sets the exposure point for automatically determining the exposure values.
   Future<void> setExposurePoint(int cameraId, Point<double> point) {
     throw UnimplementedError('setExposurePoint() is not implemented.');
   }
@@ -158,6 +165,16 @@ abstract class CameraPlatform extends PlatformInterface {
   /// Returns the (rounded) offset value that was set.
   Future<double> setExposureOffset(int cameraId, double offset) {
     throw UnimplementedError('setExposureOffset() is not implemented.');
+  }
+
+  /// Sets the focus mode for taking pictures.
+  Future<void> setFocusMode(int cameraId, FocusMode mode) {
+    throw UnimplementedError('setFocusMode() is not implemented.');
+  }
+
+  /// Sets the focus point for automatically determining the focus values.
+  Future<void> setFocusPoint(int cameraId, Point<double> point) {
+    throw UnimplementedError('setFocusPoint() is not implemented.');
   }
 
   /// Gets the maximum supported zoom level for the selected camera.
