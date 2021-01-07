@@ -52,8 +52,10 @@ class SaveTextPage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             ElevatedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: Text('Press to save a text file'),
               onPressed: () => _saveFile(),
             ),

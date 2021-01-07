@@ -29,8 +29,10 @@ class OpenTextPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: Text('Press to open a text file (json, txt)'),
               onPressed: () => _openTextFile(context),
             ),

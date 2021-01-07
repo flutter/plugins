@@ -313,6 +313,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Widget _exposureModeControlRowWidget() {
+    final ButtonStyle style = TextButton.styleFrom(
+      primary: controller?.value?.exposureMode == ExposureMode.auto ? Colors.orange : Colors.blue,
+    );
     return SizeTransition(
       sizeFactor: _exposureModeControlRowAnimation,
       child: ClipRect(
@@ -329,12 +332,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 children: [
                   TextButton(
                     child: Text('AUTO'),
-                    style: TextButton.styleFrom(
-                      primary:
-                          controller?.value?.exposureMode == ExposureMode.auto
-                              ? Colors.orange
-                              : Colors.blue,
-                    ),
+                    style: style,
                     onPressed: controller != null
                         ? () =>
                             onSetExposureModeButtonPressed(ExposureMode.auto)
@@ -346,12 +344,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   ),
                   TextButton(
                     child: Text('LOCKED'),
-                    style: TextButton.styleFrom(
-                      primary:
-                          controller?.value?.exposureMode == ExposureMode.auto
-                              ? Colors.orange
-                              : Colors.blue,
-                    ),
+                    style: style,
                     onPressed: controller != null
                         ? () =>
                             onSetExposureModeButtonPressed(ExposureMode.locked)
