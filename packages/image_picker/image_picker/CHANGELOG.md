@@ -1,6 +1,6 @@
 ## 0.6.7+20
 
-* Updated Readme
+* Updated README.md to show the new Android API requirements.
 
 ## 0.6.7+19
 
