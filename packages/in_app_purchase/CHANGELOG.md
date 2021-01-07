@@ -1,3 +1,7 @@
+## 0.3.5
+
+* [Android] Fixed: added support for the SERVICE_TIMEOUT (-3) response code.
+
 ## 0.3.4+18
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
