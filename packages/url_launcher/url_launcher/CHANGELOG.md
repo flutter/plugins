@@ -1,6 +1,6 @@
 ## 6.0.0-nullsafety.4
 
-* Update the example app: remove the depreciated `RaisedButton` and `FlatButton` widgets.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
 
 ## 6.0.0-nullsafety.3
 

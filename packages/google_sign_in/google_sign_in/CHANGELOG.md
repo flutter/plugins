@@ -1,6 +1,6 @@
 ## 4.5.9
 
-* Update the example app: remove the depreciated `RaisedButton` and `FlatButton` widgets.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
 
 ## 4.5.8
 
