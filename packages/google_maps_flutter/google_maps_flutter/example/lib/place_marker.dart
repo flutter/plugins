@@ -77,7 +77,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
           builder: (BuildContext context) {
             return AlertDialog(
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
                     child: const Text('OK'),
                     onPressed: () => Navigator.of(context).pop(),
                   )
@@ -313,19 +313,19 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('add'),
                           onPressed: _add,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('remove'),
                           onPressed: _remove,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change info'),
                           onPressed: _changeInfo,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change info anchor'),
                           onPressed: _changeInfoAnchor,
                         ),
@@ -333,35 +333,35 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                     ),
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('change alpha'),
                           onPressed: _changeAlpha,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change anchor'),
                           onPressed: _changeAnchor,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle draggable'),
                           onPressed: _toggleDraggable,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle flat'),
                           onPressed: _toggleFlat,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change position'),
                           onPressed: _changePosition,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change rotation'),
                           onPressed: _changeRotation,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle visible'),
                           onPressed: _toggleVisible,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change zIndex'),
                           onPressed: _changeZIndex,
                         ),
@@ -371,7 +371,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                         // TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
                         // https://github.com/flutter/flutter/issues/33438
                         //
-                        // FlatButton(
+                        // TextButton(
                         //   child: const Text('set marker icon'),
                         //   onPressed: () {
                         //     _getAssetIcon(context).then(
