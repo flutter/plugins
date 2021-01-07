@@ -5,6 +5,21 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
+source "$SCRIPT_DIR/nnbd_plugins.sh"
+
+if [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
+  PUB=pub.bat
+else
+  PUB=pub
+fi
+
+# Plugins that are excluded from this task.
+ALL_EXCLUDED=("")
+# Exclude nnbd plugins from stable.
+if [ "$CHANNEL" == "stable" ]; then
+  ALL_EXCLUDED=($EXCLUDED_PLUGINS_FROM_STABLE)
+  echo "Excluding the following plugins: $ALL_EXCLUDED"
+fi
 
 # Plugins that deliberately use their own analysis_options.yaml.
 #
@@ -14,9 +29,8 @@ source "$SCRIPT_DIR/common.sh"
 #
 # TODO(mklim): Remove everything from this list. https://github.com/flutter/flutter/issues/45440
 CUSTOM_ANALYSIS_PLUGINS=(
-  "in_app_purchase"
-  "camera"
 )
+
 # Comma-separated string of the list above
 readonly CUSTOM_FLAG=$(IFS=, ; echo "${CUSTOM_ANALYSIS_PLUGINS[*]}")
 # Set some default actions if run without arguments.
@@ -28,9 +42,14 @@ elif [[ "${ACTIONS[@]}" == "analyze" ]]; then
 fi
 
 BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
+
+# This has to be turned into a list and then split out to the command line,
+# otherwise it gets treated as a single argument.
+PLUGIN_SHARDING=($PLUGIN_SHARDING)
+
 if [[ "${BRANCH_NAME}" == "master" ]]; then
   echo "Running for all packages"
-  (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
+  (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
 else
   # Sets CHANGED_PACKAGES
   check_changed_packages
@@ -38,11 +57,12 @@ else
   if [[ "$CHANGED_PACKAGES" == "" ]]; then
     echo "No changes detected in packages."
     echo "Running for all packages"
-    (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
+    (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
   else
     echo running "${ACTIONS[@]}"
-    (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
+    (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
     echo "Running version check for changed packages"
-    (cd "$REPO_DIR" && pub global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
+    # TODO(egarciad): Enable this check once in master.
+    # (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
   fi
 fi

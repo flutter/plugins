@@ -6,12 +6,10 @@ package io.flutter.plugins.connectivity;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** ConnectivityPlugin */
 public class ConnectivityPlugin implements FlutterPlugin {
@@ -20,7 +18,8 @@ public class ConnectivityPlugin implements FlutterPlugin {
   private EventChannel eventChannel;
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
 
     ConnectivityPlugin plugin = new ConnectivityPlugin();
     plugin.setupChannels(registrar.messenger(), registrar.context());
@@ -28,7 +27,7 @@ public class ConnectivityPlugin implements FlutterPlugin {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    setupChannels(binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
+    setupChannels(binding.getBinaryMessenger(), binding.getApplicationContext());
   }
 
   @Override
@@ -41,9 +40,8 @@ public class ConnectivityPlugin implements FlutterPlugin {
     eventChannel = new EventChannel(messenger, "plugins.flutter.io/connectivity_status");
     ConnectivityManager connectivityManager =
         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-    WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 
-    Connectivity connectivity = new Connectivity(connectivityManager, wifiManager);
+    Connectivity connectivity = new Connectivity(connectivityManager);
 
     ConnectivityMethodChannelHandler methodChannelHandler =
         new ConnectivityMethodChannelHandler(connectivity);

@@ -108,6 +108,6 @@ This one is valid
 
 3
 00:01:54,724 --> 00:01:6,760
-This one should be ignored because the 
+This one should be ignored because the
 ned time is missing a digit.
 ''';

@@ -17,7 +17,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,7 +48,8 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
    *     io.flutter.plugin.common.MethodChannel.MethodCallHandler} to the registrar's {@link
    *     io.flutter.plugin.common.BinaryMessenger}.
    */
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
     channel.setMethodCallHandler(new LocalAuthPlugin(registrar.activity()));
   }
@@ -169,7 +169,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    channel = new MethodChannel(binding.getFlutterEngine().getDartExecutor(), CHANNEL_NAME);
+    channel = new MethodChannel(binding.getBinaryMessenger(), CHANNEL_NAME);
   }
 
   @Override

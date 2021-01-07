@@ -211,4 +211,21 @@ void main() {
     expect(platformGoogleMap.polygonIdsToRemove.isEmpty, true);
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
+
+  testWidgets("Update non platform related attr", (WidgetTester tester) async {
+    Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
+    final Set<Polygon> prev = _toSet(p1: p1);
+    p1 = Polygon(polygonId: PolygonId("polygon_1"), onTap: () => print(2 + 2));
+    final Set<Polygon> cur = _toSet(p1: p1);
+
+    await tester.pumpWidget(_mapWithPolygons(prev));
+    await tester.pumpWidget(_mapWithPolygons(cur));
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.polygonsToChange.isEmpty, true);
+    expect(platformGoogleMap.polygonIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
+  });
 }

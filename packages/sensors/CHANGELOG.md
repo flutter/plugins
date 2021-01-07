@@ -1,3 +1,50 @@
+## 0.4.2+8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.4.2+7
+
+* Update Flutter SDK constraint.
+
+## 0.4.2+6
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.2+5
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.4.2+4
+
+* Update package:e2e -> package:integration_test
+
+## 0.4.2+3
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.2+2
+
+* Post-v2 Android embedding cleanup.
+
+## 0.4.2+1
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.4.2
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.4.1+10
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.4.1+9
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
 ## 0.4.1+8
 
 * Make the pedantic dev_dependency explicit.

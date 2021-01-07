@@ -12,7 +12,7 @@
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
         </activity>
-        <activity android:name=".MainActivity"
+        <activity android:name="io.flutter.embedding.android.FlutterActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
             android:hardwareAccelerated="true"
@@ -23,5 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <meta-data android:name="flutterEmbedding" android:value="2"/>
     </application>
 </manifest>

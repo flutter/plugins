@@ -13,7 +13,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
-class PlaceMarkerPage extends Page {
+class PlaceMarkerPage extends GoogleMapExampleAppPage {
   PlaceMarkerPage() : super(const Icon(Icons.place), 'Place marker');
 
   @override

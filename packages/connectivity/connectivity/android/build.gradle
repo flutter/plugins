@@ -1,5 +1,6 @@
 group 'io.flutter.plugins.connectivity'
 version '1.0-SNAPSHOT'
+def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
 
 buildscript {
     repositories {
@@ -8,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.5.0'
     }
 }
 
@@ -19,10 +20,14 @@ rootProject.allprojects {
     }
 }
 
+project.getTasks().withType(JavaCompile){
+    options.compilerArgs.addAll(args)
+}
+
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 16
@@ -30,31 +35,5 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
-    }
-}
-
-// TODO(amirh): Remove this hack once androidx.lifecycle is included on stable. https://github.com/flutter/flutter/issues/42348
-afterEvaluate {
-    def containsEmbeddingDependencies = false
-    for (def configuration : configurations.all) {
-        for (def dependency : configuration.dependencies) {
-            if (dependency.group == 'io.flutter' &&
-                dependency.name.startsWith('flutter_embedding') &&
-                dependency.isTransitive())
-            {
-                containsEmbeddingDependencies = true
-                break
-            }
-        }
-    }
-    if (!containsEmbeddingDependencies) {
-        android {
-            dependencies {
-                def lifecycle_version = "1.1.1"
-                compileOnly "android.arch.lifecycle:runtime:$lifecycle_version"
-                compileOnly "android.arch.lifecycle:common:$lifecycle_version"
-                compileOnly "android.arch.lifecycle:common-java8:$lifecycle_version"
-            }
-        }
     }
 }

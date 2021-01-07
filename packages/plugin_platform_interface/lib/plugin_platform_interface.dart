@@ -41,7 +41,7 @@ import 'package:meta/meta.dart';
 /// [MockPlatformInterfaceMixin] for a sample of using Mockito to mock a platform interface.
 abstract class PlatformInterface {
   /// Pass a private, class-specific `const Object()` as the `token`.
-  PlatformInterface({@required Object token}) : _instanceToken = token;
+  PlatformInterface({required Object token}) : _instanceToken = token;
 
   final Object _instanceToken;
 
