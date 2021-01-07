@@ -771,11 +771,14 @@ public class Camera {
   public void setFocusMode(@NonNull final Result result, FocusMode mode)
       throws CameraAccessException {
     this.focusMode = mode;
-    initPreviewCaptureBuilder();
+
+    updateFocus(mode);
+
     switch (mode) {
       case auto:
-        cameraCaptureSession.setRepeatingRequest(
-            captureRequestBuilder.build(), pictureCaptureCallback, null);
+        refreshPreviewCaptureSession(
+            null,
+            (code, message) -> result.error("setFocusMode", message, null));
         break;
       case locked:
         lockAutoFocus(
@@ -800,35 +803,22 @@ public class Camera {
       result.error("setFocusPointFailed", "Device does not have focus point capabilities", null);
       return;
     }
+
     // Check if the current region boundaries are known
     if (cameraRegions.getMaxBoundaries() == null) {
       result.error("setFocusPointFailed", "Could not determine max region boundaries", null);
       return;
     }
+
     // Set the metering rectangle
-    if (x == null || y == null) cameraRegions.resetAutoFocusMeteringRectangle();
-    else cameraRegions.setAutoFocusMeteringRectangleFromPoint(x, y);
-    // Apply the new metering rectangle
-    initPreviewCaptureBuilder();
-    switch (focusMode) {
-      case auto:
-        cameraCaptureSession.setRepeatingRequest(
-            captureRequestBuilder.build(), pictureCaptureCallback, null);
-        break;
-      case locked:
-        lockAutoFocus(
-            new CaptureCallback() {
-              @Override
-              public void onCaptureCompleted(
-                  @NonNull CameraCaptureSession session,
-                  @NonNull CaptureRequest request,
-                  @NonNull TotalCaptureResult result) {
-                unlockAutoFocus();
-              }
-            });
-        break;
+    if (x == null || y == null) {
+      cameraRegions.resetAutoFocusMeteringRectangle();
+    } else {
+      cameraRegions.setAutoFocusMeteringRectangleFromPoint(x, y);
     }
-    result.success(null);
+
+    // Apply the new metering rectangle
+    setFocusMode(result, focusMode);
   }
 
   @TargetApi(VERSION_CODES.P)
