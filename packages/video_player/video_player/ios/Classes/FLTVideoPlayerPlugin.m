@@ -184,6 +184,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   if (rotationDegrees == 90) {
     transform.tx = videoTrack.naturalSize.height;
     transform.ty = 0;
+  } else if (rotationDegrees == 180) {
+    transform.tx = videoTrack.naturalSize.width;
+    transform.ty = videoTrack.naturalSize.height;
   } else if (rotationDegrees == 270) {
     transform.tx = 0;
     transform.ty = videoTrack.naturalSize.width;
