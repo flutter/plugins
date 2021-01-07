@@ -1,10 +1,10 @@
-## 0.6.6
+## 0.6.5
 
 * Adds auto focus support for Android and iOS implementations.
 
-## 0.6.5
+## 0.6.4+4
 
-* Adds auto exposure support for Android and iOS implementations.
+* Set camera auto focus enabled by default.
 
 ## 0.6.4+3
 

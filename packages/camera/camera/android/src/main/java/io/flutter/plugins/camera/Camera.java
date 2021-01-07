@@ -98,7 +98,7 @@ public class Camera {
   private PictureCaptureRequest pictureCaptureRequest;
   private CameraRegions cameraRegions;
   private int exposureOffset;
-  private boolean useAutoFocus;
+  private boolean useAutoFocus = true;
   private Range<Integer> fpsRange;
 
   public Camera(
