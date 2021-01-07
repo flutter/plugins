@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:camera_platform_interface/src/types/focus_mode.dart';
+
 import '../../camera_platform_interface.dart';
 
 /// Generic Event coming from the native side of Camera,
@@ -51,8 +53,14 @@ class CameraInitializedEvent extends CameraEvent {
   /// The default exposure mode
   final ExposureMode exposureMode;
 
+  /// The default focus mode
+  final FocusMode focusMode;
+
   /// Whether setting exposure points is supported.
   final bool exposurePointSupported;
+
+  /// Whether setting focus points is supported.
+  final bool focusPointSupported;
 
   /// Build a CameraInitialized event triggered from the camera represented by
   /// `cameraId`.
@@ -62,10 +70,12 @@ class CameraInitializedEvent extends CameraEvent {
   CameraInitializedEvent(
     int cameraId,
     this.previewWidth,
-    this.previewHeight,
+    this.previewHeight, [
     this.exposureMode,
-    this.exposurePointSupported,
-  ) : super(cameraId);
+    this.exposurePointSupported = false,
+    this.focusMode,
+    this.focusPointSupported = false,
+  ]) : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [CameraInitializedEvent]
   /// class.
@@ -73,7 +83,9 @@ class CameraInitializedEvent extends CameraEvent {
       : previewWidth = json['previewWidth'],
         previewHeight = json['previewHeight'],
         exposureMode = deserializeExposureMode(json['exposureMode']),
-        exposurePointSupported = json['exposurePointSupported'],
+        exposurePointSupported = json['exposurePointSupported'] ?? false,
+        focusMode = deserializeFocusMode(json['focusMode']),
+        focusPointSupported = json['focusPointSupported'] ?? false,
         super(json['cameraId']);
 
   /// Converts the [CameraInitializedEvent] instance into a [Map] instance that
@@ -84,6 +96,8 @@ class CameraInitializedEvent extends CameraEvent {
         'previewHeight': previewHeight,
         'exposureMode': serializeExposureMode(exposureMode),
         'exposurePointSupported': exposurePointSupported,
+        'focusMode': serializeFocusMode(focusMode),
+        'focusPointSupported': focusPointSupported,
       };
 
   @override
@@ -95,7 +109,9 @@ class CameraInitializedEvent extends CameraEvent {
           previewWidth == other.previewWidth &&
           previewHeight == other.previewHeight &&
           exposureMode == other.exposureMode &&
-          exposurePointSupported == other.exposurePointSupported;
+          exposurePointSupported == other.exposurePointSupported &&
+          focusMode == other.focusMode &&
+          focusPointSupported == other.focusPointSupported;
 
   @override
   int get hashCode =>
@@ -103,7 +119,9 @@ class CameraInitializedEvent extends CameraEvent {
       previewWidth.hashCode ^
       previewHeight.hashCode ^
       exposureMode.hashCode ^
-      exposurePointSupported.hashCode;
+      exposurePointSupported.hashCode ^
+      focusMode.hashCode ^
+      focusPointSupported.hashCode;
 }
 
 /// An event fired when the resolution preset of the camera has changed.

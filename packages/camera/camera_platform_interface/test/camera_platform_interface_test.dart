@@ -304,6 +304,32 @@ void main() {
     });
 
     test(
+        'Default implementation of setFocusMode() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setFocusMode(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of setFocusPoint() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setFocusPoint(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
         'Default implementation of startVideoRecording() should throw unimplemented error',
         () {
       // Arrange
