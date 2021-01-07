@@ -1,3 +1,7 @@
+## 0.3.5+1
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
 ## 0.3.5
 
 * [Android] Fixed: added support for the SERVICE_TIMEOUT (-3) response code.
