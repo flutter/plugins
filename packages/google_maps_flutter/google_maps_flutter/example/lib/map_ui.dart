@@ -5,8 +5,8 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
@@ -15,7 +15,7 @@ final LatLngBounds sydneyBounds = LatLngBounds(
   northeast: const LatLng(-33.571835, 151.325952),
 );
 
-class MapUiPage extends Page {
+class MapUiPage extends GoogleMapExampleAppPage {
   MapUiPage() : super(const Icon(Icons.map), 'User interface');
 
   @override
@@ -50,6 +50,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _rotateGesturesEnabled = true;
   bool _scrollGesturesEnabled = true;
   bool _tiltGesturesEnabled = true;
+  bool _zoomControlsEnabled = false;
   bool _zoomGesturesEnabled = true;
   bool _indoorViewEnabled = true;
   bool _myLocationEnabled = true;
@@ -179,6 +180,18 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _zoomControlsToggler() {
+    return FlatButton(
+      child:
+          Text('${_zoomControlsEnabled ? 'disable' : 'enable'} zoom controls'),
+      onPressed: () {
+        setState(() {
+          _zoomControlsEnabled = !_zoomControlsEnabled;
+        });
+      },
+    );
+  }
+
   Widget _indoorViewToggler() {
     return FlatButton(
       child: Text('${_indoorViewEnabled ? 'disable' : 'enable'} indoor'),
@@ -193,7 +206,7 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _myLocationToggler() {
     return FlatButton(
       child: Text(
-          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+          '${_myLocationEnabled ? 'disable' : 'enable'} my location marker'),
       onPressed: () {
         setState(() {
           _myLocationEnabled = !_myLocationEnabled;
@@ -269,6 +282,7 @@ class MapUiBodyState extends State<MapUiBody> {
       scrollGesturesEnabled: _scrollGesturesEnabled,
       tiltGesturesEnabled: _tiltGesturesEnabled,
       zoomGesturesEnabled: _zoomGesturesEnabled,
+      zoomControlsEnabled: _zoomControlsEnabled,
       indoorViewEnabled: _indoorViewEnabled,
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
@@ -310,6 +324,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _scrollToggler(),
               _tiltToggler(),
               _zoomToggler(),
+              _zoomControlsToggler(),
               _indoorViewToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),

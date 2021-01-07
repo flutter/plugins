@@ -16,14 +16,29 @@ import "package:js/js_util.dart" show promiseToFuture;
 
 /// <reference types="gapi" />
 
+@anonymous
+@JS()
+class GoogleAuthInitFailureError {
+  external String get error;
+  external set error(String value);
+
+  external String get details;
+  external set details(String value);
+}
+
+@anonymous
+@JS()
+class GoogleAuthSignInError {
+  external String get error;
+  external set error(String value);
+}
+
 // Module gapi.auth2
 /// GoogleAuth is a singleton class that provides methods to allow the user to sign in with a Google account,
 /// get the user's current sign-in status, get specific data from the user's Google profile,
 /// request additional scopes, and sign out from the current account.
 @JS("gapi.auth2.GoogleAuth")
 class GoogleAuth {
-  // @Ignore
-  GoogleAuth.fakeConstructor$();
   external IsSignedIn get isSignedIn;
   external set isSignedIn(IsSignedIn v);
   external CurrentUser get currentUser;
@@ -32,7 +47,7 @@ class GoogleAuth {
   /// Calls the onInit function when the GoogleAuth object is fully initialized, or calls the onFailure function if
   /// initialization fails.
   external dynamic then(dynamic onInit(GoogleAuth googleAuth),
-      [dynamic onFailure(dynamic /*{error: string, details: string}*/ reason)]);
+      [dynamic onFailure(GoogleAuthInitFailureError reason)]);
 
   /// Signs out all accounts from the application.
   external dynamic signOut();
@@ -212,8 +227,6 @@ abstract class ClientConfig {
 
 @JS("gapi.auth2.SigninOptionsBuilder")
 class SigninOptionsBuilder {
-  // @Ignore
-  SigninOptionsBuilder.fakeConstructor$();
   external dynamic setAppPackageName(String name);
   external dynamic setFetchBasicProfile(bool fetch);
   external dynamic setPrompt(String prompt);

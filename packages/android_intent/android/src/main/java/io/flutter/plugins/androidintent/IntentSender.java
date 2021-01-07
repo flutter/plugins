@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -41,6 +42,59 @@ public final class IntentSender {
    * <p>This uses {@code activity} to start the intent whenever it's not null. Otherwise it falls
    * back to {@code applicationContext} and adds {@link Intent#FLAG_ACTIVITY_NEW_TASK} to the intent
    * before launching it.
+   */
+  void send(Intent intent) {
+    if (applicationContext == null) {
+      Log.wtf(TAG, "Trying to send an intent before the applicationContext was initialized.");
+      return;
+    }
+
+    Log.v(TAG, "Sending intent " + intent);
+
+    if (activity != null) {
+      activity.startActivity(intent);
+    } else {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      applicationContext.startActivity(intent);
+    }
+  }
+
+  /**
+   * Verifies the given intent and returns whether the application context class can resolve it.
+   *
+   * <p>This will fail to create and send the intent if {@code applicationContext} hasn't been set *
+   * at the time of calling.
+   *
+   * <p>This currently only supports resolving activities.
+   *
+   * @param intent Fully built intent.
+   * @see #buildIntent(String, Integer, String, Uri, Bundle, String, ComponentName, String)
+   * @return Whether the package manager found {@link android.content.pm.ResolveInfo} using its
+   *     {@link PackageManager#resolveActivity(Intent, int)} method.
+   */
+  boolean canResolveActivity(Intent intent) {
+    if (applicationContext == null) {
+      Log.wtf(TAG, "Trying to resolve an activity before the applicationContext was initialized.");
+      return false;
+    }
+
+    final PackageManager packageManager = applicationContext.getPackageManager();
+
+    return packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null;
+  }
+
+  /** Caches the given {@code activity} to use for {@link #send}. */
+  void setActivity(@Nullable Activity activity) {
+    this.activity = activity;
+  }
+
+  /** Caches the given {@code applicationContext} to use for {@link #send}. */
+  void setApplicationContext(@Nullable Context applicationContext) {
+    this.applicationContext = applicationContext;
+  }
+
+  /**
+   * Constructs a new intent with the data specified.
    *
    * @param action the Intent action, such as {@code ACTION_VIEW}.
    * @param flags forwarded to {@link Intent#addFlags(int)} if non-null.
@@ -55,9 +109,10 @@ public final class IntentSender {
    * @param type forwarded to {@link Intent#setType(String)} if non-null and 'data' parameter is
    *     null. If both 'data' and 'type' is non-null they're forwarded to {@link
    *     Intent#setDataAndType(Uri, String)}
+   * @return Fully built intent.
    */
-  void send(
-      String action,
+  Intent buildIntent(
+      @Nullable String action,
       @Nullable Integer flags,
       @Nullable String category,
       @Nullable Uri data,
@@ -66,12 +121,15 @@ public final class IntentSender {
       @Nullable ComponentName componentName,
       @Nullable String type) {
     if (applicationContext == null) {
-      Log.wtf(TAG, "Trying to send an intent before the applicationContext was initialized.");
-      return;
+      Log.wtf(TAG, "Trying to build an intent before the applicationContext was initialized.");
+      return null;
     }
 
-    Intent intent = new Intent(action);
+    Intent intent = new Intent();
 
+    if (action != null) {
+      intent.setAction(action);
+    }
     if (flags != null) {
       intent.addFlags(flags);
     }
@@ -101,22 +159,6 @@ public final class IntentSender {
       }
     }
 
-    Log.v(TAG, "Sending intent " + intent);
-    if (activity != null) {
-      activity.startActivity(intent);
-    } else {
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      applicationContext.startActivity(intent);
-    }
-  }
-
-  /** Caches the given {@code activity} to use for {@link #send}. */
-  void setActivity(@Nullable Activity activity) {
-    this.activity = activity;
-  }
-
-  /** Caches the given {@code applicationContext} to use for {@link #send}. */
-  void setApplicationContext(@Nullable Context applicationContext) {
-    this.applicationContext = applicationContext;
+    return intent;
   }
 }

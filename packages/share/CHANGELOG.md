@@ -1,3 +1,71 @@
+## 2.0.0-nullsafety.1
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 0.6.5+5
+
+* Update Flutter SDK constraint.
+
+## 0.6.5+4
+
+* Fix iPad share window not showing when `origin` is null.
+
+## 0.6.5+3
+
+* Replace deprecated `Environment.getExternalStorageDirectory()` call on Android.
+* Upgrade to Android Gradle plugin 3.5.0 & target API level 29.
+
+## 0.6.5+2
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.6.5+1
+
+* Avoiding uses unchecked or unsafe Object Type Casting
+
+## 0.6.5
+
+* Added support for sharing files
+
+## 0.6.4+5
+
+* Update package:e2e -> package:integration_test
+
+## 0.6.4+4
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.6.4+3
+
+* Post-v2 Android embedding cleanup.
+
+## 0.6.4+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.6.4+1
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.6.4
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.6.3+8
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.6.3+7
+
+* Updated gradle version of example.
+
 ## 0.6.3+6
 
 * Make the pedantic dev_dependency explicit.

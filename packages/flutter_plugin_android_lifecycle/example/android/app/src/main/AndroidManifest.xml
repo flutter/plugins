@@ -29,5 +29,6 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
         </activity>
+        <meta-data android:name="flutterEmbedding" android:value="2"/>
     </application>
 </manifest>

@@ -8,10 +8,17 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  e2e: "^0.2.0"
+  integration_test:
+    path: ../../../integration_test
   flutter_driver:
     sdk: flutter
-  pedantic: ^1.8.0
+  pedantic: ^1.10.0-nullsafety.1
+  mockito: ^4.1.1
+  plugin_platform_interface: ^1.1.0-nullsafety.1
 
 flutter:
   uses-material-design: true
+
+environment:
+  sdk: ">=2.12.0-0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"

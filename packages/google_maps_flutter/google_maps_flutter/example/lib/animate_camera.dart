@@ -9,7 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
-class AnimateCameraPage extends Page {
+class AnimateCameraPage extends GoogleMapExampleAppPage {
   AnimateCameraPage()
       : super(const Icon(Icons.map), 'Camera control, animated');
 
