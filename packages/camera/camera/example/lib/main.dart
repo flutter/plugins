@@ -330,9 +330,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   TextButton(
                     child: Text('AUTO'),
                     style: TextButton.styleFrom(
-                      primary: controller?.value?.exposureMode == ExposureMode.auto
-                          ? Colors.orange
-                          : Colors.blue,
+                      primary:
+                          controller?.value?.exposureMode == ExposureMode.auto
+                              ? Colors.orange
+                              : Colors.blue,
                     ),
                     onPressed: controller != null
                         ? () =>
@@ -346,9 +347,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   TextButton(
                     child: Text('LOCKED'),
                     style: TextButton.styleFrom(
-                      primary: controller?.value?.exposureMode == ExposureMode.auto
-                          ? Colors.orange
-                          : Colors.blue,
+                      primary:
+                          controller?.value?.exposureMode == ExposureMode.auto
+                              ? Colors.orange
+                              : Colors.blue,
                     ),
                     onPressed: controller != null
                         ? () =>
