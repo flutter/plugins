@@ -1,6 +1,10 @@
-## 0.6.4+4
+## 0.6.4+5
 
 * Update the example app: remove the depreciated `RaisedButton` and `FlatButton` widgets.
+
+## 0.6.4+4
+
+* Set camera auto focus enabled by default.
 
 ## 0.6.4+3
 

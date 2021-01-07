@@ -1,6 +1,10 @@
-## 0.6.7+20
+## 0.6.7+21
 
 * Update the example app: remove the depreciated `RaisedButton` and `FlatButton` widgets.
+
+## 0.6.7+20
+
+* Updated README.md to show the new Android API requirements.
 
 ## 0.6.7+19
 

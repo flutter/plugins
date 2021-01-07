@@ -6,7 +6,8 @@ import 'package:camera_platform_interface/src/types/focus_mode.dart';
 
 import '../../camera_platform_interface.dart';
 
-/// Generic Event coming from the native side of Camera.
+/// Generic Event coming from the native side of Camera,
+/// related to a specific camera module.
 ///
 /// All [CameraEvent]s contain the `cameraId` that originated the event. This
 /// should never be `null`.
