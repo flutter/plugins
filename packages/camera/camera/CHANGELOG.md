@@ -2,6 +2,10 @@
 
 * Adds ImageFormat selection for ImageStream and Video(iOS only).
 
+## 0.6.4+4
+
+* Set camera auto focus enabled by default.
+
 ## 0.6.4+3
 
 * Detect if selected camera supports auto focus and act accordingly on Android. This solves a problem where front facing cameras are not capturing the picture because auto focus is not supported.
