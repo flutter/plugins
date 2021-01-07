@@ -12,7 +12,7 @@ dependencies:
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-  pedantic: ^1.10.0-nullsafety.3
+  pedantic: ^1.10.0-nullsafety
 
 flutter:
   uses-material-design: true
