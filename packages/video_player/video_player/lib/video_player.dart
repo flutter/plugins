@@ -906,8 +906,7 @@ class ClosedCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final captionText = text;
-    if (captionText == null || captionText.isEmpty) {
+    if (text == null || text!.isEmpty) {
       return SizedBox.shrink();
     }
 
@@ -928,7 +927,7 @@ class ClosedCaption extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.0),
-            child: Text(captionText, style: effectiveTextStyle),
+            child: Text(text!, style: effectiveTextStyle),
           ),
         ),
       ),
