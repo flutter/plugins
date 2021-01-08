@@ -13,15 +13,16 @@ void main() {
   group('camera_value', () {
     test('Can be created', () {
       var cameraValue = const CameraValue(
-        isInitialized: false,
-        errorDescription: null,
-        previewSize: Size(10, 10),
-        isRecordingPaused: false,
-        isRecordingVideo: false,
-        isTakingPicture: false,
-        isStreamingImages: false,
-        flashMode: FlashMode.auto,
-      );
+          isInitialized: false,
+          errorDescription: null,
+          previewSize: Size(10, 10),
+          isRecordingPaused: false,
+          isRecordingVideo: false,
+          isTakingPicture: false,
+          isStreamingImages: false,
+          flashMode: FlashMode.auto,
+          exposureMode: ExposureMode.auto,
+          exposurePointSupported: true);
 
       expect(cameraValue, isA<CameraValue>());
       expect(cameraValue.isInitialized, isFalse);
@@ -31,6 +32,9 @@ void main() {
       expect(cameraValue.isRecordingVideo, isFalse);
       expect(cameraValue.isTakingPicture, isFalse);
       expect(cameraValue.isStreamingImages, isFalse);
+      expect(cameraValue.flashMode, FlashMode.auto);
+      expect(cameraValue.exposureMode, ExposureMode.auto);
+      expect(cameraValue.exposurePointSupported, true);
     });
 
     test('Can be created as uninitialized', () {
@@ -44,6 +48,9 @@ void main() {
       expect(cameraValue.isRecordingVideo, isFalse);
       expect(cameraValue.isTakingPicture, isFalse);
       expect(cameraValue.isStreamingImages, isFalse);
+      expect(cameraValue.flashMode, FlashMode.auto);
+      expect(cameraValue.exposureMode, null);
+      expect(cameraValue.exposurePointSupported, false);
     });
 
     test('Can be copied with isInitialized', () {
@@ -59,6 +66,8 @@ void main() {
       expect(cameraValue.isTakingPicture, isFalse);
       expect(cameraValue.isStreamingImages, isFalse);
       expect(cameraValue.flashMode, FlashMode.auto);
+      expect(cameraValue.exposureMode, null);
+      expect(cameraValue.exposurePointSupported, false);
     });
 
     test('Has aspectRatio after setting size', () {
@@ -97,10 +106,11 @@ void main() {
         isTakingPicture: false,
         isStreamingImages: false,
         flashMode: FlashMode.auto,
+        exposurePointSupported: true,
       );
 
       expect(cameraValue.toString(),
-          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto)');
+          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: null, exposurePointSupported: true)');
     });
   });
 }

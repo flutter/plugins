@@ -1,6 +1,10 @@
+## 2.0.0-nullsafety.8
+
+* Fixed empty caption text still showing the caption widget.
+
 ## 2.0.0-nullsafety.7
 
-* Fix empty caption text still showing caption widget
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
 
 ## 2.0.0-nullsafety.6
 
