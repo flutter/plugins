@@ -348,7 +348,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (int64_t)duration {
-  // when CMTIME_IS_INDEFINITE return value that matches Exoplayer2's TIME_UNSET
+  // When CMTIME_IS_INDEFINITE return a value that matches TIME_UNSET from ExoPlayer2 on Android.
+  // Fixes https://github.com/flutter/flutter/issues/48670
   if ([self isDurationIndefinite]) return TIME_UNSET;
   return FLTCMTimeToMillis([[_player currentItem] duration]);
 }
