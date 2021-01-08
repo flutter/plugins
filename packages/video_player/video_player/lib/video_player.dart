@@ -928,7 +928,7 @@ class ClosedCaption extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.0),
-            child: Text(text!, style: effectiveTextStyle),
+            child: Text(text, style: effectiveTextStyle),
           ),
         ),
       ),
