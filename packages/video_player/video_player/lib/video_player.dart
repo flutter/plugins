@@ -895,7 +895,7 @@ class ClosedCaption extends StatelessWidget {
 
   /// The text that will be shown in the closed caption, or null if no caption
   /// should be shown.
-  /// If the text is empty the caption will not be shown as well
+  /// If the text is empty the caption will not be shown.
   final String? text;
 
   /// Specifies how the text in the closed caption should look.
