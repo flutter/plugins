@@ -165,15 +165,15 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('add'),
                           onPressed: _add,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('remove'),
                           onPressed: (selectedCircle == null) ? null : _remove,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle visible'),
                           onPressed:
                               (selectedCircle == null) ? null : _toggleVisible,
@@ -182,19 +182,19 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
                     ),
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('change stroke width'),
                           onPressed: (selectedCircle == null)
                               ? null
                               : _changeStrokeWidth,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change stroke color'),
                           onPressed: (selectedCircle == null)
                               ? null
                               : _changeStrokeColor,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change fill color'),
                           onPressed: (selectedCircle == null)
                               ? null
