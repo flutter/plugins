@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:html';
 import 'package:meta/meta.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
@@ -67,10 +66,9 @@ class FileSelectorWeb extends FileSelectorPlatform {
     bool multiple = false,
   }) async {
     final accept = acceptedTypesToString(acceptedTypeGroups);
-    final List<File> files = await _domHelper.getFiles(
+    return _domHelper.getFiles(
       accept: accept,
       multiple: multiple,
     );
-    return files.map(convertFileToXFile).toList();
   }
 }

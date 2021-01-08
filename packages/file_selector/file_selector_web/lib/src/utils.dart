@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 /// Convert list of XTypeGroups to a comma-separated string
@@ -19,14 +18,6 @@ String acceptedTypesToString(List<XTypeGroup> acceptedTypes) {
   }
   return allTypes.join(',');
 }
-
-/// Helper to convert an html.File to an XFile
-XFile convertFileToXFile(File file) => XFile(
-      Url.createObjectUrl(file),
-      name: file.name,
-      length: file.size,
-      lastModified: DateTime.fromMillisecondsSinceEpoch(file.lastModified),
-    );
 
 /// Make sure that at least one of its fields is populated.
 void _assertTypeGroupIsValid(XTypeGroup group) {

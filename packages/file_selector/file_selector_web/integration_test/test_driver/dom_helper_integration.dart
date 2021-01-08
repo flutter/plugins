@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:file_selector_web/src/dom_helper.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 void main() {
   group('FileSelectorWeb', () {
@@ -33,25 +34,34 @@ void main() {
     });
 
     group('getFiles', () {
-      final mockFile1 = File([], 'file1.txt');
+      final mockFile1 = File(['123456'], 'file1.txt');
       final mockFile2 = File([], 'file2.txt');
 
       testWidgets('works', (_) async {
-        final futureFile = domHelper.getFiles(input: input);
+        final Future<List<XFile>> futureFiles = domHelper.getFiles(
+          input: input,
+        );
 
         setFilesAndTriggerChange([mockFile1, mockFile2]);
 
-        final files = await futureFile;
+        final List<XFile> files = await futureFiles;
 
         expect(files.length, 2);
 
-        expect(files[0], mockFile1);
-        expect(files[1], mockFile2);
+        expect(files[0].name, 'file1.txt');
+        expect(await files[0].length(), 6);
+        expect(await files[0].readAsString(), '123456');
+        expect(await files[0].lastModified(), isNotNull);
+
+        expect(files[1].name, 'file2.txt');
+        expect(await files[1].length(), 0);
+        expect(await files[1].readAsString(), '');
+        expect(await files[1].lastModified(), isNotNull);
       });
 
       testWidgets('works multiple times', (_) async {
-        Future<List<File>> futureFiles;
-        List<File> files;
+        Future<List<XFile>> futureFiles;
+        List<XFile> files;
 
         // It should work the first time
         futureFiles = domHelper.getFiles(input: input);
@@ -60,7 +70,7 @@ void main() {
         files = await futureFiles;
 
         expect(files.length, 1);
-        expect(files.first, mockFile1);
+        expect(files.first.name, mockFile1.name);
 
         // The same input should work more than once
         futureFiles = domHelper.getFiles(input: input);
@@ -69,7 +79,7 @@ void main() {
         files = await futureFiles;
 
         expect(files.length, 1);
-        expect(files.first, mockFile2);
+        expect(files.first.name, mockFile2.name);
       });
 
       testWidgets('sets the <input /> attributes and clicks it', (_) async {

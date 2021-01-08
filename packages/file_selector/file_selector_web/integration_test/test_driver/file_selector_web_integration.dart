@@ -4,7 +4,7 @@
 
 // @dart = 2.9
 
-import 'dart:html';
+import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:integration_test/integration_test.dart';
@@ -24,7 +24,7 @@ void main() {
     });
 
     group('openFile', () {
-      final mockFile = File(['1001'], 'identity.png');
+      final mockFile = createXFile('1001', 'identity.png');
 
       testWidgets('works', (WidgetTester _) async {
         final typeGroup = XTypeGroup(
@@ -49,8 +49,8 @@ void main() {
     });
 
     group('openFiles', () {
-      final mockFile1 = File(['123456'], 'file1.txt');
-      final mockFile2 = File([''], 'file2.txt');
+      final mockFile1 = createXFile('123456', 'file1.txt');
+      final mockFile2 = createXFile('', 'file2.txt');
 
       testWidgets('works', (WidgetTester _) async {
         final typeGroup = XTypeGroup(
@@ -82,3 +82,8 @@ void main() {
 }
 
 class MockDomHelper extends Mock implements DomHelper {}
+
+XFile createXFile(String content, String name) {
+  final data = Uint8List.fromList(content.codeUnits);
+  return XFile.fromData(data, name: name, lastModified: DateTime.now());
+}

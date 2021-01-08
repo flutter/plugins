@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:html';
 import 'package:meta/meta.dart';
 import 'package:flutter/services.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 /// Class to manipulate the DOM with the intention of reading files from it.
 class DomHelper {
@@ -14,12 +15,12 @@ class DomHelper {
   }
 
   /// Sets the <input /> attributes and waits for a file to be selected.
-  Future<List<File>> getFiles({
+  Future<List<XFile>> getFiles({
     String accept = '',
     bool multiple = false,
     @visibleForTesting FileUploadInputElement input,
   }) {
-    final Completer<List<File>> _completer = Completer();
+    final Completer<List<XFile>> _completer = Completer();
     input = input ?? FileUploadInputElement();
 
     _container.children.add(
@@ -29,7 +30,7 @@ class DomHelper {
     );
 
     input.onChange.first.then((_) {
-      final List<File> files = input.files;
+      final List<XFile> files = input.files.map(_convertFileToXFile).toList();
       input.remove();
       _completer.complete(files);
     });
@@ -48,4 +49,11 @@ class DomHelper {
 
     return _completer.future;
   }
+
+  XFile _convertFileToXFile(File file) => XFile(
+        Url.createObjectUrl(file),
+        name: file.name,
+        length: file.size,
+        lastModified: DateTime.fromMillisecondsSinceEpoch(file.lastModified),
+      );
 }
