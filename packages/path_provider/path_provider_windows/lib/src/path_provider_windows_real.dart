@@ -123,7 +123,11 @@ class PathProviderWindows extends PathProviderPlatform {
       GUID knownFolderID = GUID.fromString(folderID);
 
       final hr = SHGetKnownFolderPath(
-          knownFolderID.addressOf, KF_FLAG_DEFAULT, NULL, pathPtrPtr);
+        knownFolderID.addressOf, // ignore: deprecated_member_use
+        KF_FLAG_DEFAULT,
+        NULL,
+        pathPtrPtr,
+      );
 
       if (FAILED(hr)) {
         if (hr == E_INVALIDARG || hr == E_FAIL) {
