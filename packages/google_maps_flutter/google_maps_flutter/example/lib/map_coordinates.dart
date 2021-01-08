@@ -83,7 +83,7 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
   Widget _getVisibleRegionButton() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: RaisedButton(
+      child: ElevatedButton(
         child: const Text('Get Visible Region Bounds'),
         onPressed: () async {
           final LatLngBounds visibleRegion =

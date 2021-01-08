@@ -1,6 +1,10 @@
+## 2.0.0-nullsafety.8
+
+* Added `isDurationIndefinite` to support indefinite streams - fixes [flutter/flutter#48670](Fixes https://github.com/flutter/flutter/issues/48670).
+
 ## 2.0.0-nullsafety.7
 
-* Added isDurationIndefinite to support indefinite streams
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
 
 ## 2.0.0-nullsafety.6
 

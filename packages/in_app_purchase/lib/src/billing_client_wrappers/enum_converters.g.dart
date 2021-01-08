@@ -43,6 +43,7 @@ T _$enumDecode<T>(
 }
 
 const _$BillingResponseEnumMap = {
+  BillingResponse.serviceTimeout: -3,
   BillingResponse.featureNotSupported: -2,
   BillingResponse.serviceDisconnected: -1,
   BillingResponse.ok: 0,
