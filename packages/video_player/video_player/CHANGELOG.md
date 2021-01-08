@@ -1,6 +1,10 @@
-## 2.0.0-nullsafety.7
+## 2.0.0-nullsafety.8
 
 * Fixed an issue where some videos would be rendered black on iOS.
+
+## 2.0.0-nullsafety.7
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
 
 ## 2.0.0-nullsafety.6
 
