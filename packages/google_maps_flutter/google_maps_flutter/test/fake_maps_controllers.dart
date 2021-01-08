@@ -91,6 +91,12 @@ class FakePlatformGoogleMap {
 
   Set<TileOverlay> tileOverlaysToChange = <TileOverlay>{};
 
+  Set<GroundOverlayId> groundOverlayIdsToRemove;
+
+  Set<GroundOverlay> groundOverlaysToAdd;
+
+  Set<GroundOverlay> groundOverlaysToChange;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -111,6 +117,9 @@ class FakePlatformGoogleMap {
         return Future<void>.sync(() {});
       case 'circles#update':
         updateCircles(call.arguments);
+        return Future<void>.sync(() {});
+      case 'groundOverlays#update':
+        updateGroundOverlays(call.arguments);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -361,6 +370,51 @@ class FakePlatformGoogleMap {
         fadeIn: fadeIn,
         transparency: transparency,
         zIndex: zIndex,
+        visible: visible,
+      ));
+    }
+
+    return result;
+  }
+
+  void updateGroundOverlays(Map<dynamic, dynamic> groundOverlayUpdates) {
+    if (groundOverlayUpdates == null) {
+      return;
+    }
+    groundOverlaysToAdd = _deserializeGroundOverlays(groundOverlayUpdates['groundOverlaysToAdd']);
+    groundOverlayIdsToRemove =
+        _deserializeGroundOverlayIds(groundOverlayUpdates['groundOverlayIdsToRemove']);
+    groundOverlaysToChange = _deserializeGroundOverlays(groundOverlayUpdates['groundOverlaysToChange']);
+  }
+
+  Set<GroundOverlayId> _deserializeGroundOverlayIds(List<dynamic> groundOverlayIds) {
+    if (groundOverlayIds == null) {
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
+      return Set<GroundOverlayId>();
+    }
+    return groundOverlayIds.map((dynamic groundOverlayId) => GroundOverlayId(groundOverlayId)).toSet();
+  }
+
+  Set<GroundOverlay> _deserializeGroundOverlays(dynamic groundOverlays) {
+    if (groundOverlays == null) {
+      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+      // https://github.com/flutter/flutter/issues/28312
+      // ignore: prefer_collection_literals
+      return Set<GroundOverlay>();
+    }
+    final List<dynamic> groundOverlaysData = groundOverlays;
+    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+    // https://github.com/flutter/flutter/issues/28312
+    // ignore: prefer_collection_literals
+    final Set<GroundOverlay> result = Set<GroundOverlay>();
+    for (Map<dynamic, dynamic> groundOverlayData in groundOverlaysData) {
+      final String groundOverlayId = groundOverlayData['circleId'];
+      final bool visible = groundOverlayData['visible'];
+
+      result.add(GroundOverlay(
+        groundOverlayId: GroundOverlayId(groundOverlayId),
         visible: visible,
       ));
     }
