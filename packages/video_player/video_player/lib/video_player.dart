@@ -906,7 +906,8 @@ class ClosedCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (text == null || text!.isEmpty) {
+    final text = this.text;
+    if (text == null || text.isEmpty) {
       return SizedBox.shrink();
     }
 
