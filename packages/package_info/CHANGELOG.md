@@ -1,3 +1,7 @@
+## 0.4.3+4
+
+* Update package_info readme file dependency constraints corrected.
+
 ## 0.4.3+3
 
 * Update Flutter SDK constraint.
