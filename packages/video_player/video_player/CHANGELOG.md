@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.8
+
+* Fixed an issue where some videos would be rendered black on iOS.
+
 ## 2.0.0-nullsafety.7
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
@@ -275,7 +279,6 @@ DefaultHttpDataSourceFactory by default.
 * iOS: Fix an issue where the player sends initialization message incorrectly.
 
 * Fix a few other IDE warnings.
-
 
 ## 0.10.0+7
 
