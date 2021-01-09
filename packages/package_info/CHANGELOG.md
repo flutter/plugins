@@ -1,6 +1,6 @@
 ## 0.4.3+4
 
-* Update package_info readme file dependency constraints corrected.
+* Update README: fix dependency constraint syntax.
 
 ## 0.4.3+3
 
