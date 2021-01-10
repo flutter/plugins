@@ -376,7 +376,7 @@ class _MyAppState extends State<_MyApp> {
           }
         }
         if (Platform.isAndroid) {
-          if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
+          if (_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
             await InAppPurchaseConnection.instance
                 .consumePurchase(purchaseDetails);
           }
