@@ -23,6 +23,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+  private final ArrayList<String> hostsToBlock = new ArrayList<String>();
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
@@ -101,6 +104,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
+
+    if (params.containsKey("hostsToBlock")) {
+      hostsToBlock.addAll((ArrayList<String>) params.get("hostsToBlock"));
+    }
 
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
     Map<String, Object> settings = (Map<String, Object>) params.get("settings");
@@ -356,7 +363,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           final boolean hasNavigationDelegate = (boolean) settings.get(key);
 
           final WebViewClient webViewClient =
-              flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
+              flutterWebViewClient.createWebViewClient(hasNavigationDelegate, hostsToBlock);
 
           webView.setWebViewClient(webViewClient);
           break;
