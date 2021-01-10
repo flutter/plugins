@@ -6,6 +6,8 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/sensors
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
 version: 0.4.2+8
+module:
+   androidX: true
 
 flutter:
   plugin:
