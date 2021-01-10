@@ -6,6 +6,8 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/device_info
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
 version: 2.0.0-nullsafety.2
+module:
+   androidX: true
 
 flutter:
   plugin:

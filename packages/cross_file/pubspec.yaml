@@ -2,6 +2,8 @@ name: cross_file
 description: An abstraction to allow working with files across multiple platforms.
 homepage: https://github.com/flutter/plugins/tree/master/packages/cross_file
 version: 0.2.0
+module:
+   androidX: true
 
 dependencies:
   flutter:
