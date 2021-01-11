@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.8
+
+* Fixed playback speed resetting on iOS (on seeking and on initialization).
+
 ## 2.0.0-nullsafety.7
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
