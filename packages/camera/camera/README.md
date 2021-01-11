@@ -66,6 +66,34 @@ As of version [0.5.0](https://github.com/flutter/plugins/blob/master/packages/ca
   }
 ```
 
+As of version [0.6.5](https://github.com/flutter/plugins/blob/master/packages/camera/CHANGELOG.md#065) the startVideoRecording method can be used with the maxVideoDuration. To do this the result of the recording needs to be retrieved by calling controller.onCameraTimeLimitReachedEvent which accepts a callback to retrieve the XFile result. Like so:
+
+```dart
+    Future<void> startVideoRecording() async {
+      if (!controller.value.isInitialized) {
+        showInSnackBar('Error: select a camera first.');
+        return;
+      }
+  
+      if (controller.value.isRecordingVideo) {
+        // A recording is already started, do nothing.
+        return;
+      }
+  
+      try {
+        await controller.startVideoRecording(
+            maxVideoDuration: const Duration(milliseconds: 5000),
+        );
+        controller.onCameraTimeLimitReachedEvent(onCameraTimeLimitReached: (XFile file) {
+          //Handle the XFile
+          debugPrint('onCameraTimeLimitReached ${file.path}');
+        });
+      } on CameraException catch (e) {
+        _showCameraException(e);
+        return;
+      }
+    }
+```
 ### Example
 
 Here is a small example flutter app displaying a full screen camera preview.
@@ -120,35 +148,6 @@ class _CameraAppState extends State<CameraApp> {
         child: CameraPreview(controller));
   }
 }
-```
-
-As of version [0.6.5](https://github.com/flutter/plugins/blob/master/packages/camera/CHANGELOG.md#065) the startVideoRecording method can be used with the maxVideoDuration. To do this the result of the recording needs to be retrieved by calling controller.onCameraTimeLimitReachedEvent which accepts a callback to retrieve the XFile result. Like so:
-
-```dart
-    Future<void> startVideoRecording() async {
-      if (!controller.value.isInitialized) {
-        showInSnackBar('Error: select a camera first.');
-        return;
-      }
-  
-      if (controller.value.isRecordingVideo) {
-        // A recording is already started, do nothing.
-        return;
-      }
-  
-      try {
-        await controller.startVideoRecording(
-            maxVideoDuration: const Duration(milliseconds: 5000),
-        );
-        controller.onCameraTimeLimitReachedEvent(onCameraTimeLimitReached: (XFile file) {
-          //Handle the XFile
-          debugPrint('onCameraTimeLimitReached ${file.path}');
-        });
-      } on CameraException catch (e) {
-        _showCameraException(e);
-        return;
-      }
-    }
 ```
 
 For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/master/packages/camera/example).
