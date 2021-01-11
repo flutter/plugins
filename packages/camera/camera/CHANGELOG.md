@@ -1,6 +1,11 @@
+## 0.6.6
+
+* Adds auto focus support for Android and iOS implementations.
+
 ## 0.6.5
 
 * Adds ImageFormat selection for ImageStream and Video(iOS only).
+
 ## 0.6.4+5
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
