@@ -6,6 +6,14 @@
 * Fixed videos & photos saving with the incorrect rotation on iOS.
 * BREAKING CHANGE: `CameraValue.aspectRatio` now returns `width / height` rather than `height / width`.
 
+## 0.6.6
+
+* Adds auto focus support for Android and iOS implementations.
+
+## 0.6.5
+
+* Adds ImageFormat selection for ImageStream and Video(iOS only).
+
 ## 0.6.4+5
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
@@ -24,7 +32,7 @@
 
 ## 0.6.4+1
 
-* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash.
 
 ## 0.6.4
 

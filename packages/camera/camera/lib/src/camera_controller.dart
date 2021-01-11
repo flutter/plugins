@@ -41,7 +41,9 @@ class CameraValue {
     bool isRecordingPaused,
     this.flashMode,
     this.exposureMode,
+    this.focusMode,
     this.exposurePointSupported,
+    this.focusPointSupported,
     this.deviceOrientation,
     this.lockedCaptureOrientation,
     this.recordingOrientation,
@@ -57,6 +59,7 @@ class CameraValue {
           isRecordingPaused: false,
           flashMode: FlashMode.auto,
           exposurePointSupported: false,
+          focusPointSupported: false,
           deviceOrientation: DeviceOrientation.portraitUp,
         );
 
@@ -104,8 +107,14 @@ class CameraValue {
   /// The exposure mode the camera is currently set to.
   final ExposureMode exposureMode;
 
+  /// The focus mode the camera is currently set to.
+  final FocusMode focusMode;
+
   /// Whether setting the exposure point is supported.
   final bool exposurePointSupported;
+
+  /// Whether setting the focus point is supported.
+  final bool focusPointSupported;
 
   /// The current device orientation.
   final DeviceOrientation deviceOrientation;
@@ -133,7 +142,9 @@ class CameraValue {
     bool isRecordingPaused,
     FlashMode flashMode,
     ExposureMode exposureMode,
+    FocusMode focusMode,
     bool exposurePointSupported,
+    bool focusPointSupported,
     DeviceOrientation deviceOrientation,
     Optional<DeviceOrientation> lockedCaptureOrientation,
     Optional<DeviceOrientation> recordingOrientation,
@@ -148,8 +159,10 @@ class CameraValue {
       isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
       flashMode: flashMode ?? this.flashMode,
       exposureMode: exposureMode ?? this.exposureMode,
+      focusMode: focusMode ?? this.focusMode,
       exposurePointSupported:
           exposurePointSupported ?? this.exposurePointSupported,
+      focusPointSupported: focusPointSupported ?? this.focusPointSupported,
       deviceOrientation: deviceOrientation ?? this.deviceOrientation,
       lockedCaptureOrientation: lockedCaptureOrientation == null
           ? this.lockedCaptureOrientation
@@ -170,7 +183,9 @@ class CameraValue {
         'isStreamingImages: $isStreamingImages, '
         'flashMode: $flashMode, '
         'exposureMode: $exposureMode, '
+        'focusMode: $focusMode, '
         'exposurePointSupported: $exposurePointSupported, '
+        'focusPointSupported: $focusPointSupported, '
         'deviceOrientation: $deviceOrientation, '
         'lockedCaptureOrientation: $lockedCaptureOrientation, '
         'recordingOrientation: $recordingOrientation)';
@@ -190,6 +205,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
+    this.imageFormatGroup,
   }) : super(const CameraValue.uninitialized());
 
   /// The properties of the camera device controlled by this controller.
@@ -205,6 +221,11 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
+
+  /// The [ImageFormatGroup] describes the output of the raw image format.
+  ///
+  /// When null the imageFormat will fallback to the platforms default.
+  final ImageFormatGroup imageFormatGroup;
 
   int _cameraId;
   bool _isDisposed = false;
@@ -255,7 +276,10 @@ class CameraController extends ValueNotifier<CameraValue> {
         _initializeCompleter.complete(event);
       }));
 
-      await CameraPlatform.instance.initializeCamera(_cameraId);
+      await CameraPlatform.instance.initializeCamera(
+        _cameraId,
+        imageFormatGroup: imageFormatGroup,
+      );
 
       value = value.copyWith(
         isInitialized: true,
@@ -266,8 +290,12 @@ class CameraController extends ValueNotifier<CameraValue> {
                 )),
         exposureMode: await _initializeCompleter.future
             .then((event) => event.exposureMode),
+        focusMode:
+            await _initializeCompleter.future.then((event) => event.focusMode),
         exposurePointSupported: await _initializeCompleter.future
             .then((event) => event.exposurePointSupported),
+        focusPointSupported: await _initializeCompleter.future
+            .then((event) => event.focusPointSupported),
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -750,11 +778,43 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  /// Sets the focus mode for taking pictures.
+  Future<void> setFocusMode(FocusMode mode) async {
+    try {
+      await CameraPlatform.instance.setFocusMode(_cameraId, mode);
+      value = value.copyWith(focusMode: mode);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
   /// Unlocks the capture orientation.
   Future<void> unlockCaptureOrientation() async {
     try {
       await CameraPlatform.instance.unlockCaptureOrientation(_cameraId);
       value = value.copyWith(lockedCaptureOrientation: Optional.absent());
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets the focus point for automatically determining the focus value.
+  Future<void> setFocusPoint(Offset point) async {
+    if (point != null &&
+        (point.dx < 0 || point.dx > 1 || point.dy < 0 || point.dy > 1)) {
+      throw ArgumentError(
+          'The values of point should be anywhere between (0,0) and (1,1).');
+    }
+    try {
+      await CameraPlatform.instance.setFocusPoint(
+        _cameraId,
+        point == null
+            ? null
+            : Point<double>(
+                point.dx,
+                point.dy,
+              ),
+      );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

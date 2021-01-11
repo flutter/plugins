@@ -121,14 +121,17 @@ void main() {
         isTakingPicture: false,
         isStreamingImages: false,
         flashMode: FlashMode.auto,
+        exposureMode: ExposureMode.auto,
+        focusMode: FocusMode.auto,
         exposurePointSupported: true,
+        focusPointSupported: true,
         deviceOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation: DeviceOrientation.portraitUp,
         recordingOrientation: DeviceOrientation.portraitUp,
       );
 
       expect(cameraValue.toString(),
-          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: null, exposurePointSupported: true, deviceOrientation: DeviceOrientation.portraitUp, lockedCaptureOrientation: DeviceOrientation.portraitUp, recordingOrientation: DeviceOrientation.portraitUp)');
+          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: ExposureMode.auto, focusMode: FocusMode.auto, exposurePointSupported: true, focusPointSupported: true, deviceOrientation: DeviceOrientation.portraitUp, lockedCaptureOrientation: DeviceOrientation.portraitUp, recordingOrientation: DeviceOrientation.portraitUp)');
     });
   });
 }
