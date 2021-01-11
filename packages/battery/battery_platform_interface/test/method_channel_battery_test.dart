@@ -12,8 +12,8 @@ import 'package:battery_platform_interface/method_channel/method_channel_battery
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group("$MethodChannelBattery", () {
-    MethodChannelBattery methodChannelBattery;
+  group('$MethodChannelBattery', () {
+    late MethodChannelBattery methodChannelBattery;
 
     setUp(() async {
       methodChannelBattery = MethodChannelBattery();
@@ -32,7 +32,7 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         switch (methodCall.method) {
           case 'listen':
-            await ServicesBinding.instance.defaultBinaryMessenger
+            await ServicesBinding.instance!.defaultBinaryMessenger
                 .handlePlatformMessage(
               methodChannelBattery.eventChannel.name,
               methodChannelBattery.eventChannel.codec
@@ -48,13 +48,13 @@ void main() {
     });
 
     /// Test for batetry level call.
-    test("getBatteryLevel", () async {
+    test('getBatteryLevel', () async {
       final int result = await methodChannelBattery.batteryLevel();
       expect(result, 90);
     });
 
     /// Test for battery changed state call.
-    test("onBatteryChanged", () async {
+    test('onBatteryChanged', () async {
       final BatteryState result =
           await methodChannelBattery.onBatteryStateChanged().first;
       expect(result, BatteryState.full);
