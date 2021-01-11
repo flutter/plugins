@@ -486,6 +486,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: enableAudio,
+      imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
     // If the controller is updated then update the UI.
