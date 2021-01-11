@@ -5,6 +5,7 @@
 ## 0.6.5
 
 * Adds ImageFormat selection for ImageStream and Video(iOS only).
+
 ## 0.6.4+5
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.

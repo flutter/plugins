@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera;
 
 import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
@@ -171,7 +175,7 @@ public class Camera {
           int upper = range.getUpper();
           Log.i("Camera", "[FPS Range Available] is:" + range);
           if (upper >= 10) {
-            if (fpsRange == null || upper < fpsRange.getUpper()) {
+            if (fpsRange == null || upper > fpsRange.getUpper()) {
               fpsRange = range;
             }
           }
