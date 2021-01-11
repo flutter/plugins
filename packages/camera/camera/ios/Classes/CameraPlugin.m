@@ -162,6 +162,17 @@ static FlashMode getFlashModeForString(NSString *mode) {
   }
 }
 
+static OSType getVideoFormatFromString(NSString *videoFormatString) {
+  if ([videoFormatString isEqualToString:@"bgra8888"]) {
+    return kCVPixelFormatType_32BGRA;
+  } else if ([videoFormatString isEqualToString:@"yuv420"]) {
+    return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+  } else {
+    NSLog(@"The selected imageFormatGroup is not supported by iOS. Defaulting to brga8888");
+    return kCVPixelFormatType_32BGRA;
+  }
+}
+
 static AVCaptureFlashMode getAVCaptureFlashModeForFlashMode(FlashMode mode) {
   switch (mode) {
     case FlashModeOff:
@@ -296,7 +307,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
   dispatch_queue_t _dispatchQueue;
 }
 // Format used for video and image streaming.
-FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
+FourCharCode videoFormat = kCVPixelFormatType_32BGRA;
 NSString *const errorMethod = @"error";
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
@@ -1147,6 +1158,9 @@ NSString *const errorMethod = @"error";
     NSDictionary *argsMap = call.arguments;
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
     if ([@"initialize" isEqualToString:call.method]) {
+      NSString *videoFormatValue = ((NSString *)argsMap[@"imageFormatGroup"]);
+      videoFormat = getVideoFormatFromString(videoFormatValue);
+
       __weak CameraPlugin *weakSelf = self;
       _camera.onFrameAvailable = ^{
         [weakSelf.registry textureFrameAvailable:cameraId];

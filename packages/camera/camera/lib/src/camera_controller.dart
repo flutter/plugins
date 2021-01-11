@@ -160,6 +160,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
+    this.imageFormatGroup,
   }) : super(const CameraValue.uninitialized());
 
   /// The properties of the camera device controlled by this controller.
@@ -175,6 +176,11 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
+
+  /// The [ImageFormatGroup] describes the output of the raw image format.
+  ///
+  /// When null the imageFormat will fallback to the platforms default.
+  final ImageFormatGroup imageFormatGroup;
 
   int _cameraId;
   bool _isDisposed = false;
@@ -217,7 +223,10 @@ class CameraController extends ValueNotifier<CameraValue> {
         _initializeCompleter.complete(event);
       }));
 
-      await CameraPlatform.instance.initializeCamera(_cameraId);
+      await CameraPlatform.instance.initializeCamera(
+        _cameraId,
+        imageFormatGroup: imageFormatGroup,
+      );
 
       value = value.copyWith(
         isInitialized: true,
