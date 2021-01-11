@@ -14,4 +14,5 @@ export 'package:camera_platform_interface/camera_platform_interface.dart'
         FlashMode,
         ExposureMode,
         ResolutionPreset,
-        XFile;
+        XFile,
+        ImageFormatGroup;

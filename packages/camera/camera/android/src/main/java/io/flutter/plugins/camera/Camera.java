@@ -67,6 +67,8 @@ interface ErrorCallback {
 }
 
 public class Camera {
+  private static final String TAG = "Camera";
+
   private final SurfaceTextureEntry flutterTexture;
   private final CameraManager cameraManager;
   private final OrientationEventListener orientationEventListener;
@@ -98,6 +100,14 @@ public class Camera {
   private int exposureOffset;
   private boolean useAutoFocus = true;
   private Range<Integer> fpsRange;
+
+  private static final HashMap<String, Integer> supportedImageFormats;
+  // Current supported outputs
+  static {
+    supportedImageFormats = new HashMap<>();
+    supportedImageFormats.put("yuv420", 35);
+    supportedImageFormats.put("jpeg", 256);
+  }
 
   public Camera(
       final Activity activity,
@@ -183,15 +193,20 @@ public class Camera {
   }
 
   @SuppressLint("MissingPermission")
-  public void open() throws CameraAccessException {
+  public void open(String imageFormatGroup) throws CameraAccessException {
     pictureImageReader =
         ImageReader.newInstance(
             captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
 
+    Integer imageFormat = supportedImageFormats.get(imageFormatGroup);
+    if (imageFormat == null) {
+      Log.w(TAG, "The selected imageFormatGroup is not supported by Android. Defaulting to yuv420");
+      imageFormat = ImageFormat.YUV_420_888;
+    }
+
     // Used to steam image byte data to dart side.
     imageStreamReader =
-        ImageReader.newInstance(
-            previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+        ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), imageFormat, 2);
 
     cameraManager.openCamera(
         cameraName,
