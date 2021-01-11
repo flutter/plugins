@@ -40,7 +40,9 @@ class CameraValue {
     bool isRecordingPaused,
     this.flashMode,
     this.exposureMode,
+    this.focusMode,
     this.exposurePointSupported,
+    this.focusPointSupported,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -53,6 +55,7 @@ class CameraValue {
           isRecordingPaused: false,
           flashMode: FlashMode.auto,
           exposurePointSupported: false,
+          focusPointSupported: false,
         );
 
   /// True after [CameraController.initialize] has completed successfully.
@@ -99,8 +102,14 @@ class CameraValue {
   /// The exposure mode the camera is currently set to.
   final ExposureMode exposureMode;
 
+  /// The focus mode the camera is currently set to.
+  final FocusMode focusMode;
+
   /// Whether setting the exposure point is supported.
   final bool exposurePointSupported;
+
+  /// Whether setting the focus point is supported.
+  final bool focusPointSupported;
 
   /// Creates a modified copy of the object.
   ///
@@ -116,7 +125,9 @@ class CameraValue {
     bool isRecordingPaused,
     FlashMode flashMode,
     ExposureMode exposureMode,
+    FocusMode focusMode,
     bool exposurePointSupported,
+    bool focusPointSupported,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -128,8 +139,10 @@ class CameraValue {
       isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
       flashMode: flashMode ?? this.flashMode,
       exposureMode: exposureMode ?? this.exposureMode,
+      focusMode: focusMode ?? this.focusMode,
       exposurePointSupported:
           exposurePointSupported ?? this.exposurePointSupported,
+      focusPointSupported: focusPointSupported ?? this.focusPointSupported,
     );
   }
 
@@ -143,7 +156,9 @@ class CameraValue {
         'isStreamingImages: $isStreamingImages, '
         'flashMode: $flashMode, '
         'exposureMode: $exposureMode, '
-        'exposurePointSupported: $exposurePointSupported)';
+        'focusMode: $focusMode, '
+        'exposurePointSupported: $exposurePointSupported, '
+        'focusPointSupported: $focusPointSupported)';
   }
 }
 
@@ -237,8 +252,12 @@ class CameraController extends ValueNotifier<CameraValue> {
                 )),
         exposureMode: await _initializeCompleter.future
             .then((event) => event.exposureMode),
+        focusMode:
+            await _initializeCompleter.future.then((event) => event.focusMode),
         exposurePointSupported: await _initializeCompleter.future
             .then((event) => event.exposurePointSupported),
+        focusPointSupported: await _initializeCompleter.future
+            .then((event) => event.focusPointSupported),
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -694,6 +713,38 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     try {
       return CameraPlatform.instance.setExposureOffset(_cameraId, offset);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets the focus mode for taking pictures.
+  Future<void> setFocusMode(FocusMode mode) async {
+    try {
+      await CameraPlatform.instance.setFocusMode(_cameraId, mode);
+      value = value.copyWith(focusMode: mode);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets the focus point for automatically determining the focus value.
+  Future<void> setFocusPoint(Offset point) async {
+    if (point != null &&
+        (point.dx < 0 || point.dx > 1 || point.dy < 0 || point.dy > 1)) {
+      throw ArgumentError(
+          'The values of point should be anywhere between (0,0) and (1,1).');
+    }
+    try {
+      await CameraPlatform.instance.setFocusPoint(
+        _cameraId,
+        point == null
+            ? null
+            : Point<double>(
+                point.dx,
+                point.dy,
+              ),
+      );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

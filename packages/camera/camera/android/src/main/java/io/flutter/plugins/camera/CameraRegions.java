@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera;
 
 import android.hardware.camera2.params.MeteringRectangle;
@@ -5,6 +9,7 @@ import android.util.Size;
 
 public final class CameraRegions {
   private MeteringRectangle aeMeteringRectangle;
+  private MeteringRectangle afMeteringRectangle;
   private Size maxBoundaries;
 
   public CameraRegions(Size maxBoundaries) {
@@ -17,6 +22,10 @@ public final class CameraRegions {
     return aeMeteringRectangle;
   }
 
+  public MeteringRectangle getAFMeteringRectangle() {
+    return afMeteringRectangle;
+  }
+
   public Size getMaxBoundaries() {
     return this.maxBoundaries;
   }
@@ -27,6 +36,14 @@ public final class CameraRegions {
 
   public void setAutoExposureMeteringRectangleFromPoint(double x, double y) {
     this.aeMeteringRectangle = getMeteringRectangleForPoint(maxBoundaries, x, y);
+  }
+
+  public void resetAutoFocusMeteringRectangle() {
+    this.afMeteringRectangle = null;
+  }
+
+  public void setAutoFocusMeteringRectangleFromPoint(double x, double y) {
+    this.afMeteringRectangle = getMeteringRectangleForPoint(maxBoundaries, x, y);
   }
 
   public MeteringRectangle getMeteringRectangleForPoint(Size maxBoundaries, double x, double y) {
