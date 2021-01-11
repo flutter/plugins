@@ -196,10 +196,13 @@ class FlutterWebViewClient {
       @Nullable
       @Override
       public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        Uri uri = request.getUrl();
-        String host = uri.getHost();
-        if (hostsToBlock != null && hostsToBlock.contains(host)) {
-          return createEmptyResource();
+        String uriString = request.getUrl().toString();
+        if (hostsToBlock != null && !hostsToBlock.isEmpty()) {
+          for (String host: hostsToBlock) {
+            if (uriString.contains(host)) {
+              return createEmptyResource();
+            }
+          }
         }
         return super.shouldInterceptRequest(view, request);
       }
@@ -253,10 +256,13 @@ class FlutterWebViewClient {
       @Nullable
       @Override
       public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        Uri uri = request.getUrl();
-        String host = uri.getHost();
-        if (hostsToBlock != null && hostsToBlock.contains(host)) {
-          return createEmptyResource();
+        String uriString = request.getUrl().toString();
+        if (hostsToBlock != null && !hostsToBlock.isEmpty()) {
+          for (String host: hostsToBlock) {
+            if (uriString.contains(host)) {
+              return createEmptyResource();
+            }
+          }
         }
         return super.shouldInterceptRequest(view, request);
       }
