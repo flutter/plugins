@@ -124,13 +124,13 @@ class _ExampleCard extends StatelessWidget {
           ),
           ButtonBar(
             children: <Widget>[
-              FlatButton(
+              TextButton(
                 child: const Text('BUY TICKETS'),
                 onPressed: () {
                   /* ... */
                 },
               ),
-              FlatButton(
+              TextButton(
                 child: const Text('SELL TICKETS'),
                 onPressed: () {
                   /* ... */

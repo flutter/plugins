@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 /// This class is used as a base class for all the events that might be
 /// triggered from a device, but it is never used directly as an event type.
 ///
-/// Do NOT instantiate new events like `DeviceEvent(cameraId)` directly,
+/// Do NOT instantiate new events like `DeviceEvent()` directly,
 /// use a specific class instead:
 ///
 /// Do `class NewEvent extend DeviceEvent` when creating your own events.
@@ -20,9 +20,10 @@ import 'package:flutter/services.dart';
 /// They can be (and in fact, are) filtered by the `instanceof`-operator.
 abstract class DeviceEvent {}
 
-/// An event fired whenever.
+/// The [DeviceOrientationChangedEvent] is fired every time the user changes the
+/// physical orientation of the device.
 class DeviceOrientationChangedEvent extends DeviceEvent {
-  /// The new orientation the device
+  /// The new orientation of the device
   final DeviceOrientation orientation;
 
   /// Build a new orientation changed event.

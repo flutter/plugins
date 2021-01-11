@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: RaisedButton(
+              child: ElevatedButton(
                 child: const Text('Get Temporary Directory'),
                 onPressed: _requestTempDirectory,
               ),
@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 future: _tempDirectory, builder: _buildDirectory),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: RaisedButton(
+              child: ElevatedButton(
                 child: const Text('Get Application Documents Directory'),
                 onPressed: _requestAppDocumentsDirectory,
               ),
@@ -116,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 future: _appDocumentsDirectory, builder: _buildDirectory),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: RaisedButton(
+              child: ElevatedButton(
                 child: const Text('Get Application Support Directory'),
                 onPressed: _requestAppSupportDirectory,
               ),
@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 future: _appSupportDirectory, builder: _buildDirectory),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: RaisedButton(
+              child: ElevatedButton(
                 child: const Text('Get Application Library Directory'),
                 onPressed: _requestAppLibraryDirectory,
               ),
@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 future: _appLibraryDirectory, builder: _buildDirectory),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: RaisedButton(
+              child: ElevatedButton(
                 child: const Text('Get Downlads Directory'),
                 onPressed: _requestDownloadsDirectory,
               ),

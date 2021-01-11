@@ -9,6 +9,7 @@ import 'package:async/async.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/events/device_event.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
+import 'package:camera_platform_interface/src/types/focus_mode.dart';
 import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:flutter/services.dart' hide DeviceOrientation;
 import 'package:flutter/services.dart';
@@ -133,6 +134,8 @@ void main() {
           1080,
           ExposureMode.auto,
           true,
+          FocusMode.auto,
+          true,
         ));
         await initializeFuture;
 
@@ -171,6 +174,8 @@ void main() {
           1920,
           1080,
           ExposureMode.auto,
+          true,
+          FocusMode.auto,
           true,
         ));
         await initializeFuture;
@@ -214,6 +219,8 @@ void main() {
           1080,
           ExposureMode.auto,
           true,
+          FocusMode.auto,
+          true,
         ));
         await initializeFuture;
       });
@@ -230,6 +237,8 @@ void main() {
           3840,
           2160,
           ExposureMode.auto,
+          true,
+          FocusMode.auto,
           true,
         );
         await camera.handleCameraMethodCall(
@@ -365,6 +374,8 @@ void main() {
             1920,
             1080,
             ExposureMode.auto,
+            true,
+            FocusMode.auto,
             true,
           ),
         );
@@ -701,6 +712,54 @@ void main() {
           isMethodCall('setExposureOffset', arguments: {
             'cameraId': cameraId,
             'offset': 0.5,
+          }),
+        ]);
+      });
+
+      test('Should set the focus mode', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'setFocusMode': null},
+        );
+
+        // Act
+        await camera.setFocusMode(cameraId, FocusMode.auto);
+        await camera.setFocusMode(cameraId, FocusMode.locked);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('setFocusMode',
+              arguments: {'cameraId': cameraId, 'mode': 'auto'}),
+          isMethodCall('setFocusMode',
+              arguments: {'cameraId': cameraId, 'mode': 'locked'}),
+        ]);
+      });
+
+      test('Should set the exposure point', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'setFocusPoint': null},
+        );
+
+        // Act
+        await camera.setFocusPoint(cameraId, Point<double>(0.5, 0.5));
+        await camera.setFocusPoint(cameraId, null);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('setFocusPoint', arguments: {
+            'cameraId': cameraId,
+            'x': 0.5,
+            'y': 0.5,
+            'reset': false
+          }),
+          isMethodCall('setFocusPoint', arguments: {
+            'cameraId': cameraId,
+            'x': null,
+            'y': null,
+            'reset': true
           }),
         ]);
       });

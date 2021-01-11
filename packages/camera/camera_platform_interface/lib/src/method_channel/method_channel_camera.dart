@@ -7,6 +7,7 @@ import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/events/device_event.dart';
+import 'package:camera_platform_interface/src/types/focus_mode.dart';
 import 'package:camera_platform_interface/src/types/image_format_group.dart';
 import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:cross_file/cross_file.dart';
@@ -22,7 +23,7 @@ class MethodChannelCamera extends CameraPlatform {
   final Map<int, MethodChannel> _channels = {};
 
   /// The controller we need to broadcast the different events coming
-  /// from handleMethodCall. Specific to camera events.
+  /// from handleMethodCall, specific to camera events.
   ///
   /// It is a `broadcast` because multiple controllers will connect to
   /// different stream views of this Controller.
@@ -33,7 +34,7 @@ class MethodChannelCamera extends CameraPlatform {
       StreamController<CameraEvent>.broadcast();
 
   /// The controller we need to broadcast the different events coming
-  /// from handleMethodCall. Specific to general device events.
+  /// from handleMethodCall, specific to general device events.
   ///
   /// It is a `broadcast` because multiple controllers will connect to
   /// different stream views of this Controller.
@@ -295,6 +296,31 @@ class MethodChannelCamera extends CameraPlatform {
       );
 
   @override
+  Future<void> setFocusMode(int cameraId, FocusMode mode) =>
+      _channel.invokeMethod<void>(
+        'setFocusMode',
+        <String, dynamic>{
+          'cameraId': cameraId,
+          'mode': serializeFocusMode(mode),
+        },
+      );
+
+  @override
+  Future<void> setFocusPoint(int cameraId, Point<double> point) {
+    assert(point == null || point.x >= 0 && point.x <= 1);
+    assert(point == null || point.y >= 0 && point.y <= 1);
+    return _channel.invokeMethod<void>(
+      'setFocusPoint',
+      <String, dynamic>{
+        'cameraId': cameraId,
+        'reset': point == null,
+        'x': point?.x,
+        'y': point?.y,
+      },
+    );
+  }
+
+  @override
   Future<double> getMaxZoomLevel(int cameraId) => _channel.invokeMethod<double>(
         'getMaxZoomLevel',
         <String, dynamic>{'cameraId': cameraId},
@@ -391,6 +417,8 @@ class MethodChannelCamera extends CameraPlatform {
           call.arguments['previewHeight'],
           deserializeExposureMode(call.arguments['exposureMode']),
           call.arguments['exposurePointSupported'],
+          deserializeFocusMode(call.arguments['focusMode']),
+          call.arguments['focusPointSupported'],
         ));
         break;
       case 'resolution_changed':

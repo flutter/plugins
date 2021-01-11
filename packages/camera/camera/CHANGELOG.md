@@ -1,4 +1,3 @@
-
 ## 0.7.0
 
 * Added support for capture orientation locking on Android and iOS.
@@ -6,6 +5,14 @@
 * Fixed camera preview sometimes appearing stretched on Android and iOS.
 * Fixed videos & photos saving with the incorrect rotation on iOS.
 * BREAKING CHANGE: `CameraValue.aspectRatio` now returns `width / height` rather than `height / width`.
+
+## 0.6.4+5
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.6.4+4
+
+* Set camera auto focus enabled by default.
 
 ## 0.6.4+3
 
