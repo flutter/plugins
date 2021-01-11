@@ -17,11 +17,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.3.0-nullsafety
-  battery_platform_interface:
-    git:
-      url: https://github.com/bparrishMines/plugins.git
-      ref: batter_interface_nnbd
-      path: packages/battery/battery_platform_interface
+  battery_platform_interface: ^2.0.0-nullsafety
 
 dev_dependencies:
   mockito: ^5.0.0-nullsafety.0

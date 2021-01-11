@@ -1,3 +1,16 @@
+## 1.5.0
+
+- Introduces interface methods for locking and unlocking the capture orientation.
+- Introduces interface method for listening to the device orientation.
+
+## 1.4.0
+
+- Added interface methods to support auto focus.
+
+## 1.3.0
+
+- Introduces an option to set the image format when initializing.
+
 ## 1.2.0
 
 - Added interface to support automatic exposure.
