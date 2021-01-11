@@ -146,10 +146,10 @@ static const int SOURCE_GALLERY = 1;
                                                       animated:YES
                                                     completion:nil];
   } else {
-    [[[UIAlertView alloc] initWithTitle:@"Error"
-                                message:@"Camera not available."
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
+                                message:NSLocalizedString(@"Camera not available.", nil)
                                delegate:nil
-                      cancelButtonTitle:@"OK"
+                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
                       otherButtonTitles:nil] show];
     self.result(nil);
     self.result = nil;

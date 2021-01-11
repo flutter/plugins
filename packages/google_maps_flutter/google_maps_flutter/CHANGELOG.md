@@ -1,3 +1,11 @@
+## 1.0.10
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 1.0.9
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
 ## 1.0.8
 
 * Update Flutter SDK constraint.

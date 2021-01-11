@@ -4,7 +4,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/v
 # 0.1.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.1.4+2
+version: 2.0.0-nullsafety.2
 
 flutter:
   plugin:
@@ -18,16 +18,16 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  meta: ^1.1.7
-  video_player_platform_interface: ^2.2.0
+  meta: ^1.3.0-nullsafety.3
+  video_player_platform_interface: ^3.0.0-nullsafety.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   video_player:
     path: ../video_player
-  pedantic: ^1.8.0
+  pedantic: ^1.10.0-nullsafety.1
 
 environment:
-  sdk: ">=2.8.0 <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
   flutter: ">=1.12.8"

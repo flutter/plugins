@@ -16,7 +16,7 @@ fi
 # Plugins that are excluded from this task.
 ALL_EXCLUDED=("")
 # Exclude nnbd plugins from stable.
-if [[ "$CHANNEL" -eq "stable" ]]; then
+if [ "$CHANNEL" == "stable" ]; then
   ALL_EXCLUDED=($EXCLUDED_PLUGINS_FROM_STABLE)
   echo "Excluding the following plugins: $ALL_EXCLUDED"
 fi
@@ -30,6 +30,7 @@ fi
 # TODO(mklim): Remove everything from this list. https://github.com/flutter/flutter/issues/45440
 CUSTOM_ANALYSIS_PLUGINS=(
 )
+
 # Comma-separated string of the list above
 readonly CUSTOM_FLAG=$(IFS=, ; echo "${CUSTOM_ANALYSIS_PLUGINS[*]}")
 # Set some default actions if run without arguments.
@@ -61,6 +62,7 @@ else
     echo running "${ACTIONS[@]}"
     (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
     echo "Running version check for changed packages"
-    (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
+    # TODO(egarciad): Enable this check once in master.
+    # (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
   fi
 fi

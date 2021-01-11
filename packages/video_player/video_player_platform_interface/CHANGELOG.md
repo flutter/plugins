@@ -1,3 +1,19 @@
+## 3.0.0-nullsafety.3
+
+* `messages.dart` sets Dart `2.12`.
+
+## 3.0.0-nullsafety.2
+
+* Bump Dart SDK to support null safety.
+
+## 3.0.0-nullsafety.1
+
+* Make DataSource's `uri` parameter nullable.
+
+## 3.0.0-nullsafety
+
+* Migrate to null safety.
+
 ## 2.2.1
 
 * Update Flutter SDK constraint.
