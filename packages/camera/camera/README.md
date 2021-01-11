@@ -66,7 +66,7 @@ As of version [0.5.0](https://github.com/flutter/plugins/blob/master/packages/ca
   }
 ```
 
-As of version [0.6.5](https://github.com/flutter/plugins/blob/master/packages/camera/CHANGELOG.md#065) the startVideoRecording method can be used with the maxVideoDuration. To do this the result of the recording needs to be retrieved by calling controller.onCameraTimeLimitReachedEvent which accepts a callback to retrieve the XFile result. Like so:
+As of version [0.6.5](https://github.com/flutter/plugins/blob/master/packages/camera/camera/CHANGELOG.md#065) the startVideoRecording method can be used with the maxVideoDuration. To do this the result of the recording needs to be retrieved by calling controller.onCameraTimeLimitReachedEvent which accepts a callback to retrieve the XFile result. Like so:
 
 ```dart
     Future<void> startVideoRecording() async {
@@ -149,7 +149,7 @@ class _CameraAppState extends State<CameraApp> {
 }
 ```
 
-For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/master/packages/camera/example).
+For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/master/packages/camera/camera/example).
 
 *Note*: This plugin is still under development, and some APIs might not be available yet.
 [Feedback welcome](https://github.com/flutter/flutter/issues) and
