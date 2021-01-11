@@ -232,7 +232,19 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   if ([_captureDevice position] == AVCaptureDevicePositionFront) {
     connection.videoMirrored = YES;
   }
-  connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+  
+    AVCaptureVideoOrientation newOrientation;
+    switch (UIDevice.currentDevice.orientation) {
+        case UIDeviceOrientationPortrait:
+            newOrientation = AVCaptureVideoOrientationPortrait;
+        case UIDeviceOrientationLandscapeLeft:
+            newOrientation = AVCaptureVideoOrientationLandscapeLeft;
+        case UIDeviceOrientationLandscapeRight:
+        default:
+            newOrientation = AVCaptureVideoOrientationLandscapeRight;
+    }
+    
+    connection.videoOrientation = newOrientation;
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
   [_captureSession addConnection:connection];
@@ -271,62 +283,65 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
-  switch (resolutionPreset) {
-    case max:
-    case ultraHigh:
-      if (@available(iOS 9.0, *)) {
-        if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
-          _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
-          _previewSize = CGSizeMake(3840, 2160);
-          break;
-        }
-      }
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
-        _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
-        _previewSize =
-            CGSizeMake(_captureDevice.activeFormat.highResolutionStillImageDimensions.width,
-                       _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
-        break;
-      }
-    case veryHigh:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
-        _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
-        _previewSize = CGSizeMake(1920, 1080);
-        break;
-      }
-    case high:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
-        _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
-        _previewSize = CGSizeMake(1280, 720);
-        break;
-      }
-    case medium:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
-        _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
-        _previewSize = CGSizeMake(640, 480);
-        break;
-      }
-    case low:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
-        _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
-        _previewSize = CGSizeMake(352, 288);
-        break;
-      }
-    default:
-      if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetLow]) {
-        _captureSession.sessionPreset = AVCaptureSessionPresetLow;
-        _previewSize = CGSizeMake(352, 288);
-      } else {
-        NSError *error =
-            [NSError errorWithDomain:NSCocoaErrorDomain
-                                code:NSURLErrorUnknown
-                            userInfo:@{
-                              NSLocalizedDescriptionKey :
-                                  @"No capture session available for current capture session."
-                            }];
-        @throw error;
-      }
-  }
+    bool isPortraitMode = UIDevice.currentDevice.orientation == UIDeviceOrientationPortrait;
+    NSLog(@"Is portrait mode : %d", isPortraitMode);
+    switch (resolutionPreset) {
+        case max:
+        case ultraHigh:
+            if (@available(iOS 9.0, *)) {
+                if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
+                    _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
+                    _previewSize = isPortraitMode ? CGSizeMake(3840, 2160) : CGSizeMake(2160, 3840);
+                    break;
+                }
+            }
+            if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
+                _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
+                _previewSize =
+                CGSizeMake(_captureDevice.activeFormat.highResolutionStillImageDimensions.width,
+                           _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
+                break;
+            }
+        case veryHigh:
+            if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
+                _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
+                _previewSize = CGSizeMake(1920, 1080);
+                _previewSize = isPortraitMode ? CGSizeMake(1920, 1080) : CGSizeMake(1080, 1920);
+                break;
+            }
+        case high:
+            if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
+                _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
+                _previewSize = isPortraitMode ? CGSizeMake(1280, 720) :  CGSizeMake(720, 1280);
+                break;
+            }
+        case medium:
+            if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
+                _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
+                _previewSize = isPortraitMode ? CGSizeMake(640, 480) : CGSizeMake(480, 640);
+                break;
+            }
+        case low:
+            if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
+                _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
+                _previewSize =  isPortraitMode ? CGSizeMake(352, 288) : CGSizeMake(288, 352);
+                break;
+            }
+        default:
+            if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetLow]) {
+                _captureSession.sessionPreset = AVCaptureSessionPresetLow;
+                _previewSize =  isPortraitMode ? CGSizeMake(352, 288) : CGSizeMake(288, 352);
+            } else {
+                NSError *error =
+                [NSError errorWithDomain:NSCocoaErrorDomain
+                                    code:NSURLErrorUnknown
+                                userInfo:@{
+                                    NSLocalizedDescriptionKey :
+                                        @"No capture session available for current capture session."
+                                }];
+                @throw error;
+            }
+    }
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
