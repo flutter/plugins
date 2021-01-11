@@ -1,6 +1,5 @@
 package io.flutter.plugins.camera;
 
-import static android.content.ContentValues.TAG;
 import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
@@ -68,6 +67,8 @@ interface ErrorCallback {
 }
 
 public class Camera {
+  private static final String TAG = "Camera";
+
   private final SurfaceTextureEntry flutterTexture;
   private final CameraManager cameraManager;
   private final OrientationEventListener orientationEventListener;
@@ -100,13 +101,13 @@ public class Camera {
   private boolean useAutoFocus = true;
   private Range<Integer> fpsRange;
 
-  private static HashMap<String, Integer> supportedImageFormats;
+  private static final HashMap<String, Integer> supportedImageFormats;
   // Current supported outputs
   static {
     supportedImageFormats = new HashMap<>();
     supportedImageFormats.put("yuv420", 35);
     supportedImageFormats.put("jpeg", 256);
-  };
+  }
 
   public Camera(
       final Activity activity,
