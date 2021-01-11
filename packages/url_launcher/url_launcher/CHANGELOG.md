@@ -1,3 +1,7 @@
+## 6.0.0-nullsafety.4
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
 ## 6.0.0-nullsafety.3
 
 * forceSafariVC should be nullable.
