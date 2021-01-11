@@ -86,7 +86,6 @@ As of version [0.6.5](https://github.com/flutter/plugins/blob/master/packages/ca
         );
         controller.onCameraTimeLimitReachedEvent(onCameraTimeLimitReached: (XFile file) {
           //Handle the XFile
-          debugPrint('onCameraTimeLimitReached ${file.path}');
         });
       } on CameraException catch (e) {
         _showCameraException(e);

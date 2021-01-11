@@ -499,16 +499,11 @@ class CameraController extends ValueNotifier<CameraValue> {
         'cameraTimeLimitReachedEventStream was called when no video is recording.',
       );
     }
-    debugPrint('ping');
 
     CameraPlatform.instance.onCameraTimeLimitReached(_cameraId).first.then((event) {
-      debugPrint('onCameraTimeLimitReached');
       value = value.copyWith(isRecordingVideo: false);
       onCameraTimeLimitReached(event.path);
     });
-
-    debugPrint('pong');
-    return;
   }
 
   /// Returns a widget showing a live camera preview.
