@@ -176,20 +176,14 @@ public class Camera {
       mediaRecorder.release();
     }
 
+    MediaRecorderBuilder mediaRecorderBuilder = new MediaRecorderBuilder(recordingProfile, outputFilePath)
+            .setEnableAudio(enableAudio)
+            .setMediaOrientation(getMediaOrientation());
+
     if (maxVideoDuration != null) {
-      mediaRecorder =
-              new MediaRecorderBuilder(recordingProfile, outputFilePath)
-                      .setEnableAudio(enableAudio)
-                      .setMediaOrientation(getMediaOrientation())
-                      .setMaxVideoDuration(maxVideoDuration)
-                      .build();
-    } else {
-      mediaRecorder =
-              new MediaRecorderBuilder(recordingProfile, outputFilePath)
-                      .setEnableAudio(enableAudio)
-                      .setMediaOrientation(getMediaOrientation())
-                      .build();
+      mediaRecorderBuilder.setMaxVideoDuration(maxVideoDuration);
     }
+     mediaRecorder = mediaRecorderBuilder.build();
   }
 
   @SuppressLint("MissingPermission")
@@ -608,13 +602,11 @@ public class Camera {
          if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
            try {
              dartMessenger.sendTimeLimitReachedEvent(videoRecordingFile.getAbsolutePath());
-             cameraCaptureSession.abortCaptures();
-             mediaRecorder.stop();
              recordingVideo = false;
              videoRecordingFile = null;
-             startPreview();
+             resetCaptureSession();
            } catch (CameraAccessException e) {
-             // Ignore exceptions and try to continue (changes are camera session already aborted capture)
+             result.error("videoRecordingFailed", e.getMessage(), null);
            }
          }
        });
@@ -627,6 +619,18 @@ public class Camera {
     }
   }
 
+  public void resetCaptureSession() throws CameraAccessException {
+    try {
+      cameraCaptureSession.abortCaptures();
+      mediaRecorder.stop();
+    } catch (CameraAccessException | IllegalStateException e) {
+      // Ignore exceptions and try to continue (changes are camera session already aborted capture)
+    }
+
+    mediaRecorder.reset();
+    startPreview();
+  }
+
   public void stopVideoRecording(@NonNull final Result result) {
     if (!recordingVideo) {
       result.success(null);
@@ -636,15 +640,8 @@ public class Camera {
     try {
       recordingVideo = false;
 
-      try {
-        cameraCaptureSession.abortCaptures();
-        mediaRecorder.stop();
-      } catch (CameraAccessException | IllegalStateException e) {
-        // Ignore exceptions and try to continue (changes are camera session already aborted capture)
-      }
+      resetCaptureSession();
 
-      mediaRecorder.reset();
-      startPreview();
       result.success(videoRecordingFile.getAbsolutePath());
       videoRecordingFile = null;
     } catch (CameraAccessException | IllegalStateException e) {

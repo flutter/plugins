@@ -501,7 +501,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     debugPrint('ping');
 
-    CameraPlatform.instance.onCameraTimeLimitReached(_cameraId).listen((event) {
+    CameraPlatform.instance.onCameraTimeLimitReached(_cameraId).first.then((event) {
       debugPrint('onCameraTimeLimitReached');
       value = value.copyWith(isRecordingVideo: false);
       onCameraTimeLimitReached(event.path);

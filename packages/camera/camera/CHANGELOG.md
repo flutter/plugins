@@ -1,3 +1,7 @@
+## 0.6.5
+
+* Added maxVideoDuration to startVideoRecording to limit the length of a recording. 
+
 ## 0.6.4+5
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
