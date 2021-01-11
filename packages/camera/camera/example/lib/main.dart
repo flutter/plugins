@@ -329,6 +329,16 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Widget _exposureModeControlRowWidget() {
+    final ButtonStyle styleAuto = TextButton.styleFrom(
+      primary: controller?.value?.exposureMode == ExposureMode.auto
+          ? Colors.orange
+          : Colors.blue,
+    );
+    final ButtonStyle styleLocked = TextButton.styleFrom(
+      primary: controller?.value?.exposureMode == ExposureMode.locked
+          ? Colors.orange
+          : Colors.blue,
+    );
     return SizeTransition(
       sizeFactor: _exposureModeControlRowAnimation,
       child: ClipRect(
@@ -343,12 +353,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  FlatButton(
+                  TextButton(
                     child: Text('AUTO'),
-                    textColor:
-                        controller?.value?.exposureMode == ExposureMode.auto
-                            ? Colors.orange
-                            : Colors.blue,
+                    style: styleAuto,
                     onPressed: controller != null
                         ? () =>
                             onSetExposureModeButtonPressed(ExposureMode.auto)
@@ -358,12 +365,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                       showInSnackBar('Resetting exposure point');
                     },
                   ),
-                  FlatButton(
+                  TextButton(
                     child: Text('LOCKED'),
-                    textColor:
-                        controller?.value?.exposureMode == ExposureMode.locked
-                            ? Colors.orange
-                            : Colors.blue,
+                    style: styleLocked,
                     onPressed: controller != null
                         ? () =>
                             onSetExposureModeButtonPressed(ExposureMode.locked)

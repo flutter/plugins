@@ -2,6 +2,10 @@
 
 * Adds auto focus support for Android and iOS implementations.
 
+## 0.6.4+5
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
 ## 0.6.4+4
 
 * Set camera auto focus enabled by default.
