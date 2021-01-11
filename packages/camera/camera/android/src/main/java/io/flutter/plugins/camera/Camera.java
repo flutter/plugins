@@ -165,7 +165,7 @@ public class Camera {
           int upper = range.getUpper();
           Log.i("Camera", "[FPS Range Available] is:" + range);
           if (upper >= 10) {
-            if (fpsRange == null || upper < fpsRange.getUpper()) {
+            if (fpsRange == null || upper > fpsRange.getUpper()) {
               fpsRange = range;
             }
           }
