@@ -35,17 +35,20 @@ class PackageInfo {
   /// Retrieves package information from the platform.
   /// The result is cached.
   static Future<PackageInfo> fromPlatform() async {
-    final PackageInfo? packageInfo = _fromPlatform;
+    PackageInfo? packageInfo = _fromPlatform;
     if (packageInfo != null) return packageInfo;
 
     final Map<String, dynamic> map =
         (await _kChannel.invokeMapMethod<String, dynamic>('getAll'))!;
-    return _fromPlatform = PackageInfo(
+
+    packageInfo = PackageInfo(
       appName: map["appName"],
       packageName: map["packageName"],
       version: map["version"],
       buildNumber: map["buildNumber"],
     );
+    _fromPlatform = packageInfo;
+    return packageInfo;
   }
 
   /// The app name. `CFBundleDisplayName` on iOS, `application/label` on Android.
