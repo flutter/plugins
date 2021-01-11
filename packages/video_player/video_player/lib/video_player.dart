@@ -405,6 +405,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             return;
           }
           _updatePosition(newPosition);
+
+          // It seems that seeking will reset the playback speed on iOS.
+          // However, we do not know how long to wait before applying the
+          // playback speed again as the video might be buffering. This is why
+          // we simply apply it in the timer in order to make sure that we
+          // always apply the latest playback speed. This does not seem to
+          // have any performance implications.
+          await _applyPlaybackSpeed();
         },
       );
 
