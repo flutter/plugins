@@ -339,6 +339,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           ? Colors.orange
           : Colors.blue,
     );
+
     return SizeTransition(
       sizeFactor: _exposureModeControlRowAnimation,
       child: ClipRect(
@@ -404,6 +405,17 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Widget _focusModeControlRowWidget() {
+    final ButtonStyle styleAuto = TextButton.styleFrom(
+      primary: controller?.value?.focusMode == FocusMode.auto
+          ? Colors.orange
+          : Colors.blue,
+    );
+    final ButtonStyle styleLocked = TextButton.styleFrom(
+      primary: controller?.value?.focusMode == FocusMode.locked
+          ? Colors.orange
+          : Colors.blue,
+    );
+
     return SizeTransition(
       sizeFactor: _focusModeControlRowAnimation,
       child: ClipRect(
@@ -418,11 +430,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  FlatButton(
+                  TextButton(
                     child: Text('AUTO'),
-                    textColor: controller?.value?.focusMode == FocusMode.auto
-                        ? Colors.orange
-                        : Colors.blue,
+                    style: styleAuto,
                     onPressed: controller != null
                         ? () => onSetFocusModeButtonPressed(FocusMode.auto)
                         : null,
@@ -431,11 +441,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                       showInSnackBar('Resetting focus point');
                     },
                   ),
-                  FlatButton(
+                  TextButton(
                     child: Text('LOCKED'),
-                    textColor: controller?.value?.focusMode == FocusMode.locked
-                        ? Colors.orange
-                        : Colors.blue,
+                    style: styleLocked,
                     onPressed: controller != null
                         ? () => onSetFocusModeButtonPressed(FocusMode.locked)
                         : null,
