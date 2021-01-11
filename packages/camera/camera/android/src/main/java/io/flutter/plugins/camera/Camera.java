@@ -171,17 +171,25 @@ public class Camera {
     Log.i("Camera", "[FPS Range] is:" + fpsRange);
   }
 
-  private void prepareMediaRecorder(String outputFilePath, int maxVideoDuration) throws IOException {
+  private void prepareMediaRecorder(String outputFilePath, Integer maxVideoDuration) throws IOException {
     if (mediaRecorder != null) {
       mediaRecorder.release();
     }
 
-    mediaRecorder =
-        new MediaRecorderBuilder(recordingProfile, outputFilePath)
-            .setEnableAudio(enableAudio)
-            .setMediaOrientation(getMediaOrientation())
-            .setMaxVideoDuration(maxVideoDuration)
-            .build();
+    if (maxVideoDuration != null) {
+      mediaRecorder =
+              new MediaRecorderBuilder(recordingProfile, outputFilePath)
+                      .setEnableAudio(enableAudio)
+                      .setMediaOrientation(getMediaOrientation())
+                      .setMaxVideoDuration(maxVideoDuration)
+                      .build();
+    } else {
+      mediaRecorder =
+              new MediaRecorderBuilder(recordingProfile, outputFilePath)
+                      .setEnableAudio(enableAudio)
+                      .setMediaOrientation(getMediaOrientation())
+                      .build();
+    }
   }
 
   @SuppressLint("MissingPermission")
@@ -595,11 +603,13 @@ public class Camera {
       recordingVideo = true;
       createCaptureSession(
           CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
-      mediaRecorder.setOnInfoListener((mr, what, extra) -> {
-        if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-          dartMessenger.sendTimeLimitReachedEvent(videoRecordingFile.getPath());
-        }
-      });
+     if(maxVideoDuration != null) {
+       mediaRecorder.setOnInfoListener((mr, what, extra) -> {
+         if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+           dartMessenger.sendTimeLimitReachedEvent(videoRecordingFile.getPath());
+         }
+       });
+     }
       result.success(null);
     } catch (CameraAccessException | IOException e) {
       recordingVideo = false;

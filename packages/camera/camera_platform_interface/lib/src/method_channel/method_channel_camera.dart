@@ -184,7 +184,7 @@ class MethodChannelCamera extends CameraPlatform {
 
   @override
   Stream<CameraTimeLimitReachedEvent> onCameraTimeLimitReached(int cameraId) {
-    return _events(cameraId).whereType<CameraTimeLimitReachedEvent>();
+    return _cameraEvents(cameraId).whereType<CameraTimeLimitReachedEvent>();
   }
 
   @override
