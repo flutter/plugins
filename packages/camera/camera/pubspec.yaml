@@ -8,9 +8,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/camera/camera
 dependencies:
   flutter:
     sdk: flutter
-  #TODO(BeMacized): Replace with reference to pub.dev version once updated platform interface has been published.
-  camera_platform_interface:
-    path: ../camera_platform_interface
+  camera_platform_interface: ^1.5.0
   pedantic: ^1.8.0
 
 dev_dependencies:
