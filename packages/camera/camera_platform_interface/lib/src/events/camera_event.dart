@@ -250,19 +250,18 @@ class CameraTimeLimitReachedEvent extends CameraEvent {
   /// Converts the [CameraTimeLimitReachedEvent] instance into a [Map] instance that can be
   /// serialized to JSON.
   Map<String, dynamic> toJson() => {
-    'cameraId': cameraId,
-    'path': path.path,
-  };
+        'cameraId': cameraId,
+        'path': path.path,
+      };
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          super == other &&
-              other is CameraTimeLimitReachedEvent &&
-              runtimeType == other.runtimeType &&
-              path == other.path;
+      super == other &&
+          other is CameraTimeLimitReachedEvent &&
+          runtimeType == other.runtimeType &&
+          path == other.path;
 
   @override
   int get hashCode => super.hashCode ^ path.hashCode;
-
 }

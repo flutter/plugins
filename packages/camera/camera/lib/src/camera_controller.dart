@@ -500,7 +500,10 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
 
-    CameraPlatform.instance.onCameraTimeLimitReached(_cameraId).first.then((event) {
+    CameraPlatform.instance
+        .onCameraTimeLimitReached(_cameraId)
+        .first
+        .then((event) {
       value = value.copyWith(isRecordingVideo: false);
       onCameraTimeLimitReached(event.path);
     });
