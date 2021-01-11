@@ -4,19 +4,19 @@
 
 package io.flutter.plugins.camera.types;
 
-// Mirrors exposure_mode.dart
-public enum ExposureMode {
+// Mirrors focus_mode.dart
+public enum FocusMode {
   auto("auto"),
   locked("locked");
 
   private final String strValue;
 
-  ExposureMode(String strValue) {
+  FocusMode(String strValue) {
     this.strValue = strValue;
   }
 
-  public static ExposureMode getValueForString(String modeStr) {
-    for (ExposureMode value : values()) {
+  public static FocusMode getValueForString(String modeStr) {
+    for (FocusMode value : values()) {
       if (value.strValue.equals(modeStr)) return value;
     }
     return null;
