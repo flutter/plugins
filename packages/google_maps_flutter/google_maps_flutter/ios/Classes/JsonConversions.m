@@ -27,6 +27,10 @@
                                     [FLTGoogleMapJsonConversions toDouble:data[1]]);
 }
 
++ (GMSCoordinateBounds)toLatLngBounds:(NSArray*)data {
+  return [GMSCoordinateBounds initWithCoordinate:toLocation(data[0]) coordinate:toLocation(data[1])];
+}
+
 + (CGPoint)toPoint:(NSArray*)data {
   return CGPointMake([FLTGoogleMapJsonConversions toDouble:data[0]],
                      [FLTGoogleMapJsonConversions toDouble:data[1]]);
