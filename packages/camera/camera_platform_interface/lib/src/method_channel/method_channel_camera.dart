@@ -163,6 +163,11 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
+  Stream<CameraTimeLimitReachedEvent> onCameraTimeLimitReached(int cameraId) {
+    return _cameraEvents(cameraId).whereType<CameraTimeLimitReachedEvent>();
+  }
+
+  @override
   Future<void> lockCaptureOrientation(
       int cameraId, DeviceOrientation orientation) async {
     await _channel.invokeMethod<String>(
@@ -180,11 +185,6 @@ class MethodChannelCamera extends CameraPlatform {
       'unlockCaptureOrientation',
       <String, dynamic>{'cameraId': cameraId},
     );
-  }
-
-  @override
-  Stream<CameraTimeLimitReachedEvent> onCameraTimeLimitReached(int cameraId) {
-    return _cameraEvents(cameraId).whereType<CameraTimeLimitReachedEvent>();
   }
 
   @override
@@ -210,12 +210,6 @@ class MethodChannelCamera extends CameraPlatform {
         'maxVideoDuration': maxVideoDuration?.inMilliseconds,
       },
     );
-
-    if (maxVideoDuration != null) {
-      await onCameraTimeLimitReached(cameraId).first.then((value) {
-        debugPrint('received event');
-      });
-    }
   }
 
   @override
@@ -435,7 +429,7 @@ class MethodChannelCamera extends CameraPlatform {
       case 'max_time_limit_reached':
         cameraEventStreamController.add(CameraTimeLimitReachedEvent(
           cameraId,
-          call.arguments['path'],
+          XFile(call.arguments['path']),
         ));
         break;
       case 'resolution_changed':

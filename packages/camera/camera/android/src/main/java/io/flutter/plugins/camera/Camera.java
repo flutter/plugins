@@ -606,7 +606,16 @@ public class Camera {
      if(maxVideoDuration != null) {
        mediaRecorder.setOnInfoListener((mr, what, extra) -> {
          if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-           dartMessenger.sendTimeLimitReachedEvent(videoRecordingFile.getPath());
+           try {
+             dartMessenger.sendTimeLimitReachedEvent(videoRecordingFile.getAbsolutePath());
+             cameraCaptureSession.abortCaptures();
+             mediaRecorder.stop();
+             recordingVideo = false;
+             videoRecordingFile = null;
+             startPreview();
+           } catch (CameraAccessException e) {
+             // Ignore exceptions and try to continue (changes are camera session already aborted capture)
+           }
          }
        });
      }

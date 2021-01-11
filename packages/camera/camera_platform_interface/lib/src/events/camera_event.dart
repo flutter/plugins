@@ -237,21 +237,21 @@ class CameraErrorEvent extends CameraEvent {
 }
 
 class CameraTimeLimitReachedEvent extends CameraEvent {
-  final String path;
+  final XFile path;
 
   CameraTimeLimitReachedEvent(int cameraId, this.path) : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [CameraTimeLimitReachedEvent]
   /// class.
   CameraTimeLimitReachedEvent.fromJson(Map<String, dynamic> json)
-      : path = json['path'],
+      : path = XFile(json['path']),
         super(json['cameraId']);
 
   /// Converts the [CameraTimeLimitReachedEvent] instance into a [Map] instance that can be
   /// serialized to JSON.
   Map<String, dynamic> toJson() => {
     'cameraId': cameraId,
-    'path': path,
+    'path': path.path,
   };
 
   @override

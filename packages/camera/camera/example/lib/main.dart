@@ -607,8 +607,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.startVideoRecording(
-          maxVideoDuration: null //const Duration(milliseconds: 5000),
+          maxVideoDuration: const Duration(milliseconds: 5000),
       );
+      debugPrint('recording started');
+      controller.onCameraTimeLimitReachedEvent(onCameraTimeLimitReached: (file) {
+        debugPrint('onCameraTimeLimitReached ${file.path}');
+      });
+      debugPrint('listening');
     } on CameraException catch (e) {
       _showCameraException(e);
       return;

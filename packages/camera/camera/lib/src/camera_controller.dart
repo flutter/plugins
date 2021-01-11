@@ -381,7 +381,9 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
-  Future<XFile> startVideoRecording({Duration maxVideoDuration}) async {
+  ///
+  /// TODO: Documentation: when maxVideoDuration listen to Stream with CameraTimeLimitReachedEvent
+  Future<void> startVideoRecording({Duration maxVideoDuration}) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -402,24 +404,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      Completer<XFile> completer = Completer();
       await CameraPlatform.instance
           .startVideoRecording(_cameraId, maxVideoDuration: maxVideoDuration);
       value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
-
-      if (maxVideoDuration != null) {
-        await CameraPlatform.instance
-            .onCameraTimeLimitReached(_cameraId)
-            .listen((event) {
-          debugPrint('Video recorded to: ${event.path}');
-          completer.complete(XFile(event.path));
-          value =
-              value.copyWith(isRecordingVideo: false, isRecordingPaused: false);
-        });
-        return completer.future;
-      } else {
-        return null;
-      }
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -496,6 +483,32 @@ class CameraController extends ValueNotifier<CameraValue> {
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
+  }
+
+  /// TODO: Documentation
+  void onCameraTimeLimitReachedEvent({onCameraTimeLimitReached}) {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'cameraTimeLimitReachedEventStream was called on uninitialized CameraController',
+      );
+    }
+    if (!value.isRecordingVideo) {
+      throw CameraException(
+        'No video is recording',
+        'cameraTimeLimitReachedEventStream was called when no video is recording.',
+      );
+    }
+    debugPrint('ping');
+
+    CameraPlatform.instance.onCameraTimeLimitReached(_cameraId).listen((event) {
+      debugPrint('onCameraTimeLimitReached');
+      value = value.copyWith(isRecordingVideo: false);
+      onCameraTimeLimitReached(event.path);
+    });
+
+    debugPrint('pong');
+    return;
   }
 
   /// Returns a widget showing a live camera preview.
