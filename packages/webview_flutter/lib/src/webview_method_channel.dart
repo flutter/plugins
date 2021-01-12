@@ -62,6 +62,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
           ),
         );
         return null;
+      case 'inputFocusEvent':
+        _platformCallbacksHandler.onInputFocusEvent(call.arguments['type']);
+        return true;
     }
 
     throw MissingPluginException(

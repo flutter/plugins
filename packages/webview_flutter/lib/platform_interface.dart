@@ -32,6 +32,9 @@ abstract class WebViewPlatformCallbacksHandler {
 
   /// Report web resource loading error to the host application.
   void onWebResourceError(WebResourceError error);
+
+  /// Invoked by [WebViewPlatformController] when a page has input focus.
+  void onInputFocusEvent(WebTextInputType type);
 }
 
 /// Possible error type categorizations used by [WebResourceError].
@@ -147,6 +150,45 @@ class WebResourceError {
   /// This value is not provided on iOS. Alternatively, you can keep track of
   /// the last values provided to [WebViewPlatformController.loadUrl].
   final String? failingUrl;
+}
+
+/// Represents the type of a focused text input field.
+/// Corresponds with blink's public/platform/WebTextInputType.h
+/// Reference that source for more extended commentary on meaning of each value.
+enum WebTextInputType {
+  none,
+
+  text,
+
+  password,
+
+  search,
+
+  email,
+
+  number,
+
+  telephone,
+
+  url,
+
+  date,
+
+  dateTime,
+
+  dateTimeLocal,
+
+  month,
+
+  time,
+
+  week,
+
+  textArea,
+
+  contentEditable,
+
+  dateTimeField,
 }
 
 /// Interface for talking to the webview's platform implementation.
