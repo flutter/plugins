@@ -285,12 +285,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if the capture fails.
   Future<XFile> takePicture() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController.',
-        'takePicture was called on uninitialized CameraController',
-      );
-    }
+    _throwIfNotInitialized("takePicture");
     if (value.isTakingPicture) {
       throw CameraException(
         'Previous capture has not returned yet.',
@@ -328,13 +323,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> startImageStream(onLatestImageAvailable onAvailable) async {
     assert(defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
-
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'startImageStream was called on uninitialized CameraController.',
-      );
-    }
+    _throwIfNotInitialized("startImageStream");
     if (value.isRecordingVideo) {
       throw CameraException(
         'A video recording is already started.',
@@ -374,13 +363,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> stopImageStream() async {
     assert(defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
-
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'stopImageStream was called on uninitialized CameraController.',
-      );
-    }
+    _throwIfNotInitialized("stopImageStream");
     if (value.isRecordingVideo) {
       throw CameraException(
         'A video recording is already started.',
@@ -410,12 +393,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
   Future<void> startVideoRecording() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'startVideoRecording was called on uninitialized CameraController',
-      );
-    }
+    _throwIfNotInitialized("startVideoRecording");
     if (value.isRecordingVideo) {
       throw CameraException(
         'A video recording is already started.',
@@ -441,12 +419,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if the capture failed.
   Future<XFile> stopVideoRecording() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'stopVideoRecording was called on uninitialized CameraController',
-      );
-    }
+    _throwIfNotInitialized("stopVideoRecording");
     if (!value.isRecordingVideo) {
       throw CameraException(
         'No video is recording',
@@ -466,12 +439,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// This feature is only available on iOS and Android sdk 24+.
   Future<void> pauseVideoRecording() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'pauseVideoRecording was called on uninitialized CameraController',
-      );
-    }
+    _throwIfNotInitialized("pauseVideoRecording");
     if (!value.isRecordingVideo) {
       throw CameraException(
         'No video is recording',
@@ -490,12 +458,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// This feature is only available on iOS and Android sdk 24+.
   Future<void> resumeVideoRecording() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'resumeVideoRecording was called on uninitialized CameraController',
-      );
-    }
+    _throwIfNotInitialized("resumeVideoRecording");
     if (!value.isRecordingVideo) {
       throw CameraException(
         'No video is recording',
@@ -512,12 +475,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Returns a widget showing a live camera preview.
   Widget buildPreview() {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'buildView() was called on uninitialized CameraController.',
-      );
-    }
+    _throwIfNotInitialized("buildPreview");
     try {
       return CameraPlatform.instance.buildPreview(_cameraId);
     } on PlatformException catch (e) {
@@ -527,13 +485,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the maximum supported zoom level for the selected camera.
   Future<double> getMaxZoomLevel() {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'getMaxZoomLevel was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("getMaxZoomLevel");
     try {
       return CameraPlatform.instance.getMaxZoomLevel(_cameraId);
     } on PlatformException catch (e) {
@@ -543,13 +495,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the minimum supported zoom level for the selected camera.
   Future<double> getMinZoomLevel() {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'getMinZoomLevel was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("getMinZoomLevel");
     try {
       return CameraPlatform.instance.getMinZoomLevel(_cameraId);
     } on PlatformException catch (e) {
@@ -563,13 +509,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// zoom level returned by the `getMaxZoomLevel`. Throws an `CameraException`
   /// when an illegal zoom level is suplied.
   Future<void> setZoomLevel(double zoom) {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'setZoomLevel was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("setZoomLevel");
     try {
       return CameraPlatform.instance.setZoomLevel(_cameraId, zoom);
     } on PlatformException catch (e) {
@@ -621,13 +561,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the minimum supported exposure offset for the selected camera in EV units.
   Future<double> getMinExposureOffset() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'getMinExposureOffset was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("getMinExposureOffset");
     try {
       return CameraPlatform.instance.getMinExposureOffset(_cameraId);
     } on PlatformException catch (e) {
@@ -637,13 +571,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the maximum supported exposure offset for the selected camera in EV units.
   Future<double> getMaxExposureOffset() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'getMaxExposureOffset was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("getMaxExposureOffset");
     try {
       return CameraPlatform.instance.getMaxExposureOffset(_cameraId);
     } on PlatformException catch (e) {
@@ -655,13 +583,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Returns 0 when the camera supports using a free value without stepping.
   Future<double> getExposureOffsetStepSize() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'getExposureOffsetStepSize was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("getExposureOffsetStepSize");
     try {
       return CameraPlatform.instance.getExposureOffsetStepSize(_cameraId);
     } on PlatformException catch (e) {
@@ -681,13 +603,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Returns the (rounded) offset value that was set.
   Future<double> setExposureOffset(double offset) async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'setExposureOffset was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("setExposureOffset");
     // Check if offset is in range
     List<double> range =
         await Future.wait([getMinExposureOffset(), getMaxExposureOffset()]);
@@ -761,6 +677,21 @@ class CameraController extends ValueNotifier<CameraValue> {
     if (_initCalled != null) {
       await _initCalled;
       await CameraPlatform.instance.dispose(_cameraId);
+    }
+  }
+
+  void _throwIfNotInitialized(String functionName) {
+    if (!value.isInitialized) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        '$functionName() was called on an uninitialized CameraController.',
+      );
+    }
+    if (_isDisposed) {
+      throw CameraException(
+        'Disposed CameraController',
+        '$functionName() was called on a disposed CameraController.',
+      );
     }
   }
 }

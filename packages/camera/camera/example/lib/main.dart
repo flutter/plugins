@@ -572,8 +572,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     try {
       await controller.initialize();
       await Future.wait([
-        controller.getMinExposureOffset().then((value) => _minAvailableExposureOffset = value),
-        controller.getMaxExposureOffset().then((value) => _maxAvailableExposureOffset = value),
+        controller
+            .getMinExposureOffset()
+            .then((value) => _minAvailableExposureOffset = value),
+        controller
+            .getMaxExposureOffset()
+            .then((value) => _maxAvailableExposureOffset = value),
         controller.getMaxZoomLevel().then((value) => _maxAvailableZoom = value),
         controller.getMinZoomLevel().then((value) => _minAvailableZoom = value),
       ]);
