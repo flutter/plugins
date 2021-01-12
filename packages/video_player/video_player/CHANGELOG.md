@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.8
+
+* Integration test for `VideoPlayerController.file()`.
+
 ## 2.0.0-nullsafety.7
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
