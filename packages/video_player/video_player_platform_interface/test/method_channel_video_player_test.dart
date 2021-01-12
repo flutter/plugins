@@ -234,21 +234,13 @@ void main() {
     });
 
     test('videoEventsFor', () async {
-      // TODO(cbenhagen): This has been deprecated and should be replaced
-      // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-      // available on all the versions of Flutter that we test.
-      // ignore: deprecated_member_use
-      defaultBinaryMessenger.setMockMessageHandler(
+      ServicesBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
         "flutter.io/videoPlayer/videoEvents123",
         (ByteData message) async {
           final MethodCall methodCall =
               const StandardMethodCodec().decodeMethodCall(message);
           if (methodCall.method == 'listen') {
-            // TODO(cbenhagen): This has been deprecated and should be replaced
-            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-            // available on all the versions of Flutter that we test.
-            // ignore: deprecated_member_use
-            await defaultBinaryMessenger.handlePlatformMessage(
+            await ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
@@ -259,11 +251,7 @@ void main() {
                 }),
                 (ByteData data) {});
 
-            // TODO(cbenhagen): This has been deprecated and should be replaced
-            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-            // available on all the versions of Flutter that we test.
-            // ignore: deprecated_member_use
-            await defaultBinaryMessenger.handlePlatformMessage(
+            await ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
@@ -271,11 +259,7 @@ void main() {
                 }),
                 (ByteData data) {});
 
-            // TODO(cbenhagen): This has been deprecated and should be replaced
-            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-            // available on all the versions of Flutter that we test.
-            // ignore: deprecated_member_use
-            await defaultBinaryMessenger.handlePlatformMessage(
+            await ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
@@ -287,11 +271,7 @@ void main() {
                 }),
                 (ByteData data) {});
 
-            // TODO(cbenhagen): This has been deprecated and should be replaced
-            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-            // available on all the versions of Flutter that we test.
-            // ignore: deprecated_member_use
-            await defaultBinaryMessenger.handlePlatformMessage(
+            await ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{
@@ -299,11 +279,7 @@ void main() {
                 }),
                 (ByteData data) {});
 
-            // TODO(cbenhagen): This has been deprecated and should be replaced
-            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-            // available on all the versions of Flutter that we test.
-            // ignore: deprecated_member_use
-            await defaultBinaryMessenger.handlePlatformMessage(
+            await ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
                 "flutter.io/videoPlayer/videoEvents123",
                 const StandardMethodCodec()
                     .encodeSuccessEnvelope(<String, dynamic>{

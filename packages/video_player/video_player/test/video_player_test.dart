@@ -795,11 +795,7 @@ class FakeEventsChannel {
   }
 
   void _sendMessage(ByteData data) {
-    // TODO(jackson): This has been deprecated and should be replaced
-    // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-    // available on all the versions of Flutter that we test.
-    // ignore: deprecated_member_use
-    defaultBinaryMessenger.handlePlatformMessage(
+    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
         eventsMethodChannel.name, data, (ByteData? data) {});
   }
 }
