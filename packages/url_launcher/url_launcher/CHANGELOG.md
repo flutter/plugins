@@ -1,3 +1,35 @@
+## 6.0.0-nullsafety.4
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 6.0.0-nullsafety.3
+
+* forceSafariVC should be nullable.
+
+## 6.0.0-nullsafety.2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 6.0.0-nullsafety.1
+
+* Bump Dart SDK to support null safety.
+
+## 6.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 5.7.13
+
+* Update Flutter SDK constraint.
+
+## 5.7.12
+
+* Updated code sample in `README.md`
+
+## 5.7.11
+
+* Update integration test examples to use `testWidgets` instead of `test`.
+
 ## 5.7.10
 
 * Update Dart SDK constraint in example.

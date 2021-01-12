@@ -1,3 +1,101 @@
+## 0.6.6
+
+* Adds auto focus support for Android and iOS implementations.
+
+## 0.6.5
+
+* Adds ImageFormat selection for ImageStream and Video(iOS only).
+
+## 0.6.4+5
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.6.4+4
+
+* Set camera auto focus enabled by default.
+
+## 0.6.4+3
+
+* Detect if selected camera supports auto focus and act accordingly on Android. This solves a problem where front facing cameras are not capturing the picture because auto focus is not supported.
+
+## 0.6.4+2
+
+* Set ImageStreamReader listener to null to prevent stale images when streaming images. 
+
+## 0.6.4+1
+
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash.
+
+## 0.6.4
+
+* Adds auto exposure support for Android and iOS implementations.
+
+## 0.6.3+4
+
+* Revert previous dependency update: Changed dependency on camera_platform_interface to >=1.04 <1.1.0.
+
+## 0.6.3+3
+
+* Updated dependency on camera_platform_interface to ^1.2.0.
+
+## 0.6.3+2
+
+* Fixes crash on Android which occurs after video recording has stopped just before taking a picture.
+
+## 0.6.3+1
+
+* Fixes flash & torch modes not working on some Android devices.
+
+## 0.6.3
+
+* Adds torch mode as a flash mode for Android and iOS implementations.
+
+## 0.6.2+1
+
+* Fix the API documentation for the `CameraController.takePicture` method.
+
+## 0.6.2
+
+* Add zoom support for Android and iOS implementations.
+
+## 0.6.1+1
+
+* Added implementation of the `didFinishProcessingPhoto` on iOS which allows saving image metadata (EXIF) on iOS 11 and up.
+
+## 0.6.1
+
+* Add flash support for Android and iOS implementations.
+
+## 0.6.0+2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.6.0+1
+
+Updated README to inform users that iOS 10.0+ is needed for use
+
+## 0.6.0
+
+As part of implementing federated architecture and making the interface compatible with the web this version contains the following **breaking changes**:
+
+Method changes in `CameraController`:
+- The `takePicture` method no longer accepts the `path` parameter, but instead returns the captured image as an instance of the `XFile` class;
+- The `startVideoRecording` method no longer accepts the `filePath`. Instead the recorded video is now returned as a `XFile` instance when the `stopVideoRecording` method completes; 
+- The `stopVideoRecording` method now returns the captured video when it completes;
+- Added the `buildPreview` method which is now used to implement the CameraPreview widget.
+
+## 0.5.8+19
+
+* Update Flutter SDK constraint.
+
+## 0.5.8+18
+
+* Suppress unchecked warning in Android tests which prevented the tests to compile.
+
+## 0.5.8+17
+
+* Added Android 30 support.
+
 ## 0.5.8+16
 
 * Moved package to camera/camera subdir, to allow for federated implementations.

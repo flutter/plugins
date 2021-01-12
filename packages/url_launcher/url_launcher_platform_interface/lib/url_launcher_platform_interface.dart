@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart' show required;
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:url_launcher_platform_interface/link.dart';
 
@@ -40,7 +39,7 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
   }
 
   /// The delegate used by the Link widget to build itself.
-  LinkDelegate get linkDelegate;
+  LinkDelegate? get linkDelegate;
 
   /// Returns `true` if this platform is able to launch [url].
   Future<bool> canLaunch(String url) {
@@ -53,13 +52,13 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
   /// in `package:url_launcher/url_launcher.dart`.
   Future<bool> launch(
     String url, {
-    @required bool useSafariVC,
-    @required bool useWebView,
-    @required bool enableJavaScript,
-    @required bool enableDomStorage,
-    @required bool universalLinksOnly,
-    @required Map<String, String> headers,
-    String webOnlyWindowName,
+    required bool useSafariVC,
+    required bool useWebView,
+    required bool enableJavaScript,
+    required bool enableDomStorage,
+    required bool universalLinksOnly,
+    required Map<String, String> headers,
+    String? webOnlyWindowName,
   }) {
     throw UnimplementedError('launch() has not been implemented.');
   }

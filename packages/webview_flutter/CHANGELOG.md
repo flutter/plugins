@@ -1,6 +1,26 @@
-## 1.0.8
+## 2.0.0-nullsafety.4
 
 * Added support for progress tracking.
+
+## 2.0.0-nullsafety.3
+
+* Fix `onWebResourceError` on iOS.
+
+## 2.0.0-nullsafety.2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 2.0.0-nullsafety.1
+
+* Added `allowsInlineMediaPlayback` property.
+
+## 2.0.0-nullsafety
+
+* Migration to null-safety.
+
+## 1.0.8
+
+* Update Flutter SDK constraint.
 
 ## 1.0.7
 
@@ -48,7 +68,6 @@ performing better on iOS. Flutter 1.22 no longer requires adding the
 ## 0.3.24
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
->>>>>>> flutter-origin-master
 
 ## 0.3.23
 

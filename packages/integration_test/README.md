@@ -14,6 +14,8 @@ Create a `integration_test/` directory for your package. In this directory,
 create a `<name>_test.dart`, using the following as a starting point to make
 assertions.
 
+Note: You should only use `testWidgets` to declare your tests, or errors will not be reported correctly.
+
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -42,7 +44,7 @@ Future<void> main() => integrationDriver();
 You can also use different driver scripts to customize the behavior of the app
 under test. For example, `FlutterDriver` can also be parameterized with
 different [options](https://api.flutter.dev/flutter/flutter_driver/FlutterDriver/connect.html).
-See the [extended driver](https://github.com/flutter/plugins/tree/master/packages/integration_test/example/test_driver/integration_test_extended_driver.dart) for an example.
+See the [extended driver](https://github.com/flutter/plugins/blob/master/packages/integration_test/example/test_driver/extended_integration_test.dart) for an example.
 
 ### Package Structure
 

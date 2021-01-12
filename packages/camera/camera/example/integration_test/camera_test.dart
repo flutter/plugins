@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:integration_test/integration_test.dart';
@@ -55,12 +55,10 @@ void main() {
         'Capturing photo at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
 
     // Take Picture
-    final String filePath =
-        '${testDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
-    await controller.takePicture(filePath);
+    final file = await controller.takePicture();
 
     // Load picture
-    final File fileImage = File(filePath);
+    final File fileImage = File(file.path);
     final Image image = await decodeImageFromList(fileImage.readAsBytesSync());
 
     // Verify image dimensions are as expected
@@ -102,14 +100,12 @@ void main() {
         'Capturing video at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
 
     // Take Video
-    final String filePath =
-        '${testDir.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-    await controller.startVideoRecording(filePath);
+    await controller.startVideoRecording();
     sleep(const Duration(milliseconds: 300));
-    await controller.stopVideoRecording();
+    final file = await controller.stopVideoRecording();
 
     // Load video metadata
-    final File videoFile = File(filePath);
+    final File videoFile = File(file.path);
     final VideoPlayerController videoController =
         VideoPlayerController.file(videoFile);
     await videoController.initialize();
@@ -160,13 +156,10 @@ void main() {
     await controller.initialize();
     await controller.prepareForVideoRecording();
 
-    final String filePath =
-        '${testDir.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-
     int startPause;
     int timePaused = 0;
 
-    await controller.startVideoRecording(filePath);
+    await controller.startVideoRecording();
     final int recordingStart = DateTime.now().millisecondsSinceEpoch;
     sleep(const Duration(milliseconds: 500));
 
@@ -186,11 +179,11 @@ void main() {
 
     sleep(const Duration(milliseconds: 500));
 
-    await controller.stopVideoRecording();
+    final file = await controller.stopVideoRecording();
     final int recordingTime =
         DateTime.now().millisecondsSinceEpoch - recordingStart;
 
-    final File videoFile = File(filePath);
+    final File videoFile = File(file.path);
     final VideoPlayerController videoController = VideoPlayerController.file(
       videoFile,
     );
