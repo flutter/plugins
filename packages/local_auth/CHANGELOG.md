@@ -37,9 +37,7 @@
 
 ## 0.6.3+1
 
-* Add `authenticate` method that uses biometric authentication, but allows users to also use device authentication - pin, pattern, passcode.
 * Update package:e2e -> package:integration_test
-
 
 ## 0.6.3
 
@@ -72,11 +70,9 @@
 
 * Replace deprecated `getFlutterEngine` call on Android.
 
-
 ## 0.6.1+3
 
 * Make the pedantic dev_dependency explicit.
-
 
 ## 0.6.1+2
 
