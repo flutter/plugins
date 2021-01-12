@@ -122,7 +122,16 @@ class IosPlatformImages {
     Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
     Completer<double> scaleCompleter = Completer<double>();
     loadInfo.then((map) {
-      scaleCompleter.complete(map!["scale"]);
+      if (map == null) {
+        scaleCompleter.completeError(
+          Exception("Image couldn't be found: $name"),
+        );
+        bytesCompleter.completeError(
+          Exception("Image couldn't be found: $name"),
+        );
+        return;
+      }
+      scaleCompleter.complete(map["scale"]);
       bytesCompleter.complete(map["data"]);
     });
     return _FutureMemoryImage(bytesCompleter.future, scaleCompleter.future);
