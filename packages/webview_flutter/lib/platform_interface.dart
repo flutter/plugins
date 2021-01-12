@@ -407,7 +407,7 @@ class WebSettings {
 
   /// Whether the [WebView] should track page loading progress.
   /// See also: [WebViewPlatformCallbacksHandler.onProgress] to get the progress.
-  final bool hasProgressTracking;
+  final bool? hasProgressTracking;
 
   /// Whether to enable the platform's webview content debugging tools.
   ///
