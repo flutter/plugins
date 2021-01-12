@@ -1,3 +1,7 @@
+## 0.6.6+1
+
+* Improved error feedback by differentiating between uninitialized and disposed camera controllers.
+
 ## 0.6.6
 
 * Adds auto focus support for Android and iOS implementations.
