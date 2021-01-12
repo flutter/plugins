@@ -9,10 +9,9 @@ if pgrep -lf chromedriver > /dev/null; then
   else
     echo "Running test target: $1..."
     set -x
-    flutter drive -d web-server --web-port=7357 --browser-name=chrome --target=$1
+    flutter drive -d web-server --web-port=7357 --browser-name=chrome --driver=test_driver/integration_test.dart --target=$1
   fi
 
   else
     echo "chromedriver is not running."
 fi
-
