@@ -1,5 +1,7 @@
 package io.flutter.plugins.camera;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -64,6 +66,11 @@ class DartMessenger {
     if (channel == null) {
       return;
     }
-    channel.invokeMethod(eventType.toString().toLowerCase(), args);
+    new Handler(Looper.getMainLooper()).post(new Runnable () {
+      @Override
+      public void run () {
+        channel.invokeMethod(eventType.toString().toLowerCase(), args);
+      }
+    });
   }
 }
