@@ -1085,14 +1085,8 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'progress': progress},
     ));
 
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(
-      channel.name,
-      data,
-      (ByteData data) {},
-    );
+    ServicesBinding.instance!.defaultBinaryMessenger
+        .handlePlatformMessage(channel.name, data, (ByteData? data) {});
   }
 
   void _loadUrl(String? url) {

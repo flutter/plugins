@@ -587,7 +587,7 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   @override
   void onProgress(int progress) {
     if (_widget.onProgress != null) {
-      _widget.onProgress(progress);
+      _widget.onProgress!(progress);
     }
   }
 
