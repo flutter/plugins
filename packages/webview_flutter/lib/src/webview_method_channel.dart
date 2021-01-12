@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 import '../platform_interface.dart';
 
@@ -15,7 +16,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   MethodChannelWebViewPlatform(int id, this._platformCallbacksHandler)
       : assert(_platformCallbacksHandler != null),
         _channel = MethodChannel('plugins.flutter.io/webview_$id') {
-    _channel.setMethodCallHandler(_onMethodCall);
+    _channel.setMethodCallHandler(onMethodCall);
   }
 
   final WebViewPlatformCallbacksHandler _platformCallbacksHandler;
@@ -25,7 +26,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   static const MethodChannel _cookieManagerChannel =
       MethodChannel('plugins.flutter.io/cookie_manager');
 
-  Future<bool?> _onMethodCall(MethodCall call) async {
+  @protected
+  Future<bool?> onMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'javascriptChannelMessage':
         final String channel = call.arguments['channel']!;
