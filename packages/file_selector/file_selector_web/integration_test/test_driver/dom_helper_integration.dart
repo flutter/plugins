@@ -8,7 +8,6 @@ import 'dart:html';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:file_selector_web/src/dom_helper.dart';
-import 'package:pedantic/pedantic.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 void main() {
@@ -87,7 +86,8 @@ void main() {
         final multiple = true;
         bool wasClicked = false;
 
-        unawaited(input.onClick.first.then((_) => wasClicked = true));
+        //ignore: unawaited_futures
+        input.onClick.first.then((_) => wasClicked = true);
 
         final futureFile = domHelper.getFiles(
           accept: accept,
