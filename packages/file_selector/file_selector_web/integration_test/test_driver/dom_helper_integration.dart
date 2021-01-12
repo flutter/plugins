@@ -98,7 +98,12 @@ void main() {
         expect(input.matchesWithAncestors('body'), true);
         expect(input.accept, accept);
         expect(input.multiple, multiple);
-        expect(wasClicked, true);
+        expect(
+          wasClicked,
+          true,
+          reason:
+              'The <input /> should be clicked otherwise no dialog will be shown',
+        );
 
         setFilesAndTriggerChange([]);
         await futureFile;
