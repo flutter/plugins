@@ -176,10 +176,10 @@ void main() {
 
       VideoPlayerController fileController = VideoPlayerController.file(file);
       await fileController.initialize();
-      
+
       await fileController.play();
       expect(fileController.value.isPlaying, true);
-      
+
       await fileController.pause();
       expect(fileController.value.isPlaying, false);
     }, skip: kIsWeb);
