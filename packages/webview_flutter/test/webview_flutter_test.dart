@@ -694,7 +694,7 @@ void main() {
 
   group('$PageLoadingCallback', () {
     testWidgets('onLoadingProgress is not null', (WidgetTester tester) async {
-      int loadingProgress;
+      int? loadingProgress;
 
       await tester.pumpWidget(WebView(
         initialUrl: 'https://youtube.com',
@@ -703,10 +703,10 @@ void main() {
         },
       ));
 
-      final FakePlatformWebView platformWebView =
+      final FakePlatformWebView? platformWebView =
           fakePlatformViewsController.lastCreatedView;
 
-      platformWebView.fakeOnProgressCallback(50);
+      platformWebView?.fakeOnProgressCallback(50);
 
       expect(loadingProgress, 50);
     });
@@ -718,14 +718,14 @@ void main() {
       ));
 
       final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       // This is to test that it does not crash on a null callback.
       platformWebView.fakeOnProgressCallback(50);
     });
 
     testWidgets('onLoadingProgress changed', (WidgetTester tester) async {
-      int loadingProgress;
+      int? loadingProgress;
 
       await tester.pumpWidget(WebView(
         initialUrl: 'https://youtube.com',
@@ -740,7 +740,7 @@ void main() {
       ));
 
       final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       platformWebView.fakeOnProgressCallback(50);
 
