@@ -223,7 +223,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                                   ? null
                                   : _addHoles),
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('remove holes'),
                           onPressed: (selectedPolygon == null)
                               ? null
@@ -231,7 +231,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                                   ? null
                                   : _removeHoles),
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change stroke width'),
                           onPressed:
                               (selectedPolygon == null) ? null : _changeWidth,
