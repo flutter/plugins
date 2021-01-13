@@ -225,12 +225,9 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
     onActivityResumed(null);
   }
 
-  // hack: dialog opens twice on Android 8
-  private boolean isSettingsDialogOpen = false;
   // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
   @SuppressLint("InflateParams")
   private void showGoToSettingsDialog(String title, String descriptionText) {
-    if (isSettingsDialogOpen) return;
     View view = LayoutInflater.from(activity).inflate(R.layout.go_to_setting, null, false);
     TextView message = (TextView) view.findViewById(R.id.fingerprint_required);
     TextView description = (TextView) view.findViewById(R.id.go_to_setting_description);
@@ -241,7 +238,6 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            isSettingsDialogOpen = false;
             completionHandler.onFailure();
             stop();
             activity.startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
@@ -251,12 +247,10 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            isSettingsDialogOpen = false;
             completionHandler.onFailure();
             stop();
           }
         };
-    isSettingsDialogOpen = true;
     new AlertDialog.Builder(context)
         .setView(view)
         .setPositiveButton((String) call.argument("goToSetting"), goToSettingHandler)
