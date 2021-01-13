@@ -795,7 +795,7 @@ class FakeEventsChannel {
   }
 
   void _sendMessage(ByteData data) {
-    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
         eventsMethodChannel.name, data, (ByteData? data) {});
   }
 }

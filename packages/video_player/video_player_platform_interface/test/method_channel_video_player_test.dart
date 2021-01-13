@@ -240,52 +240,57 @@ void main() {
           final MethodCall methodCall =
               const StandardMethodCodec().decodeMethodCall(message);
           if (methodCall.method == 'listen') {
-            await ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
-                "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec()
-                    .encodeSuccessEnvelope(<String, dynamic>{
-                  'event': 'initialized',
-                  'duration': 98765,
-                  'width': 1920,
-                  'height': 1080,
-                }),
-                (ByteData data) {});
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    "flutter.io/videoPlayer/videoEvents123",
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'initialized',
+                      'duration': 98765,
+                      'width': 1920,
+                      'height': 1080,
+                    }),
+                    (ByteData data) {});
 
-            await ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
-                "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec()
-                    .encodeSuccessEnvelope(<String, dynamic>{
-                  'event': 'completed',
-                }),
-                (ByteData data) {});
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    "flutter.io/videoPlayer/videoEvents123",
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'completed',
+                    }),
+                    (ByteData data) {});
 
-            await ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
-                "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec()
-                    .encodeSuccessEnvelope(<String, dynamic>{
-                  'event': 'bufferingUpdate',
-                  'values': <List<dynamic>>[
-                    <int>[0, 1234],
-                    <int>[1235, 4000],
-                  ],
-                }),
-                (ByteData data) {});
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    "flutter.io/videoPlayer/videoEvents123",
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'bufferingUpdate',
+                      'values': <List<dynamic>>[
+                        <int>[0, 1234],
+                        <int>[1235, 4000],
+                      ],
+                    }),
+                    (ByteData data) {});
 
-            await ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
-                "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec()
-                    .encodeSuccessEnvelope(<String, dynamic>{
-                  'event': 'bufferingStart',
-                }),
-                (ByteData data) {});
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    "flutter.io/videoPlayer/videoEvents123",
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'bufferingStart',
+                    }),
+                    (ByteData data) {});
 
-            await ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
-                "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec()
-                    .encodeSuccessEnvelope(<String, dynamic>{
-                  'event': 'bufferingEnd',
-                }),
-                (ByteData data) {});
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    "flutter.io/videoPlayer/videoEvents123",
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'bufferingEnd',
+                    }),
+                    (ByteData data) {});
 
             return const StandardMethodCodec().encodeSuccessEnvelope(null);
           } else if (methodCall.method == 'cancel') {
