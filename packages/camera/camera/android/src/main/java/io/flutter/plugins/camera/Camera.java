@@ -464,17 +464,20 @@ public class Camera {
             return;
           }
           String reason;
+          boolean fatalFailure = false;
           switch (failure.getReason()) {
             case CaptureFailure.REASON_ERROR:
               reason = "An error happened in the framework";
               break;
             case CaptureFailure.REASON_FLUSHED:
               reason = "The capture has failed due to an abortCaptures() call";
+              fatalFailure = true;
               break;
             default:
               reason = "Unknown reason";
           }
-          pictureCaptureRequest.error("captureFailure", reason, null);
+          Log.w("Camera", "pictureCaptureCallback.onCaptureFailed(): " + reason);
+          if (fatalFailure) pictureCaptureRequest.error("captureFailure", reason, null);
         }
 
         private void processCapture(CaptureResult result) {

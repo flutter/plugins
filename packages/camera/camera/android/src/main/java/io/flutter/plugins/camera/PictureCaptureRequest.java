@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.camera;
 
+import android.os.Handler;
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.MethodChannel;
 
@@ -19,17 +20,25 @@ class PictureCaptureRequest {
     error,
   }
 
+  private static final int REQUEST_TIMEOUT = 5000;
+  private final Handler handler;
   private final MethodChannel.Result result;
   private State state;
 
   public PictureCaptureRequest(MethodChannel.Result result) {
     this.result = result;
     state = State.idle;
+    this.handler = new Handler();
   }
 
   public void setState(State state) {
     if (isFinished()) throw new IllegalStateException("Request has already been finished");
     this.state = state;
+    if (state != State.idle && state != State.finished && state != State.error) {
+      this.resetTimeout();
+    } else {
+      clearTimeout();
+    }
   }
 
   public State getState() {
@@ -42,6 +51,7 @@ class PictureCaptureRequest {
 
   public void finish(String absolutePath) {
     if (isFinished()) throw new IllegalStateException("Request has already been finished");
+    clearTimeout();
     result.success(absolutePath);
     state = State.finished;
   }
@@ -49,7 +59,25 @@ class PictureCaptureRequest {
   public void error(
       String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
     if (isFinished()) throw new IllegalStateException("Request has already been finished");
+    clearTimeout();
     result.error(errorCode, errorMessage, errorDetails);
     state = State.error;
+  }
+
+  private final Runnable timeoutCallback =
+      new Runnable() {
+        @Override
+        public void run() {
+          error("captureTimeout", "Picture capture request timed out", state.toString());
+        }
+      };
+
+  private void resetTimeout() {
+    clearTimeout();
+    handler.postDelayed(timeoutCallback, REQUEST_TIMEOUT);
+  }
+
+  private void clearTimeout() {
+    handler.removeCallbacks(timeoutCallback);
   }
 }

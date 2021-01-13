@@ -1,3 +1,7 @@
+## 0.6.6+1
+
+* Fixes picture captures causing a crash on some Huawei devices.
+
 ## 0.6.6
 
 * Adds auto focus support for Android and iOS implementations.
