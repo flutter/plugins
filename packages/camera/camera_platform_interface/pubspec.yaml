@@ -12,13 +12,13 @@ dependencies:
   plugin_platform_interface: ^1.0.1
   cross_file: ^0.1.0
   stream_transform: ^1.2.0
+  pedantic: ^1.8.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   async: ^2.4.2
   mockito: ^4.1.1
-  pedantic: ^1.8.0
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

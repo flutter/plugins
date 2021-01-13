@@ -573,6 +573,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       await controller.initialize();
       controller.onVideoRecordedEvent().listen((VideoRecordedEvent event) {
           // Handle VideoRecordedEvent
+        debugPrint('event is stream ${event.file.path}');
       });
       _minAvailableExposureOffset = await controller.getMinExposureOffset();
       _maxAvailableExposureOffset = await controller.getMaxExposureOffset();
@@ -666,6 +667,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   void onStopButtonPressed() {
     stopVideoRecording().then((file) {
+      debugPrint('file after future ${file.path}');
       if (mounted) setState(() {});
       if (file != null) {
         showInSnackBar('Video recorded to ${file.path}');
@@ -702,7 +704,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.startVideoRecording(
-          maxVideoDuration: Duration(seconds: 2));
+          maxVideoDuration: Duration(seconds: 20));
     } on CameraException catch (e) {
       _showCameraException(e);
       return;

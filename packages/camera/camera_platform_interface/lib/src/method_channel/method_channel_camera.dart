@@ -14,6 +14,7 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/camera');
@@ -214,11 +215,13 @@ class MethodChannelCamera extends CameraPlatform {
 
   @override
   Future<XFile> stopVideoRecording(int cameraId) async {
-    String path = await _channel.invokeMethod<String>(
+    Completer<XFile> completer = Completer();
+    unawaited(onVideoRecordedEvent(cameraId).first.then((event) => completer.complete(event.file)));
+    unawaited(_channel.invokeMethod<void>(
       'stopVideoRecording',
       <String, dynamic>{'cameraId': cameraId},
-    );
-    return XFile(path);
+    ));
+    return completer.future;
   }
 
   @override
