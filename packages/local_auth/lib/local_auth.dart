@@ -30,6 +30,8 @@ void setMockPathProviderPlatform(Platform platform) {
 
 /// A Flutter plugin for authenticating the user identity locally.
 class LocalAuthentication {
+  /// The `authenticateWithBiometrics` method has been deprecated.
+  /// Use `authenticate` with `biometricOnly: true` instead
   @Deprecated("Use `authenticate` with `biometricOnly: true` instead")
   Future<bool> authenticateWithBiometrics({
     required String localizedReason,
@@ -136,16 +138,13 @@ class LocalAuthentication {
   /// Returns true if device is capable of checking biometrics
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> get canCheckBiometrics async =>
-      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))!
-          .isNotEmpty;
+  Future<bool> get canCheckBiometrics async => (await _channel.invokeListMethod<String>('getAvailableBiometrics'))!.isNotEmpty;
 
   /// Returns true if device is capable of checking biometrics or is able to
   /// fail over to device credentials.
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> isDeviceSupported() async =>
-      (await _channel.invokeMethod<bool>('isDeviceSupported')) ?? false;
+  Future<bool> isDeviceSupported() async => (await _channel.invokeMethod<bool>('isDeviceSupported')) ?? false;
 
   /// Returns a list of enrolled biometrics
   ///
