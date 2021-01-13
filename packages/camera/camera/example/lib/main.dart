@@ -171,18 +171,18 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         ),
       );
     } else {
-      return AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: Listener(
-          onPointerDown: (_) => _pointers++,
-          onPointerUp: (_) => _pointers--,
+      return Listener(
+        onPointerDown: (_) => _pointers++,
+        onPointerUp: (_) => _pointers--,
+        child: CameraPreview(
+          controller,
           child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
             return GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onScaleStart: _handleScaleStart,
               onScaleUpdate: _handleScaleUpdate,
               onTapDown: (details) => onViewFinderTap(details, constraints),
-              child: CameraPreview(controller),
             );
           }),
         ),
@@ -268,6 +268,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               icon: Icon(enableAudio ? Icons.volume_up : Icons.volume_mute),
               color: Colors.blue,
               onPressed: controller != null ? onAudioModeButtonPressed : null,
+            ),
+            IconButton(
+              icon: Icon(controller?.value?.isCaptureOrientationLocked ?? false
+                  ? Icons.screen_lock_rotation
+                  : Icons.screen_rotation),
+              color: Colors.blue,
+              onPressed: controller != null
+                  ? onCaptureOrientationLockButtonPressed
+                  : null,
             ),
           ],
         ),
@@ -631,6 +640,19 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     enableAudio = !enableAudio;
     if (controller != null) {
       onNewCameraSelected(controller.description);
+    }
+  }
+
+  void onCaptureOrientationLockButtonPressed() async {
+    if (controller != null) {
+      if (controller.value.isCaptureOrientationLocked) {
+        await controller.unlockCaptureOrientation();
+        showInSnackBar('Capture orientation unlocked');
+      } else {
+        await controller.lockCaptureOrientation();
+        showInSnackBar(
+            'Capture orientation locked to ${controller.value.lockedCaptureOrientation.toString().split('.').last}');
+      }
     }
   }
 
