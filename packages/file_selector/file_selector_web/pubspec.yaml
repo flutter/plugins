@@ -1,0 +1,32 @@
+name: file_selector_web
+description: Web platform implementation of file_selector
+homepage: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_web
+version: 0.7.0
+
+flutter:
+  plugin:
+    platforms:
+      web:
+        pluginClass: FileSelectorWeb
+        fileName: file_selector_web.dart
+
+dependencies:
+  file_selector_platform_interface: ^1.0.2
+  platform_detect: ^1.4.0
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  meta: ^1.1.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^4.1.1
+  pedantic: ^1.8.0
+  integration_test:
+    path: ../../integration_test
+
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+  flutter: ">=1.10.0"
