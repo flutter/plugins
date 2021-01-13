@@ -157,14 +157,14 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
-    return deviceEventStreamController.stream
-        .whereType<DeviceOrientationChangedEvent>();
+  Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
+    return _cameraEvents(cameraId).whereType<VideoRecordedEvent>();
   }
 
   @override
-  Stream<CameraTimeLimitReachedEvent> onCameraTimeLimitReached(int cameraId) {
-    return _cameraEvents(cameraId).whereType<CameraTimeLimitReachedEvent>();
+  Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
+    return deviceEventStreamController.stream
+        .whereType<DeviceOrientationChangedEvent>();
   }
 
   @override
@@ -426,10 +426,13 @@ class MethodChannelCamera extends CameraPlatform {
           call.arguments['focusPointSupported'],
         ));
         break;
-      case 'max_time_limit_reached':
-        cameraEventStreamController.add(CameraTimeLimitReachedEvent(
+      case 'video_recorded':
+        cameraEventStreamController.add(VideoRecordedEvent(
           cameraId,
           XFile(call.arguments['path']),
+          call.arguments['maxVideoDuration'] != null
+              ? Duration(milliseconds: call.arguments['maxVideoDuration'])
+              : null,
         ));
         break;
       case 'resolution_changed':

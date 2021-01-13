@@ -435,6 +435,14 @@ class CameraController extends ValueNotifier<CameraValue> {
       await CameraPlatform.instance
           .startVideoRecording(_cameraId, maxVideoDuration: maxVideoDuration);
       value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
+
+      // Listen for end to update isRecordingVideo in CameraValue.
+      CameraPlatform.instance
+          .onVideoRecordedEvent(_cameraId).asBroadcastStream()
+          .listen((event) {
+        value = value.copyWith(isRecordingVideo: false);
+      });
+      debugPrint('started');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -514,27 +522,14 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   /// TODO: Documentation
-  void onCameraTimeLimitReachedEvent({onCameraTimeLimitReached}) {
+  Stream<VideoRecordedEvent> onVideoRecordedEvent() {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
         'cameraTimeLimitReachedEventStream was called on uninitialized CameraController',
       );
     }
-    if (!value.isRecordingVideo) {
-      throw CameraException(
-        'No video is recording',
-        'cameraTimeLimitReachedEventStream was called when no video is recording.',
-      );
-    }
-
-    CameraPlatform.instance
-        .onCameraTimeLimitReached(_cameraId)
-        .first
-        .then((event) {
-      value = value.copyWith(isRecordingVideo: false);
-      onCameraTimeLimitReached(event.path);
-    });
+    return CameraPlatform.instance.onVideoRecordedEvent(_cameraId);
   }
 
   /// Returns a widget showing a live camera preview.

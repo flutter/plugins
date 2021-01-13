@@ -571,6 +571,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.initialize();
+      controller.onVideoRecordedEvent().listen((VideoRecordedEvent event) {
+          // Handle VideoRecordedEvent
+      });
       _minAvailableExposureOffset = await controller.getMinExposureOffset();
       _maxAvailableExposureOffset = await controller.getMaxExposureOffset();
       _maxAvailableZoom = await controller.getMaxZoomLevel();
@@ -698,7 +701,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     try {
-      await controller.startVideoRecording();
+      await controller.startVideoRecording(
+          maxVideoDuration: Duration(seconds: 2));
     } on CameraException catch (e) {
       _showCameraException(e);
       return;

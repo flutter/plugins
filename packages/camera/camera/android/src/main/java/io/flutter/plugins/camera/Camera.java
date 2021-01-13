@@ -107,6 +107,7 @@ public class Camera {
   private int exposureOffset;
   private boolean useAutoFocus = true;
   private Range<Integer> fpsRange;
+  private Integer maxDurationLimit;
 
   private static final HashMap<String, Integer> supportedImageFormats;
   // Current supported outputs
@@ -609,6 +610,7 @@ public class Camera {
 
   public void startVideoRecording(Result result, Integer maxVideoDuration) {
     final File outputDir = applicationContext.getCacheDir();
+    maxDurationLimit = maxVideoDuration;
     try {
       videoRecordingFile = File.createTempFile("REC", ".mp4", outputDir);
     } catch (IOException | SecurityException e) {
@@ -625,9 +627,10 @@ public class Camera {
        mediaRecorder.setOnInfoListener((mr, what, extra) -> {
          if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
            try {
-             dartMessenger.sendTimeLimitReachedEvent(videoRecordingFile.getAbsolutePath());
+             dartMessenger.sendVideoRecordedEvent(videoRecordingFile.getAbsolutePath(), maxVideoDuration);
              recordingVideo = false;
              videoRecordingFile = null;
+             maxDurationLimit = null;
              resetCaptureSession();
            } catch (CameraAccessException e) {
              result.error("videoRecordingFailed", e.getMessage(), null);
@@ -665,8 +668,9 @@ public class Camera {
       recordingVideo = false;
 
       resetCaptureSession();
-
+      dartMessenger.sendVideoRecordedEvent(videoRecordingFile.getAbsolutePath(), maxDurationLimit);
       result.success(videoRecordingFile.getAbsolutePath());
+      maxDurationLimit = null;
       videoRecordingFile = null;
     } catch (CameraAccessException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);

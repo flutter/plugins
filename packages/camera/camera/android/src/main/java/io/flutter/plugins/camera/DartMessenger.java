@@ -20,7 +20,7 @@ class DartMessenger {
     ERROR,
     CAMERA_CLOSING,
     INITIALIZED,
-    MAX_TIME_LIMIT_REACHED,
+    VIDEO_RECORDED,
   }
 
   DartMessenger(BinaryMessenger messenger, long cameraId) {
@@ -54,12 +54,13 @@ class DartMessenger {
         });
   }
 
-  void sendTimeLimitReachedEvent(String path) {
+  void sendVideoRecordedEvent(String path, Integer maxVideoDuration) {
     this.send(
-        EventType.MAX_TIME_LIMIT_REACHED,
+        EventType.VIDEO_RECORDED,
         new HashMap<String, Object>() {
           {
             if (path != null) put("path", path);
+            if (maxVideoDuration != null) put("maxVideoDuration", maxVideoDuration);
           }
         });
   }

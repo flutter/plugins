@@ -87,6 +87,11 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('onCameraError() is not implemented.');
   }
 
+  /// The camera finished recording a video
+  Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
+    throw UnimplementedError('onCameraTimeLimitReached() is not implemented.');
+  }
+
   /// The device orientation changed.
   ///
   /// Implementations for this:
@@ -106,11 +111,6 @@ abstract class CameraPlatform extends PlatformInterface {
   /// Unlocks the capture orientation.
   Future<void> unlockCaptureOrientation(int cameraId) {
     throw UnimplementedError('unlockCaptureOrientation() is not implemented.');
-  }
-
-  @override
-  Stream<CameraTimeLimitReachedEvent> onCameraTimeLimitReached(int cameraId) {
-    throw UnimplementedError('onCameraTimeLimitReached() is not implemented.');
   }
 
   /// Captures an image and returns the file where it was saved.

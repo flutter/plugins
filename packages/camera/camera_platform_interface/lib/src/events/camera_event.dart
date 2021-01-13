@@ -236,32 +236,37 @@ class CameraErrorEvent extends CameraEvent {
   int get hashCode => super.hashCode ^ description.hashCode;
 }
 
-class CameraTimeLimitReachedEvent extends CameraEvent {
-  final XFile path;
+class VideoRecordedEvent extends CameraEvent {
+  final XFile file;
+  final Duration maxVideoDuration;
 
-  CameraTimeLimitReachedEvent(int cameraId, this.path) : super(cameraId);
+  VideoRecordedEvent(int cameraId, this.file, this.maxVideoDuration) : super(cameraId);
 
-  /// Converts the supplied [Map] to an instance of the [CameraTimeLimitReachedEvent]
+  /// Converts the supplied [Map] to an instance of the [VideoRecordedEvent]
   /// class.
-  CameraTimeLimitReachedEvent.fromJson(Map<String, dynamic> json)
-      : path = XFile(json['path']),
+  VideoRecordedEvent.fromJson(Map<String, dynamic> json)
+      : file = XFile(json['path']),
+        maxVideoDuration = json['maxVideoDuration'] != null
+            ? Duration(milliseconds: json['maxVideoDuration'] as int) : null,
         super(json['cameraId']);
 
-  /// Converts the [CameraTimeLimitReachedEvent] instance into a [Map] instance that can be
+  /// Converts the [VideoRecordedEvent] instance into a [Map] instance that can be
   /// serialized to JSON.
   Map<String, dynamic> toJson() => {
         'cameraId': cameraId,
-        'path': path.path,
+        'path': file.path,
+        'maxVideoDuration': maxVideoDuration?.inMilliseconds
       };
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       super == other &&
-          other is CameraTimeLimitReachedEvent &&
+          other is VideoRecordedEvent &&
           runtimeType == other.runtimeType &&
-          path == other.path;
+          file == other.file &&
+          maxVideoDuration == other.maxVideoDuration;
 
   @override
-  int get hashCode => super.hashCode ^ path.hashCode;
+  int get hashCode => super.hashCode ^ file.hashCode ^ maxVideoDuration.hashCode;
 }

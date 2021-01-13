@@ -1021,6 +1021,24 @@ void main() {
               .setExposureOffset(cameraController.cameraId, -0.4))
           .called(4);
     });
+
+    // test('Record video with time limit', () async {
+    //   CameraController cameraController = CameraController(
+    //       CameraDescription(
+    //           name: 'cam',
+    //           lensDirection: CameraLensDirection.back,
+    //           sensorOrientation: 90),
+    //       ResolutionPreset.max);
+    //   await cameraController.initialize();
+    //   cameraController.onVideoRecordedEvent().listen((VideoRecordedEvent event) {
+    //         debugPrint('VideoRecordedEvent received');
+    //   });
+    //   await cameraController.startVideoRecording(maxVideoDuration: Duration(seconds: 2));
+    //   // OR
+    //   await cameraController.startVideoRecording();
+    //   await Future.delayed(Duration(milliseconds: 500));
+    //   await cameraController.stopVideoRecording();
+    // });
   });
 }
 
