@@ -12,7 +12,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     path: ../../integration_test
-  pedantic: ^1.10.0-nullsafety.3
+  pedantic: ^1.10.0-nullsafety
 
 flutter:
   uses-material-design: true
