@@ -1,3 +1,15 @@
+## 4.5.9
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 4.5.8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 4.5.7
+
+* Update Flutter SDK constraint.
+
 ## 4.5.6
 
 * Fix deprecated member warning in tests.

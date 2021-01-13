@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' show listEquals, VoidCallback;
 import 'package:flutter/material.dart' show Color, Colors;
 import 'package:meta/meta.dart' show immutable, required;
@@ -46,6 +47,7 @@ class Polygon {
     this.fillColor = Colors.black,
     this.geodesic = false,
     this.points = const <LatLng>[],
+    this.holes = const <List<LatLng>>[],
     this.strokeColor = Colors.black,
     this.strokeWidth = 10,
     this.visible = true,
@@ -77,6 +79,14 @@ class Polygon {
   /// default; to form a closed polygon, the start and end points must be the same.
   final List<LatLng> points;
 
+  /// To create an empty area within a polygon, you need to use holes.
+  /// To create the hole, the coordinates defining the hole path must be inside the polygon.
+  ///
+  /// The vertices of the holes to be cut out of polygon.
+  ///
+  /// Line segments of each points of hole are drawn inside polygon between consecutive hole points.
+  final List<List<LatLng>> holes;
+
   /// True if the marker is visible.
   final bool visible;
 
@@ -106,6 +116,7 @@ class Polygon {
     Color fillColorParam,
     bool geodesicParam,
     List<LatLng> pointsParam,
+    List<List<LatLng>> holesParam,
     Color strokeColorParam,
     int strokeWidthParam,
     bool visibleParam,
@@ -118,6 +129,7 @@ class Polygon {
       fillColor: fillColorParam ?? fillColor,
       geodesic: geodesicParam ?? geodesic,
       points: pointsParam ?? points,
+      holes: holesParam ?? holes,
       strokeColor: strokeColorParam ?? strokeColor,
       strokeWidth: strokeWidthParam ?? strokeWidth,
       visible: visibleParam ?? visible,
@@ -154,6 +166,10 @@ class Polygon {
       json['points'] = _pointsToJson();
     }
 
+    if (holes != null) {
+      json['holes'] = _holesToJson();
+    }
+
     return json;
   }
 
@@ -167,6 +183,7 @@ class Polygon {
         fillColor == typedOther.fillColor &&
         geodesic == typedOther.geodesic &&
         listEquals(points, typedOther.points) &&
+        DeepCollectionEquality().equals(holes, typedOther.holes) &&
         visible == typedOther.visible &&
         strokeColor == typedOther.strokeColor &&
         strokeWidth == typedOther.strokeWidth &&
@@ -180,6 +197,18 @@ class Polygon {
     final List<dynamic> result = <dynamic>[];
     for (final LatLng point in points) {
       result.add(point.toJson());
+    }
+    return result;
+  }
+
+  List<List<dynamic>> _holesToJson() {
+    final List<List<dynamic>> result = <List<dynamic>>[];
+    for (final List<LatLng> hole in holes) {
+      final List<dynamic> jsonHole = <dynamic>[];
+      for (final LatLng point in hole) {
+        jsonHole.add(point.toJson());
+      }
+      result.add(jsonHole);
     }
     return result;
   }

@@ -8,28 +8,28 @@
 class AndroidDeviceInfo {
   /// Android device Info class.
   AndroidDeviceInfo({
-    this.version,
-    this.board,
-    this.bootloader,
-    this.brand,
-    this.device,
-    this.display,
-    this.fingerprint,
-    this.hardware,
-    this.host,
-    this.id,
-    this.manufacturer,
-    this.model,
-    this.product,
-    List<String> supported32BitAbis,
-    List<String> supported64BitAbis,
-    List<String> supportedAbis,
-    this.tags,
-    this.type,
-    this.isPhysicalDevice,
-    this.androidId,
-    List<String> systemFeatures,
-  })  : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
+    required this.version,
+    required this.board,
+    required this.bootloader,
+    required this.brand,
+    required this.device,
+    required this.display,
+    required this.fingerprint,
+    required this.hardware,
+    required this.host,
+    required this.id,
+    required this.manufacturer,
+    required this.model,
+    required this.product,
+    required List<String> supported32BitAbis,
+    required List<String> supported64BitAbis,
+    required List<String> supportedAbis,
+    required this.tags,
+    required this.type,
+    required this.isPhysicalDevice,
+    required this.androidId,
+    required List<String> systemFeatures,
+  })   : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
         supported64BitAbis = List<String>.unmodifiable(supported64BitAbis),
         supportedAbis = List<String>.unmodifiable(supportedAbis),
         systemFeatures = List<String>.unmodifiable(systemFeatures);
@@ -113,28 +113,28 @@ class AndroidDeviceInfo {
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo fromMap(Map<String, dynamic> map) {
     return AndroidDeviceInfo(
-      version: AndroidBuildVersion._fromMap(
-          map['version']?.cast<String, dynamic>() ?? {}),
-      board: map['board'],
-      bootloader: map['bootloader'],
-      brand: map['brand'],
-      device: map['device'],
-      display: map['display'],
-      fingerprint: map['fingerprint'],
-      hardware: map['hardware'],
-      host: map['host'],
-      id: map['id'],
-      manufacturer: map['manufacturer'],
-      model: map['model'],
-      product: map['product'],
-      supported32BitAbis: _fromList(map['supported32BitAbis'] ?? []),
-      supported64BitAbis: _fromList(map['supported64BitAbis'] ?? []),
-      supportedAbis: _fromList(map['supportedAbis'] ?? []),
-      tags: map['tags'],
-      type: map['type'],
-      isPhysicalDevice: map['isPhysicalDevice'],
-      androidId: map['androidId'],
-      systemFeatures: _fromList(map['systemFeatures'] ?? []),
+      version:
+          AndroidBuildVersion._fromMap(map['version']!.cast<String, dynamic>()),
+      board: map['board']!,
+      bootloader: map['bootloader']!,
+      brand: map['brand']!,
+      device: map['device']!,
+      display: map['display']!,
+      fingerprint: map['fingerprint']!,
+      hardware: map['hardware']!,
+      host: map['host']!,
+      id: map['id']!,
+      manufacturer: map['manufacturer']!,
+      model: map['model']!,
+      product: map['product']!,
+      supported32BitAbis: _fromList(map['supported32BitAbis']!),
+      supported64BitAbis: _fromList(map['supported64BitAbis']!),
+      supportedAbis: _fromList(map['supportedAbis']!),
+      tags: map['tags']!,
+      type: map['type']!,
+      isPhysicalDevice: map['isPhysicalDevice']!,
+      androidId: map['androidId']!,
+      systemFeatures: _fromList(map['systemFeatures']!),
     );
   }
 
@@ -152,25 +152,31 @@ class AndroidDeviceInfo {
 class AndroidBuildVersion {
   AndroidBuildVersion._({
     this.baseOS,
-    this.codename,
-    this.incremental,
     this.previewSdkInt,
-    this.release,
-    this.sdkInt,
     this.securityPatch,
+    required this.codename,
+    required this.incremental,
+    required this.release,
+    required this.sdkInt,
   });
 
   /// The base OS build the product is based on.
-  final String baseOS;
+  /// This is only available on Android 6.0 or above.
+  String? baseOS;
+
+  /// The developer preview revision of a prerelease SDK.
+  /// This is only available on Android 6.0 or above.
+  int? previewSdkInt;
+
+  /// The user-visible security patch level.
+  /// This is only available on Android 6.0 or above.
+  final String? securityPatch;
 
   /// The current development codename, or the string "REL" if this is a release build.
   final String codename;
 
   /// The internal value used by the underlying source control to represent this build.
   final String incremental;
-
-  /// The developer preview revision of a prerelease SDK.
-  final int previewSdkInt;
 
   /// The user-visible version string.
   final String release;
@@ -180,19 +186,16 @@ class AndroidBuildVersion {
   /// Possible values are defined in: https://developer.android.com/reference/android/os/Build.VERSION_CODES.html
   final int sdkInt;
 
-  /// The user-visible security patch level.
-  final String securityPatch;
-
   /// Deserializes from the map message received from [_kChannel].
   static AndroidBuildVersion _fromMap(Map<String, dynamic> map) {
     return AndroidBuildVersion._(
       baseOS: map['baseOS'],
-      codename: map['codename'],
-      incremental: map['incremental'],
       previewSdkInt: map['previewSdkInt'],
-      release: map['release'],
-      sdkInt: map['sdkInt'],
       securityPatch: map['securityPatch'],
+      codename: map['codename']!,
+      incremental: map['incremental']!,
+      release: map['release']!,
+      sdkInt: map['sdkInt']!,
     );
   }
 }
