@@ -320,7 +320,7 @@ class _GoogleMapState extends State<GoogleMap> {
       this,
     );
     _controller.complete(controller);
-    if (widget.onMapCreated != null) {
+    if (mounted && widget.onMapCreated != null) {
       widget.onMapCreated(controller);
     }
   }
