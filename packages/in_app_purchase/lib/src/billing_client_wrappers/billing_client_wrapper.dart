@@ -12,6 +12,7 @@ import 'purchase_wrapper.dart';
 import 'sku_details_wrapper.dart';
 import 'enum_converters.dart';
 
+/// Method identifier for the OnPurchaseUpdated method channel method.
 @visibleForTesting
 const String kOnPurchasesUpdated =
     'PurchasesUpdatedListener#onPurchasesUpdated(int, List<Purchase>)';
@@ -51,6 +52,9 @@ typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
 class BillingClient {
   bool _enablePendingPurchases = false;
 
+  /// Creates a billing client.
+  ///
+  /// The `onPurchasesUpdated` parameter must not be null.
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
     assert(onPurchasesUpdated != null);
     channel.setMethodCallHandler(callHandler);
@@ -273,6 +277,7 @@ class BillingClient {
         }));
   }
 
+  /// The method call handler for [channel].
   @visibleForTesting
   Future<void> callHandler(MethodCall call) async {
     switch (call.method) {
@@ -309,36 +314,52 @@ enum BillingResponse {
   // WARNING: Changes to this class need to be reflected in our generated code.
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
   // further changes.
+
+  /// The request has reached the maximum timeout before Google Play responds.
+  @JsonValue(-3)
+  serviceTimeout,
+
+  /// The requested feature is not supported by Play Store on the current device.
   @JsonValue(-2)
   featureNotSupported,
 
+  /// The play Store service is not connected now - potentially transient state.
   @JsonValue(-1)
   serviceDisconnected,
 
+  /// Success.
   @JsonValue(0)
   ok,
 
+  /// The user pressed back or canceled a dialog.
   @JsonValue(1)
   userCanceled,
 
+  /// The network connection is down.
   @JsonValue(2)
   serviceUnavailable,
 
+  /// The billing API version is not supported for the type requested.
   @JsonValue(3)
   billingUnavailable,
 
+  /// The requested product is not available for purchase.
   @JsonValue(4)
   itemUnavailable,
 
+  /// Invalid arguments provided to the API.
   @JsonValue(5)
   developerError,
 
+  /// Fatal error during the API action.
   @JsonValue(6)
   error,
 
+  /// Failure to purchase since item is already owned.
   @JsonValue(7)
   itemAlreadyOwned,
 
+  /// Failure to consume since item is not owned.
   @JsonValue(8)
   itemNotOwned,
 }

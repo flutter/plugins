@@ -13,10 +13,10 @@ void main() {
   // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
   // as part of initializing the app.
   InAppPurchaseConnection.enablePendingPurchases();
-  runApp(MyApp());
+  runApp(_MyApp());
 }
 
-const bool kAutoConsume = true;
+const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
 const List<String> _kProductIds = <String>[
@@ -25,12 +25,12 @@ const List<String> _kProductIds = <String>[
   'subscription'
 ];
 
-class MyApp extends StatefulWidget {
+class _MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<_MyApp> {
   final InAppPurchaseConnection _connection = InAppPurchaseConnection.instance;
   StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
@@ -245,10 +245,12 @@ class _MyAppState extends State<MyApp> {
             ),
             trailing: previousPurchase != null
                 ? Icon(Icons.check)
-                : FlatButton(
+                : TextButton(
                     child: Text(productDetails.price),
-                    color: Colors.green[800],
-                    textColor: Colors.white,
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.green[800],
+                      primary: Colors.white,
+                    ),
                     onPressed: () {
                       PurchaseParam purchaseParam = PurchaseParam(
                           productDetails: productDetails,
@@ -257,7 +259,7 @@ class _MyAppState extends State<MyApp> {
                       if (productDetails.id == _kConsumableId) {
                         _connection.buyConsumable(
                             purchaseParam: purchaseParam,
-                            autoConsume: kAutoConsume || Platform.isIOS);
+                            autoConsume: _kAutoConsume || Platform.isIOS);
                       } else {
                         _connection.buyNonConsumable(
                             purchaseParam: purchaseParam);
@@ -374,7 +376,7 @@ class _MyAppState extends State<MyApp> {
           }
         }
         if (Platform.isAndroid) {
-          if (!kAutoConsume && purchaseDetails.productID == _kConsumableId) {
+          if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
             await InAppPurchaseConnection.instance
                 .consumePurchase(purchaseDetails);
           }

@@ -1,3 +1,16 @@
+## 0.0.4+8
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.0.4+7
+
+* Update Flutter SDK constraint.
+
+## 0.0.4+6
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
 ## 0.0.4+5
 
 * Update license header.

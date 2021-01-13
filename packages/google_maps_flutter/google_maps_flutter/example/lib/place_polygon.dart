@@ -192,20 +192,20 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('add'),
                           onPressed: _add,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('remove'),
                           onPressed: (selectedPolygon == null) ? null : _remove,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle visible'),
                           onPressed:
                               (selectedPolygon == null) ? null : _toggleVisible,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('toggle geodesic'),
                           onPressed: (selectedPolygon == null)
                               ? null
@@ -215,7 +215,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                     ),
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('add holes'),
                           onPressed: (selectedPolygon == null)
                               ? null
@@ -236,13 +236,13 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                           onPressed:
                               (selectedPolygon == null) ? null : _changeWidth,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change stroke color'),
                           onPressed: (selectedPolygon == null)
                               ? null
                               : _changeStrokeColor,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('change fill color'),
                           onPressed: (selectedPolygon == null)
                               ? null

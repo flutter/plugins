@@ -33,6 +33,9 @@ import java.util.Map;
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
 
+  // TODO(hamdikahloun): FlutterMain has been deprecated and should be replaced with FlutterLoader
+  //  when it's available in Stable channel: https://github.com/flutter/flutter/issues/70923.
+  @SuppressWarnings("deprecation")
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
@@ -207,8 +210,9 @@ class Convert {
   }
 
   static Point toPoint(Object o) {
-    Map<String, Integer> screenCoordinate = (Map<String, Integer>) o;
-    return new Point(screenCoordinate.get("x"), screenCoordinate.get("y"));
+    Object x = toMap(o).get("x");
+    Object y = toMap(o).get("y");
+    return new Point((int) x, (int) y);
   }
 
   static Map<String, Integer> pointToJson(Point point) {
@@ -232,6 +236,18 @@ class Convert {
 
   private static Map<?, ?> toMap(Object o) {
     return (Map<?, ?>) o;
+  }
+
+  private static Map<String, Object> toObjectMap(Object o) {
+    Map<String, Object> hashMap = new HashMap<>();
+    Map<?, ?> map = (Map<?, ?>) o;
+    for (Object key : map.keySet()) {
+      Object object = map.get(key);
+      if (object != null) {
+        hashMap.put((String) key, object);
+      }
+    }
+    return hashMap;
   }
 
   private static float toFractionalPixels(Object o, float density) {
@@ -377,7 +393,7 @@ class Convert {
 
     final Object infoWindow = data.get("infoWindow");
     if (infoWindow != null) {
-      interpretInfoWindowOptions(sink, (Map<String, Object>) infoWindow);
+      interpretInfoWindowOptions(sink, toObjectMap(infoWindow));
     }
     final Object position = data.get("position");
     if (position != null) {

@@ -1,3 +1,56 @@
+## 3.0.0-nullsafety.3
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 3.0.0-nullsafety.2
+
+* Android: Cleanup the NetworkCallback object when a connectivity stream is cancelled
+
+## 3.0.0-nullsafety.1
+
+* Bump Dart SDK to support null safety.
+
+## 3.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 2.0.3
+
+* Update Flutter SDK constraint.
+
+## 2.0.2
+
+* Android: Fix IllegalArgumentException.
+* Android: Update Example project.
+
+## 2.0.1
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 2.0.0
+
+* [Breaking Change] The `getWifiName`, `getWifiBSSID` and `getWifiIP` are removed to [wifi_info_flutter](https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter)
+* Migration guide:
+
+  If you don't use any of the above APIs, your code should work as is. In addition, you can also remove `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationWhenInUseUsageDescription` in `ios/Runner/Info.plist`
+
+  If you use any of the above APIs, you can find the same APIs in the [wifi_info_flutter](https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter) plugin.
+  For example, to migrate `getWifiName`, use the new plugin:
+  ```dart
+  final WifiInfo _wifiInfo = WifiInfo();
+  final String wifiName = await _wifiInfo.getWifiName();
+  ```
+
+## 1.0.0
+
+* Mark wifi related code deprecated.
+* Announce 1.0.0!
+
+## 0.4.9+5
+
+* Update android compileSdkVersion to 29.
+
 ## 0.4.9+4
 
 * Update README with the updated information about WifiInfo on Android O or higher.
