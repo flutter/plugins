@@ -647,8 +647,8 @@ public class Camera {
     try {
       cameraCaptureSession.abortCaptures();
       mediaRecorder.stop();
-    } catch (CameraAccessException | IllegalStateException e) {
-      // Ignore exceptions and try to continue (changes are camera session already aborted capture)
+    } catch (IllegalStateException e) {
+      // Ignore exceptions and try to continue (chances are camera session already aborted capture)
     }
 
     mediaRecorder.reset();
@@ -668,7 +668,7 @@ public class Camera {
 
       result.success(videoRecordingFile.getAbsolutePath());
       videoRecordingFile = null;
-    } catch (CameraAccessException | IllegalStateException e) {
+    } catch (CameraAccessException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
     }
   }
