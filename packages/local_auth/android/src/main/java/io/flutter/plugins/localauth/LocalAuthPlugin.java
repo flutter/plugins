@@ -80,16 +80,16 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   public void onMethodCall(MethodCall call, @NonNull final Result result) {
     switch (call.method) {
       case "authenticate":
-        this.authenticate(call, result);
+        authenticate(call, result);
         break;
       case "getAvailableBiometrics":
-        this.getAvailableBiometrics(result);
+        getAvailableBiometrics(result);
         break;
       case "isDeviceSupported":
-        this.isDeviceSupported(result);
+        isDeviceSupported(result);
         break;
       case "stopAuthentication":
-        this.stopAuthentication(result);
+        stopAuthentication(result);
         break;
       default:
         result.notImplemented();
