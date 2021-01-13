@@ -5,6 +5,8 @@
 package io.flutter.plugins.camera;
 
 import android.os.Handler;
+import android.os.Looper;
+
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.MethodChannel;
 
@@ -28,7 +30,7 @@ class PictureCaptureRequest {
   public PictureCaptureRequest(MethodChannel.Result result) {
     this.result = result;
     state = State.idle;
-    this.handler = new Handler();
+    this.handler = new Handler(Looper.getMainLooper());
   }
 
   public void setState(State state) {
