@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
-
 import androidx.annotation.NonNull;
 import androidx.biometric.BiometricManager;
 import androidx.fragment.app.FragmentActivity;
