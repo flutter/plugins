@@ -368,8 +368,8 @@ Set<Polygon> _rawOptionsToInitialPolygons(Map<String, dynamic> rawOptions) {
               ?.toList(),
           holes: rawPolygon['holes']
               ?.map<List<LatLng>>((List hole) => hole
-                ?.map<LatLng>((rawPoint) => LatLng.fromJson(rawPoint))
-                ?.toList())
+                  ?.map<LatLng>((rawPoint) => LatLng.fromJson(rawPoint))
+                  ?.toList())
               ?.toList(),
         );
       }) ??

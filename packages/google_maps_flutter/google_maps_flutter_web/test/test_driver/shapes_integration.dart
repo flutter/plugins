@@ -194,17 +194,19 @@ void main() {
     testWidgets('Handle Polygons with holes', (WidgetTester tester) async {
       final polygons = {
         Polygon(
-            polygonId: PolygonId('BermudaTriangle'),
-            points: [LatLng(25.774, -80.19),
-              LatLng(18.466, -66.118),
-              LatLng(32.321, -64.757),],
-            holes: [
-              [
-                LatLng(28.745, -70.579 ),
-                LatLng(29.57, -67.514 ),
-                LatLng(27.339, -66.668 ),
-              ],
+          polygonId: PolygonId('BermudaTriangle'),
+          points: [
+            LatLng(25.774, -80.19),
+            LatLng(18.466, -66.118),
+            LatLng(32.321, -64.757),
+          ],
+          holes: [
+            [
+              LatLng(28.745, -70.579),
+              LatLng(29.57, -67.514),
+              LatLng(27.339, -66.668),
             ],
+          ],
         ),
       };
 
