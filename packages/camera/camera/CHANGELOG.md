@@ -1,6 +1,14 @@
-## 0.6.6+1
+## 0.7.0+1
 
 * Fixes picture captures causing a crash on some Huawei devices.
+
+## 0.7.0
+
+* Added support for capture orientation locking on Android and iOS.
+* Fixed camera preview not rotating correctly on Android and iOS.
+* Fixed camera preview sometimes appearing stretched on Android and iOS.
+* Fixed videos & photos saving with the incorrect rotation on iOS.
+* BREAKING CHANGE: `CameraValue.aspectRatio` now returns `width / height` rather than `height / width`.
 
 ## 0.6.6
 
@@ -24,7 +32,7 @@
 
 ## 0.6.4+2
 
-* Set ImageStreamReader listener to null to prevent stale images when streaming images. 
+* Set ImageStreamReader listener to null to prevent stale images when streaming images.
 
 ## 0.6.4+1
 
