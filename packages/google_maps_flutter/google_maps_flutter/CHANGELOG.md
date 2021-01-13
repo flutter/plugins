@@ -1,3 +1,7 @@
+## 1.0.11
+
+* Fix onMapCreated being called when the platform view is created after `GoogleMap` has already been disposed.
+
 ## 1.0.10
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
