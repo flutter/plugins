@@ -8,6 +8,7 @@ import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,8 +28,15 @@ get mockAvailableCameras => [
 
 get mockInitializeCamera => 13;
 
-get mockOnCameraInitializedEvent =>
-    CameraInitializedEvent(13, 75, 75, ExposureMode.auto, true);
+get mockOnCameraInitializedEvent => CameraInitializedEvent(
+      13,
+      75,
+      75,
+      ExposureMode.auto,
+      true,
+      FocusMode.auto,
+      true,
+    );
 
 get mockOnCameraClosingEvent => null;
 
@@ -162,6 +170,22 @@ void main() {
             'bar',
           )));
       mockPlatformException = false;
+    });
+
+    test('initialize() sets imageFormat', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      CameraController cameraController = CameraController(
+        CameraDescription(
+            name: 'cam',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 90),
+        ResolutionPreset.max,
+        imageFormatGroup: ImageFormatGroup.yuv420,
+      );
+      await cameraController.initialize();
+      verify(CameraPlatform.instance
+              .initializeCamera(13, imageFormatGroup: ImageFormatGroup.yuv420))
+          .called(1);
     });
 
     test('prepareForVideoRecording() calls $CameraPlatform ', () async {
@@ -1003,6 +1027,10 @@ void main() {
 class MockCameraPlatform extends Mock
     with MockPlatformInterfaceMixin
     implements CameraPlatform {
+  @override
+  Future<void> initializeCamera(int cameraId,
+      {ImageFormatGroup imageFormatGroup});
+
   @override
   Future<List<CameraDescription>> availableCameras() =>
       Future.value(mockAvailableCameras);

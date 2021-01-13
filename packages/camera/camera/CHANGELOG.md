@@ -1,6 +1,14 @@
-## 0.6.5
+## 0.6.7
 
 * Added maxVideoDuration to startVideoRecording to limit the length of a recording. 
+
+## 0.6.6
+
+* Adds auto focus support for Android and iOS implementations.
+
+## 0.6.5
+
+* Adds ImageFormat selection for ImageStream and Video(iOS only).
 
 ## 0.6.4+5
 
@@ -20,7 +28,7 @@
 
 ## 0.6.4+1
 
-* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash.
 
 ## 0.6.4
 
