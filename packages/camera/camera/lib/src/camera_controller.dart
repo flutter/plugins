@@ -442,7 +442,6 @@ class CameraController extends ValueNotifier<CameraValue> {
           .listen((event) {
         value = value.copyWith(isRecordingVideo: false);
       });
-      debugPrint('started');
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -465,9 +464,15 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      XFile file = await CameraPlatform.instance.stopVideoRecording(_cameraId);
-      value = value.copyWith(isRecordingVideo: false);
-      return file;
+      Completer<XFile> completer = Completer();
+      CameraPlatform.instance
+          .onVideoRecordedEvent(_cameraId).asBroadcastStream()
+          .listen((event) {
+        value = value.copyWith(isRecordingVideo: false);
+        completer.complete(event.file);
+      });
+      await CameraPlatform.instance.stopVideoRecording(_cameraId);
+      return completer.future;
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

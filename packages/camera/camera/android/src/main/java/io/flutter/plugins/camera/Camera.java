@@ -669,7 +669,6 @@ public class Camera {
 
       resetCaptureSession();
       dartMessenger.sendVideoRecordedEvent(videoRecordingFile.getAbsolutePath(), maxDurationLimit);
-      result.success(videoRecordingFile.getAbsolutePath());
       maxDurationLimit = null;
       videoRecordingFile = null;
     } catch (CameraAccessException e) {
