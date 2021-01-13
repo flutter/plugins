@@ -190,6 +190,30 @@ void main() {
       expect(polygon.get('strokeColor'), '#c0ffee');
       expect(polygon.get('strokeOpacity'), closeTo(1, _acceptableDelta));
     });
+
+    testWidgets('Handle Polygons with holes', (WidgetTester tester) async {
+      final polygons = {
+        Polygon(
+            polygonId: PolygonId('BermudaTriangle'),
+            points: [LatLng(25.774, -80.19),
+              LatLng(18.466, -66.118),
+              LatLng(32.321, -64.757),],
+            holes: [
+              [
+                LatLng(28.745, -70.579 ),
+                LatLng(29.57, -67.514 ),
+                LatLng(27.339, -66.668 ),
+              ],
+            ],
+        ),
+      };
+
+      controller.addPolygons(polygons);
+
+      expect(controller.polygons.length, 1);
+      expect(controller.polygons, contains(PolygonId('BermudaTriangle')));
+      expect(controller.polygons, isNot(contains(PolygonId('66'))));
+    });
   });
 
   group('PolylinesController', () {
