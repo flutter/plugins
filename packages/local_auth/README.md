@@ -65,17 +65,15 @@ bool didAuthenticate =
         localizedReason: 'Please authenticate to show account balance');
 ```
 
-The `authenticateWithBiometrics()` method uses biometric authentication only.
+To authenticate using biometric authentication only, set `biometricOnly` to `true`.
 
 ```dart
 var localAuth = LocalAuthentication();
 bool didAuthenticate =
-    await localAuth.authenticateWithBiometrics(
-        localizedReason: 'Please authenticate to show account balance');
+    await localAuth.authenticate(
+        localizedReason: 'Please authenticate to show account balance',
+        biometricOnly: true);
 ```
-
-Note that `authenticate()` and `authenticateWithBiometrics()` methods have
-the same signature and parameters.
 
 If you don't want to use the default dialogs, call this API with
 'useErrorDialogs = false'. In this case, it will throw the error message back
@@ -83,7 +81,7 @@ and you need to handle them in your dart code:
 
 ```dart
 bool didAuthenticate =
-    await localAuth.authenticateWithBiometrics(
+    await localAuth.authenticate(
         localizedReason: 'Please authenticate to show account balance',
         useErrorDialogs: false);
 ```
@@ -99,7 +97,7 @@ const iosStrings = const IOSAuthMessages(
     goToSettingsButton: 'settings',
     goToSettingsDescription: 'Please set up your Touch ID.',
     lockOut: 'Please reenable your Touch ID');
-await localAuth.authenticateWithBiometrics(
+await localAuth.authenticate(
     localizedReason: 'Please authenticate to show account balance',
     useErrorDialogs: false,
     iOSAuthStrings: iosStrings);
@@ -127,7 +125,7 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 
 try {
-  bool didAuthenticate = await local_auth.authenticateWithBiometrics(
+  bool didAuthenticate = await local_auth.authenticate(
       localizedReason: 'Please authenticate to show account balance');
 } on PlatformException catch (e) {
   if (e.code == auth_error.notAvailable) {
@@ -205,7 +203,7 @@ Update your project's `AndroidManifest.xml` file to include the
 On Android, you can check only for existence of fingerprint hardware prior
 to API 29 (Android Q). Therefore, if you would like to support other biometrics
 types (such as face scanning) and you want to support SDKs lower than Q,
-_do not_ call `getAvailableBiometrics`. Simply call `authenticateWithBiometrics`.
+_do not_ call `getAvailableBiometrics`. Simply call `authenticate` with `biometricOnly: true`.
 This will return an error if there was no hardware available.
 
 ## Sticky Auth
