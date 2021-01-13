@@ -27,13 +27,6 @@
                                     [FLTGoogleMapJsonConversions toDouble:data[1]]);
 }
 
-+ (GMSCoordinateBounds*)toLatLngBounds:(NSArray*)data {
-  CLLocationCoordinate2D ne = toLocation:data[0];
-  CLLocationCoordinate2D sw = toLocation:data[1];
-  
-  return [[GMSCoordinateBounds alloc] initWithCoordinate:ne coordinate:sw];
-}
-
 + (CGPoint)toPoint:(NSArray*)data {
   return CGPointMake([FLTGoogleMapJsonConversions toDouble:data[0]],
                      [FLTGoogleMapJsonConversions toDouble:data[1]]);

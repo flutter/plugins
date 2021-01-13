@@ -98,8 +98,8 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
                                                     mapView:_mapView
                                                   registrar:registrar];
     _groundOverlaysController = [[FLTGroundOverlaysController alloc] init:_channel
-                                                    mapView:_mapView
-                                                  registrar:registrar];
+                                                                  mapView:_mapView
+                                                                registrar:registrar];
     _tileOverlaysController = [[FLTTileOverlaysController alloc] init:_channel
                                                               mapView:_mapView
                                                             registrar:registrar];
@@ -125,7 +125,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     }
     id groundOverlaysToAdd = args[@"groundOverlaysToAdd"];
     if ([groundOverlaysToAdd isKindOfClass:[NSArray class]]) {
-      [_groundOverlaysToAdd addGroundOverlays:groundOverlaysToAdd];
+      [_groundOverlaysController addGroundOverlays:groundOverlaysToAdd];
     }
   }
   return self;

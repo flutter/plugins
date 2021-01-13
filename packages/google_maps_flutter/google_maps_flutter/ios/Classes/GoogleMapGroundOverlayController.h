@@ -4,30 +4,32 @@
 
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "GoogleMapController.h"
 
-// Defines circle UI options writable from Flutter.
+// Defines ground overlay UI options writable from Flutter.
 @protocol FLTGoogleMapGroundOverlayOptionsSink
+- (void)setBearing:(CLLocationDirection)bearing;
+- (void)setBitmapDescriptor:(UIImage*)bd;
+- (void)setBounds:(GMSCoordinateBounds*)bounds;
 - (void)setConsumeTapEvents:(BOOL)consume;
+- (void)setLocation:(CLLocationCoordinate2D)location width:(CGFloat)width height:(CGFloat)height;
+- (void)setTransparency:(float)transparency;
 - (void)setVisible:(BOOL)visible;
 - (void)setZIndex:(int)zIndex;
-- (void)setLocation:(CLLocationCoordinate2D)location width:(CGFloat)width height:(CGFloat)height bounds:(GMSCoordinateBounds*)bounds;
-- (void)setBitmapDescriptor:(UIImage*)bd;
-- (void)setBearing:(CLLocationDirection)bearing;
-- (void)setTransparency:(float)transparency;
 @end
 
-// Defines circle controllable by Flutter.
+// Defines ground overlay controllable by Flutter.
 @interface FLTGoogleMapGroundOverlayController : NSObject <FLTGoogleMapGroundOverlayOptionsSink>
 @property(atomic, readonly) NSString* groundOverlayId;
 - (instancetype)initGroundOverlayWithPosition:(CLLocationCoordinate2D)position
-                              icon:(UIImage*)icon
-                              zoomLevel:(CGFloat)zoomLevel
+                                         icon:(UIImage*)icon
+                                    zoomLevel:(CGFloat)zoomLevel
                               groundOverlayId:(NSString*)groundOverlayId
-                               mapView:(GMSMapView*)mapView;
+                                      mapView:(GMSMapView*)mapView;
 - (instancetype)initGroundOverlayWithBounds:(GMSCoordinateBounds*)bounds
-                              icon:(UIImage*)icon
-                              groundOverlayId:(NSString*)groundOverlayId
-                               mapView:(GMSMapView*)mapView;
+                                       icon:(UIImage*)icon
+                            groundOverlayId:(NSString*)groundOverlayId
+                                    mapView:(GMSMapView*)mapView;
 - (BOOL)consumeTapEvents;
 - (void)removeGroundOverlay;
 @end
