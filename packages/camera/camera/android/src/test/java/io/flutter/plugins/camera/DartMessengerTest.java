@@ -8,6 +8,7 @@ import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 
 import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.StandardMethodCodec;
@@ -87,6 +88,17 @@ public class DartMessengerTest {
     MethodCall call = decodeSentMessage(sentMessages.get(0));
     assertEquals("camera_closing", call.method);
     assertNull(call.argument("description"));
+  }
+
+  @Test
+  public void sendDeviceOrientationChangedEvent() {
+    dartMessenger.sendDeviceOrientationChangeEvent(PlatformChannel.DeviceOrientation.PORTRAIT_UP);
+
+    List<ByteBuffer> sentMessages = fakeBinaryMessenger.getMessages();
+    assertEquals(1, sentMessages.size());
+    MethodCall call = decodeSentMessage(sentMessages.get(0));
+    assertEquals("orientation_changed", call.method);
+    assertEquals(call.argument("orientation"), "portraitUp");
   }
 
   private MethodCall decodeSentMessage(ByteBuffer sentMessage) {
