@@ -1,6 +1,30 @@
+## 0.6.6
+
+* Adds auto focus support for Android and iOS implementations.
+
+## 0.6.5
+
+* Adds ImageFormat selection for ImageStream and Video(iOS only).
+
+## 0.6.4+5
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.6.4+4
+
+* Set camera auto focus enabled by default.
+
+## 0.6.4+3
+
+* Detect if selected camera supports auto focus and act accordingly on Android. This solves a problem where front facing cameras are not capturing the picture because auto focus is not supported.
+
+## 0.6.4+2
+
+* Set ImageStreamReader listener to null to prevent stale images when streaming images. 
+
 ## 0.6.4+1
 
-* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash.
 
 ## 0.6.4
 

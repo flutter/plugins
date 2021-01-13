@@ -5,7 +5,11 @@
   * `fingerprintHint` is now `biometricHint`  
   * `fingerprintNotRecognized`is now `biometricNotRecognized`  
   * `fingerprintSuccess`is now `biometricSuccess`  
-  * `fingerprintRequiredTitle` is now `biometricRequiredTitle`  
+  * `fingerprintRequiredTitle` is now `biometricRequiredTitle` 
+
+## 1.0.0-nullsafety.3
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
 
 ## 1.0.0-nullsafety.2
 

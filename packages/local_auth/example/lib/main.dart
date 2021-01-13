@@ -154,20 +154,20 @@ class _MyAppState extends State<MyApp> {
                   Text("This device is not supported"),
                 Divider(height: 100),
                 Text('Can check biometrics: $_canCheckBiometrics\n'),
-                RaisedButton(
+                ElevatedButton(
                   child: const Text('Check biometrics'),
                   onPressed: _checkBiometrics,
                 ),
                 Divider(height: 100),
                 Text('Available biometrics: $_availableBiometrics\n'),
-                RaisedButton(
+                ElevatedButton(
                   child: const Text('Get available biometrics'),
                   onPressed: _getAvailableBiometrics,
                 ),
                 Divider(height: 100),
                 Text('Current State: $_authorized\n'),
                 (_isAuthenticating)
-                    ? RaisedButton(
+                    ? ElevatedButton(
                         onPressed: _cancelAuthentication,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -179,7 +179,7 @@ class _MyAppState extends State<MyApp> {
                       )
                     : Column(
                         children: [
-                          RaisedButton(
+                          ElevatedButton(
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -189,7 +189,7 @@ class _MyAppState extends State<MyApp> {
                             ),
                             onPressed: _authenticate,
                           ),
-                          RaisedButton(
+                          ElevatedButton(
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
