@@ -1,6 +1,18 @@
-## 6.0.0-nullsafety.2
+## 6.0.0-nullsafety.5
 
 * Fix PlatformException when not specifying `forceSafariVC` for non-web URLs
+
+## 6.0.0-nullsafety.4
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 6.0.0-nullsafety.3
+
+* forceSafariVC should be nullable.
+
+## 6.0.0-nullsafety.2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
 
 ## 6.0.0-nullsafety.1
 

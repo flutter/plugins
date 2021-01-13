@@ -57,7 +57,7 @@ void main() {
         )).captured,
         <dynamic>[
           'http://flutter.dev/',
-          true,
+          false,
           false,
           false,
           false,
@@ -188,6 +188,32 @@ void main() {
 
     test('cannot launch a non-web in webview', () async {
       expect(() async => await launch('tel:555-555-5555', forceWebView: true),
+          throwsA(isA<PlatformException>()));
+    });
+
+    test('send e-mail', () async {
+      await launch('mailto:gmail-noreply@google.com?subject=Hello');
+      expect(
+        verify(await mock.launch(
+          any,
+          useSafariVC: anyNamed('useSafariVC'),
+          useWebView: anyNamed('useWebView'),
+          enableJavaScript: anyNamed('enableJavaScript'),
+          enableDomStorage: anyNamed('enableDomStorage'),
+          universalLinksOnly: anyNamed('universalLinksOnly'),
+          headers: anyNamed('headers'),
+        )),
+        isInstanceOf<VerificationResult>(),
+      );
+    });
+
+    test('cannot send e-mail with forceSafariVC: true', () async {
+      expect(() async => await launch('mailto:gmail-noreply@google.com?subject=Hello', forceSafariVC: true),
+          throwsA(isA<PlatformException>()));
+    });
+
+    test('cannot send e-mail with forceWebView: true', () async {
+      expect(() async => await launch('mailto:gmail-noreply@google.com?subject=Hello', forceWebView: true),
           throwsA(isA<PlatformException>()));
     });
 
