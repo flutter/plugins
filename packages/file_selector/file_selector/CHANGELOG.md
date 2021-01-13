@@ -1,3 +1,7 @@
+## 0.7.0+3
+
+* Endorse the web implementation.
+
 ## 0.7.0+2
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
