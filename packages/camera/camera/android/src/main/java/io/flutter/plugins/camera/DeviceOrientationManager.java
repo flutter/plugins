@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.hardware.SensorManager;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.provider.Settings;
 import android.view.Display;
 import android.view.OrientationEventListener;
@@ -189,6 +191,11 @@ class DeviceOrientationManager {
 
   @SuppressWarnings("deprecation")
   private Display getDisplay() {
-    return ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+    if (VERSION.SDK_INT >= VERSION_CODES.R) {
+      return activity.getDisplay();
+    } else {
+      return ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE))
+          .getDefaultDisplay();
+    }
   }
 }
