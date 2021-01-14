@@ -73,7 +73,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
   Future<void> _createMarkerImageFromAsset(BuildContext context) async {
     if (_markerIcon == null) {
       final ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context);
+          createLocalImageConfiguration(context, size: Size.square(48));
       BitmapDescriptor.fromAssetImage(
               imageConfiguration, 'assets/red_square.png')
           .then(_updateBitmap);

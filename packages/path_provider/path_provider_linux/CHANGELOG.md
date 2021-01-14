@@ -1,3 +1,23 @@
+## 0.1.1+3
+
+* Update Flutter SDK constraint.
+
+## 0.1.1+2
+
+* Log errors in the example when calls to the `path_provider` fail.
+
+## 0.1.1+1
+
+* Check in linux/ directory for example/
+
+## 0.1.1	- NOT PUBLISHED
+* Reverts changes on 0.1.0, which broke the tree.
+
+
+## 0.1.0	- NOT PUBLISHED
+* This release updates getApplicationSupportPath to use the application ID instead of the executable name.
+  * No migration is provided, so any older apps that were using this path will now have a different directory.
+
 ## 0.0.1+2
 * This release updates the example to depend on the endorsed plugin rather than relative path
 
@@ -7,4 +27,3 @@
 ## 0.0.1
 * The initial implementation of path_provider for Linux
   * Implements getApplicationSupportPath, getApplicationDocumentsPath, getDownloadsPath, and getTemporaryPath
-  

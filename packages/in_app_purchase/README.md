@@ -52,6 +52,19 @@ use.
 ### Initializing the plugin
 
 ```dart
+void main() {
+  // Inform the plugin that this app supports pending purchases on Android.
+  // An error will occur on Android if you access the plugin `instance`
+  // without this call.
+  //
+  // On iOS this is a no-op.
+  InAppPurchaseConnection.enablePendingPurchases();
+  
+  runApp(MyApp());
+}
+```
+
+```dart
 // Subscribe to any incoming purchases at app initialization. These can
 // propagate from either storefront so it's important to listen as soon as
 // possible to avoid losing events.
@@ -90,7 +103,7 @@ if (!available) {
 // Set literals require Dart 2.2. Alternatively, use `Set<String> _kIds = <String>['product1', 'product2'].toSet()`.
 const Set<String> _kIds = {'product1', 'product2'};
 final ProductDetailsResponse response = await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
-if (!response.notFoundIDs.isEmpty) {
+if (response.notFoundIDs.isNotEmpty) {
     // Handle the error.
 }
 List<ProductDetails> products = response.productDetails;
@@ -168,7 +181,7 @@ WARNING! Failure to call `InAppPurchaseConnection.completePurchase` and get a su
 ## Development
 
 This plugin uses
-[json_serializable](https://pub.dartlang.org/packages/json_serializable) for the
+[json_serializable](https://pub.dev/packages/json_serializable) for the
 many data structs passed between the underlying platform layers and Dart. After
 editing any of the serialized data structs, rebuild the serializers by running
 `flutter packages pub run build_runner build --delete-conflicting-outputs`.

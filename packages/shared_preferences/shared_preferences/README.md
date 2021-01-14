@@ -1,11 +1,11 @@
 # Shared preferences plugin
 
-[![pub package](https://img.shields.io/pub/v/shared_preferences.svg)](https://pub.dartlang.org/packages/shared_preferences)
+[![pub package](https://img.shields.io/pub/v/shared_preferences.svg)](https://pub.dev/packages/shared_preferences)
 
-Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
-a persistent store for simple data. Data is persisted to disk asynchronously.
-Neither platform can guarantee that writes will be persisted to disk after
-returning and this plugin must not be used for storing critical data.
+Wraps platform-specific persistent storage for simple data
+(NSUserDefaults on iOS and macOS, SharedPreferences on Android, etc.). Data may be persisted to disk asynchronously,
+and there is no guarantee that writes will be persisted to disk after
+returning, so this plugin must not be used for storing critical data.
 
 
 **Please set your constraint to `shared_preferences: '>=0.5.y+x <2.0.0'`**
@@ -16,7 +16,7 @@ Please use `shared_preferences: '>=0.5.y+x <2.0.0'` as your dependency constrain
 For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
 
 ## Usage
-To use this plugin, add `shared_preferences` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this plugin, add `shared_preferences` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 
 ### Example
 

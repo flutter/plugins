@@ -7,8 +7,7 @@ import 'package:image_picker_platform_interface/image_picker_platform_interface.
 
 final String _kImagePickerInputsDomId = '__image_picker_web-file-input';
 final String _kAcceptImageMimeType = 'image/*';
-// TODO The value below seems to not be enough for Safari (https://github.com/flutter/flutter/issues/58532)
-final String _kAcceptVideoMimeType = 'video/*';
+final String _kAcceptVideoMimeType = 'video/3gpp,video/x-m4v,video/mp4,video/*';
 
 /// The web implementation of [ImagePickerPlatform].
 ///

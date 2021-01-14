@@ -1,6 +1,6 @@
 # Share plugin
 
-[![pub package](https://img.shields.io/pub/v/share.svg)](https://pub.dartlang.org/packages/share)
+[![pub package](https://img.shields.io/pub/v/share.svg)](https://pub.dev/packages/share)
 
 A Flutter plugin to share content from your Flutter app via the platform's
 share dialog.
@@ -17,7 +17,7 @@ For more details see: https://github.com/flutter/flutter/wiki/Package-migration-
 
 ## Usage
 
-To use this plugin, add `share` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this plugin, add `share` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 
 ## Example
 
@@ -38,4 +38,10 @@ sharing to email.
 
 ``` dart
 Share.share('check out my website https://example.com', subject: 'Look what I made!');
+```
+
+To share one or multiple files invoke the static `shareFiles` method anywhere in your Dart code. Optionally you can also pass in `text` and `subject`.
+``` dart
+Share.shareFiles(['${directory.path}/image.jpg'], text: 'Great picture');
+Share.shareFiles(['${directory.path}/image1.jpg', '${directory.path}/image2.jpg']);
 ```

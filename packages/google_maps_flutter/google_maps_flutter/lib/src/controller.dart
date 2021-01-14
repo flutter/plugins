@@ -258,4 +258,9 @@ class GoogleMapController {
   Future<Uint8List> takeSnapshot() {
     return _googleMapsFlutterPlatform.takeSnapshot(mapId: mapId);
   }
+
+  /// Disposes of the platform resources
+  void dispose() {
+    _googleMapsFlutterPlatform.dispose(mapId: mapId);
+  }
 }

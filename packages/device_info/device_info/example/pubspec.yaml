@@ -1,0 +1,22 @@
+name: device_info_example
+description: Demonstrates how to use the device_info plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  device_info:
+    path: ../
+
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  integration_test:
+    path: ../../../integration_test
+  pedantic: ^1.10.0-nullsafety.1
+
+flutter:
+  uses-material-design: true
+
+environment:
+  sdk: ">=2.10.0-56.0.dev <3.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"
