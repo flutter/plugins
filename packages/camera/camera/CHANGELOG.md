@@ -1,3 +1,7 @@
+## 0.7.0+3
+
+* Fixes crash with using inner camera on some Android devices.
+
 ## 0.7.0+2
 
 * Improved error feedback by differentiating between uninitialized and disposed camera controllers.
