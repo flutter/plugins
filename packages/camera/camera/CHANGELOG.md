@@ -1,3 +1,7 @@
+## 0.7.0+1
+
+* Fixes picture captures causing a crash on some Huawei devices.
+
 ## 0.7.0
 
 * Added support for capture orientation locking on Android and iOS.
