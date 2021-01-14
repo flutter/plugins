@@ -216,7 +216,6 @@ public class Camera {
           public void onOpened(@NonNull CameraDevice device) {
             cameraDevice = device;
             try {
-              cameraRegions = new CameraRegions(getRegionBoundaries());
               startPreview();
               dartMessenger.sendCameraInitializedEvent(
                   previewSize.getWidth(),
@@ -299,6 +298,8 @@ public class Camera {
         captureRequestBuilder.addTarget(surface);
       }
     }
+
+    cameraRegions = new CameraRegions(getRegionBoundaries());
 
     // Prepare the callback
     CameraCaptureSession.StateCallback callback =
