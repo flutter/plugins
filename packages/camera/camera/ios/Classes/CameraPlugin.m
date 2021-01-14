@@ -365,12 +365,12 @@ NSString *const errorMethod = @"error";
   _enableAudio = enableAudio;
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
-  _flashMode = FlashModeAuto;
+  _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
+  _flashMode = _captureDevice.hasFlash ? FlashModeAuto : FlashModeOff;
   _exposureMode = ExposureModeAuto;
   _focusMode = FocusModeAuto;
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
 
-  _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
                                                              error:&localError];
