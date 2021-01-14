@@ -33,6 +33,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return _channels[mapId];
   }
 
+  // Keep a collection of id -> GetTileCallback
+  // Every method call passes the int mapId
+  final Map<int, MapGetTileCallback> _getTileCallbacks = {};
+
   /// Initializes the platform interface with [id].
   ///
   /// This method is called when the plugin is first initialized.
@@ -184,6 +188,15 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
           LatLng.fromJson(call.arguments['position']),
         ));
         break;
+      case 'tileOverlay#getTile':
+        final getTileCallback = _getTileCallbacks[mapId];
+        final Tile tile = await getTileCallback(
+          call.arguments['tileOverlayId'],
+          call.arguments['x'],
+          call.arguments['y'],
+          call.arguments['zoom'],
+        );
+        return tile.toJson();
       default:
         throw MissingPluginException();
     }
@@ -279,6 +292,40 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       'circles#update',
       circleUpdates.toJson(),
     );
+  }
+
+  /// Updates tile overlay configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  @override
+  Future<void> updateTileOverlays(
+    TileOverlayUpdates tileOverlayUpdates, {
+    @required int mapId,
+  }) {
+    assert(tileOverlayUpdates != null);
+    return channel(mapId).invokeMethod<void>(
+      'tileOverlays#update',
+      tileOverlayUpdates.toJson(),
+    );
+  }
+
+  /// Clears the tile cache so that all tiles will be requested again from the
+  /// [TileProvider]. The current tiles from this tile overlay will also be
+  /// cleared from the map after calling this method. The API maintains a small
+  /// in-memory cache of tiles. If you want to cache tiles for longer, you
+  /// should implement an on-disk cache.
+  @override
+  Future<void> clearTileCache(
+    TileOverlayId tileOverlayId, {
+    @required int mapId,
+  }) {
+    return channel(mapId)
+        .invokeMethod<void>('tileOverlays#clearTileCache', <String, dynamic>{
+      'tileOverlayId': tileOverlayId.value,
+    });
   }
 
   /// Starts an animated change of the map camera position.
@@ -449,6 +496,16 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     @required int mapId,
   }) {
     return channel(mapId).invokeMethod<Uint8List>('map#takeSnapshot');
+  }
+
+  /// Sets the `MapGetTileCallback` with mapId.
+  ///
+  /// `mapId` and `callback` must not be null.
+  @override
+  void setGetTileCallback(
+      {@required int mapId, @required MapGetTileCallback callback}) {
+    assert(mapId != null && callback != null);
+    _getTileCallbacks[mapId] = callback;
   }
 
   /// This method builds the appropriate platform view where the map
