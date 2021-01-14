@@ -94,7 +94,11 @@ void main() {
       final TileOverlayUpdates updates =
           TileOverlayUpdates.from(previous, current);
       expect(
-          updates.hashCode, hashValues(hashList(updates.tileOverlaysToAdd), hashList(updates.tileOverlayIdsToRemove), hashList(updates.tileOverlaysToChange)));
+          updates.hashCode,
+          hashValues(
+              hashList(updates.tileOverlaysToAdd),
+              hashList(updates.tileOverlayIdsToRemove),
+              hashList(updates.tileOverlaysToChange)));
     });
 
     test('toString', () async {
