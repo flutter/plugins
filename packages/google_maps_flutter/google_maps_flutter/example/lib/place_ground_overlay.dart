@@ -32,7 +32,7 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
   GoogleMapController controller;
   Map<GroundOverlayId, GroundOverlay> groundOverlays =
       <GroundOverlayId, GroundOverlay>{};
-  int _groundOverlayIdCounter = 1;
+  int _groundOverlayIdCounter = 0;
   GroundOverlayId selectedGroundOverlay;
 
   void _onMapCreated(GoogleMapController controller) {
@@ -44,7 +44,7 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
     super.dispose();
   }
 
-  void _onPolygonTapped(GroundOverlayId groundOverlayId) {
+  void _onGroundOverlayTapped(GroundOverlayId groundOverlayId) {
     setState(() {
       selectedGroundOverlay = groundOverlayId;
     });
@@ -77,12 +77,14 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
   }
 
   void _add() {
+    final double offset = _groundOverlayIdCounter.ceilToDouble() / 1000;
     LatLngBounds bounds = LatLngBounds(
-        southwest: LatLng(51.088327, 71.394807),
-        northeast: LatLng(51.089432, 71.395880));
-    final int polygonCount = groundOverlays.length;
+      southwest: LatLng(-33.853432 + offset, 151.211807),
+      northeast: LatLng(-33.851327 + offset, 151.213880),
+    );
+    final int groundOverlayCount = groundOverlays.length;
 
-    if (polygonCount == 12) {
+    if (groundOverlayCount == 12) {
       return;
     }
 
@@ -97,12 +99,32 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
       bitmap: _bitMapDesc,
       consumeTapEvents: true,
       onTap: () {
-        _onPolygonTapped(groundOverlayId);
+        _onGroundOverlayTapped(groundOverlayId);
       },
     );
 
     setState(() {
       groundOverlays[groundOverlayId] = groundOverlay;
+    });
+  }
+
+  Future<void> _changeTransparency() async {
+    final GroundOverlay groundOverlay = groundOverlays[selectedGroundOverlay];
+    final double current = groundOverlay.opacity;
+    setState(() {
+      groundOverlays[selectedGroundOverlay] = groundOverlay.copyWith(
+        opacityParam: current < 0.1 ? 1.0 : current * 0.75,
+      );
+    });
+  }
+
+  Future<void> _changeBearing() async {
+    final GroundOverlay groundOverlay = groundOverlays[selectedGroundOverlay];
+    final double current = groundOverlay.bearing ?? 0.0;
+    setState(() {
+      groundOverlays[selectedGroundOverlay] = groundOverlay.copyWith(
+        bearingParam: current == 330.0 ? 0.0 : current + 30.0,
+      );
     });
   }
 
@@ -128,10 +150,10 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
             height: 300.0,
             child: GoogleMap(
               initialCameraPosition: const CameraPosition(
-                target: LatLng(51.089432, 71.395880),
-                zoom: 7.0,
+                target: LatLng(-33.852, 151.211),
+                zoom: 15.0,
               ),
-              groundOverlays: Set<GroundOverlay>.of(groundOverlays.values),
+              groundOverlays: groundOverlays.values.toSet(),
               onMapCreated: _onMapCreated,
             ),
           ),
@@ -145,16 +167,28 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: const Text('add'),
                           onPressed: _add,
                         ),
-                        FlatButton(
+                        TextButton(
                           child: const Text('remove'),
                           onPressed:
                               (selectedGroundOverlay == null) ? null : _remove,
                         ),
-                        FlatButton(
+                        TextButton(
+                          child: const Text('change transparency'),
+                          onPressed: (selectedGroundOverlay == null)
+                              ? null
+                              : _changeTransparency,
+                        ),
+                        TextButton(
+                          child: const Text('change bearing'),
+                          onPressed: (selectedGroundOverlay == null)
+                              ? null
+                              : _changeBearing,
+                        ),
+                        TextButton(
                           child: const Text('toggle visible'),
                           onPressed: (selectedGroundOverlay == null)
                               ? null

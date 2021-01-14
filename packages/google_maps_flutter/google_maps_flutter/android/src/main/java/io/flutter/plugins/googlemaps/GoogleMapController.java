@@ -799,7 +799,7 @@ final class GoogleMapController
   }
 
   private void updateInitialGroundOverlays() {
-    groundOverlaysController.addOverlays(initialGroundOverlays);
+    groundOverlaysController.addGroundOverlays(initialGroundOverlays);
   }
 
   @SuppressLint("MissingPermission")
