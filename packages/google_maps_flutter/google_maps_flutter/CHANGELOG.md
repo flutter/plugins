@@ -1,6 +1,14 @@
-## 1.0.11
+## 1.1.2
 
 * Fix onMapCreated being called when the platform view is created after `GoogleMap` has already been disposed.
+
+## 1.1.1
+
+* Fix in example app to properly place polyline at initial camera position.
+
+## 1.1.0
+
+* Add support for holes in Polygons.
 
 ## 1.0.10
 

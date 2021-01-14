@@ -18,8 +18,6 @@ static FlutterError *getFlutterError(NSError *error) {
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
 @property(readonly, nonatomic) FlutterResult result;
-@property(readonly, nonatomic) CMMotionManager *motionManager;
-@property(readonly, nonatomic) AVCaptureDevicePosition cameraPosition;
 @end
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
@@ -45,15 +43,10 @@ static FlutterError *getFlutterError(NSError *error) {
   FLTSavePhotoDelegate *selfReference;
 }
 
-- initWithPath:(NSString *)path
-            result:(FlutterResult)result
-     motionManager:(CMMotionManager *)motionManager
-    cameraPosition:(AVCaptureDevicePosition)cameraPosition {
+- initWithPath:(NSString *)path result:(FlutterResult)result {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _path = path;
-  _motionManager = motionManager;
-  _cameraPosition = cameraPosition;
   selfReference = self;
   _result = result;
   return self;
@@ -70,15 +63,14 @@ static FlutterError *getFlutterError(NSError *error) {
     _result(getFlutterError(error));
     return;
   }
+
   NSData *data = [AVCapturePhotoOutput
       JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
                             previewPhotoSampleBuffer:previewPhotoSampleBuffer];
-  UIImage *image = [UIImage imageWithCGImage:[UIImage imageWithData:data].CGImage
-                                       scale:1.0
-                                 orientation:[self getImageRotation]];
 
   // TODO(sigurdm): Consider writing file asynchronously.
-  bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:_path atomically:YES];
+  bool success = [data writeToFile:_path atomically:YES];
+
   if (!success) {
     _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
     return;
@@ -103,34 +95,6 @@ static FlutterError *getFlutterError(NSError *error) {
     return;
   }
   _result(_path);
-}
-
-- (UIImageOrientation)getImageRotation {
-  float const threshold = 45.0;
-  BOOL (^isNearValue)(float value1, float value2) = ^BOOL(float value1, float value2) {
-    return fabsf(value1 - value2) < threshold;
-  };
-  BOOL (^isNearValueABS)(float value1, float value2) = ^BOOL(float value1, float value2) {
-    return isNearValue(fabsf(value1), fabsf(value2));
-  };
-  float yxAtan = (atan2(_motionManager.accelerometerData.acceleration.y,
-                        _motionManager.accelerometerData.acceleration.x)) *
-                 180 / M_PI;
-  if (isNearValue(-90.0, yxAtan)) {
-    return UIImageOrientationRight;
-  } else if (isNearValueABS(180.0, yxAtan)) {
-    return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationUp
-                                                          : UIImageOrientationDown;
-  } else if (isNearValueABS(0.0, yxAtan)) {
-    return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationDown /*rotate 180* */
-                                                          : UIImageOrientationUp /*do not rotate*/;
-  } else if (isNearValue(90.0, yxAtan)) {
-    return UIImageOrientationLeft;
-  }
-  // If none of the above, then the device is likely facing straight down or straight up -- just
-  // pick something arbitrary
-  // TODO: Maybe use the UIInterfaceOrientation if in these scenarios
-  return UIImageOrientationUp;
 }
 @end
 
@@ -224,6 +188,42 @@ static ExposureMode getExposureModeForString(NSString *mode) {
                                      }];
     @throw error;
   }
+}
+
+static UIDeviceOrientation getUIDeviceOrientationForString(NSString *orientation) {
+  if ([orientation isEqualToString:@"portraitDown"]) {
+    return UIDeviceOrientationPortraitUpsideDown;
+  } else if ([orientation isEqualToString:@"landscapeLeft"]) {
+    return UIDeviceOrientationLandscapeRight;
+  } else if ([orientation isEqualToString:@"landscapeRight"]) {
+    return UIDeviceOrientationLandscapeLeft;
+  } else if ([orientation isEqualToString:@"portraitUp"]) {
+    return UIDeviceOrientationPortrait;
+  } else {
+    NSError *error = [NSError
+        errorWithDomain:NSCocoaErrorDomain
+                   code:NSURLErrorUnknown
+               userInfo:@{
+                 NSLocalizedDescriptionKey :
+                     [NSString stringWithFormat:@"Unknown device orientation %@", orientation]
+               }];
+    @throw error;
+  }
+}
+
+static NSString *getStringForUIDeviceOrientation(UIDeviceOrientation orientation) {
+  switch (orientation) {
+    case UIDeviceOrientationPortraitUpsideDown:
+      return @"portraitDown";
+    case UIDeviceOrientationLandscapeRight:
+      return @"landscapeLeft";
+    case UIDeviceOrientationLandscapeLeft:
+      return @"landscapeRight";
+    case UIDeviceOrientationPortrait:
+    default:
+      return @"portraitUp";
+      break;
+  };
 }
 
 // Mirrors FocusMode in camera.dart
@@ -334,6 +334,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) ExposureMode exposureMode;
 @property(assign, nonatomic) FocusMode focusMode;
 @property(assign, nonatomic) FlashMode flashMode;
+@property(assign, nonatomic) UIDeviceOrientation lockedCaptureOrientation;
 @property(assign, nonatomic) CMTime lastVideoSampleTime;
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
 @property(assign, nonatomic) CMTime videoTimeOffset;
@@ -364,11 +365,12 @@ NSString *const errorMethod = @"error";
   _enableAudio = enableAudio;
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
-  _flashMode = FlashModeAuto;
+  _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
+  _flashMode = _captureDevice.hasFlash ? FlashModeAuto : FlashModeOff;
   _exposureMode = ExposureModeAuto;
   _focusMode = FocusModeAuto;
+  _lockedCaptureOrientation = UIDeviceOrientationUnknown;
 
-  _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
                                                              error:&localError];
@@ -390,7 +392,7 @@ NSString *const errorMethod = @"error";
   if ([_captureDevice position] == AVCaptureDevicePositionFront) {
     connection.videoMirrored = YES;
   }
-  connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+  connection.videoOrientation = AVCaptureVideoOrientationLandscapeRight;
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
   [_captureSession addConnection:connection];
@@ -420,6 +422,7 @@ NSString *const errorMethod = @"error";
   if (_resolutionPreset == max) {
     [settings setHighResolutionPhotoEnabled:YES];
   }
+
   AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFlashMode(_flashMode);
   if (avFlashMode != -1) {
     [settings setFlashMode:avFlashMode];
@@ -434,12 +437,40 @@ NSString *const errorMethod = @"error";
     return;
   }
 
-  [_capturePhotoOutput
-      capturePhotoWithSettings:settings
-                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                   result:result
-                                                            motionManager:_motionManager
-                                                           cameraPosition:_captureDevice.position]];
+  AVCaptureConnection *connection = [_capturePhotoOutput connectionWithMediaType:AVMediaTypeVideo];
+
+  if (connection) {
+    if (_lockedCaptureOrientation != UIDeviceOrientationUnknown) {
+      connection.videoOrientation =
+          [self getVideoOrientationForDeviceOrientation:_lockedCaptureOrientation];
+    } else {
+      connection.videoOrientation =
+          [self getVideoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]];
+    }
+  }
+
+  [_capturePhotoOutput capturePhotoWithSettings:settings
+                                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                                                    result:result]];
+}
+
+- (AVCaptureVideoOrientation)getVideoOrientationForDeviceOrientation:
+    (UIDeviceOrientation)deviceOrientation {
+  if (deviceOrientation == UIDeviceOrientationPortrait) {
+    return AVCaptureVideoOrientationPortrait;
+  } else if (deviceOrientation == UIDeviceOrientationLandscapeLeft) {
+    // Note: device orientation is flipped compared to video orientation. When UIDeviceOrientation
+    // is landscape left the video orientation should be landscape right.
+    return AVCaptureVideoOrientationLandscapeRight;
+  } else if (deviceOrientation == UIDeviceOrientationLandscapeRight) {
+    // Note: device orientation is flipped compared to video orientation. When UIDeviceOrientation
+    // is landscape right the video orientation should be landscape left.
+    return AVCaptureVideoOrientationLandscapeLeft;
+  } else if (deviceOrientation == UIDeviceOrientationPortraitUpsideDown) {
+    return AVCaptureVideoOrientationPortraitUpsideDown;
+  } else {
+    return AVCaptureVideoOrientationPortrait;
+  }
 }
 
 - (NSString *)getTemporaryFilePathWithExtension:(NSString *)extension
@@ -756,7 +787,7 @@ NSString *const errorMethod = @"error";
     NSError *error;
     _videoRecordingPath = [self getTemporaryFilePathWithExtension:@"mp4"
                                                         subfolder:@"videos"
-                                                           prefix:@"CAP_"
+                                                           prefix:@"REC_"
                                                             error:error];
     if (error) {
       result(getFlutterError(error));
@@ -811,6 +842,24 @@ NSString *const errorMethod = @"error";
 
 - (void)resumeVideoRecordingWithResult:(FlutterResult)result {
   _isRecordingPaused = NO;
+  result(nil);
+}
+
+- (void)lockCaptureOrientationWithResult:(FlutterResult)result
+                             orientation:(NSString *)orientationStr {
+  UIDeviceOrientation orientation;
+  @try {
+    orientation = getUIDeviceOrientationForString(orientationStr);
+  } @catch (NSError *e) {
+    result(getFlutterError(e));
+    return;
+  }
+  _lockedCaptureOrientation = orientation;
+  result(nil);
+}
+
+- (void)unlockCaptureOrientationWithResult:(FlutterResult)result {
+  _lockedCaptureOrientation = UIDeviceOrientationUnknown;
   result(nil);
 }
 
@@ -1053,7 +1102,7 @@ NSString *const errorMethod = @"error";
     [self setUpCaptureSessionForAudio];
   }
   _videoWriter = [[AVAssetWriter alloc] initWithURL:outputURL
-                                           fileType:AVFileTypeQuickTimeMovie
+                                           fileType:AVFileTypeMPEG4
                                               error:&error];
   NSParameterAssert(_videoWriter);
   if (error) {
@@ -1062,8 +1111,8 @@ NSString *const errorMethod = @"error";
   }
   NSDictionary *videoSettings = [NSDictionary
       dictionaryWithObjectsAndKeys:AVVideoCodecH264, AVVideoCodecKey,
-                                   [NSNumber numberWithInt:_previewSize.height], AVVideoWidthKey,
-                                   [NSNumber numberWithInt:_previewSize.width], AVVideoHeightKey,
+                                   [NSNumber numberWithInt:_previewSize.width], AVVideoWidthKey,
+                                   [NSNumber numberWithInt:_previewSize.height], AVVideoHeightKey,
                                    nil];
   _videoWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
                                                          outputSettings:videoSettings];
@@ -1075,6 +1124,14 @@ NSString *const errorMethod = @"error";
                                  }];
 
   NSParameterAssert(_videoWriterInput);
+  CGFloat rotationDegrees;
+  if (_lockedCaptureOrientation != UIDeviceOrientationUnknown) {
+    rotationDegrees = [self getRotationFromDeviceOrientation:_lockedCaptureOrientation];
+  } else {
+    rotationDegrees = [self getRotationFromDeviceOrientation:[UIDevice currentDevice].orientation];
+  }
+
+  _videoWriterInput.transform = CGAffineTransformMakeRotation(rotationDegrees * M_PI / 180);
   _videoWriterInput.expectsMediaDataInRealTime = YES;
 
   // Add the audio input
@@ -1105,10 +1162,12 @@ NSString *const errorMethod = @"error";
   }
 
   [_videoWriter addInput:_videoWriterInput];
+
   [_captureVideoOutput setSampleBufferDelegate:self queue:_dispatchQueue];
 
   return YES;
 }
+
 - (void)setUpCaptureSessionForAudio {
   NSError *error = nil;
   // Create a device input with the device and add it to the session.
@@ -1135,12 +1194,28 @@ NSString *const errorMethod = @"error";
     }
   }
 }
+
+- (int)getRotationFromDeviceOrientation:(UIDeviceOrientation)orientation {
+  switch (orientation) {
+    case UIDeviceOrientationPortraitUpsideDown:
+      return 270;
+    case UIDeviceOrientationLandscapeRight:
+      return 180;
+    case UIDeviceOrientationLandscapeLeft:
+      return 0;
+    case UIDeviceOrientationPortrait:
+    default:
+      return 90;
+  };
+}
+
 @end
 
 @interface CameraPlugin ()
 @property(readonly, nonatomic) NSObject<FlutterTextureRegistry> *registry;
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
 @property(readonly, nonatomic) FLTCam *camera;
+@property(readonly, nonatomic) FlutterMethodChannel *deviceEventMethodChannel;
 @end
 
 @implementation CameraPlugin {
@@ -1161,7 +1236,34 @@ NSString *const errorMethod = @"error";
   NSAssert(self, @"super init cannot be nil");
   _registry = registry;
   _messenger = messenger;
+  [self initDeviceEventMethodChannel];
+  [self startOrientationListener];
   return self;
+}
+
+- (void)initDeviceEventMethodChannel {
+  _deviceEventMethodChannel =
+      [FlutterMethodChannel methodChannelWithName:@"flutter.io/cameraPlugin/device"
+                                  binaryMessenger:_messenger];
+}
+
+- (void)startOrientationListener {
+  [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(orientationChanged:)
+                                               name:UIDeviceOrientationDidChangeNotification
+                                             object:[UIDevice currentDevice]];
+}
+
+- (void)orientationChanged:(NSNotification *)note {
+  UIDevice *device = note.object;
+  [self sendDeviceOrientation:device.orientation];
+}
+
+- (void)sendDeviceOrientation:(UIDeviceOrientation)orientation {
+  [_deviceEventMethodChannel
+      invokeMethod:@"orientation_changed"
+         arguments:@{@"orientation" : getStringForUIDeviceOrientation(orientation)}];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -1265,6 +1367,7 @@ NSString *const errorMethod = @"error";
                    @([_camera.captureDevice isExposurePointOfInterestSupported]),
                @"focusPointSupported" : @([_camera.captureDevice isFocusPointOfInterestSupported]),
              }];
+      [self sendDeviceOrientation:[UIDevice currentDevice].orientation];
       [_camera start];
       result(nil);
     } else if ([@"takePicture" isEqualToString:call.method]) {
@@ -1318,6 +1421,10 @@ NSString *const errorMethod = @"error";
     } else if ([@"setExposureOffset" isEqualToString:call.method]) {
       [_camera setExposureOffsetWithResult:result
                                     offset:((NSNumber *)call.arguments[@"offset"]).doubleValue];
+    } else if ([@"lockCaptureOrientation" isEqualToString:call.method]) {
+      [_camera lockCaptureOrientationWithResult:result orientation:call.arguments[@"orientation"]];
+    } else if ([@"unlockCaptureOrientation" isEqualToString:call.method]) {
+      [_camera unlockCaptureOrientationWithResult:result];
     } else if ([@"setFocusMode" isEqualToString:call.method]) {
       [_camera setFocusModeWithResult:result mode:call.arguments[@"mode"]];
     } else if ([@"setFocusPoint" isEqualToString:call.method]) {
