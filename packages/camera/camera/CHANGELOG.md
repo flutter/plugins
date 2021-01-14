@@ -1,3 +1,7 @@
+## 0.7.0+5
+
+* Fixes crash when taking a picture on iOS devices without flash.
+
 ## 0.7.0+4
 
 * Make sure the configured zoom scale is copied over to the final capture builder on Android. Fixes the issue where the preview is zoomed but the final picture is not.
