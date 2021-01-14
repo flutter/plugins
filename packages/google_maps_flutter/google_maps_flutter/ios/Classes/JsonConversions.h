@@ -15,4 +15,5 @@
 + (NSArray*)positionToJson:(CLLocationCoordinate2D)position;
 + (UIColor*)toColor:(NSNumber*)data;
 + (NSArray<CLLocation*>*)toPoints:(NSArray*)data;
++ (NSArray<NSArray<CLLocation*>*>*)toHoles:(NSArray*)data;
 @end
