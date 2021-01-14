@@ -1,3 +1,15 @@
+## 1.1.3
+
+* Update Flutter SDK constraint.
+
+## 1.1.2
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 1.1.1
+
+* Add attribute serverAuthCode.
+
 ## 1.1.0
 
 * Add hasRequestedScope method to determine if an Oauth scope has been granted.

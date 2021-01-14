@@ -43,6 +43,10 @@ class FakePlatformGoogleMap {
 
   bool zoomGesturesEnabled;
 
+  bool zoomControlsEnabled;
+
+  bool liteModeEnabled;
+
   bool trackCameraPosition;
 
   bool myLocationEnabled;
@@ -198,12 +202,14 @@ class FakePlatformGoogleMap {
       final bool visible = polygonData['visible'];
       final bool geodesic = polygonData['geodesic'];
       final List<LatLng> points = _deserializePoints(polygonData['points']);
+      final List<List<LatLng>> holes = _deserializeHoles(polygonData['holes']);
 
       result.add(Polygon(
         polygonId: PolygonId(polygonId),
         visible: visible,
         geodesic: geodesic,
         points: points,
+        holes: holes,
       ));
     }
 
@@ -213,6 +219,14 @@ class FakePlatformGoogleMap {
   List<LatLng> _deserializePoints(List<dynamic> points) {
     return points.map<LatLng>((dynamic list) {
       return LatLng(list[0], list[1]);
+    }).toList();
+  }
+
+  List<List<LatLng>> _deserializeHoles(List<dynamic> holes) {
+    return holes.map<List<LatLng>>((dynamic hole) {
+      return hole.map<LatLng>((dynamic list) {
+        return LatLng(list[0], list[1]);
+      }).toList();
     }).toList();
   }
 
@@ -350,6 +364,12 @@ class FakePlatformGoogleMap {
     }
     if (options.containsKey('zoomGesturesEnabled')) {
       zoomGesturesEnabled = options['zoomGesturesEnabled'];
+    }
+    if (options.containsKey('zoomControlsEnabled')) {
+      zoomControlsEnabled = options['zoomControlsEnabled'];
+    }
+    if (options.containsKey('liteModeEnabled')) {
+      liteModeEnabled = options['liteModeEnabled'];
     }
     if (options.containsKey('myLocationEnabled')) {
       myLocationEnabled = options['myLocationEnabled'];

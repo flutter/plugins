@@ -190,4 +190,21 @@ void main() {
     expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
     expect(platformGoogleMap.circlesToAdd.isEmpty, true);
   });
+
+  testWidgets("Update non platform related attr", (WidgetTester tester) async {
+    Circle c1 = Circle(circleId: CircleId("circle_1"));
+    final Set<Circle> prev = _toSet(c1: c1);
+    c1 = Circle(circleId: CircleId("circle_1"), onTap: () => print("hello"));
+    final Set<Circle> cur = _toSet(c1: c1);
+
+    await tester.pumpWidget(_mapWithCircles(prev));
+    await tester.pumpWidget(_mapWithCircles(cur));
+
+    final FakePlatformGoogleMap platformGoogleMap =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformGoogleMap.circlesToChange.isEmpty, true);
+    expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
+    expect(platformGoogleMap.circlesToAdd.isEmpty, true);
+  });
 }

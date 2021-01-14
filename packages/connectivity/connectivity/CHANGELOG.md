@@ -1,3 +1,93 @@
+## 3.0.0-nullsafety.3
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 3.0.0-nullsafety.2
+
+* Android: Cleanup the NetworkCallback object when a connectivity stream is cancelled
+
+## 3.0.0-nullsafety.1
+
+* Bump Dart SDK to support null safety.
+
+## 3.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 2.0.3
+
+* Update Flutter SDK constraint.
+
+## 2.0.2
+
+* Android: Fix IllegalArgumentException.
+* Android: Update Example project.
+
+## 2.0.1
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 2.0.0
+
+* [Breaking Change] The `getWifiName`, `getWifiBSSID` and `getWifiIP` are removed to [wifi_info_flutter](https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter)
+* Migration guide:
+
+  If you don't use any of the above APIs, your code should work as is. In addition, you can also remove `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationWhenInUseUsageDescription` in `ios/Runner/Info.plist`
+
+  If you use any of the above APIs, you can find the same APIs in the [wifi_info_flutter](https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter) plugin.
+  For example, to migrate `getWifiName`, use the new plugin:
+  ```dart
+  final WifiInfo _wifiInfo = WifiInfo();
+  final String wifiName = await _wifiInfo.getWifiName();
+  ```
+
+## 1.0.0
+
+* Mark wifi related code deprecated.
+* Announce 1.0.0!
+
+## 0.4.9+5
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.9+4
+
+* Update README with the updated information about WifiInfo on Android O or higher.
+* Android: Avoiding uses or overrides a deprecated API
+
+## 0.4.9+3
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.4.9+2
+
+* Update package:e2e to use package:integration_test
+
+## 0.4.9+1
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.9
+
+* Add support for `web` (by endorsing `connectivity_for_web` 0.3.0)
+
+## 0.4.8+6
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.4.8+5
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.4.8+4
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Clean up various Android workarounds no longer needed after framework v1.12.
+* Complete v2 embedding support.
+* Fix CocoaPods podspec lint warnings.
+
 ## 0.4.8+3
 
 * Replace deprecated `getFlutterEngine` call on Android.

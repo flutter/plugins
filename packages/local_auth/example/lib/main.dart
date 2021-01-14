@@ -21,16 +21,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final LocalAuthentication auth = LocalAuthentication();
-  bool _canCheckBiometrics;
-  List<BiometricType> _availableBiometrics;
+  late bool _canCheckBiometrics;
+  late List<BiometricType> _availableBiometrics;
   String _authorized = 'Not Authorized';
   bool _isAuthenticating = false;
 
   Future<void> _checkBiometrics() async {
-    bool canCheckBiometrics;
+    late bool canCheckBiometrics;
     try {
       canCheckBiometrics = await auth.canCheckBiometrics;
     } on PlatformException catch (e) {
+      canCheckBiometrics = false;
       print(e);
     }
     if (!mounted) return;
@@ -41,10 +42,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _getAvailableBiometrics() async {
-    List<BiometricType> availableBiometrics;
+    late List<BiometricType> availableBiometrics;
     try {
       availableBiometrics = await auth.getAvailableBiometrics();
     } on PlatformException catch (e) {
+      availableBiometrics = <BiometricType>[];
       print(e);
     }
     if (!mounted) return;
@@ -97,17 +99,17 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Text('Can check biometrics: $_canCheckBiometrics\n'),
-                RaisedButton(
+                ElevatedButton(
                   child: const Text('Check biometrics'),
                   onPressed: _checkBiometrics,
                 ),
                 Text('Available biometrics: $_availableBiometrics\n'),
-                RaisedButton(
+                ElevatedButton(
                   child: const Text('Get available biometrics'),
                   onPressed: _getAvailableBiometrics,
                 ),
                 Text('Current State: $_authorized\n'),
-                RaisedButton(
+                ElevatedButton(
                   child: Text(_isAuthenticating ? 'Cancel' : 'Authenticate'),
                   onPressed:
                       _isAuthenticating ? _cancelAuthentication : _authenticate,

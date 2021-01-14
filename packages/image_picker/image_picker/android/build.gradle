@@ -1,0 +1,42 @@
+group 'io.flutter.plugins.imagepicker'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.3.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven {
+            url 'https://google.bintray.com/exoplayer/'
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+        minSdkVersion 16
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    dependencies {
+        implementation 'androidx.core:core:1.0.2'
+        implementation 'androidx.annotation:annotation:1.0.0'
+        implementation 'androidx.exifinterface:exifinterface:1.3.0'
+    }
+}

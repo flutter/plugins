@@ -1,3 +1,158 @@
+## 1.1.0
+
+* Add support for holes in Polygons.
+
+## 1.0.10
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 1.0.9
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 1.0.8
+
+* Update Flutter SDK constraint.
+
+## 1.0.7
+
+* Android: Handle deprecation & unchecked warning as error.
+
+## 1.0.6
+
+* Update Dart SDK constraint in example.
+* Remove unused `test` dependency in the example app.
+
+## 1.0.5
+
+Overhaul lifecycle management in GoogleMapsPlugin.
+
+GoogleMapController is now uniformly driven by implementing `DefaultLifecycleObserver`. That observer is registered to a lifecycle from one of three sources:
+
+1. For v2 plugin registration, `GoogleMapsPlugin` obtains the lifecycle via `ActivityAware` methods.
+2. For v1 plugin registration, if the activity implements `LifecycleOwner`, it's lifecycle is used directly.
+3. For v1 plugin registration, if the activity does not implement `LifecycleOwner`, a proxy lifecycle is created and driven via `ActivityLifecycleCallbacks`.
+
+## 1.0.4
+
+* Cleanup of Android code:
+* A few minor formatting changes and additions of `@Nullable` annotations.
+* Removed pass-through of `activityHashCode` to `GoogleMapController`.
+* Replaced custom lifecycle state ints with `androidx.lifecycle.Lifecycle.State` enum.
+* Fixed a bug where the Lifecycle object was being leaked `onDetachFromActivity`, by nulling out the field.
+* Moved GoogleMapListener to its own file. Declaring multiple top level classes in the same file is discouraged.
+
+## 1.0.3
+
+* Update android compileSdkVersion to 29.
+
+## 1.0.2
+
+* Remove `io.flutter.embedded_views_preview` requirement from readme.
+
+## 1.0.1
+
+* Fix headline in the readme.
+
+## 1.0.0 - Out of developer preview  🎉.
+
+* Bump the minimal Flutter SDK to 1.22 where platform views are out of developer preview and performing better on iOS. Flutter 1.22 no longer requires adding the `io.flutter.embedded_views_preview` to `Info.plist` in iOS.
+
+## 0.5.33
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.5.32
+
+* Fix typo in google_maps_flutter/example/map_ui.dart.
+
+## 0.5.31
+
+* Geodesic Polyline support for iOS
+
+## 0.5.30
+
+* Add a `dispose` method to the controller to let the native side know that we're done with said controller.
+* Call `controller.dispose()` from the `dispose` method of the `GoogleMap` widget.
+
+## 0.5.29+1
+
+* (ios) Pin dependency on GoogleMaps pod to `< 3.10`, to address https://github.com/flutter/flutter/issues/63447
+
+## 0.5.29
+
+* Pass a constant `_web_only_mapCreationId` to `platform.buildView`, so web can return a cached widget DOM when flutter attempts to repaint there.
+* Modify some examples slightly so they're more web-friendly.
+
+## 0.5.28+2
+
+* Move test introduced in #2449 to its right location.
+
+## 0.5.28+1
+
+* Android: Make sure map view only calls onDestroy once.
+* Android: Fix a memory leak regression caused in `0.5.26+4`.
+
+## 0.5.28
+
+* Android: Add liteModeEnabled option.
+
+## 0.5.27+3
+
+* iOS: Update the gesture recognizer blocking policy to "WaitUntilTouchesEnded", which fixes the camera idle callback not triggered issue.
+* Update the min flutter version to 1.16.3.
+* Skip `testTakeSnapshot` test on Android.
+
+## 0.5.27+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.5.27+1
+
+* Remove endorsement of `web` platform, it's not ready yet.
+
+## 0.5.27
+
+* Migrate the core plugin to use `google_maps_flutter_platform_interface` APIs.
+
+## 0.5.26+4
+
+* Android: Fix map view crash when "exit app" while using `FragmentActivity`.
+* Android: Remove listeners from `GoogleMap` when disposing.
+
+## 0.5.26+3
+
+* iOS: observe the bounds update for the `GMSMapView` to reset the camera setting.
+* Update UI related e2e tests to wait for camera update on the platform thread.
+
+## 0.5.26+2
+
+* Fix UIKit availability warnings and CocoaPods podspec lint warnings.
+
+## 0.5.26+1
+
+* Removes a errorneously added method from the GoogleMapController.h header file.
+
+## 0.5.26
+
+* Adds support for toggling zoom controls (Android only)
+
+## 0.5.25+3
+
+* Rename 'Page' in the example app to avoid type conflict with the Flutter Framework.
+
+## 0.5.25+2
+
+* Avoid unnecessary map elements updates by ignoring not platform related attributes (eg. onTap)
+
+## 0.5.25+1
+
+* Add takeSnapshot that takes a snapshot of the map.
+
+## 0.5.25
+
+* Add an optional param `mipmaps` for `BitmapDescriptor.fromAssetImage`.
+
 ## 0.5.24+1
 
 * Make the pedantic dev_dependency explicit.
@@ -72,7 +227,7 @@
 
 ## 0.5.21+8
 
-* Add NS_ASSUME_NONNULL_* macro to reduce iOS compiler warnings.
+* Add NS*ASSUME_NONNULL*\* macro to reduce iOS compiler warnings.
 
 ## 0.5.21+7
 
@@ -145,11 +300,9 @@
 
 ## 0.5.19
 
-
 * Adds support for toggling Indoor View on or off.
 
 * Allow BitmapDescriptor scaling override
-
 
 ## 0.5.18
 
