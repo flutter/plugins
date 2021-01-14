@@ -119,12 +119,13 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
     if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {
       [_tileOverlaysController addTileOverlays:tileOverlaysToAdd];
     }
+
+    [_mapView addObserver:self forKeyPath:@"frame" options:0 context:nil];
   }
   return self;
 }
 
 - (UIView *)view {
-  [_mapView addObserver:self forKeyPath:@"frame" options:0 context:nil];
   return _mapView;
 }
 
@@ -132,11 +133,6 @@ static double ToDouble(NSNumber *data) { return [FLTGoogleMapJsonConversions toD
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
-  if (_cameraDidInitialSetup) {
-    // We only observe the frame for initial setup.
-    [_mapView removeObserver:self forKeyPath:@"frame"];
-    return;
-  }
   if (object == _mapView && [keyPath isEqualToString:@"frame"]) {
     CGRect bounds = _mapView.bounds;
     if (CGRectEqualToRect(bounds, CGRectZero)) {
