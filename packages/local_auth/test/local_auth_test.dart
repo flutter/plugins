@@ -33,8 +33,9 @@ void main() {
     group("With device auth fail over", () {
       test('authenticate with no args on Android.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-        await localAuthentication.authenticateWithBiometrics(
+        await localAuthentication.authenticate(
           localizedReason: 'Needs secure',
+          biometricOnly: true,
         );
         expect(
           log,
@@ -53,8 +54,9 @@ void main() {
 
       test('authenticate with no args on iOS.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
-        await localAuthentication.authenticateWithBiometrics(
+        await localAuthentication.authenticate(
           localizedReason: 'Needs secure',
+          biometricOnly: true,
         );
         expect(
           log,
@@ -73,10 +75,11 @@ void main() {
 
       test('authenticate with no sensitive transaction.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
-        await localAuthentication.authenticateWithBiometrics(
+        await localAuthentication.authenticate(
           localizedReason: 'Insecure',
           sensitiveTransaction: false,
           useErrorDialogs: false,
+          biometricOnly: true,
         );
         expect(
           log,

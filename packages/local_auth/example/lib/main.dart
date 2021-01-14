@@ -103,11 +103,12 @@ class _MyAppState extends State<MyApp> {
         _isAuthenticating = true;
         _authorized = 'Authenticating';
       });
-      authenticated = await auth.authenticateWithBiometrics(
+      authenticated = await auth.authenticate(
           localizedReason:
               'Scan your fingerprint (or face or whatever) to authenticate',
           useErrorDialogs: true,
-          stickyAuth: true);
+          stickyAuth: true,
+          biometricOnly: true);
       setState(() {
         _isAuthenticating = false;
         _authorized = 'Authenticating';
