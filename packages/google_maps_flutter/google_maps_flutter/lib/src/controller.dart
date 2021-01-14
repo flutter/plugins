@@ -18,6 +18,8 @@ class GoogleMapController {
     @required this.mapId,
   }) : assert(_googleMapsFlutterPlatform != null) {
     _connectStreams(mapId);
+    _googleMapsFlutterPlatform.setGetTileCallback(
+        mapId: mapId, callback: _googleMapState._onGetTile);
   }
 
   /// Initialize control of a [GoogleMap] with [id].
@@ -151,6 +153,32 @@ class GoogleMapController {
     return _googleMapsFlutterPlatform.updateCircles(circleUpdates,
         mapId: mapId);
   }
+
+  /// Updates tile overlays configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updateTileOverlays(TileOverlayUpdates tileOverlayUpdates) {
+    assert(tileOverlayUpdates != null);
+    return _googleMapsFlutterPlatform.updateTileOverlays(tileOverlayUpdates,
+        mapId: mapId);
+  }
+
+  /// Clears the tile cache so that all tiles will be requested again from the
+  /// [TileProvider].
+  ///
+  /// The current tiles from this tile overlay will also be
+  /// cleared from the map after calling this method. The API maintains a small
+  /// in-memory cache of tiles. If you want to cache tiles for longer, you
+  /// should implement an on-disk cache.
+  Future<void> clearTileCache(TileOverlayId tileOverlayId) async {
+    assert(tileOverlayId != null);
+    return _googleMapsFlutterPlatform.clearTileCache(tileOverlayId,
+        mapId: mapId);
+  }
+
 
   /// Starts an animated change of the map camera position.
   ///
