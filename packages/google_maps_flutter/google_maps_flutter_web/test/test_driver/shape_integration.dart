@@ -11,7 +11,7 @@ import 'package:google_maps/google_maps.dart' as gmaps;
 import 'package:google_maps/google_maps_geometry.dart' as geometry;
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
-    as interface;
+    as platform;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -92,18 +92,18 @@ void main() {
     });
 
     test('Polygon with hole has a hole', () {
-      final holedPolygon = interface.Polygon(
-        polygonId: interface.PolygonId('BermudaTriangle'),
+      final holedPolygon = platform.Polygon(
+        polygonId: platform.PolygonId('BermudaTriangle'),
         points: [
-          interface.LatLng(25.774, -80.19),
-          interface.LatLng(18.466, -66.118),
-          interface.LatLng(32.321, -64.757),
+          platform.LatLng(25.774, -80.19),
+          platform.LatLng(18.466, -66.118),
+          platform.LatLng(32.321, -64.757),
         ],
         holes: [
           [
-            interface.LatLng(28.745, -70.579),
-            interface.LatLng(29.57, -67.514),
-            interface.LatLng(27.339, -66.668),
+            platform.LatLng(28.745, -70.579),
+            platform.LatLng(29.57, -67.514),
+            platform.LatLng(27.339, -66.668),
           ],
         ],
       );
