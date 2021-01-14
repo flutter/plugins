@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:quiver/core.dart';
 
 final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
@@ -43,6 +44,9 @@ class CameraValue {
     this.focusMode,
     this.exposurePointSupported,
     this.focusPointSupported,
+    this.deviceOrientation,
+    this.lockedCaptureOrientation,
+    this.recordingOrientation,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -56,6 +60,7 @@ class CameraValue {
           flashMode: FlashMode.auto,
           exposurePointSupported: false,
           focusPointSupported: false,
+          deviceOrientation: DeviceOrientation.portraitUp,
         );
 
   /// True after [CameraController.initialize] has completed successfully.
@@ -86,10 +91,10 @@ class CameraValue {
   /// Is `null` until  [isInitialized] is `true`.
   final Size previewSize;
 
-  /// Convenience getter for `previewSize.height / previewSize.width`.
+  /// Convenience getter for `previewSize.width / previewSize.height`.
   ///
   /// Can only be called when [initialize] is done.
-  double get aspectRatio => previewSize.height / previewSize.width;
+  double get aspectRatio => previewSize.width / previewSize.height;
 
   /// Whether the controller is in an error state.
   ///
@@ -111,6 +116,18 @@ class CameraValue {
   /// Whether setting the focus point is supported.
   final bool focusPointSupported;
 
+  /// The current device orientation.
+  final DeviceOrientation deviceOrientation;
+
+  /// The currently locked capture orientation.
+  final DeviceOrientation lockedCaptureOrientation;
+
+  /// Whether the capture orientation is currently locked.
+  bool get isCaptureOrientationLocked => lockedCaptureOrientation != null;
+
+  /// The orientation of the currently running video recording.
+  final DeviceOrientation recordingOrientation;
+
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
@@ -128,6 +145,9 @@ class CameraValue {
     FocusMode focusMode,
     bool exposurePointSupported,
     bool focusPointSupported,
+    DeviceOrientation deviceOrientation,
+    Optional<DeviceOrientation> lockedCaptureOrientation,
+    Optional<DeviceOrientation> recordingOrientation,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -143,6 +163,13 @@ class CameraValue {
       exposurePointSupported:
           exposurePointSupported ?? this.exposurePointSupported,
       focusPointSupported: focusPointSupported ?? this.focusPointSupported,
+      deviceOrientation: deviceOrientation ?? this.deviceOrientation,
+      lockedCaptureOrientation: lockedCaptureOrientation == null
+          ? this.lockedCaptureOrientation
+          : lockedCaptureOrientation.orNull,
+      recordingOrientation: recordingOrientation == null
+          ? this.recordingOrientation
+          : recordingOrientation.orNull,
     );
   }
 
@@ -158,7 +185,10 @@ class CameraValue {
         'exposureMode: $exposureMode, '
         'focusMode: $focusMode, '
         'exposurePointSupported: $exposurePointSupported, '
-        'focusPointSupported: $focusPointSupported)';
+        'focusPointSupported: $focusPointSupported, '
+        'deviceOrientation: $deviceOrientation, '
+        'lockedCaptureOrientation: $lockedCaptureOrientation, '
+        'recordingOrientation: $recordingOrientation)';
   }
 }
 
@@ -201,6 +231,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   bool _isDisposed = false;
   StreamSubscription<dynamic> _imageStreamSubscription;
   FutureOr<bool> _initCalled;
+  StreamSubscription _deviceOrientationSubscription;
 
   /// Checks whether [CameraController.dispose] has completed successfully.
   ///
@@ -224,6 +255,13 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       Completer<CameraInitializedEvent> _initializeCompleter = Completer();
+
+      _deviceOrientationSubscription =
+          CameraPlatform.instance.onDeviceOrientationChanged().listen((event) {
+        value = value.copyWith(
+          deviceOrientation: event.orientation,
+        );
+      });
 
       _cameraId = await CameraPlatform.instance.createCamera(
         description,
@@ -409,7 +447,11 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     try {
       await CameraPlatform.instance.startVideoRecording(_cameraId);
-      value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
+      value = value.copyWith(
+          isRecordingVideo: true,
+          isRecordingPaused: false,
+          recordingOrientation: Optional.fromNullable(
+              value.lockedCaptureOrientation ?? value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -428,7 +470,10 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       XFile file = await CameraPlatform.instance.stopVideoRecording(_cameraId);
-      value = value.copyWith(isRecordingVideo: false);
+      value = value.copyWith(
+        isRecordingVideo: false,
+        recordingOrientation: Optional.absent(),
+      );
       return file;
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -634,11 +679,36 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  /// Locks the capture orientation.
+  ///
+  /// If [orientation] is omitted, the current device orientation is used.
+  Future<void> lockCaptureOrientation([DeviceOrientation orientation]) async {
+    try {
+      await CameraPlatform.instance.lockCaptureOrientation(
+          _cameraId, orientation ?? value.deviceOrientation);
+      value = value.copyWith(
+          lockedCaptureOrientation:
+              Optional.fromNullable(orientation ?? value.deviceOrientation));
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
   /// Sets the focus mode for taking pictures.
   Future<void> setFocusMode(FocusMode mode) async {
     try {
       await CameraPlatform.instance.setFocusMode(_cameraId, mode);
       value = value.copyWith(focusMode: mode);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Unlocks the capture orientation.
+  Future<void> unlockCaptureOrientation() async {
+    try {
+      await CameraPlatform.instance.unlockCaptureOrientation(_cameraId);
+      value = value.copyWith(lockedCaptureOrientation: Optional.absent());
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -672,6 +742,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     if (_isDisposed) {
       return;
     }
+    unawaited(_deviceOrientationSubscription?.cancel());
     _isDisposed = true;
     super.dispose();
     if (_initCalled != null) {
