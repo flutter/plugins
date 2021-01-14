@@ -1,3 +1,79 @@
+## 1.6.27
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 1.6.26
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 1.6.25
+
+* Update Flutter SDK constraint.
+
+## 1.6.24
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 1.6.23
+
+* Check in windows/ directory for example/
+
+## 1.6.22
+
+* Switch to guava-android dependency instead of full guava.
+
+## 1.6.21
+
+* Update android compileSdkVersion to 29.
+
+## 1.6.20
+
+* Check in linux/ directory for example/
+
+## 1.6.19
+
+* Android implementation does path queries in the background thread rather than UI thread.
+
+## 1.6.18
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 1.6.17
+
+* Update Windows endorsement verison again, to pick up the fix for
+  web compilation in projects that include path_provider.
+
+## 1.6.16
+
+* Update Windows endorsement verison
+
+## 1.6.15
+
+* Endorse Windows implementation.
+* Remove the need to call disablePathProviderPlatformOverride in tests
+
+## 1.6.14
+
+* Update package:e2e -> package:integration_test
+
+## 1.6.13
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 1.6.12
+
+* Fixed a Java lint in a test.
+
+## 1.6.11
+
+* Updated documentation to reflect the need for changes in testing for federated plugins
+
+## 1.6.10
+
+* Linux implementation endorsement
+
 ## 1.6.9
 
 * Post-v2 Android embedding cleanups.

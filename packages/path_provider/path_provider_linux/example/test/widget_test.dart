@@ -9,23 +9,20 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path_provider_linux/path_provider_linux.dart';
 
 import 'package:pathproviderexample/main.dart';
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 void main() {
   group('Test linux path provider example', () {
     setUpAll(() async {
       await WidgetsFlutterBinding.ensureInitialized();
-      PathProviderPlatform.instance = PathProviderLinux();
     });
 
     testWidgets('Finds tmp directory', (WidgetTester tester) async {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 10));
+        await Future.delayed(Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that temporary directory is retrieved.
@@ -43,7 +40,7 @@ void main() {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 10));
+        await Future.delayed(Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that documents directory is retrieved.
@@ -61,7 +58,7 @@ void main() {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 10));
+        await Future.delayed(Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that downloads directory is retrieved.
@@ -80,7 +77,7 @@ void main() {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 10));
+        await Future.delayed(Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that Application Support Directory is retrieved.

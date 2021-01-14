@@ -2,10 +2,7 @@ name: connectivity
 description: Flutter plugin for discovering the state of the network (WiFi &
   mobile/cellular) connectivity on Android and iOS.
 homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity
-# 0.4.y+z is compatible with 1.0.0, if you land a breaking change bump
-# the version to 2.0.0.
-# See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.4.8+6
+version: 3.0.0-nullsafety.3
 
 flutter:
   plugin:
@@ -17,25 +14,31 @@ flutter:
         pluginClass: FLTConnectivityPlugin
       macos:
         default_package: connectivity_macos
+      web:
+        default_package: connectivity_for_web
 
 dependencies:
   flutter:
     sdk: flutter
-  meta: "^1.0.5"
-  connectivity_platform_interface: ^1.0.2
-  connectivity_macos: ^0.1.0
+  meta: ^1.0.5
+  connectivity_platform_interface: ^2.0.0-nullsafety.1
+  #TODO(cyanglaz): re-endorse the below plugins when they have migrated to nnbd.
+  # https://github.com/flutter/flutter/issues/68669
+  connectivity_macos: ^0.2.0-nullsafety
+  # connectivity_for_web: ^0.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  test: any
-  e2e: ^0.2.0
+  test: ^1.10.0-nullsafety.1
+  integration_test:
+    path: ../../integration_test
   mockito: ^4.1.1
-  plugin_platform_interface: ^1.0.0
-  pedantic: ^1.8.0
+  plugin_platform_interface: ^1.1.0-nullsafety.1
+  pedantic: ^1.10.0-nullsafety.1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5 <2.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5"

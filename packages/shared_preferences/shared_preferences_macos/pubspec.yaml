@@ -3,7 +3,7 @@ description: macOS implementation of the shared_preferences plugin.
 # 0.0.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.0.1+9
+version: 0.0.1+12
 homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences_macos
 
 flutter:
@@ -14,7 +14,7 @@ flutter:
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.8 <2.0.0"
+  flutter: ">=1.12.8"
 
 dependencies:
   shared_preferences_platform_interface: ^1.0.0
@@ -22,4 +22,3 @@ dependencies:
     sdk: flutter
 dev_dependencies:
   pedantic: ^1.8.0
-

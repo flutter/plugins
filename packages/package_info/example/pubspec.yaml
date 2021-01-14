@@ -6,13 +6,17 @@ dependencies:
     sdk: flutter
   package_info:
     path: ../
-  e2e: "^0.2.1"
+  integration_test:
+    path: ../../integration_test
 
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-  test: any
   pedantic: ^1.8.0
 
 flutter:
   uses-material-design: true
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"

@@ -25,7 +25,6 @@ static const int SOURCE_GALLERY = 1;
 @implementation FLTImagePickerPlugin {
   NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
-  UIViewController *_viewController;
   UIImagePickerControllerCameraDevice _device;
 }
 
@@ -33,23 +32,30 @@ static const int SOURCE_GALLERY = 1;
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/image_picker"
                                   binaryMessenger:[registrar messenger]];
-  UIViewController *viewController =
-      [UIApplication sharedApplication].delegate.window.rootViewController;
-  FLTImagePickerPlugin *instance =
-      [[FLTImagePickerPlugin alloc] initWithViewController:viewController];
+  FLTImagePickerPlugin *instance = [FLTImagePickerPlugin new];
   [registrar addMethodCallDelegate:instance channel:channel];
-}
-
-- (instancetype)initWithViewController:(UIViewController *)viewController {
-  self = [super init];
-  if (self) {
-    _viewController = viewController;
-  }
-  return self;
 }
 
 - (UIImagePickerController *)getImagePickerController {
   return _imagePickerController;
+}
+
+- (UIViewController *)viewControllerWithWindow:(UIWindow *)window {
+  UIWindow *windowToUse = window;
+  if (windowToUse == nil) {
+    for (UIWindow *window in [UIApplication sharedApplication].windows) {
+      if (window.isKeyWindow) {
+        windowToUse = window;
+        break;
+      }
+    }
+  }
+
+  UIViewController *topController = windowToUse.rootViewController;
+  while (topController.presentedViewController) {
+    topController = topController.presentedViewController;
+  }
+  return topController;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -136,12 +142,14 @@ static const int SOURCE_GALLERY = 1;
       [UIImagePickerController isCameraDeviceAvailable:_device]) {
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
     _imagePickerController.cameraDevice = _device;
-    [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
+    [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
+                                                      animated:YES
+                                                    completion:nil];
   } else {
-    [[[UIAlertView alloc] initWithTitle:@"Error"
-                                message:@"Camera not available."
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
+                                message:NSLocalizedString(@"Camera not available.", nil)
                                delegate:nil
-                      cancelButtonTitle:@"OK"
+                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
                       otherButtonTitles:nil] show];
     self.result(nil);
     self.result = nil;
@@ -241,7 +249,9 @@ static const int SOURCE_GALLERY = 1;
 - (void)showPhotoLibrary {
   // No need to check if SourceType is available. It always is.
   _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
+  [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
+                                                    animated:YES
+                                                  completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker

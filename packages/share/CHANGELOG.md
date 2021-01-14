@@ -1,3 +1,49 @@
+## 2.0.0-nullsafety.2
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 2.0.0-nullsafety.1
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 0.6.5+5
+
+* Update Flutter SDK constraint.
+
+## 0.6.5+4
+
+* Fix iPad share window not showing when `origin` is null.
+
+## 0.6.5+3
+
+* Replace deprecated `Environment.getExternalStorageDirectory()` call on Android.
+* Upgrade to Android Gradle plugin 3.5.0 & target API level 29.
+
+## 0.6.5+2
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.6.5+1
+
+* Avoiding uses unchecked or unsafe Object Type Casting
+
+## 0.6.5
+
+* Added support for sharing files
+
+## 0.6.4+5
+
+* Update package:e2e -> package:integration_test
+
+## 0.6.4+4
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.6.4+3
 
 * Post-v2 Android embedding cleanup.
