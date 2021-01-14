@@ -106,7 +106,7 @@ void main() {
     final GroundOverlay g1 =
     GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_1"));
     final GroundOverlay g2 = GroundOverlay(
-        groundOverlayId: GroundOverlayId("g_overlay_1"), transparency: 0.5);
+        groundOverlayId: GroundOverlayId("g_overlay_1"), opacity: 0.5);
 
     await tester.pumpWidget(_mapWithGroundOverlays(_toSet(g1: g1)));
     await tester.pumpWidget(_mapWithGroundOverlays(_toSet(g1: g2)));
@@ -125,7 +125,7 @@ void main() {
     GroundOverlay g2 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_2"));
     final Set<GroundOverlay> prev = _toSet(g1: g1, g2: g2);
     g1 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_1"), visible: false);
-    g2 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_2"), transparency: 0.5);
+    g2 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_2"), opacity: 0.5);
     final Set<GroundOverlay> cur = _toSet(g1: g1, g2: g2);
 
     await tester.pumpWidget(_mapWithGroundOverlays(prev));

@@ -54,7 +54,7 @@ class GroundOverlay {
     this.height,
     this.bearing,
     this.anchor,
-    this.transparency,
+    this.opacity = 1.0,
   }) : assert(
             (height != null &&
                     width != null &&
@@ -73,7 +73,8 @@ class GroundOverlay {
                     location == null &&
                     bounds == null),
             "Only one of the three types of positioning is allowed, please refer "
-            "to the https://developers.google.com/maps/documentation/android-sdk/groundoverlay#add_an_overlay");
+            "to the https://developers.google.com/maps/documentation/android-sdk/groundoverlay#add_an_overlay"),assert(opacity == null ||
+      (0.0 <= opacity && opacity <= 1.0));
 
   /// Creates an immutable representation of a [GroundOverlay] to draw on [GoogleMap]
   /// using [LatLngBounds]
@@ -81,14 +82,16 @@ class GroundOverlay {
     this.bounds, {
     @required this.groundOverlayId,
     this.anchor,
-    this.bearing,
+    this.bearing = 0.0,
     this.bitmap,
     this.consumeTapEvents = false,
     this.onTap,
-    this.transparency,
+    this.opacity = 1.0,
     this.visible = true,
     this.zIndex = 0,
-  })  : location = null,
+  })  : assert(opacity == null ||
+            (0.0 <= opacity && opacity <= 1.0)),
+        location = null,
         height = null,
         width = null;
 
@@ -135,7 +138,7 @@ class GroundOverlay {
   final Offset anchor;
 
   /// Transparency of the ground overlay
-  final double transparency;
+  final double opacity;
 
   /// A latitude/longitude alignment of the ground overlay.
   final LatLngBounds bounds;
@@ -154,13 +157,13 @@ class GroundOverlay {
     LatLng locationParam,
     LatLngBounds boundsParam,
     VoidCallback onTapParam,
-    double transparencyParam,
+    double opacityParam,
   }) {
     return GroundOverlay(
         groundOverlayId: groundOverlayId,
         consumeTapEvents: consumeTapEventsParam ?? consumeTapEvents,
         bitmap: bitmapParam ?? bitmap,
-        transparency: transparencyParam ?? transparency,
+        opacity: opacityParam ?? opacity,
         location: locationParam ?? location,
         visible: visibleParam ?? visible,
         bearing: bearingParam ?? bearing,
@@ -187,7 +190,7 @@ class GroundOverlay {
 
     addIfPresent('groundOverlayId', groundOverlayId.value);
     addIfPresent('consumeTapEvents', consumeTapEvents);
-    addIfPresent('transparency', transparency);
+    addIfPresent('transparency', 1 - opacity);
     addIfPresent('bearing', bearing);
     addIfPresent('visible', visible);
     addIfPresent('zIndex', zIndex);
@@ -210,7 +213,7 @@ class GroundOverlay {
     return groundOverlayId == typedOther.groundOverlayId &&
         bitmap == typedOther.bitmap &&
         consumeTapEvents == typedOther.consumeTapEvents &&
-        transparency == typedOther.transparency &&
+        opacity == typedOther.opacity &&
         location == typedOther.location &&
         bearing == typedOther.bearing &&
         visible == typedOther.visible &&

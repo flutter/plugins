@@ -13,7 +13,7 @@
 - (void)setBounds:(GMSCoordinateBounds*)bounds;
 - (void)setConsumeTapEvents:(BOOL)consume;
 - (void)setLocation:(CLLocationCoordinate2D)location width:(CGFloat)width height:(CGFloat)height;
-- (void)setTransparency:(float)transparency;
+- (void)setOpacity:(float)opacity;
 - (void)setVisible:(BOOL)visible;
 - (void)setZIndex:(int)zIndex;
 @end
