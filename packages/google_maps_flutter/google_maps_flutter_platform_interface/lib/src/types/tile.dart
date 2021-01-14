@@ -21,7 +21,7 @@ class Tile {
   final Uint8List data;
 
   /// Converts this object to JSON.
-  dynamic toJson() {
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {

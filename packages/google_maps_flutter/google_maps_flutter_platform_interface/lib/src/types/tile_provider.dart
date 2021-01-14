@@ -10,5 +10,7 @@ abstract class TileProvider {
   static const Tile noTile = Tile(-1, -1, null);
 
   /// Returns the tile to be used for this tile coordinate.
+  ///
+  /// See [TileOverlay] for the specification of tile coordinates.
   Future<Tile> getTile(int x, int y, int zoom);
 }

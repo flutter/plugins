@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui' show hashValues, hashList;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
@@ -93,10 +94,7 @@ void main() {
       final TileOverlayUpdates updates =
           TileOverlayUpdates.from(previous, current);
       expect(
-          updates.hashCode,
-          updates.tileOverlaysToAdd.hashCode ^
-              updates.tileOverlayIdsToRemove.hashCode ^
-              updates.tileOverlaysToChange.hashCode);
+          updates.hashCode, hashValues(hashList(updates.tileOverlaysToAdd), hashList(updates.tileOverlayIdsToRemove), hashList(updates.tileOverlaysToChange)));
     });
 
     test('toString', () async {
@@ -113,9 +111,9 @@ void main() {
           TileOverlayUpdates.from(previous, current);
       expect(
           updates.toString(),
-          'TileOverlayUpdates{tileOverlaysToAdd: ${updates.tileOverlaysToAdd}, '
-          'tileOverlayIdsToRemove: ${updates.tileOverlayIdsToRemove}, '
-          'tileOverlaysToChange: ${updates.tileOverlaysToChange}}');
+          'TileOverlayUpdates(${updates.tileOverlaysToAdd}, '
+          '${updates.tileOverlayIdsToRemove}, '
+          '${updates.tileOverlaysToChange})');
     });
   });
 }

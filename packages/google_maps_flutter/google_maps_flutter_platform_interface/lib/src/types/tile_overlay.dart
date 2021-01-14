@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui' show hashValues;
+import 'package:flutter/foundation.dart';
+
 import 'types.dart';
 import 'package:meta/meta.dart' show immutable, required;
 
 /// Uniquely identifies a [TileOverlay] among [GoogleMap] tile overlays.
-///
-/// This does not have to be globally unique, only unique among the list.
 @immutable
 class TileOverlayId {
   /// Creates an immutable identifier for a [TileOverlay].
@@ -18,25 +19,24 @@ class TileOverlayId {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final TileOverlayId typedOther = other;
-    return value == typedOther.value;
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is TileOverlayId && other.value == value;
   }
 
   @override
   int get hashCode => value.hashCode;
 
   @override
-  String toString() {
-    return 'TileOverlay{value: $value}';
-  }
+  String toString() => '${objectRuntimeType(this, 'TileOverlayId')}($value)';
 }
 
-/// A Tile Overlay is a set of images which are displayed on top of the base map tiles.
+/// # A set of images which are displayed on top of the base map tiles.
+///
 /// These tiles may be transparent, allowing you to add features to existing maps.
 ///
-/// Tile Coordinates
+/// ## Tile Coordinates
 ///
 /// Note that the world is projected using the Mercator projection
 /// (see [Wikipedia](https://en.wikipedia.org/wiki/Mercator_projection)) with the left (west) side
@@ -101,7 +101,7 @@ class TileOverlay {
   /// would give on a non-retina device.
   final int tileSize;
 
-  /// Creates a new [Polygon] object whose values are the same as this instance,
+  /// Creates a new [TileOverlay] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   TileOverlay copyWith({
     TileOverlayId tileOverlayId,
@@ -122,7 +122,7 @@ class TileOverlay {
   }
 
   /// Converts this object to JSON.
-  dynamic toJson() {
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {
@@ -143,17 +143,18 @@ class TileOverlay {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final TileOverlay typedOther = other;
-    return tileOverlayId == typedOther.tileOverlayId &&
-        fadeIn == typedOther.fadeIn &&
-        transparency == typedOther.transparency &&
-        zIndex == typedOther.zIndex &&
-        visible == typedOther.visible &&
-        tileSize == typedOther.tileSize;
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is TileOverlay
+      && tileOverlayId == other.tileOverlayId
+      && fadeIn == other.fadeIn
+      && transparency == other.transparency
+      && zIndex == other.zIndex
+      && visible == other.visible
+      && tileSize == other.tileSize;
   }
 
   @override
-  int get hashCode => tileOverlayId.hashCode;
+  int get hashCode => hashValues(tileOverlayId, fadeIn, transparency, zIndex, visible, tileSize);
 }

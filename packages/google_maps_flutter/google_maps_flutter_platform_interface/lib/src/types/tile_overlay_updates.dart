@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart' show setEquals;
+import 'package:flutter/foundation.dart' show objectRuntimeType, setEquals;
+import 'dart:ui' show hashValues, hashList;
 
 import 'utils/tile_overlay.dart';
 import 'types.dart';
 
-/// Represents the details of an update events of [TileOverlay]s.
+/// Update specification for a set of [TileOverlay]s.
 class TileOverlayUpdates {
   /// Computes [TileOverlayUpdates] given previous and current [TileOverlay]s.
   TileOverlayUpdates.from(Set<TileOverlay> previous, Set<TileOverlay> current) {
@@ -101,25 +102,21 @@ class TileOverlayUpdates {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final TileOverlayUpdates typedOther = other;
-    return setEquals(_tileOverlaysToAdd, typedOther._tileOverlaysToAdd) &&
-        setEquals(
-            _tileOverlayIdsToRemove, typedOther._tileOverlayIdsToRemove) &&
-        setEquals(_tileOverlaysToChange, typedOther._tileOverlaysToChange);
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is TileOverlayUpdates
+      && setEquals(_tileOverlaysToAdd, other._tileOverlaysToAdd)
+      && setEquals(
+            _tileOverlayIdsToRemove, other._tileOverlayIdsToRemove)
+      && setEquals(_tileOverlaysToChange, other._tileOverlaysToChange);
   }
 
   @override
-  int get hashCode =>
-      _tileOverlaysToAdd.hashCode ^
-      _tileOverlayIdsToRemove.hashCode ^
-      _tileOverlaysToChange.hashCode;
+  int get hashCode => hashValues(hashList(_tileOverlaysToAdd), hashList(_tileOverlayIdsToRemove), hashList(_tileOverlaysToChange));
 
   @override
   String toString() {
-    return 'TileOverlayUpdates{tileOverlaysToAdd: $_tileOverlaysToAdd, '
-        'tileOverlayIdsToRemove: $_tileOverlayIdsToRemove, '
-        'tileOverlaysToChange: $_tileOverlaysToChange}';
+    return '${objectRuntimeType(this, 'TileOverlayUpdates')}($_tileOverlaysToAdd, $_tileOverlayIdsToRemove, $_tileOverlaysToChange)';
   }
 }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui' show hashValues;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
@@ -19,7 +20,7 @@ void main() {
 
     test('toString', () async {
       final TileOverlayId id1 = TileOverlayId('1');
-      expect(id1.toString(), 'TileOverlay{value: 1}');
+      expect(id1.toString(), 'TileOverlayId(1)');
     });
   });
 
@@ -92,7 +93,7 @@ void main() {
           zIndex: 1,
           visible: false,
           tileSize: 128);
-      expect(tileOverlay.hashCode, id.hashCode);
+      expect(tileOverlay.hashCode, hashValues(tileOverlay.tileOverlayId, tileOverlay.fadeIn, tileOverlay.transparency, tileOverlay.zIndex, tileOverlay.visible, tileOverlay.tileSize));
     });
   });
 
