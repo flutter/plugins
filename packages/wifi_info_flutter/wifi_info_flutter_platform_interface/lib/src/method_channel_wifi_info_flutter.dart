@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../wifi_info_flutter_platform_interface.dart';
-import '../wifi_info_flutter_platform_interface.dart';
 
 /// An implementation of [WifiInfoFlutterPlatform] that uses method channels.
 class MethodChannelWifiInfoFlutter extends WifiInfoFlutterPlatform {
