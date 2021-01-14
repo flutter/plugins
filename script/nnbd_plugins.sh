@@ -19,6 +19,7 @@ readonly NNBD_PLUGINS_LIST=(
   "url_launcher"
   "video_player"
   "webview_flutter"
+  "wifi_info_flutter"
 )
 
 export EXCLUDED_PLUGINS_FROM_STABLE=$(IFS=, ; echo "${NNBD_PLUGINS_LIST[*]}")
