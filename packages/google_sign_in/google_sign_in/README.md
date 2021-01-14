@@ -1,6 +1,6 @@
 # google_sign_in
 
-[![pub package](https://img.shields.io/pub/v/google_sign_in.svg)](https://pub.dartlang.org/packages/google_sign_in)
+[![pub package](https://img.shields.io/pub/v/google_sign_in.svg)](https://pub.dev/packages/google_sign_in)
 
 A Flutter plugin for [Google Sign In](https://developers.google.com/identity/).
 
@@ -49,10 +49,21 @@ Make sure you've filled out all required fields in the console for [OAuth consen
 <!-- End of the Google Sign-in Section -->
 ```
 
+### iOS additional requirement
+
+Note that according to https://developer.apple.com/sign-in-with-apple/get-started,
+starting June 30, 2020, apps that use login services must also offer a "Sign in
+with Apple" option when submitting to the Apple App Store.
+
+Consider also using an Apple sign in plugin from pub.dev.
+
+The Flutter Favorite [sign_in_with_apple](https://pub.dev/packages/sign_in_with_apple)
+plugin could be an option.
+
 ## Usage
 
 ### Import the package
-To use this plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
+To use this plugin, follow the [plugin installation instructions](https://pub.dev/packages/google_sign_in#pub-pkg-tab-installing).
 
 ### Use the plugin
 Add the following import to your Dart code:

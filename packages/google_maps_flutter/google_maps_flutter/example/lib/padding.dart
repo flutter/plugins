@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
-class PaddingPage extends Page {
+class PaddingPage extends GoogleMapExampleAppPage {
   PaddingPage() : super(const Icon(Icons.map), 'Add padding to the map');
 
   @override
@@ -147,7 +147,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          FlatButton(
+          TextButton(
             child: const Text("Set Padding"),
             onPressed: () {
               setState(() {
@@ -159,7 +159,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               });
             },
           ),
-          FlatButton(
+          TextButton(
             child: const Text("Reset Padding"),
             onPressed: () {
               setState(() {
