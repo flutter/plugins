@@ -22,12 +22,21 @@ void main() {
         ResolutionPreset.max);
 
     expect(
-        () => cameraController.startImageStream((image) => null),
-        throwsA(isA<CameraException>().having(
-          (error) => error.description,
-          'Uninitialized CameraController.',
-          'startImageStream was called on uninitialized CameraController.',
-        )));
+      () => cameraController.startImageStream((image) => null),
+      throwsA(
+        isA<CameraException>()
+            .having(
+              (error) => error.code,
+              'code',
+              'Uninitialized CameraController',
+            )
+            .having(
+              (error) => error.description,
+              'description',
+              'startImageStream() was called on an uninitialized CameraController.',
+            ),
+      ),
+    );
   });
 
   test('startImageStream() throws $CameraException when recording videos',
@@ -107,12 +116,21 @@ void main() {
         ResolutionPreset.max);
 
     expect(
-        cameraController.stopImageStream,
-        throwsA(isA<CameraException>().having(
-          (error) => error.description,
-          'Uninitialized CameraController.',
-          'stopImageStream was called on uninitialized CameraController.',
-        )));
+      cameraController.stopImageStream,
+      throwsA(
+        isA<CameraException>()
+            .having(
+              (error) => error.code,
+              'code',
+              'Uninitialized CameraController',
+            )
+            .having(
+              (error) => error.description,
+              'description',
+              'stopImageStream() was called on an uninitialized CameraController.',
+            ),
+      ),
+    );
   });
 
   test('stopImageStream() throws $CameraException when recording videos',

@@ -1,3 +1,7 @@
+## 0.7.0+2
+
+* Improved error feedback by differentiating between uninitialized and disposed camera controllers.
+
 ## 0.7.0+1
 
 * Fixes picture captures causing a crash on some Huawei devices.
