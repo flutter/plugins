@@ -4,6 +4,10 @@
 * Updates Android compileSdkVersion to 31.
 * Internal code cleanup for stricter analysis options.
 
+## 2.1.2
+
+* Fix iOS crash on `EXC_BAD_ACCESS KERN_PROTECTION_FAILURE` if the map frame changes long after creation.
+
 ## 2.1.1
 
 * Suppresses unchecked cast warning.
