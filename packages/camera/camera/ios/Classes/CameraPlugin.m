@@ -370,7 +370,7 @@ NSString *const errorMethod = @"error";
   _exposureMode = ExposureModeAuto;
   _focusMode = FocusModeAuto;
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
-    
+
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
                                                              error:&localError];
