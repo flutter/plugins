@@ -17,7 +17,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// Callback method for when a [Tile] is requested from a [TileProvider].
 typedef Future<Tile> MapGetTileCallback(
-    TileOverlayId tileOverlayId, int x, int y, int zoom);
+    String tileOverlayIdString, int x, int y, int zoom);
 
 /// The interface that platform-specific implementations of `google_maps_flutter` must extend.
 ///
