@@ -6,12 +6,12 @@ environment:
   sdk: ">=2.12.0-0 <3.0.0"
 
 dependencies:
-  connectivity: 3.0.0-nullsafety.1
+  connectivity: 3.0.0-nullsafety
   flutter:
     sdk: flutter
   wifi_info_flutter:
     path: ../
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.1
 
 dev_dependencies:
   integration_test:

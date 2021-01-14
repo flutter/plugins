@@ -18,7 +18,7 @@ dependencies:
 
 dev_dependencies:
   mockito: ^5.0.0-nullsafety.0
-  plugin_platform_interface: ^1.1.0-nullsafety.1
+  plugin_platform_interface: ^1.1.0-nullsafety
   integration_test:
     path: ../../integration_test
   flutter_test:

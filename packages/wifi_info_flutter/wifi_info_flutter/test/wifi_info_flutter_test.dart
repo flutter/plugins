@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.8
-
 import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 import 'package:wifi_info_flutter_platform_interface/wifi_info_flutter_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,7 +18,7 @@ const LocationAuthorizationStatus kGetLocationResult =
 
 void main() {
   group('$WifiInfo', () {
-    WifiInfo wifiInfo;
+    late WifiInfo wifiInfo;
     MockWifiInfoFlutterPlatform fakePlatform;
 
     setUp(() async {
@@ -30,17 +28,17 @@ void main() {
     });
 
     test('getWifiName', () async {
-      String result = await wifiInfo.getWifiName();
+      String? result = await wifiInfo.getWifiName();
       expect(result, kWifiNameResult);
     });
 
     test('getWifiBSSID', () async {
-      String result = await wifiInfo.getWifiBSSID();
+      String? result = await wifiInfo.getWifiBSSID();
       expect(result, kWifiBSSIDResult);
     });
 
     test('getWifiIP', () async {
-      String result = await wifiInfo.getWifiIP();
+      String? result = await wifiInfo.getWifiIP();
       expect(result, kWifiIpAddressResult);
     });
 
