@@ -27,21 +27,21 @@ class GroundOverlaysController {
         this.googleMap = googleMap;
     }
 
-    void addOverlays(List<Object> overlaysToAdd) {
-        if (overlaysToAdd != null) {
-            for (Object polygonToAdd : overlaysToAdd) {
-                addOverlay(polygonToAdd);
+    void addGroundOverlays(List<Object> groundOverlaysToAdd) {
+        if (groundOverlaysToAdd != null) {
+            for (Object groundOverlayToAdd : groundOverlaysToAdd) {
+                addGroundOverlay(groundOverlayToAdd);
             }
         }
     }
 
-    private void addOverlay(Object overlay) {
-        if (overlay == null) {
+    private void addGroundOverlay(Object groundOverlay) {
+        if (groundOverlay == null) {
             return;
         }
 
         GroundOverlayBuilder groundOverlayBuilder = new GroundOverlayBuilder();
-        String groundOverlayId = Convert.interpretGroundOverlayOptions(overlay, groundOverlayBuilder);
+        String groundOverlayId = Convert.interpretGroundOverlayOptions(groundOverlay, groundOverlayBuilder);
         GroundOverlayOptions options = groundOverlayBuilder.build();
         addGroundOverlay(groundOverlayId, options, groundOverlayBuilder.consumeTapEvents());
     }
@@ -107,8 +107,8 @@ class GroundOverlaysController {
     }
 
     @SuppressWarnings("unchecked")
-    private static String getGroundOverlayId(Object overlay) {
-        Map<String, Object> overlayMap = (Map<String, Object>) overlay;
+    private static String getGroundOverlayId(Object groundOverlay) {
+        Map<String, Object> overlayMap = (Map<String, Object>) groundOverlay;
         return (String) overlayMap.get("groundOverlayId");
     }
 }
