@@ -41,39 +41,56 @@ class GroundOverlay {
   /// 1. Using [height], [width] and [LatLng]
   /// 2. Using [width], [width]
   /// 3. Using [LatLngBounds]
-  const GroundOverlay(
-      {@required this.groundOverlayId,
-        this.consumeTapEvents = false,
-        this.location,
-        this.zIndex = 0,
-        this.onTap,
-        this.visible = true,
-        this.bitmapDescriptor,
-        this.bounds,
-        this.width,
-        this.height,
-        this.bearing,
-        this.anchor,
-        this.transparency})
-      : assert(
-  (height != null &&
-      width != null &&
-      location != null &&
-      bounds == null) ||
-      (height == null &&
-          width == null &&
-          location == null &&
-          bounds != null) ||
-      (height == null &&
-          width != null &&
-          location != null &&
-          bounds == null) ||
-      (height == null &&
-          width == null &&
-          location == null &&
-          bounds == null),
-  "Only one of the three types of positioning is allowed, please refer "
-      "to the https://developers.google.com/maps/documentation/android-sdk/groundoverlay#add_an_overlay");
+  const GroundOverlay({
+    @required this.groundOverlayId,
+    this.consumeTapEvents = false,
+    this.location,
+    this.zIndex = 0,
+    this.onTap,
+    this.visible = true,
+    this.bitmap,
+    this.bounds,
+    this.width,
+    this.height,
+    this.bearing,
+    this.anchor,
+    this.transparency,
+  }) : assert(
+            (height != null &&
+                    width != null &&
+                    location != null &&
+                    bounds == null) ||
+                (height == null &&
+                    width == null &&
+                    location == null &&
+                    bounds != null) ||
+                (height == null &&
+                    width != null &&
+                    location != null &&
+                    bounds == null) ||
+                (height == null &&
+                    width == null &&
+                    location == null &&
+                    bounds == null),
+            "Only one of the three types of positioning is allowed, please refer "
+            "to the https://developers.google.com/maps/documentation/android-sdk/groundoverlay#add_an_overlay");
+
+  /// Creates an immutable representation of a [GroundOverlay] to draw on [GoogleMap]
+  /// using [LatLngBounds]
+  const GroundOverlay.fromBounds(
+    this.bounds, {
+    @required this.groundOverlayId,
+    this.anchor,
+    this.bearing,
+    this.bitmap,
+    this.consumeTapEvents = false,
+    this.onTap,
+    this.transparency,
+    this.visible = true,
+    this.zIndex = 0,
+  })  : location = null,
+        height = null,
+        width = null;
 
   /// Uniquely identifies a [GroundOverlay].
   final GroundOverlayId groundOverlayId;
@@ -100,7 +117,7 @@ class GroundOverlay {
   final VoidCallback onTap;
 
   /// A description of the bitmap used to draw the ground overlay image.
-  final BitmapDescriptor bitmapDescriptor;
+  final BitmapDescriptor bitmap;
 
   /// Width of the ground overlay in meters
   final double width;
@@ -123,11 +140,10 @@ class GroundOverlay {
   /// A latitude/longitude alignment of the ground overlay.
   final LatLngBounds bounds;
 
-
   /// Creates a new [GroundOverlay] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   GroundOverlay copyWith({
-    BitmapDescriptor bitmapDescriptorParam,
+    BitmapDescriptor bitmapParam,
     Offset anchorParam,
     int zIndexParam,
     bool visibleParam,
@@ -143,7 +159,7 @@ class GroundOverlay {
     return GroundOverlay(
         groundOverlayId: groundOverlayId,
         consumeTapEvents: consumeTapEventsParam ?? consumeTapEvents,
-        bitmapDescriptor: bitmapDescriptorParam ?? bitmapDescriptor,
+        bitmap: bitmapParam ?? bitmap,
         transparency: transparencyParam ?? transparency,
         location: locationParam ?? location,
         visible: visibleParam ?? visible,
@@ -178,7 +194,7 @@ class GroundOverlay {
     addIfPresent('height', height);
     addIfPresent('anchor', _offsetToJson(anchor));
     addIfPresent('bounds', bounds?.toJson());
-    addIfPresent('bitmap', bitmapDescriptor?.toJson());
+    addIfPresent('bitmap', bitmap?.toJson());
     addIfPresent('width', width);
     if (location != null) {
       json['location'] = _locationToJson();
@@ -192,7 +208,7 @@ class GroundOverlay {
     if (other.runtimeType != runtimeType) return false;
     final GroundOverlay typedOther = other;
     return groundOverlayId == typedOther.groundOverlayId &&
-        bitmapDescriptor == typedOther.bitmapDescriptor &&
+        bitmap == typedOther.bitmap &&
         consumeTapEvents == typedOther.consumeTapEvents &&
         transparency == typedOther.transparency &&
         location == typedOther.location &&

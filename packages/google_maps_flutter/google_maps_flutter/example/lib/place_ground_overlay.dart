@@ -81,7 +81,6 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
         southwest: LatLng(51.088327, 71.394807),
         northeast: LatLng(51.089432, 71.395880));
     final int polygonCount = groundOverlays.length;
-    var ll = LatLng(51.088327, 71.394807);
 
     if (polygonCount == 12) {
       return;
@@ -92,12 +91,11 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
     _groundOverlayIdCounter++;
     final GroundOverlayId groundOverlayId = GroundOverlayId(groundOverlayIdVal);
 
-    final GroundOverlay groundOverlay = GroundOverlay(
+    final GroundOverlay groundOverlay = GroundOverlay.fromBounds(
+      bounds,
       groundOverlayId: groundOverlayId,
-      bounds: bounds,
-      bitmapDescriptor: _bitMapDesc,
+      bitmap: _bitMapDesc,
       consumeTapEvents: true,
-      location: ll,
       onTap: () {
         _onPolygonTapped(groundOverlayId);
       },
