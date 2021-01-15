@@ -3,7 +3,7 @@ description: A common platform interface for the camera plugin.
 homepage: https://github.com/flutter/plugins/tree/master/packages/camera/camera_platform_interface
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
-version: 1.0.4
+version: 1.5.0
 
 dependencies:
   flutter:
@@ -21,5 +21,5 @@ dev_dependencies:
   pedantic: ^1.8.0
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
   flutter: ">=1.22.0"

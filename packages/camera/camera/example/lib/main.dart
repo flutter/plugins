@@ -35,13 +35,22 @@ void logError(String code, String message) =>
     print('Error: $code\nError Message: $message');
 
 class _CameraExampleHomeState extends State<CameraExampleHome>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController controller;
   XFile imageFile;
   XFile videoFile;
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
+  double _minAvailableExposureOffset = 0.0;
+  double _maxAvailableExposureOffset = 0.0;
+  double _currentExposureOffset = 0.0;
+  AnimationController _flashModeControlRowAnimationController;
+  Animation<double> _flashModeControlRowAnimation;
+  AnimationController _exposureModeControlRowAnimationController;
+  Animation<double> _exposureModeControlRowAnimation;
+  AnimationController _focusModeControlRowAnimationController;
+  Animation<double> _focusModeControlRowAnimation;
   double _minAvailableZoom;
   double _maxAvailableZoom;
   double _currentScale = 1.0;
@@ -54,11 +63,37 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _flashModeControlRowAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _flashModeControlRowAnimation = CurvedAnimation(
+      parent: _flashModeControlRowAnimationController,
+      curve: Curves.easeInCubic,
+    );
+    _exposureModeControlRowAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _exposureModeControlRowAnimation = CurvedAnimation(
+      parent: _exposureModeControlRowAnimationController,
+      curve: Curves.easeInCubic,
+    );
+    _focusModeControlRowAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _focusModeControlRowAnimation = CurvedAnimation(
+      parent: _focusModeControlRowAnimationController,
+      curve: Curves.easeInCubic,
+    );
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _flashModeControlRowAnimationController.dispose();
+    _exposureModeControlRowAnimationController.dispose();
     super.dispose();
   }
 
@@ -108,8 +143,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
           ),
           _captureControlRowWidget(),
-          _flashModeRowWidget(),
-          _toggleAudioWidget(),
+          _modeControlRowWidget(),
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
@@ -137,16 +171,20 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         ),
       );
     } else {
-      return AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: Listener(
-          onPointerDown: (_) => _pointers++,
-          onPointerUp: (_) => _pointers--,
-          child: GestureDetector(
-            onScaleStart: _handleScaleStart,
-            onScaleUpdate: _handleScaleUpdate,
-            child: CameraPreview(controller),
-          ),
+      return Listener(
+        onPointerDown: (_) => _pointers++,
+        onPointerUp: (_) => _pointers--,
+        child: CameraPreview(
+          controller,
+          child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onScaleStart: _handleScaleStart,
+              onScaleUpdate: _handleScaleUpdate,
+              onTapDown: (details) => onViewFinderTap(details, constraints),
+            );
+          }),
         ),
       );
     }
@@ -166,27 +204,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         .clamp(_minAvailableZoom, _maxAvailableZoom);
 
     await controller.setZoomLevel(_currentScale);
-  }
-
-  /// Toggle recording audio
-  Widget _toggleAudioWidget() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 25),
-      child: Row(
-        children: <Widget>[
-          const Text('Enable Audio:'),
-          Switch(
-            value: enableAudio,
-            onChanged: (bool value) {
-              enableAudio = value;
-              if (controller != null) {
-                onNewCameraSelected(controller.description);
-              }
-            },
-          ),
-        ],
-      ),
-    );
   }
 
   /// Display the thumbnail of the captured image or video.
@@ -223,49 +240,229 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     );
   }
 
-  /// Display a bar with buttons to change the flash mode
-  Widget _flashModeRowWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.flash_off),
-          color: controller?.value?.flashMode == FlashMode.off
-              ? Colors.orange
-              : Colors.blue,
-          onPressed: controller != null
-              ? () => onFlashModeButtonPressed(FlashMode.off)
-              : null,
+  /// Display a bar with buttons to change the flash and exposure modes
+  Widget _modeControlRowWidget() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.flash_on),
+              color: Colors.blue,
+              onPressed: controller != null ? onFlashModeButtonPressed : null,
+            ),
+            IconButton(
+              icon: Icon(Icons.exposure),
+              color: Colors.blue,
+              onPressed:
+                  controller != null ? onExposureModeButtonPressed : null,
+            ),
+            IconButton(
+              icon: Icon(Icons.filter_center_focus),
+              color: Colors.blue,
+              onPressed: controller != null ? onFocusModeButtonPressed : null,
+            ),
+            IconButton(
+              icon: Icon(enableAudio ? Icons.volume_up : Icons.volume_mute),
+              color: Colors.blue,
+              onPressed: controller != null ? onAudioModeButtonPressed : null,
+            ),
+            IconButton(
+              icon: Icon(controller?.value?.isCaptureOrientationLocked ?? false
+                  ? Icons.screen_lock_rotation
+                  : Icons.screen_rotation),
+              color: Colors.blue,
+              onPressed: controller != null
+                  ? onCaptureOrientationLockButtonPressed
+                  : null,
+            ),
+          ],
         ),
-        IconButton(
-          icon: const Icon(Icons.flash_auto),
-          color: controller?.value?.flashMode == FlashMode.auto
-              ? Colors.orange
-              : Colors.blue,
-          onPressed: controller != null
-              ? () => onFlashModeButtonPressed(FlashMode.auto)
-              : null,
-        ),
-        IconButton(
-          icon: const Icon(Icons.flash_on),
-          color: controller?.value?.flashMode == FlashMode.always
-              ? Colors.orange
-              : Colors.blue,
-          onPressed: controller != null
-              ? () => onFlashModeButtonPressed(FlashMode.always)
-              : null,
-        ),
-        IconButton(
-          icon: const Icon(Icons.highlight),
-          color: controller?.value?.flashMode == FlashMode.torch
-              ? Colors.orange
-              : Colors.blue,
-          onPressed: controller != null
-              ? () => onFlashModeButtonPressed(FlashMode.torch)
-              : null,
-        ),
+        _flashModeControlRowWidget(),
+        _exposureModeControlRowWidget(),
+        _focusModeControlRowWidget(),
       ],
+    );
+  }
+
+  Widget _flashModeControlRowWidget() {
+    return SizeTransition(
+      sizeFactor: _flashModeControlRowAnimation,
+      child: ClipRect(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            IconButton(
+              icon: Icon(Icons.flash_off),
+              color: controller?.value?.flashMode == FlashMode.off
+                  ? Colors.orange
+                  : Colors.blue,
+              onPressed: controller != null
+                  ? () => onSetFlashModeButtonPressed(FlashMode.off)
+                  : null,
+            ),
+            IconButton(
+              icon: Icon(Icons.flash_auto),
+              color: controller?.value?.flashMode == FlashMode.auto
+                  ? Colors.orange
+                  : Colors.blue,
+              onPressed: controller != null
+                  ? () => onSetFlashModeButtonPressed(FlashMode.auto)
+                  : null,
+            ),
+            IconButton(
+              icon: Icon(Icons.flash_on),
+              color: controller?.value?.flashMode == FlashMode.always
+                  ? Colors.orange
+                  : Colors.blue,
+              onPressed: controller != null
+                  ? () => onSetFlashModeButtonPressed(FlashMode.always)
+                  : null,
+            ),
+            IconButton(
+              icon: Icon(Icons.highlight),
+              color: controller?.value?.flashMode == FlashMode.torch
+                  ? Colors.orange
+                  : Colors.blue,
+              onPressed: controller != null
+                  ? () => onSetFlashModeButtonPressed(FlashMode.torch)
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _exposureModeControlRowWidget() {
+    final ButtonStyle styleAuto = TextButton.styleFrom(
+      primary: controller?.value?.exposureMode == ExposureMode.auto
+          ? Colors.orange
+          : Colors.blue,
+    );
+    final ButtonStyle styleLocked = TextButton.styleFrom(
+      primary: controller?.value?.exposureMode == ExposureMode.locked
+          ? Colors.orange
+          : Colors.blue,
+    );
+
+    return SizeTransition(
+      sizeFactor: _exposureModeControlRowAnimation,
+      child: ClipRect(
+        child: Container(
+          color: Colors.grey.shade50,
+          child: Column(
+            children: [
+              Center(
+                child: Text("Exposure Mode"),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  TextButton(
+                    child: Text('AUTO'),
+                    style: styleAuto,
+                    onPressed: controller != null
+                        ? () =>
+                            onSetExposureModeButtonPressed(ExposureMode.auto)
+                        : null,
+                    onLongPress: () {
+                      if (controller != null) controller.setExposurePoint(null);
+                      showInSnackBar('Resetting exposure point');
+                    },
+                  ),
+                  TextButton(
+                    child: Text('LOCKED'),
+                    style: styleLocked,
+                    onPressed: controller != null
+                        ? () =>
+                            onSetExposureModeButtonPressed(ExposureMode.locked)
+                        : null,
+                  ),
+                ],
+              ),
+              Center(
+                child: Text("Exposure Offset"),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(_minAvailableExposureOffset.toString()),
+                  Slider(
+                    value: _currentExposureOffset,
+                    min: _minAvailableExposureOffset,
+                    max: _maxAvailableExposureOffset,
+                    label: _currentExposureOffset.toString(),
+                    onChanged: _minAvailableExposureOffset ==
+                            _maxAvailableExposureOffset
+                        ? null
+                        : setExposureOffset,
+                  ),
+                  Text(_maxAvailableExposureOffset.toString()),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _focusModeControlRowWidget() {
+    final ButtonStyle styleAuto = TextButton.styleFrom(
+      primary: controller?.value?.focusMode == FocusMode.auto
+          ? Colors.orange
+          : Colors.blue,
+    );
+    final ButtonStyle styleLocked = TextButton.styleFrom(
+      primary: controller?.value?.focusMode == FocusMode.locked
+          ? Colors.orange
+          : Colors.blue,
+    );
+
+    return SizeTransition(
+      sizeFactor: _focusModeControlRowAnimation,
+      child: ClipRect(
+        child: Container(
+          color: Colors.grey.shade50,
+          child: Column(
+            children: [
+              Center(
+                child: Text("Focus Mode"),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  TextButton(
+                    child: Text('AUTO'),
+                    style: styleAuto,
+                    onPressed: controller != null
+                        ? () => onSetFocusModeButtonPressed(FocusMode.auto)
+                        : null,
+                    onLongPress: () {
+                      if (controller != null) controller.setFocusPoint(null);
+                      showInSnackBar('Resetting focus point');
+                    },
+                  ),
+                  TextButton(
+                    child: Text('LOCKED'),
+                    style: styleLocked,
+                    onPressed: controller != null
+                        ? () => onSetFocusModeButtonPressed(FocusMode.locked)
+                        : null,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -353,6 +550,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
   }
 
+  void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
+    final offset = Offset(
+      details.localPosition.dx / constraints.maxWidth,
+      details.localPosition.dy / constraints.maxHeight,
+    );
+    controller.setExposurePoint(offset);
+    controller.setFocusPoint(offset);
+  }
+
   void onNewCameraSelected(CameraDescription cameraDescription) async {
     if (controller != null) {
       await controller.dispose();
@@ -361,6 +567,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: enableAudio,
+      imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
     // If the controller is updated then update the UI.
@@ -373,8 +580,16 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.initialize();
-      _maxAvailableZoom = await controller.getMaxZoomLevel();
-      _minAvailableZoom = await controller.getMinZoomLevel();
+      await Future.wait([
+        controller
+            .getMinExposureOffset()
+            .then((value) => _minAvailableExposureOffset = value),
+        controller
+            .getMaxExposureOffset()
+            .then((value) => _maxAvailableExposureOffset = value),
+        controller.getMaxZoomLevel().then((value) => _maxAvailableZoom = value),
+        controller.getMinZoomLevel().then((value) => _minAvailableZoom = value),
+      ]);
     } on CameraException catch (e) {
       _showCameraException(e);
     }
@@ -397,10 +612,74 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
-  void onFlashModeButtonPressed(FlashMode mode) {
+  void onFlashModeButtonPressed() {
+    if (_flashModeControlRowAnimationController.value == 1) {
+      _flashModeControlRowAnimationController.reverse();
+    } else {
+      _flashModeControlRowAnimationController.forward();
+      _exposureModeControlRowAnimationController.reverse();
+      _focusModeControlRowAnimationController.reverse();
+    }
+  }
+
+  void onExposureModeButtonPressed() {
+    if (_exposureModeControlRowAnimationController.value == 1) {
+      _exposureModeControlRowAnimationController.reverse();
+    } else {
+      _exposureModeControlRowAnimationController.forward();
+      _flashModeControlRowAnimationController.reverse();
+      _focusModeControlRowAnimationController.reverse();
+    }
+  }
+
+  void onFocusModeButtonPressed() {
+    if (_focusModeControlRowAnimationController.value == 1) {
+      _focusModeControlRowAnimationController.reverse();
+    } else {
+      _focusModeControlRowAnimationController.forward();
+      _flashModeControlRowAnimationController.reverse();
+      _exposureModeControlRowAnimationController.reverse();
+    }
+  }
+
+  void onAudioModeButtonPressed() {
+    enableAudio = !enableAudio;
+    if (controller != null) {
+      onNewCameraSelected(controller.description);
+    }
+  }
+
+  void onCaptureOrientationLockButtonPressed() async {
+    if (controller != null) {
+      if (controller.value.isCaptureOrientationLocked) {
+        await controller.unlockCaptureOrientation();
+        showInSnackBar('Capture orientation unlocked');
+      } else {
+        await controller.lockCaptureOrientation();
+        showInSnackBar(
+            'Capture orientation locked to ${controller.value.lockedCaptureOrientation.toString().split('.').last}');
+      }
+    }
+  }
+
+  void onSetFlashModeButtonPressed(FlashMode mode) {
     setFlashMode(mode).then((_) {
       if (mounted) setState(() {});
       showInSnackBar('Flash mode set to ${mode.toString().split('.').last}');
+    });
+  }
+
+  void onSetExposureModeButtonPressed(ExposureMode mode) {
+    setExposureMode(mode).then((_) {
+      if (mounted) setState(() {});
+      showInSnackBar('Exposure mode set to ${mode.toString().split('.').last}');
+    });
+  }
+
+  void onSetFocusModeButtonPressed(FocusMode mode) {
+    setFocusMode(mode).then((_) {
+      if (mounted) setState(() {});
+      showInSnackBar('Focus mode set to ${mode.toString().split('.').last}');
     });
   }
 
@@ -496,6 +775,36 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Future<void> setFlashMode(FlashMode mode) async {
     try {
       await controller.setFlashMode(mode);
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      rethrow;
+    }
+  }
+
+  Future<void> setExposureMode(ExposureMode mode) async {
+    try {
+      await controller.setExposureMode(mode);
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      rethrow;
+    }
+  }
+
+  Future<void> setExposureOffset(double offset) async {
+    setState(() {
+      _currentExposureOffset = offset;
+    });
+    try {
+      offset = await controller.setExposureOffset(offset);
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      rethrow;
+    }
+  }
+
+  Future<void> setFocusMode(FocusMode mode) async {
+    try {
+      await controller.setFocusMode(mode);
     } on CameraException catch (e) {
       _showCameraException(e);
       rethrow;

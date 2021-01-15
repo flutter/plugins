@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final ButtonStyle style = ElevatedButton.styleFrom(
+      primary: Colors.blue,
+      onPrimary: Colors.white,
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text('File Selector Demo Home Page'),
@@ -12,37 +16,32 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: style,
               child: Text('Open a text file'),
               onPressed: () => Navigator.pushNamed(context, '/open/text'),
             ),
             SizedBox(height: 10),
-            RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: style,
               child: Text('Open an image'),
               onPressed: () => Navigator.pushNamed(context, '/open/image'),
             ),
             SizedBox(height: 10),
-            RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: style,
               child: Text('Open multiple images'),
               onPressed: () => Navigator.pushNamed(context, '/open/images'),
             ),
             SizedBox(height: 10),
-            RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: style,
               child: Text('Save a file'),
               onPressed: () => Navigator.pushNamed(context, '/save/text'),
             ),
             SizedBox(height: 10),
-            RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: style,
               child: Text('Open a get directory dialog'),
               onPressed: () => Navigator.pushNamed(context, '/directory'),
             ),

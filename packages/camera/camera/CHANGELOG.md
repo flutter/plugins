@@ -1,3 +1,75 @@
+## 0.7.0+5
+
+* Fixes crash when taking a picture on iOS devices without flash.
+
+## 0.7.0+4
+
+* Make sure the configured zoom scale is copied over to the final capture builder on Android. Fixes the issue where the preview is zoomed but the final picture is not.
+
+## 0.7.0+3
+
+* Fixes crash with using inner camera on some Android devices.
+
+## 0.7.0+2
+
+* Improved error feedback by differentiating between uninitialized and disposed camera controllers.
+
+## 0.7.0+1
+
+* Fixes picture captures causing a crash on some Huawei devices.
+
+## 0.7.0
+
+* Added support for capture orientation locking on Android and iOS.
+* Fixed camera preview not rotating correctly on Android and iOS.
+* Fixed camera preview sometimes appearing stretched on Android and iOS.
+* Fixed videos & photos saving with the incorrect rotation on iOS.
+* BREAKING CHANGE: `CameraValue.aspectRatio` now returns `width / height` rather than `height / width`.
+
+## 0.6.6
+
+* Adds auto focus support for Android and iOS implementations.
+
+## 0.6.5
+
+* Adds ImageFormat selection for ImageStream and Video(iOS only).
+
+## 0.6.4+5
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.6.4+4
+
+* Set camera auto focus enabled by default.
+
+## 0.6.4+3
+
+* Detect if selected camera supports auto focus and act accordingly on Android. This solves a problem where front facing cameras are not capturing the picture because auto focus is not supported.
+
+## 0.6.4+2
+
+* Set ImageStreamReader listener to null to prevent stale images when streaming images.
+
+## 0.6.4+1
+
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash.
+
+## 0.6.4
+
+* Adds auto exposure support for Android and iOS implementations.
+
+## 0.6.3+4
+
+* Revert previous dependency update: Changed dependency on camera_platform_interface to >=1.04 <1.1.0.
+
+## 0.6.3+3
+
+* Updated dependency on camera_platform_interface to ^1.2.0.
+
+## 0.6.3+2
+
+* Fixes crash on Android which occurs after video recording has stopped just before taking a picture.
+
 ## 0.6.3+1
 
 * Fixes flash & torch modes not working on some Android devices.

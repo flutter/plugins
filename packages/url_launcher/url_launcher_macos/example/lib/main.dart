@@ -140,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     decoration: const InputDecoration(
                         hintText: 'Input the phone number to launch')),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _makePhoneCall('tel:$_phone');
                 }),
@@ -150,33 +150,33 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: EdgeInsets.all(16.0),
                 child: Text(toLaunch),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchInBrowser(toLaunch);
                 }),
                 child: const Text('Launch in browser'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchInWebViewOrVC(toLaunch);
                 }),
                 child: const Text('Launch in app'),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchInWebViewWithJavaScript(toLaunch);
                 }),
                 child: const Text('Launch in app(JavaScript ON)'),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchInWebViewWithDomStorage(toLaunch);
                 }),
                 child: const Text('Launch in app(DOM storage ON)'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchUniversalLinkIos(toLaunch);
                 }),
