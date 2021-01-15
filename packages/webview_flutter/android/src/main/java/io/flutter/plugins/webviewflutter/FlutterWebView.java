@@ -375,6 +375,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "allowsInlineMediaPlayback":
           // no-op inline media playback is always allowed on Android.
           break;
+        case "ignoreSslCertificateErrors":
+          final boolean ignoreSslCertificateErrors = (boolean) settings.get(key);
+          flutterWebViewClient.setIgnoreSslCertificateErrors(ignoreSslCertificateErrors);
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
