@@ -9,15 +9,6 @@ import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
-
-// class MockMethodChannel extends Mock implements MethodChannel {
-//   @override
-//   Future<T?> invokeMethod<T>(String method, [dynamic arguments]) async {
-//     return super.noSuchMethod(Invocation.method(#invokeMethod, [method, arguments])) as dynamic;
-//   }
-// }
-
-
 class MockUrlLauncher extends Mock
     with MockPlatformInterfaceMixin
     implements UrlLauncherPlatform {

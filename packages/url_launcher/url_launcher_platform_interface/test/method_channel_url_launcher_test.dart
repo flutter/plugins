@@ -309,9 +309,7 @@ class UrlLauncherPlatformMock extends Mock
     implements UrlLauncherPlatform {}
 
 class ImplementsUrlLauncherPlatform extends Mock
-    implements UrlLauncherPlatform {
-
-}
+    implements UrlLauncherPlatform {}
 
 class ExtendsUrlLauncherPlatform extends UrlLauncherPlatform {
   @override
