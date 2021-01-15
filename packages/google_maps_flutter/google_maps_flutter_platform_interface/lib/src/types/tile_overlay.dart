@@ -146,15 +146,16 @@ class TileOverlay {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is TileOverlay
-      && tileOverlayId == other.tileOverlayId
-      && fadeIn == other.fadeIn
-      && transparency == other.transparency
-      && zIndex == other.zIndex
-      && visible == other.visible
-      && tileSize == other.tileSize;
+    return other is TileOverlay &&
+        tileOverlayId == other.tileOverlayId &&
+        fadeIn == other.fadeIn &&
+        transparency == other.transparency &&
+        zIndex == other.zIndex &&
+        visible == other.visible &&
+        tileSize == other.tileSize;
   }
 
   @override
-  int get hashCode => hashValues(tileOverlayId, fadeIn, transparency, zIndex, visible, tileSize);
+  int get hashCode => hashValues(
+      tileOverlayId, fadeIn, transparency, zIndex, visible, tileSize);
 }

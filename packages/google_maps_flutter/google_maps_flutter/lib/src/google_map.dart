@@ -224,7 +224,8 @@ class _GoogleMapState extends State<GoogleMap> {
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
-  Map<TileOverlayId, TileOverlay> _tileOverlays = <TileOverlayId, TileOverlay>{};
+  Map<TileOverlayId, TileOverlay> _tileOverlays =
+      <TileOverlayId, TileOverlay>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override

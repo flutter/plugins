@@ -93,7 +93,15 @@ void main() {
           zIndex: 1,
           visible: false,
           tileSize: 128);
-      expect(tileOverlay.hashCode, hashValues(tileOverlay.tileOverlayId, tileOverlay.fadeIn, tileOverlay.transparency, tileOverlay.zIndex, tileOverlay.visible, tileOverlay.tileSize));
+      expect(
+          tileOverlay.hashCode,
+          hashValues(
+              tileOverlay.tileOverlayId,
+              tileOverlay.fadeIn,
+              tileOverlay.transparency,
+              tileOverlay.zIndex,
+              tileOverlay.visible,
+              tileOverlay.tileSize));
     });
   });
 

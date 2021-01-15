@@ -105,15 +105,15 @@ class TileOverlayUpdates {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is TileOverlayUpdates
-      && setEquals(_tileOverlaysToAdd, other._tileOverlaysToAdd)
-      && setEquals(
-            _tileOverlayIdsToRemove, other._tileOverlayIdsToRemove)
-      && setEquals(_tileOverlaysToChange, other._tileOverlaysToChange);
+    return other is TileOverlayUpdates &&
+        setEquals(_tileOverlaysToAdd, other._tileOverlaysToAdd) &&
+        setEquals(_tileOverlayIdsToRemove, other._tileOverlayIdsToRemove) &&
+        setEquals(_tileOverlaysToChange, other._tileOverlaysToChange);
   }
 
   @override
-  int get hashCode => hashValues(hashList(_tileOverlaysToAdd), hashList(_tileOverlayIdsToRemove), hashList(_tileOverlaysToChange));
+  int get hashCode => hashValues(hashList(_tileOverlaysToAdd),
+      hashList(_tileOverlayIdsToRemove), hashList(_tileOverlaysToChange));
 
   @override
   String toString() {

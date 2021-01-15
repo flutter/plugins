@@ -37,7 +37,7 @@ final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
   PaddingPage(),
   SnapshotPage(),
   LiteModePage(),
-  TileOverlayPage(),  
+  TileOverlayPage(),
 ];
 
 class MapsDemo extends StatelessWidget {

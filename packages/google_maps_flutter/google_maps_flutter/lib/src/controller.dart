@@ -179,7 +179,6 @@ class GoogleMapController {
         mapId: mapId);
   }
 
-
   /// Starts an animated change of the map camera position.
   ///
   /// The returned [Future] completes after the change has been started on the
