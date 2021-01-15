@@ -146,13 +146,6 @@ class Convert {
     return ((Number) o).intValue();
   }
 
-  private static byte[] toByteArray(Object o) {
-    if (o == null) {
-      return null;
-    }
-    return (byte[]) o;
-  }
-
   static Object cameraPositionToJson(CameraPosition position) {
     if (position == null) {
       return null;
@@ -696,7 +689,10 @@ class Convert {
   static Tile interpretTile(Map<String, ?> data) {
     int width = toInt(data.get("width"));
     int height = toInt(data.get("height"));
-    byte[] dataArray = toByteArray(data.get("data"));
+    byte[] dataArray = null;
+    if (data.get("data") != null) {
+      dataArray = (byte[]) data.get("data");
+    }
     return new Tile(width, height, dataArray);
   }
 }
