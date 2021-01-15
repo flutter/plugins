@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.localauth;
 
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.KEYGUARD_SERVICE;
 
 import android.app.Activity;
@@ -25,6 +26,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
 import java.util.ArrayList;
@@ -49,6 +51,22 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   private BiometricManager biometricManager;
   private FingerprintManager fingerprintManager;
   private KeyguardManager keyguardManager;
+  private Result lockRequestResult;
+  private final PluginRegistry.ActivityResultListener resultListener =
+      new PluginRegistry.ActivityResultListener() {
+        @Override
+        public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+          if (requestCode == LOCK_REQUEST_CODE) {
+            if (resultCode == RESULT_OK && lockRequestResult != null) {
+              authenticateSuccess(lockRequestResult);
+            } else {
+              authenticateFail(lockRequestResult);
+            }
+            lockRequestResult = null;
+          }
+          return false;
+        }
+      };
 
   /**
    * Registers a plugin with the v1 embedding api {@code io.flutter.plugin.common}.
@@ -66,6 +84,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
     plugin.activity = registrar.activity();
     channel.setMethodCallHandler(plugin);
+    registrar.addActivityResultListener(plugin.resultListener);
   }
 
   /**
@@ -189,6 +208,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       String title = call.argument("signInTitle");
       String reason = call.argument("localizedReason");
       Intent authIntent = keyguardManager.createConfirmDeviceCredentialIntent(title, reason);
+
+      // save result for async response
+      lockRequestResult = result;
       activity.startActivityForResult(authIntent, LOCK_REQUEST_CODE);
       return;
     }
@@ -306,6 +328,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
+    binding.addActivityResultListener(resultListener);
     setServicesFromActivity(binding.getActivity());
     lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
     channel.setMethodCallHandler(this);
@@ -318,6 +341,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
 
   @Override
   public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+    binding.addActivityResultListener(resultListener);
     setServicesFromActivity(binding.getActivity());
     lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
   }
