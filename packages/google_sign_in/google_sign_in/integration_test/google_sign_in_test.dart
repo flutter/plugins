@@ -2,6 +2,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+// @dart = 2.9
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 

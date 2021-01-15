@@ -85,6 +85,7 @@ class GoogleSignInUserData {
 
 /// Holds authentication data after sign in.
 class GoogleSignInTokenData {
+  /// Build `GoogleSignInTokenData`.
   GoogleSignInTokenData({
     this.idToken,
     this.accessToken,
