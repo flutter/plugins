@@ -8,10 +8,7 @@ import 'dart:async';
 
 import 'package:integration_test/integration_test.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
-import 'package:google_maps/google_maps_geometry.dart' as geometry;
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
-    as platform;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -89,29 +86,6 @@ void main() {
       final options = gmaps.PolygonOptions()..draggable = false;
       controller.update(options);
       verify(polygon.options = options);
-    });
-
-    test('Polygon with hole has a hole', () {
-      final holedPolygon = platform.Polygon(
-        polygonId: platform.PolygonId('BermudaTriangle'),
-        points: [
-          platform.LatLng(25.774, -80.19),
-          platform.LatLng(18.466, -66.118),
-          platform.LatLng(32.321, -64.757),
-        ],
-        holes: [
-          [
-            platform.LatLng(28.745, -70.579),
-            platform.LatLng(29.57, -67.514),
-            platform.LatLng(27.339, -66.668),
-          ],
-        ],
-      );
-      final controller = PolygonsController(stream: null)
-        ..addPolygons({holedPolygon});
-      final gmapsPolygon = controller.polygons.values.first.polygon;
-      final pointInHole = gmaps.LatLng(28.632, -68.401);
-      expect(geometry.poly.containsLocation(pointInHole, gmapsPolygon), false);
     });
   });
 
