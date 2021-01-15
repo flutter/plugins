@@ -408,6 +408,12 @@ final class GoogleMapController
           result.success(null);
           break;
         }
+      case "map#getTileOverlayInfo":
+        {
+          String tileOverlayId = call.argument("tileOverlayId");
+          result.success(tileOverlaysController.getTileOverlayInfo(tileOverlayId));
+          break;
+        }
       default:
         result.notImplemented();
     }

@@ -67,6 +67,17 @@ class TileOverlaysController {
     }
   }
 
+  Map<String, Object> getTileOverlayInfo(String tileOverlayId) {
+    if (tileOverlayId == null) {
+      return null;
+    }
+    TileOverlayController tileOverlayController = tileOverlayIdToController.get(tileOverlayId);
+    if (tileOverlayController == null) {
+      return null;
+    }
+    return tileOverlayController.getTileOverlayInfo();
+  }
+
   private void addTileOverlay(Map<String, ?> tileOverlayOptions) {
     if (tileOverlayOptions == null) {
       return;

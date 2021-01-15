@@ -51,8 +51,8 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
 
   void _addTileOverlay() {
     final TileOverlay tileOverlay = TileOverlay(
-      tileOverlayId: TileOverlayId("tile_overlay_1"),
-      tileProvider: DebugTileProvider(),
+      tileOverlayId: TileOverlayId('tile_overlay_1'),
+      tileProvider: _DebugTileProvider(),
     );
     setState(() {
       _tileOverlay = tileOverlay;
@@ -104,8 +104,8 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
   }
 }
 
-class DebugTileProvider implements TileProvider {
-  DebugTileProvider() {
+class _DebugTileProvider implements TileProvider {
+  _DebugTileProvider() {
     boxPaint.isAntiAlias = true;
     boxPaint.color = Colors.blue;
     boxPaint.strokeWidth = 2.0;
@@ -125,7 +125,7 @@ class DebugTileProvider implements TileProvider {
     final ui.PictureRecorder recorder = ui.PictureRecorder();
     final Canvas canvas = Canvas(recorder);
     final TextSpan textSpan = TextSpan(
-      text: "$x,$y",
+      text: '$x,$y',
       style: textStyle,
     );
     final TextPainter textPainter = TextPainter(
