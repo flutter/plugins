@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'dart:io';
 import 'dart:ui';
 
@@ -17,7 +15,7 @@ import 'package:flutter/services.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MockMethodChannel mockChannel;
+  late MockMethodChannel mockChannel;
 
   setUp(() {
     mockChannel = MockMethodChannel();
@@ -91,4 +89,9 @@ void main() {
   });
 }
 
-class MockMethodChannel extends Mock implements MethodChannel {}
+class MockMethodChannel extends Mock implements MethodChannel {
+  @override
+  Future<T?> invokeMethod<T>(String method, [dynamic arguments]) async {
+    return super.noSuchMethod(Invocation.method(#invokeMethod, [method, arguments])) as dynamic;
+  }
+}

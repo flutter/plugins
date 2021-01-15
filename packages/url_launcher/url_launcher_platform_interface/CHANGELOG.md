@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.2
+
+* Use Mockito null safe.
+
 ## 2.0.0-nullsafety.1
 
 * Bump Dart SDK to support null safety.

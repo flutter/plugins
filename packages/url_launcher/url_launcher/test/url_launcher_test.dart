@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(mvanbeusekom): Remove once Mockito is migrated to null safety.
-// @dart = 2.9
-
 import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter/foundation.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 import 'package:flutter/services.dart' show PlatformException;
+
+import 'url_launcher_mock.dart';
 
 void main() {
   final MockUrlLauncher mock = MockUrlLauncher();
@@ -193,7 +191,7 @@ void main() {
 
     test('controls system UI when changing statusBarBrightness', () async {
       final TestWidgetsFlutterBinding binding =
-          TestWidgetsFlutterBinding.ensureInitialized();
+          TestWidgetsFlutterBinding.ensureInitialized() as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       binding.renderView.automaticSystemUiAdjustment = true;
       final Future<bool> launchResult =
@@ -208,7 +206,7 @@ void main() {
 
     test('sets automaticSystemUiAdjustment to not be null', () async {
       final TestWidgetsFlutterBinding binding =
-          TestWidgetsFlutterBinding.ensureInitialized();
+          TestWidgetsFlutterBinding.ensureInitialized() as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       expect(binding.renderView.automaticSystemUiAdjustment, true);
       final Future<bool> launchResult =
@@ -222,7 +220,3 @@ void main() {
     });
   });
 }
-
-class MockUrlLauncher extends Mock
-    with MockPlatformInterfaceMixin
-    implements UrlLauncherPlatform {}

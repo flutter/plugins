@@ -1,3 +1,7 @@
+## 6.0.0-nullsafety.5
+
+* Use Mockito null safe.
+
 ## 6.0.0-nullsafety.4
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.

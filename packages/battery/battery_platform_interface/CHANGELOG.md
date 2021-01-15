@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.1
+
+* Remove Mockito dependency.
+
 ## 2.0.0-nullsafety
 
 * Migrate to null safety.

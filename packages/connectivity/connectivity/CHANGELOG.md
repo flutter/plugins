@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.4
+
+* Use Mockito null safe.
+
 ## 3.0.0-nullsafety.3
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))

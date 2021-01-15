@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'package:android_intent/flag.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,9 +9,10 @@ import 'package:android_intent/android_intent.dart';
 import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
 
+
 void main() {
-  AndroidIntent androidIntent;
-  MockMethodChannel mockChannel;
+  late AndroidIntent androidIntent;
+  late MockMethodChannel mockChannel;
 
   setUp(() {
     mockChannel = MockMethodChannel();
@@ -179,4 +178,9 @@ void main() {
   });
 }
 
-class MockMethodChannel extends Mock implements MethodChannel {}
+class MockMethodChannel extends Mock implements MethodChannel {
+  @override
+  Future<T?> invokeMethod<T>(String method, [dynamic arguments]) async {
+    return super.noSuchMethod(Invocation.method(#invokeMethod, [method, arguments])) as dynamic;
+  }
+}

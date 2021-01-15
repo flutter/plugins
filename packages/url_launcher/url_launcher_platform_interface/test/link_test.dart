@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(egarciad): Remove once Mockito has been migrated to null safety.
-// @dart = 2.9
-
 import 'dart:ui';
 
 import 'package:mockito/mockito.dart';
@@ -19,18 +16,20 @@ final MethodCodec _codec = const JSONMethodCodec();
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  PlatformMessageCallback oldHandler;
-  MethodCall lastCall;
+  late PlatformMessageCallback oldHandler;
+  late MethodCall lastCall;
 
   setUp(() {
-    oldHandler = window.onPlatformMessage;
+    oldHandler = window.onPlatformMessage!;
     window.onPlatformMessage = (
       String name,
-      ByteData data,
-      PlatformMessageResponseCallback callback,
+      ByteData? data,
+      PlatformMessageResponseCallback? callback,
     ) {
       lastCall = _codec.decodeMethodCall(data);
-      callback(_codec.encodeSuccessEnvelope(true));
+      if (callback != null) {
+        callback(_codec.encodeSuccessEnvelope(true));
+      }
     };
   });
 
