@@ -41,7 +41,7 @@ import 'package:meta/meta.dart';
 /// [MockPlatformInterfaceMixin] for a sample of using Mockito to mock a platform interface.
 abstract class PlatformInterface {
   /// Pass a private, class-specific `const Object()` as the `token`.
-  PlatformInterface({@required Object token}) : _instanceToken = token;
+  PlatformInterface({required Object token}) : _instanceToken = token;
 
   final Object _instanceToken;
 
@@ -57,7 +57,7 @@ abstract class PlatformInterface {
   /// This is implemented as a static method so that it cannot be overridden
   /// with `noSuchMethod`.
   static void verifyToken(PlatformInterface instance, Object token) {
-    if (identical(instance._instanceToken, MockPlatformInterfaceMixin._token)) {
+    if (instance is MockPlatformInterfaceMixin) {
       bool assertionsEnabled = false;
       assert(() {
         assertionsEnabled = true;
@@ -67,6 +67,7 @@ abstract class PlatformInterface {
         throw AssertionError(
             '`MockPlatformInterfaceMixin` is not intended for use in release builds.');
       }
+      return;
     }
     if (!identical(token, instance._instanceToken)) {
       throw AssertionError(
@@ -90,9 +91,4 @@ abstract class PlatformInterface {
 ///    implements UrlLauncherPlatform {}
 /// ```
 @visibleForTesting
-abstract class MockPlatformInterfaceMixin implements PlatformInterface {
-  static const Object _token = Object();
-
-  @override
-  Object get _instanceToken => _token;
-}
+abstract class MockPlatformInterfaceMixin implements PlatformInterface {}

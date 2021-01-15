@@ -8,112 +8,90 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'messages.dart';
 import 'video_player_platform_interface.dart';
-
-const MethodChannel _channel = MethodChannel('flutter.io/videoPlayer');
 
 /// An implementation of [VideoPlayerPlatform] that uses method channels.
 class MethodChannelVideoPlayer extends VideoPlayerPlatform {
+  VideoPlayerApi _api = VideoPlayerApi();
+
   @override
   Future<void> init() {
-    return _channel.invokeMethod<void>('init');
+    return _api.initialize();
   }
 
   @override
   Future<void> dispose(int textureId) {
-    return _channel.invokeMethod<void>(
-      'dispose',
-      <String, dynamic>{'textureId': textureId},
-    );
+    return _api.dispose(TextureMessage()..textureId = textureId);
   }
 
   @override
-  Future<int> create(DataSource dataSource) async {
-    Map<String, dynamic> dataSourceDescription;
+  Future<int?> create(DataSource dataSource) async {
+    CreateMessage message = CreateMessage();
 
     switch (dataSource.sourceType) {
       case DataSourceType.asset:
-        dataSourceDescription = <String, dynamic>{
-          'asset': dataSource.asset,
-          'package': dataSource.package,
-        };
+        message.asset = dataSource.asset;
+        message.packageName = dataSource.package;
         break;
       case DataSourceType.network:
-        dataSourceDescription = <String, dynamic>{
-          'uri': dataSource.uri,
-          'formatHint': _videoFormatStringMap[dataSource.formatHint]
-        };
+        message.uri = dataSource.uri;
+        message.formatHint = _videoFormatStringMap[dataSource.formatHint];
         break;
       case DataSourceType.file:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource.uri};
+        message.uri = dataSource.uri;
         break;
     }
 
-    final Map<String, dynamic> response =
-        await _channel.invokeMapMethod<String, dynamic>(
-      'create',
-      dataSourceDescription,
-    );
-    return response['textureId'];
+    TextureMessage response = await _api.create(message);
+    return response.textureId;
   }
 
   @override
   Future<void> setLooping(int textureId, bool looping) {
-    return _channel.invokeMethod<void>(
-      'setLooping',
-      <String, dynamic>{
-        'textureId': textureId,
-        'looping': looping,
-      },
-    );
+    return _api.setLooping(LoopingMessage()
+      ..textureId = textureId
+      ..isLooping = looping);
   }
 
   @override
   Future<void> play(int textureId) {
-    return _channel.invokeMethod<void>(
-      'play',
-      <String, dynamic>{'textureId': textureId},
-    );
+    return _api.play(TextureMessage()..textureId = textureId);
   }
 
   @override
   Future<void> pause(int textureId) {
-    return _channel.invokeMethod<void>(
-      'pause',
-      <String, dynamic>{'textureId': textureId},
-    );
+    return _api.pause(TextureMessage()..textureId = textureId);
   }
 
   @override
   Future<void> setVolume(int textureId, double volume) {
-    return _channel.invokeMethod<void>(
-      'setVolume',
-      <String, dynamic>{
-        'textureId': textureId,
-        'volume': volume,
-      },
-    );
+    return _api.setVolume(VolumeMessage()
+      ..textureId = textureId
+      ..volume = volume);
+  }
+
+  @override
+  Future<void> setPlaybackSpeed(int textureId, double speed) {
+    assert(speed > 0);
+
+    return _api.setPlaybackSpeed(PlaybackSpeedMessage()
+      ..textureId = textureId
+      ..speed = speed);
   }
 
   @override
   Future<void> seekTo(int textureId, Duration position) {
-    return _channel.invokeMethod<void>(
-      'seekTo',
-      <String, dynamic>{
-        'textureId': textureId,
-        'location': position.inMilliseconds,
-      },
-    );
+    return _api.seekTo(PositionMessage()
+      ..textureId = textureId
+      ..position = position.inMilliseconds);
   }
 
   @override
   Future<Duration> getPosition(int textureId) async {
-    return Duration(
-      milliseconds: await _channel.invokeMethod<int>(
-        'position',
-        <String, dynamic>{'textureId': textureId},
-      ),
-    );
+    PositionMessage response =
+        await _api.position(TextureMessage()..textureId = textureId);
+    return Duration(milliseconds: response.position!);
   }
 
   @override
@@ -154,6 +132,13 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   @override
   Widget buildView(int textureId) {
     return Texture(textureId: textureId);
+  }
+
+  @override
+  Future<void> setMixWithOthers(bool mixWithOthers) {
+    return _api.setMixWithOthers(
+      MixWithOthersMessage()..mixWithOthers = mixWithOthers,
+    );
   }
 
   EventChannel _eventChannelFor(int textureId) {

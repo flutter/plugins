@@ -25,5 +25,6 @@ GoogleSignInTokenData getTokenDataFromMap(Map<String, dynamic> data) {
   return GoogleSignInTokenData(
     idToken: data['idToken'],
     accessToken: data['accessToken'],
+    serverAuthCode: data['serverAuthCode'],
   );
 }

@@ -53,20 +53,15 @@ void _initializeFakeSensorChannel(String channelName, List<double> sensorData) {
   const StandardMethodCodec standardMethod = StandardMethodCodec();
 
   void _emitEvent(ByteData event) {
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(
+    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
       channelName,
       event,
       (ByteData reply) {},
     );
   }
 
-  // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-  // https://github.com/flutter/flutter/issues/33446
-  // ignore: deprecated_member_use
-  BinaryMessages.setMockMessageHandler(channelName, (ByteData message) async {
+  ServicesBinding.instance.defaultBinaryMessenger
+      .setMockMessageHandler(channelName, (ByteData message) async {
     final MethodCall methodCall = standardMethod.decodeMethodCall(message);
     if (methodCall.method == 'listen') {
       _emitEvent(standardMethod.encodeSuccessEnvelope(sensorData));

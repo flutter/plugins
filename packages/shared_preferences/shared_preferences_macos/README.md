@@ -2,16 +2,20 @@
 
 The macos implementation of [`shared_preferences`][1].
 
+**Please set your constraint to `shared_preferences_macos: '>=0.0.y+x <2.0.0'`**
+
+## Backward compatible 1.0.0 version is coming
+The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.0.y+z`.
+Please use `shared_preferences_macos: '>=0.0.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
+For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+
 ## Usage
 
 ### Import the package
 
-To use this plugin in your Flutter app, simply add it as a dependency in
-your `pubspec.yaml` alongside the base `shared_preferences` plugin.
-
-_(This is only temporary: in the future we hope to make this package an
-"endorsed" implementation of `shared_preferences`, so that it is automatically
-included in your Flutter app when you depend on `package:shared_preferences`.)_
+This package has been endorsed, meaning that you only need to add `shared_preferences`
+as a dependency in your `pubspec.yaml`. It will be automatically included in your app
+when you depend on `package:shared_preferences`.
 
 This is what the above means to your `pubspec.yaml`:
 
@@ -19,14 +23,19 @@ This is what the above means to your `pubspec.yaml`:
 ...
 dependencies:
   ...
-  shared_preferences: ^0.5.4+8
-  shared_preferences_macos: ^0.1.0
+  shared_preferences: ^0.5.6
   ...
 ```
 
-### Use the plugin
+If you wish to use the macos package only, you can add  `shared_preferences_macos` as a
+dependency:
 
-Once you have the `shared_preferences_macos` dependency in your pubspec, you should
-be able to use `package:shared_preferences` as normal.
+```yaml
+...
+dependencies:
+  ...
+  shared_preferences_macos: ^0.0.1
+  ...
+```
 
-[1]: ../shared_preferences/shared_preferences_macos
+[1]: ../

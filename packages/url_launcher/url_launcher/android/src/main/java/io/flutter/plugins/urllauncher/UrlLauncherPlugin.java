@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
  * Plugin implementation that uses the new {@code io.flutter.embedding} package.
@@ -25,7 +24,8 @@ public final class UrlLauncherPlugin implements FlutterPlugin, ActivityAware {
    * <p>Calling this automatically initializes the plugin. However plugins initialized this way
    * won't react to changes in activity or context, unlike {@link UrlLauncherPlugin}.
    */
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     MethodCallHandlerImpl handler =
         new MethodCallHandlerImpl(new UrlLauncher(registrar.context(), registrar.activity()));
     handler.startListening(registrar.messenger());
@@ -35,7 +35,7 @@ public final class UrlLauncherPlugin implements FlutterPlugin, ActivityAware {
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     urlLauncher = new UrlLauncher(binding.getApplicationContext(), /*activity=*/ null);
     methodCallHandler = new MethodCallHandlerImpl(urlLauncher);
-    methodCallHandler.startListening(binding.getFlutterEngine().getDartExecutor());
+    methodCallHandler.startListening(binding.getBinaryMessenger());
   }
 
   @Override

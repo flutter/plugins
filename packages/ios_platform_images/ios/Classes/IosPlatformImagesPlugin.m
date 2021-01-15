@@ -20,7 +20,10 @@
       UIImage* image = [UIImage imageNamed:name];
       NSData* data = UIImagePNGRepresentation(image);
       if (data) {
-        result([FlutterStandardTypedData typedDataWithBytes:data]);
+        result(@{
+          @"scale" : @(image.scale),
+          @"data" : [FlutterStandardTypedData typedDataWithBytes:data],
+        });
       } else {
         result(nil);
       }
@@ -28,7 +31,8 @@
     } else if ([@"resolveURL" isEqualToString:call.method]) {
       NSArray* args = call.arguments;
       NSString* name = args[0];
-      NSString* extension = args[1];
+      NSString* extension = (args[1] == (id)NSNull.null) ? nil : args[1];
+
       NSURL* url = [[NSBundle mainBundle] URLForResource:name withExtension:extension];
       result(url.absoluteString);
       return;

@@ -1,10 +1,34 @@
 import 'dart:async';
 import 'dart:html';
-import 'dart:ui' as ui;
+import 'src/shims/dart_ui.dart' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+
+// An error code value to error name Map.
+// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/code
+const Map<int, String> _kErrorValueToErrorName = {
+  1: 'MEDIA_ERR_ABORTED',
+  2: 'MEDIA_ERR_NETWORK',
+  3: 'MEDIA_ERR_DECODE',
+  4: 'MEDIA_ERR_SRC_NOT_SUPPORTED',
+};
+
+// An error code value to description Map.
+// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/code
+const Map<int, String> _kErrorValueToErrorDescription = {
+  1: 'The user canceled the fetching of the video.',
+  2: 'A network error occurred while fetching the video, despite having previously been available.',
+  3: 'An error occurred while trying to decode the video, despite having previously been determined to be usable.',
+  4: 'The video has been found to be unsuitable (missing or in a format not supported by your browser).',
+};
+
+// The default error message, when the error is an empty string
+// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/message
+const String _kDefaultErrorMessage =
+    'No further diagnostic information can be determined or provided.';
 
 /// The web implementation of [VideoPlayerPlatform].
 ///
@@ -26,7 +50,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 
   @override
   Future<void> dispose(int textureId) async {
-    _videoPlayers[textureId].dispose();
+    _videoPlayers[textureId]!.dispose();
     _videoPlayers.remove(textureId);
     return null;
   }
@@ -42,20 +66,20 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
     final int textureId = _textureCounter;
     _textureCounter++;
 
-    Uri uri;
+    late String uri;
     switch (dataSource.sourceType) {
       case DataSourceType.network:
-        uri = Uri.parse(dataSource.uri);
+        // Do NOT modify the incoming uri, it can be a Blob, and Safari doesn't
+        // like blobs that have changed.
+        uri = dataSource.uri ?? '';
         break;
       case DataSourceType.asset:
-        String assetUrl = dataSource.asset;
-        if (dataSource.package != null && dataSource.package.isNotEmpty) {
+        String assetUrl = dataSource.asset!;
+        if (dataSource.package != null && dataSource.package!.isNotEmpty) {
           assetUrl = 'packages/${dataSource.package}/$assetUrl';
         }
-        // 'webOnlyAssetManager' is only in the web version of dart:ui
-        // ignore: undefined_prefixed_name
         assetUrl = ui.webOnlyAssetManager.getAssetUrl(assetUrl);
-        uri = Uri.parse(assetUrl);
+        uri = assetUrl;
         break;
       case DataSourceType.file:
         return Future.error(UnimplementedError(
@@ -75,38 +99,45 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 
   @override
   Future<void> setLooping(int textureId, bool looping) async {
-    return _videoPlayers[textureId].setLooping(looping);
+    return _videoPlayers[textureId]!.setLooping(looping);
   }
 
   @override
   Future<void> play(int textureId) async {
-    return _videoPlayers[textureId].play();
+    return _videoPlayers[textureId]!.play();
   }
 
   @override
   Future<void> pause(int textureId) async {
-    return _videoPlayers[textureId].pause();
+    return _videoPlayers[textureId]!.pause();
   }
 
   @override
   Future<void> setVolume(int textureId, double volume) async {
-    return _videoPlayers[textureId].setVolume(volume);
+    return _videoPlayers[textureId]!.setVolume(volume);
+  }
+
+  @override
+  Future<void> setPlaybackSpeed(int textureId, double speed) async {
+    assert(speed > 0);
+
+    return _videoPlayers[textureId]!.setPlaybackSpeed(speed);
   }
 
   @override
   Future<void> seekTo(int textureId, Duration position) async {
-    return _videoPlayers[textureId].seekTo(position);
+    return _videoPlayers[textureId]!.seekTo(position);
   }
 
   @override
   Future<Duration> getPosition(int textureId) async {
-    _videoPlayers[textureId].sendBufferingUpdate();
-    return _videoPlayers[textureId].getPosition();
+    _videoPlayers[textureId]!.sendBufferingUpdate();
+    return _videoPlayers[textureId]!.getPosition();
   }
 
   @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
-    return _videoPlayers[textureId].eventController.stream;
+    return _videoPlayers[textureId]!.eventController.stream;
   }
 
   @override
@@ -116,25 +147,38 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 }
 
 class _VideoPlayer {
-  _VideoPlayer({this.uri, this.textureId});
+  _VideoPlayer({required this.uri, required this.textureId});
 
   final StreamController<VideoEvent> eventController =
       StreamController<VideoEvent>();
 
-  final Uri uri;
+  final String uri;
   final int textureId;
-  VideoElement videoElement;
+  late VideoElement videoElement;
   bool isInitialized = false;
+  bool isBuffering = false;
+
+  void setBuffering(bool buffering) {
+    if (isBuffering != buffering) {
+      isBuffering = buffering;
+      eventController.add(VideoEvent(
+          eventType: isBuffering
+              ? VideoEventType.bufferingStart
+              : VideoEventType.bufferingEnd));
+    }
+  }
 
   void initialize() {
     videoElement = VideoElement()
-      ..src = uri.toString()
+      ..src = uri
       ..autoplay = false
       ..controls = false
       ..style.border = 'none';
 
+    // Allows Safari iOS to play the video inline
+    videoElement.setAttribute('playsinline', 'true');
+
     // TODO(hterkelsen): Use initialization parameters once they are available
-    // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
         'videoPlayer-$textureId', (int viewId) => videoElement);
 
@@ -143,11 +187,38 @@ class _VideoPlayer {
         isInitialized = true;
         sendInitialized();
       }
+      setBuffering(false);
     });
-    videoElement.onError.listen((dynamic error) {
-      eventController.addError(error);
+
+    videoElement.onCanPlayThrough.listen((dynamic _) {
+      setBuffering(false);
     });
+
+    videoElement.onPlaying.listen((dynamic _) {
+      setBuffering(false);
+    });
+
+    videoElement.onWaiting.listen((dynamic _) {
+      setBuffering(true);
+      sendBufferingUpdate();
+    });
+
+    // The error event fires when some form of error occurs while attempting to load or perform the media.
+    videoElement.onError.listen((Event _) {
+      setBuffering(false);
+      // The Event itself (_) doesn't contain info about the actual error.
+      // We need to look at the HTMLMediaElement.error.
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
+      MediaError error = videoElement.error!;
+      eventController.addError(PlatformException(
+        code: _kErrorValueToErrorName[error.code]!,
+        message: error.message != '' ? error.message : _kDefaultErrorMessage,
+        details: _kErrorValueToErrorDescription[error.code],
+      ));
+    });
+
     videoElement.onEnded.listen((dynamic _) {
+      setBuffering(false);
       eventController.add(VideoEvent(eventType: VideoEventType.completed));
     });
   }
@@ -159,8 +230,19 @@ class _VideoPlayer {
     ));
   }
 
-  void play() {
-    videoElement.play();
+  Future<void> play() {
+    return videoElement.play().catchError((e) {
+      // play() attempts to begin playback of the media. It returns
+      // a Promise which can get rejected in case of failure to begin
+      // playback for any reason, such as permission issues.
+      // The rejection handler is called with a DomException.
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/play
+      DomException exception = e;
+      eventController.addError(PlatformException(
+        code: exception.name,
+        message: exception.message,
+      ));
+    }, test: (e) => e is DomException);
   }
 
   void pause() {
@@ -172,7 +254,19 @@ class _VideoPlayer {
   }
 
   void setVolume(double value) {
+    // TODO: Do we need to expose a "muted" API? https://github.com/flutter/flutter/issues/60721
+    if (value > 0.0) {
+      videoElement.muted = false;
+    } else {
+      videoElement.muted = true;
+    }
     videoElement.volume = value;
+  }
+
+  void setPlaybackSpeed(double speed) {
+    assert(speed > 0);
+
+    videoElement.playbackRate = speed;
   }
 
   void seekTo(Duration position) {
@@ -191,8 +285,8 @@ class _VideoPlayer {
           milliseconds: (videoElement.duration * 1000).round(),
         ),
         size: Size(
-          videoElement.videoWidth.toDouble() ?? 0.0,
-          videoElement.videoHeight.toDouble() ?? 0.0,
+          videoElement.videoWidth.toDouble(),
+          videoElement.videoHeight.toDouble(),
         ),
       ),
     );

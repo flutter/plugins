@@ -5,6 +5,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
@@ -13,16 +14,16 @@ import 'package:video_player_web/video_player_web.dart';
 
 void main() {
   group('VideoPlayer for Web', () {
-    int textureId;
+    late int textureId;
 
     setUp(() async {
       VideoPlayerPlatform.instance = VideoPlayerPlugin();
-      textureId = await VideoPlayerPlatform.instance.create(
+      textureId = (await VideoPlayerPlatform.instance.create(
         DataSource(
             sourceType: DataSourceType.network,
             uri:
                 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
-      );
+      ))!;
     });
 
     test('$VideoPlayerPlugin is the live instance', () {
@@ -82,12 +83,37 @@ void main() {
       expect(VideoPlayerPlatform.instance.play(textureId), completes);
     });
 
+    test('throws PlatformException when playing bad media', () async {
+      int videoPlayerId = (await VideoPlayerPlatform.instance.create(
+        DataSource(
+            sourceType: DataSourceType.network,
+            uri:
+                'https://flutter.github.io/assets-for-api-docs/assets/videos/_non_existent_video.mp4'),
+      ))!;
+
+      Stream<VideoEvent> eventStream =
+          VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
+
+      // Mute video to allow autoplay (See https://goo.gl/xX8pDD)
+      await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
+      await VideoPlayerPlatform.instance.play(videoPlayerId);
+
+      expect(eventStream, emitsError(isA<PlatformException>()));
+    });
+
     test('can pause', () {
       expect(VideoPlayerPlatform.instance.pause(textureId), completes);
     });
 
     test('can set volume', () {
       expect(VideoPlayerPlatform.instance.setVolume(textureId, 0.8), completes);
+    });
+
+    test('can set playback speed', () {
+      expect(
+        VideoPlayerPlatform.instance.setPlaybackSpeed(textureId, 2.0),
+        completes,
+      );
     });
 
     test('can seek to position', () {

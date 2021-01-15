@@ -120,11 +120,11 @@ class SignInDemoState extends State<SignInDemo> {
           ),
           const Text("Signed in successfully."),
           Text(_contactText ?? ''),
-          RaisedButton(
+          ElevatedButton(
             child: const Text('SIGN OUT'),
             onPressed: _handleSignOut,
           ),
-          RaisedButton(
+          ElevatedButton(
             child: const Text('REFRESH'),
             onPressed: _handleGetContact,
           ),
@@ -135,7 +135,7 @@ class SignInDemoState extends State<SignInDemo> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           const Text("You are not currently signed in."),
-          RaisedButton(
+          ElevatedButton(
             child: const Text('SIGN IN'),
             onPressed: _handleSignIn,
           ),

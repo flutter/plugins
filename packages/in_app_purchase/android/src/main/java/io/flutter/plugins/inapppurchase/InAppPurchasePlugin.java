@@ -5,6 +5,7 @@
 package io.flutter.plugins.inapppurchase;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
@@ -13,7 +14,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** Wraps a {@link BillingClient} instance and responds to Dart calls for it. */
 public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
@@ -36,6 +36,8 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
         "BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)";
     static final String CONSUME_PURCHASE_ASYNC =
         "BillingClient#consumeAsync(String, ConsumeResponseListener)";
+    static final String ACKNOWLEDGE_PURCHASE =
+        "BillingClient#(AcknowledgePurchaseParams params, (AcknowledgePurchaseParams, AcknowledgePurchaseResponseListener)";
 
     private MethodNames() {};
   }
@@ -44,17 +46,18 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   private MethodCallHandlerImpl methodCallHandler;
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     InAppPurchasePlugin plugin = new InAppPurchasePlugin();
     plugin.setupMethodChannel(registrar.activity(), registrar.messenger(), registrar.context());
+    ((Application) registrar.context().getApplicationContext())
+        .registerActivityLifecycleCallbacks(plugin.methodCallHandler);
   }
 
   @Override
   public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
     setupMethodChannel(
-        /*activity=*/ null,
-        binding.getFlutterEngine().getDartExecutor(),
-        binding.getApplicationContext());
+        /*activity=*/ null, binding.getBinaryMessenger(), binding.getApplicationContext());
   }
 
   @Override
@@ -70,6 +73,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onDetachedFromActivity() {
     methodCallHandler.setActivity(null);
+    methodCallHandler.onDetachedFromActivity();
   }
 
   @Override
@@ -79,7 +83,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onDetachedFromActivityForConfigChanges() {
-    onDetachedFromActivity();
+    methodCallHandler.setActivity(null);
   }
 
   private void setupMethodChannel(Activity activity, BinaryMessenger messenger, Context context) {
@@ -93,5 +97,10 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
     methodChannel.setMethodCallHandler(null);
     methodChannel = null;
     methodCallHandler = null;
+  }
+
+  @VisibleForTesting
+  void setMethodCallHandler(MethodCallHandlerImpl methodCallHandler) {
+    this.methodCallHandler = methodCallHandler;
   }
 }

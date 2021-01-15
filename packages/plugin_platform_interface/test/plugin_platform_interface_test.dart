@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(egarciad): Remove once Mockito is migrated to null safety.
+// @dart = 2.9
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -10,7 +12,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class SamplePluginPlatform extends PlatformInterface {
   SamplePluginPlatform() : super(token: _token);
 
-  static const Object _token = Object();
+  static final Object _token = Object();
 
   static set instance(SamplePluginPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);

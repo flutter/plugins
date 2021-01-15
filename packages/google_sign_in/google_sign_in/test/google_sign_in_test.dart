@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart = 2.9
+
 import 'dart:async';
 
 import 'package:flutter/services.dart';
@@ -32,9 +34,11 @@ void main() {
       'signOut': null,
       'disconnect': null,
       'isSignedIn': true,
+      'requestScopes': true,
       'getTokens': <dynamic, dynamic>{
         'idToken': '123',
         'accessToken': '456',
+        'serverAuthCode': '789',
       },
     };
 
@@ -150,9 +154,9 @@ void main() {
     test('signIn works even if a previous call throws error in other zone',
         () async {
       responses['signInSilently'] = Exception('Not a user');
-      await runZoned(() async {
+      await runZonedGuarded(() async {
         expect(await googleSignIn.signInSilently(), isNull);
-      }, onError: (dynamic e, dynamic st) {});
+      }, (Object e, StackTrace st) {});
       expect(await googleSignIn.signIn(), isNotNull);
       expect(
         log,
@@ -369,12 +373,34 @@ void main() {
 
       expect(auth.accessToken, '456');
       expect(auth.idToken, '123');
+      expect(auth.serverAuthCode, '789');
       expect(
         log,
         <Matcher>[
           isMethodCall('getTokens', arguments: <String, dynamic>{
             'email': 'john.doe@gmail.com',
             'shouldRecoverAuth': true,
+          }),
+        ],
+      );
+    });
+
+    test('requestScopes returns true once new scope is granted', () async {
+      await googleSignIn.signIn();
+      final result = await googleSignIn.requestScopes(['testScope']);
+
+      expect(result, isTrue);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
+            'scopes': <String>[],
+            'hostedDomain': null,
+          }),
+          isMethodCall('signIn', arguments: null),
+          isMethodCall('requestScopes', arguments: <String, dynamic>{
+            'scopes': ['testScope'],
           }),
         ],
       );

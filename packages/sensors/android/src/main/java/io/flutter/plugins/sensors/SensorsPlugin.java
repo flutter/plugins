@@ -10,7 +10,6 @@ import android.hardware.SensorManager;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** SensorsPlugin */
 public class SensorsPlugin implements FlutterPlugin {
@@ -25,7 +24,8 @@ public class SensorsPlugin implements FlutterPlugin {
   private EventChannel gyroscopeChannel;
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     SensorsPlugin plugin = new SensorsPlugin();
     plugin.setupEventChannels(registrar.context(), registrar.messenger());
   }
@@ -33,7 +33,7 @@ public class SensorsPlugin implements FlutterPlugin {
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     final Context context = binding.getApplicationContext();
-    setupEventChannels(context, binding.getFlutterEngine().getDartExecutor());
+    setupEventChannels(context, binding.getBinaryMessenger());
   }
 
   @Override
