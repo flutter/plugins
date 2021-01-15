@@ -1,7 +1,3 @@
-## 0.7.0+6
-
-* Update `quiver` to `^3.0.0-nullsafety.2` so this can be used alongside `google_sign_in`.
-
 ## 0.7.0+5
 
 * Fixes crash when taking a picture on iOS devices without flash.
