@@ -191,7 +191,8 @@ void main() {
 
     test('controls system UI when changing statusBarBrightness', () async {
       final TestWidgetsFlutterBinding binding =
-          TestWidgetsFlutterBinding.ensureInitialized() as TestWidgetsFlutterBinding;
+          TestWidgetsFlutterBinding.ensureInitialized()
+              as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       binding.renderView.automaticSystemUiAdjustment = true;
       final Future<bool> launchResult =
@@ -206,7 +207,8 @@ void main() {
 
     test('sets automaticSystemUiAdjustment to not be null', () async {
       final TestWidgetsFlutterBinding binding =
-          TestWidgetsFlutterBinding.ensureInitialized() as TestWidgetsFlutterBinding;
+          TestWidgetsFlutterBinding.ensureInitialized()
+              as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       expect(binding.renderView.automaticSystemUiAdjustment, true);
       final Future<bool> launchResult =

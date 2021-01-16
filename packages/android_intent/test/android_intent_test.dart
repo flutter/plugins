@@ -9,7 +9,6 @@ import 'package:android_intent/android_intent.dart';
 import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
 
-
 void main() {
   late AndroidIntent androidIntent;
   late MockMethodChannel mockChannel;
@@ -181,6 +180,8 @@ void main() {
 class MockMethodChannel extends Mock implements MethodChannel {
   @override
   Future<T?> invokeMethod<T>(String method, [dynamic arguments]) async {
-    return super.noSuchMethod(Invocation.method(#invokeMethod, [method, arguments])) as dynamic;
+    return super
+            .noSuchMethod(Invocation.method(#invokeMethod, [method, arguments]))
+        as dynamic;
   }
 }

@@ -12,7 +12,6 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 class MockUrlLauncher extends Mock
     with MockPlatformInterfaceMixin
     implements UrlLauncherPlatform {
-
   @override
   Future<void> closeWebView() async {
     super.noSuchMethod(Invocation.method(#closeWebView, []));
@@ -20,7 +19,8 @@ class MockUrlLauncher extends Mock
 
   @override
   Future<bool> canLaunch(String url) {
-    return super.noSuchMethod(Invocation.method(#canLaunch, [url]), Future.value(false)) as dynamic;
+    return super.noSuchMethod(
+        Invocation.method(#canLaunch, [url]), Future.value(false)) as dynamic;
   }
 
   @override
@@ -34,20 +34,18 @@ class MockUrlLauncher extends Mock
     required Map<String, String>? headers,
     String? webOnlyWindowName,
   }) async {
-    final dynamic result = super
-      .noSuchMethod(Invocation.method(
-        #launch,
-        [url],
-        <Symbol, Object?>{
-          #useSafariVC : useSafariVC,
-          #useWebView : useWebView,
-          #enableJavaScript : enableJavaScript,
-          #enableDomStorage : enableDomStorage,
-          #universalLinksOnly: universalLinksOnly,
-          #headers: headers,
-          #webOnlyWindowName: webOnlyWindowName,
-        }
-      ),
+    final dynamic result = super.noSuchMethod(
+      Invocation.method(#launch, [
+        url
+      ], <Symbol, Object?>{
+        #useSafariVC: useSafariVC,
+        #useWebView: useWebView,
+        #enableJavaScript: enableJavaScript,
+        #enableDomStorage: enableDomStorage,
+        #universalLinksOnly: universalLinksOnly,
+        #headers: headers,
+        #webOnlyWindowName: webOnlyWindowName,
+      }),
       Future.value(false),
     ) as dynamic;
 
