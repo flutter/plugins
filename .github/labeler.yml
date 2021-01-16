@@ -10,7 +10,6 @@
 'p: camera':
   - packages/camera/**/*
 
-
 'p: connectivity':
   - packages/connectivity/**/*
 
@@ -43,7 +42,6 @@
 
 'p: in_app_purchase':
   - packages/in_app_purchase/**/*
-
 
 'p: integration_test':
   - packages/integration_test/**/*
