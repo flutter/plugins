@@ -32,7 +32,7 @@ void main() {
         headers: defaultHeaders));
 
     Finder browserlaunchBtn =
-        find.widgetWithText(RaisedButton, 'Launch in browser');
+        find.widgetWithText(ElevatedButton, 'Launch in browser');
     expect(browserlaunchBtn, findsOneWidget);
     await tester.tap(browserlaunchBtn);
 

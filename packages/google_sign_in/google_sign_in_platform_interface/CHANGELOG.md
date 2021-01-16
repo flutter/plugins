@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety
+
+* Migration to nnbd.
+
 ## 1.1.3
 
 * Update Flutter SDK constraint.
