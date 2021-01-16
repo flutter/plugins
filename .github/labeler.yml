@@ -1,14 +1,11 @@
 'p: android_alarm_manager':
   - packages/android_alarm_manager/**/*
 
-
 'p: android_intent':
   - packages/android_intent/**/*
 
-
 'p: battery':
   - packages/battery/**/*
-
 
 'p: camera':
   - packages/camera/**/*
@@ -17,42 +14,32 @@
 'p: connectivity':
   - packages/connectivity/**/*
 
-
 'p: cross_file':
   - packages/cross_file/**/*
-
 
 'p: device_info':
   - packages/device_info/**/*
 
-
 'p: e2e':
   - packages/e2e/**/*
-
 
 'p: espresso':
   - packages/espresso/**/*
 
-
 'p: file_selector':
   - packages/file_selector/**/*
-
 
 'p: flutter_plugin_android_lifecycle':
   - packages/flutter_plugin_android_lifecycle/**/*
 
-
 'p: google_maps_flutter':
   - packages/google_maps_flutter/**/*
-
 
 'p: google_sign_in':
   - packages/google_sign_in/**/*
 
-
 'p: image_picker':
   - packages/image_picker/**/*
-
 
 'p: in_app_purchase':
   - packages/in_app_purchase/**/*
@@ -61,54 +48,41 @@
 'p: integration_test':
   - packages/integration_test/**/*
 
-
 'p: ios_platform_images':
   - packages/ios_platform_images/**/*
-
 
 'p: local_auth':
   - packages/local_auth/**/*
 
-
 'p: package_info':
   - packages/package_info/**/*
-
 
 'p: path_provider':
   - packages/path_provider/**/*
 
-
 'p: plugin_platform_interface':
   - packages/plugin_platform_interface/**/*
-
 
 'p: quick_actions':
   - packages/quick_actions/**/*
 
-
 'p: sensors':
   - packages/sensors/**/*
-
 
 'p: share':
   - packages/share/**/*
 
-
 'p: shared_preferences':
   - packages/shared_preferences/**/*
-
 
 'p: url_launcher':
   - packages/url_launcher/**/*
 
-
 'p: video_player':
   - packages/video_player/**/*
 
-
 'p: webview_flutter':
   - packages/webview_flutter/**/*
-
 
 'p: wifi_info_flutter':
   - packages/wifi_info_flutter/**/*
