@@ -37,9 +37,63 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double maxHeight,
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-  }) {
+  }) async {
     String capture = computeCaptureAttribute(source, preferredCameraDevice);
-    return pickFile(accept: _kAcceptImageMimeType, capture: capture);
+    return pickFile(
+      accept: _kAcceptImageMimeType,
+      capture: await _resizeImage(
+        capture,
+        maxWidth.toInt(),
+        maxHeight.toInt(),
+        imageQuality,
+      ),
+    );
+  }
+
+  static Future<String> _resizeImage(
+    String src,
+    int maxWidth,
+    int maxHeight,
+    int imageQuality,
+  ) {
+    final completer = Completer<String>();
+    final img = html.ImageElement();
+    img.onError.listen((event) {
+      completer.complete("");
+    });
+    img.onLoad.listen((event) {
+      final canvas = html.CanvasElement();
+      final ctx = canvas.context2D;
+      double ratio = 1;
+
+      if (img.width > img.height) {
+        if (img.width > maxWidth) ratio = maxWidth / img.width;
+      } else if (img.height > maxWidth) {
+        ratio = maxWidth / img.height;
+      }
+      if (img.width > img.height) {
+        if (img.width < maxHeight) ratio = maxHeight / img.width;
+      } else if (img.height < maxHeight) {
+        ratio = maxHeight / img.height;
+      }
+
+      canvas.height = (img.height * ratio).floor();
+      canvas.width = (img.width * ratio).floor();
+      // Draw the image to canvas and resize
+      ctx.drawImageScaled(img, 0, 0, canvas.width, canvas.height);
+      final base64 = canvas.toDataUrl("image/png", imageQuality / 100);
+      completer.complete(base64);
+    });
+    img.src = src;
+    // make sure the load event fires for cached images too
+    if (img.complete) {
+      // Flush cache
+      img.src =
+          'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+      // Try again
+      img.src = src;
+    }
+    return completer.future;
   }
 
   @override
