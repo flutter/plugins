@@ -2,7 +2,7 @@ name: camera
 description: A Flutter plugin for getting information about and controlling the
   camera on Android and iOS. Supports previewing the camera feed, capturing images, capturing video,
   and streaming image buffers to dart.
-version: 0.6.6
+version: 0.7.0+5
 homepage: https://github.com/flutter/plugins/tree/master/packages/camera/camera
 
 dependencies:
@@ -10,6 +10,7 @@ dependencies:
     sdk: flutter
   camera_platform_interface: ^1.5.0
   pedantic: ^1.8.0
+  quiver: ^2.1.5
 
 dev_dependencies:
   path_provider: ^0.5.0
