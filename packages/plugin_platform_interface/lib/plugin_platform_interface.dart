@@ -43,7 +43,7 @@ abstract class PlatformInterface {
   /// Pass a private, class-specific `const Object()` as the `token`.
   PlatformInterface({required Object token}) : _instanceToken = token;
 
-  final Object _instanceToken;
+  final Object? _instanceToken;
 
   /// Ensures that the platform instance has a token that matches the
   /// provided token and throws [AssertionError] if not.

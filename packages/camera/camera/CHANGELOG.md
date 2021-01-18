@@ -1,3 +1,19 @@
+## 0.7.0+5
+
+* Fixes crash when taking a picture on iOS devices without flash.
+
+## 0.7.0+4
+
+* Make sure the configured zoom scale is copied over to the final capture builder on Android. Fixes the issue where the preview is zoomed but the final picture is not.
+
+## 0.7.0+3
+
+* Fixes crash with using inner camera on some Android devices.
+
+## 0.7.0+2
+
+* Improved error feedback by differentiating between uninitialized and disposed camera controllers.
+
 ## 0.7.0+1
 
 * Fixes picture captures causing a crash on some Huawei devices.

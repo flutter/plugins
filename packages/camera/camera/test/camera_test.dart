@@ -213,12 +213,21 @@ void main() {
               sensorOrientation: 90),
           ResolutionPreset.max);
       expect(
-          cameraController.takePicture(),
-          throwsA(isA<CameraException>().having(
-            (error) => error.description,
-            'Uninitialized CameraController.',
-            'takePicture was called on uninitialized CameraController',
-          )));
+        cameraController.takePicture(),
+        throwsA(
+          isA<CameraException>()
+              .having(
+                (error) => error.code,
+                'code',
+                'Uninitialized CameraController',
+              )
+              .having(
+                (error) => error.description,
+                'description',
+                'takePicture() was called on an uninitialized CameraController.',
+              ),
+        ),
+      );
     });
 
     test('takePicture() throws $CameraException when takePicture is true',
@@ -286,12 +295,21 @@ void main() {
           ResolutionPreset.max);
 
       expect(
-          cameraController.startVideoRecording(),
-          throwsA(isA<CameraException>().having(
-            (error) => error.description,
-            'Uninitialized CameraController',
-            'startVideoRecording was called on uninitialized CameraController',
-          )));
+        cameraController.startVideoRecording(),
+        throwsA(
+          isA<CameraException>()
+              .having(
+                (error) => error.code,
+                'code',
+                'Uninitialized CameraController',
+              )
+              .having(
+                (error) => error.description,
+                'description',
+                'startVideoRecording() was called on an uninitialized CameraController.',
+              ),
+        ),
+      );
     });
     test('startVideoRecording() throws $CameraException when recording videos',
         () async {
@@ -350,12 +368,21 @@ void main() {
           ResolutionPreset.max);
 
       expect(
-          cameraController.getMaxZoomLevel,
-          throwsA(isA<CameraException>().having(
-            (error) => error.description,
-            'Uninitialized CameraController',
-            'getMaxZoomLevel was called on uninitialized CameraController',
-          )));
+        cameraController.getMaxZoomLevel,
+        throwsA(
+          isA<CameraException>()
+              .having(
+                (error) => error.code,
+                'code',
+                'Uninitialized CameraController',
+              )
+              .having(
+                (error) => error.description,
+                'description',
+                'getMaxZoomLevel() was called on an uninitialized CameraController.',
+              ),
+        ),
+      );
     });
 
     test('getMaxZoomLevel() throws $CameraException when disposed', () async {
@@ -370,12 +397,21 @@ void main() {
       await cameraController.dispose();
 
       expect(
-          cameraController.getMaxZoomLevel,
-          throwsA(isA<CameraException>().having(
-            (error) => error.description,
-            'Uninitialized CameraController',
-            'getMaxZoomLevel was called on uninitialized CameraController',
-          )));
+        cameraController.getMaxZoomLevel,
+        throwsA(
+          isA<CameraException>()
+              .having(
+                (error) => error.code,
+                'code',
+                'Disposed CameraController',
+              )
+              .having(
+                (error) => error.description,
+                'description',
+                'getMaxZoomLevel() was called on a disposed CameraController.',
+              ),
+        ),
+      );
     });
 
     test(
@@ -432,12 +468,21 @@ void main() {
           ResolutionPreset.max);
 
       expect(
-          cameraController.getMinZoomLevel,
-          throwsA(isA<CameraException>().having(
-            (error) => error.description,
-            'Uninitialized CameraController',
-            'getMinZoomLevel was called on uninitialized CameraController',
-          )));
+        cameraController.getMinZoomLevel,
+        throwsA(
+          isA<CameraException>()
+              .having(
+                (error) => error.code,
+                'code',
+                'Uninitialized CameraController',
+              )
+              .having(
+                (error) => error.description,
+                'description',
+                'getMinZoomLevel() was called on an uninitialized CameraController.',
+              ),
+        ),
+      );
     });
 
     test('getMinZoomLevel() throws $CameraException when disposed', () async {
@@ -452,12 +497,21 @@ void main() {
       await cameraController.dispose();
 
       expect(
-          cameraController.getMinZoomLevel,
-          throwsA(isA<CameraException>().having(
-            (error) => error.description,
-            'Uninitialized CameraController',
-            'getMinZoomLevel was called on uninitialized CameraController',
-          )));
+        cameraController.getMinZoomLevel,
+        throwsA(
+          isA<CameraException>()
+              .having(
+                (error) => error.code,
+                'code',
+                'Disposed CameraController',
+              )
+              .having(
+                (error) => error.description,
+                'description',
+                'getMinZoomLevel() was called on a disposed CameraController.',
+              ),
+        ),
+      );
     });
 
     test(
@@ -513,12 +567,21 @@ void main() {
           ResolutionPreset.max);
 
       expect(
-          () => cameraController.setZoomLevel(42.0),
-          throwsA(isA<CameraException>().having(
-            (error) => error.description,
-            'Uninitialized CameraController',
-            'setZoomLevel was called on uninitialized CameraController',
-          )));
+        () => cameraController.setZoomLevel(42.0),
+        throwsA(
+          isA<CameraException>()
+              .having(
+                (error) => error.code,
+                'code',
+                'Uninitialized CameraController',
+              )
+              .having(
+                (error) => error.description,
+                'description',
+                'setZoomLevel() was called on an uninitialized CameraController.',
+              ),
+        ),
+      );
     });
 
     test('setZoomLevel() throws $CameraException when disposed', () async {
@@ -533,12 +596,21 @@ void main() {
       await cameraController.dispose();
 
       expect(
-          () => cameraController.setZoomLevel(42.0),
-          throwsA(isA<CameraException>().having(
-            (error) => error.description,
-            'Uninitialized CameraController',
-            'setZoomLevel was called on uninitialized CameraController',
-          )));
+        () => cameraController.setZoomLevel(42.0),
+        throwsA(
+          isA<CameraException>()
+              .having(
+                (error) => error.code,
+                'code',
+                'Disposed CameraController',
+              )
+              .having(
+                (error) => error.description,
+                'description',
+                'setZoomLevel() was called on a disposed CameraController.',
+              ),
+        ),
+      );
     });
 
     test(
