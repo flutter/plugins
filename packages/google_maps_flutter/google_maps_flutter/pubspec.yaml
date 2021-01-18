@@ -11,7 +11,7 @@ dependencies:
     git:
       url: https://github.com/strigePC/plugins.git
       path: packages/google_maps_flutter/google_maps_flutter_platform_interface/
-      ref: ground-overlays
+      ref: maps-ground-overlays
 
 dev_dependencies:
   flutter_test:
