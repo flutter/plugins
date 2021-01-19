@@ -1131,60 +1131,60 @@ void main() {
     },
   );
 
-  // testWidgets(
-  //   'remove tileOverlays correctly',
-  //   (WidgetTester tester) async {
-  //     Completer<GoogleMapInspector> inspectorCompleter =
-  //         Completer<GoogleMapInspector>();
-  //     final Key key = GlobalKey();
-  //     final TileOverlay tileOverlay1 = TileOverlay(
-  //       tileOverlayId: TileOverlayId('tile_overlay_1'),
-  //       tileProvider: _DebugTileProvider(),
-  //       zIndex: 2,
-  //       visible: true,
-  //       transparency: 0.2,
-  //       fadeIn: true,
-  //     );
+  testWidgets(
+    'remove tileOverlays correctly',
+    (WidgetTester tester) async {
+      Completer<GoogleMapInspector> inspectorCompleter =
+          Completer<GoogleMapInspector>();
+      final Key key = GlobalKey();
+      final TileOverlay tileOverlay1 = TileOverlay(
+        tileOverlayId: TileOverlayId('tile_overlay_1'),
+        tileProvider: _DebugTileProvider(),
+        zIndex: 2,
+        visible: true,
+        transparency: 0.2,
+        fadeIn: true,
+      );
 
-  //     await tester.pumpWidget(
-  //       Directionality(
-  //         textDirection: TextDirection.ltr,
-  //         child: GoogleMap(
-  //           key: key,
-  //           initialCameraPosition: _kInitialCameraPosition,
-  //           tileOverlays: <TileOverlay>{tileOverlay1},
-  //           onMapCreated: (GoogleMapController controller) {
-  //             final GoogleMapInspector inspector =
-  //                 // ignore: invalid_use_of_visible_for_testing_member
-  //                 GoogleMapInspector(controller.channel);
-  //             inspectorCompleter.complete(inspector);
-  //           },
-  //         ),
-  //       ),
-  //     );
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            tileOverlays: <TileOverlay>{tileOverlay1},
+            onMapCreated: (GoogleMapController controller) {
+              final GoogleMapInspector inspector =
+                  // ignore: invalid_use_of_visible_for_testing_member
+                  GoogleMapInspector(controller.channel);
+              inspectorCompleter.complete(inspector);
+            },
+          ),
+        ),
+      );
 
-  //     final GoogleMapInspector inspector = await inspectorCompleter.future;
+      final GoogleMapInspector inspector = await inspectorCompleter.future;
 
-  //     await tester.pumpWidget(
-  //       Directionality(
-  //         textDirection: TextDirection.ltr,
-  //         child: GoogleMap(
-  //           key: key,
-  //           initialCameraPosition: _kInitialCameraPosition,
-  //           onMapCreated: (GoogleMapController controller) {
-  //             fail('OnMapCreated should get called only once.');
-  //           },
-  //         ),
-  //       ),
-  //     );
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            onMapCreated: (GoogleMapController controller) {
+              fail('OnMapCreated should get called only once.');
+            },
+          ),
+        ),
+      );
 
-  //     await tester.pumpAndSettle(const Duration(seconds: 3));
-  //     Map<String, dynamic> tileOverlayInfo1 =
-  //         await inspector.getTileOverlayInfo('tile_overlay_1');
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+      Map<String, dynamic> tileOverlayInfo1 =
+          await inspector.getTileOverlayInfo('tile_overlay_1');
 
-  //     expect(tileOverlayInfo1, isNull);
-  //   },
-  // );
+      expect(tileOverlayInfo1, isNull);
+    },
+  );
 }
 
 class _DebugTileProvider implements TileProvider {

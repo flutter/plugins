@@ -87,15 +87,15 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
             ),
           ),
         ),
-        FlatButton(
+        TextButton(
           child: const Text('Add tile overlay'),
           onPressed: _addTileOverlay,
         ),
-        FlatButton(
+        TextButton(
           child: const Text('Remove tile overlay'),
           onPressed: _removeTileOverlay,
         ),
-        FlatButton(
+        TextButton(
           child: const Text('Clear tile cache'),
           onPressed: _clearTileCache,
         ),

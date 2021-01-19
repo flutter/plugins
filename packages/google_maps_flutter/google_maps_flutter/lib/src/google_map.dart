@@ -396,7 +396,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   // Returns the [Tile] from an added [TileOverlay].
   //
-  // If the TileOverlay or his TileProvider is not found,
+  // If the TileOverlay or its TileProvider is not found,
   // a [TileProvider.noTile] is returned.
   Future<Tile> _onGetTile(
       String tileOverlayIdRaw, int x, int y, int zoom) async {
@@ -404,7 +404,7 @@ class _GoogleMapState extends State<GoogleMap> {
     final TileOverlayId tileOverlayId = TileOverlayId(tileOverlayIdRaw);
     final TileOverlay tileOverlay = _tileOverlays[tileOverlayId];
     if (tileOverlay == null || tileOverlay.tileProvider == null) {
-      return null;
+      return TileProvider.noTile;
     }
     return await tileOverlay.tileProvider.getTile(x, y, zoom);
   }

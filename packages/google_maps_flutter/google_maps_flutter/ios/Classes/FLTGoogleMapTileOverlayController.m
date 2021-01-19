@@ -131,7 +131,11 @@ static void InterpretTileOverlayOptions(NSDictionary* data,
               UIImage* tileImage;
               if ([result isKindOfClass:[NSDictionary class]]) {
                 FlutterStandardTypedData* typedData = (FlutterStandardTypedData*)result[@"data"];
-                tileImage = [UIImage imageWithData:typedData.data];
+                if (typedData == nil) {
+                  tileImage = kGMSTileLayerNoTile;
+                } else {
+                  tileImage = [UIImage imageWithData:typedData.data];
+                }
               } else {
                 if ([result isKindOfClass:[FlutterError class]]) {
                   FlutterError* error = (FlutterError*)result;
