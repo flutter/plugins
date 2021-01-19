@@ -4,6 +4,21 @@
 
 #import "JsonConversions.h"
 
+@implementation FLTPolylinePattern
+
+- (instancetype) init: (NSString *)patternType length:(double)length  {
+
+    self = [super init];
+
+    if (self) {
+        self.patternType = patternType;
+        self.length = length;
+    }
+    return self;
+}
+
+@end
+
 @implementation FLTGoogleMapJsonConversions
 
 + (bool)toBool:(NSNumber*)data {
@@ -56,6 +71,24 @@
   }
 
   return points;
+}
+
++ (NSArray<FLTPolylinePattern*>*)toPattern:(NSArray*)data {
+  NSMutableArray* patterns = [[NSMutableArray alloc] init];
+  for (unsigned i = 0; i < [data count]; i++) {
+    NSArray* item = data[i];
+    NSString* patternType = item[0];
+    NSNumber* length = 0;
+    if ([item count] > 1) {
+        length = item[1];
+    }
+    FLTPolylinePattern* pattern =
+      [[FLTPolylinePattern alloc] init:patternType
+                                  length:[FLTGoogleMapJsonConversions toDouble:length]];
+    [patterns addObject:pattern];
+  }
+
+  return patterns;
 }
 
 + (NSArray<NSArray<CLLocation*>*>*)toHoles:(NSArray*)data {

@@ -463,6 +463,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   if (_trackCameraPosition) {
     [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : PositionToJson(position)}];
   }
+  [_polylinesController redrawPolylines];
 }
 
 - (void)mapView:(GMSMapView*)mapView idleAtCameraPosition:(GMSCameraPosition*)position {
