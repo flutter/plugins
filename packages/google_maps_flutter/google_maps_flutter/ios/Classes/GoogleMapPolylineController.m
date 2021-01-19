@@ -47,9 +47,12 @@
 }
 
 - (void)setPattern {
-    NSArray *styles = @[[GMSStrokeStyle solidColor:[UIColor blackColor]],
+    NSArray *styles = @[[GMSStrokeStyle solidColor:_polyline.strokeColor],
                         [GMSStrokeStyle solidColor:[UIColor clearColor]]];
-    NSArray *lengths = @[@50, @50];
+    
+    double scale = 1.0 / [_mapView.projection pointsForMeters:1 atCoordinate: _mapView.camera.target];
+    NSNumber *calculatedLength = [NSNumber numberWithDouble:scale * 15];
+    NSArray *lengths = @[calculatedLength, calculatedLength];
     _polyline.spans = GMSStyleSpans(_polyline.path, styles, lengths, kGMSLengthRhumb);
 }
 
