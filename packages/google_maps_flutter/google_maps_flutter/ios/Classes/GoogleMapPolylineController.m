@@ -25,7 +25,7 @@
 
 - (void)redraw {
   if (_pattern != nil) {
-    [self setPattern: _pattern];
+    [self setPattern:_pattern];
   }
 }
 
