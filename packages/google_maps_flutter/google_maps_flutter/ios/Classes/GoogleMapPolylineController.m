@@ -24,9 +24,9 @@
 }
 
 - (void)redraw {
-    if(_pattern != nil){
-        [self setPattern: _pattern];
-    }
+  if (_pattern != nil) {
+    [self setPattern: _pattern];
+  }
 }
 
 - (void)removePolyline {
@@ -56,10 +56,10 @@
   _pattern = pattern;
   NSMutableArray* styles = [[NSMutableArray alloc] init];
   NSMutableArray* lengths = [[NSMutableArray alloc] init];
-  double scale = 1.0 / [_mapView.projection pointsForMeters:1 atCoordinate: _mapView.camera.target];
+  double scale = 1.0 / [_mapView.projection pointsForMeters:1 atCoordinate:_mapView.camera.target];
   for (FLTPolylinePattern* patternItem in _pattern) {
-     NSString* patternType = patternItem.patternType;
-     if ([patternType isEqualToString:@"dash"]) {
+    NSString* patternType = patternItem.patternType;
+    if ([patternType isEqualToString:@"dash"]) {
       [styles addObject:[GMSStrokeStyle solidColor:_polyline.strokeColor]];
       [lengths addObject:[NSNumber numberWithDouble:scale * patternItem.length]];
     } else if ([patternType isEqualToString:@"gap"]) {
