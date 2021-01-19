@@ -281,7 +281,9 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                         ),
                         TextButton(
                           child: const Text('change pattern'),
-                          onPressed:  (selectedPolyline == null) ? null : _changePattern,
+                          onPressed: (selectedPolyline == null)
+                              ? null
+                              : _changePattern,
                         ),
                       ],
                     )
