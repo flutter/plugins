@@ -1,6 +1,6 @@
 ## 1.1.2
 
-* Added the iOS implementation for patterns
+* iOS: Added the pattern support for polylines
 
 ## 1.1.1
 
