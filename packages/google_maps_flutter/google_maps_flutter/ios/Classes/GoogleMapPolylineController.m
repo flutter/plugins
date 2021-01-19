@@ -46,6 +46,13 @@
   _polyline.path = path;
 }
 
+- (void)setPattern {
+    NSArray *styles = @[[GMSStrokeStyle solidColor:[UIColor blackColor]],
+                        [GMSStrokeStyle solidColor:[UIColor clearColor]]];
+    NSArray *lengths = @[@50, @50];
+    _polyline.spans = GMSStyleSpans(_polyline.path, styles, lengths, kGMSLengthRhumb);
+}
+
 - (void)setColor:(UIColor*)color {
   _polyline.strokeColor = color;
 }
@@ -89,6 +96,12 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   if (points) {
     [sink setPoints:ToPoints(points)];
   }
+    
+  NSArray* pattern = data[@"pattern"];
+  if (pattern) {
+//    [sink setPattern];
+  }
+  [sink setPattern];
 
   NSNumber* strokeColor = data[@"color"];
   if (strokeColor != nil) {
