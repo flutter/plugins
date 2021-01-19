@@ -66,6 +66,10 @@
 - (void)setGeodesic:(BOOL)isGeodesic {
   _polyline.geodesic = isGeodesic;
 }
+
+- (void)redraw {
+    [self setPattern];
+}
 @end
 
 static int ToInt(NSNumber* data) { return [FLTGoogleMapJsonConversions toInt:data]; }
