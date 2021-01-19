@@ -1,3 +1,8 @@
+## 0.1.0+10
+
+* Update `package:google_maps_flutter_platform_interface` to `^1.1.0`.
+* Add support for Polygon Holes.
+
 ## 0.1.0+9
 
 * Update Flutter SDK constraint.
