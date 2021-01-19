@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Added the iOS implementation for patterns
+
 ## 1.1.1
 
 * Fix in example app to properly place polyline at initial camera position.
