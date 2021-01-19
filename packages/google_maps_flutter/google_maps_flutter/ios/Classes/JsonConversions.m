@@ -6,7 +6,7 @@
 
 @implementation FLTPolylinePattern
 
-- (instancetype)init:(NSString *)patternType length:(double)length  {
+- (instancetype)init:(NSString*)patternType length:(double)length  {
 
   self = [super init];
   if (self) {
@@ -83,7 +83,7 @@
     }
     FLTPolylinePattern* pattern =
         [[FLTPolylinePattern alloc] init:patternType
-                                    length:[FLTGoogleMapJsonConversions toDouble:length]];
+                                  length:[FLTGoogleMapJsonConversions toDouble:length]];
     [patterns addObject:pattern];
   }
 

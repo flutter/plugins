@@ -79,8 +79,8 @@
 - (void)setStrokeWidth:(CGFloat)width {
   _polyline.strokeWidth = width;
 
-  if(_pattern != nil){
-      [self setPattern: _pattern];
+  if (_pattern != nil) {
+    [self setPattern:_pattern];
   }
 }
 
@@ -125,7 +125,7 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   if (points) {
     [sink setPoints:ToPoints(points)];
   }
-    
+
   NSArray* pattern = data[@"pattern"];
   if (pattern) {
     [sink setPattern:ToPattern(pattern)];
@@ -178,9 +178,9 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   }
 }
 - (void)redrawPolylines {
-    for (FLTGoogleMapPolylineController *controller in _polylineIdToController.allValues){
-        [controller redraw];
-    }
+  for (FLTGoogleMapPolylineController *controller in _polylineIdToController.allValues){
+    [controller redraw];
+  }
 }
 - (void)changePolylines:(NSArray*)polylinesToChange {
   for (NSDictionary* polyline in polylinesToChange) {
