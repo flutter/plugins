@@ -7,10 +7,10 @@
 
 @interface FLTPolylinePattern : NSObject
 
-@property (strong, nonatomic) NSString* patternType;
-@property (nonatomic) double length;
+@property(strong, nonatomic) NSString* patternType;
+@property(nonatomic) double length;
 
-- (instancetype) init: (NSString*)patternType length: (double)length;
+- (instancetype)init:(NSString*)patternType length:(double)length;
 @end
 
 @interface FLTGoogleMapJsonConversions : NSObject

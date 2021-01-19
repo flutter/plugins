@@ -6,15 +6,14 @@
 
 @implementation FLTPolylinePattern
 
-- (instancetype) init: (NSString *)patternType length:(double)length  {
+- (instancetype)init:(NSString *)patternType length:(double)length  {
 
-    self = [super init];
-
-    if (self) {
-        self.patternType = patternType;
-        self.length = length;
-    }
-    return self;
+  self = [super init];
+  if (self) {
+    self.patternType = patternType;
+    self.length = length;
+  }
+  return self;
 }
 
 @end
@@ -80,11 +79,11 @@
     NSString* patternType = item[0];
     NSNumber* length = 0;
     if ([item count] > 1) {
-        length = item[1];
+      length = item[1];
     }
     FLTPolylinePattern* pattern =
-      [[FLTPolylinePattern alloc] init:patternType
-                                  length:[FLTGoogleMapJsonConversions toDouble:length]];
+        [[FLTPolylinePattern alloc] init:patternType
+                                    length:[FLTGoogleMapJsonConversions toDouble:length]];
     [patterns addObject:pattern];
   }
 
