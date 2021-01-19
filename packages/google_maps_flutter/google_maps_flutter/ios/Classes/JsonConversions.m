@@ -6,7 +6,7 @@
 
 @implementation FLTPolylinePattern
 
-- (instancetype)init:(NSString*)patternType length:(double)length  {
+- (instancetype)init:(NSString*)patternType length:(double)length {
 
   self = [super init];
   if (self) {

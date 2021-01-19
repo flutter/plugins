@@ -53,24 +53,24 @@
   _polyline.path = path;
 }
 - (void)setPattern:(NSArray<FLTPolylinePattern*>*)pattern {
-    _pattern = pattern;
-    NSMutableArray* styles = [[NSMutableArray alloc] init];
-    NSMutableArray* lengths = [[NSMutableArray alloc] init];
-    double scale = 1.0 / [_mapView.projection pointsForMeters:1 atCoordinate: _mapView.camera.target];
-    for (FLTPolylinePattern* patternItem in _pattern) {
-        NSString* patternType = patternItem.patternType;
-        if ([patternType isEqualToString:@"dash"]) {
-            [styles addObject:[GMSStrokeStyle solidColor:_polyline.strokeColor]];
-            [lengths addObject:[NSNumber numberWithDouble:scale * patternItem.length]];
-        } else if ([patternType isEqualToString:@"gap"]) {
-            [styles addObject:[GMSStrokeStyle solidColor:[UIColor clearColor]]];
-            [lengths addObject:[NSNumber numberWithDouble:scale * patternItem.length]];
-        } else if ([patternType isEqualToString:@"dot"]) {
-            [styles addObject:[GMSStrokeStyle solidColor:_polyline.strokeColor]];
-            [lengths addObject:[NSNumber numberWithDouble:scale * _polyline.strokeWidth]];
-        }
+  _pattern = pattern;
+  NSMutableArray* styles = [[NSMutableArray alloc] init];
+  NSMutableArray* lengths = [[NSMutableArray alloc] init];
+  double scale = 1.0 / [_mapView.projection pointsForMeters:1 atCoordinate: _mapView.camera.target];
+  for (FLTPolylinePattern* patternItem in _pattern) {
+     NSString* patternType = patternItem.patternType;
+     if ([patternType isEqualToString:@"dash"]) {
+      [styles addObject:[GMSStrokeStyle solidColor:_polyline.strokeColor]];
+      [lengths addObject:[NSNumber numberWithDouble:scale * patternItem.length]];
+    } else if ([patternType isEqualToString:@"gap"]) {
+      [styles addObject:[GMSStrokeStyle solidColor:[UIColor clearColor]]];
+      [lengths addObject:[NSNumber numberWithDouble:scale * patternItem.length]];
+    } else if ([patternType isEqualToString:@"dot"]) {
+      [styles addObject:[GMSStrokeStyle solidColor:_polyline.strokeColor]];
+      [lengths addObject:[NSNumber numberWithDouble:scale * _polyline.strokeWidth]];
     }
-    _polyline.spans = GMSStyleSpans(_polyline.path, styles, lengths, kGMSLengthRhumb);
+  }
+  _polyline.spans = GMSStyleSpans(_polyline.path, styles, lengths, kGMSLengthRhumb);
 }
 
 - (void)setColor:(UIColor*)color {
@@ -178,7 +178,7 @@ static void InterpretPolylineOptions(NSDictionary* data, id<FLTGoogleMapPolyline
   }
 }
 - (void)redrawPolylines {
-  for (FLTGoogleMapPolylineController *controller in _polylineIdToController.allValues){
+  for (FLTGoogleMapPolylineController* controller in _polylineIdToController.allValues) {
     [controller redraw];
   }
 }
