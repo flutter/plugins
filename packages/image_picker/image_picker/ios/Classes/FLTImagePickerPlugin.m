@@ -289,7 +289,7 @@ static const int SOURCE_GALLERY = 1;
     }
 
     NSString* origAssetUrl = [info objectForKey:UIImagePickerControllerReferenceURL];
-    if (origAssetUrl != nil} {
+    if (origAssetUrl != nil) {
         self.result(origAssetUrl);
     } else {
         self.result(videoURL.path);
