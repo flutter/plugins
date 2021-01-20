@@ -103,7 +103,9 @@ static const int SOURCE_GALLERY = 1;
       (NSString *)kUTTypeMPEG4
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
-
+    if (@available(iOS 11.0, *)) {
+      _imagePickerController.videoExportPreset = AVAssetExportPresetPassthrough;
+    }
     self.result = result;
     _arguments = call.arguments;
 
