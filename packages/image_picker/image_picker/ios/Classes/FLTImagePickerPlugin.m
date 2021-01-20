@@ -287,7 +287,13 @@ static const int SOURCE_GALLERY = 1;
         videoURL = destination;
       }
     }
-    self.result(videoURL.path);
+
+    NSString* origAssetUrl = [info objectForKey:UIImagePickerControllerReferenceURL];
+    if (origAssetUrl != nil} {
+        self.result(origAssetUrl);
+    } else {
+        self.result(videoURL.path);
+    }
     self.result = nil;
     _arguments = nil;
   } else {
