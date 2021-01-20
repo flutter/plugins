@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:quiver/core.dart';
 
 final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
@@ -40,7 +41,12 @@ class CameraValue {
     bool isRecordingPaused,
     this.flashMode,
     this.exposureMode,
+    this.focusMode,
     this.exposurePointSupported,
+    this.focusPointSupported,
+    this.deviceOrientation,
+    this.lockedCaptureOrientation,
+    this.recordingOrientation,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -53,6 +59,8 @@ class CameraValue {
           isRecordingPaused: false,
           flashMode: FlashMode.auto,
           exposurePointSupported: false,
+          focusPointSupported: false,
+          deviceOrientation: DeviceOrientation.portraitUp,
         );
 
   /// True after [CameraController.initialize] has completed successfully.
@@ -83,10 +91,10 @@ class CameraValue {
   /// Is `null` until  [isInitialized] is `true`.
   final Size previewSize;
 
-  /// Convenience getter for `previewSize.height / previewSize.width`.
+  /// Convenience getter for `previewSize.width / previewSize.height`.
   ///
   /// Can only be called when [initialize] is done.
-  double get aspectRatio => previewSize.height / previewSize.width;
+  double get aspectRatio => previewSize.width / previewSize.height;
 
   /// Whether the controller is in an error state.
   ///
@@ -99,8 +107,26 @@ class CameraValue {
   /// The exposure mode the camera is currently set to.
   final ExposureMode exposureMode;
 
+  /// The focus mode the camera is currently set to.
+  final FocusMode focusMode;
+
   /// Whether setting the exposure point is supported.
   final bool exposurePointSupported;
+
+  /// Whether setting the focus point is supported.
+  final bool focusPointSupported;
+
+  /// The current device orientation.
+  final DeviceOrientation deviceOrientation;
+
+  /// The currently locked capture orientation.
+  final DeviceOrientation lockedCaptureOrientation;
+
+  /// Whether the capture orientation is currently locked.
+  bool get isCaptureOrientationLocked => lockedCaptureOrientation != null;
+
+  /// The orientation of the currently running video recording.
+  final DeviceOrientation recordingOrientation;
 
   /// Creates a modified copy of the object.
   ///
@@ -116,7 +142,12 @@ class CameraValue {
     bool isRecordingPaused,
     FlashMode flashMode,
     ExposureMode exposureMode,
+    FocusMode focusMode,
     bool exposurePointSupported,
+    bool focusPointSupported,
+    DeviceOrientation deviceOrientation,
+    Optional<DeviceOrientation> lockedCaptureOrientation,
+    Optional<DeviceOrientation> recordingOrientation,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -128,8 +159,17 @@ class CameraValue {
       isRecordingPaused: isRecordingPaused ?? _isRecordingPaused,
       flashMode: flashMode ?? this.flashMode,
       exposureMode: exposureMode ?? this.exposureMode,
+      focusMode: focusMode ?? this.focusMode,
       exposurePointSupported:
           exposurePointSupported ?? this.exposurePointSupported,
+      focusPointSupported: focusPointSupported ?? this.focusPointSupported,
+      deviceOrientation: deviceOrientation ?? this.deviceOrientation,
+      lockedCaptureOrientation: lockedCaptureOrientation == null
+          ? this.lockedCaptureOrientation
+          : lockedCaptureOrientation.orNull,
+      recordingOrientation: recordingOrientation == null
+          ? this.recordingOrientation
+          : recordingOrientation.orNull,
     );
   }
 
@@ -143,7 +183,12 @@ class CameraValue {
         'isStreamingImages: $isStreamingImages, '
         'flashMode: $flashMode, '
         'exposureMode: $exposureMode, '
-        'exposurePointSupported: $exposurePointSupported)';
+        'focusMode: $focusMode, '
+        'exposurePointSupported: $exposurePointSupported, '
+        'focusPointSupported: $focusPointSupported, '
+        'deviceOrientation: $deviceOrientation, '
+        'lockedCaptureOrientation: $lockedCaptureOrientation, '
+        'recordingOrientation: $recordingOrientation)';
   }
 }
 
@@ -160,6 +205,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
+    this.imageFormatGroup,
   }) : super(const CameraValue.uninitialized());
 
   /// The properties of the camera device controlled by this controller.
@@ -176,10 +222,16 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Whether to include audio when recording a video.
   final bool enableAudio;
 
+  /// The [ImageFormatGroup] describes the output of the raw image format.
+  ///
+  /// When null the imageFormat will fallback to the platforms default.
+  final ImageFormatGroup imageFormatGroup;
+
   int _cameraId;
   bool _isDisposed = false;
   StreamSubscription<dynamic> _imageStreamSubscription;
   FutureOr<bool> _initCalled;
+  StreamSubscription _deviceOrientationSubscription;
 
   /// Checks whether [CameraController.dispose] has completed successfully.
   ///
@@ -204,6 +256,13 @@ class CameraController extends ValueNotifier<CameraValue> {
     try {
       Completer<CameraInitializedEvent> _initializeCompleter = Completer();
 
+      _deviceOrientationSubscription =
+          CameraPlatform.instance.onDeviceOrientationChanged().listen((event) {
+        value = value.copyWith(
+          deviceOrientation: event.orientation,
+        );
+      });
+
       _cameraId = await CameraPlatform.instance.createCamera(
         description,
         resolutionPreset,
@@ -217,7 +276,10 @@ class CameraController extends ValueNotifier<CameraValue> {
         _initializeCompleter.complete(event);
       }));
 
-      await CameraPlatform.instance.initializeCamera(_cameraId);
+      await CameraPlatform.instance.initializeCamera(
+        _cameraId,
+        imageFormatGroup: imageFormatGroup,
+      );
 
       value = value.copyWith(
         isInitialized: true,
@@ -228,8 +290,12 @@ class CameraController extends ValueNotifier<CameraValue> {
                 )),
         exposureMode: await _initializeCompleter.future
             .then((event) => event.exposureMode),
+        focusMode:
+            await _initializeCompleter.future.then((event) => event.focusMode),
         exposurePointSupported: await _initializeCompleter.future
             .then((event) => event.exposurePointSupported),
+        focusPointSupported: await _initializeCompleter.future
+            .then((event) => event.focusPointSupported),
       );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -257,12 +323,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if the capture fails.
   Future<XFile> takePicture() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController.',
-        'takePicture was called on uninitialized CameraController',
-      );
-    }
+    _throwIfNotInitialized("takePicture");
     if (value.isTakingPicture) {
       throw CameraException(
         'Previous capture has not returned yet.',
@@ -300,13 +361,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> startImageStream(onLatestImageAvailable onAvailable) async {
     assert(defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
-
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'startImageStream was called on uninitialized CameraController.',
-      );
-    }
+    _throwIfNotInitialized("startImageStream");
     if (value.isRecordingVideo) {
       throw CameraException(
         'A video recording is already started.',
@@ -346,13 +401,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> stopImageStream() async {
     assert(defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
-
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'stopImageStream was called on uninitialized CameraController.',
-      );
-    }
+    _throwIfNotInitialized("stopImageStream");
     if (value.isRecordingVideo) {
       throw CameraException(
         'A video recording is already started.',
@@ -382,12 +431,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
   Future<void> startVideoRecording() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'startVideoRecording was called on uninitialized CameraController',
-      );
-    }
+    _throwIfNotInitialized("startVideoRecording");
     if (value.isRecordingVideo) {
       throw CameraException(
         'A video recording is already started.',
@@ -403,7 +447,11 @@ class CameraController extends ValueNotifier<CameraValue> {
 
     try {
       await CameraPlatform.instance.startVideoRecording(_cameraId);
-      value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
+      value = value.copyWith(
+          isRecordingVideo: true,
+          isRecordingPaused: false,
+          recordingOrientation: Optional.fromNullable(
+              value.lockedCaptureOrientation ?? value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -413,12 +461,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if the capture failed.
   Future<XFile> stopVideoRecording() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'stopVideoRecording was called on uninitialized CameraController',
-      );
-    }
+    _throwIfNotInitialized("stopVideoRecording");
     if (!value.isRecordingVideo) {
       throw CameraException(
         'No video is recording',
@@ -427,7 +470,10 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       XFile file = await CameraPlatform.instance.stopVideoRecording(_cameraId);
-      value = value.copyWith(isRecordingVideo: false);
+      value = value.copyWith(
+        isRecordingVideo: false,
+        recordingOrientation: Optional.absent(),
+      );
       return file;
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
@@ -438,12 +484,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// This feature is only available on iOS and Android sdk 24+.
   Future<void> pauseVideoRecording() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'pauseVideoRecording was called on uninitialized CameraController',
-      );
-    }
+    _throwIfNotInitialized("pauseVideoRecording");
     if (!value.isRecordingVideo) {
       throw CameraException(
         'No video is recording',
@@ -462,12 +503,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// This feature is only available on iOS and Android sdk 24+.
   Future<void> resumeVideoRecording() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'resumeVideoRecording was called on uninitialized CameraController',
-      );
-    }
+    _throwIfNotInitialized("resumeVideoRecording");
     if (!value.isRecordingVideo) {
       throw CameraException(
         'No video is recording',
@@ -484,12 +520,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Returns a widget showing a live camera preview.
   Widget buildPreview() {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'buildView() was called on uninitialized CameraController.',
-      );
-    }
+    _throwIfNotInitialized("buildPreview");
     try {
       return CameraPlatform.instance.buildPreview(_cameraId);
     } on PlatformException catch (e) {
@@ -499,13 +530,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the maximum supported zoom level for the selected camera.
   Future<double> getMaxZoomLevel() {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'getMaxZoomLevel was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("getMaxZoomLevel");
     try {
       return CameraPlatform.instance.getMaxZoomLevel(_cameraId);
     } on PlatformException catch (e) {
@@ -515,13 +540,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the minimum supported zoom level for the selected camera.
   Future<double> getMinZoomLevel() {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'getMinZoomLevel was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("getMinZoomLevel");
     try {
       return CameraPlatform.instance.getMinZoomLevel(_cameraId);
     } on PlatformException catch (e) {
@@ -535,13 +554,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// zoom level returned by the `getMaxZoomLevel`. Throws an `CameraException`
   /// when an illegal zoom level is suplied.
   Future<void> setZoomLevel(double zoom) {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'setZoomLevel was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("setZoomLevel");
     try {
       return CameraPlatform.instance.setZoomLevel(_cameraId, zoom);
     } on PlatformException catch (e) {
@@ -593,13 +606,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the minimum supported exposure offset for the selected camera in EV units.
   Future<double> getMinExposureOffset() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'getMinExposureOffset was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("getMinExposureOffset");
     try {
       return CameraPlatform.instance.getMinExposureOffset(_cameraId);
     } on PlatformException catch (e) {
@@ -609,13 +616,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Gets the maximum supported exposure offset for the selected camera in EV units.
   Future<double> getMaxExposureOffset() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'getMaxExposureOffset was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("getMaxExposureOffset");
     try {
       return CameraPlatform.instance.getMaxExposureOffset(_cameraId);
     } on PlatformException catch (e) {
@@ -627,13 +628,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Returns 0 when the camera supports using a free value without stepping.
   Future<double> getExposureOffsetStepSize() async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'getExposureOffsetStepSize was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("getExposureOffsetStepSize");
     try {
       return CameraPlatform.instance.getExposureOffsetStepSize(_cameraId);
     } on PlatformException catch (e) {
@@ -653,13 +648,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Returns the (rounded) offset value that was set.
   Future<double> setExposureOffset(double offset) async {
-    if (!value.isInitialized || _isDisposed) {
-      throw CameraException(
-        'Uninitialized CameraController',
-        'setExposureOffset was called on uninitialized CameraController',
-      );
-    }
-
+    _throwIfNotInitialized("setExposureOffset");
     // Check if offset is in range
     List<double> range =
         await Future.wait([getMinExposureOffset(), getMaxExposureOffset()]);
@@ -690,17 +679,90 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  /// Locks the capture orientation.
+  ///
+  /// If [orientation] is omitted, the current device orientation is used.
+  Future<void> lockCaptureOrientation([DeviceOrientation orientation]) async {
+    try {
+      await CameraPlatform.instance.lockCaptureOrientation(
+          _cameraId, orientation ?? value.deviceOrientation);
+      value = value.copyWith(
+          lockedCaptureOrientation:
+              Optional.fromNullable(orientation ?? value.deviceOrientation));
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets the focus mode for taking pictures.
+  Future<void> setFocusMode(FocusMode mode) async {
+    try {
+      await CameraPlatform.instance.setFocusMode(_cameraId, mode);
+      value = value.copyWith(focusMode: mode);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Unlocks the capture orientation.
+  Future<void> unlockCaptureOrientation() async {
+    try {
+      await CameraPlatform.instance.unlockCaptureOrientation(_cameraId);
+      value = value.copyWith(lockedCaptureOrientation: Optional.absent());
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets the focus point for automatically determining the focus value.
+  Future<void> setFocusPoint(Offset point) async {
+    if (point != null &&
+        (point.dx < 0 || point.dx > 1 || point.dy < 0 || point.dy > 1)) {
+      throw ArgumentError(
+          'The values of point should be anywhere between (0,0) and (1,1).');
+    }
+    try {
+      await CameraPlatform.instance.setFocusPoint(
+        _cameraId,
+        point == null
+            ? null
+            : Point<double>(
+                point.dx,
+                point.dy,
+              ),
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
   /// Releases the resources of this camera.
   @override
   Future<void> dispose() async {
     if (_isDisposed) {
       return;
     }
+    unawaited(_deviceOrientationSubscription?.cancel());
     _isDisposed = true;
     super.dispose();
     if (_initCalled != null) {
       await _initCalled;
       await CameraPlatform.instance.dispose(_cameraId);
+    }
+  }
+
+  void _throwIfNotInitialized(String functionName) {
+    if (!value.isInitialized) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        '$functionName() was called on an uninitialized CameraController.',
+      );
+    }
+    if (_isDisposed) {
+      throw CameraException(
+        'Disposed CameraController',
+        '$functionName() was called on a disposed CameraController.',
+      );
     }
   }
 }

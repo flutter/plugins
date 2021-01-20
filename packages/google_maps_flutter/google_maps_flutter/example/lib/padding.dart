@@ -147,7 +147,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          FlatButton(
+          TextButton(
             child: const Text("Set Padding"),
             onPressed: () {
               setState(() {
@@ -159,7 +159,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
               });
             },
           ),
-          FlatButton(
+          TextButton(
             child: const Text("Reset Padding"),
             onPressed: () {
               setState(() {

@@ -79,7 +79,7 @@ class DemoAppState extends State<DemoApp> {
                   const Padding(padding: EdgeInsets.only(top: 12.0)),
                   Builder(
                     builder: (BuildContext context) {
-                      return RaisedButton(
+                      return ElevatedButton(
                         child: const Text('Share'),
                         onPressed: text.isEmpty && imagePaths.isEmpty
                             ? null
@@ -90,7 +90,7 @@ class DemoAppState extends State<DemoApp> {
                   const Padding(padding: EdgeInsets.only(top: 12.0)),
                   Builder(
                     builder: (BuildContext context) {
-                      return RaisedButton(
+                      return ElevatedButton(
                         child: const Text('Share With Empty Origin'),
                         onPressed: () => _onShareWithEmptyOrigin(context),
                       );
@@ -111,11 +111,11 @@ class DemoAppState extends State<DemoApp> {
 
   _onShare(BuildContext context) async {
     // A builder is used to retrieve the context immediately
-    // surrounding the RaisedButton.
+    // surrounding the ElevatedButton.
     //
     // The context's `findRenderObject` returns the first
     // RenderObject in its descendent tree when it's not
-    // a RenderObjectWidget. The RaisedButton's RenderObject
+    // a RenderObjectWidget. The ElevatedButton's RenderObject
     // has its position and size after it's built.
     final RenderBox box = context.findRenderObject();
 
