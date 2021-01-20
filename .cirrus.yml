@@ -170,7 +170,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: catalina-xcode-12.1-flutter
+    image: catalina-xcode-12.0-flutter
   upgrade_script:
     - sudo gem install cocoapods
     - flutter channel stable
@@ -181,7 +181,7 @@ task:
   activate_script: pub global activate flutter_plugin_tools
   create_simulator_script:
     - xcrun simctl list
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-2 | xargs xcrun simctl boot
+    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-0 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
       env:
@@ -220,7 +220,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: catalina-xcode-11.3.1-flutter
+    image: catalina-xcode-12.0-flutter
   setup_script:
     - flutter config --enable-macos-desktop
   upgrade_script:
