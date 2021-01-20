@@ -4,6 +4,9 @@
 
 // ignore_for_file: public_member_api_docs
 
+// TODO(bmparr) Remove once path_provider releases a null safe version.
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:io' show Directory;
 
