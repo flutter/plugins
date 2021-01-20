@@ -39,8 +39,16 @@
 #         - flutter channel $CHANNEL
 #         - ./script/incremental_build.sh test
 #     - name: analyze
+#       env:
+#         matrix:
+#           CHANNEL: "master"
+#           CHANNEL: "stable"
 #       script: ./script/incremental_build.sh analyze
 #     - name: build_all_plugins_apk
+#       env:
+#         matrix:
+#           CHANNEL: "master"
+#           CHANNEL: "stable"
 #       script:
 #         # TODO(jackson): Allow web plugins once supported on stable
 #         # https://github.com/flutter/flutter/issues/42864
@@ -164,6 +172,7 @@ task:
   osx_instance:
     image: catalina-xcode-12.1-flutter
   upgrade_script:
+    - sudo gem install cocoapods
     - flutter channel stable
     - flutter upgrade
     - flutter channel master
@@ -175,6 +184,10 @@ task:
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-2 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
@@ -200,30 +213,31 @@ task:
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --ipa
-        # - ./script/incremental_build.sh drive-examples
-        - ./script/incremental_build.sh xctest --target RunnerUITests --ios-destination 'platform=iOS Simulator,name=iPhone 11,OS=14.2' --skip $PLUGINS_TO_SKIP_XCTESTS
-# task:
-#   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-#   only_if: $CIRRUS_TAG == ''
-#   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
-#   osx_instance:
-#     image: catalina-xcode-11.3.1-flutter
-#   setup_script:
-#     - flutter config --enable-macos-desktop
-#   upgrade_script:
-#     - flutter channel master
-#     - flutter upgrade
-#     - git fetch origin master
-#   activate_script: pub global activate flutter_plugin_tools
-#   matrix:
-#     - name: build_all_plugins_app
-#       script:
-#         - flutter channel master
-#         - ./script/build_all_plugins_app.sh macos
-#     - name: build-apps+drive-examples
-#       env:
-#         PATH: $PATH:/usr/local/bin
-#       build_script:
-#         - flutter channel master
-#         - ./script/incremental_build.sh build-examples --macos --no-ipa
-#         - ./script/incremental_build.sh drive-examples --macos
+        - ./script/incremental_build.sh drive-examples
+        - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS
+task:
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
+  osx_instance:
+    image: catalina-xcode-11.3.1-flutter
+  setup_script:
+    - flutter config --enable-macos-desktop
+  upgrade_script:
+    - sudo gem install cocoapods
+    - flutter channel master
+    - flutter upgrade
+    - git fetch origin master
+  activate_script: pub global activate flutter_plugin_tools
+  matrix:
+    - name: build_all_plugins_app
+      script:
+        - flutter channel master
+        - ./script/build_all_plugins_app.sh macos
+    - name: build-apps+drive-examples
+      env:
+        PATH: $PATH:/usr/local/bin
+      build_script:
+        - flutter channel master
+        - ./script/incremental_build.sh build-examples --macos --no-ipa
+        - ./script/incremental_build.sh drive-examples --macos

@@ -1,16 +1,26 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera;
 
 import android.app.Activity;
 import android.hardware.camera2.CameraAccessException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
+import io.flutter.plugins.camera.types.ExposureMode;
+import io.flutter.plugins.camera.types.FlashMode;
+import io.flutter.plugins.camera.types.FocusMode;
 import io.flutter.view.TextureRegistry;
+import java.util.HashMap;
+import java.util.Map;
 
 final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private final Activity activity;
@@ -49,11 +59,12 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           handleException(e, result);
         }
         break;
-      case "initialize":
+      case "create":
         {
           if (camera != null) {
             camera.close();
           }
+
           cameraPermissions.requestPermissions(
               activity,
               permissionsRegistry,
@@ -69,12 +80,28 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
                   result.error(errCode, errDesc, null);
                 }
               });
-
+          break;
+        }
+      case "initialize":
+        {
+          if (camera != null) {
+            try {
+              camera.open(call.argument("imageFormatGroup"));
+              result.success(null);
+            } catch (Exception e) {
+              handleException(e, result);
+            }
+          } else {
+            result.error(
+                "cameraNotFound",
+                "Camera not found. Please call the 'create' method before calling 'initialize'.",
+                null);
+          }
           break;
         }
       case "takePicture":
         {
-          camera.takePicture(call.argument("path"), result);
+          camera.takePicture(result);
           break;
         }
       case "prepareForVideoRecording":
@@ -85,7 +112,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         }
       case "startVideoRecording":
         {
-          camera.startVideoRecording(call.argument("filePath"), result);
+          camera.startVideoRecording(result);
           break;
         }
       case "stopVideoRecording":
@@ -103,6 +130,119 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           camera.resumeVideoRecording(result);
           break;
         }
+      case "setFlashMode":
+        {
+          String modeStr = call.argument("mode");
+          FlashMode mode = FlashMode.getValueForString(modeStr);
+          if (mode == null) {
+            result.error("setFlashModeFailed", "Unknown flash mode " + modeStr, null);
+            return;
+          }
+          try {
+            camera.setFlashMode(result, mode);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setExposureMode":
+        {
+          String modeStr = call.argument("mode");
+          ExposureMode mode = ExposureMode.getValueForString(modeStr);
+          if (mode == null) {
+            result.error("setExposureModeFailed", "Unknown exposure mode " + modeStr, null);
+            return;
+          }
+          try {
+            camera.setExposureMode(result, mode);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setExposurePoint":
+        {
+          Boolean reset = call.argument("reset");
+          Double x = null;
+          Double y = null;
+          if (reset == null || !reset) {
+            x = call.argument("x");
+            y = call.argument("y");
+          }
+          try {
+            camera.setExposurePoint(result, x, y);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getMinExposureOffset":
+        {
+          try {
+            result.success(camera.getMinExposureOffset());
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getMaxExposureOffset":
+        {
+          try {
+            result.success(camera.getMaxExposureOffset());
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getExposureOffsetStepSize":
+        {
+          try {
+            result.success(camera.getExposureOffsetStepSize());
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setExposureOffset":
+        {
+          try {
+            camera.setExposureOffset(result, call.argument("offset"));
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setFocusMode":
+        {
+          String modeStr = call.argument("mode");
+          FocusMode mode = FocusMode.getValueForString(modeStr);
+          if (mode == null) {
+            result.error("setFocusModeFailed", "Unknown focus mode " + modeStr, null);
+            return;
+          }
+          try {
+            camera.setFocusMode(result, mode);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setFocusPoint":
+        {
+          Boolean reset = call.argument("reset");
+          Double x = null;
+          Double y = null;
+          if (reset == null || !reset) {
+            x = call.argument("x");
+            y = call.argument("y");
+          }
+          try {
+            camera.setFocusPoint(result, x, y);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
       case "startImageStream":
         {
           try {
@@ -117,6 +257,72 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         {
           try {
             camera.startPreview();
+            result.success(null);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getMaxZoomLevel":
+        {
+          assert camera != null;
+
+          try {
+            float maxZoomLevel = camera.getMaxZoomLevel();
+            result.success(maxZoomLevel);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "getMinZoomLevel":
+        {
+          assert camera != null;
+
+          try {
+            float minZoomLevel = camera.getMinZoomLevel();
+            result.success(minZoomLevel);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "setZoomLevel":
+        {
+          assert camera != null;
+
+          Double zoom = call.argument("zoom");
+
+          if (zoom == null) {
+            result.error(
+                "ZOOM_ERROR", "setZoomLevel is called without specifying a zoom level.", null);
+            return;
+          }
+
+          try {
+            camera.setZoomLevel(result, zoom.floatValue());
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "lockCaptureOrientation":
+        {
+          PlatformChannel.DeviceOrientation orientation =
+              CameraUtils.deserializeDeviceOrientation(call.argument("orientation"));
+
+          try {
+            camera.lockCaptureOrientation(orientation);
+            result.success(null);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "unlockCaptureOrientation":
+        {
+          try {
+            camera.unlockCaptureOrientation();
             result.success(null);
           } catch (Exception e) {
             handleException(e, result);
@@ -157,7 +363,9 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
             resolutionPreset,
             enableAudio);
 
-    camera.open(result);
+    Map<String, Object> reply = new HashMap<>();
+    reply.put("cameraId", flutterSurfaceTexture.id());
+    result.success(reply);
   }
 
   // We move catching CameraAccessException out of onMethodCall because it causes a crash

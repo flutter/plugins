@@ -1,51 +1,120 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera;
 
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugins.camera.types.ExposureMode;
+import io.flutter.plugins.camera.types.FocusMode;
 import java.util.HashMap;
 import java.util.Map;
 
 class DartMessenger {
-  @Nullable private EventChannel.EventSink eventSink;
+  @Nullable private MethodChannel cameraChannel;
+  @Nullable private MethodChannel deviceChannel;
 
-  enum EventType {
-    ERROR,
-    CAMERA_CLOSING,
+  enum DeviceEventType {
+    ORIENTATION_CHANGED("orientation_changed");
+    private final String method;
+
+    DeviceEventType(String method) {
+      this.method = method;
+    }
   }
 
-  DartMessenger(BinaryMessenger messenger, long eventChannelId) {
-    new EventChannel(messenger, "flutter.io/cameraPlugin/cameraEvents" + eventChannelId)
-        .setStreamHandler(
-            new EventChannel.StreamHandler() {
-              @Override
-              public void onListen(Object arguments, EventChannel.EventSink sink) {
-                eventSink = sink;
-              }
+  enum CameraEventType {
+    ERROR("error"),
+    CLOSING("camera_closing"),
+    INITIALIZED("initialized");
 
-              @Override
-              public void onCancel(Object arguments) {
-                eventSink = null;
-              }
-            });
+    private final String method;
+
+    CameraEventType(String method) {
+      this.method = method;
+    }
+  }
+
+  DartMessenger(BinaryMessenger messenger, long cameraId) {
+    cameraChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/camera" + cameraId);
+    deviceChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/device");
+  }
+
+  void sendDeviceOrientationChangeEvent(PlatformChannel.DeviceOrientation orientation) {
+    assert (orientation != null);
+    this.send(
+        DeviceEventType.ORIENTATION_CHANGED,
+        new HashMap<String, Object>() {
+          {
+            put("orientation", CameraUtils.serializeDeviceOrientation(orientation));
+          }
+        });
+  }
+
+  void sendCameraInitializedEvent(
+      Integer previewWidth,
+      Integer previewHeight,
+      ExposureMode exposureMode,
+      FocusMode focusMode,
+      Boolean exposurePointSupported,
+      Boolean focusPointSupported) {
+    assert (previewWidth != null);
+    assert (previewHeight != null);
+    assert (exposureMode != null);
+    assert (focusMode != null);
+    assert (exposurePointSupported != null);
+    assert (focusPointSupported != null);
+    this.send(
+        CameraEventType.INITIALIZED,
+        new HashMap<String, Object>() {
+          {
+            put("previewWidth", previewWidth.doubleValue());
+            put("previewHeight", previewHeight.doubleValue());
+            put("exposureMode", exposureMode.toString());
+            put("focusMode", focusMode.toString());
+            put("exposurePointSupported", exposurePointSupported);
+            put("focusPointSupported", focusPointSupported);
+          }
+        });
   }
 
   void sendCameraClosingEvent() {
-    send(EventType.CAMERA_CLOSING, null);
+    send(CameraEventType.CLOSING);
   }
 
-  void send(EventType eventType, @Nullable String description) {
-    if (eventSink == null) {
+  void sendCameraErrorEvent(@Nullable String description) {
+    this.send(
+        CameraEventType.ERROR,
+        new HashMap<String, Object>() {
+          {
+            if (!TextUtils.isEmpty(description)) put("description", description);
+          }
+        });
+  }
+
+  void send(CameraEventType eventType) {
+    send(eventType, new HashMap<>());
+  }
+
+  void send(CameraEventType eventType, Map<String, Object> args) {
+    if (cameraChannel == null) {
       return;
     }
+    cameraChannel.invokeMethod(eventType.method, args);
+  }
 
-    Map<String, String> event = new HashMap<>();
-    event.put("eventType", eventType.toString().toLowerCase());
-    // Only errors have a description.
-    if (eventType == EventType.ERROR && !TextUtils.isEmpty(description)) {
-      event.put("errorDescription", description);
+  void send(DeviceEventType eventType) {
+    send(eventType, new HashMap<>());
+  }
+
+  void send(DeviceEventType eventType, Map<String, Object> args) {
+    if (deviceChannel == null) {
+      return;
     }
-    eventSink.success(event);
+    deviceChannel.invokeMethod(eventType.method, args);
   }
 }

@@ -108,7 +108,7 @@ class XFile extends XFileBase {
 
   /// Saves the data of this CrossFile at the location indicated by path.
   /// For the web implementation, the path variable is ignored.
-  void saveTo(String path) async {
+  Future<void> saveTo(String path) async {
     // Create a DOM container where we can host the anchor.
     _target = ensureInitialized('__x_file_dom_element');
 
