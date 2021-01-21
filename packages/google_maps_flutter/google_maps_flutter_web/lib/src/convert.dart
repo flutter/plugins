@@ -485,10 +485,12 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
   final polygonDirection = _isPolygonClockwise(path);
   List<List<gmaps.LatLng>> paths = [path];
   polygon.holes?.forEach((hole) {
-    final holePath = hole.map((point) => _latLngToGmLatLng(point)).toList();
+    List<gmaps.LatLng> holePath =
+        hole.map((point) => _latLngToGmLatLng(point)).toList();
     if (_isPolygonClockwise(holePath) == polygonDirection) {
+      holePath = holePath.reversed.toList();
       print(
-          'Holepath is the same direction as polygon. In order to be displayed properly you should reverse the hole Path. More Info: https://developers.google.com/maps/documentation/javascript/examples/polygon-hole');
+          'Holepath was reversed: https://github.com/flutter/flutter/issues/74096');
     }
     paths.add(holePath);
   });
