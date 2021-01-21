@@ -1,3 +1,7 @@
+## 0.7.0+1
+
+* Fix issue: [camera] [crash] Methods marked with @UiThread must be executed on the main thread #72340
+
 ## 0.7.0
 
 * BREAKING CHANGE: `CameraValue.aspectRatio` now returns `width / height` rather than `height / width`. [(commit)](https://github.com/flutter/plugins/commit/100c7470d4066b1d0f8f7e4ec6d7c943e736f970)
