@@ -4,7 +4,9 @@
 
 import 'dart:ui' show hashValues, hashList;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/utils/tile_overlay.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/tile_overlay_updates.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/tile_overlay.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

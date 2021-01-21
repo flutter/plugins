@@ -12,6 +12,8 @@ import 'package:flutter/gestures.dart';
 
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:stream_transform/stream_transform.dart';
+import '../types/tile_overlay_updates.dart';
+import '../types/utils/tile_overlay.dart';
 
 /// An implementation of [GoogleMapsFlutterPlatform] that uses [MethodChannel] to communicate with the native code.
 ///
@@ -33,8 +35,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return _channels[mapId];
   }
 
-  // Keep a collection of id -> TileOverlay.
-  final Map<int, TileOverlay> _tileOverlays = {};
+  // Keep a collection of mapId to a map of TileOverlays.
+  final Map<int, Map<TileOverlayId, TileOverlay>> _tileOverlays = {};
 
   /// Initializes the platform interface with [id].
   ///
@@ -188,7 +190,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         ));
         break;
       case 'tileOverlay#getTile':
-        final TileOverlay tileOverlay = _tileOverlays[mapId];
+        final Map<TileOverlayId, TileOverlay> tileOverlaysForThisMap = _tileOverlays[mapId];
+        final String tileOverlayId = call.arguments['tileOverlayId'];
+        final TileOverlay tileOverlay = tileOverlaysForThisMap[tileOverlayId];
         assert(tileOverlay.tileProvider.getTile != null);
         final Tile tile = await tileOverlay.tileProvider.getTile(
           call.arguments['x'],
@@ -301,13 +305,14 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// The returned [Future] completes after listeners have been notified.
   @override
   Future<void> updateTileOverlays(
-    TileOverlayUpdates tileOverlayUpdates, {
+    {Set<TileOverlay> previous, Set<TileOverlay> current,
     @required int mapId,
   }) {
-    assert(tileOverlayUpdates != null);
+    final TileOverlayUpdates updates = TileOverlayUpdates.from(previous, current);
+    _tileOverlays[mapId] = keyTileOverlayId(current);
     return channel(mapId).invokeMethod<void>(
       'tileOverlays#update',
-      tileOverlayUpdates.toJson(),
+      updates.toJson(),
     );
   }
 
@@ -497,16 +502,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     @required int mapId,
   }) {
     return channel(mapId).invokeMethod<Uint8List>('map#takeSnapshot');
-  }
-
-  /// Sets the `MapGetTileCallback` with mapId.
-  ///
-  /// `mapId` and `callback` must not be null.
-  @override
-  void setTileOverlay(
-      {@required int mapId, @required TileOverlay tileOverlay}) {
-    assert(mapId != null && tileOverlay != null);
-    _tileOverlays[mapId] = tileOverlay;
   }
 
   /// This method builds the appropriate platform view where the map
