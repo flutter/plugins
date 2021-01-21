@@ -275,17 +275,17 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
     final double offset = polygonOffsets[selectedPolygon];
 
     final List<LatLng> hole1 = <LatLng>[];
-    hole1.add(_createLatLng(52.0231 + offset, -4.5829));
-    hole1.add(_createLatLng(52.1351 + offset, -4.4435));
-    hole1.add(_createLatLng(52.0234 + offset, -3.9914));
     hole1.add(_createLatLng(51.8395 + offset, -3.8814));
+    hole1.add(_createLatLng(52.0234 + offset, -3.9914));
+    hole1.add(_createLatLng(52.1351 + offset, -4.4435));
+    hole1.add(_createLatLng(52.0231 + offset, -4.5829));
     holes.add(hole1);
 
     final List<LatLng> hole2 = <LatLng>[];
-    hole2.add(_createLatLng(52.4231 + offset, -4.3829));
-    hole2.add(_createLatLng(52.5351 + offset, -4.2435));
-    hole2.add(_createLatLng(52.4234 + offset, -3.7914));
     hole2.add(_createLatLng(52.2395 + offset, -3.6814));
+    hole2.add(_createLatLng(52.4234 + offset, -3.7914));
+    hole2.add(_createLatLng(52.5351 + offset, -4.2435));
+    hole2.add(_createLatLng(52.4231 + offset, -4.3829));
     holes.add(hole2);
 
     return holes;
