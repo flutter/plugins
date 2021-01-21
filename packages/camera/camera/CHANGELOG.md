@@ -1,6 +1,6 @@
 ## 0.7.0+1
 
-* Fix issue: [camera] [crash] Methods marked with @UiThread must be executed on the main thread #72340
+* Ensure communication from JAVA to Dart is done on the main UI thread.
 
 ## 0.7.0
 
