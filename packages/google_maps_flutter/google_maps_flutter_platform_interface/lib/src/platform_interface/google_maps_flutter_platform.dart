@@ -133,8 +133,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   }
 
   /// Clears the tile cache so that all tiles will be requested again from the
-  /// [TileProvider]. The current tiles from this tile overlay will also be
-  /// cleared from the map after calling this method. The API maintains a small
+  /// [TileProvider].
+  ///
+  /// The current tiles from this tile overlay will also be
+  /// cleared from the map after calling this method. The Google Maps SDK maintains a small
   /// in-memory cache of tiles. If you want to cache tiles for longer, you
   /// should implement an on-disk cache.
   Future<void> clearTileCache(

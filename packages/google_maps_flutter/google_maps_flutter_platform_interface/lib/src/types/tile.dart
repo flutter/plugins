@@ -18,6 +18,8 @@ class Tile {
   final int height;
 
   /// A byte array containing the image data.
+  ///
+  /// The image data format accepted by platforms various based on platforms and versions.
   final Uint8List data;
 
   /// Converts this object to JSON.

@@ -14,7 +14,7 @@ class TileOverlayId {
   /// Creates an immutable identifier for a [TileOverlay].
   TileOverlayId(this.value) : assert(value != null);
 
-  /// value of the [TileOverlayId].
+  /// The value of the [TileOverlayId].
   final String value;
 
   @override
@@ -32,7 +32,7 @@ class TileOverlayId {
   String toString() => '${objectRuntimeType(this, 'TileOverlayId')}($value)';
 }
 
-/// # A set of images which are displayed on top of the base map tiles.
+/// A set of images which are displayed on top of the base map tiles.
 ///
 /// These tiles may be transparent, allowing you to add features to existing maps.
 ///

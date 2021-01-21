@@ -189,7 +189,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         ));
         break;
       case 'tileOverlay#getTile':
-        final getTileCallback = _getTileCallbacks[mapId];
+        final MapGetTileCallback getTileCallback = _getTileCallbacks[mapId];
+        assert(getTileCallback != null);
         final Tile tile = await getTileCallback(
           call.arguments['tileOverlayId'],
           call.arguments['x'],
@@ -313,8 +314,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }
 
   /// Clears the tile cache so that all tiles will be requested again from the
-  /// [TileProvider]. The current tiles from this tile overlay will also be
-  /// cleared from the map after calling this method. The API maintains a small
+  /// [TileProvider].
+  ///
+  /// The current tiles from this tile overlay will also be
+  /// cleared from the map after calling this method. The Google Map SDK maintains a small
   /// in-memory cache of tiles. If you want to cache tiles for longer, you
   /// should implement an on-disk cache.
   @override
