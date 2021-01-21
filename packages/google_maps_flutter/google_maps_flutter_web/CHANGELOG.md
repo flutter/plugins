@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Auto-reverse holes if they're the same direction as the polygon. [Issue](https://github.com/flutter/flutter/issues/74096).
+
 ## 0.1.0+10
 
 * Update `package:google_maps_flutter_platform_interface` to `^1.1.0`.
