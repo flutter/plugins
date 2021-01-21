@@ -304,15 +304,18 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
+  ///
+  /// If `newTileOverlays` is null, all the [TileOverlays] are removed for the Map with `mapId`.
   @override
   Future<void> updateTileOverlays({
-    Set<TileOverlay> previous,
-    Set<TileOverlay> current,
+    Set<TileOverlay> newTileOverlays,
     @required int mapId,
   }) {
+    final Map<TileOverlayId, TileOverlay> currentTileOverlays = _tileOverlays[mapId];
+    Set<TileOverlay> previousSet = currentTileOverlays != null ? currentTileOverlays.values.toSet() :null;
     final TileOverlayUpdates updates =
-        TileOverlayUpdates.from(previous, current);
-    _tileOverlays[mapId] = keyTileOverlayId(current);
+        TileOverlayUpdates.from(previousSet, newTileOverlays);
+    _tileOverlays[mapId] = keyTileOverlayId(newTileOverlays);
     return channel(mapId).invokeMethod<void>(
       'tileOverlays#update',
       updates.toJson(),
