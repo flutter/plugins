@@ -106,12 +106,14 @@ class DartMessenger {
     if (cameraChannel == null) {
       return;
     }
-    new Handler(Looper.getMainLooper()).post(new Runnable () {
-      @Override
-      public void run () {
-        cameraChannel.invokeMethod(eventType.method, args);
-      }
-    });
+    new Handler(Looper.getMainLooper())
+        .post(
+            new Runnable() {
+              @Override
+              public void run() {
+                cameraChannel.invokeMethod(eventType.method, args);
+              }
+            });
   }
 
   void send(DeviceEventType eventType) {
@@ -122,11 +124,13 @@ class DartMessenger {
     if (deviceChannel == null) {
       return;
     }
-    new Handler(Looper.getMainLooper()).post(new Runnable () {
-      @Override
-      public void run () {
-        deviceChannel.invokeMethod(eventType.method, args);
-      }
-    });
+    new Handler(Looper.getMainLooper())
+        .post(
+            new Runnable() {
+              @Override
+              public void run() {
+                deviceChannel.invokeMethod(eventType.method, args);
+              }
+            });
   }
 }
