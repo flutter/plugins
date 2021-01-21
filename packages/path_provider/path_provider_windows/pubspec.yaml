@@ -17,7 +17,7 @@ dependencies:
   flutter:
     sdk: flutter
   ffi: ^0.2.0-nullsafety.1
-  win32: ^2.0.0-nullsafety.7
+  win32: 2.0.0-nullsafety.7
 
 dev_dependencies:
   flutter_test:
