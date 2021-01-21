@@ -190,7 +190,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         ));
         break;
       case 'tileOverlay#getTile':
-        final Map<TileOverlayId, TileOverlay> tileOverlaysForThisMap = _tileOverlays[mapId];
+        final Map<TileOverlayId, TileOverlay> tileOverlaysForThisMap =
+            _tileOverlays[mapId];
         final String tileOverlayId = call.arguments['tileOverlayId'];
         final TileOverlay tileOverlay = tileOverlaysForThisMap[tileOverlayId];
         assert(tileOverlay.tileProvider.getTile != null);
@@ -304,11 +305,13 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// The returned [Future] completes after listeners have been notified.
   @override
-  Future<void> updateTileOverlays(
-    {Set<TileOverlay> previous, Set<TileOverlay> current,
+  Future<void> updateTileOverlays({
+    Set<TileOverlay> previous,
+    Set<TileOverlay> current,
     @required int mapId,
   }) {
-    final TileOverlayUpdates updates = TileOverlayUpdates.from(previous, current);
+    final TileOverlayUpdates updates =
+        TileOverlayUpdates.from(previous, current);
     _tileOverlays[mapId] = keyTileOverlayId(current);
     return channel(mapId).invokeMethod<void>(
       'tileOverlays#update',

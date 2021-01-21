@@ -121,8 +121,9 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updateTileOverlays(
-    {Set<TileOverlay> previous, Set<TileOverlay> current,
+  Future<void> updateTileOverlays({
+    Set<TileOverlay> previous,
+    Set<TileOverlay> current,
     @required int mapId,
   }) {
     throw UnimplementedError('updateTileOverlays() has not been implemented.');
