@@ -13,7 +13,7 @@ class FakeVersionInfoQuerier implements VersionInfoQuerier {
 
   final Map<String, String> responses;
 
-  getStringValue(Pointer<Uint8> versionInfo, key) => responses[key];
+  getStringValue(Pointer<Uint8>? versionInfo, key) => responses[key];
 }
 
 void main() {

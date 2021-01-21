@@ -116,7 +116,7 @@ class PathProviderWindows extends PathProviderPlatform {
   /// [WindowsKnownFolder].
   Future<String> getPath(String folderID) {
     final pathPtrPtr = allocate<Pointer<Utf16>>();
-    final Pointer<GUID> knownFolderID = calloc<GUID>()..setGUID(folderID);;
+    final Pointer<GUID> knownFolderID = calloc<GUID>()..setGUID(folderID);
 
     try {
       final hr = SHGetKnownFolderPath(
