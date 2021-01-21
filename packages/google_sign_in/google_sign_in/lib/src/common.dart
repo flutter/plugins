@@ -28,10 +28,10 @@ abstract class GoogleIdentity {
   /// The display name of the signed in user.
   ///
   /// Not guaranteed to be present for all users, even when configured.
-  String get displayName;
+  String? get displayName;
 
   /// The photo url of the signed in user if the user has a profile picture.
   ///
   /// Not guaranteed to be present for all users, even when configured.
-  String get photoUrl;
+  String? get photoUrl;
 }

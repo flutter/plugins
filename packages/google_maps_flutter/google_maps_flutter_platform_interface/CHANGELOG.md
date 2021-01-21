@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Add support for holes in Polygons.
+
 ## 1.0.6
 
 * Update Flutter SDK constraint.

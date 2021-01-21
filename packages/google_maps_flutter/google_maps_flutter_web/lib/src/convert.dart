@@ -366,6 +366,11 @@ Set<Polygon> _rawOptionsToInitialPolygons(Map<String, dynamic> rawOptions) {
           points: rawPolygon['points']
               ?.map<LatLng>((rawPoint) => LatLng.fromJson(rawPoint))
               ?.toList(),
+          holes: rawPolygon['holes']
+              ?.map<List<LatLng>>((List hole) => hole
+                  ?.map<LatLng>((rawPoint) => LatLng.fromJson(rawPoint))
+                  ?.toList())
+              ?.toList(),
         );
       }) ??
       []);
@@ -473,9 +478,13 @@ gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
 
 gmaps.PolygonOptions _polygonOptionsFromPolygon(
     gmaps.GMap googleMap, Polygon polygon) {
-  List<gmaps.LatLng> paths = [];
+  List<gmaps.LatLng> path = [];
   polygon.points.forEach((point) {
-    paths.add(_latLngToGmLatLng(point));
+    path.add(_latLngToGmLatLng(point));
+  });
+  List<List<gmaps.LatLng>> paths = [path];
+  polygon.holes?.forEach((hole) {
+    paths.add(hole.map((point) => _latLngToGmLatLng(point)).toList());
   });
   return gmaps.PolygonOptions()
     ..paths = paths
