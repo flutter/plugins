@@ -56,6 +56,10 @@ ALL_EXCLUDED=($EXCLUDED)
 if [ "$CHANNEL" == "stable" ]; then
   ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_STABLE")
 fi
+# Exclude non-nnbd plugins from master.
+if [ "$CHANNEL" != "stable" ]; then
+  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_MASTER")
+fi
 
 echo "Excluding the following plugins: $ALL_EXCLUDED"
 
