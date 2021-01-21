@@ -1,3 +1,7 @@
+## 0.1.0+11
+
+* Add support for Custom Tiles.
+
 ## 0.1.0+10
 
 * Update `package:google_maps_flutter_platform_interface` to `^1.1.0`.
