@@ -19,8 +19,8 @@ class Tile {
 
   /// A byte array containing the image data.
   ///
-  /// The image data format must be one that's natively supported for decoding by the platform.
-  /// (e.g on Android it can only be one of the [supported image formats for decoding](https://developer.android.com/guide/topics/media/media-formats#image-formats)).
+  /// The image data format must be natively supported for decoding by the platform.
+  /// e.g on Android it can only be one of the [supported image formats for decoding](https://developer.android.com/guide/topics/media/media-formats#image-formats).
   final Uint8List data;
 
   /// Converts this object to JSON.
