@@ -33,9 +33,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return _channels[mapId];
   }
 
-  // Keep a collection of id -> GetTileCallback
-  // Every method call passes the int mapId
-  final Map<int, MapGetTileCallback> _getTileCallbacks = {};
+  // Keep a collection of id -> TileOverlay.
+  final Map<int, TileOverlay> _tileOverlays = {};
 
   /// Initializes the platform interface with [id].
   ///
@@ -189,10 +188,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         ));
         break;
       case 'tileOverlay#getTile':
-        final MapGetTileCallback getTileCallback = _getTileCallbacks[mapId];
-        assert(getTileCallback != null);
-        final Tile tile = await getTileCallback(
-          call.arguments['tileOverlayId'],
+        final TileOverlay tileOverlay = _tileOverlays[mapId];
+        assert(tileOverlay.tileProvider != null);
+        final Tile tile = await tileOverlay.tileProvider.getTile(
           call.arguments['x'],
           call.arguments['y'],
           call.arguments['zoom'],
@@ -505,10 +503,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///
   /// `mapId` and `callback` must not be null.
   @override
-  void setGetTileCallback(
-      {@required int mapId, @required MapGetTileCallback callback}) {
-    assert(mapId != null && callback != null);
-    _getTileCallbacks[mapId] = callback;
+  void setTileOverlay(
+      {@required int mapId, @required TileOverlay tileOverlay}) {
+    assert(mapId != null && tileOverlay != null);
+    _tileOverlays[mapId] = tileOverlay;
   }
 
   /// This method builds the appropriate platform view where the map

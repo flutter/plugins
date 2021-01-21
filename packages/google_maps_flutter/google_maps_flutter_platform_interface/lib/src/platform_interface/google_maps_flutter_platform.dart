@@ -277,9 +277,11 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('takeSnapshot() has not been implemented.');
   }
 
-  /// Set the [MapGetTileCallback] for the map, which will be called
-  /// when a [Tile] is requested for an added [TileProvider].
-  void setGetTileCallback({@required int mapId, MapGetTileCallback callback}) {
+  /// Set the [TileOverlay] for the map.
+  ///
+  /// The [TileProvider] is called when a [Tile] is requested.
+  void setTileOverlay(
+      {@required int mapId, @required TileOverlay tileOverlay}) {
     throw UnimplementedError('onGetTile() has not been implemented.');
   }
 
