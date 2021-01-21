@@ -1,3 +1,5 @@
+experimental: true
+
 # task:
 #   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
 #   only_if: $CIRRUS_TAG == ''
