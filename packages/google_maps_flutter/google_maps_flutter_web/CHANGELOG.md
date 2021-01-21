@@ -1,6 +1,6 @@
-## 0.1.0+11
+## 0.1.1
 
-* Add warning if a hole is the same direction as the polygon [Issue](https://github.com/flutter/flutter/issues/74096)
+* Auto-reverse holes if they're the same direction as the polygon. [Issue](https://github.com/flutter/flutter/issues/74096).
 
 ## 0.1.0+10
 
