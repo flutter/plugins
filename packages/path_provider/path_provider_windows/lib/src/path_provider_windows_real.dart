@@ -29,13 +29,12 @@ class VersionInfoQuerier {
     const kEnUsLanguageCode = '040904e4';
     final keyPath = TEXT('\\StringFileInfo\\$kEnUsLanguageCode\\$key');
     final length = allocate<Uint32>();
-    final valueAddress = allocate<IntPtr>();
+    final valueAddress = allocate<Pointer<Utf16>>();
     try {
       if (VerQueryValue(versionInfo, keyPath, valueAddress, length) == 0) {
         return null;
       }
-      return Pointer<Utf16>.fromAddress(valueAddress.value)
-          .unpackString(length.value);
+      return valueAddress.value.unpackString(length.value);
     } finally {
       free(keyPath);
       free(length);
@@ -116,14 +115,12 @@ class PathProviderWindows extends PathProviderPlatform {
   /// folderID is a GUID that represents a specific known folder ID, drawn from
   /// [WindowsKnownFolder].
   Future<String> getPath(String folderID) {
-    final pathPtrPtr = allocate<IntPtr>();
-    late Pointer<Utf16> pathPtr;
+    final pathPtrPtr = allocate<Pointer<Utf16>>();
+    final Pointer<GUID> knownFolderID = calloc<GUID>()..setGUID(folderID);;
 
     try {
-      GUID knownFolderID = GUID.fromString(folderID);
-
       final hr = SHGetKnownFolderPath(
-        knownFolderID.addressOf, // ignore: deprecated_member_use
+        knownFolderID,
         KF_FLAG_DEFAULT,
         NULL,
         pathPtrPtr,
@@ -135,12 +132,11 @@ class PathProviderWindows extends PathProviderPlatform {
         }
       }
 
-      pathPtr = Pointer<Utf16>.fromAddress(pathPtrPtr.value);
-      final path = pathPtr.unpackString(MAX_PATH);
+      final path = pathPtrPtr.value.unpackString(MAX_PATH);
       return Future.value(path);
     } finally {
-      CoTaskMemFree(pathPtr.cast());
       free(pathPtrPtr);
+      free(knownFolderID);
     }
   }
 
