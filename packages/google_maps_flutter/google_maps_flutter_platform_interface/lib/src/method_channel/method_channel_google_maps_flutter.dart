@@ -512,16 +512,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return channel(mapId).invokeMethod<Uint8List>('map#takeSnapshot');
   }
 
-  /// Sets the `MapGetTileCallback` with mapId.
-  ///
-  /// `mapId` and `callback` must not be null.
-  @override
-  void setGetTileCallback(
-      {@required int mapId, @required MapGetTileCallback callback}) {
-    assert(mapId != null && callback != null);
-    _getTileCallbacks[mapId] = callback;
-  }
-
   /// This method builds the appropriate platform view where the map
   /// can be rendered.
   /// The `mapId` is passed as a parameter from the framework on the
