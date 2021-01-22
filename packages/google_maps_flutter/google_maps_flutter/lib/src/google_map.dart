@@ -332,6 +332,7 @@ class _GoogleMapState extends State<GoogleMap> {
       this,
     );
     _controller.complete(controller);
+    _updateTileOverlays();
     if (widget.onMapCreated != null) {
       widget.onMapCreated(controller);
     }

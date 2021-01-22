@@ -18,8 +18,6 @@ class GoogleMapController {
     @required this.mapId,
   }) : assert(_googleMapsFlutterPlatform != null) {
     _connectStreams(mapId);
-    _googleMapsFlutterPlatform.updateTileOverlays(
-        mapId: mapId, newTileOverlays: _googleMapState.widget.tileOverlays);
   }
 
   /// Initialize control of a [GoogleMap] with [id].
