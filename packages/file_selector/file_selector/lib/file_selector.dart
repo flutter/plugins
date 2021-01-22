@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
+import 'package:logger/logger.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
-
 export 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
     show XFile, XTypeGroup;
+
+final _logger = Logger();
 
 /// Open file dialog for loading files and return a file path
 Future<XFile?> openFile({
@@ -15,6 +16,7 @@ Future<XFile?> openFile({
   String? initialDirectory,
   String? confirmButtonText,
 }) {
+  _verifyExtensions(acceptedTypeGroups);
   return FileSelectorPlatform.instance.openFile(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
@@ -27,6 +29,7 @@ Future<List<XFile>> openFiles({
   String? initialDirectory,
   String? confirmButtonText,
 }) {
+  _verifyExtensions(acceptedTypeGroups);
   return FileSelectorPlatform.instance.openFiles(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
@@ -40,6 +43,7 @@ Future<String?> getSavePath({
   String? suggestedName,
   String? confirmButtonText,
 }) async {
+  _verifyExtensions(acceptedTypeGroups);
   return FileSelectorPlatform.instance.getSavePath(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
@@ -54,4 +58,17 @@ Future<String?> getDirectoryPath({
 }) async {
   return FileSelectorPlatform.instance.getDirectoryPath(
       initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);
+}
+
+void _verifyExtensions(List<XTypeGroup> acceptedTypeGroups) {
+  acceptedTypeGroups?.asMap()?.forEach((i, acceptedTypeGroup) {
+    acceptedTypeGroup.extensions?.asMap()?.forEach((j, ext) {
+      if (ext.startsWith('.')) {
+        _logger.w(
+          'acceptedTypeGroups[${i}].extensions[${j}] with value "${ext}" is invalid.'
+          ' Remove the leading dot.',
+        );
+      }
+    });
+  });
 }
