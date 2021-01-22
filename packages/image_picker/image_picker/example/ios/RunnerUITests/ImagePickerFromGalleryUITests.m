@@ -53,6 +53,10 @@ const int kElementWaitingTime = 30;
                                         }];
 }
 
+- (void)tearDown {
+  [self.app terminate];
+}
+
 - (void)testPickingFromGallery {
   [self launchPickerAndPick];
 }
