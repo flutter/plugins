@@ -18,8 +18,7 @@ class GoogleMapController {
     @required this.mapId,
   }) : assert(_googleMapsFlutterPlatform != null) {
     _connectStreams(mapId);
-    _googleMapsFlutterPlatform.setGetTileCallback(
-        mapId: mapId, callback: _googleMapState._onGetTile);
+    _googleMapsFlutterPlatform.updateTileOverlays(mapId: mapId, newTileOverlays: _googleMapState.widget.tileOverlays);
   }
 
   /// Initialize control of a [GoogleMap] with [id].
@@ -160,9 +159,8 @@ class GoogleMapController {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateTileOverlays(TileOverlayUpdates tileOverlayUpdates) {
-    assert(tileOverlayUpdates != null);
-    return _googleMapsFlutterPlatform.updateTileOverlays(tileOverlayUpdates,
+  Future<void> _updateTileOverlays(Set<TileOverlay> newTileOverlays) {
+    return _googleMapsFlutterPlatform.updateTileOverlays(newTileOverlays: newTileOverlays,
         mapId: mapId);
   }
 

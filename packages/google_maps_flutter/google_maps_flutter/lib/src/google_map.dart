@@ -224,8 +224,6 @@ class _GoogleMapState extends State<GoogleMap> {
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
-  Map<TileOverlayId, TileOverlay> _tileOverlays =
-      <TileOverlayId, TileOverlay>{};
   _GoogleMapOptions _googleMapOptions;
 
   @override
@@ -256,7 +254,6 @@ class _GoogleMapState extends State<GoogleMap> {
     _polygons = keyByPolygonId(widget.polygons);
     _polylines = keyByPolylineId(widget.polylines);
     _circles = keyByCircleId(widget.circles);
-    _tileOverlays = keyTileOverlayId(widget.tileOverlays);
   }
 
   @override
@@ -325,9 +322,7 @@ class _GoogleMapState extends State<GoogleMap> {
   void _updateTileOverlays() async {
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
-    controller._updateTileOverlays(TileOverlayUpdates.from(
-        _tileOverlays.values.toSet(), widget.tileOverlays));
-    _tileOverlays = keyTileOverlayId(widget.tileOverlays);
+    controller._updateTileOverlays(widget.tileOverlays);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -392,21 +387,6 @@ class _GoogleMapState extends State<GoogleMap> {
     if (widget.onLongPress != null) {
       widget.onLongPress(position);
     }
-  }
-
-  // Returns the [Tile] from an added [TileOverlay].
-  //
-  // If the TileOverlay or its TileProvider is not found,
-  // a [TileProvider.noTile] is returned.
-  Future<Tile> _onGetTile(
-      String tileOverlayIdRaw, int x, int y, int zoom) async {
-    assert(tileOverlayIdRaw != null);
-    final TileOverlayId tileOverlayId = TileOverlayId(tileOverlayIdRaw);
-    final TileOverlay tileOverlay = _tileOverlays[tileOverlayId];
-    if (tileOverlay == null || tileOverlay.tileProvider == null) {
-      return TileProvider.noTile;
-    }
-    return await tileOverlay.tileProvider.getTile(x, y, zoom);
   }
 }
 
