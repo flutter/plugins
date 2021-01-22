@@ -177,6 +177,7 @@ const int kElementWaitingTime = 30;
                                                 identifier:@"PhotosGridView"]
                  .cells.firstMatch;
   }
+  os_log_error(OS_LOG_DEFAULT, "description before picking image %@", self.app.debugDescription);
   if (![aImage waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find an image with %@ seconds", @(kElementWaitingTime));
