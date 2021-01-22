@@ -160,6 +160,10 @@ const int kElementWaitingTime = 30;
   XCTAssertTrue(pickButton.exists);
   [pickButton tap];
 
+  // There is a known bug where the permission popups interruption won't get fired until a tap
+  // happened in the app. We expect a permission popup so we do a tap here.
+  [self.app tap];
+
   // Find an image and tap on it. (IOS 14 UI, images are showing directly)
   XCUIElement* aImage;
   if (@available(iOS 14, *)) {
