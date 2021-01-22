@@ -79,7 +79,8 @@ class Convert {
       }
     } else {
       throw new IllegalArgumentException(
-          "fromBytes should have exactly one argument, the bytes. Got: " + data.size());
+          "fromBytes should have exactly one argument,interpretTileOverlayOptions the bytes. Got: "
+              + data.size());
     }
   }
 
@@ -667,22 +668,22 @@ class Convert {
       sink.setFadeIn(toBoolean(fadeIn));
     }
     final Object transparency = data.get("transparency");
-    if (transparency != null) {
-      sink.setTransparency(toFloat(transparency));
+    if (transparency instanceof Number) {
+      sink.setTransparency(((Number) transparency).floatValue());
     }
     final Object zIndex = data.get("zIndex");
-    if (zIndex != null) {
-      sink.setZIndex(toFloat(zIndex));
+    if (zIndex instanceof Number) {
+      sink.setZIndex(((Number) zIndex).intValue());
     }
     final Object visible = data.get("visible");
-    if (visible != null) {
-      sink.setVisible(toBoolean(visible));
+    if (visible instanceof Boolean) {
+      sink.setVisible((Boolean) visible);
     }
-    final String tileOverlayId = (String) data.get("tileOverlayId");
-    if (tileOverlayId == null) {
-      throw new IllegalArgumentException("tileOverlayId was null");
+    final Object tileOverlayId = data.get("tileOverlayId");
+    if (!(tileOverlayId instanceof String)) {
+      throw new IllegalArgumentException("tileOverlayId was invalid");
     } else {
-      return tileOverlayId;
+      return (String) tileOverlayId;
     }
   }
 
@@ -690,7 +691,7 @@ class Convert {
     int width = toInt(data.get("width"));
     int height = toInt(data.get("height"));
     byte[] dataArray = null;
-    if (data.get("data") != null) {
+    if (data.get("data") instanceof byte[]) {
       dataArray = (byte[]) data.get("data");
     }
     return new Tile(width, height, dataArray);

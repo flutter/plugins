@@ -56,8 +56,7 @@ class TileProviderController implements TileProvider {
                   Convert.tileOverlayArgumentsToJson(tileOverlayId, x, y, zoom),
                   this));
       try {
-        // `getTile` must be a synchronized operation.
-        // Because `methodChannel.invokeMethod` is an sync operation, we use a `countDownLatch` to make the process synchronized.
+        // Because `methodChannel.invokeMethod` is async, we use a `countDownLatch` make it synchronized.
         countDownLatch.await();
       } catch (InterruptedException e) {
         Log.e(
@@ -68,8 +67,8 @@ class TileProviderController implements TileProvider {
       }
       try {
         return Convert.interpretTile(result);
-      } catch (Exception ex) {
-        Log.e(TAG, "Can't parse tile data", ex);
+      } catch (Exception e) {
+        Log.e(TAG, "Can't parse tile data", e);
         return TileProvider.NO_TILE;
       }
     }
