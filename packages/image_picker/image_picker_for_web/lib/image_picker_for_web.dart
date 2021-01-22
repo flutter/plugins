@@ -39,28 +39,32 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
     String capture = computeCaptureAttribute(source, preferredCameraDevice);
-    return pickFile(
+
+    final pickedFile = await pickFile(
       accept: _kAcceptImageMimeType,
-      capture: await _resizeImage(
-        capture,
-        maxWidth.toInt(),
-        maxHeight.toInt(),
-        imageQuality,
-      ),
+      capture: capture,
     );
+
+    if (maxWidth != null && maxHeight != null && imageQuality != null) {
+      return _resizeImage(pickedFile.path, maxWidth, maxHeight, imageQuality);
+    } else {
+      return pickedFile;
+    }
   }
 
-  static Future<String> _resizeImage(
+  static Future<PickedFile> _resizeImage(
     String src,
-    int maxWidth,
-    int maxHeight,
+    double maxWidth,
+    double maxHeight,
     int imageQuality,
   ) {
-    final completer = Completer<String>();
+    final completer = Completer<PickedFile>();
     final img = html.ImageElement();
+
     img.onError.listen((event) {
-      completer.complete("");
+      completer.complete(PickedFile(''));
     });
+
     img.onLoad.listen((event) {
       final canvas = html.CanvasElement();
       final ctx = canvas.context2D;
@@ -79,11 +83,13 @@ class ImagePickerPlugin extends ImagePickerPlatform {
 
       canvas.height = (img.height * ratio).floor();
       canvas.width = (img.width * ratio).floor();
+
       // Draw the image to canvas and resize
       ctx.drawImageScaled(img, 0, 0, canvas.width, canvas.height);
-      final base64 = canvas.toDataUrl("image/png", imageQuality / 100);
-      completer.complete(base64);
+      final base64 = canvas.toDataUrl('image/png', imageQuality / 100);
+      completer.complete(PickedFile(base64));
     });
+
     img.src = src;
     // make sure the load event fires for cached images too
     if (img.complete) {
@@ -93,6 +99,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       // Try again
       img.src = src;
     }
+
     return completer.future;
   }
 
