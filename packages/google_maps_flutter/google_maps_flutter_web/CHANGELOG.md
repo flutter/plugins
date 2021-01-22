@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Add support for Custom Tiles.
+
 ## 0.1.1
 
 * Auto-reverse holes if they're the same direction as the polygon. [Issue](https://github.com/flutter/flutter/issues/74096).
