@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
 
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:stream_transform/stream_transform.dart';
 import '../types/tile_overlay_updates.dart';
 import '../types/utils/tile_overlay.dart';
@@ -193,9 +194,12 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         final Map<TileOverlayId, TileOverlay> tileOverlaysForThisMap =
             _tileOverlays[mapId];
         final String tileOverlayId = call.arguments['tileOverlayId'];
-        final TileOverlay tileOverlay = tileOverlaysForThisMap[tileOverlayId];
-        assert(tileOverlay.tileProvider.getTile != null);
-        final Tile tile = await tileOverlay.tileProvider.getTile(
+        final TileOverlay tileOverlay = tileOverlaysForThisMap[TileOverlayId(tileOverlayId)];
+        Tile tile;
+        if (tileOverlay == null || tileOverlay.tileProvider == null) {
+          return TileProvider.noTile.toJson();
+        }
+        tile = await tileOverlay.tileProvider.getTile(
           call.arguments['x'],
           call.arguments['y'],
           call.arguments['zoom'],
