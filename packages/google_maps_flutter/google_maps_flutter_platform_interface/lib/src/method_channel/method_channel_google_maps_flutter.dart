@@ -194,7 +194,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         final Map<TileOverlayId, TileOverlay> tileOverlaysForThisMap =
             _tileOverlays[mapId];
         final String tileOverlayId = call.arguments['tileOverlayId'];
-        final TileOverlay tileOverlay = tileOverlaysForThisMap[TileOverlayId(tileOverlayId)];
+        final TileOverlay tileOverlay =
+            tileOverlaysForThisMap[TileOverlayId(tileOverlayId)];
         Tile tile;
         if (tileOverlay == null || tileOverlay.tileProvider == null) {
           return TileProvider.noTile.toJson();
