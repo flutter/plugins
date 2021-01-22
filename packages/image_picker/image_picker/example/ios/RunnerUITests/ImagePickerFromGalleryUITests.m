@@ -31,7 +31,7 @@ const int kElementWaitingTime = 30;
                                             if (![allPhotoPermission waitForExistenceWithTimeout:
                                                                          kElementWaitingTime]) {
                                               os_log_error(OS_LOG_DEFAULT, "%@",
-                                                           self.app.debugDescription);
+                                                           weakSelf.app.debugDescription);
                                               XCTFail(@"Failed due to not able to find "
                                                       @"allPhotoPermission button with %@ seconds",
                                                       @(kElementWaitingTime));
@@ -42,7 +42,7 @@ const int kElementWaitingTime = 30;
                                             if (![ok waitForExistenceWithTimeout:
                                                          kElementWaitingTime]) {
                                               os_log_error(OS_LOG_DEFAULT, "%@",
-                                                           self.app.debugDescription);
+                                                           weakSelf.app.debugDescription);
                                               XCTFail(@"Failed due to not able to find ok button "
                                                       @"with %@ seconds",
                                                       @(kElementWaitingTime));
