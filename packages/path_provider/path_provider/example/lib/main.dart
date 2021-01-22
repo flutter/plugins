@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (snapshot.hasError) {
         text = Text('Error: ${snapshot.error}');
       } else if (snapshot.hasData) {
-        text = Text('path: ${snapshot.data!.path}');
+        text = Text('path: ${snapshot.data?.path}');
       } else {
         text = const Text('path unavailable');
       }
@@ -72,8 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if (snapshot.hasError) {
         text = Text('Error: ${snapshot.error}');
       } else if (snapshot.hasData) {
-        final String combined =
-            snapshot.data!.map((Directory d) => d.path).join(', ');
+        final String? combined =
+            snapshot.data?.map((Directory d) => d.path).join(', ');
         text = Text('paths: $combined');
       } else {
         text = const Text('path unavailable');
