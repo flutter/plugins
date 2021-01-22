@@ -64,6 +64,7 @@ public class ConnectivityBroadcastReceiver extends BroadcastReceiver
     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       if (networkCallback != null) {
         connectivity.getConnectivityManager().unregisterNetworkCallback(networkCallback);
+        networkCallback = null;
       }
     } else {
       context.unregisterReceiver(this);

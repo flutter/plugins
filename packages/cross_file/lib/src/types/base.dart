@@ -18,7 +18,7 @@ abstract class XFileBase {
   XFileBase(String path);
 
   /// Save the CrossFile at the indicated file path.
-  void saveTo(String path) async {
+  Future<void> saveTo(String path) {
     throw UnimplementedError('saveTo has not been implemented.');
   }
 
