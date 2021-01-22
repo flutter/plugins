@@ -14,7 +14,7 @@ class TileOverlayId {
   /// Creates an immutable identifier for a [TileOverlay].
   TileOverlayId(this.value) : assert(value != null);
 
-  /// value of the [TileOverlayId].
+  /// The value of the [TileOverlayId].
   final String value;
 
   @override
@@ -32,7 +32,7 @@ class TileOverlayId {
   String toString() => '${objectRuntimeType(this, 'TileOverlayId')}($value)';
 }
 
-/// # A set of images which are displayed on top of the base map tiles.
+/// A set of images which are displayed on top of the base map tiles.
 ///
 /// These tiles may be transparent, allowing you to add features to existing maps.
 ///
@@ -92,7 +92,7 @@ class TileOverlay {
   /// The visibility for the tile overlay. The default visibility is true.
   final bool visible;
 
-  /// Specifies the number of pixels (not points) that the returned tile images will prefer
+  /// Specifies the number of logical pixels (not points) that the returned tile images will prefer
   /// to display as. iOS only.
   ///
   /// Defaults to 256, which is the traditional size of Google Maps tiles.

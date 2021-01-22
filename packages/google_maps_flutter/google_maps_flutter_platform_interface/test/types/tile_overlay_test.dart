@@ -104,30 +104,4 @@ void main() {
               tileOverlay.tileSize));
     });
   });
-
-  group('tile overlay utils tests', () {
-    test('keyTileOverlayId', () async {
-      final TileOverlay tileOverlay1 =
-          TileOverlay(tileOverlayId: TileOverlayId('id1'));
-      final TileOverlay tileOverlay2 =
-          TileOverlay(tileOverlayId: TileOverlayId('id2'));
-      final Map<TileOverlayId, TileOverlay> result =
-          keyTileOverlayId([tileOverlay1, tileOverlay2]);
-      expect(result[TileOverlayId('id1')], tileOverlay1);
-      expect(result[TileOverlayId('id2')], tileOverlay2);
-    });
-
-    test('serializeTileOverlaySet', () async {
-      final TileOverlay tileOverlay1 =
-          TileOverlay(tileOverlayId: TileOverlayId('id1'));
-      final TileOverlay tileOverlay2 =
-          TileOverlay(tileOverlayId: TileOverlayId('id2'));
-      final Set<TileOverlay> tileOverlaySet =
-          Set.from(<TileOverlay>[tileOverlay1, tileOverlay2]);
-      List<Map<String, dynamic>> result =
-          serializeTileOverlaySet(tileOverlaySet);
-      expect(result[0]['tileOverlayId'], 'id1');
-      expect(result[1]['tileOverlayId'], 'id2');
-    });
-  });
 }

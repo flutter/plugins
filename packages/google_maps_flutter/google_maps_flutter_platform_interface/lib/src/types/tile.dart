@@ -11,13 +11,16 @@ class Tile {
   /// Creates an immutable representation of a [Tile] to draw by [TileProvider].
   const Tile(this.width, this.height, this.data);
 
-  /// The width of the image encoded by data in pixels.
+  /// The width of the image encoded by data in logical pixels.
   final int width;
 
-  /// The height of the image encoded by data in pixels.
+  /// The height of the image encoded by data in logical pixels.
   final int height;
 
   /// A byte array containing the image data.
+  ///
+  /// The image data format must be natively supported for decoding by the platform.
+  /// e.g on Android it can only be one of the [supported image formats for decoding](https://developer.android.com/guide/topics/media/media-formats#image-formats).
   final Uint8List data;
 
   /// Converts this object to JSON.
