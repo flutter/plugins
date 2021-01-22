@@ -35,7 +35,7 @@
 - (void)setVisible:(BOOL)visible {
   _circle.map = visible ? _mapView : nil;
 }
-- (void)setZIndex:(NSInteger)zIndex {
+- (void)setZIndex:(int)zIndex {
   _circle.zIndex = zIndex;
 }
 - (void)setCenter:(CLLocationCoordinate2D)center {
