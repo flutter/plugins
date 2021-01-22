@@ -18,7 +18,8 @@ class GoogleMapController {
     @required this.mapId,
   }) : assert(_googleMapsFlutterPlatform != null) {
     _connectStreams(mapId);
-    _googleMapsFlutterPlatform.updateTileOverlays(mapId: mapId, newTileOverlays: _googleMapState.widget.tileOverlays);
+    _googleMapsFlutterPlatform.updateTileOverlays(
+        mapId: mapId, newTileOverlays: _googleMapState.widget.tileOverlays);
   }
 
   /// Initialize control of a [GoogleMap] with [id].
@@ -160,8 +161,8 @@ class GoogleMapController {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateTileOverlays(Set<TileOverlay> newTileOverlays) {
-    return _googleMapsFlutterPlatform.updateTileOverlays(newTileOverlays: newTileOverlays,
-        mapId: mapId);
+    return _googleMapsFlutterPlatform.updateTileOverlays(
+        newTileOverlays: newTileOverlays, mapId: mapId);
   }
 
   /// Clears the tile cache so that all tiles will be requested again from the
