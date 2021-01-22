@@ -54,8 +54,8 @@ const int kElementWaitingTime = 30;
 }
 
 - (void)testPickingFromGallery {
-  [self launchPickerAndCancel];
   [self launchPickerAndPick];
+  [self launchPickerAndCancel];
 }
 
 - (void)launchPickerAndCancel {
