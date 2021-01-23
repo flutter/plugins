@@ -24,7 +24,7 @@ import 'package:cross_file/cross_file.dart';
 final pathPrefix = './assets/';
 final path = pathPrefix + 'hello.txt';
 final String expectedStringContents = 'Hello, world!';
-final Uint8List bytes = utf8.encode(expectedStringContents);
+final Uint8List bytes = Uint8List.fromList(utf8.encode(expectedStringContents));
 final File textFile = File(path);
 final String textFilePath = textFile.path;
 
