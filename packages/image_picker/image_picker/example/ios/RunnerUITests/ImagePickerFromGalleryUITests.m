@@ -16,6 +16,7 @@ const int kElementWaitingTime = 30;
 @implementation ImagePickerFromGalleryUITests
 
 - (void)setUp {
+  [super setup];
   // Delete the app if already exists, to test permission popups
 
   self.continueAfterFailure = NO;
@@ -54,6 +55,7 @@ const int kElementWaitingTime = 30;
 }
 
 - (void)tearDown {
+  [super tearDown];
   [self.app terminate];
 }
 
