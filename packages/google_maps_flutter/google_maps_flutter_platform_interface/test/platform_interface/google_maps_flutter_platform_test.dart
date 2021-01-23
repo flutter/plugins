@@ -45,14 +45,11 @@ void main() {
       log.add(methodCall);
     });
 
-//    final MethodChannelGoogleMapsFlutter map = MethodChannelGoogleMapsFlutter(0);
-
     tearDown(() {
       log.clear();
     });
 
     test('foo', () async {
-//      await map.foo();
       expect(
         log,
         <Matcher>[],
