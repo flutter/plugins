@@ -31,7 +31,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   GoogleMapController controller;
   Map<PolylineId, Polyline> polylines = <PolylineId, Polyline>{};
-  int _polylineIdCounter = 1;
+  int _polylineIdCounter = 0;
   PolylineId selectedPolyline;
 
   // Values when toggling polyline color
@@ -215,7 +215,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
             height: 300.0,
             child: GoogleMap(
               initialCameraPosition: const CameraPosition(
-                target: LatLng(52.4478, -3.5402),
+                target: LatLng(53.1721, -3.5402),
                 zoom: 7.0,
               ),
               polylines: Set<Polyline>.of(polylines.values),

@@ -1,5 +1,10 @@
-## 2.0.0-nullsafety.8
+## 2.0.0-nullsafety.9
+
 * Introduce setCaptionOffset to offset the caption display based on a Duration.
+
+## 2.0.0-nullsafety.8
+
+* Migrated from deprecated `defaultBinaryMessenger`.
 
 ## 2.0.0-nullsafety.7
 

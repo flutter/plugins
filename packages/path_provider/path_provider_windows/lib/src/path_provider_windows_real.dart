@@ -22,20 +22,19 @@ import 'folders.dart';
 class VersionInfoQuerier {
   /// Returns the value for [key] in [versionInfo]s English strings section, or
   /// null if there is no such entry, or if versionInfo is null.
-  getStringValue(Pointer<Uint8> versionInfo, key) {
+  getStringValue(Pointer<Uint8>? versionInfo, key) {
     if (versionInfo == null) {
       return null;
     }
     const kEnUsLanguageCode = '040904e4';
     final keyPath = TEXT('\\StringFileInfo\\$kEnUsLanguageCode\\$key');
     final length = allocate<Uint32>();
-    final valueAddress = allocate<IntPtr>();
+    final valueAddress = allocate<Pointer<Utf16>>();
     try {
       if (VerQueryValue(versionInfo, keyPath, valueAddress, length) == 0) {
         return null;
       }
-      return Pointer<Utf16>.fromAddress(valueAddress.value)
-          .unpackString(length.value);
+      return valueAddress.value.unpackString(length.value);
     } finally {
       free(keyPath);
       free(length);
@@ -54,7 +53,7 @@ class PathProviderWindows extends PathProviderPlatform {
 
   /// This is typically the same as the TMP environment variable.
   @override
-  Future<String> getTemporaryPath() async {
+  Future<String?> getTemporaryPath() async {
     final buffer = allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
     String path;
 
@@ -88,7 +87,7 @@ class PathProviderWindows extends PathProviderPlatform {
   }
 
   @override
-  Future<String> getApplicationSupportPath() async {
+  Future<String?> getApplicationSupportPath() async {
     final appDataRoot = await getPath(WindowsKnownFolder.RoamingAppData);
     final directory = Directory(
         path.join(appDataRoot, _getApplicationSpecificSubdirectory()));
@@ -105,25 +104,27 @@ class PathProviderWindows extends PathProviderPlatform {
   }
 
   @override
-  Future<String> getApplicationDocumentsPath() =>
+  Future<String?> getApplicationDocumentsPath() =>
       getPath(WindowsKnownFolder.Documents);
 
   @override
-  Future<String> getDownloadsPath() => getPath(WindowsKnownFolder.Downloads);
+  Future<String?> getDownloadsPath() => getPath(WindowsKnownFolder.Downloads);
 
   /// Retrieve any known folder from Windows.
   ///
   /// folderID is a GUID that represents a specific known folder ID, drawn from
   /// [WindowsKnownFolder].
   Future<String> getPath(String folderID) {
-    final pathPtrPtr = allocate<IntPtr>();
-    Pointer<Utf16> pathPtr;
+    final pathPtrPtr = allocate<Pointer<Utf16>>();
+    final Pointer<GUID> knownFolderID = calloc<GUID>()..setGUID(folderID);
 
     try {
-      GUID knownFolderID = GUID.fromString(folderID);
-
       final hr = SHGetKnownFolderPath(
-          knownFolderID.addressOf, KF_FLAG_DEFAULT, NULL, pathPtrPtr);
+        knownFolderID,
+        KF_FLAG_DEFAULT,
+        NULL,
+        pathPtrPtr,
+      );
 
       if (FAILED(hr)) {
         if (hr == E_INVALIDARG || hr == E_FAIL) {
@@ -131,12 +132,11 @@ class PathProviderWindows extends PathProviderPlatform {
         }
       }
 
-      pathPtr = Pointer<Utf16>.fromAddress(pathPtrPtr.value);
-      final path = pathPtr.unpackString(MAX_PATH);
+      final path = pathPtrPtr.value.unpackString(MAX_PATH);
       return Future.value(path);
     } finally {
-      CoTaskMemFree(pathPtr.cast());
       free(pathPtrPtr);
+      free(knownFolderID);
     }
   }
 
@@ -151,13 +151,13 @@ class PathProviderWindows extends PathProviderPlatform {
   /// - If the product name isn't there, it will use the exe's filename (without
   ///   extension).
   String _getApplicationSpecificSubdirectory() {
-    String companyName;
-    String productName;
+    String? companyName;
+    String? productName;
 
     final Pointer<Utf16> moduleNameBuffer =
         allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
     final Pointer<Uint32> unused = allocate<Uint32>();
-    Pointer<Uint8> infoBuffer;
+    Pointer<Uint8>? infoBuffer;
     try {
       // Get the module name.
       final moduleNameLength = GetModuleFileName(0, moduleNameBuffer, MAX_PATH);
@@ -203,7 +203,7 @@ class PathProviderWindows extends PathProviderPlatform {
   /// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
   ///
   /// If after sanitizing the string is empty, returns null.
-  String _sanitizedDirectoryName(String rawString) {
+  String? _sanitizedDirectoryName(String? rawString) {
     if (rawString == null) {
       return null;
     }
