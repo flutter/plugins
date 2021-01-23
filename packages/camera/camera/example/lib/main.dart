@@ -145,7 +145,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           _captureControlRowWidget(),
           _modeControlRowWidget(),
           Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
@@ -526,7 +526,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       for (CameraDescription cameraDescription in cameras) {
         toggles.add(
           SizedBox(
-            width: 90.0,
+            width: 80.0,
             child: RadioListTile<CameraDescription>(
               title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
               groupValue: controller?.description,
@@ -534,6 +534,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               onChanged: controller != null && controller.value.isRecordingVideo
                   ? null
                   : onNewCameraSelected,
+                
             ),
           ),
         );
