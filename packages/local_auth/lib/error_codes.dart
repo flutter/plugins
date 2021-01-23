@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Exception codes for `PlatformException` returned by
-// `authenticateWithBiometrics`.
+// `authenticate`.
 
 /// Indicates that the user has not yet configured a passcode (iOS) or
 /// PIN/pattern/password (Android) on the device.

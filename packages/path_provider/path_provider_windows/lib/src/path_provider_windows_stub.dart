@@ -19,7 +19,7 @@ class PathProviderWindows extends PathProviderPlatform {
   }
 
   /// Stub; see comment on VersionInfoQuerier.
-  VersionInfoQuerier versionInfoQuerier;
+  VersionInfoQuerier versionInfoQuerier = VersionInfoQuerier();
 
   /// Match PathProviderWindows so that the analyzer won't report invalid
   /// overrides if tests provide fake PathProviderWindows implementations.

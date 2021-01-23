@@ -1,6 +1,10 @@
-## 2.0.0-nullsafety.8
+## 2.0.0-nullsafety.9
 
 * Fixed empty caption text still showing the caption widget.
+
+## 2.0.0-nullsafety.8
+
+* Migrated from deprecated `defaultBinaryMessenger`.
 
 ## 2.0.0-nullsafety.7
 

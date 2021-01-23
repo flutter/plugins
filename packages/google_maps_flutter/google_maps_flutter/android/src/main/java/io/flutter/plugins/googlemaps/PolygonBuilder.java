@@ -42,6 +42,13 @@ class PolygonBuilder implements PolygonOptionsSink {
   }
 
   @Override
+  public void setHoles(List<List<LatLng>> holes) {
+    for (List<LatLng> hole : holes) {
+      polygonOptions.addHole(hole);
+    }
+  }
+
+  @Override
   public void setConsumeTapEvents(boolean consumeTapEvents) {
     this.consumeTapEvents = consumeTapEvents;
     polygonOptions.clickable(consumeTapEvents);
