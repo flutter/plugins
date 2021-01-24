@@ -24,14 +24,15 @@ enum SignInOption {
 
 /// Holds information about the signed in user.
 class GoogleSignInUserData {
-  /// Uses the given data to construct an instance.
-  GoogleSignInUserData({
-    required this.email,
-    required this.id,
-    this.displayName,
-    this.photoUrl,
-    this.idToken,
-  });
+  /// Uses the given data to construct an instance. Any of these parameters
+  /// could be null.
+  GoogleSignInUserData(
+      {this.displayName,
+      this.email,
+      this.id,
+      this.photoUrl,
+      this.idToken,
+      this.serverAuthCode});
 
   /// The display name of the signed in user.
   ///
@@ -64,11 +65,15 @@ class GoogleSignInUserData {
 
   /// A token that can be sent to your own server to verify the authentication
   /// data.
-  String? idToken;
+  String idToken;
+
+  /// Authorization code required to make API calls from the server.
+  /// Read more on <https://developers.google.com/identity/sign-in/android/offline-access>
+  String serverAuthCode;
 
   @override
-  int get hashCode =>
-      hashObjects(<String?>[displayName, email, id, photoUrl, idToken]);
+  int get hashCode => hashObjects(
+      <String>[displayName, email, id, photoUrl, idToken, serverAuthCode]);
 
   @override
   bool operator ==(dynamic other) {
@@ -79,7 +84,8 @@ class GoogleSignInUserData {
         otherUserData.email == email &&
         otherUserData.id == id &&
         otherUserData.photoUrl == photoUrl &&
-        otherUserData.idToken == idToken;
+        otherUserData.idToken == idToken &&
+        otherUserData.serverAuthCode == serverAuthCode;
   }
 }
 
