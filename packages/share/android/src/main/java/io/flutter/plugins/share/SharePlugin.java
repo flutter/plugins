@@ -4,59 +4,69 @@
 
 package io.flutter.plugins.share;
 
-import android.content.Intent;
-import io.flutter.plugin.common.MethodCall;
+import android.app.Activity;
+import android.content.Context;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-import java.util.Map;
 
 /** Plugin method host for presenting a share sheet via Intent */
-public class SharePlugin implements MethodChannel.MethodCallHandler {
+public class SharePlugin implements FlutterPlugin, ActivityAware {
 
   private static final String CHANNEL = "plugins.flutter.io/share";
+  private MethodCallHandler handler;
+  private Share share;
+  private MethodChannel methodChannel;
 
-  public static void registerWith(Registrar registrar) {
-    MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    SharePlugin instance = new SharePlugin(registrar);
-    channel.setMethodCallHandler(instance);
-  }
-
-  private final Registrar mRegistrar;
-
-  private SharePlugin(Registrar registrar) {
-    this.mRegistrar = registrar;
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+    SharePlugin plugin = new SharePlugin();
+    plugin.setUpChannel(registrar.context(), registrar.activity(), registrar.messenger());
   }
 
   @Override
-  public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    if (call.method.equals("share")) {
-      if (!(call.arguments instanceof Map)) {
-        throw new IllegalArgumentException("Map argument expected");
-      }
-      // Android does not support showing the share sheet at a particular point on screen.
-      share((String) call.argument("text"), (String) call.argument("subject"));
-      result.success(null);
-    } else {
-      result.notImplemented();
-    }
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    setUpChannel(binding.getApplicationContext(), null, binding.getBinaryMessenger());
   }
 
-  private void share(String text, String subject) {
-    if (text == null || text.isEmpty()) {
-      throw new IllegalArgumentException("Non-empty text expected");
-    }
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    methodChannel.setMethodCallHandler(null);
+    methodChannel = null;
+    share = null;
+  }
 
-    Intent shareIntent = new Intent();
-    shareIntent.setAction(Intent.ACTION_SEND);
-    shareIntent.putExtra(Intent.EXTRA_TEXT, text);
-    shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-    shareIntent.setType("text/plain");
-    Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
-    if (mRegistrar.activity() != null) {
-      mRegistrar.activity().startActivity(chooserIntent);
-    } else {
-      chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      mRegistrar.context().startActivity(chooserIntent);
-    }
+  @Override
+  public void onAttachedToActivity(ActivityPluginBinding binding) {
+    share.setActivity(binding.getActivity());
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+    tearDownChannel();
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+    onAttachedToActivity(binding);
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    onDetachedFromActivity();
+  }
+
+  private void setUpChannel(Context context, Activity activity, BinaryMessenger messenger) {
+    methodChannel = new MethodChannel(messenger, CHANNEL);
+    share = new Share(context, activity);
+    handler = new MethodCallHandler(share);
+    methodChannel.setMethodCallHandler(handler);
+  }
+
+  private void tearDownChannel() {
+    share.setActivity(null);
+    methodChannel.setMethodCallHandler(null);
   }
 }

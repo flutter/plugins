@@ -1,3 +1,116 @@
+## 1.1.0-nullsafety
+
+* Allow pin, passcode, and pattern authentication with `authenticate` method
+* **Breaking change**. Parameter names refactored to use the generic `biometric` prefix in place of `fingerprint` in the `AndroidAuthMessages` class
+  * `fingerprintHint` is now `biometricHint`  
+  * `fingerprintNotRecognized`is now `biometricNotRecognized`  
+  * `fingerprintSuccess`is now `biometricSuccess`  
+  * `fingerprintRequiredTitle` is now `biometricRequiredTitle` 
+
+## 1.0.0-nullsafety.3
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 1.0.0-nullsafety.2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 1.0.0-nullsafety.1
+
+* Update README for Android Integration.
+
+## 1.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 0.6.3+5
+
+* Update Flutter SDK constraint.
+
+## 0.6.3+4
+
+* Update Dart SDK constraint in example.
+
+## 0.6.3+3
+
+* Update android compileSdkVersion to 29.
+
+## 0.6.3+2
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.6.3+1
+
+* Update package:e2e -> package:integration_test
+
+## 0.6.3
+
+* Increase upper range of `package:platform` constraint to allow 3.X versions.
+
+## 0.6.2+4
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.6.2+3
+
+* Post-v2 Android embedding cleanup.
+
+## 0.6.2+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.6.2+1
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.6.2
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix block implicitly retains 'self' warning.
+
+## 0.6.1+4
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.6.1+3
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.6.1+2
+
+* Support v2 embedding.
+
+## 0.6.1+1
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.6.1
+
+* Added ability to stop authentication (For Android).
+
+## 0.6.0+3
+
+* Remove AndroidX warnings.
+
+## 0.6.0+2
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
+## 0.6.0+1
+
+* Update the `intl` constraint to ">=0.15.1 <0.17.0" (0.16.0 isn't really a breaking change).
+
+## 0.6.0
+
+* Define a new parameter for signaling that the transaction is sensitive.
+* Up the biometric version to beta01.
+* Handle no device credential error.
+
 ## 0.5.3
 
 * Add face id detection as well by not relying on FingerprintCompat.

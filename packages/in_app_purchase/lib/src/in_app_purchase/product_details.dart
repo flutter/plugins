@@ -12,13 +12,14 @@ import 'in_app_purchase_connection.dart';
 /// This class unifies the BillingClient's [SkuDetailsWrapper] and StoreKit's [SKProductWrapper]. You can use the common attributes in
 /// This class for simple operations. If you would like to see the detailed representation of the product, instead,  use [skuDetails] on Android and [skProduct] on iOS.
 class ProductDetails {
+  /// Creates a new product details object with the provided details.
   ProductDetails(
       {@required this.id,
       @required this.title,
       @required this.description,
       @required this.price,
-      this.skProduct = null,
-      this.skuDetail = null});
+      this.skProduct,
+      this.skuDetail});
 
   /// The identifier of the product, specified in App Store Connect or Sku in Google Play console.
   final String id;
@@ -66,10 +67,9 @@ class ProductDetails {
 ///
 /// A list of [ProductDetails] can be obtained from the this response.
 class ProductDetailsResponse {
+  /// Creates a new [ProductDetailsResponse] with the provided response details.
   ProductDetailsResponse(
-      {@required this.productDetails,
-      @required this.notFoundIDs,
-      this.error = null});
+      {@required this.productDetails, @required this.notFoundIDs, this.error});
 
   /// Each [ProductDetails] uniquely matches one valid identifier in [identifiers] of [InAppPurchaseConnection.queryProductDetails].
   final List<ProductDetails> productDetails;

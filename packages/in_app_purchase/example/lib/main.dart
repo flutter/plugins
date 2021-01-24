@@ -9,10 +9,14 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'consumable_store.dart';
 
 void main() {
-  runApp(MyApp());
+  // For play billing library 2.0 on Android, it is mandatory to call
+  // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
+  // as part of initializing the app.
+  InAppPurchaseConnection.enablePendingPurchases();
+  runApp(_MyApp());
 }
 
-const bool kAutoConsume = true;
+const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
 const List<String> _kProductIds = <String>[
@@ -21,12 +25,12 @@ const List<String> _kProductIds = <String>[
   'subscription'
 ];
 
-class MyApp extends StatefulWidget {
+class _MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<_MyApp> {
   final InAppPurchaseConnection _connection = InAppPurchaseConnection.instance;
   StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
@@ -36,7 +40,7 @@ class _MyAppState extends State<MyApp> {
   bool _isAvailable = false;
   bool _purchasePending = false;
   bool _loading = true;
-  String _queryProductError = null;
+  String _queryProductError;
 
   @override
   void initState() {
@@ -149,12 +153,12 @@ class _MyAppState extends State<MyApp> {
       stack.add(
         Stack(
           children: [
-            new Opacity(
+            Opacity(
               opacity: 0.3,
               child: const ModalBarrier(dismissible: false, color: Colors.grey),
             ),
-            new Center(
-              child: new CircularProgressIndicator(),
+            Center(
+              child: CircularProgressIndicator(),
             ),
           ],
         ),
@@ -209,11 +213,9 @@ class _MyAppState extends State<MyApp> {
     if (!_isAvailable) {
       return Card();
     }
-    final ListTile productHeader = ListTile(
-        title: Text('Products for Sale',
-            style: Theme.of(context).textTheme.headline));
+    final ListTile productHeader = ListTile(title: Text('Products for Sale'));
     List<ListTile> productList = <ListTile>[];
-    if (!_notFoundIds.isEmpty) {
+    if (_notFoundIds.isNotEmpty) {
       productList.add(ListTile(
           title: Text('[${_notFoundIds.join(", ")}] not found',
               style: TextStyle(color: ThemeData.light().errorColor)),
@@ -223,10 +225,10 @@ class _MyAppState extends State<MyApp> {
 
     // This loading previous purchases code is just a demo. Please do not use this as it is.
     // In your app you should always verify the purchase data using the `verificationData` inside the [PurchaseDetails] object before trusting it.
-    // We recommend that you use your own server to verity the purchase data.
+    // We recommend that you use your own server to verify the purchase data.
     Map<String, PurchaseDetails> purchases =
         Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
-      if (Platform.isIOS) {
+      if (purchase.pendingCompletePurchase) {
         InAppPurchaseConnection.instance.completePurchase(purchase);
       }
       return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
@@ -243,10 +245,12 @@ class _MyAppState extends State<MyApp> {
             ),
             trailing: previousPurchase != null
                 ? Icon(Icons.check)
-                : FlatButton(
+                : TextButton(
                     child: Text(productDetails.price),
-                    color: Colors.green[800],
-                    textColor: Colors.white,
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.green[800],
+                      primary: Colors.white,
+                    ),
                     onPressed: () {
                       PurchaseParam purchaseParam = PurchaseParam(
                           productDetails: productDetails,
@@ -255,7 +259,7 @@ class _MyAppState extends State<MyApp> {
                       if (productDetails.id == _kConsumableId) {
                         _connection.buyConsumable(
                             purchaseParam: purchaseParam,
-                            autoConsume: kAutoConsume || Platform.isIOS);
+                            autoConsume: _kAutoConsume || Platform.isIOS);
                       } else {
                         _connection.buyNonConsumable(
                             purchaseParam: purchaseParam);
@@ -280,9 +284,8 @@ class _MyAppState extends State<MyApp> {
     if (!_isAvailable || _notFoundIds.contains(_kConsumableId)) {
       return Card();
     }
-    final ListTile consumableHeader = ListTile(
-        title: Text('Purchased consumables',
-            style: Theme.of(context).textTheme.headline));
+    final ListTile consumableHeader =
+        ListTile(title: Text('Purchased consumables'));
     final List<Widget> tokens = _consumables.map((String id) {
       return GridTile(
         child: IconButton(
@@ -356,9 +359,6 @@ class _MyAppState extends State<MyApp> {
     // handle invalid purchase here if  _verifyPurchase` failed.
   }
 
-  static ListTile buildListCard(ListTile innerTile) =>
-      ListTile(title: Card(child: innerTile));
-
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
       if (purchaseDetails.status == PurchaseStatus.pending) {
@@ -372,14 +372,18 @@ class _MyAppState extends State<MyApp> {
             deliverProduct(purchaseDetails);
           } else {
             _handleInvalidPurchase(purchaseDetails);
+            return;
           }
         }
-        if (Platform.isIOS) {
-          InAppPurchaseConnection.instance.completePurchase(purchaseDetails);
-        } else if (Platform.isAndroid) {
-          if (!kAutoConsume && purchaseDetails.productID == _kConsumableId) {
-            InAppPurchaseConnection.instance.consumePurchase(purchaseDetails);
+        if (Platform.isAndroid) {
+          if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
+            await InAppPurchaseConnection.instance
+                .consumePurchase(purchaseDetails);
           }
+        }
+        if (purchaseDetails.pendingCompletePurchase) {
+          await InAppPurchaseConnection.instance
+              .completePurchase(purchaseDetails);
         }
       }
     });

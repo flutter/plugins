@@ -1,10 +1,8 @@
 name: webview_flutter_example
 description: Demonstrates how to use the webview_flutter plugin.
 
-version: 1.0.1
-
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
 
 dependencies:
   flutter:
@@ -17,8 +15,12 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
+  integration_test:
+    path: ../../integration_test
+  pedantic: ^1.8.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/sample_audio.ogg
+    - assets/sample_video.mp4

@@ -16,6 +16,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 typedef void VoidCallback();
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final _FakePlatformViewsController fakePlatformViewsController =
       _FakePlatformViewsController();
 
@@ -38,7 +40,7 @@ void main() {
   });
 
   testWidgets('Initial url', (WidgetTester tester) async {
-    WebViewController controller;
+    late WebViewController controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
@@ -58,7 +60,7 @@ void main() {
     ));
 
     final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformWebView.javascriptMode, JavascriptMode.unrestricted);
 
@@ -70,7 +72,7 @@ void main() {
   });
 
   testWidgets('Load url', (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
@@ -81,13 +83,13 @@ void main() {
 
     expect(controller, isNotNull);
 
-    controller.loadUrl('https://flutter.io');
+    await controller!.loadUrl('https://flutter.io');
 
-    expect(await controller.currentUrl(), 'https://flutter.io');
+    expect(await controller!.currentUrl(), 'https://flutter.io');
   });
 
   testWidgets('Invalid urls', (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
@@ -98,19 +100,18 @@ void main() {
 
     expect(controller, isNotNull);
 
-    expect(() => controller.loadUrl(null), throwsA(anything));
-    expect(await controller.currentUrl(), isNull);
+    expect(await controller!.currentUrl(), isNull);
 
-    expect(() => controller.loadUrl(''), throwsA(anything));
-    expect(await controller.currentUrl(), isNull);
+    expect(() => controller!.loadUrl(''), throwsA(anything));
+    expect(await controller!.currentUrl(), isNull);
 
     // Missing schema.
-    expect(() => controller.loadUrl('flutter.io'), throwsA(anything));
-    expect(await controller.currentUrl(), isNull);
+    expect(() => controller!.loadUrl('flutter.io'), throwsA(anything));
+    expect(await controller!.currentUrl(), isNull);
   });
 
   testWidgets('Headers in loadUrl', (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
@@ -124,13 +125,13 @@ void main() {
     final Map<String, String> headers = <String, String>{
       'CACHE-CONTROL': 'ABC'
     };
-    await controller.loadUrl('https://flutter.io', headers: headers);
-    expect(await controller.currentUrl(), equals('https://flutter.io'));
+    await controller!.loadUrl('https://flutter.io', headers: headers);
+    expect(await controller!.currentUrl(), equals('https://flutter.io'));
   });
 
   testWidgets("Can't go back before loading a page",
       (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
@@ -141,13 +142,13 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final bool canGoBackNoPageLoaded = await controller.canGoBack();
+    final bool canGoBackNoPageLoaded = await controller!.canGoBack();
 
     expect(canGoBackNoPageLoaded, false);
   });
 
   testWidgets("Clear Cache", (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
@@ -157,15 +158,15 @@ void main() {
     );
 
     expect(controller, isNotNull);
-    expect(fakePlatformViewsController.lastCreatedView.hasCache, true);
+    expect(fakePlatformViewsController.lastCreatedView!.hasCache, true);
 
-    await controller.clearCache();
+    await controller!.clearCache();
 
-    expect(fakePlatformViewsController.lastCreatedView.hasCache, false);
+    expect(fakePlatformViewsController.lastCreatedView!.hasCache, false);
   });
 
   testWidgets("Can't go back with no history", (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
@@ -176,13 +177,13 @@ void main() {
     );
 
     expect(controller, isNotNull);
-    final bool canGoBackFirstPageLoaded = await controller.canGoBack();
+    final bool canGoBackFirstPageLoaded = await controller!.canGoBack();
 
     expect(canGoBackFirstPageLoaded, false);
   });
 
   testWidgets('Can go back', (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
@@ -194,15 +195,15 @@ void main() {
 
     expect(controller, isNotNull);
 
-    await controller.loadUrl('https://www.google.com');
-    final bool canGoBackSecondPageLoaded = await controller.canGoBack();
+    await controller!.loadUrl('https://www.google.com');
+    final bool canGoBackSecondPageLoaded = await controller!.canGoBack();
 
     expect(canGoBackSecondPageLoaded, true);
   });
 
   testWidgets("Can't go forward before loading a page",
       (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
@@ -213,13 +214,13 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final bool canGoForwardNoPageLoaded = await controller.canGoForward();
+    final bool canGoForwardNoPageLoaded = await controller!.canGoForward();
 
     expect(canGoForwardNoPageLoaded, false);
   });
 
   testWidgets("Can't go forward with no history", (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
@@ -230,13 +231,13 @@ void main() {
     );
 
     expect(controller, isNotNull);
-    final bool canGoForwardFirstPageLoaded = await controller.canGoForward();
+    final bool canGoForwardFirstPageLoaded = await controller!.canGoForward();
 
     expect(canGoForwardFirstPageLoaded, false);
   });
 
   testWidgets('Can go forward', (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
@@ -248,15 +249,15 @@ void main() {
 
     expect(controller, isNotNull);
 
-    await controller.loadUrl('https://youtube.com');
-    await controller.goBack();
-    final bool canGoForwardFirstPageBacked = await controller.canGoForward();
+    await controller!.loadUrl('https://youtube.com');
+    await controller!.goBack();
+    final bool canGoForwardFirstPageBacked = await controller!.canGoForward();
 
     expect(canGoForwardFirstPageBacked, true);
   });
 
   testWidgets('Go back', (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
@@ -268,19 +269,19 @@ void main() {
 
     expect(controller, isNotNull);
 
-    expect(await controller.currentUrl(), 'https://youtube.com');
+    expect(await controller!.currentUrl(), 'https://youtube.com');
 
-    controller.loadUrl('https://flutter.io');
+    await controller!.loadUrl('https://flutter.io');
 
-    expect(await controller.currentUrl(), 'https://flutter.io');
+    expect(await controller!.currentUrl(), 'https://flutter.io');
 
-    controller.goBack();
+    await controller!.goBack();
 
-    expect(await controller.currentUrl(), 'https://youtube.com');
+    expect(await controller!.currentUrl(), 'https://youtube.com');
   });
 
   testWidgets('Go forward', (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
@@ -292,23 +293,23 @@ void main() {
 
     expect(controller, isNotNull);
 
-    expect(await controller.currentUrl(), 'https://youtube.com');
+    expect(await controller!.currentUrl(), 'https://youtube.com');
 
-    controller.loadUrl('https://flutter.io');
+    await controller!.loadUrl('https://flutter.io');
 
-    expect(await controller.currentUrl(), 'https://flutter.io');
+    expect(await controller!.currentUrl(), 'https://flutter.io');
 
-    controller.goBack();
+    await controller!.goBack();
 
-    expect(await controller.currentUrl(), 'https://youtube.com');
+    expect(await controller!.currentUrl(), 'https://youtube.com');
 
-    controller.goForward();
+    await controller!.goForward();
 
-    expect(await controller.currentUrl(), 'https://flutter.io');
+    expect(await controller!.currentUrl(), 'https://flutter.io');
   });
 
   testWidgets('Current URL', (WidgetTester tester) async {
-    WebViewController controller;
+    WebViewController? controller;
     await tester.pumpWidget(
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
@@ -320,20 +321,20 @@ void main() {
     expect(controller, isNotNull);
 
     // Test a WebView without an explicitly set first URL.
-    expect(await controller.currentUrl(), isNull);
+    expect(await controller!.currentUrl(), isNull);
 
-    controller.loadUrl('https://youtube.com');
-    expect(await controller.currentUrl(), 'https://youtube.com');
+    await controller!.loadUrl('https://youtube.com');
+    expect(await controller!.currentUrl(), 'https://youtube.com');
 
-    controller.loadUrl('https://flutter.io');
-    expect(await controller.currentUrl(), 'https://flutter.io');
+    await controller!.loadUrl('https://flutter.io');
+    expect(await controller!.currentUrl(), 'https://flutter.io');
 
-    controller.goBack();
-    expect(await controller.currentUrl(), 'https://youtube.com');
+    await controller!.goBack();
+    expect(await controller!.currentUrl(), 'https://youtube.com');
   });
 
   testWidgets('Reload url', (WidgetTester tester) async {
-    WebViewController controller;
+    late WebViewController controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
@@ -344,23 +345,23 @@ void main() {
     );
 
     final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformWebView.currentUrl, 'https://flutter.io');
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
 
-    controller.reload();
+    await controller.reload();
 
     expect(platformWebView.currentUrl, 'https://flutter.io');
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 1);
 
-    controller.loadUrl('https://youtube.com');
+    await controller.loadUrl('https://youtube.com');
 
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
   });
 
   testWidgets('evaluate Javascript', (WidgetTester tester) async {
-    WebViewController controller;
+    late WebViewController controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
@@ -373,15 +374,11 @@ void main() {
     expect(
         await controller.evaluateJavascript("fake js string"), "fake js string",
         reason: 'should get the argument');
-    expect(
-      () => controller.evaluateJavascript(null),
-      throwsA(anything),
-    );
   });
 
   testWidgets('evaluate Javascript with JavascriptMode disabled',
       (WidgetTester tester) async {
-    WebViewController controller;
+    late WebViewController controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
@@ -393,10 +390,6 @@ void main() {
     );
     expect(
       () => controller.evaluateJavascript('fake js string'),
-      throwsA(anything),
-    );
-    expect(
-      () => controller.evaluateJavascript(null),
       throwsA(anything),
     );
   });
@@ -430,19 +423,17 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
           JavascriptChannel(
               name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
 
     final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformWebView.javascriptChannelNames,
         unorderedEquals(<String>['Tts', 'Alarm']));
@@ -452,6 +443,7 @@ void main() {
     final JavascriptMessageHandler noOp = (JavascriptMessage msg) {};
     JavascriptChannel(name: 'Tts1', onMessageReceived: noOp);
     JavascriptChannel(name: '_Alarm', onMessageReceived: noOp);
+    JavascriptChannel(name: 'foo_bar_', onMessageReceived: noOp);
 
     VoidCallback createChannel(String name) {
       return () {
@@ -469,14 +461,12 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
           JavascriptChannel(
               name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
     expect(tester.takeException(), isNot(null));
@@ -486,35 +476,31 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
           JavascriptChannel(
               name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
 
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
           JavascriptChannel(
               name: 'Alarm2', onMessageReceived: (JavascriptMessage msg) {}),
           JavascriptChannel(
               name: 'Alarm3', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
 
     final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformWebView.javascriptChannelNames,
         unorderedEquals(<String>['Tts', 'Alarm2', 'Alarm3']));
@@ -529,12 +515,10 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
 
@@ -547,17 +531,15 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
-        ].toSet(),
+        },
       ),
     );
 
     final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformWebView.javascriptChannelNames,
         unorderedEquals(<String>['Tts']));
@@ -569,9 +551,7 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://youtube.com',
-        // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-        // ignore: prefer_collection_literals
-        javascriptChannels: <JavascriptChannel>[
+        javascriptChannels: <JavascriptChannel>{
           JavascriptChannel(
               name: 'Tts',
               onMessageReceived: (JavascriptMessage msg) {
@@ -582,12 +562,12 @@ void main() {
               onMessageReceived: (JavascriptMessage msg) {
                 alarmMessagesReceived.add(msg.message);
               }),
-        ].toSet(),
+        },
       ),
     );
 
     final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(ttsMessagesReceived, isEmpty);
     expect(alarmMessagesReceived, isEmpty);
@@ -598,9 +578,66 @@ void main() {
     expect(ttsMessagesReceived, <String>['Hello', 'World']);
   });
 
+  group('$PageStartedCallback', () {
+    testWidgets('onPageStarted is not null', (WidgetTester tester) async {
+      String? returnedUrl;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: (String url) {
+          returnedUrl = url;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      platformWebView.fakeOnPageStartedCallback();
+
+      expect(platformWebView.currentUrl, returnedUrl);
+    });
+
+    testWidgets('onPageStarted is null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: null,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      // The platform side will always invoke a call for onPageStarted. This is
+      // to test that it does not crash on a null callback.
+      platformWebView.fakeOnPageStartedCallback();
+    });
+
+    testWidgets('onPageStarted changed', (WidgetTester tester) async {
+      String? returnedUrl;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: (String url) {},
+      ));
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onPageStarted: (String url) {
+          returnedUrl = url;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      platformWebView.fakeOnPageStartedCallback();
+
+      expect(platformWebView.currentUrl, returnedUrl);
+    });
+  });
+
   group('$PageFinishedCallback', () {
     testWidgets('onPageFinished is not null', (WidgetTester tester) async {
-      String returnedUrl;
+      String? returnedUrl;
 
       await tester.pumpWidget(WebView(
         initialUrl: 'https://youtube.com',
@@ -610,7 +647,7 @@ void main() {
       ));
 
       final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       platformWebView.fakeOnPageFinishedCallback();
 
@@ -624,7 +661,7 @@ void main() {
       ));
 
       final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       // The platform side will always invoke a call for onPageFinished. This is
       // to test that it does not crash on a null callback.
@@ -632,7 +669,7 @@ void main() {
     });
 
     testWidgets('onPageFinished changed', (WidgetTester tester) async {
-      String returnedUrl;
+      String? returnedUrl;
 
       await tester.pumpWidget(WebView(
         initialUrl: 'https://youtube.com',
@@ -647,7 +684,7 @@ void main() {
       ));
 
       final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       platformWebView.fakeOnPageFinishedCallback();
 
@@ -662,13 +699,14 @@ void main() {
       ));
 
       final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       expect(platformWebView.hasNavigationDelegate, false);
 
       await tester.pumpWidget(WebView(
         initialUrl: 'https://youtube.com',
-        navigationDelegate: (NavigationRequest r) => null,
+        navigationDelegate: (NavigationRequest r) =>
+            NavigationDecision.navigate,
       ));
 
       expect(platformWebView.hasNavigationDelegate, true);
@@ -688,7 +726,7 @@ void main() {
           }));
 
       final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       expect(platformWebView.hasNavigationDelegate, true);
 
@@ -713,7 +751,7 @@ void main() {
       ));
 
       final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       expect(platformWebView.debuggingEnabled, true);
     });
@@ -722,7 +760,7 @@ void main() {
       await tester.pumpWidget(const WebView());
 
       final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       expect(platformWebView.debuggingEnabled, false);
     });
@@ -732,7 +770,7 @@ void main() {
       await tester.pumpWidget(WebView(key: key));
 
       final FakePlatformWebView platformWebView =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       await tester.pumpWidget(WebView(
         key: key,
@@ -762,11 +800,12 @@ void main() {
       await tester.pumpWidget(
         const WebView(
           initialUrl: 'https://youtube.com',
+          gestureNavigationEnabled: true,
         ),
       );
 
-      final MyWebViewPlatform builder = WebView.platform;
-      final MyWebViewPlatformController platform = builder.lastPlatformBuilt;
+      final MyWebViewPlatform builder = WebView.platform as MyWebViewPlatform;
+      final MyWebViewPlatformController platform = builder.lastPlatformBuilt!;
 
       expect(
           platform.creationParams,
@@ -776,16 +815,14 @@ void main() {
               javascriptMode: JavascriptMode.disabled,
               hasNavigationDelegate: false,
               debuggingEnabled: false,
-              userAgent: WebSetting<String>.of(null),
+              userAgent: WebSetting<String?>.of(null),
+              gestureNavigationEnabled: true,
             ),
-            // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-            // ignore: prefer_collection_literals
-            javascriptChannelNames: Set<String>(),
           )));
     });
 
     testWidgets('loadUrl', (WidgetTester tester) async {
-      WebViewController controller;
+      late WebViewController controller;
       await tester.pumpWidget(
         WebView(
           initialUrl: 'https://youtube.com',
@@ -795,8 +832,8 @@ void main() {
         ),
       );
 
-      final MyWebViewPlatform builder = WebView.platform;
-      final MyWebViewPlatformController platform = builder.lastPlatformBuilt;
+      final MyWebViewPlatform builder = WebView.platform as MyWebViewPlatform;
+      final MyWebViewPlatformController platform = builder.lastPlatformBuilt!;
 
       final Map<String, String> headers = <String, String>{
         'header': 'value',
@@ -815,7 +852,7 @@ void main() {
     ));
 
     final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformWebView.userAgent, isNull);
 
@@ -830,9 +867,9 @@ void main() {
 }
 
 class FakePlatformWebView {
-  FakePlatformWebView(int id, Map<dynamic, dynamic> params) {
+  FakePlatformWebView(int? id, Map<dynamic, dynamic> params) {
     if (params.containsKey('initialUrl')) {
-      final String initialUrl = params['initialUrl'];
+      final String? initialUrl = params['initialUrl'];
       if (initialUrl != null) {
         history.add(initialUrl);
         currentPosition++;
@@ -852,20 +889,20 @@ class FakePlatformWebView {
     channel.setMockMethodCallHandler(onMethodCall);
   }
 
-  MethodChannel channel;
+  late MethodChannel channel;
 
-  List<String> history = <String>[];
+  List<String?> history = <String?>[];
   int currentPosition = -1;
   int amountOfReloadsOnCurrentUrl = 0;
   bool hasCache = true;
 
-  String get currentUrl => history.isEmpty ? null : history[currentPosition];
-  JavascriptMode javascriptMode;
-  List<String> javascriptChannelNames;
+  String? get currentUrl => history.isEmpty ? null : history[currentPosition];
+  JavascriptMode? javascriptMode;
+  List<String>? javascriptChannelNames;
 
-  bool hasNavigationDelegate;
-  bool debuggingEnabled;
-  String userAgent;
+  bool? hasNavigationDelegate;
+  bool? debuggingEnabled;
+  String? userAgent;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -887,34 +924,28 @@ class FakePlatformWebView {
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => currentPosition > 0);
-        break;
       case 'canGoForward':
         return Future<bool>.sync(() => currentPosition < history.length - 1);
-        break;
       case 'goBack':
         currentPosition = max(-1, currentPosition - 1);
         return Future<void>.sync(() {});
-        break;
       case 'goForward':
         currentPosition = min(history.length - 1, currentPosition + 1);
         return Future<void>.sync(() {});
       case 'reload':
         amountOfReloadsOnCurrentUrl++;
         return Future<void>.sync(() {});
-        break;
       case 'currentUrl':
-        return Future<String>.value(currentUrl);
-        break;
+        return Future<String?>.value(currentUrl);
       case 'evaluateJavascript':
         return Future<dynamic>.value(call.arguments);
-        break;
       case 'addJavascriptChannels':
         final List<String> channelNames = List<String>.from(call.arguments);
-        javascriptChannelNames.addAll(channelNames);
+        javascriptChannelNames!.addAll(channelNames);
         break;
       case 'removeJavascriptChannels':
         final List<String> channelNames = List<String>.from(call.arguments);
-        javascriptChannelNames
+        javascriptChannelNames!
             .removeWhere((String channel) => channelNames.contains(channel));
         break;
       case 'clearCache':
@@ -932,17 +963,14 @@ class FakePlatformWebView {
     };
     final ByteData data = codec
         .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(
-        channel.name, data, (ByteData data) {});
+    ServicesBinding.instance!.defaultBinaryMessenger
+        .handlePlatformMessage(channel.name, data, (ByteData? data) {});
   }
 
   // Fakes a main frame navigation that was initiated by the webview, e.g when
   // the user clicks a link in the currently loaded page.
   void fakeNavigate(String url) {
-    if (!hasNavigationDelegate) {
+    if (!hasNavigationDelegate!) {
       print('no navigation delegate');
       _loadUrl(url);
       return;
@@ -954,15 +982,28 @@ class FakePlatformWebView {
     };
     final ByteData data =
         codec.encodeMethodCall(MethodCall('navigationRequest', arguments));
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(channel.name, data, (ByteData data) {
-      final bool allow = codec.decodeEnvelope(data);
+    ServicesBinding.instance!.defaultBinaryMessenger
+        .handlePlatformMessage(channel.name, data, (ByteData? data) {
+      final bool allow = codec.decodeEnvelope(data!);
       if (allow) {
         _loadUrl(url);
       }
     });
+  }
+
+  void fakeOnPageStartedCallback() {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+
+    final ByteData data = codec.encodeMethodCall(MethodCall(
+      'onPageStarted',
+      <dynamic, dynamic>{'url': currentUrl},
+    ));
+
+    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
+      channel.name,
+      data,
+      (ByteData? data) {},
+    );
   }
 
   void fakeOnPageFinishedCallback() {
@@ -973,17 +1014,14 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
-    // TODO(hterkelsen): Remove this when defaultBinaryMessages is in stable.
-    // https://github.com/flutter/flutter/issues/33446
-    // ignore: deprecated_member_use
-    BinaryMessages.handlePlatformMessage(
+    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
       channel.name,
       data,
-      (ByteData data) {},
+      (ByteData? data) {},
     );
   }
 
-  void _loadUrl(String url) {
+  void _loadUrl(String? url) {
     history = history.sublist(0, currentPosition + 1);
     history.add(url);
     currentPosition++;
@@ -992,13 +1030,13 @@ class FakePlatformWebView {
 }
 
 class _FakePlatformViewsController {
-  FakePlatformWebView lastCreatedView;
+  FakePlatformWebView? lastCreatedView;
 
   Future<dynamic> fakePlatformViewsMethodHandler(MethodCall call) {
     switch (call.method) {
       case 'create':
         final Map<dynamic, dynamic> args = call.arguments;
-        final Map<dynamic, dynamic> params = _decodeParams(args['params']);
+        final Map<dynamic, dynamic> params = _decodeParams(args['params'])!;
         lastCreatedView = FakePlatformWebView(
           args['id'],
           params,
@@ -1014,7 +1052,7 @@ class _FakePlatformViewsController {
   }
 }
 
-Map<dynamic, dynamic> _decodeParams(Uint8List paramsMessage) {
+Map<dynamic, dynamic>? _decodeParams(Uint8List paramsMessage) {
   final ByteBuffer buffer = paramsMessage.buffer;
   final ByteData messageBytes = buffer.asByteData(
     paramsMessage.offsetInBytes,
@@ -1045,9 +1083,8 @@ class _FakeCookieManager {
         return Future<bool>.sync(() {
           return hadCookies;
         });
-        break;
     }
-    return Future<bool>.sync(() => null);
+    return Future<bool>.sync(() => true);
   }
 
   void reset() {
@@ -1056,26 +1093,26 @@ class _FakeCookieManager {
 }
 
 class MyWebViewPlatform implements WebViewPlatform {
-  MyWebViewPlatformController lastPlatformBuilt;
+  MyWebViewPlatformController? lastPlatformBuilt;
 
   @override
   Widget build({
-    BuildContext context,
-    CreationParams creationParams,
-    @required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
-    @required WebViewPlatformCreatedCallback onWebViewPlatformCreated,
-    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+    BuildContext? context,
+    CreationParams? creationParams,
+    required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+    WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
   }) {
     assert(onWebViewPlatformCreated != null);
     lastPlatformBuilt = MyWebViewPlatformController(
         creationParams, gestureRecognizers, webViewPlatformCallbacksHandler);
-    onWebViewPlatformCreated(lastPlatformBuilt);
+    onWebViewPlatformCreated!(lastPlatformBuilt);
     return Container();
   }
 
   @override
   Future<bool> clearCookies() {
-    return Future<bool>.sync(() => null);
+    return Future<bool>.sync(() => true);
   }
 }
 
@@ -1084,25 +1121,24 @@ class MyWebViewPlatformController extends WebViewPlatformController {
       WebViewPlatformCallbacksHandler platformHandler)
       : super(platformHandler);
 
-  CreationParams creationParams;
-  Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+  CreationParams? creationParams;
+  Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
 
-  String lastUrlLoaded;
-  Map<String, String> lastRequestHeaders;
+  String? lastUrlLoaded;
+  Map<String, String>? lastRequestHeaders;
 
   @override
-  Future<void> loadUrl(String url, Map<String, String> headers) {
+  Future<void> loadUrl(String url, Map<String, String>? headers) async {
     equals(1, 1);
     lastUrlLoaded = url;
     lastRequestHeaders = headers;
-    return null;
   }
 }
 
 class MatchesWebSettings extends Matcher {
   MatchesWebSettings(this._webSettings);
 
-  final WebSettings _webSettings;
+  final WebSettings? _webSettings;
 
   @override
   Description describe(Description description) =>
@@ -1111,11 +1147,13 @@ class MatchesWebSettings extends Matcher {
   @override
   bool matches(
       covariant WebSettings webSettings, Map<dynamic, dynamic> matchState) {
-    return _webSettings.javascriptMode == webSettings.javascriptMode &&
-        _webSettings.hasNavigationDelegate ==
+    return _webSettings!.javascriptMode == webSettings.javascriptMode &&
+        _webSettings!.hasNavigationDelegate ==
             webSettings.hasNavigationDelegate &&
-        _webSettings.debuggingEnabled == webSettings.debuggingEnabled &&
-        _webSettings.userAgent == webSettings.userAgent;
+        _webSettings!.debuggingEnabled == webSettings.debuggingEnabled &&
+        _webSettings!.gestureNavigationEnabled ==
+            webSettings.gestureNavigationEnabled &&
+        _webSettings!.userAgent == webSettings.userAgent;
   }
 }
 
@@ -1133,7 +1171,7 @@ class MatchesCreationParams extends Matcher {
       Map<dynamic, dynamic> matchState) {
     return _creationParams.initialUrl == creationParams.initialUrl &&
         MatchesWebSettings(_creationParams.webSettings)
-            .matches(creationParams.webSettings, matchState) &&
+            .matches(creationParams.webSettings!, matchState) &&
         orderedEquals(_creationParams.javascriptChannelNames)
             .matches(creationParams.javascriptChannelNames, matchState);
   }

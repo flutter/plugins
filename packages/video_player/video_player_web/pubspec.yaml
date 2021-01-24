@@ -1,0 +1,33 @@
+name: video_player_web
+description: Web platform implementation of video_player.
+homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player_web
+# 0.1.y+z is compatible with 1.0.0, if you land a breaking change bump
+# the version to 2.0.0.
+# See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
+version: 2.0.0-nullsafety.2
+
+flutter:
+  plugin:
+    platforms:
+      web:
+        pluginClass: VideoPlayerPlugin
+        fileName: video_player_web.dart
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  meta: ^1.3.0-nullsafety.3
+  video_player_platform_interface: ^3.0.0-nullsafety.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  video_player:
+    path: ../video_player
+  pedantic: ^1.10.0-nullsafety.1
+
+environment:
+  sdk: ">=2.12.0-0 <3.0.0"
+  flutter: ">=1.12.8"

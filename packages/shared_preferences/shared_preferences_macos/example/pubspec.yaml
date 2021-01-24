@@ -1,0 +1,23 @@
+name: shared_preferences_example
+description: Demonstrates how to use the shared_preferences plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: any
+  shared_preferences_macos:
+    path: ../
+
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  integration_test:
+    path: ../../../integration_test
+  pedantic: ^1.8.0
+
+flutter:
+  uses-material-design: true
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.12.8 <2.0.0"
