@@ -37,6 +37,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "path_provider_macos"
   "path_provider_platform_interface"
   "path_provider_web"
+  "path_provider_windows"
   "plugin_platform_interface"
   "shared_preferences_linux"
   "shared_preferences_macos"
