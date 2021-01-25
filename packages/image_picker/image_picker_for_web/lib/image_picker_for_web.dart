@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:html' as html;
+import 'dart:math' as math;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:meta/meta.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:meta/meta.dart';
 
 final String _kImagePickerInputsDomId = '__image_picker_web-file-input';
 final String _kAcceptImageMimeType = 'image/*';
@@ -45,7 +46,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       capture: capture,
     );
 
-    if (maxWidth != null && maxHeight != null && imageQuality != null) {
+    if (maxWidth != null && maxHeight != null) {
       return _resizeImage(pickedFile.path, maxWidth, maxHeight, imageQuality);
     } else {
       return pickedFile;
@@ -68,21 +69,34 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     img.onLoad.listen((event) {
       final canvas = html.CanvasElement();
       final ctx = canvas.context2D;
-      double ratio = 1;
 
-      if (img.width > img.height) {
-        if (img.width > maxWidth) ratio = maxWidth / img.width;
-      } else if (img.height > maxWidth) {
-        ratio = maxWidth / img.height;
-      }
-      if (img.width > img.height) {
-        if (img.width < maxHeight) ratio = maxHeight / img.width;
-      } else if (img.height < maxHeight) {
-        ratio = maxHeight / img.height;
+      var width = math.min(img.width, maxWidth);
+      var height = math.min(img.height, maxHeight);
+
+      if (!_isImageQualityValid(imageQuality)) {
+        imageQuality = 100;
       }
 
-      canvas.height = (img.height * ratio).floor();
-      canvas.width = (img.width * ratio).floor();
+      final shouldDownscale = maxWidth < img.width || maxHeight < img.height;
+      if (shouldDownscale) {
+        final downscaledWidth = (height / img.height) * img.width;
+        final downscaledHeight = (width / img.width) * img.height;
+
+        if (width < height) {
+          height = downscaledHeight;
+        } else if (height < width) {
+          width = downscaledWidth;
+        } else {
+          if (img.width < img.height) {
+            width = downscaledWidth;
+          } else if (img.height < img.width) {
+            height = downscaledHeight;
+          }
+        }
+      }
+
+      canvas.height = height.floor();
+      canvas.width = width.floor();
 
       // Draw the image to canvas and resize
       ctx.drawImageScaled(img, 0, 0, canvas.width, canvas.height);
@@ -179,6 +193,10 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     // "input" gets re-created in the DOM every time the user needs to
     // pick a file.
     return _completer.future;
+  }
+
+  static bool _isImageQualityValid(int imageQuality) {
+    return imageQuality != null && imageQuality > 0 && imageQuality < 100;
   }
 
   /// Initializes a DOM container where we can host input elements.
