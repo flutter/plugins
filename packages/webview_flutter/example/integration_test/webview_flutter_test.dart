@@ -144,7 +144,7 @@ void main() {
     await pageLoaded.future;
 
     expect(messagesReceived, isEmpty);
-    await controller.evaluateJavascript('Echo.postMessage("hello");');
+    await controller.evaluateJavascript('Echo.postMessage("hello");1;');
     expect(messagesReceived, equals(<String>['hello']));
   });
 

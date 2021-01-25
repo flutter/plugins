@@ -47,22 +47,22 @@ BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
 # otherwise it gets treated as a single argument.
 PLUGIN_SHARDING=($PLUGIN_SHARDING)
 
-if [[ "${BRANCH_NAME}" == "master" ]]; then
+# if [[ "${BRANCH_NAME}" == "master" ]]; then
   echo "Running for all packages"
-  (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
-else
-  # Sets CHANGED_PACKAGES
-  check_changed_packages
+  (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" ${PLUGIN_SHARDING[@]})
+# else
+#   # Sets CHANGED_PACKAGES
+#   check_changed_packages
 
-  if [[ "$CHANGED_PACKAGES" == "" ]]; then
-    echo "No changes detected in packages."
-    echo "Running for all packages"
-    (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
-  else
-    echo running "${ACTIONS[@]}"
-    (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
-    echo "Running version check for changed packages"
-    # TODO(egarciad): Enable this check once in master.
-    # (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
-  fi
-fi
+#   if [[ "$CHANGED_PACKAGES" == "" ]]; then
+#     echo "No changes detected in packages."
+#     echo "Running for all packages"
+#     (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
+#   else
+#     echo running "${ACTIONS[@]}"
+#     (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
+#     echo "Running version check for changed packages"
+#     # TODO(egarciad): Enable this check once in master.
+#     # (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
+#   fi
+# fi
