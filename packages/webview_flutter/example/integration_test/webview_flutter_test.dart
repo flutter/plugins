@@ -144,6 +144,10 @@ void main() {
     await pageLoaded.future;
 
     expect(messagesReceived, isEmpty);
+    // Append a return value "1" in the end will prevent an iOS platform exception.
+    // See: https://github.com/flutter/flutter/issues/66318#issuecomment-701105380
+    // TODO(cyanglaz): remove the workaround "1" in the end when the below issue is fixed.
+    // https://github.com/flutter/flutter/issues/66318
     await controller.evaluateJavascript('Echo.postMessage("hello");1;');
     expect(messagesReceived, equals(<String>['hello']));
   });
