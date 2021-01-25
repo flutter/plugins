@@ -210,6 +210,32 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   _enableAudio = enableAudio;
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
+    
+    
+    
+    BOOL test =  [self isBluetoothHeadsetConnected];
+    NSLog(test ? @"bluetooth connected" : @"bluetooth disconnected");
+    if(test) {
+        self.captureSession.usesApplicationAudioSession = true;
+        self.captureSession.automaticallyConfiguresApplicationAudioSession = false;
+        if (@available(iOS 10.0, *)) {
+            [[AVAudioSession sharedInstance]
+             setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetoothA2DP error:nil];
+        } else {
+            // Fallback on earlier versions
+            [[AVAudioSession sharedInstance]
+             setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
+        }
+    } else {
+        [AVAudioSession sharedInstance];
+    }
+    
+    [[AVAudioSession sharedInstance] setActive: YES error:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(routeChange:)
+                                                 name:AVAudioSessionRouteChangeNotification
+                                               object:nil];
+    
 
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
@@ -260,6 +286,49 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [self setCaptureSessionPreset:_resolutionPreset];
   return self;
 }
+
+- (void)routeChange:(NSNotification*)notification {
+
+NSDictionary *interuptionDict = notification.userInfo;
+
+NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+
+switch (routeChangeReason) {
+    case AVAudioSessionRouteChangeReasonUnknown:
+        NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonUnknown");
+        break;
+
+    case AVAudioSessionRouteChangeReasonNewDeviceAvailable:
+        // a headset was added or removed
+        NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonNewDeviceAvailable");
+        break;
+
+    case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
+        // a headset was added or removed
+        NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonOldDeviceUnavailable");
+        break;
+
+    case AVAudioSessionRouteChangeReasonCategoryChange:
+        // called at start - also when other audio wants to play
+        NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonCategoryChange");//AVAudioSessionRouteChangeReasonCategoryChange
+        break;
+
+    case AVAudioSessionRouteChangeReasonOverride:
+        NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonOverride");
+        break;
+
+    case AVAudioSessionRouteChangeReasonWakeFromSleep:
+        NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonWakeFromSleep");
+        break;
+
+    case AVAudioSessionRouteChangeReasonNoSuitableRouteForCategory:
+        NSLog(@"routeChangeReason : AVAudioSessionRouteChangeReasonNoSuitableRouteForCategory");
+        break;
+
+    default:
+        break;
+} }
+
 
 - (void)start {
   [_captureSession startRunning];
@@ -562,6 +631,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   for (AVCaptureOutput *output in [_captureSession outputs]) {
     [_captureSession removeOutput:output];
   }
+    NSLog(@"Audio session stop");
+  [[AVAudioSession sharedInstance] setActive:NO error:nil];
 }
 
 - (void)dealloc {
@@ -669,6 +740,22 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     _eventSink(
         @{@"event" : @"error", @"errorDescription" : @"Images from camera are not streaming!"});
   }
+}
+
+
+
+- (BOOL)isBluetoothHeadsetConnected {
+    
+    BOOL available = NO;
+    AVAudioSessionRouteDescription* route = [[AVAudioSession sharedInstance] currentRoute];
+    for (AVAudioSessionPortDescription* desc in [route outputs]) {
+        NSLog(@"portType %@",desc);
+        if ([[desc portType] isEqualToString:@"BluetoothA2DPOutput"])
+            available = YES;
+            break;
+    }
+    return available;
+
 }
 
 - (BOOL)setupWriterForPath:(NSString *)path {
