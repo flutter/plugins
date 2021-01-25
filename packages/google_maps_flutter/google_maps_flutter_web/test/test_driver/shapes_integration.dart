@@ -245,6 +245,39 @@ void main() {
 
       expect(geometry.poly.containsLocation(pointInHole, polygon), false);
     });
+
+    testWidgets('Hole Path gets reversed to display correctly',
+        (WidgetTester tester) async {
+      final polygons = {
+        Polygon(
+          polygonId: PolygonId('BermudaTriangle'),
+          points: [
+            LatLng(25.774, -80.19),
+            LatLng(18.466, -66.118),
+            LatLng(32.321, -64.757),
+          ],
+          holes: [
+            [
+              LatLng(27.339, -66.668),
+              LatLng(29.57, -67.514),
+              LatLng(28.745, -70.579),
+            ],
+          ],
+        ),
+      };
+
+      controller.addPolygons(polygons);
+
+      expect(
+          controller.polygons.values.first.polygon.paths.getAt(1).getAt(0).lat,
+          28.745);
+      expect(
+          controller.polygons.values.first.polygon.paths.getAt(1).getAt(1).lat,
+          29.57);
+      expect(
+          controller.polygons.values.first.polygon.paths.getAt(1).getAt(2).lat,
+          27.339);
+    });
   });
 
   group('PolylinesController', () {
