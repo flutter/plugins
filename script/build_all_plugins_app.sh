@@ -19,10 +19,12 @@ source "$SCRIPT_DIR/nnbd_plugins.sh"
 check_changed_packages > /dev/null
 
 readonly EXCLUDED_PLUGINS_LIST=(
+  "camera_platform_interface"
   "connectivity_macos"
   "connectivity_platform_interface"
   "connectivity_web"
   "extension_google_sign_in_as_googleapis_auth"
+  "file_selector_platform_interface"
   "flutter_plugin_android_lifecycle"
   "google_maps_flutter_platform_interface"
   "google_maps_flutter_web"
