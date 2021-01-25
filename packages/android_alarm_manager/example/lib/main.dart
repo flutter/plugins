@@ -131,7 +131,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
                 ),
               ],
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text(
                 'Schedule OneShot Alarm',
               ),

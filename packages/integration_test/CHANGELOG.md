@@ -1,3 +1,19 @@
+## 1.0.2
+
+* Update Flutter SDK constraint.
+
+## 1.0.1
+
+* Remove usages of deprecated `List` constructor.
+
+## 1.0.0
+
+* Public stable release of plugin.
+
+## 0.9.3
+
+* Update README to mention that only `testWidgets` is supported for declaring tests.
+
 ## 0.9.2+2
 
 * Broaden the constraint on vm_service.

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(mvanbeusekom): Remove once Mockito is migrated to null safety.
+// @dart = 2.9
 import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,6 +44,10 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       log.add(methodCall);
+
+      // Return null explicitly instead of relying on the implicit null
+      // returned by the method channel if no return statement is specified.
+      return null;
     });
 
     final MethodChannelUrlLauncher launcher = MethodChannelUrlLauncher();
@@ -60,6 +66,12 @@ void main() {
           })
         ],
       );
+    });
+
+    test('canLaunch should return false if platform returns null', () async {
+      final canLaunch = await launcher.canLaunch('http://example.com/');
+
+      expect(canLaunch, false);
     });
 
     test('launch', () async {
@@ -268,6 +280,20 @@ void main() {
           })
         ],
       );
+    });
+
+    test('launch should return false if platform returns null', () async {
+      final launched = await launcher.launch(
+        'http://example.com/',
+        useSafariVC: true,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        headers: const <String, String>{},
+      );
+
+      expect(launched, false);
     });
 
     test('closeWebView default behavior', () async {

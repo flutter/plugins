@@ -17,7 +17,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// ```dart
 /// Link(
 ///   uri: Uri.parse('https://flutter.dev'),
-///   builder: (BuildContext context, FollowLink followLink) => RaisedButton(
+///   builder: (BuildContext context, FollowLink followLink) => ElevatedButton(
 ///     onPressed: followLink,
 ///     // ... other properties here ...
 ///   )},
@@ -29,7 +29,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// ```dart
 /// Link(
 ///   uri: Uri.parse('/home'),
-///   builder: (BuildContext context, FollowLink followLink) => RaisedButton(
+///   builder: (BuildContext context, FollowLink followLink) => ElevatedButton(
 ///     onPressed: followLink,
 ///     // ... other properties here ...
 ///   )},
@@ -40,7 +40,7 @@ class Link extends StatelessWidget implements LinkInfo {
   final LinkWidgetBuilder builder;
 
   /// The destination that this link leads to.
-  final Uri uri;
+  final Uri? uri;
 
   /// The target indicating where to open the link.
   final LinkTarget target;
@@ -51,12 +51,11 @@ class Link extends StatelessWidget implements LinkInfo {
   /// Creates a widget that renders a real link on the web, and uses WebViews in
   /// native platforms to open links.
   Link({
-    Key key,
-    @required this.uri,
-    LinkTarget target,
-    @required this.builder,
-  })  : target = target ?? LinkTarget.defaultTarget,
-        super(key: key);
+    Key? key,
+    required this.uri,
+    this.target = LinkTarget.defaultTarget,
+    required this.builder,
+  }) : super(key: key);
 
   LinkDelegate get _effectiveDelegate {
     return UrlLauncherPlatform.instance.linkDelegate ??
@@ -90,16 +89,17 @@ class DefaultLinkDelegate extends StatelessWidget {
   bool get _useWebView {
     if (link.target == LinkTarget.self) return true;
     if (link.target == LinkTarget.blank) return false;
-    return null;
+    return false;
   }
 
   Future<void> _followLink(BuildContext context) async {
-    if (!link.uri.hasScheme) {
+    if (!link.uri!.hasScheme) {
       // A uri that doesn't have a scheme is an internal route name. In this
       // case, we push it via Flutter's navigation system instead of letting the
       // browser handle it.
       final String routeName = link.uri.toString();
-      return pushRouteNameToFramework(context, routeName);
+      await pushRouteNameToFramework(context, routeName);
+      return;
     }
 
     // At this point, we know that the link is external. So we use the `launch`
@@ -119,7 +119,6 @@ class DefaultLinkDelegate extends StatelessWidget {
         context: ErrorDescription('during launching a link'),
       ));
     }
-    return Future<void>.value(null);
   }
 
   @override

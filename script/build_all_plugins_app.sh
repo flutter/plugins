@@ -1,13 +1,21 @@
 #!/bin/bash
 
+#  Usage:
+#
+#   ./script/build_all_plugins_app.sh apk
+#   ./script/build_all_plugins_app.sh ios
+
 # This script builds the app in flutter/plugins/example/all_plugins to make
 # sure all first party plugins can be compiled together.
 
 # So that users can run this script from anywhere and it will work as expected.
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
+
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
+source "$SCRIPT_DIR/nnbd_plugins.sh"
+
 check_changed_packages > /dev/null
 
 readonly EXCLUDED_PLUGINS_LIST=(
@@ -21,6 +29,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "google_sign_in_platform_interface"
   "google_sign_in_web"
   "image_picker_platform_interface"
+  "local_auth" # flutter_plugin_android_lifecycle conflict
   "instrumentation_adapter"
   "path_provider_linux"
   "path_provider_macos"
@@ -42,7 +51,19 @@ readonly EXCLUDED_PLUGINS_LIST=(
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
 
-(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude $EXCLUDED)
+ALL_EXCLUDED=($EXCLUDED)
+# Exclude nnbd plugins from stable.
+if [ "$CHANNEL" == "stable" ]; then
+  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_STABLE")
+fi
+# Exclude non-nnbd plugins from master.
+if [ "$CHANNEL" != "stable" ]; then
+  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_MASTER")
+fi
+
+echo "Excluding the following plugins: $ALL_EXCLUDED"
+
+(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
 
 function error() {
   echo "$@" 1>&2

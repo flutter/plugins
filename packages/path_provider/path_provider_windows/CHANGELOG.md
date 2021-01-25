@@ -1,3 +1,11 @@
+## 0.1.0-nullsafety
+
+* Migrate to null safety
+
+## 0.0.4+4
+
+* Update Flutter SDK constraint.
+
 ## 0.0.4+3
 
 * Remove unused `test` dependency.

@@ -12,17 +12,17 @@ description: Reusable base class for Flutter plugin platform interfaces.
 # be done when absolutely necessary and after the ecosystem has already migrated to 1.X.Y version
 # that is forward compatible with 2.0.0 (ideally the ecosystem have migrated to depend on:
 # `plugin_platform_interface: >=1.X.Y <3.0.0`).
-version: 1.0.3
+version: 1.1.0-nullsafety.2
 
 repository: https://github.com/flutter/plugins/tree/master/packages/plugin_platform_interface
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
 
 dependencies:
-  meta: ^1.0.0
+  meta: ^1.3.0-nullsafety.3
 
 dev_dependencies:
-  mockito: ^4.1.1
-  test: ^1.9.4
-  pedantic: ^1.8.0
+  mockito: ^5.0.0-nullsafety.2
+  test: ^1.10.0-nullsafety.1
+  pedantic: ^1.10.0-nullsafety.1
