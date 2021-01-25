@@ -1,7 +1,9 @@
 ## 0.3.0-nullsafety
 
 * Migrated package to null-safety.
-* **breaking change** According to our unit tests, the API should be backwards-compatible. Please report any issues you may encounter so they can be documented here!
+* **breaking change** According to our unit tests, the API should be backwards-compatible. However, some changes were made:
+ * Web: `lastModified` returns the epoch time as a default value, to maintain the `Future<DateTime>` return type.
+ 
 
 ## 0.2.0
 

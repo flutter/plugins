@@ -15,12 +15,12 @@ import './base.dart';
 ///
 /// It wraps the bytes of a selected file.
 class XFile extends XFileBase {
-  late String? path;
+  late String path;
 
   final String? mimeType;
   final Uint8List? _data;
   final int? _length;
-  final String? name;
+  final String name;
   final DateTime? _lastModified;
 
   late Element _target;
@@ -39,7 +39,7 @@ class XFile extends XFileBase {
   XFile(
     this.path, {
     this.mimeType,
-    this.name,
+    String? name,
     int? length,
     Uint8List? bytes,
     DateTime? lastModified,
@@ -47,33 +47,35 @@ class XFile extends XFileBase {
   })  : _data = bytes,
         _length = length,
         _overrides = overrides,
-        _lastModified = lastModified,
+        _lastModified = lastModified ?? DateTime.fromMillisecondsSinceEpoch(0),
+        name = name ?? '',
         super(path);
 
   /// Construct an CrossFile from its data
   XFile.fromData(
     Uint8List bytes, {
     this.mimeType,
-    this.name,
+    String? name,
     int? length,
     DateTime? lastModified,
-    this.path,
+    String? path,
     @visibleForTesting CrossFileTestOverrides? overrides,
   })  : _data = bytes,
         _length = length,
         _overrides = overrides,
-        _lastModified = lastModified,
+        _lastModified = lastModified ?? DateTime.fromMillisecondsSinceEpoch(0),
+        name = name ?? '',
         super(path) {
     if (path == null) {
       final blob = (mimeType == null) ? Blob([bytes]) : Blob([bytes], mimeType);
       this.path = Url.createObjectUrl(blob);
+    } else {
+      this.path = path;
     }
   }
 
   @override
-  Future<DateTime> lastModified() async {
-    return Future.value(_lastModified);
-  }
+  Future<DateTime> lastModified() async => Future.value(_lastModified);
 
   Future<Uint8List> get _bytes async {
     if (_data != null) {
@@ -82,16 +84,13 @@ class XFile extends XFileBase {
 
     // We can force 'response' to be a byte buffer by passing responseType:
     ByteBuffer? response =
-        (await HttpRequest.request(path!, responseType: 'arraybuffer'))
-            .response;
+        (await HttpRequest.request(path, responseType: 'arraybuffer')).response;
 
     return response?.asUint8List() ?? Uint8List(0);
   }
 
   @override
-  Future<int> length() async {
-    return _length ?? (await _bytes).length;
-  }
+  Future<int> length() async => _length ?? (await _bytes).length;
 
   @override
   Future<String> readAsString({Encoding encoding = utf8}) async {
@@ -99,9 +98,7 @@ class XFile extends XFileBase {
   }
 
   @override
-  Future<Uint8List> readAsBytes() async {
-    return Future.value(await _bytes);
-  }
+  Future<Uint8List> readAsBytes() async => Future.value(await _bytes);
 
   @override
   Stream<Uint8List> openRead([int? start, int? end]) async* {
@@ -118,9 +115,8 @@ class XFile extends XFileBase {
     // Create an <a> tag with the appropriate download attributes and click it
     // May be overridden with CrossFileTestOverrides
     final AnchorElement element = _hasTestOverrides
-        ? _overrides!.createAnchorElement(this.path!, this.name ?? '')
-            as AnchorElement
-        : createAnchorElement(this.path!, this.name ?? '');
+        ? _overrides!.createAnchorElement(this.path, this.name) as AnchorElement
+        : createAnchorElement(this.path, this.name);
 
     // Clear the children in our container so we can add an element to click
     _target.children.clear();
