@@ -67,41 +67,43 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     });
 
     img.onLoad.listen((event) {
-      final canvas = html.CanvasElement();
-      final ctx = canvas.context2D;
+      if (img.width > 1 && img.height > 1) {
+        final canvas = html.CanvasElement();
+        final ctx = canvas.context2D;
 
-      var width = math.min(img.width, maxWidth);
-      var height = math.min(img.height, maxHeight);
+        var width = math.min(img.width, maxWidth);
+        var height = math.min(img.height, maxHeight);
 
-      if (!_isImageQualityValid(imageQuality)) {
-        imageQuality = 100;
-      }
+        if (!_isImageQualityValid(imageQuality)) {
+          imageQuality = 100;
+        }
 
-      final shouldDownscale = maxWidth < img.width || maxHeight < img.height;
-      if (shouldDownscale) {
-        final downscaledWidth = (height / img.height) * img.width;
-        final downscaledHeight = (width / img.width) * img.height;
+        final shouldDownscale = maxWidth < img.width || maxHeight < img.height;
+        if (shouldDownscale) {
+          final downscaledWidth = (height / img.height) * img.width;
+          final downscaledHeight = (width / img.width) * img.height;
 
-        if (width < height) {
-          height = downscaledHeight;
-        } else if (height < width) {
-          width = downscaledWidth;
-        } else {
-          if (img.width < img.height) {
-            width = downscaledWidth;
-          } else if (img.height < img.width) {
+          if (width < height) {
             height = downscaledHeight;
+          } else if (height < width) {
+            width = downscaledWidth;
+          } else {
+            if (img.width < img.height) {
+              width = downscaledWidth;
+            } else if (img.height < img.width) {
+              height = downscaledHeight;
+            }
           }
         }
+
+        canvas.height = height.floor();
+        canvas.width = width.floor();
+
+        // Draw the image to canvas and resize
+        ctx.drawImageScaled(img, 0, 0, canvas.width, canvas.height);
+        final base64 = canvas.toDataUrl('image/png', imageQuality / 100);
+        completer.complete(PickedFile(base64));
       }
-
-      canvas.height = height.floor();
-      canvas.width = width.floor();
-
-      // Draw the image to canvas and resize
-      ctx.drawImageScaled(img, 0, 0, canvas.width, canvas.height);
-      final base64 = canvas.toDataUrl('image/png', imageQuality / 100);
-      completer.complete(PickedFile(base64));
     });
 
     img.src = src;
