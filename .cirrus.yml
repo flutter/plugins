@@ -117,7 +117,6 @@ task:
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
   upgrade_script:
-    - sudo gem install cocoapods
     - flutter channel stable
     - flutter upgrade
     - flutter channel master
@@ -133,6 +132,7 @@ task:
         - flutter channel master
         - ./script/incremental_build.sh build-examples --linux
         - xvfb-run ./script/incremental_build.sh drive-examples --linux
+
 task:
   # Xcode 12 task
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
@@ -194,6 +194,7 @@ task:
   osx_instance:
     image: catalina-xcode-11.3.1-flutter
   upgrade_script:
+    - sudo gem install cocoapods
     - flutter channel stable
     - flutter upgrade
     - flutter channel master
