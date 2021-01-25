@@ -104,6 +104,7 @@ static const int SOURCE_GALLERY = 1;
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
     if (@available(iOS 11.0, *)) {
+      NSLog(@"enable passthrough mode in video-picking mode.");
       _imagePickerController.videoExportPreset = AVAssetExportPresetPassthrough;
     }
     self.result = result;
@@ -258,7 +259,18 @@ static const int SOURCE_GALLERY = 1;
 
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
-  NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+  
+  NSString * mediaType = info[ UIImagePickerControllerMediaType];
+  NSURL *videoURL = nil;
+  
+  if (CFStringCompare ((__bridge CFStringRef) mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
+    videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+    
+    if (videoURL == nil) {
+      videoURL = (NSURL *) info[UIImagePickerControllerReferenceURL];
+    }
+    NSLog(@"has video URL? %@", videoURL);
+  }
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
   // The method dismissViewControllerAnimated does not immediately prevent
   // further didFinishPickingMediaWithInfo invocations. A nil check is necessary
@@ -268,27 +280,82 @@ static const int SOURCE_GALLERY = 1;
     return;
   }
   if (videoURL != nil) {
-    if (@available(iOS 13.0, *)) {
+    if (@available(iOS 11.0, *)) {
+      NSLog(@"will try to copy resource at asset URL: %@", videoURL);
       NSString *fileName = [videoURL lastPathComponent];
       NSURL *destination =
           [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+      NSLog(@"copy detination: %@", destination);
 
+      // two different code paths for get accessible file URL, even OS version is the same.
+      // the first half is for newer devices(tested with Xs, 11 and 12.
+      // the second half is for older devices(tested with 7).
       if ([[NSFileManager defaultManager] isReadableFileAtPath:[videoURL path]]) {
         NSError *error;
         if (![[videoURL path] isEqualToString:[destination path]]) {
           [[NSFileManager defaultManager] copyItemAtURL:videoURL toURL:destination error:&error];
 
           if (error) {
+            NSLog(@"failed to copy resource, error: %@", error);
             self.result([FlutterError errorWithCode:@"flutter_image_picker_copy_video_error"
                                             message:@"Could not cache the video file."
                                             details:nil]);
             self.result = nil;
             return;
+          } else {
+            NSLog(@"ok with copying resource, destination: %@", destination);
           }
+        } else {
+            NSLog(@"no need to copy resource, destination = srouce.");
         }
         videoURL = destination;
+        
+        NSNumber *fileSizeValue = nil;
+        NSError *fileSizeError = nil;
+        [videoURL getResourceValue:&fileSizeValue
+                           forKey:NSURLFileSizeKey
+                            error:&fileSizeError];
+        if (fileSizeValue) {
+            NSLog(@"file size for %@ is %@", videoURL, fileSizeValue);
+        }
+        else {
+            NSLog(@"error getting size for url %@ error was %@", videoURL, fileSizeError);
+        }
+      } else {
+        NSLog(@"source not readable, using PhotoKit for acccesing: %@", destination);
+        
+        PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+        
+        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.version = PHVideoRequestOptionsVersionOriginal;
+        
+        __weak typeof(self) weakSelf = self;
+        [[PHImageManager defaultManager] requestAVAssetForVideo:originalAsset
+                                                        options:options
+                                                  resultHandler:^(AVAsset * _Nullable avasset,
+                                                                  AVAudioMix * _Nullable audioMix,
+                                                                  NSDictionary * _Nullable info)
+        {
+          NSError *error;
+          AVURLAsset *avAsset = (AVURLAsset*) avasset;
+          
+          [[NSFileManager defaultManager] removeItemAtURL:destination error:&error];
+          // Write to documents folder
+          if ([[NSFileManager defaultManager] copyItemAtURL:avAsset.URL
+                                                     toURL:destination
+                                                     error:&error]) {
+            NSLog(@"successfully copy asset from PhotoKit correctly from %@ to %@", avAsset.URL, destination);
+            weakSelf.result(destination.path);
+            weakSelf.result = nil;
+          } else {
+            NSLog(@"copy asset from PhotoKit from %@ to %@ failed: %@", videoURL, destination, error);
+          }
+         }];
+        
+        return;
       }
     }
+    
     
     self.result(videoURL.path);
     self.result = nil;
