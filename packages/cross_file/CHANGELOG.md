@@ -2,8 +2,7 @@
 
 * Migrated package to null-safety.
 * **breaking change** According to our unit tests, the API should be backwards-compatible. However, some changes were made:
- * Web: `lastModified` returns the epoch time as a default value, to maintain the `Future<DateTime>` return type.
- 
+  * Web: `lastModified` returns the epoch time as a default value, to maintain the `Future<DateTime>` return type.
 
 ## 0.2.0
 
