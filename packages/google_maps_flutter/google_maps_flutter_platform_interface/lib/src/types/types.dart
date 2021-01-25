@@ -19,6 +19,9 @@ export 'polygon.dart';
 export 'polyline_updates.dart';
 export 'polyline.dart';
 export 'screen_coordinate.dart';
+export 'tile.dart';
+export 'tile_overlay.dart';
+export 'tile_provider.dart';
 export 'ui.dart';
 
 // Export the utils, they're used by the Widget
@@ -26,3 +29,4 @@ export 'utils/circle.dart';
 export 'utils/marker.dart';
 export 'utils/polygon.dart';
 export 'utils/polyline.dart';
+export 'utils/tile_overlay.dart';
