@@ -287,9 +287,14 @@ static const int SOURCE_GALLERY = 1;
           [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
       NSLog(@"copy detination: %@", destination);
 
-      // two different code paths for get accessible file URL, even OS version is the same.
-      // the first half is for newer devices(tested with Xs, 11 and 12.
-      // the second half is for older devices(tested with 7).
+      // Two different code paths exist for getting accessible real file path,
+      // even with the same OS version( on iOS 14.3).
+      //
+      // The first half is for newer devices(tested with iPhone Xs, 11 and 12),
+      // in which "videoURL" is prefixed with "file://".
+      //
+      // The second half is for older devices(tested with iPhone 7), in which
+      // "videoURL" is prefixed with "assets-library://".
       if ([[NSFileManager defaultManager] isReadableFileAtPath:[videoURL path]]) {
         NSError *error;
         if (![[videoURL path] isEqualToString:[destination path]]) {
@@ -306,21 +311,20 @@ static const int SOURCE_GALLERY = 1;
             NSLog(@"ok with copying resource, destination: %@", destination);
           }
         } else {
-            NSLog(@"no need to copy resource, destination = srouce.");
+          NSLog(@"no need to copy resource, destination = srouce.");
         }
         videoURL = destination;
         
-        NSNumber *fileSizeValue = nil;
-        NSError *fileSizeError = nil;
-        [videoURL getResourceValue:&fileSizeValue
-                           forKey:NSURLFileSizeKey
-                            error:&fileSizeError];
-        if (fileSizeValue) {
-            NSLog(@"file size for %@ is %@", videoURL, fileSizeValue);
-        }
-        else {
-            NSLog(@"error getting size for url %@ error was %@", videoURL, fileSizeError);
-        }
+//        NSNumber *fileSizeValue = nil;
+//        NSError *fileSizeError = nil;
+//        [videoURL getResourceValue:&fileSizeValue
+//                           forKey:NSURLFileSizeKey
+//                            error:&fileSizeError];
+//        if (fileSizeValue) {
+//            NSLog(@"file size for %@ is %@", videoURL, fileSizeValue);
+//        } else {
+//            NSLog(@"error getting size for url %@ error was %@", videoURL, fileSizeError);
+//        }
       } else {
         NSLog(@"source not readable, using PhotoKit for acccesing: %@", destination);
         
@@ -339,8 +343,9 @@ static const int SOURCE_GALLERY = 1;
           NSError *error;
           AVURLAsset *avAsset = (AVURLAsset*) avasset;
           
+          // Destination is a tmp file, reset/drop it before copy operation anyway.
           [[NSFileManager defaultManager] removeItemAtURL:destination error:&error];
-          // Write to documents folder
+          // Write to app tmp folder.
           if ([[NSFileManager defaultManager] copyItemAtURL:avAsset.URL
                                                      toURL:destination
                                                      error:&error]) {
@@ -350,12 +355,11 @@ static const int SOURCE_GALLERY = 1;
           } else {
             NSLog(@"copy asset from PhotoKit from %@ to %@ failed: %@", videoURL, destination, error);
           }
-         }];
+        }];
         
         return;
       }
     }
-    
     
     self.result(videoURL.path);
     self.result = nil;
