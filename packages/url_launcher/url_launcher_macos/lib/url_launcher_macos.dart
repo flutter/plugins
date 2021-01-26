@@ -5,5 +5,7 @@
 /// UrlLauncherMacOS provides the registerWith() method.
 class UrlLauncherMacOS {
   /// Binds the implementation to the interface.
-  static void registerWith() {}
+  static void registerWith() {
+    // todo
+  }
 }
