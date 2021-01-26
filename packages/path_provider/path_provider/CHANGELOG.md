@@ -1,6 +1,6 @@
 ## 1.6.28
 
-* Depend on null-safe uuid for tests.
+* Drop unused UUID dependency for tests.
 
 ## 1.6.27
 

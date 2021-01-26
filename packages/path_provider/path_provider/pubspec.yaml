@@ -33,7 +33,6 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  uuid: ^3.0.0-nullsafety.0
   pedantic: ^1.8.0
   mockito: ^4.1.1
   plugin_platform_interface: ^1.0.0
