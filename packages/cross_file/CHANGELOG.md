@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Prepare for breaking `package:http` change. 
+
 ## 0.2.0
 
 * **breaking change** Make sure the `saveTo` method returns a `Future` so it can be awaited and users are sure the file has been written to disk.

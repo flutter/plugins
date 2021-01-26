@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 import 'dart:convert';
+import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http show readBytes;
 import 'package:meta/meta.dart';
-import 'dart:html';
 
-import '../web_helpers/web_helpers.dart';
 import './base.dart';
+import '../web_helpers/web_helpers.dart';
 
 /// A CrossFile that works on web.
 ///
@@ -82,7 +82,7 @@ class XFile extends XFileBase {
     if (_data != null) {
       return Future.value(UnmodifiableUint8ListView(_data));
     }
-    return http.readBytes(path);
+    return http.readBytes(Uri.parse(path));
   }
 
   @override
