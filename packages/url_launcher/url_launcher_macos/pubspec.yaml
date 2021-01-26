@@ -3,13 +3,15 @@ description: macOS implementation of the url_launcher plugin.
 # 0.0.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.1.0-nullsafety.2
+version: 0.1.0-nullsafety.3
 homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_macos
 
 flutter:
   plugin:
+    implements: url_launcher
     platforms:
       macos:
+        dartPluginClass: UrlLauncherMacOS
         pluginClass: UrlLauncherPlugin
         fileName: url_launcher_macos.dart
 

@@ -1,3 +1,7 @@
+## 0.1.0-nullsafety.3
+
+* Fixes for Dart plugin registry.
+
 # 0.1.0-nullsafety.2
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.

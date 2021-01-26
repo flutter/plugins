@@ -1,12 +1,14 @@
 name: url_launcher_linux
 description: Linux implementation of the url_launcher plugin.
-version: 0.1.0-nullsafety.3
+version: 0.1.0-nullsafety.4
 homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_linux
 
 flutter:
   plugin:
+    implements: url_launcher
     platforms:
       linux:
+        dartPluginClass: UrlLauncherLinux
         pluginClass: UrlLauncherPlugin
 
 environment:

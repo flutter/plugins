@@ -1,3 +1,7 @@
+## 6.0.0-nullsafety.6
+
+* Fixes for Dart plugin registry.
+
 ## 6.0.0-nullsafety.5
 
 * Document that the web plugin is not endorsed in the `nullsafety` prerelease for now.
