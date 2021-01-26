@@ -534,7 +534,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               onChanged: controller != null && controller.value.isRecordingVideo
                   ? null
                   : onNewCameraSelected,
-                
             ),
           ),
         );
