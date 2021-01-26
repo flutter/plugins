@@ -498,8 +498,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)initialize:(FlutterError* __autoreleasing*)error {
-  // Allow audio playback when the Ring/Silent switch is set to silent
-  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord
+                                         error:nil];
 
   for (NSNumber* textureId in _players) {
     [_registry unregisterTexture:[textureId unsignedIntegerValue]];
@@ -592,11 +592,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (void)setMixWithOthers:(FLTMixWithOthersMessage*)input
                    error:(FlutterError* _Nullable __autoreleasing*)error {
   if ([input.mixWithOthers boolValue]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord
                                      withOptions:AVAudioSessionCategoryOptionMixWithOthers
                                            error:nil];
   } else {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord
+                                           error:nil];
   }
 }
 
