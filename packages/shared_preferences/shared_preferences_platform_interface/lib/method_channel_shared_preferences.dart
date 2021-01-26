@@ -18,39 +18,29 @@ const MethodChannel _kChannel =
 class MethodChannelSharedPreferencesStore
     extends SharedPreferencesStorePlatform {
   @override
-  Future<bool> remove(String key) {
-    return _invokeBoolMethod('remove', <String, dynamic>{
-      'key': key,
-    });
+  Future<bool> remove(String key) async {
+    return await _kChannel.invokeMethod<bool>(
+      'remove',
+      <String, dynamic>{'key': key},
+    ) as bool;
   }
 
   @override
-  Future<bool> setValue(String valueType, String key, Object value) {
-    return _invokeBoolMethod('set$valueType', <String, dynamic>{
-      'key': key,
-      'value': value,
-    });
-  }
-
-  Future<bool> _invokeBoolMethod(String method, Map<String, dynamic> params) {
-    return _kChannel
-        .invokeMethod<bool>(method, params)
-        // TODO(yjbanov): I copied this from the original
-        //                shared_preferences.dart implementation, but I
-        //                actually do not know why it's necessary to pipe the
-        //                result through an identity function.
-        //
-        //                Source: https://github.com/flutter/plugins/blob/3a87296a40a2624d200917d58f036baa9fb18df8/packages/shared_preferences/lib/shared_preferences.dart#L134
-        .then<bool>((dynamic result) => result);
+  Future<bool> setValue(String valueType, String key, Object value) async {
+    return await _kChannel.invokeMethod<bool>(
+      'set$valueType',
+      <String, dynamic>{'key': key, 'value': value},
+    ) as bool;
   }
 
   @override
-  Future<bool> clear() {
-    return _kChannel.invokeMethod<bool>('clear');
+  Future<bool> clear() async {
+    return await _kChannel.invokeMethod<bool>('clear') as bool;
   }
 
   @override
-  Future<Map<String, Object>> getAll() {
-    return _kChannel.invokeMapMethod<String, Object>('getAll');
+  Future<Map<String, Object>> getAll() async {
+    return await _kChannel.invokeMapMethod<String, Object>('getAll')
+        as Map<String, Object>;
   }
 }
