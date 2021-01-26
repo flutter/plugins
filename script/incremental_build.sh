@@ -46,7 +46,6 @@ BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
 # This has to be turned into a list and then split out to the command line,
 # otherwise it gets treated as a single argument.
 PLUGIN_SHARDING=($PLUGIN_SHARDING)
-(cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
 if [[ "${BRANCH_NAME}" == "master" ]]; then
   echo "Running for all packages"
   (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
