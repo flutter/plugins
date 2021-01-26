@@ -1,3 +1,7 @@
+## 1.0.2+1
+
+* Update vm_service constraint
+
 ## 1.0.2
 
 * Update Flutter SDK constraint.
