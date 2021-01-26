@@ -11,16 +11,6 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cross_file/cross_file.dart';
 
-// Please note that executing this test with command
-// `flutter test test/x_file_io_test.dart` will set the directory
-// to ./file_selector_platform_interface.
-//
-// This will cause our hello.txt file to be not be found. Please
-// execute this test with `flutter test` or change the path prefix
-// to ./test/assets/
-//
-// https://github.com/flutter/flutter/issues/20907
-
 final pathPrefix = './test/assets/';
 final path = pathPrefix + 'hello.txt';
 final String expectedStringContents = 'Hello, world!';
@@ -30,7 +20,14 @@ final String textFilePath = textFile.path;
 
 void main() {
   group('Create with a path', () {
-    final file = XFile(textFilePath);
+    XFile file;
+    if (Directory(textFilePath).existsSync()) {
+      file = XFile(textFilePath);
+    } else {
+      // TODO(cyanglaz): remove this alternative file location when https://github.com/flutter/flutter/commit/22f170042746ff253997236f6350ecb7403cf3b1
+      // lands on stable.
+      file = XFile(File('./assets/hello.txt').path);
+    }
 
     test('Can be read as a string', () async {
       expect(await file.readAsString(), equals(expectedStringContents));

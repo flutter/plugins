@@ -14,11 +14,18 @@ import 'package:image_picker_platform_interface/image_picker_platform_interface.
 final String expectedStringContents = 'Hello, world!';
 final Uint8List bytes = utf8.encode(expectedStringContents);
 final File textFile = File('./test/assets/hello.txt');
-final String textFilePath = textFile.path;
+String textFilePath = textFile.path;
 
 void main() {
   group('Create with an objectUrl', () {
-    final pickedFile = PickedFile(textFilePath);
+    PickedFile pickedFile;
+    if (Directory(textFilePath).existsSync()) {
+      pickedFile = PickedFile(textFilePath);
+    } else {
+      // TODO(cyanglaz): remove this alternative file location when https://github.com/flutter/flutter/commit/22f170042746ff253997236f6350ecb7403cf3b1
+      // lands on stable.
+      pickedFile = PickedFile(File('./assets/hello.txt').path);
+    }
 
     test('Can be read as a string', () async {
       expect(await pickedFile.readAsString(), equals(expectedStringContents));
