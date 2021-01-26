@@ -11,7 +11,8 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cross_file/cross_file.dart';
 
-final pathPrefix = './test/assets/';
+final pathPrefix =
+    Directory.current.path.endsWith('test') ? './assets/' : './test/assets/';
 final path = pathPrefix + 'hello.txt';
 final String expectedStringContents = 'Hello, world!';
 final Uint8List bytes = Uint8List.fromList(utf8.encode(expectedStringContents));
@@ -20,14 +21,7 @@ final String textFilePath = textFile.path;
 
 void main() {
   group('Create with a path', () {
-    XFile file;
-    if (Directory(textFilePath).existsSync()) {
-      file = XFile(textFilePath);
-    } else {
-      // TODO(cyanglaz): remove this alternative file location when https://github.com/flutter/flutter/commit/22f170042746ff253997236f6350ecb7403cf3b1
-      // lands on stable.
-      file = XFile(File('./assets/hello.txt').path);
-    }
+    final XFile file = XFile(textFilePath);
 
     test('Can be read as a string', () async {
       expect(await file.readAsString(), equals(expectedStringContents));
