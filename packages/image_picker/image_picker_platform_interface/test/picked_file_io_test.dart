@@ -13,7 +13,7 @@ import 'package:image_picker_platform_interface/image_picker_platform_interface.
 
 final String expectedStringContents = 'Hello, world!';
 final Uint8List bytes = utf8.encode(expectedStringContents);
-final File textFile = File('./assets/hello.txt');
+final File textFile = File('./test/assets/hello.txt');
 final String textFilePath = textFile.path;
 
 void main() {

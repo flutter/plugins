@@ -21,7 +21,7 @@ import 'package:cross_file/cross_file.dart';
 //
 // https://github.com/flutter/flutter/issues/20907
 
-final pathPrefix = './assets/';
+final pathPrefix = './test/assets/';
 final path = pathPrefix + 'hello.txt';
 final String expectedStringContents = 'Hello, world!';
 final Uint8List bytes = Uint8List.fromList(utf8.encode(expectedStringContents));
