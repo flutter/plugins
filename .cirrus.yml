@@ -192,8 +192,8 @@ task:
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --ipa
-        # - ./script/incremental_build.sh drive-examples
-        # - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS
+        - ./script/incremental_build.sh drive-examples
+        - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS
 # task:
 #   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
 #   only_if: $CIRRUS_TAG == ''
