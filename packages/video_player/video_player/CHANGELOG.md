@@ -1,6 +1,6 @@
 ## 2.0.0-nullsafety.9
 
-* Added `isDurationIndefinite` to support indefinite streams - fixes [flutter/flutter#48670](Fixes https://github.com/flutter/flutter/issues/48670).
+* Refactor `FLTCMTimeToMillis` to support indefinite streams - fixes [flutter/flutter#48670](Fixes https://github.com/flutter/flutter/issues/48670).
 
 ## 2.0.0-nullsafety.8
 
