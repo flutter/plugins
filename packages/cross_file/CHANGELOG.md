@@ -1,12 +1,6 @@
-## 0.3.0-nullsafety
-
-* Migrated package to null-safety.
-* **breaking change** According to our unit tests, the API should be backwards-compatible. Some relevant changes were made, however:
-  * Web: `lastModified` returns the epoch time as a default value, to maintain the `Future<DateTime>` return type (and not `null`)
-
 ## 0.2.1
 
-* Prepare for breaking `package:http` change.
+* Prepare for breaking `package:http` change. 
 
 ## 0.2.0
 
@@ -18,8 +12,8 @@
 
 ## 0.1.0+1
 
-* Update Flutter SDK constraint.
+- Update Flutter SDK constraint.
 
 ## 0.1.0
 
-* Initial open-source release.
+- Initial open-source release

@@ -21,12 +21,12 @@ class XFile extends XFileBase {
   /// (like in web)
   XFile(
     String path, {
-    String? mimeType,
-    String? name,
-    int? length,
-    Uint8List? bytes,
-    DateTime? lastModified,
-    @visibleForTesting CrossFileTestOverrides? overrides,
+    String mimeType,
+    String name,
+    int length,
+    Uint8List bytes,
+    DateTime lastModified,
+    @visibleForTesting CrossFileTestOverrides overrides,
   }) : super(path) {
     throw UnimplementedError(
         'CrossFile is not available in your current platform.');
@@ -35,12 +35,12 @@ class XFile extends XFileBase {
   /// Construct a CrossFile object from its data
   XFile.fromData(
     Uint8List bytes, {
-    String? mimeType,
-    String? name,
-    int? length,
-    DateTime? lastModified,
-    String? path,
-    @visibleForTesting CrossFileTestOverrides? overrides,
+    String mimeType,
+    String name,
+    int length,
+    DateTime lastModified,
+    String path,
+    @visibleForTesting CrossFileTestOverrides overrides,
   }) : super(path) {
     throw UnimplementedError(
         'CrossFile is not available in your current platform.');
@@ -54,5 +54,5 @@ class CrossFileTestOverrides {
   dynamic Function(String href, String suggestedName) createAnchorElement;
 
   /// Default constructor for overrides
-  CrossFileTestOverrides({required this.createAnchorElement});
+  CrossFileTestOverrides({this.createAnchorElement});
 }

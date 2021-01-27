@@ -15,7 +15,7 @@ final pathPrefix =
     Directory.current.path.endsWith('test') ? './assets/' : './test/assets/';
 final path = pathPrefix + 'hello.txt';
 final String expectedStringContents = 'Hello, world!';
-final Uint8List bytes = Uint8List.fromList(utf8.encode(expectedStringContents));
+final Uint8List bytes = utf8.encode(expectedStringContents);
 final File textFile = File(path);
 final String textFilePath = textFile.path;
 
