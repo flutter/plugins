@@ -1,137 +1,137 @@
-# task:
-#   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-#   only_if: $CIRRUS_TAG == ''
-#   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
-#   container:
-#     dockerfile: .ci/Dockerfile
-#     cpu: 8
-#     memory: 16G
-#   env:
-#     INTEGRATION_TEST_PATH: "./packages/integration_test"
-#   upgrade_script:
-#     - flutter channel stable
-#     - flutter upgrade
-#     - flutter channel master
-#     - flutter upgrade
-#     - git fetch origin master
-#   activate_script: pub global activate flutter_plugin_tools
-#   matrix:
-#     - name: publishable
-#       script:
-#         - flutter channel master
-#         - ./script/check_publish.sh
-#     - name: format
-#       install_script:
-#         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-#         - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main"
-#         - sudo apt-get update
-#         - sudo apt-get install -y --allow-unauthenticated clang-format-7
-#       format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-7
-#     - name: test
-#       env:
-#         matrix:
-#           CHANNEL: "master"
-#           CHANNEL: "stable"
-#       test_script:
-#         # TODO(jackson): Allow web plugins once supported on stable
-#         # https://github.com/flutter/flutter/issues/42864
-#         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
-#         - flutter channel $CHANNEL
-#         - ./script/incremental_build.sh test
-#     - name: analyze
-#       env:
-#         matrix:
-#           CHANNEL: "master"
-#           CHANNEL: "stable"
-#       script: ./script/incremental_build.sh analyze
-#     - name: build_all_plugins_apk
-#       env:
-#         matrix:
-#           CHANNEL: "master"
-#           CHANNEL: "stable"
-#       script:
-#         # TODO(jackson): Allow web plugins once supported on stable
-#         # https://github.com/flutter/flutter/issues/42864
-#         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
-#         - flutter channel $CHANNEL
-#         - ./script/build_all_plugins_app.sh apk
-#     - name: integration_web_smoke_test
-#       # Tests integration example test in web.
-#       only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
-#       install_script:
-#         - flutter config --enable-web
-#         - git clone https://github.com/flutter/web_installers.git
-#         - cd web_installers/packages/web_drivers/
-#         - pub get
-#         - dart lib/web_driver_installer.dart chromedriver --install-only
-#         - ./chromedriver/chromedriver --port=4444 &
-#       test_script:
-#         - cd $INTEGRATION_TEST_PATH/example/
-#         - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
-#     - name: build-apks+java-test+firebase-test-lab
-#       env:
-#         matrix:
-#           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
-#           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
-#           PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
-#           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
-#         matrix:
-#           CHANNEL: "master"
-#           CHANNEL: "stable"
-#         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-#         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
-#       script:
-#         # TODO(jackson): Allow web plugins once supported on stable
-#         # https://github.com/flutter/flutter/issues/42864
-#         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
-#         - flutter channel $CHANNEL
-#         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
-#         # might include non-ASCII characters which makes Gradle crash.
-#         # See: https://github.com/flutter/flutter/issues/24935
-#         # This is a temporary workaround until we figure how to properly configure
-#         # a UTF8 locale on Cirrus (or until the Gradle bug is fixed).
-#         # TODO(amirh): Set the locale to UTF8.
-#         - echo "$CIRRUS_CHANGE_MESSAGE" > /tmp/cirrus_change_message.txt
-#         - echo "$CIRRUS_COMMIT_MESSAGE" > /tmp/cirrus_commit_message.txt
-#         - export CIRRUS_CHANGE_MESSAGE=""
-#         - export CIRRUS_COMMIT_MESSAGE=""
-#         - ./script/incremental_build.sh build-examples --apk
-#         - ./script/incremental_build.sh java-test  # must come after apk build
-#         - if [[ $GCLOUD_FIREBASE_TESTLAB_KEY == ENCRYPTED* ]]; then
-#         -   echo "This user does not have permission to run Firebase Test Lab tests."
-#         - else
-#         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-#         -   ./script/incremental_build.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26
-#         - fi
-#         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
-#         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
+task:
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  container:
+    dockerfile: .ci/Dockerfile
+    cpu: 8
+    memory: 16G
+  env:
+    INTEGRATION_TEST_PATH: "./packages/integration_test"
+  upgrade_script:
+    - flutter channel stable
+    - flutter upgrade
+    - flutter channel master
+    - flutter upgrade
+    - git fetch origin master
+  activate_script: pub global activate flutter_plugin_tools
+  matrix:
+    - name: publishable
+      script:
+        - flutter channel master
+        - ./script/check_publish.sh
+    - name: format
+      install_script:
+        - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main"
+        - sudo apt-get update
+        - sudo apt-get install -y --allow-unauthenticated clang-format-7
+      format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-7
+    - name: test
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      test_script:
+        # TODO(jackson): Allow web plugins once supported on stable
+        # https://github.com/flutter/flutter/issues/42864
+        - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
+        - flutter channel $CHANNEL
+        - ./script/incremental_build.sh test
+    - name: analyze
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      script: ./script/incremental_build.sh analyze
+    - name: build_all_plugins_apk
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      script:
+        # TODO(jackson): Allow web plugins once supported on stable
+        # https://github.com/flutter/flutter/issues/42864
+        - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
+        - flutter channel $CHANNEL
+        - ./script/build_all_plugins_app.sh apk
+    - name: integration_web_smoke_test
+      # Tests integration example test in web.
+      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
+      install_script:
+        - flutter config --enable-web
+        - git clone https://github.com/flutter/web_installers.git
+        - cd web_installers/packages/web_drivers/
+        - pub get
+        - dart lib/web_driver_installer.dart chromedriver --install-only
+        - ./chromedriver/chromedriver --port=4444 &
+      test_script:
+        - cd $INTEGRATION_TEST_PATH/example/
+        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
+    - name: build-apks+java-test+firebase-test-lab
+      env:
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+        MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
+      script:
+        # TODO(jackson): Allow web plugins once supported on stable
+        # https://github.com/flutter/flutter/issues/42864
+        - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
+        - flutter channel $CHANNEL
+        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
+        # might include non-ASCII characters which makes Gradle crash.
+        # See: https://github.com/flutter/flutter/issues/24935
+        # This is a temporary workaround until we figure how to properly configure
+        # a UTF8 locale on Cirrus (or until the Gradle bug is fixed).
+        # TODO(amirh): Set the locale to UTF8.
+        - echo "$CIRRUS_CHANGE_MESSAGE" > /tmp/cirrus_change_message.txt
+        - echo "$CIRRUS_COMMIT_MESSAGE" > /tmp/cirrus_commit_message.txt
+        - export CIRRUS_CHANGE_MESSAGE=""
+        - export CIRRUS_COMMIT_MESSAGE=""
+        - ./script/incremental_build.sh build-examples --apk
+        - ./script/incremental_build.sh java-test  # must come after apk build
+        - if [[ $GCLOUD_FIREBASE_TESTLAB_KEY == ENCRYPTED* ]]; then
+        -   echo "This user does not have permission to run Firebase Test Lab tests."
+        - else
+        -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
+        -   ./script/incremental_build.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26
+        - fi
+        - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
+        - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
 
-# task:
-#   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-#   only_if: $CIRRUS_TAG == ''
-#   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
-#   container:
-#     dockerfile: .ci/Dockerfile-LinuxDesktop
-#     cpu: 8
-#     memory: 16G
-#   env:
-#     INTEGRATION_TEST_PATH: "./packages/integration_test"
-#   upgrade_script:
-#     - flutter channel stable
-#     - flutter upgrade
-#     - flutter channel master
-#     - flutter upgrade
-#     - git fetch origin master
-#   activate_script: pub global activate flutter_plugin_tools
-#   matrix:
-#     - name: build-linux+drive-examples
-#       install_script:
-#         - flutter config --enable-linux-desktop
-#       build_script:
-#         # TODO(stuartmorgan): Include stable once Linux is supported on stable.
-#         - flutter channel master
-#         - ./script/incremental_build.sh build-examples --linux
-#         - xvfb-run ./script/incremental_build.sh drive-examples --linux
+task:
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  container:
+    dockerfile: .ci/Dockerfile-LinuxDesktop
+    cpu: 8
+    memory: 16G
+  env:
+    INTEGRATION_TEST_PATH: "./packages/integration_test"
+  upgrade_script:
+    - flutter channel stable
+    - flutter upgrade
+    - flutter channel master
+    - flutter upgrade
+    - git fetch origin master
+  activate_script: pub global activate flutter_plugin_tools
+  matrix:
+    - name: build-linux+drive-examples
+      install_script:
+        - flutter config --enable-linux-desktop
+      build_script:
+        # TODO(stuartmorgan): Include stable once Linux is supported on stable.
+        - flutter channel master
+        - ./script/incremental_build.sh build-examples --linux
+        - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
@@ -151,28 +151,28 @@ task:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
   matrix:
-    # - name: build_all_plugins_ipa
-    #   env:
-    #     matrix:
-    #       CHANNEL: "master"
-    #       CHANNEL: "stable"
-    #   script:
-    #     # TODO(jackson): Allow web plugins once supported on stable
-    #     # https://github.com/flutter/flutter/issues/42864
-    #     - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
-    #     - flutter channel $CHANNEL
-    #     - ./script/build_all_plugins_app.sh ios --no-codesign
-    # - name: lint_darwin_plugins
-    #   env:
-    #     matrix:
-    #       PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-    #       PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
-    #   script:
-    #     # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
-    #     - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
-    #     # Skip the dummy podspecs used to placate the tool.
-    #     - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
-    #     - ./script/incremental_build.sh podspecs
+    - name: build_all_plugins_ipa
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      script:
+        # TODO(jackson): Allow web plugins once supported on stable
+        # https://github.com/flutter/flutter/issues/42864
+        - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
+        - flutter channel $CHANNEL
+        - ./script/build_all_plugins_app.sh ios --no-codesign
+    - name: lint_darwin_plugins
+      env:
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+      script:
+        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
+        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
+        # Skip the dummy podspecs used to placate the tool.
+        - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
+        - ./script/incremental_build.sh podspecs
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
@@ -194,29 +194,29 @@ task:
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples
         - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS
-# task:
-#   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-#   only_if: $CIRRUS_TAG == ''
-#   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
-#   osx_instance:
-#     image: catalina-xcode-11.3.1-flutter
-#   setup_script:
-#     - flutter config --enable-macos-desktop
-#   upgrade_script:
-#     - sudo gem install cocoapods
-#     - flutter channel master
-#     - flutter upgrade
-#     - git fetch origin master
-#   activate_script: pub global activate flutter_plugin_tools
-#   matrix:
-#     - name: build_all_plugins_app
-#       script:
-#         - flutter channel master
-#         - ./script/build_all_plugins_app.sh macos
-#     - name: build-apps+drive-examples
-#       env:
-#         PATH: $PATH:/usr/local/bin
-#       build_script:
-#         - flutter channel master
-#         - ./script/incremental_build.sh build-examples --macos --no-ipa
-#         - ./script/incremental_build.sh drive-examples --macos
+task:
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
+  osx_instance:
+    image: catalina-xcode-11.3.1-flutter
+  setup_script:
+    - flutter config --enable-macos-desktop
+  upgrade_script:
+    - sudo gem install cocoapods
+    - flutter channel master
+    - flutter upgrade
+    - git fetch origin master
+  activate_script: pub global activate flutter_plugin_tools
+  matrix:
+    - name: build_all_plugins_app
+      script:
+        - flutter channel master
+        - ./script/build_all_plugins_app.sh macos
+    - name: build-apps+drive-examples
+      env:
+        PATH: $PATH:/usr/local/bin
+      build_script:
+        - flutter channel master
+        - ./script/incremental_build.sh build-examples --macos --no-ipa
+        - ./script/incremental_build.sh drive-examples --macos
