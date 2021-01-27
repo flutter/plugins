@@ -31,7 +31,7 @@ Element ensureInitialized(String id) {
   if (target == null) {
     final Element targetElement = Element.tag('flt-x-file')..id = id;
 
-    querySelector('body')!.children.add(targetElement);
+    querySelector('body').children.add(targetElement);
     target = targetElement;
   }
   return target;

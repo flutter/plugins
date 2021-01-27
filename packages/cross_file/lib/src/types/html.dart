@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:html';
 import 'dart:typed_data';
 
+import 'package:http/http.dart' as http show readBytes;
 import 'package:meta/meta.dart';
 
 import './base.dart';
@@ -15,17 +16,16 @@ import '../web_helpers/web_helpers.dart';
 ///
 /// It wraps the bytes of a selected file.
 class XFile extends XFileBase {
-  late String path;
+  String path;
 
-  final String? mimeType;
-  final Uint8List? _data;
-  final int? _length;
+  final String mimeType;
+  final Uint8List _data;
+  final int _length;
   final String name;
-  final DateTime? _lastModified;
+  final DateTime _lastModified;
+  Element _target;
 
-  late Element _target;
-
-  final CrossFileTestOverrides? _overrides;
+  final CrossFileTestOverrides _overrides;
 
   bool get _hasTestOverrides => _overrides != null;
 
@@ -39,58 +39,56 @@ class XFile extends XFileBase {
   XFile(
     this.path, {
     this.mimeType,
-    String? name,
-    int? length,
-    Uint8List? bytes,
-    DateTime? lastModified,
-    @visibleForTesting CrossFileTestOverrides? overrides,
+    this.name,
+    int length,
+    Uint8List bytes,
+    DateTime lastModified,
+    @visibleForTesting CrossFileTestOverrides overrides,
   })  : _data = bytes,
         _length = length,
         _overrides = overrides,
-        _lastModified = lastModified ?? DateTime.fromMillisecondsSinceEpoch(0),
-        name = name ?? '',
+        _lastModified = lastModified,
         super(path);
 
   /// Construct an CrossFile from its data
   XFile.fromData(
     Uint8List bytes, {
     this.mimeType,
-    String? name,
-    int? length,
-    DateTime? lastModified,
-    String? path,
-    @visibleForTesting CrossFileTestOverrides? overrides,
+    this.name,
+    int length,
+    DateTime lastModified,
+    this.path,
+    @visibleForTesting CrossFileTestOverrides overrides,
   })  : _data = bytes,
         _length = length,
         _overrides = overrides,
-        _lastModified = lastModified ?? DateTime.fromMillisecondsSinceEpoch(0),
-        name = name ?? '',
+        _lastModified = lastModified,
         super(path) {
     if (path == null) {
       final blob = (mimeType == null) ? Blob([bytes]) : Blob([bytes], mimeType);
       this.path = Url.createObjectUrl(blob);
-    } else {
-      this.path = path;
     }
   }
 
   @override
-  Future<DateTime> lastModified() async => Future.value(_lastModified);
+  Future<DateTime> lastModified() async {
+    if (_lastModified != null) {
+      return Future.value(_lastModified);
+    }
+    return null;
+  }
 
   Future<Uint8List> get _bytes async {
     if (_data != null) {
-      return Future.value(UnmodifiableUint8ListView(_data!));
+      return Future.value(UnmodifiableUint8ListView(_data));
     }
-
-    // We can force 'response' to be a byte buffer by passing responseType:
-    ByteBuffer? response =
-        (await HttpRequest.request(path, responseType: 'arraybuffer')).response;
-
-    return response?.asUint8List() ?? Uint8List(0);
+    return http.readBytes(Uri.parse(path));
   }
 
   @override
-  Future<int> length() async => _length ?? (await _bytes).length;
+  Future<int> length() async {
+    return _length ?? (await _bytes).length;
+  }
 
   @override
   Future<String> readAsString({Encoding encoding = utf8}) async {
@@ -98,10 +96,12 @@ class XFile extends XFileBase {
   }
 
   @override
-  Future<Uint8List> readAsBytes() async => Future.value(await _bytes);
+  Future<Uint8List> readAsBytes() async {
+    return Future.value(await _bytes);
+  }
 
   @override
-  Stream<Uint8List> openRead([int? start, int? end]) async* {
+  Stream<Uint8List> openRead([int start, int end]) async* {
     final bytes = await _bytes;
     yield bytes.sublist(start ?? 0, end ?? bytes.length);
   }
@@ -114,9 +114,10 @@ class XFile extends XFileBase {
 
     // Create an <a> tag with the appropriate download attributes and click it
     // May be overridden with CrossFileTestOverrides
-    final AnchorElement element = _hasTestOverrides
-        ? _overrides!.createAnchorElement(this.path, this.name) as AnchorElement
-        : createAnchorElement(this.path, this.name);
+    final AnchorElement element =
+        (_hasTestOverrides && _overrides.createAnchorElement != null)
+            ? _overrides.createAnchorElement(this.path, this.name)
+            : createAnchorElement(this.path, this.name);
 
     // Clear the children in our container so we can add an element to click
     _target.children.clear();
@@ -131,5 +132,5 @@ class CrossFileTestOverrides {
   Element Function(String href, String suggestedName) createAnchorElement;
 
   /// Default constructor for overrides
-  CrossFileTestOverrides({required this.createAnchorElement});
+  CrossFileTestOverrides({this.createAnchorElement});
 }
