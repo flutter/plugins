@@ -45,8 +45,8 @@ void main() {
         }
         final RegExp setterRegExp = RegExp(r'set(.*)');
         final Match? match = setterRegExp.matchAsPrefix(methodCall.method);
-        if (match != null && match.groupCount == 1) {
-          final String valueType = match.group(1)!;
+        if (match?.groupCount == 1) {
+          final String valueType = match!.group(1)!;
           final String key = methodCall.arguments['key'];
           final Object value = methodCall.arguments['value'];
           return await testData.setValue(valueType, key, value);
