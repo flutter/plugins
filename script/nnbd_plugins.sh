@@ -8,7 +8,6 @@ readonly NNBD_PLUGINS_LIST=(
   "android_intent"
   "battery"
   "connectivity"
-  "cross_file"
   "device_info"
   "flutter_plugin_android_lifecycle"
   "flutter_webview"
