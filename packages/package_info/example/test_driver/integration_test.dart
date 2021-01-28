@@ -15,5 +15,6 @@ Future<void> main() async {
   );
   await driver.close();
   final Map<String, dynamic> result = jsonDecode(data);
+  print('====== get result $result');
   exit(result['result'] == 'true' ? 0 : 1);
 }
