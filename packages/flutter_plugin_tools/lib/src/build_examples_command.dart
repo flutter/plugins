@@ -61,6 +61,9 @@ class BuildExamplesCommand extends PluginCommand {
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
 
+        await processRunner.runAndStream(flutterCommand, ['clean'],
+            workingDir: example);
+
         if (argResults[kLinux]) {
           print('\nBUILDING Linux for $packageName');
           if (isLinuxPlugin(plugin, fileSystem)) {
@@ -135,17 +138,18 @@ class BuildExamplesCommand extends PluginCommand {
           print('\nBUILDING IPA for $packageName');
           if (isIosPlugin(plugin, fileSystem)) {
             final int exitCode = await processRunner.runAndStream(
-                flutterCommand,
-                <String>[
-                  'build',
-                  'ios',
-                  '--no-codesign',
-                  // '--verbose',
-                  if (enableExperiment.isNotEmpty)
-                    '--enable-experiment=$enableExperiment',
-                ],
-                workingDir: example,
-                exitOnError: true,);
+              flutterCommand,
+              <String>[
+                'build',
+                'ios',
+                '--no-codesign',
+                // '--verbose',
+                if (enableExperiment.isNotEmpty)
+                  '--enable-experiment=$enableExperiment',
+              ],
+              workingDir: example,
+              exitOnError: true,
+            );
             if (exitCode != 0) {
               failingPackages.add('$packageName (ipa)');
             }
