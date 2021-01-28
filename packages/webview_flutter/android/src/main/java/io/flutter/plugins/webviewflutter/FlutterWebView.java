@@ -174,6 +174,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "loadUrl":
         loadUrl(methodCall, result);
         break;
+      case "loadAssetHtmlFile":
+        loadAssetHtmlFile(methodCall, result);
+        break;
+      case "loadLocalHtmlFile":
+        loadLocalHtmlFile(methodCall, result);
+        break;
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
@@ -236,6 +242,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       headers = Collections.emptyMap();
     }
     webView.loadUrl(url, headers);
+    result.success(null);
+  }
+  
+  private void loadAssetHtmlFile(MethodCall methodCall, Result result) {
+    String url = (String) methodCall.arguments;
+    webView.loadUrl("file:///android_asset/flutter_assets/" + url);
+    result.success(null);
+  }
+
+  private void loadLocalHtmlFile(MethodCall methodCall, Result result) {
+    String url = (String) methodCall.arguments;
+    webView.loadUrl("file:///" + url);
     result.success(null);
   }
 
