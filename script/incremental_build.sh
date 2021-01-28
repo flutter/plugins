@@ -36,7 +36,11 @@ if [ "$1" == "firebase-test-lab" ]; then
   fi
 fi
 
-echo "Excluding the following plugins: $ALL_EXCLUDED"
+if [ ${#ALL_EXCLUDED[@]} -eq 0 ]; then
+  ALL_EXCLUDED=("")
+else
+  echo "Excluding the following plugins: $ALL_EXCLUDED"
+fi
 
 # Plugins that deliberately use their own analysis_options.yaml.
 #
