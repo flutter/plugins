@@ -14,12 +14,29 @@ else
 fi
 
 # Plugins that are excluded from this task.
-ALL_EXCLUDED=("")
+ALL_EXCLUDED=()
 # Exclude nnbd plugins from stable.
 if [ "$CHANNEL" == "stable" ]; then
   ALL_EXCLUDED=($EXCLUDED_PLUGINS_FROM_STABLE)
-  echo "Excluding the following plugins: $ALL_EXCLUDED"
 fi
+
+readonly FIREBASE_LAB_EXCLUDED_LIST=(
+  "package_info"
+)
+
+readonly FIREBASE_LAB_EXCLUDED=$(IFS=, ; echo "${FIREBASE_LAB_EXCLUDED_LIST[@]}")
+# EXCLUDE plugins in FIREBASE_LAB_EXCLUDED_LIST when the command is firebase-test-lab.
+# TODO(cyanglaz): remove this when firebase test lab tests isues are resolved for plugins in FIREBASE_LAB_EXCLUDED_LIST
+# https://github.com/flutter/flutter/issues/74944
+if [ "$1" == "firebase-test-lab" ]; then
+  if [ ${#ALL_EXCLUDED[@]} -eq 0 ]; then
+      ALL_EXCLUDED=("$FIREBASE_LAB_EXCLUDED")
+  else
+      ALL_EXCLUDED=("$ALL_EXCLUDED, $FIREBASE_LAB_EXCLUDED")
+  fi
+fi
+
+echo "Excluding the following plugins: $ALL_EXCLUDED"
 
 # Plugins that deliberately use their own analysis_options.yaml.
 #
