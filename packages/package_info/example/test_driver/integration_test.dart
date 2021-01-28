@@ -9,8 +9,6 @@ import 'dart:async';
 import 'package:flutter_driver/flutter_driver.dart';
 
 Future<void> main() async {
-  developer.log('====== start tests');
-  stderr.writeln('print me');
   print('====== start tests');
   final FlutterDriver driver = await FlutterDriver.connect();
   final String data = await driver.requestData(
