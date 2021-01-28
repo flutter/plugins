@@ -27,8 +27,6 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  integration_test:
-    path: ../integration_test
   pedantic: ^1.8.0
 
 environment:
