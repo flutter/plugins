@@ -53,6 +53,7 @@ if [[ "${BRANCH_NAME}" == "master" ]]; then
 else
   # Sets CHANGED_PACKAGES
   check_changed_packages
+
   if [[ "$CHANGED_PACKAGES" == "" ]]; then
     echo "No changes detected in packages."
     echo "Running for all packages"
