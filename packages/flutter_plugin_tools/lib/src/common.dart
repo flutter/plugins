@@ -449,6 +449,8 @@ class ProcessRunner {
     List<String> args, {
     Directory workingDir,
   }) async {
+    print(
+        'Running command: "$executable ${args.join(' ')}" in ${workingDir?.path ?? io.Directory.current.path}');
     final io.ProcessResult result = await io.Process.run(executable, args,
         workingDirectory: workingDir?.path);
     if (result.exitCode != 0) {
