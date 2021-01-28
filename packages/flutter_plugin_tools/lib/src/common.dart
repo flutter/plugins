@@ -388,7 +388,7 @@ class ProcessRunner {
     print(
         'Running command: "$executable ${args.join(' ')}" in ${workingDir?.path ?? io.Directory.current.path}');
     final io.Process process = await io.Process.start(executable, args,
-        workingDirectory: workingDir?.path);
+        workingDirectory: workingDir?.path, runInShell: true);
     await io.stdout.addStream(process.stdout);
     await io.stderr.addStream(process.stderr);
     if (exitOnError && await process.exitCode != 0) {

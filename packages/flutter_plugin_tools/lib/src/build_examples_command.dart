@@ -145,7 +145,8 @@ class BuildExamplesCommand extends PluginCommand {
                     '--enable-experiment=$enableExperiment',
                 ],
                 workingDir: example,
-                exitOnError: true);
+                exitOnError: true,
+                );
             if (exitCode != 0) {
               failingPackages.add('$packageName (ipa)');
             }
