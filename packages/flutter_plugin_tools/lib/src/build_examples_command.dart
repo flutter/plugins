@@ -140,12 +140,12 @@ class BuildExamplesCommand extends PluginCommand {
                   'build',
                   'ios',
                   '--no-codesign',
-                  '--verbose',
+                  // '--verbose',
                   if (enableExperiment.isNotEmpty)
                     '--enable-experiment=$enableExperiment',
                 ],
                 workingDir: example,
-                exitOnError: true);
+                exitOnError: true,);
             if (exitCode != 0) {
               failingPackages.add('$packageName (ipa)');
             }
