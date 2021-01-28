@@ -48,6 +48,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "url_launcher_web"
   "video_player_platform_interface"
   "video_player_web"
+  "flutter_plugin_tools"
 )
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
