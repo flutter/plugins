@@ -19,23 +19,23 @@ class MethodChannelSharedPreferencesStore
     extends SharedPreferencesStorePlatform {
   @override
   Future<bool> remove(String key) async {
-    return await _kChannel.invokeMethod<bool>(
+    return (await _kChannel.invokeMethod<bool>(
       'remove',
       <String, dynamic>{'key': key},
-    ) as bool;
+    ))!;
   }
 
   @override
   Future<bool> setValue(String valueType, String key, Object value) async {
-    return await _kChannel.invokeMethod<bool>(
+    return (await _kChannel.invokeMethod<bool>(
       'set$valueType',
       <String, dynamic>{'key': key, 'value': value},
-    ) as bool;
+    ))!;
   }
 
   @override
   Future<bool> clear() async {
-    return await _kChannel.invokeMethod<bool>('clear') as bool;
+    return (await _kChannel.invokeMethod<bool>('clear'))!;
   }
 
   @override
