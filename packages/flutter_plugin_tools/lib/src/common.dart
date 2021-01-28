@@ -414,6 +414,8 @@ class ProcessRunner {
       bool exitOnError = false,
       stdoutEncoding = io.systemEncoding,
       stderrEncoding = io.systemEncoding}) async {
+    print(
+        'Running command: "$executable ${args.join(' ')}" in ${workingDir?.path ?? io.Directory.current.path}');
     return io.Process.run(executable, args,
         workingDirectory: workingDir?.path,
         stdoutEncoding: stdoutEncoding,

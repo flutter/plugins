@@ -133,6 +133,8 @@ class BuildExamplesCommand extends PluginCommand {
 
         if (argResults[kIpa]) {
           print('\nBUILDING IPA for $packageName');
+          await processRunner.run(flutterCommand, ['clean']);
+          await processRunner.run('git', ['clean', '-dfx']);
           if (isIosPlugin(plugin, fileSystem)) {
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
