@@ -65,10 +65,13 @@ class BuildExamplesCommand extends PluginCommand {
 
         await processRunner.runAndStream('ls', ['-al'], workingDir: example);
 
-        await processRunner.runAndStream('echo', [flutterCommand],
+        await processRunner.runAndStream('which', [flutterCommand],
             workingDir: example);
 
-        await processRunner.runAndStream('ls', ['-al', flutterCommand],
+        await processRunner.runAndStream(flutterCommand, ['--version'],
+            workingDir: example);
+
+        await processRunner.runAndStream(flutterCommand, ['doctor'],
             workingDir: example);
 
         await processRunner.runAndStream(flutterCommand, ['clean'],
