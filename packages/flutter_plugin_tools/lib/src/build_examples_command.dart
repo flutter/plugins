@@ -61,6 +61,16 @@ class BuildExamplesCommand extends PluginCommand {
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
 
+        await processRunner.runAndStream('pwd', [], workingDir: example);
+
+        await processRunner.runAndStream('ls', ['-al'], workingDir: example);
+
+        await processRunner.runAndStream('echo', [flutterCommand],
+            workingDir: example);
+
+        await processRunner.runAndStream('ls', ['-al', flutterCommand],
+            workingDir: example);
+
         await processRunner.runAndStream(flutterCommand, ['clean'],
             workingDir: example);
 
