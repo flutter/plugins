@@ -454,7 +454,7 @@ class ProcessRunner {
     if (result.exitCode != 0) {
       final String error =
           _getErrorString(executable, args, workingDir: workingDir);
-      print('$error Stderr:\n${result.stdout}');
+      print('$error stdout:\n${result.stdout} \n stderr: ${result.stderr}');
       throw ToolExit(result.exitCode);
     }
     return result;

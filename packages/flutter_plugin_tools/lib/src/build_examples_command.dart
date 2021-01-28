@@ -142,9 +142,6 @@ class BuildExamplesCommand extends PluginCommand {
             if (result2.exitCode != 0) {
               print('git clean failed: ${result1.stderr}');
             }
-            if (result2.exitCode != 0) {
-              print('git clean failed: ${result1.stderr}');
-            }
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
