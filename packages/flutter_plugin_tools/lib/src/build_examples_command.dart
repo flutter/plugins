@@ -134,13 +134,17 @@ class BuildExamplesCommand extends PluginCommand {
         if (argResults[kIpa]) {
           print('\nBUILDING IPA for $packageName');
           if (isIosPlugin(plugin, fileSystem)) {
-            io.ProcessResult result1 = await processRunner.runAndExitOnError(flutterCommand, ['clean'], workingDir: example);
-            if (result1.exitCode != 0) {
-              print('flutter clean failed: ${result1.stderr}');
+            io.ProcessResult result0 = await processRunner.runAndExitOnError('ls', ['-1'], workingDir: example);
+            if (result0.exitCode != 0) {
+              print('ls -l failed: ${result0.stderr}');
             }
             io.ProcessResult result2 = await processRunner.runAndExitOnError('git', ['clean', '-dfx'], workingDir: example);
             if (result2.exitCode != 0) {
-              print('git clean failed: ${result1.stderr}');
+              print('git clean failed: ${result2.stderr}');
+            }
+            io.ProcessResult result1 = await processRunner.runAndExitOnError(flutterCommand, ['clean'], workingDir: example);
+            if (result1.exitCode != 0) {
+              print('flutter clean failed: ${result1.stderr}');
             }
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
