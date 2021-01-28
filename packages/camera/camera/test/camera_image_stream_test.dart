@@ -13,7 +13,7 @@ void main() {
     CameraPlatform.instance = MockCameraPlatform();
   });
 
-  test('startImageStream() throws $CameraException when uninitialized 1', () {
+  test('startImageStream() throws $CameraException when uninitialized', () {
     CameraController cameraController = CameraController(
         CameraDescription(
             name: 'cam',
