@@ -16,6 +16,6 @@ public class EmbedderV1Activity extends FlutterActivity {
     PackageInfoPlugin.registerWith(
         registrarFor("io.flutter.plugins.packageinfo.PackageInfoPlugin"));
     IntegrationTestPlugin.registerWith(
-      registrarFor("dev.flutter.plugins.integration_test.IntegrationTestPlugin"));
+        registrarFor("dev.flutter.plugins.integration_test.IntegrationTestPlugin"));
   }
 }
