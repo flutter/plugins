@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,8 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
 
 /**
  * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin. It is also
@@ -124,18 +124,20 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     final ExecutorService executor = Executors.newSingleThreadExecutor();
     final Handler handler = new Handler(Looper.getMainLooper());
 
-    executor.execute(new Runnable() {
-      @Override
-      public void run() {
-        final boolean response = editor.commit();
-        handler.post(new Runnable() {
+    executor.execute(
+        new Runnable() {
           @Override
           public void run() {
-            result.success(response);
+            final boolean response = editor.commit();
+            handler.post(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    result.success(response);
+                  }
+                });
           }
         });
-      }
-    });
   }
 
   private List<String> decodeList(String encodedList) throws IOException {
