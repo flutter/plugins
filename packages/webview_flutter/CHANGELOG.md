@@ -1,3 +1,6 @@
+## 2.0.0-nullsafety.4
+* Fixed [#70619](https://github.com/flutter/flutter/issues/70619) by removing gesture detector from android view.
+
 ## 2.0.0-nullsafety.3
 
 * Fix `onWebResourceError` on iOS.
