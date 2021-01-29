@@ -79,7 +79,7 @@ class Convert {
       }
     } else {
       throw new IllegalArgumentException(
-          "fromBytes should have exactly one argument,interpretTileOverlayOptions the bytes. Got: "
+          "fromBytes should have exactly one argument, interpretTileOverlayOptions the bytes. Got: "
               + data.size());
     }
   }
