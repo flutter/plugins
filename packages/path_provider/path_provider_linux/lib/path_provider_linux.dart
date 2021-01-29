@@ -36,11 +36,11 @@ class PathProviderLinux extends PathProviderPlatform {
 
   @override
   Future<String?> getApplicationDocumentsPath() {
-    return Future.value(xdg.getUserDirectory('DOCUMENTS').path);
+    return Future.value(xdg.getUserDirectory('DOCUMENTS')?.path);
   }
 
   @override
   Future<String?> getDownloadsPath() {
-    return Future.value(xdg.getUserDirectory('DOWNLOAD').path);
+    return Future.value(xdg.getUserDirectory('DOWNLOAD')?.path);
   }
 }
