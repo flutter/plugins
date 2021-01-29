@@ -11,10 +11,8 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cross_file/cross_file.dart';
 
-import 'dart:html';
-
 final String expectedStringContents = 'Hello, world!';
-final Uint8List bytes = utf8.encode(expectedStringContents);
+final Uint8List bytes = Uint8List.fromList(utf8.encode(expectedStringContents));
 final html.File textFile = html.File([bytes], 'hello.txt');
 final String textFileUrl = html.Url.createObjectUrl(textFile);
 
@@ -66,7 +64,7 @@ void main() {
 
         await file.saveTo('');
 
-        final container = querySelector('#${CrossFileDomElementId}');
+        final container = html.querySelector('#${CrossFileDomElementId}');
 
         expect(container, isNotNull);
       });
@@ -76,18 +74,18 @@ void main() {
 
         await file.saveTo('path');
 
-        final container = querySelector('#${CrossFileDomElementId}');
-        final AnchorElement element = container?.children?.firstWhere(
-            (element) => element.tagName == 'A',
-            orElse: () => null);
+        final container = html.querySelector('#${CrossFileDomElementId}');
+        final html.AnchorElement element =
+            container?.children.firstWhere((element) => element.tagName == 'A')
+                as html.AnchorElement;
 
-        expect(element, isNotNull);
+        // if element is not found, the `firstWhere` call will throw StateError.
         expect(element.href, file.path);
         expect(element.download, file.name);
       });
 
       test('anchor element is clicked', () async {
-        final mockAnchor = AnchorElement();
+        final mockAnchor = html.AnchorElement();
 
         CrossFileTestOverrides overrides = CrossFileTestOverrides(
           createAnchorElement: (_, __) => mockAnchor,
