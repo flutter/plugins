@@ -188,6 +188,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         'gestureNavigationEnabled', settings.gestureNavigationEnabled);
     _addIfNonNull(
         'allowsInlineMediaPlayback', settings.allowsInlineMediaPlayback);
+    _addIfNonNull(
+        'ignoreSslCertificateErrors', settings.ignoreSslCertificateErrors);
     _addSettingIfPresent('userAgent', settings.userAgent);
     return map;
   }

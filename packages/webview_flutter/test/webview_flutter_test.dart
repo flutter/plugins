@@ -788,6 +788,50 @@ void main() {
     });
   });
 
+  group('ignoreSslCertificateErrors', () {
+    testWidgets('enable', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        ignoreSslCertificateErrors: true,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      expect(platformWebView.ignoreSslCertificateErrors, true);
+    });
+
+    testWidgets('defaults to false', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      expect(platformWebView.ignoreSslCertificateErrors, false);
+    });
+
+    testWidgets('can be changed', (WidgetTester tester) async {
+      final GlobalKey key = GlobalKey();
+      await tester.pumpWidget(WebView(key: key));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        ignoreSslCertificateErrors: true,
+      ));
+
+      expect(platformWebView.ignoreSslCertificateErrors, true);
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        ignoreSslCertificateErrors: false,
+      ));
+
+      expect(platformWebView.ignoreSslCertificateErrors, false);
+    });
+  });
+
   group('Custom platform implementation', () {
     setUpAll(() {
       WebView.platform = MyWebViewPlatform();
@@ -801,6 +845,7 @@ void main() {
         const WebView(
           initialUrl: 'https://youtube.com',
           gestureNavigationEnabled: true,
+          ignoreSslCertificateErrors: true,
         ),
       );
 
@@ -817,6 +862,7 @@ void main() {
               debuggingEnabled: false,
               userAgent: WebSetting<String?>.of(null),
               gestureNavigationEnabled: true,
+              ignoreSslCertificateErrors: true,
             ),
           )));
     });
@@ -883,6 +929,8 @@ class FakePlatformWebView {
     hasNavigationDelegate =
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
+    ignoreSslCertificateErrors =
+        params['settings']['ignoreSslCertificateErrors'];
     userAgent = params['settings']['userAgent'];
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
@@ -902,6 +950,7 @@ class FakePlatformWebView {
 
   bool? hasNavigationDelegate;
   bool? debuggingEnabled;
+  bool? ignoreSslCertificateErrors;
   String? userAgent;
 
   Future<dynamic> onMethodCall(MethodCall call) {
@@ -919,6 +968,10 @@ class FakePlatformWebView {
         }
         if (call.arguments['debuggingEnabled'] != null) {
           debuggingEnabled = call.arguments['debuggingEnabled'];
+        }
+        if (call.arguments['ignoreSslCertificateErrors'] != null) {
+          ignoreSslCertificateErrors =
+              call.arguments['ignoreSslCertificateErrors'];
         }
         userAgent = call.arguments['userAgent'];
         break;

@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.4
+
+* Added `ignoreSslCertificateErrors` on Android.
+
 ## 2.0.0-nullsafety.3
 
 * Fix `onWebResourceError` on iOS.

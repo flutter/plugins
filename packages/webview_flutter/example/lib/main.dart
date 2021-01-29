@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -35,6 +36,7 @@ class WebViewExample extends StatefulWidget {
 class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
+  bool ignoreSslCertificateErrors = false;
 
   @override
   void initState() {
@@ -50,13 +52,19 @@ class _WebViewExampleState extends State<WebViewExample> {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(_controller.future),
-          SampleMenu(_controller.future),
+          SampleMenu(
+            controller: _controller.future,
+            ignoreSslCertificateErrors: ignoreSslCertificateErrors,
+            onIgnoreSslCertificateErrors: () => setState(
+                () => ignoreSslCertificateErrors = !ignoreSslCertificateErrors),
+          ),
         ],
       ),
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
+          // Set initial URL to https://badssl.com if you want to try SSL problems
           initialUrl: 'https://flutter.dev',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
@@ -80,6 +88,7 @@ class _WebViewExampleState extends State<WebViewExample> {
             print('Page finished loading: $url');
           },
           gestureNavigationEnabled: true,
+          ignoreSslCertificateErrors: ignoreSslCertificateErrors,
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -127,13 +136,20 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  ignoreSslCertificateErrors,
 }
 
 class SampleMenu extends StatelessWidget {
-  SampleMenu(this.controller);
+  SampleMenu({
+    required this.controller,
+    required this.ignoreSslCertificateErrors,
+    required this.onIgnoreSslCertificateErrors,
+  });
 
   final Future<WebViewController> controller;
   final CookieManager cookieManager = CookieManager();
+  final bool ignoreSslCertificateErrors;
+  final VoidCallback onIgnoreSslCertificateErrors;
 
   @override
   Widget build(BuildContext context) {
@@ -165,37 +181,66 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
                 break;
+              case MenuOptions.ignoreSslCertificateErrors:
+                onIgnoreSslCertificateErrors();
+                break;
             }
           },
-          itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuOptions>>[
             PopupMenuItem<MenuOptions>(
               value: MenuOptions.showUserAgent,
-              child: const Text('Show user agent'),
+              child: ListTile(
+                leading: Icon(null),
+                title: const Text('Show user agent'),
+              ),
               enabled: controller.hasData,
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.listCookies,
-              child: Text('List cookies'),
+              child: ListTile(
+                leading: Icon(null),
+                title: Text('List cookies'),
+              ),
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.clearCookies,
-              child: Text('Clear cookies'),
+              child: ListTile(
+                leading: Icon(null),
+                title: Text('Clear cookies'),
+              ),
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.addToCache,
-              child: Text('Add to cache'),
+              child: ListTile(
+                leading: Icon(null),
+                title: Text('Add to cache'),
+              ),
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.listCache,
-              child: Text('List cache'),
+              child: ListTile(
+                leading: Icon(null),
+                title: Text('List cache'),
+              ),
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.clearCache,
-              child: Text('Clear cache'),
+              child: ListTile(
+                leading: Icon(null),
+                title: Text('Clear cache'),
+              ),
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.navigationDelegate,
-              child: Text('Navigation Delegate example'),
+              child: ListTile(
+                leading: Icon(null),
+                title: Text('Navigation Delegate example'),
+              ),
+            ),
+            CheckedPopupMenuItem<MenuOptions>(
+              value: MenuOptions.ignoreSslCertificateErrors,
+              child: Text('Ignore SSL errors'),
+              checked: ignoreSslCertificateErrors,
             ),
           ],
         );

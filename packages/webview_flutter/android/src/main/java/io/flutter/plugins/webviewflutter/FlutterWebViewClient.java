@@ -7,9 +7,11 @@ package io.flutter.plugins.webviewflutter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -30,9 +32,14 @@ class FlutterWebViewClient {
   private static final String TAG = "FlutterWebViewClient";
   private final MethodChannel methodChannel;
   private boolean hasNavigationDelegate;
+  private boolean ignoreSslCertificateErrors;
 
   FlutterWebViewClient(MethodChannel methodChannel) {
     this.methodChannel = methodChannel;
+  }
+
+  public void setIgnoreSslCertificateErrors(boolean ignoreSslCertificateErrors) {
+    this.ignoreSslCertificateErrors = ignoreSslCertificateErrors;
   }
 
   private static String errorCodeToString(int errorCode) {
@@ -198,6 +205,13 @@ class FlutterWebViewClient {
         // Deliberately empty. Occasionally the webview will mark events as having failed to be
         // handled even though they were handled. We don't want to propagate those as they're not
         // truly lost.
+      }
+
+      @Override
+      public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError er) {
+        if (FlutterWebViewClient.this.ignoreSslCertificateErrors) {
+          handler.proceed();
+        }
       }
     };
   }
