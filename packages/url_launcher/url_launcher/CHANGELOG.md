@@ -1,3 +1,7 @@
+## 6.0.0-nullsafety.6
+
+* Correct statement in description about which platforms url_launcher supports.
+
 ## 6.0.0-nullsafety.5
 
 * Document that the web plugin is not endorsed in the `nullsafety` prerelease for now.
