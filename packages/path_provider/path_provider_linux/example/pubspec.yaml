@@ -15,9 +15,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
 
-dependency_overrides:
-  path_provider_linux:
-    path: ../
+# Disable overrides until path_provider is migrated to null safety.
+# dependency_overrides:
+#   path_provider_linux:
+#     path: ../
 
 dev_dependencies:
   flutter_test:
