@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:logger/logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 export 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
     show XFile, XTypeGroup;
-
-final _logger = Logger();
 
 /// Open file dialog for loading files and return a file path
 Future<XFile?> openFile({
@@ -63,8 +61,8 @@ Future<String?> getDirectoryPath({
 void _verifyExtensions(List<XTypeGroup> acceptedTypeGroups) {
   acceptedTypeGroups?.asMap()?.forEach((i, acceptedTypeGroup) {
     acceptedTypeGroup.extensions?.asMap()?.forEach((j, ext) {
-      if (ext.startsWith('.')) {
-        _logger.w(
+      if (kDebugMode && ext.startsWith('.')) {
+        print(
           'acceptedTypeGroups[${i}].extensions[${j}] with value "${ext}" is invalid.'
           ' Remove the leading dot.',
         );
