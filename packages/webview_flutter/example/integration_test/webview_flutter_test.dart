@@ -887,7 +887,6 @@ void main() {
       const int Y_SCROLL = 321;
 
       await controller.scrollTo(X_SCROLL, Y_SCROLL);
-      // await tester.pumpAndSettle(Duration(seconds: 3));
       int scrollPosX = await controller.getScrollX();
       int scrollPosY = await controller.getScrollY();
       expect(X_SCROLL, scrollPosX);
@@ -895,7 +894,6 @@ void main() {
 
       // Check scrollBy() (on top of scrollTo())
       await controller.scrollBy(X_SCROLL, Y_SCROLL);
-      // await tester.pumpAndSettle(Duration(seconds: 3));
       scrollPosX = await controller.getScrollX();
       scrollPosY = await controller.getScrollY();
       expect(X_SCROLL * 2, scrollPosX);
