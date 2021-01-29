@@ -16,7 +16,7 @@ environment:
 
 dependencies:
   path: ^1.8.0-nullsafety.3
-  xdg_directories: ^0.1.0
+  xdg_directories: ^0.2.0-nullsafety.0
   path_provider_platform_interface: ^2.0.0-nullsafety
   flutter:
     sdk: flutter
@@ -24,4 +24,4 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ^1.10.0-nullsafety.1
+  pedantic: ^1.10.0-nullsafety.3
