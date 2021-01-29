@@ -5,6 +5,8 @@
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 // Defines map UI options writable from Flutter.
 @protocol FLTGoogleMapTileOverlayOptionsSink
 - (void)setFadeIn:(BOOL)fadeIn;
@@ -13,8 +15,6 @@
 - (void)setVisible:(BOOL)visible;
 - (void)setTileSize:(NSInteger)tileSize;
 @end
-
-NS_ASSUME_NONNULL_BEGIN
 
 @interface FLTGoogleMapTileOverlayController : NSObject <FLTGoogleMapTileOverlayOptionsSink>
 - (instancetype)initWithTileLayer:(GMSTileLayer *)tileLayer mapView:(GMSMapView *)mapView;

@@ -668,22 +668,22 @@ class Convert {
       sink.setFadeIn(toBoolean(fadeIn));
     }
     final Object transparency = data.get("transparency");
-    if (transparency instanceof Number) {
-      sink.setTransparency(((Number) transparency).floatValue());
+    if (transparency != null) {
+      sink.setTransparency(toFloat(transparency));
     }
     final Object zIndex = data.get("zIndex");
-    if (zIndex instanceof Number) {
-      sink.setZIndex(((Number) zIndex).intValue());
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
     }
     final Object visible = data.get("visible");
-    if (visible instanceof Boolean) {
-      sink.setVisible((Boolean) visible);
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
     }
-    final Object tileOverlayId = data.get("tileOverlayId");
-    if (!(tileOverlayId instanceof String)) {
-      throw new IllegalArgumentException("tileOverlayId was invalid");
+    final String tileOverlayId = (String) data.get("tileOverlayId");
+    if (tileOverlayId == null) {
+      throw new IllegalArgumentException("tileOverlayId was null");
     } else {
-      return (String) tileOverlayId;
+      return tileOverlayId;
     }
   }
 
@@ -691,7 +691,7 @@ class Convert {
     int width = toInt(data.get("width"));
     int height = toInt(data.get("height"));
     byte[] dataArray = null;
-    if (data.get("data") instanceof byte[]) {
+    if (data.get("data") != null) {
       dataArray = (byte[]) data.get("data");
     }
     return new Tile(width, height, dataArray);
