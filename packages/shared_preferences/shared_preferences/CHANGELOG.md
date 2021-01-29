@@ -1,3 +1,7 @@
+## 0.5.13+3
+
+* Removed deprecated [AsyncTask](https://developer.android.com/reference/android/os/AsyncTask) was deprecated in API level 30 ([#3481](https://github.com/flutter/plugins/pull/3481))
+
 ## 0.5.13+2
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
