@@ -138,6 +138,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
           return;
         }
         completionHandler.onError("NotAvailable", "Security credentials not available.");
+        break;
       case BiometricPrompt.ERROR_NO_SPACE:
       case BiometricPrompt.ERROR_NO_BIOMETRICS:
         if (promptInfo.isDeviceCredentialAllowed()) return;
