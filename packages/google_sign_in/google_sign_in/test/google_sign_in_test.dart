@@ -32,15 +32,17 @@ void main() {
       'signOut': null,
       'disconnect': null,
       'isSignedIn': true,
+      'requestScopes': true,
       'getTokens': <dynamic, dynamic>{
         'idToken': '123',
         'accessToken': '456',
+        'serverAuthCode': '789',
       },
     };
 
     final List<MethodCall> log = <MethodCall>[];
-    Map<String, dynamic> responses;
-    GoogleSignIn googleSignIn;
+    late Map<String, dynamic> responses;
+    late GoogleSignIn googleSignIn;
 
     setUp(() {
       responses = Map<String, dynamic>.from(kDefaultResponses);
@@ -150,9 +152,9 @@ void main() {
     test('signIn works even if a previous call throws error in other zone',
         () async {
       responses['signInSilently'] = Exception('Not a user');
-      await runZoned(() async {
+      await runZonedGuarded(() async {
         expect(await googleSignIn.signInSilently(), isNull);
-      }, onError: (dynamic e, dynamic st) {});
+      }, (Object e, StackTrace st) {});
       expect(await googleSignIn.signIn(), isNotNull);
       expect(
         log,
@@ -169,16 +171,16 @@ void main() {
     });
 
     test('concurrent calls of the same method trigger sign in once', () async {
-      final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount?>> futures =
+          <Future<GoogleSignInAccount?>>[
         googleSignIn.signInSilently(),
         googleSignIn.signInSilently(),
       ];
       expect(futures.first, isNot(futures.last),
           reason: 'Must return new Future');
-      final List<GoogleSignInAccount> users = await Future.wait(futures);
+      final List<GoogleSignInAccount?> users = await Future.wait(futures);
       expect(googleSignIn.currentUser, isNotNull);
-      expect(users, <GoogleSignInAccount>[
+      expect(users, <GoogleSignInAccount?>[
         googleSignIn.currentUser,
         googleSignIn.currentUser
       ]);
@@ -214,13 +216,13 @@ void main() {
     });
 
     test('concurrent calls of different signIn methods', () async {
-      final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount?>> futures =
+          <Future<GoogleSignInAccount?>>[
         googleSignIn.signInSilently(),
         googleSignIn.signIn(),
       ];
       expect(futures.first, isNot(futures.last));
-      final List<GoogleSignInAccount> users = await Future.wait(futures);
+      final List<GoogleSignInAccount?> users = await Future.wait(futures);
       expect(
         log,
         <Matcher>[
@@ -244,8 +246,8 @@ void main() {
     });
 
     test('signOut/disconnect methods always trigger native calls', () async {
-      final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount?>> futures =
+          <Future<GoogleSignInAccount?>>[
         googleSignIn.signOut(),
         googleSignIn.signOut(),
         googleSignIn.disconnect(),
@@ -269,8 +271,8 @@ void main() {
     });
 
     test('queue of many concurrent calls', () async {
-      final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount?>> futures =
+          <Future<GoogleSignInAccount?>>[
         googleSignIn.signInSilently(),
         googleSignIn.signOut(),
         googleSignIn.signIn(),
@@ -364,17 +366,39 @@ void main() {
       await googleSignIn.signIn();
       log.clear();
 
-      final GoogleSignInAccount user = googleSignIn.currentUser;
+      final GoogleSignInAccount user = googleSignIn.currentUser!;
       final GoogleSignInAuthentication auth = await user.authentication;
 
       expect(auth.accessToken, '456');
       expect(auth.idToken, '123');
+      expect(auth.serverAuthCode, '789');
       expect(
         log,
         <Matcher>[
           isMethodCall('getTokens', arguments: <String, dynamic>{
             'email': 'john.doe@gmail.com',
             'shouldRecoverAuth': true,
+          }),
+        ],
+      );
+    });
+
+    test('requestScopes returns true once new scope is granted', () async {
+      await googleSignIn.signIn();
+      final result = await googleSignIn.requestScopes(['testScope']);
+
+      expect(result, isTrue);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
+            'scopes': <String>[],
+            'hostedDomain': null,
+          }),
+          isMethodCall('signIn', arguments: null),
+          isMethodCall('requestScopes', arguments: <String, dynamic>{
+            'scopes': ['testScope'],
           }),
         ],
       );
@@ -389,11 +413,11 @@ void main() {
       photoUrl: "https://lh5.googleusercontent.com/photo.jpg",
     );
 
-    GoogleSignIn googleSignIn;
+    late GoogleSignIn googleSignIn;
 
     setUp(() {
       final MethodChannelGoogleSignIn platformInstance =
-          GoogleSignInPlatform.instance;
+          GoogleSignInPlatform.instance as MethodChannelGoogleSignIn;
       platformInstance.channel.setMockMethodCallHandler(
           (FakeSignInBackend()..user = kUserData).handleMethodCall);
       googleSignIn = GoogleSignIn();
@@ -406,7 +430,7 @@ void main() {
     test('can sign in and sign out', () async {
       await googleSignIn.signIn();
 
-      final GoogleSignInAccount user = googleSignIn.currentUser;
+      final GoogleSignInAccount user = googleSignIn.currentUser!;
 
       expect(user.displayName, equals(kUserData.displayName));
       expect(user.email, equals(kUserData.email));

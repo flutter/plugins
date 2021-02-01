@@ -1,3 +1,15 @@
+## 1.0.5
+
+* Update Flutter SDK constraint.
+
+## 1.0.4
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 1.0.3
+
+* Make the pedantic dev_dependency explicit.
+
 ## 1.0.2
 
 * Adds a `shared_preferences_macos` package.

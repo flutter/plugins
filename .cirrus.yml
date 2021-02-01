@@ -6,6 +6,8 @@ task:
     dockerfile: .ci/Dockerfile
     cpu: 8
     memory: 16G
+  env:
+    INTEGRATION_TEST_PATH: "./packages/integration_test"
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -16,7 +18,7 @@ task:
   matrix:
     - name: publishable
       script:
-        - flutter channel stable
+        - flutter channel master
         - ./script/check_publish.sh
     - name: format
       install_script:
@@ -37,19 +39,42 @@ task:
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh test
     - name: analyze
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh apk
+    - name: integration_web_smoke_test
+      # Tests integration example test in web.
+      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
+      install_script:
+        - flutter config --enable-web
+        - git clone https://github.com/flutter/web_installers.git
+        - cd web_installers/packages/web_drivers/
+        - pub get
+        - dart lib/web_driver_installer.dart chromedriver --install-only
+        - ./chromedriver/chromedriver --port=4444 &
+      test_script:
+        - cd $INTEGRATION_TEST_PATH/example/
+        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -76,7 +101,7 @@ task:
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - else
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        -   ./script/incremental_build.sh firebase-test-lab
+        -   ./script/incremental_build.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
@@ -84,12 +109,39 @@ task:
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  container:
+    dockerfile: .ci/Dockerfile-LinuxDesktop
+    cpu: 8
+    memory: 16G
+  env:
+    INTEGRATION_TEST_PATH: "./packages/integration_test"
+  upgrade_script:
+    - flutter channel stable
+    - flutter upgrade
+    - flutter channel master
+    - flutter upgrade
+    - git fetch origin master
+  activate_script: pub global activate flutter_plugin_tools
+  matrix:
+    - name: build-linux+drive-examples
+      install_script:
+        - flutter config --enable-linux-desktop
+      build_script:
+        # TODO(stuartmorgan): Include stable once Linux is supported on stable.
+        - flutter channel master
+        - ./script/incremental_build.sh build-examples --linux
+        - xvfb-run ./script/incremental_build.sh drive-examples --linux
+
+task:
+  # Xcode 12 task
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.3-flutter
-  setup_script:
-    - pod repo update
+    image: big-sur-xcode-12.3
   upgrade_script:
+    - sudo gem install cocoapods
     - flutter channel stable
     - flutter upgrade
     - flutter channel master
@@ -98,20 +150,23 @@ task:
   activate_script: pub global activate flutter_plugin_tools
   create_simulator_script:
     - xcrun simctl list
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
+    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh ios --no-codesign
-    - name: lint_darwin_plugins
-      script: ./script/lint_darwin_plugins.sh
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
+        PLUGINS_TO_SKIP_XCTESTS: "battery/battery,camera/camera,connectivity/connectivity,device_info/device_info,espresso,google_maps_flutter/google_maps_flutter,google_sign_in/google_sign_in,in_app_purchase,integration_test,ios_platform_images,local_auth,package_info,path_provider/path_provider,quick_actions,sensors,shared_preferences/shared_preferences,url_launcher/url_launcher,video_player/video_player,webview_flutter,wifi_info_flutter/wifi_info_flutter"
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
@@ -126,18 +181,53 @@ task:
         # https://github.com/flutter/flutter/issues/42864
         - if [[ "$CHANNEL" -eq "stable" ]]; then find . | grep _web$ | xargs rm -rf; fi
         - flutter channel $CHANNEL
+        - flutter upgrade
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples
+        - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=14.3"
+
+task:
+  # Xcode 11 task
+  # TODO(cyanglaz): merge Xcode 11 task to Xcode 12 task when all the matrix can be run in Xcode 12.
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
+  osx_instance:
+    image: catalina-xcode-11.3.1-flutter
+  upgrade_script:
+    - sudo gem install cocoapods
+    - flutter channel stable
+    - flutter upgrade
+    - flutter channel master
+    - flutter upgrade
+    - git fetch origin master
+  activate_script: pub global activate flutter_plugin_tools
+  create_simulator_script:
+    - xcrun simctl list
+    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
+  matrix:
+    - name: lint_darwin_plugins
+      env:
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+      script:
+        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
+        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
+        # Skip the dummy podspecs used to placate the tool.
+        - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
+        - ./script/incremental_build.sh podspecs
+
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: mojave-xcode-11.3-flutter
+    image: big-sur-xcode-12.3
   setup_script:
-    - pod repo update
     - flutter config --enable-macos-desktop
   upgrade_script:
+    - sudo gem install cocoapods
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
@@ -147,8 +237,6 @@ task:
       script:
         - flutter channel master
         - ./script/build_all_plugins_app.sh macos
-    - name: lint_darwin_plugins
-      script: ./script/lint_darwin_plugins.sh
     - name: build-apps+drive-examples
       env:
         PATH: $PATH:/usr/local/bin

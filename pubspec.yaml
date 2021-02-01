@@ -1,7 +1,0 @@
-# This only exists so that we can include pedantic in the top level
-# analysis_options.yaml. Each plugin should be published from its own
-# subdirectory underneath packages/.
-name: flutter_plugins
-dev_dependencies:
-  pedantic: 1.8.0
-publish_to: none

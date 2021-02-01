@@ -1,3 +1,31 @@
+## 2.0.0-nullsafety.1
+
+* Bump Dart SDK to support null safety.
+
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 1.0.10
+
+* Update Flutter SDK constraint.
+
+## 1.0.9
+
+* Laid the groundwork for introducing a Link widget.
+
+## 1.0.8
+
+* Added webOnlyWindowName parameter
+
+## 1.0.7
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 1.0.6
+
+* Make the pedantic dev_dependency explicit.
+
 ## 1.0.5
 
 * Make the `PlatformInterface` `_token` non `const` (as `const` `Object`s are not unique).

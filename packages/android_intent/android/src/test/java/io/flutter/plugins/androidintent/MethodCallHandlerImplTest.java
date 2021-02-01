@@ -217,8 +217,34 @@ public class MethodCallHandlerImplTest {
     Intent intent = shadowOf((Application) context).getNextStartedActivity();
     assertNotNull(intent);
     assertNotNull(intent.getComponent());
-    assertEquals(expectedComponent.getPackageName(), intent.getPackage());
-    assertEquals(expectedComponent.flattenToString(), intent.getComponent().flattenToString());
+    assertEquals("foo", intent.getAction());
+    assertEquals("io.flutter.plugins.androidintent", intent.getPackage());
+    assertEquals(
+        "io.flutter.plugins.androidintent/MainActivity", intent.getComponent().flattenToString());
+  }
+
+  @Test
+  public void onMethodCall_setsOnlyComponentName() {
+    sender.setApplicationContext(context);
+    Map<String, Object> args = new HashMap<>();
+    ComponentName expectedComponent =
+        new ComponentName("io.flutter.plugins.androidintent", "MainActivity");
+    args.put("package", expectedComponent.getPackageName());
+    args.put("componentName", expectedComponent.getClassName());
+    Result result = mock(Result.class);
+    ShadowPackageManager shadowPm =
+        shadowOf(ApplicationProvider.getApplicationContext().getPackageManager());
+    shadowPm.addActivityIfNotPresent(expectedComponent);
+
+    methodCallHandler.onMethodCall(new MethodCall("launch", args), result);
+
+    verify(result, times(1)).success(null);
+    Intent intent = shadowOf((Application) context).getNextStartedActivity();
+    assertNotNull(intent);
+    assertNotNull(intent.getComponent());
+    assertEquals("io.flutter.plugins.androidintent", intent.getPackage());
+    assertEquals(
+        "io.flutter.plugins.androidintent/MainActivity", intent.getComponent().flattenToString());
   }
 
   @Test

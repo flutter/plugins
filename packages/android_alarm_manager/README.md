@@ -1,9 +1,16 @@
 # android_alarm_manager
 
-[![pub package](https://img.shields.io/pub/v/android_alarm_manager.svg)](https://pub.dartlang.org/packages/android_alarm_manager)
+[![pub package](https://img.shields.io/pub/v/android_alarm_manager.svg)](https://pub.dev/packages/android_alarm_manager)
 
 A Flutter plugin for accessing the Android AlarmManager service, and running
 Dart code in the background when alarms fire.
+
+**Please set your constraint to `android_alarm_manager: '>=0.4.y+x <2.0.0'`**
+
+## Backward compatible 1.0.0 version is coming
+The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.4.y+z`.
+Please use `android_alarm_manager: '>=0.4.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
+For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
 
 ## Getting Started
 
@@ -29,7 +36,7 @@ Next, within the `<application></application>` tags, add:
     android:name="io.flutter.plugins.androidalarmmanager.RebootBroadcastReceiver"
     android:enabled="false">
     <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
     </intent-filter>
 </receiver>
 
@@ -114,6 +121,6 @@ register plugins. This can be resolved by running `flutter upgrade` to upgrade
 to the latest Flutter version.**
 
 For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+[documentation](https://flutter.dev/).
 
-For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).
+For help on editing plugin code, view the [documentation](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin).

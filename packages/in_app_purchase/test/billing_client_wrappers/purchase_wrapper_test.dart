@@ -69,6 +69,7 @@ void main() {
           dummyPurchase.purchaseToken);
       expect(details.skPaymentTransaction, null);
       expect(details.billingClientPurchase, dummyPurchase);
+      expect(details.pendingCompletePurchase, true);
     });
   });
 

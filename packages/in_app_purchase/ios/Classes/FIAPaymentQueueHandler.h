@@ -5,6 +5,8 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
+@class SKPaymentTransaction;
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^TransactionsUpdated)(NSArray<SKPaymentTransaction *> *transactions);
@@ -16,8 +18,6 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 
 @interface FIAPaymentQueueHandler : NSObject <SKPaymentTransactionObserver>
 
-@property(copy, nonatomic, readonly) NSDictionary *transactions;
-
 - (instancetype)initWithQueue:(nonnull SKPaymentQueue *)queue
                      transactionsUpdated:(nullable TransactionsUpdated)transactionsUpdated
                       transactionRemoved:(nullable TransactionsRemoved)transactionsRemoved
@@ -26,10 +26,19 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
         (nullable RestoreCompletedTransactionsFinished)restoreCompletedTransactionsFinished
                    shouldAddStorePayment:(nullable ShouldAddStorePayment)shouldAddStorePayment
                         updatedDownloads:(nullable UpdatedDownloads)updatedDownloads;
-- (void)addPayment:(nonnull SKPayment *)payment;
 // Can throw exceptions if the transaction type is purchasing, should always used in a @try block.
 - (void)finishTransaction:(nonnull SKPaymentTransaction *)transaction;
 - (void)restoreTransactions:(nullable NSString *)applicationName;
+- (NSArray<SKPaymentTransaction *> *)getUnfinishedTransactions;
+
+// This method needs to be called before any other methods.
+- (void)startObservingPaymentQueue;
+
+// Appends a payment to the SKPaymentQueue.
+//
+// @param payment Payment object to be added to the payment queue.
+// @return whether "addPayment" was successful.
+- (BOOL)addPayment:(SKPayment *)payment;
 
 @end
 

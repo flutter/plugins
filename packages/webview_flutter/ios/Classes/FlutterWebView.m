@@ -93,6 +93,7 @@
 
     _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
+    _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
@@ -149,6 +150,14 @@
     [self clearCache:result];
   } else if ([[call method] isEqualToString:@"getTitle"]) {
     [self onGetTitle:result];
+  } else if ([[call method] isEqualToString:@"scrollTo"]) {
+    [self onScrollTo:call result:result];
+  } else if ([[call method] isEqualToString:@"scrollBy"]) {
+    [self onScrollBy:call result:result];
+  } else if ([[call method] isEqualToString:@"getScrollX"]) {
+    [self getScrollX:call result:result];
+  } else if ([[call method] isEqualToString:@"getScrollY"]) {
+    [self getScrollY:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -274,6 +283,36 @@
   result(title);
 }
 
+- (void)onScrollTo:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSDictionary* arguments = [call arguments];
+  int x = [arguments[@"x"] intValue];
+  int y = [arguments[@"y"] intValue];
+
+  _webView.scrollView.contentOffset = CGPointMake(x, y);
+  result(nil);
+}
+
+- (void)onScrollBy:(FlutterMethodCall*)call result:(FlutterResult)result {
+  CGPoint contentOffset = _webView.scrollView.contentOffset;
+
+  NSDictionary* arguments = [call arguments];
+  int x = [arguments[@"x"] intValue] + contentOffset.x;
+  int y = [arguments[@"y"] intValue] + contentOffset.y;
+
+  _webView.scrollView.contentOffset = CGPointMake(x, y);
+  result(nil);
+}
+
+- (void)getScrollX:(FlutterMethodCall*)call result:(FlutterResult)result {
+  int offsetX = _webView.scrollView.contentOffset.x;
+  result([NSNumber numberWithInt:offsetX]);
+}
+
+- (void)getScrollY:(FlutterMethodCall*)call result:(FlutterResult)result {
+  int offsetY = _webView.scrollView.contentOffset.y;
+  result([NSNumber numberWithInt:offsetY]);
+}
+
 // Returns nil when successful, or an error message when one or more keys are unknown.
 - (NSString*)applySettings:(NSDictionary<NSString*, id>*)settings {
   NSMutableArray<NSString*>* unknownKeys = [[NSMutableArray alloc] init];
@@ -293,6 +332,9 @@
     } else if ([key isEqualToString:@"userAgent"]) {
       NSString* userAgent = settings[key];
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
+    } else if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
+      NSNumber* allowsInlineMediaPlayback = settings[key];
+      _webView.configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
     } else {
       [unknownKeys addObject:key];
     }
@@ -396,6 +438,19 @@
   } else {
     NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
   }
+}
+
+#pragma mark WKUIDelegate
+
+- (WKWebView*)webView:(WKWebView*)webView
+    createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
+               forNavigationAction:(WKNavigationAction*)navigationAction
+                    windowFeatures:(WKWindowFeatures*)windowFeatures {
+  if (!navigationAction.targetFrame.isMainFrame) {
+    [webView loadRequest:navigationAction.request];
+  }
+
+  return nil;
 }
 
 @end

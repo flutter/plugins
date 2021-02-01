@@ -32,6 +32,8 @@ class GooglePlayConnection
     _purchaseUpdatedController = StreamController.broadcast();
     ;
   }
+
+  /// Returns the singleton instance of the [GooglePlayConnection].
   static GooglePlayConnection get instance => _getOrCreateInstance();
   static GooglePlayConnection _instance;
 
@@ -39,6 +41,9 @@ class GooglePlayConnection
       _purchaseUpdatedController.stream;
   static StreamController<List<PurchaseDetails>> _purchaseUpdatedController;
 
+  /// The [BillingClient] that's abstracted by [GooglePlayConnection].
+  ///
+  /// This field should not be used out of test code.
   @visibleForTesting
   final BillingClient billingClient;
 
@@ -161,19 +166,10 @@ class GooglePlayConnection
         'The method <refreshPurchaseVerificationData> only works on iOS.');
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.paused:
-        _disconnect();
-        break;
-      case AppLifecycleState.resumed:
-        _readyFuture = _connect();
-        break;
-      default:
-    }
-  }
-
+  /// Resets the connection instance.
+  ///
+  /// The next call to [instance] will create a new instance. Should only be
+  /// used in tests.
   @visibleForTesting
   static void reset() => _instance = null;
 
@@ -188,8 +184,6 @@ class GooglePlayConnection
 
   Future<void> _connect() =>
       billingClient.startConnection(onBillingServiceDisconnected: () {});
-
-  Future<void> _disconnect() => billingClient.endConnection();
 
   /// Query the product detail list.
   ///
