@@ -6,6 +6,9 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.webkit.ValueCallback;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
@@ -33,35 +36,36 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+  Context context1;
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
     @Override
     public boolean onCreateWindow(
-        final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+            final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
       final WebViewClient webViewClient =
-          new WebViewClient() {
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public boolean shouldOverrideUrlLoading(
-                @NonNull WebView view, @NonNull WebResourceRequest request) {
-              final String url = request.getUrl().toString();
-              if (!flutterWebViewClient.shouldOverrideUrlLoading(
-                  FlutterWebView.this.webView, request)) {
-                webView.loadUrl(url);
-              }
-              return true;
-            }
+              new WebViewClient() {
+                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public boolean shouldOverrideUrlLoading(
+                        @NonNull WebView view, @NonNull WebResourceRequest request) {
+                  final String url = request.getUrl().toString();
+                  if (!flutterWebViewClient.shouldOverrideUrlLoading(
+                          FlutterWebView.this.webView, request)) {
+                    webView.loadUrl(url);
+                  }
+                  return true;
+                }
 
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-              if (!flutterWebViewClient.shouldOverrideUrlLoading(
-                  FlutterWebView.this.webView, url)) {
-                webView.loadUrl(url);
-              }
-              return true;
-            }
-          };
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                  if (!flutterWebViewClient.shouldOverrideUrlLoading(
+                          FlutterWebView.this.webView, url)) {
+                    webView.loadUrl(url);
+                  }
+                  return true;
+                }
+              };
 
       final WebView newWebView = new WebView(view.getContext());
       newWebView.setWebViewClient(webViewClient);
@@ -72,20 +76,31 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
       return true;
     }
+
+    @Override
+    public boolean onShowFileChooser(
+            WebView webView, ValueCallback<Uri[]> filePathCallback,
+            WebChromeClient.FileChooserParams fileChooserParams) {
+      Intent intent = new Intent(context1, newActivity.class);
+      newActivity.getfilePathCallback(filePathCallback);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      context1.startActivity(intent);
+      return true;
+    }
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @SuppressWarnings("unchecked")
   FlutterWebView(
-      final Context context,
-      BinaryMessenger messenger,
-      int id,
-      Map<String, Object> params,
-      View containerView) {
+          final Context context,
+          BinaryMessenger messenger,
+          int id,
+          Map<String, Object> params,
+          View containerView) {
 
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
     DisplayManager displayManager =
-        (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+            (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
     webView = new InputAwareWebView(context, containerView);
     displayListenerProxy.onPostWebViewInitialization(displayManager);
@@ -94,7 +109,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
     webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-
+    context1 = context;
+    webView.getSettings().setAllowContentAccess(true);
+    webView.getSettings().setAllowFileAccess(true);
     // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
     webView.getSettings().setSupportMultipleWindows(true);
     webView.setWebChromeClient(new FlutterWebChromeClient());
@@ -283,13 +300,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       throw new UnsupportedOperationException("JavaScript string cannot be null");
     }
     webView.evaluateJavascript(
-        jsString,
-        new android.webkit.ValueCallback<String>() {
-          @Override
-          public void onReceiveValue(String value) {
-            result.success(value);
-          }
-        });
+            jsString,
+            new android.webkit.ValueCallback<String>() {
+              @Override
+              public void onReceiveValue(String value) {
+                result.success(value);
+              }
+            });
   }
 
   @SuppressWarnings("unchecked")
@@ -356,7 +373,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           final boolean hasNavigationDelegate = (boolean) settings.get(key);
 
           final WebViewClient webViewClient =
-              flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
+                  flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
 
           webView.setWebViewClient(webViewClient);
           break;
@@ -371,9 +388,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           break;
         case "userAgent":
           updateUserAgent((String) settings.get(key));
-          break;
-        case "allowsInlineMediaPlayback":
-          // no-op inline media playback is always allowed on Android.
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
@@ -406,7 +420,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private void registerJavaScriptChannelNames(List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.addJavascriptInterface(
-          new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
+              new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
     }
   }
 
