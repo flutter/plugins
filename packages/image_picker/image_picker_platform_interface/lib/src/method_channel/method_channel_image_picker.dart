@@ -27,7 +27,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    String? path = await pickImagePath(
+    String? path = await _pickImagePath(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
@@ -37,8 +37,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     return path != null ? PickedFile(path) : null;
   }
 
-  @override
-  Future<String?> pickImagePath({
+  Future<String?> _pickImagePath({
     required ImageSource source,
     double? maxWidth,
     double? maxHeight,
@@ -76,7 +75,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) async {
-    String? path = await pickVideoPath(
+    String? path = await _pickVideoPath(
       source: source,
       maxDuration: maxDuration,
       preferredCameraDevice: preferredCameraDevice,
@@ -84,8 +83,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     return path != null ? PickedFile(path) : null;
   }
 
-  @override
-  Future<String?> pickVideoPath({
+  Future<String?> _pickVideoPath({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
@@ -134,41 +132,5 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       exception: exception,
       type: retrieveType,
     );
-  }
-
-  @override
-  // ignore: deprecated_member_use_from_same_package
-  Future<LostDataResponse> retrieveLostDataAsDartIoFile() async {
-    final Map<String, dynamic>? result =
-        await _channel.invokeMapMethod<String, dynamic>('retrieve');
-    if (result == null) {
-      // ignore: deprecated_member_use_from_same_package
-      return LostDataResponse.empty();
-    }
-    assert(result.containsKey('path') ^ result.containsKey('errorCode'));
-
-    final String? type = result['type'];
-    assert(type == kTypeImage || type == kTypeVideo);
-
-    RetrieveType? retrieveType;
-    if (type == kTypeImage) {
-      retrieveType = RetrieveType.image;
-    } else if (type == kTypeVideo) {
-      retrieveType = RetrieveType.video;
-    }
-
-    PlatformException? exception;
-    if (result.containsKey('errorCode')) {
-      exception = PlatformException(
-          code: result['errorCode'], message: result['errorMessage']);
-    }
-
-    final String? path = result['path'];
-
-    // ignore: deprecated_member_use_from_same_package
-    return LostDataResponse(
-        file: path == null ? null : File(path),
-        exception: exception,
-        type: retrieveType);
   }
 }
