@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety
+
+* Migrate to NNBD.
+
 ## 1.1.6
 
 * Fix test asset file location.
