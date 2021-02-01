@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker_platform_interface/src/types/lost_data.dart';
 import 'package:meta/meta.dart' show required, visibleForTesting;
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
@@ -20,7 +21,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   MethodChannel get channel => _channel;
 
   @override
-  Future<PickedFile> pickImage({
+  Future<XFile> pickImage({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
@@ -34,7 +35,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       imageQuality: imageQuality,
       preferredCameraDevice: preferredCameraDevice,
     );
-    return path != null ? PickedFile(path) : null;
+    return path != null ? XFile(path) : null;
   }
 
   @override
@@ -72,7 +73,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
-  Future<PickedFile> pickVideo({
+  Future<XFile> pickVideo({
     @required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration maxDuration,
@@ -82,7 +83,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxDuration: maxDuration,
       preferredCameraDevice: preferredCameraDevice,
     );
-    return path != null ? PickedFile(path) : null;
+    return path != null ? XFile(path) : null;
   }
 
   @override
@@ -132,7 +133,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     final String path = result['path'];
 
     return LostData(
-      file: path != null ? PickedFile(path) : null,
+      file: path != null ? XFile(path) : null,
       exception: exception,
       type: retrieveType,
     );
