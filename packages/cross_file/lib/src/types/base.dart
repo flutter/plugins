@@ -15,10 +15,10 @@ import 'dart:typed_data';
 /// the methods should seem familiar.
 abstract class XFileBase {
   /// Construct a CrossFile
-  XFileBase(String path);
+  XFileBase(String? path);
 
   /// Save the CrossFile at the indicated file path.
-  void saveTo(String path) async {
+  Future<void> saveTo(String path) {
     throw UnimplementedError('saveTo has not been implemented.');
   }
 
@@ -31,19 +31,19 @@ abstract class XFileBase {
   /// Accessing the data contained in the picked file by its path
   /// is platform-dependant (and won't work on web), so use the
   /// byte getters in the CrossFile instance instead.
-  String get path {
+  String? get path {
     throw UnimplementedError('.path has not been implemented.');
   }
 
   /// The name of the file as it was selected by the user in their device.
   ///
   /// Use only for cosmetic reasons, do not try to use this as a path.
-  String get name {
+  String? get name {
     throw UnimplementedError('.name has not been implemented.');
   }
 
   /// For web, it may be necessary for a file to know its MIME type.
-  String get mimeType {
+  String? get mimeType {
     throw UnimplementedError('.mimeType has not been implemented.');
   }
 
@@ -75,7 +75,7 @@ abstract class XFileBase {
   /// If `end` is present, only up to byte-index `end` will be read. Otherwise, until end of file.
   ///
   /// In order to make sure that system resources are freed, the stream must be read to completion or the subscription on the stream must be cancelled.
-  Stream<Uint8List> openRead([int start, int end]) {
+  Stream<Uint8List> openRead([int? start, int? end]) {
     throw UnimplementedError('openRead() has not been implemented.');
   }
 

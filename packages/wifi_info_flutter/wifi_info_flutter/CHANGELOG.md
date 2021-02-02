@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Fix README example.
+
 ## 1.0.2
 
 * Update Flutter SDK constraint.

@@ -1,3 +1,27 @@
+## 0.6.7+22
+
+* iOS: update XCUITests to separate each test session.
+
+## 0.6.7+21
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.6.7+20
+
+* Updated README.md to show the new Android API requirements.
+
+## 0.6.7+19
+
+* Do not copy static field to another static field.
+
+## 0.6.7+18
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.6.7+17
+
+* iOS: fix `User-facing text should use localized string macro` warning.
+
 ## 0.6.7+16
 
 * Update Flutter SDK constraint.

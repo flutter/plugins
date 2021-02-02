@@ -3,7 +3,7 @@ description: macOS implementation of the path_provider plugin
 # 0.0.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.0.4+7
+version: 0.0.4+9
 homepage: https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider_macos
 
 flutter:

@@ -468,6 +468,10 @@ class Convert {
     if (points != null) {
       sink.setPoints(toPoints(points));
     }
+    final Object holes = data.get("holes");
+    if (holes != null) {
+      sink.setHoles(toHoles(holes));
+    }
     final String polygonId = (String) data.get("polygonId");
     if (polygonId == null) {
       throw new IllegalArgumentException("polygonId was null");
@@ -576,11 +580,21 @@ class Convert {
     final List<?> data = toList(o);
     final List<LatLng> points = new ArrayList<>(data.size());
 
-    for (Object ob : data) {
-      final List<?> point = toList(ob);
+    for (Object rawPoint : data) {
+      final List<?> point = toList(rawPoint);
       points.add(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))));
     }
     return points;
+  }
+
+  private static List<List<LatLng>> toHoles(Object o) {
+    final List<?> data = toList(o);
+    final List<List<LatLng>> holes = new ArrayList<>(data.size());
+
+    for (Object rawHole : data) {
+      holes.add(toPoints(rawHole));
+    }
+    return holes;
   }
 
   private static List<PatternItem> toPattern(Object o) {
