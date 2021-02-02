@@ -43,6 +43,8 @@ class LostData {
   final PlatformException? exception;
 
   /// Can either be [RetrieveType.image] or [RetrieveType.video];
+  ///
+  /// If the lost data is empty, this will be null.
   final RetrieveType? type;
 
   bool _empty = false;
