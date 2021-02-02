@@ -1,6 +1,6 @@
-## 0.4.6 - null safety
+##  0.5.0-null-safety
 
-* Migrate to null safety
+* Migrate to null safety.
 
 ## 0.4.5+20
 
