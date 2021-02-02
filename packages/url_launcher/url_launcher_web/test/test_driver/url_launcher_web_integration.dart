@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart = 2.9
 import 'dart:html' as html;
 import 'dart:js_util';
 import 'package:flutter/widgets.dart';
@@ -270,6 +271,38 @@ void main() {
       // Check that the same anchor has been updated.
       expect(anchor.getAttribute('href'), uri2.toString());
       expect(anchor.getAttribute('target'), '_self');
+    });
+
+    testWidgets('sizes itself correctly', (WidgetTester tester) async {
+      final Key containerKey = GlobalKey();
+      final Uri uri = Uri.parse('http://foobar');
+      await tester.pumpWidget(Directionality(
+        textDirection: TextDirection.ltr,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints.tight(Size(100.0, 100.0)),
+            child: WebLinkDelegate(TestLinkInfo(
+              uri: uri,
+              target: LinkTarget.blank,
+              builder: (BuildContext context, FollowLink followLink) {
+                return Container(
+                  key: containerKey,
+                  child: SizedBox(width: 50.0, height: 50.0),
+                );
+              },
+            )),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      final Size containerSize = tester.getSize(find.byKey(containerKey));
+      // The Stack widget inserted by the `WebLinkDelegate` shouldn't loosen the
+      // constraints before passing them to the inner container. So the inner
+      // container should respect the tight constraints given by the ancestor
+      // `ConstrainedBox` widget.
+      expect(containerSize.width, 100.0);
+      expect(containerSize.height, 100.0);
     });
   });
 }

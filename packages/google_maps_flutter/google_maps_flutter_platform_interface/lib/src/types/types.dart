@@ -29,3 +29,4 @@ export 'utils/circle.dart';
 export 'utils/marker.dart';
 export 'utils/polygon.dart';
 export 'utils/polyline.dart';
+export 'utils/tile_overlay.dart';

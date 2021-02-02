@@ -1,3 +1,7 @@
+## 0.6.7+22
+
+* iOS: update XCUITests to separate each test session.
+
 ## 0.6.7+21
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
