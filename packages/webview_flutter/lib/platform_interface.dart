@@ -391,17 +391,17 @@ class WebSettings {
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
     this.allowsInlineMediaPlayback,
-    required this.setSupportZoom,
-    required this.setBuiltInZoomControls,
-    required this.setDisplayZoomControls,
-    required this.setUseWideViewPort,
-    required this.setLoadWithOverviewMode,
+    required this.zoomEnabled,
+    required this.builtInZoomControlsEnabled,
+    required this.displayZoomControls,
+    required this.useWideViewPort,
+    required this.loadWithOverviewMode,
     required this.userAgent,
-  }) : assert(setSupportZoom != null &&
-            setBuiltInZoomControls != null &&
-            setDisplayZoomControls != null &&
-            setUseWideViewPort != null &&
-            setLoadWithOverviewMode != null &&
+  }) : assert(zoomEnabled != null &&
+            builtInZoomControlsEnabled != null &&
+            displayZoomControls != null &&
+            useWideViewPort != null &&
+            loadWithOverviewMode != null &&
             userAgent != null);
 
   /// The JavaScript execution mode to be used by the webview.
@@ -436,23 +436,23 @@ class WebSettings {
   final WebSetting<String?> userAgent;
 
   /// Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
-  final WebSetting<bool?> setSupportZoom;
+  final WebSetting<bool?> zoomEnabled;
 
   /// Sets whether the WebView should use its built-in zoom mechanisms.
-  final WebSetting<bool?> setBuiltInZoomControls;
+  final WebSetting<bool?> builtInZoomControlsEnabled;
 
   /// Sets whether the WebView should display on-screen zoom controls when using the built-in zoom mechanisms.
   ///
   ///The default is true. However, on-screen zoom controls are deprecated in Android so it's recommended to set this to false.
-  final WebSetting<bool?> setDisplayZoomControls;
+  final WebSetting<bool?> displayZoomControls;
 
   /// Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
-  final WebSetting<bool?> setUseWideViewPort;
+  final WebSetting<bool?> useWideViewPort;
 
   /// Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
   ///
   /// This setting is taken into account when the content width is greater than the width of the WebView control, for example, when getUseWideViewPort() is enabled.
-  final WebSetting<bool?> setLoadWithOverviewMode;
+  final WebSetting<bool?> loadWithOverviewMode;
 
   @override
   String toString() {

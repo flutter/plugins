@@ -375,20 +375,20 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "allowsInlineMediaPlayback":
           // no-op inline media playback is always allowed on Android.
           break;
-        case "setSupportZoom":
-          setSupportZoom((boolean) settings.get(key));
+        case "zoomEnabled":
+          zoomEnabled((boolean) settings.get(key));
           break;
-        case "setBuiltInZoomControls":
-          setBuiltInZoomControls((boolean) settings.get(key));
+        case "builtInZoomControlsEnabled":
+          builtInZoomControlsEnabled((boolean) settings.get(key));
           break;
-        case "setDisplayZoomControls":
-          setDisplayZoomControls((boolean) settings.get(key));
+        case "displayZoomControls":
+          displayZoomControls((boolean) settings.get(key));
           break;
-        case "setUseWideViewPort":
-          setUseWideViewPort((boolean) settings.get(key));
+        case "useWideViewPort":
+          useWideViewPort((boolean) settings.get(key));
           break;
-        case "setLoadWithOverviewMode":
-          setLoadWithOverviewMode((boolean) settings.get(key));
+        case "loadWithOverviewMode":
+          loadWithOverviewMode((boolean) settings.get(key));
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
@@ -429,25 +429,25 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.getSettings().setUserAgentString(userAgent);
   }
 
-  private void setSupportZoom(boolean shouldEnable) {
-    webView.getSettings().setSupportZoom(shouldEnable);
+  private void zoomEnabled(boolean shouldEnable) {
+    webView.getSettings().zoomEnabled(shouldEnable);
   }
 
-  private void setBuiltInZoomControls(boolean shouldEnable) {
-    webView.getSettings().setBuiltInZoomControls(shouldEnable);
+  private void builtInZoomControlsEnabled(boolean shouldEnable) {
+    webView.getSettings().builtInZoomControlsEnabled(shouldEnable);
   }
 
-  private void setDisplayZoomControls(boolean shouldEnable) {
+  private void displayZoomControls(boolean shouldEnable) {
     // oOn-screen zoom controls are deprecated in Android (see ZoomButtonsController) so it's recommended to set this to false.
-    webView.getSettings().setDisplayZoomControls(shouldEnable);
+    webView.getSettings().displayZoomControls(shouldEnable);
   }
 
-  private void setUseWideViewPort(boolean shouldEnable) {
-    webView.getSettings().setUseWideViewPort(shouldEnable);
+  private void useWideViewPort(boolean shouldEnable) {
+    webView.getSettings().useWideViewPort(shouldEnable);
   }
 
-  private void setLoadWithOverviewMode(boolean shouldEnable) {
-    webView.getSettings().setLoadWithOverviewMode(shouldEnable);
+  private void loadWithOverviewMode(boolean shouldEnable) {
+    webView.getSettings().loadWithOverviewMode(shouldEnable);
   }
 
   @Override

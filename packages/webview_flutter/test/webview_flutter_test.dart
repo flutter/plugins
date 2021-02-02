@@ -788,16 +788,16 @@ void main() {
     });
   });
 
-  group('setSupportZoom', () {
-    testWidgets('set Support Zoom', (WidgetTester tester) async {
+  group('zoomEnabled', () {
+    testWidgets('Enable zoom', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
-        setSupportZoom: true,
+        zoomEnabled: true,
       ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      expect(platformWebView.setSupportZoom, isTrue);
+      expect(platformWebView.zoomEnabled, isTrue);
     });
 
     testWidgets('defaults to true', (WidgetTester tester) async {
@@ -806,7 +806,7 @@ void main() {
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      expect(platformWebView.setSupportZoom, isTrue);
+      expect(platformWebView.zoomEnabled, isTrue);
     });
 
     testWidgets('can be changed', (WidgetTester tester) async {
@@ -818,30 +818,30 @@ void main() {
 
       await tester.pumpWidget(WebView(
         key: key,
-        setSupportZoom: true,
+        zoomEnabled: true,
       ));
 
-      expect(platformWebView.setSupportZoom, isTrue);
+      expect(platformWebView.zoomEnabled, isTrue);
 
       await tester.pumpWidget(WebView(
         key: key,
-        setSupportZoom: false,
+        zoomEnabled: false,
       ));
 
-      expect(platformWebView.setSupportZoom, isFalse);
+      expect(platformWebView.zoomEnabled, isFalse);
     });
   });
 
-  group('setBuiltInZoomControls', () {
-    testWidgets('set Built In ZoomControls', (WidgetTester tester) async {
+  group('builtInZoomControlsEnabled', () {
+    testWidgets('enable Built In ZoomControls', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
-        setBuiltInZoomControls: true,
+        builtInZoomControlsEnabled: true,
       ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      expect(platformWebView.setBuiltInZoomControls, isTrue);
+      expect(platformWebView.builtInZoomControlsEnabled, isTrue);
     });
 
     testWidgets('defaults to true', (WidgetTester tester) async {
@@ -850,7 +850,7 @@ void main() {
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      expect(platformWebView.setBuiltInZoomControls, isTrue);
+      expect(platformWebView.builtInZoomControlsEnabled, isTrue);
     });
 
     testWidgets('can be changed', (WidgetTester tester) async {
@@ -862,30 +862,30 @@ void main() {
 
       await tester.pumpWidget(WebView(
         key: key,
-        setBuiltInZoomControls: true,
+        builtInZoomControlsEnabled: true,
       ));
 
-      expect(platformWebView.setBuiltInZoomControls, isTrue);
+      expect(platformWebView.builtInZoomControlsEnabled, isTrue);
 
       await tester.pumpWidget(WebView(
         key: key,
-        setBuiltInZoomControls: false,
+        builtInZoomControlsEnabled: false,
       ));
 
-      expect(platformWebView.setBuiltInZoomControls, isFalse);
+      expect(platformWebView.builtInZoomControlsEnabled, isFalse);
     });
   });
 
-  group('setDisplayZoomControls', () {
-    testWidgets('set Display Zoom Controls', (WidgetTester tester) async {
+  group('displayZoomControls', () {
+    testWidgets('Display Zoom Controls', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
-        setDisplayZoomControls: true,
+        displayZoomControls: true,
       ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      expect(platformWebView.setDisplayZoomControls, isTrue);
+      expect(platformWebView.displayZoomControls, isTrue);
     });
 
     testWidgets('defaults to false', (WidgetTester tester) async {
@@ -894,7 +894,7 @@ void main() {
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      expect(platformWebView.setDisplayZoomControls, isFalse);
+      expect(platformWebView.displayZoomControls, isFalse);
     });
 
     testWidgets('can be changed', (WidgetTester tester) async {
@@ -906,30 +906,30 @@ void main() {
 
       await tester.pumpWidget(WebView(
         key: key,
-        setDisplayZoomControls: true,
+        displayZoomControls: true,
       ));
 
-      expect(platformWebView.setDisplayZoomControls, isTrue);
+      expect(platformWebView.displayZoomControls, isTrue);
 
       await tester.pumpWidget(WebView(
         key: key,
-        setDisplayZoomControls: false,
+        displayZoomControls: false,
       ));
 
-      expect(platformWebView.setDisplayZoomControls, isFalse);
+      expect(platformWebView.displayZoomControls, isFalse);
     });
   });
 
-  group('setUseWideViewPort', () {
-    testWidgets('set Use Wide Viewport', (WidgetTester tester) async {
+  group('useWideViewPort', () {
+    testWidgets('Use Wide Viewport', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
-        setUseWideViewPort: true,
+        useWideViewPort: true,
       ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      expect(platformWebView.setUseWideViewPort, isTrue);
+      expect(platformWebView.useWideViewPort, isTrue);
     });
 
     testWidgets('defaults to true', (WidgetTester tester) async {
@@ -938,7 +938,7 @@ void main() {
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      expect(platformWebView.setUseWideViewPort, isTrue);
+      expect(platformWebView.useWideViewPort, isTrue);
     });
 
     testWidgets('can be changed', (WidgetTester tester) async {
@@ -950,30 +950,30 @@ void main() {
 
       await tester.pumpWidget(WebView(
         key: key,
-        setUseWideViewPort: true,
+        useWideViewPort: true,
       ));
 
-      expect(platformWebView.setUseWideViewPort, isTrue);
+      expect(platformWebView.useWideViewPort, isTrue);
 
       await tester.pumpWidget(WebView(
         key: key,
-        setUseWideViewPort: false,
+        useWideViewPort: false,
       ));
 
-      expect(platformWebView.setUseWideViewPort, isFalse);
+      expect(platformWebView.useWideViewPort, isFalse);
     });
   });
 
-  group('setLoadWithOverviewMode', () {
-    testWidgets('set Load With Overview Mode', (WidgetTester tester) async {
+  group('loadWithOverviewMode', () {
+    testWidgets('Load With Overview Mode', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
-        setLoadWithOverviewMode: true,
+        loadWithOverviewMode: true,
       ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      expect(platformWebView.setLoadWithOverviewMode, isTrue);
+      expect(platformWebView.loadWithOverviewMode, isTrue);
     });
 
     testWidgets('defaults to true', (WidgetTester tester) async {
@@ -982,7 +982,7 @@ void main() {
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      expect(platformWebView.setLoadWithOverviewMode, isTrue);
+      expect(platformWebView.loadWithOverviewMode, isTrue);
     });
 
     testWidgets('can be changed', (WidgetTester tester) async {
@@ -994,17 +994,17 @@ void main() {
 
       await tester.pumpWidget(WebView(
         key: key,
-        setLoadWithOverviewMode: true,
+        loadWithOverviewMode: true,
       ));
 
-      expect(platformWebView.setLoadWithOverviewMode, isTrue);
+      expect(platformWebView.loadWithOverviewMode, isTrue);
 
       await tester.pumpWidget(WebView(
         key: key,
-        setLoadWithOverviewMode: false,
+        loadWithOverviewMode: false,
       ));
 
-      expect(platformWebView.setLoadWithOverviewMode, isFalse);
+      expect(platformWebView.loadWithOverviewMode, isFalse);
     });
   });
 
@@ -1037,11 +1037,11 @@ void main() {
               debuggingEnabled: false,
               userAgent: WebSetting<String?>.of(null),
               gestureNavigationEnabled: true,
-              setSupportZoom: WebSetting<bool?>.of(true),
-              setBuiltInZoomControls: WebSetting<bool?>.of(true),
-              setDisplayZoomControls: WebSetting<bool?>.of(false),
-              setUseWideViewPort: WebSetting<bool?>.of(true),
-              setLoadWithOverviewMode: WebSetting<bool?>.of(true),
+              zoomEnabled: WebSetting<bool?>.of(true),
+              builtInZoomControlsEnabled: WebSetting<bool?>.of(true),
+              displayZoomControls: WebSetting<bool?>.of(false),
+              useWideViewPort: WebSetting<bool?>.of(true),
+              loadWithOverviewMode: WebSetting<bool?>.of(true),
             ),
           )));
     });
@@ -1109,13 +1109,12 @@ class FakePlatformWebView {
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
     userAgent = params['settings']['userAgent'];
-    setSupportZoom = params['settings']['setSupportZoom'] ?? true;
-    setBuiltInZoomControls =
-        params['settings']['setBuiltInZoomControls'] ?? true;
-    setDisplayZoomControls =
-        params['settings']['setDisplayZoomControls'] ?? false;
-    setUseWideViewPort = params['settings']['setUseWideViewPort'];
-    setLoadWithOverviewMode = params['settings']['setLoadWithOverviewMode'];
+    zoomEnabled = params['settings']['zoomEnabled'] ?? true;
+    builtInZoomControlsEnabled =
+        params['settings']['builtInZoomControlsEnabled'] ?? true;
+    displayZoomControls = params['settings']['displayZoomControls'] ?? false;
+    useWideViewPort = params['settings']['useWideViewPort'];
+    loadWithOverviewMode = params['settings']['loadWithOverviewMode'];
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -1135,11 +1134,11 @@ class FakePlatformWebView {
   bool? hasNavigationDelegate;
   bool? debuggingEnabled;
   String? userAgent;
-  bool? setSupportZoom;
-  bool? setBuiltInZoomControls;
-  bool? setDisplayZoomControls;
-  bool? setUseWideViewPort;
-  bool? setLoadWithOverviewMode;
+  bool? zoomEnabled;
+  bool? builtInZoomControlsEnabled;
+  bool? displayZoomControls;
+  bool? useWideViewPort;
+  bool? loadWithOverviewMode;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -1158,20 +1157,21 @@ class FakePlatformWebView {
           debuggingEnabled = call.arguments['debuggingEnabled'];
         }
         userAgent = call.arguments['userAgent'];
-        if (call.arguments['setSupportZoom'] != null) {
-          setSupportZoom = call.arguments['setSupportZoom'];
+        if (call.arguments['zoomEnabled'] != null) {
+          zoomEnabled = call.arguments['zoomEnabled'];
         }
-        if (call.arguments['setBuiltInZoomControls'] != null) {
-          setBuiltInZoomControls = call.arguments['setBuiltInZoomControls'];
+        if (call.arguments['builtInZoomControlsEnabled'] != null) {
+          builtInZoomControlsEnabled =
+              call.arguments['builtInZoomControlsEnabled'];
         }
-        if (call.arguments['setDisplayZoomControls'] != null) {
-          setDisplayZoomControls = call.arguments['setDisplayZoomControls'];
+        if (call.arguments['displayZoomControls'] != null) {
+          displayZoomControls = call.arguments['displayZoomControls'];
         }
-        if (call.arguments['setUseWideViewPort'] != null) {
-          setUseWideViewPort = call.arguments['setUseWideViewPort'];
+        if (call.arguments['useWideViewPort'] != null) {
+          useWideViewPort = call.arguments['useWideViewPort'];
         }
-        if (call.arguments['setLoadWithOverviewMode'] != null) {
-          setLoadWithOverviewMode = call.arguments['setLoadWithOverviewMode'];
+        if (call.arguments['loadWithOverviewMode'] != null) {
+          loadWithOverviewMode = call.arguments['loadWithOverviewMode'];
         }
         break;
       case 'canGoBack':
@@ -1406,14 +1406,12 @@ class MatchesWebSettings extends Matcher {
         _webSettings!.gestureNavigationEnabled ==
             webSettings.gestureNavigationEnabled &&
         _webSettings!.userAgent == webSettings.userAgent &&
-        _webSettings!.setSupportZoom == webSettings.setSupportZoom &&
-        _webSettings!.setBuiltInZoomControls ==
-            webSettings.setBuiltInZoomControls &&
-        _webSettings!.setDisplayZoomControls ==
-            webSettings.setDisplayZoomControls &&
-        _webSettings!.setUseWideViewPort == webSettings.setUseWideViewPort &&
-        _webSettings!.setLoadWithOverviewMode ==
-            webSettings.setLoadWithOverviewMode;
+        _webSettings!.zoomEnabled == webSettings.zoomEnabled &&
+        _webSettings!.builtInZoomControlsEnabled ==
+            webSettings.builtInZoomControlsEnabled &&
+        _webSettings!.displayZoomControls == webSettings.displayZoomControls &&
+        _webSettings!.useWideViewPort == webSettings.useWideViewPort &&
+        _webSettings!.loadWithOverviewMode == webSettings.loadWithOverviewMode;
   }
 }
 

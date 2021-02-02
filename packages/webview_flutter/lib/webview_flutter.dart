@@ -221,11 +221,11 @@ class WebView extends StatefulWidget {
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
-    this.setSupportZoom = true,
-    this.setBuiltInZoomControls = true,
-    this.setDisplayZoomControls = false,
-    this.setUseWideViewPort = true,
-    this.setLoadWithOverviewMode = true,
+    this.zoomEnabled = true,
+    this.builtInZoomControlsEnabled = true,
+    this.displayZoomControls = false,
+    this.useWideViewPort = true,
+    this.loadWithOverviewMode = true,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
@@ -404,24 +404,24 @@ class WebView extends StatefulWidget {
 
   /// (Android only) Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
   ///
-  /// The particular zoom mechanisms that should be used can be set with setBuiltInZoomControls(boolean).
+  /// The particular zoom mechanisms that should be used can be set with builtInZoomControlsEnabled(boolean).
   ///
-  /// By default 'setSupportZoom` is true
-  final bool setSupportZoom;
+  /// By default 'zoomEnabled' is true
+  final bool zoomEnabled;
 
   /// (Android only) Sets whether the WebView should use its built-in zoom mechanisms.
   ///
   /// The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
   ///
-  /// By default 'setBuiltInZoomControls` is true
-  final bool setBuiltInZoomControls;
+  /// By default 'builtInZoomControlsEnabled' is true
+  final bool builtInZoomControlsEnabled;
 
   /// (Android only) Sets whether the WebView should use its built-in zoom mechanisms.
   ///
   /// The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
   ///
-  /// By default 'setDisplayZoomControls` is false
-  final bool setDisplayZoomControls;
+  /// By default 'displayZoomControls` is false
+  final bool displayZoomControls;
 
   /// (Android only) Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
   ///
@@ -431,15 +431,15 @@ class WebView extends StatefulWidget {
   ///
   /// If the page does not contain the tag or does not provide a width, then a wide viewport will be used.
   ///
-  /// By default 'setUseWideViewPort` is true
-  final bool setUseWideViewPort;
+  /// By default 'useWideViewPort` is true
+  final bool useWideViewPort;
 
   /// (Android only) Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
   ///
   /// This setting is taken into account when the content width is greater than the width of the WebView control, for example, when getUseWideViewPort() is enabled.
   ///
-  /// By default 'setLoadWithOverviewMode' is true
-  final bool setLoadWithOverviewMode;
+  /// By default 'loadWithOverviewMode' is true
+  final bool loadWithOverviewMode;
 
   /// Which restrictions apply on automatic media playback.
   ///
@@ -524,12 +524,12 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
-    setSupportZoom: WebSetting<bool?>.of(widget.setSupportZoom),
-    setBuiltInZoomControls: WebSetting<bool?>.of(widget.setBuiltInZoomControls),
-    setDisplayZoomControls: WebSetting<bool?>.of(widget.setDisplayZoomControls),
-    setUseWideViewPort: WebSetting<bool?>.of(widget.setUseWideViewPort),
-    setLoadWithOverviewMode:
-        WebSetting<bool?>.of(widget.setLoadWithOverviewMode),
+    zoomEnabled: WebSetting<bool?>.of(widget.zoomEnabled),
+    builtInZoomControlsEnabled:
+        WebSetting<bool?>.of(widget.builtInZoomControlsEnabled),
+    displayZoomControls: WebSetting<bool?>.of(widget.displayZoomControls),
+    useWideViewPort: WebSetting<bool?>.of(widget.useWideViewPort),
+    loadWithOverviewMode: WebSetting<bool?>.of(widget.loadWithOverviewMode),
   );
 }
 
@@ -543,21 +543,21 @@ WebSettings _clearUnchangedWebSettings(
   assert(newValue.hasNavigationDelegate != null);
   assert(newValue.debuggingEnabled != null);
   assert(newValue.userAgent != null);
-  assert(newValue.setSupportZoom != null);
-  assert(newValue.setBuiltInZoomControls != null);
-  assert(newValue.setDisplayZoomControls != null);
-  assert(newValue.setUseWideViewPort != null);
-  assert(newValue.setLoadWithOverviewMode != null);
+  assert(newValue.zoomEnabled != null);
+  assert(newValue.builtInZoomControlsEnabled != null);
+  assert(newValue.displayZoomControls != null);
+  assert(newValue.useWideViewPort != null);
+  assert(newValue.loadWithOverviewMode != null);
 
   JavascriptMode? javascriptMode;
   bool? hasNavigationDelegate;
   bool? debuggingEnabled;
   WebSetting<String?> userAgent = WebSetting.absent();
-  WebSetting<bool?> setSupportZoom = WebSetting.absent();
-  WebSetting<bool?> setBuiltInZoomControls = WebSetting.absent();
-  WebSetting<bool?> setDisplayZoomControls = WebSetting.absent();
-  WebSetting<bool?> setUseWideViewPort = WebSetting.absent();
-  WebSetting<bool?> setLoadWithOverviewMode = WebSetting.absent();
+  WebSetting<bool?> zoomEnabled = WebSetting.absent();
+  WebSetting<bool?> builtInZoomControlsEnabled = WebSetting.absent();
+  WebSetting<bool?> displayZoomControls = WebSetting.absent();
+  WebSetting<bool?> useWideViewPort = WebSetting.absent();
+  WebSetting<bool?> loadWithOverviewMode = WebSetting.absent();
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -570,21 +570,21 @@ WebSettings _clearUnchangedWebSettings(
   if (currentValue.userAgent != newValue.userAgent) {
     userAgent = newValue.userAgent;
   }
-  if (currentValue.setSupportZoom != newValue.setSupportZoom) {
-    setSupportZoom = newValue.setSupportZoom;
+  if (currentValue.zoomEnabled != newValue.zoomEnabled) {
+    zoomEnabled = newValue.zoomEnabled;
   }
-  if (currentValue.setBuiltInZoomControls != newValue.setBuiltInZoomControls) {
-    setBuiltInZoomControls = newValue.setBuiltInZoomControls;
+  if (currentValue.builtInZoomControlsEnabled !=
+      newValue.builtInZoomControlsEnabled) {
+    builtInZoomControlsEnabled = newValue.builtInZoomControlsEnabled;
   }
-  if (currentValue.setDisplayZoomControls != newValue.setDisplayZoomControls) {
-    setDisplayZoomControls = newValue.setDisplayZoomControls;
+  if (currentValue.displayZoomControls != newValue.displayZoomControls) {
+    displayZoomControls = newValue.displayZoomControls;
   }
-  if (currentValue.setUseWideViewPort != newValue.setUseWideViewPort) {
-    setUseWideViewPort = newValue.setUseWideViewPort;
+  if (currentValue.useWideViewPort != newValue.useWideViewPort) {
+    useWideViewPort = newValue.useWideViewPort;
   }
-  if (currentValue.setLoadWithOverviewMode !=
-      newValue.setLoadWithOverviewMode) {
-    setLoadWithOverviewMode = newValue.setLoadWithOverviewMode;
+  if (currentValue.loadWithOverviewMode != newValue.loadWithOverviewMode) {
+    loadWithOverviewMode = newValue.loadWithOverviewMode;
   }
 
   return WebSettings(
@@ -592,11 +592,11 @@ WebSettings _clearUnchangedWebSettings(
     hasNavigationDelegate: hasNavigationDelegate,
     debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,
-    setSupportZoom: setSupportZoom,
-    setBuiltInZoomControls: setBuiltInZoomControls,
-    setDisplayZoomControls: setDisplayZoomControls,
-    setUseWideViewPort: setUseWideViewPort,
-    setLoadWithOverviewMode: setLoadWithOverviewMode,
+    zoomEnabled: zoomEnabled,
+    builtInZoomControlsEnabled: builtInZoomControlsEnabled,
+    displayZoomControls: displayZoomControls,
+    useWideViewPort: useWideViewPort,
+    loadWithOverviewMode: loadWithOverviewMode,
   );
 }
 
