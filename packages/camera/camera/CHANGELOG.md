@@ -1,3 +1,7 @@
+## 0.7.0+2
+
+* Fix example reference in README.
+
 ## 0.7.0+1
 
 * Ensure communication from JAVA to Dart is done on the main UI thread.
