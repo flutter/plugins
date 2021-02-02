@@ -13,6 +13,11 @@ else
   PUB=pub
 fi
 
+echo "Debugging PUB"
+$PUB --version
+which $PUB
+
+
 # Plugins that are excluded from this task.
 ALL_EXCLUDED=("")
 # Exclude nnbd plugins from stable.
