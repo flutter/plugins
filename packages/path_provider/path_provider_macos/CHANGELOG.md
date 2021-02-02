@@ -1,4 +1,4 @@
-## 0.0.4+10
+## 0.0.4+10-nullsafety
 
 * Update Dart SDK constraint for null safety.
 
