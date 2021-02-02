@@ -430,24 +430,24 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void zoomEnabled(boolean shouldEnable) {
-    webView.getSettings().zoomEnabled(shouldEnable);
+    webView.getSettings().setSupportZoom(shouldEnable);
   }
 
   private void builtInZoomControlsEnabled(boolean shouldEnable) {
-    webView.getSettings().builtInZoomControlsEnabled(shouldEnable);
+    webView.getSettings().setBuiltInZoomControls(shouldEnable);
   }
 
   private void displayZoomControls(boolean shouldEnable) {
-    // oOn-screen zoom controls are deprecated in Android (see ZoomButtonsController) so it's recommended to set this to false.
-    webView.getSettings().displayZoomControls(shouldEnable);
+    // On-screen zoom controls are deprecated in Android (see ZoomButtonsController) so it's recommended to set this to false.
+    webView.getSettings().setDisplayZoomControls(shouldEnable);
   }
 
   private void useWideViewPort(boolean shouldEnable) {
-    webView.getSettings().useWideViewPort(shouldEnable);
+    webView.getSettings().setUseWideViewPort(shouldEnable);
   }
 
   private void loadWithOverviewMode(boolean shouldEnable) {
-    webView.getSettings().loadWithOverviewMode(shouldEnable);
+    webView.getSettings().setLoadWithOverviewMode(shouldEnable);
   }
 
   @Override
