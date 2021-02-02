@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.0
+
+- Migrate to null safety.
+
 ## 1.6.0
 
 - Added VideoRecordedEvent to support ending a video recording in the native implementation. 

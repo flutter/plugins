@@ -71,9 +71,9 @@ class CameraInitializedEvent extends CameraEvent {
     int cameraId,
     this.previewWidth,
     this.previewHeight, [
-    this.exposureMode,
+    this.exposureMode = ExposureMode.auto,
     this.exposurePointSupported = false,
-    this.focusMode,
+    this.focusMode = FocusMode.auto,
     this.focusPointSupported = false,
   ]) : super(cameraId);
 
