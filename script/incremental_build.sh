@@ -17,6 +17,7 @@ echo "Debugging PUB"
 $PUB --version
 which $PUB
 
+$PUB global activate flutter_plugin_tools
 
 # Plugins that are excluded from this task.
 ALL_EXCLUDED=("")
