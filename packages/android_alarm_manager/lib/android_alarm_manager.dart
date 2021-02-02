@@ -31,7 +31,7 @@ void _alarmManagerCallbackDispatcher() {
 
     // PluginUtilities.getCallbackFromHandle performs a lookup based on the
     // callback handle and returns a tear-off of the original callback.
-    final Function closure = PluginUtilities.getCallbackFromHandle(handle);
+    final Function? closure = PluginUtilities.getCallbackFromHandle(handle);
 
     if (closure == null) {
       print('Fatal: could not find callback');
@@ -71,13 +71,13 @@ class AndroidAlarmManager {
   // Callback used to get the handle for a callback. It's
   // [PluginUtilities.getCallbackHandle] by default.
   static _GetCallbackHandle _getCallbackHandle =
-      (Function callback) => PluginUtilities.getCallbackHandle(callback);
+      (Function callback) => PluginUtilities.getCallbackHandle(callback)!;
 
   /// This is exposed for the unit tests. It should not be accessed by users of
   /// the plugin.
   @visibleForTesting
   static void setTestOverides(
-      {_Now now, _GetCallbackHandle getCallbackHandle}) {
+      {_Now? now, _GetCallbackHandle? getCallbackHandle}) {
     _now = (now ?? _now);
     _getCallbackHandle = (getCallbackHandle ?? _getCallbackHandle);
   }
@@ -93,7 +93,7 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final bool r = await _channel.invokeMethod<bool>(
+    final bool? r = await _channel.invokeMethod<bool>(
         'AlarmService.start', <dynamic>[handle.toRawHandle()]);
     return r ?? false;
   }
@@ -211,7 +211,7 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final bool r =
+    final bool? r =
         await _channel.invokeMethod<bool>('Alarm.oneShotAt', <dynamic>[
       id,
       alarmClock,
@@ -262,7 +262,7 @@ class AndroidAlarmManager {
     Duration duration,
     int id,
     Function callback, {
-    DateTime startAt,
+    DateTime? startAt,
     bool exact = false,
     bool wakeup = false,
     bool rescheduleOnReboot = false,
@@ -278,7 +278,7 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final bool r = await _channel.invokeMethod<bool>(
+    final bool? r = await _channel.invokeMethod<bool>(
         'Alarm.periodic', <dynamic>[
       id,
       exact,
@@ -299,7 +299,7 @@ class AndroidAlarmManager {
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> cancel(int id) async {
-    final bool r =
+    final bool? r =
         await _channel.invokeMethod<bool>('Alarm.cancel', <dynamic>[id]);
     return (r == null) ? false : r;
   }
