@@ -402,28 +402,34 @@ class WebView extends StatefulWidget {
   /// By default `userAgent` is null.
   final String? userAgent;
 
-  /// (Android only) Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  /// Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
   ///
   /// The particular zoom mechanisms that should be used can be set with builtInZoomControlsEnabled(boolean).
+  ///
+  /// On iOS this property is ignored.
   ///
   /// By default 'zoomEnabled' is true
   final bool zoomEnabled;
 
-  /// (Android only) Sets whether the WebView should use its built-in zoom mechanisms.
+  /// Sets whether the WebView should use its built-in zoom mechanisms.
   ///
   /// The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
+  ///
+  /// On iOS this property is ignored.
   ///
   /// By default 'builtInZoomControlsEnabled' is true
   final bool builtInZoomControlsEnabled;
 
-  /// (Android only) Sets whether the WebView should use its built-in zoom mechanisms.
+  /// Sets whether the WebView should use its built-in zoom mechanisms.
   ///
   /// The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
+  ///
+  /// On iOS this property is ignored.
   ///
   /// By default 'displayZoomControls` is false
   final bool displayZoomControls;
 
-  /// (Android only) Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
+  /// Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
   ///
   /// When the value of the setting is false, the layout width is always set to the width of the WebView control in device-independent (CSS) pixels.
   ///
@@ -431,12 +437,16 @@ class WebView extends StatefulWidget {
   ///
   /// If the page does not contain the tag or does not provide a width, then a wide viewport will be used.
   ///
+  /// On iOS this property is ignored.
+  ///
   /// By default 'useWideViewPort` is true
   final bool useWideViewPort;
 
-  /// (Android only) Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
+  /// Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
   ///
   /// This setting is taken into account when the content width is greater than the width of the WebView control, for example, when getUseWideViewPort() is enabled.
+  ///
+  /// On iOS this property is ignored.
   ///
   /// By default 'loadWithOverviewMode' is true
   final bool loadWithOverviewMode;
