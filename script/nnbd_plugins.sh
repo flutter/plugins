@@ -17,6 +17,7 @@ readonly NNBD_PLUGINS_LIST=(
   "path_provider"
   "plugin_platform_interface"
   "share"
+  "shared_preferences"
   "url_launcher"
   "video_player"
   "webview_flutter"
@@ -35,7 +36,6 @@ readonly NON_NNBD_PLUGINS_LIST=(
   # "in_app_purchase"
   # "quick_actions"
   # "sensors"
-  # "shared_preferences"
   # "wifi_info_flutter"
 )
 
