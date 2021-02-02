@@ -1,6 +1,8 @@
 ## 2.0.0-nullsafety
 
 * Migrate to null safety.
+* Breaking Changes:
+    * Removed the deprecated methods: `ImagePickerPlatform.retrieveLostDataAsDartIoFile`,`ImagePickerPlatform.pickImagePath` and `ImagePickerPlatform.pickVideoPath`.
 
 ## 1.1.6
 
