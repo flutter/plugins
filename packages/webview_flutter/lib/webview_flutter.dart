@@ -409,6 +409,7 @@ class WebView extends StatefulWidget {
   /// On iOS this property is ignored.
   ///
   /// By default 'zoomEnabled' is true
+  // TODO(https://github.com/flutter/flutter/issues/75196): Update other platform implementations so this param can be used by those platforms
   final bool zoomEnabled;
 
   /// Sets whether the WebView should use its built-in zoom mechanisms.
