@@ -122,7 +122,7 @@ class _CameraAppState extends State<CameraApp> {
 }
 ```
 
-For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/master/packages/camera/example).
+For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/master/packages/camera/camera/example).
 
 *Note*: This plugin is still under development, and some APIs might not be available yet.
 [Feedback welcome](https://github.com/flutter/flutter/issues) and
