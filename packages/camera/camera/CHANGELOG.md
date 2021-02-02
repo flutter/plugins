@@ -1,3 +1,7 @@
+## 0.7.0+2
+
+* Removed overflow from _CameraTogglesRowWidget(main.dart) in the example app.
+
 ## 0.7.0+1
 
 * Ensure communication from JAVA to Dart is done on the main UI thread.
