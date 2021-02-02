@@ -1,6 +1,10 @@
-## 2.0.0-nullsafety.4
+## 2.0.0-nullsafety.5
 
 * Enable native double-tap to zoom, and pinch to zoom functionality on Android and default to setLoadWithOverviewMode
+
+## 2.0.0-nullsafety.4
+
+* Update integration test to workaround an iOS 14 issue with `evaluateJavascript`.
 
 ## 2.0.0-nullsafety.3
 

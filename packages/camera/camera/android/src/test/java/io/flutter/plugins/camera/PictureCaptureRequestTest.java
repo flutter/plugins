@@ -1,9 +1,16 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import io.flutter.plugin.common.MethodChannel;
@@ -20,14 +27,44 @@ public class PictureCaptureRequestTest {
   @Test
   public void setState_sets_state() {
     PictureCaptureRequest req = new PictureCaptureRequest(null);
-    req.setState(PictureCaptureRequest.State.awaitingPreCapture);
+    req.setState(PictureCaptureRequest.State.focusing);
+    assertEquals("State is focusing", req.getState(), PictureCaptureRequest.State.focusing);
+    req.setState(PictureCaptureRequest.State.preCapture);
+    assertEquals("State is preCapture", req.getState(), PictureCaptureRequest.State.preCapture);
+    req.setState(PictureCaptureRequest.State.waitingPreCaptureReady);
     assertEquals(
-        "State is awaitingPreCapture",
+        "State is waitingPreCaptureReady",
         req.getState(),
-        PictureCaptureRequest.State.awaitingPreCapture);
+        PictureCaptureRequest.State.waitingPreCaptureReady);
     req.setState(PictureCaptureRequest.State.capturing);
     assertEquals(
         "State is awaitingPreCapture", req.getState(), PictureCaptureRequest.State.capturing);
+  }
+
+  @Test
+  public void setState_resets_timeout() {
+    PictureCaptureRequest.TimeoutHandler mockTimeoutHandler =
+        mock(PictureCaptureRequest.TimeoutHandler.class);
+    PictureCaptureRequest req = new PictureCaptureRequest(null, mockTimeoutHandler);
+    req.setState(PictureCaptureRequest.State.focusing);
+    req.setState(PictureCaptureRequest.State.preCapture);
+    req.setState(PictureCaptureRequest.State.waitingPreCaptureReady);
+    req.setState(PictureCaptureRequest.State.capturing);
+    verify(mockTimeoutHandler, times(4)).resetTimeout(any());
+    verify(mockTimeoutHandler, never()).clearTimeout(any());
+  }
+
+  @Test
+  public void setState_clears_timeout() {
+    PictureCaptureRequest.TimeoutHandler mockTimeoutHandler =
+        mock(PictureCaptureRequest.TimeoutHandler.class);
+    PictureCaptureRequest req = new PictureCaptureRequest(null, mockTimeoutHandler);
+    req.setState(PictureCaptureRequest.State.idle);
+    req.setState(PictureCaptureRequest.State.finished);
+    req = new PictureCaptureRequest(null, mockTimeoutHandler);
+    req.setState(PictureCaptureRequest.State.error);
+    verify(mockTimeoutHandler, never()).resetTimeout(any());
+    verify(mockTimeoutHandler, times(3)).clearTimeout(any());
   }
 
   @Test
@@ -43,13 +80,24 @@ public class PictureCaptureRequestTest {
   }
 
   @Test
+  public void finish_clears_timeout() {
+    PictureCaptureRequest.TimeoutHandler mockTimeoutHandler =
+        mock(PictureCaptureRequest.TimeoutHandler.class);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    PictureCaptureRequest req = new PictureCaptureRequest(mockResult, mockTimeoutHandler);
+    req.finish("/test/path");
+    verify(mockTimeoutHandler, never()).resetTimeout(any());
+    verify(mockTimeoutHandler).clearTimeout(any());
+  }
+
+  @Test
   public void isFinished_is_true_When_state_is_finished_or_error() {
     // Setup
     PictureCaptureRequest req = new PictureCaptureRequest(null);
     // Test false states
     req.setState(PictureCaptureRequest.State.idle);
     assertFalse(req.isFinished());
-    req.setState(PictureCaptureRequest.State.awaitingPreCapture);
+    req.setState(PictureCaptureRequest.State.preCapture);
     assertFalse(req.isFinished());
     req.setState(PictureCaptureRequest.State.capturing);
     assertFalse(req.isFinished());
@@ -80,6 +128,17 @@ public class PictureCaptureRequestTest {
     // Test
     verify(mockResult).error("ERROR_CODE", "Error Message", null);
     assertEquals("State is error", req.getState(), PictureCaptureRequest.State.error);
+  }
+
+  @Test
+  public void error_clears_timeout() {
+    PictureCaptureRequest.TimeoutHandler mockTimeoutHandler =
+        mock(PictureCaptureRequest.TimeoutHandler.class);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    PictureCaptureRequest req = new PictureCaptureRequest(mockResult, mockTimeoutHandler);
+    req.error("ERROR_CODE", "Error Message", null);
+    verify(mockTimeoutHandler, never()).resetTimeout(any());
+    verify(mockTimeoutHandler).clearTimeout(any());
   }
 
   @Test(expected = IllegalStateException.class)

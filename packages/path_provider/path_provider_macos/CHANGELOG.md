@@ -1,3 +1,11 @@
+## 0.0.4+9
+
+* Remove placeholder Dart file.
+
+## 0.0.4+8
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
 ## 0.0.4+7
 
 * Update Flutter SDK constraint.

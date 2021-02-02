@@ -23,14 +23,15 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "connectivity_platform_interface"
   "connectivity_web"
   "extension_google_sign_in_as_googleapis_auth"
+  "file_selector" # currently out of sync with camera
   "flutter_plugin_android_lifecycle"
   "google_maps_flutter_platform_interface"
   "google_maps_flutter_web"
   "google_sign_in_platform_interface"
   "google_sign_in_web"
   "image_picker_platform_interface"
-  "local_auth" # flutter_plugin_android_lifecycle conflict
   "instrumentation_adapter"
+  "local_auth" # flutter_plugin_android_lifecycle conflict
   "path_provider_linux"
   "path_provider_macos"
   "path_provider_platform_interface"
@@ -55,6 +56,10 @@ ALL_EXCLUDED=($EXCLUDED)
 # Exclude nnbd plugins from stable.
 if [ "$CHANNEL" == "stable" ]; then
   ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_STABLE")
+fi
+# Exclude non-nnbd plugins from master.
+if [ "$CHANNEL" != "stable" ]; then
+  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_MASTER")
 fi
 
 echo "Excluding the following plugins: $ALL_EXCLUDED"

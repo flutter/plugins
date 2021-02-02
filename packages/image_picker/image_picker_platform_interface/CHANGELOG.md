@@ -1,3 +1,7 @@
+## 1.1.6
+
+* Fix test asset file location.
+
 ## 1.1.5
 
 * Update Flutter SDK constraint.
