@@ -1,3 +1,7 @@
+## 0.0.1+13-nullsafety
+
+* Update Dart SDK constraint for null safety.
+
 ## 0.0.1+12
 
 * Update Flutter SDK constraint.
