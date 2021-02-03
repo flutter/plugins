@@ -1,4 +1,4 @@
-## 0.7.0+4
+## 0.7.0+2
 
 * Fix example reference in README.
 * Revert compileSdkVersion back to 29 (from 30) as this is causing problems with add-to-app configurations.
