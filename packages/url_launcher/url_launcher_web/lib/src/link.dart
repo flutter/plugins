@@ -45,16 +45,16 @@ class WebLinkDelegate extends StatefulWidget {
 /// For external URIs, it lets the browser do its thing. For app route names, it
 /// pushes the route name to the framework.
 class WebLinkDelegateState extends State<WebLinkDelegate> {
-  LinkViewController _controller;
+  late LinkViewController _controller;
 
   @override
   void didUpdateWidget(WebLinkDelegate oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.link.uri != oldWidget.link.uri) {
-      _controller?.setUri(widget.link.uri);
+      _controller.setUri(widget.link.uri!);
     }
     if (widget.link.target != oldWidget.link.target) {
-      _controller?.setTarget(widget.link.target);
+      _controller.setTarget(widget.link.target);
     }
   }
 
@@ -78,7 +78,7 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
             onCreatePlatformView: (PlatformViewCreationParams params) {
               _controller = LinkViewController.fromParams(params, context);
               return _controller
-                ..setUri(widget.link.uri)
+                ..setUri(widget.link.uri!)
                 ..setTarget(widget.link.target);
             },
             surfaceFactory:
@@ -126,15 +126,15 @@ class LinkViewController extends PlatformViewController {
   static Map<int, LinkViewController> _instances = <int, LinkViewController>{};
 
   static html.Element _viewFactory(int viewId) {
-    return _instances[viewId]?._element;
+    return _instances[viewId]!._element;
   }
 
-  static int _hitTestedViewId;
+  static int? _hitTestedViewId;
 
-  static StreamSubscription _clickSubscription;
+  static late StreamSubscription _clickSubscription;
 
   static void _onGlobalClick(html.MouseEvent event) {
-    final int viewId = getViewIdFromTarget(event);
+    final int? viewId = getViewIdFromTarget(event);
     _instances[viewId]?._onDomClick(event);
     // After the DOM click event has been received, clean up the hit test state
     // so we can start fresh on the next click.
@@ -161,7 +161,7 @@ class LinkViewController extends PlatformViewController {
   /// The context of the [Link] widget that created this controller.
   final BuildContext context;
 
-  html.Element _element;
+  late html.Element _element;
   bool get _isInitialized => _element != null;
 
   Future<void> _initialize() async {
@@ -207,7 +207,7 @@ class LinkViewController extends PlatformViewController {
     pushRouteNameToFramework(context, routeName);
   }
 
-  Uri _uri;
+  late Uri _uri;
 
   /// Set the [Uri] value for this link.
   void setUri(Uri uri) {
@@ -264,8 +264,8 @@ class LinkViewController extends PlatformViewController {
 }
 
 /// Finds the view id of the DOM element targeted by the [event].
-int getViewIdFromTarget(html.Event event) {
-  final html.Element linkElement = getLinkElementFromTarget(event);
+int? getViewIdFromTarget(html.Event event) {
+  final html.Element? linkElement = getLinkElementFromTarget(event);
   if (linkElement != null) {
     return getProperty(linkElement, linkViewIdProperty);
   }
@@ -275,15 +275,17 @@ int getViewIdFromTarget(html.Event event) {
 /// Finds the targeted DOM element by the [event].
 ///
 /// It handles the case where the target element is inside a shadow DOM too.
-html.Element getLinkElementFromTarget(html.Event event) {
-  final html.Element target = event.target;
-  if (isLinkElement(target)) {
-    return target;
-  }
-  if (target.shadowRoot != null) {
-    final html.Element child = target.shadowRoot.lastChild;
-    if (isLinkElement(child)) {
-      return child;
+html.Element? getLinkElementFromTarget(html.Event event) {
+  final html.EventTarget? target = event.target;
+  if (target != null && target is html.Element) {
+    if (isLinkElement(target)) {
+      return target;
+    }
+    if (target.shadowRoot != null) {
+      final html.Node? child = target.shadowRoot!.lastChild;
+      if (child != null && child is html.Element && isLinkElement(child)) {
+        return child;
+      }
     }
   }
   return null;
@@ -291,6 +293,6 @@ html.Element getLinkElementFromTarget(html.Event event) {
 
 /// Checks if the given [element] is a link that was created by
 /// [LinkViewController].
-bool isLinkElement(html.Element element) {
-  return element.tagName == 'A' && hasProperty(element, linkViewIdProperty);
+bool isLinkElement(html.Element? element) {
+  return element != null && element.tagName == 'A' && hasProperty(element, linkViewIdProperty);
 }
