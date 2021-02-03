@@ -15,7 +15,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mockito: ^5.0.0-nullsafety.5
   pedantic: ^1.10.0-nullsafety.3
 
 environment:
