@@ -189,19 +189,21 @@ public class Camera {
     Log.i("Camera", "[FPS Range] is:" + fpsRange);
   }
 
-  private void prepareMediaRecorder(String outputFilePath, Integer maxVideoDuration) throws IOException {
+  private void prepareMediaRecorder(String outputFilePath, Integer maxVideoDuration)
+      throws IOException {
     if (mediaRecorder != null) {
       mediaRecorder.release();
     }
 
-    MediaRecorderBuilder mediaRecorderBuilder = new MediaRecorderBuilder(recordingProfile, outputFilePath)
+    MediaRecorderBuilder mediaRecorderBuilder =
+        new MediaRecorderBuilder(recordingProfile, outputFilePath)
             .setEnableAudio(enableAudio)
             .setMediaOrientation(getMediaOrientation());
 
     if (maxVideoDuration != null) {
       mediaRecorderBuilder.setMaxVideoDuration(maxVideoDuration);
     }
-     mediaRecorder = mediaRecorderBuilder.build();
+    mediaRecorder = mediaRecorderBuilder.build();
   }
 
   @SuppressLint("MissingPermission")
@@ -623,21 +625,23 @@ public class Camera {
       recordingVideo = true;
       createCaptureSession(
           CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
-     if(maxVideoDuration != null) {
-       mediaRecorder.setOnInfoListener((mr, what, extra) -> {
-         if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-           try {
-             dartMessenger.sendVideoRecordedEvent(videoRecordingFile.getAbsolutePath(), maxVideoDuration);
-             recordingVideo = false;
-             videoRecordingFile = null;
-             maxDurationLimit = null;
-             resetCaptureSession();
-           } catch (CameraAccessException e) {
-             result.error("videoRecordingFailed", e.getMessage(), null);
-           }
-         }
-       });
-     }
+      if (maxVideoDuration != null) {
+        mediaRecorder.setOnInfoListener(
+            (mr, what, extra) -> {
+              if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                try {
+                  dartMessenger.sendVideoRecordedEvent(
+                      videoRecordingFile.getAbsolutePath(), maxVideoDuration);
+                  recordingVideo = false;
+                  videoRecordingFile = null;
+                  maxDurationLimit = null;
+                  resetCaptureSession();
+                } catch (CameraAccessException e) {
+                  result.error("videoRecordingFailed", e.getMessage(), null);
+                }
+              }
+            });
+      }
       result.success(null);
     } catch (CameraAccessException | IOException e) {
       recordingVideo = false;

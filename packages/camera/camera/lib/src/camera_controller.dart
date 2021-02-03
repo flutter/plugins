@@ -437,9 +437,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       value = value.copyWith(isRecordingVideo: true, isRecordingPaused: false);
 
       // Listen for end to update isRecordingVideo in CameraValue.
-      CameraPlatform.instance
-          .onVideoRecordedEvent(_cameraId)
-          .listen((event) {
+      CameraPlatform.instance.onVideoRecordedEvent(_cameraId).listen((event) {
         value = value.copyWith(isRecordingVideo: false);
       });
     } on PlatformException catch (e) {
@@ -526,7 +524,9 @@ class CameraController extends ValueNotifier<CameraValue> {
         'cameraTimeLimitReachedEventStream was called on uninitialized CameraController',
       );
     }
-    return CameraPlatform.instance.onVideoRecordedEvent(_cameraId).asBroadcastStream();
+    return CameraPlatform.instance
+        .onVideoRecordedEvent(_cameraId)
+        .asBroadcastStream();
   }
 
   /// Returns a widget showing a live camera preview.

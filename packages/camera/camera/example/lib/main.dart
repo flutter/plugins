@@ -572,7 +572,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     try {
       await controller.initialize();
       controller.onVideoRecordedEvent().listen((VideoRecordedEvent event) {
-          // Handle VideoRecordedEvent
+        // Handle VideoRecordedEvent
         debugPrint('event is stream ${event.file.path}');
       });
       _minAvailableExposureOffset = await controller.getMinExposureOffset();

@@ -240,14 +240,16 @@ class VideoRecordedEvent extends CameraEvent {
   final XFile file;
   final Duration maxVideoDuration;
 
-  VideoRecordedEvent(int cameraId, this.file, this.maxVideoDuration) : super(cameraId);
+  VideoRecordedEvent(int cameraId, this.file, this.maxVideoDuration)
+      : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [VideoRecordedEvent]
   /// class.
   VideoRecordedEvent.fromJson(Map<String, dynamic> json)
       : file = XFile(json['path']),
         maxVideoDuration = json['maxVideoDuration'] != null
-            ? Duration(milliseconds: json['maxVideoDuration'] as int) : null,
+            ? Duration(milliseconds: json['maxVideoDuration'] as int)
+            : null,
         super(json['cameraId']);
 
   /// Converts the [VideoRecordedEvent] instance into a [Map] instance that can be
@@ -268,5 +270,6 @@ class VideoRecordedEvent extends CameraEvent {
           maxVideoDuration == other.maxVideoDuration;
 
   @override
-  int get hashCode => super.hashCode ^ file.hashCode ^ maxVideoDuration.hashCode;
+  int get hashCode =>
+      super.hashCode ^ file.hashCode ^ maxVideoDuration.hashCode;
 }

@@ -216,7 +216,9 @@ class MethodChannelCamera extends CameraPlatform {
   @override
   Future<XFile> stopVideoRecording(int cameraId) async {
     Completer<XFile> completer = Completer();
-    unawaited(onVideoRecordedEvent(cameraId).first.then((event) => completer.complete(event.file)));
+    unawaited(onVideoRecordedEvent(cameraId)
+        .first
+        .then((event) => completer.complete(event.file)));
     unawaited(_channel.invokeMethod<void>(
       'stopVideoRecording',
       <String, dynamic>{'cameraId': cameraId},
