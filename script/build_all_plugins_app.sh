@@ -64,7 +64,7 @@ fi
 
 echo "Excluding the following plugins: $ALL_EXCLUDED"
 
-(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
+(cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
 
 function error() {
   echo "$@" 1>&2
