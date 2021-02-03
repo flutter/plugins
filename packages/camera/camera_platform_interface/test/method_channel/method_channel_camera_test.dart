@@ -376,7 +376,8 @@ void main() {
 
     group('Function Tests', () {
       late MethodChannelCamera camera;
-      int? cameraId;
+      late int cameraId;
+
       setUp(() async {
         MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
@@ -394,10 +395,10 @@ void main() {
           ),
           ResolutionPreset.high,
         );
-        Future<void> initializeFuture = camera.initializeCamera(cameraId!);
+        Future<void> initializeFuture = camera.initializeCamera(cameraId);
         camera.cameraEventStreamController.add(
           CameraInitializedEvent(
-            cameraId!,
+            cameraId,
             1920,
             1080,
             ExposureMode.auto,
@@ -470,7 +471,7 @@ void main() {
             methods: {'takePicture': '/test/path.jpg'});
 
         // Act
-        XFile file = await camera.takePicture(cameraId!);
+        XFile file = await camera.takePicture(cameraId);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -505,7 +506,7 @@ void main() {
         );
 
         // Act
-        await camera.startVideoRecording(cameraId!);
+        await camera.startVideoRecording(cameraId);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -526,7 +527,7 @@ void main() {
 
         // Act
         await camera.startVideoRecording(
-          cameraId!,
+          cameraId,
           maxVideoDuration: Duration(seconds: 10),
         );
 
@@ -545,7 +546,7 @@ void main() {
         );
 
         // Act
-        XFile file = await camera.stopVideoRecording(cameraId!);
+        XFile file = await camera.stopVideoRecording(cameraId);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -564,7 +565,7 @@ void main() {
         );
 
         // Act
-        await camera.pauseVideoRecording(cameraId!);
+        await camera.pauseVideoRecording(cameraId);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -582,7 +583,7 @@ void main() {
         );
 
         // Act
-        await camera.resumeVideoRecording(cameraId!);
+        await camera.resumeVideoRecording(cameraId);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -600,10 +601,10 @@ void main() {
         );
 
         // Act
-        await camera.setFlashMode(cameraId!, FlashMode.torch);
-        await camera.setFlashMode(cameraId!, FlashMode.always);
-        await camera.setFlashMode(cameraId!, FlashMode.auto);
-        await camera.setFlashMode(cameraId!, FlashMode.off);
+        await camera.setFlashMode(cameraId, FlashMode.torch);
+        await camera.setFlashMode(cameraId, FlashMode.always);
+        await camera.setFlashMode(cameraId, FlashMode.auto);
+        await camera.setFlashMode(cameraId, FlashMode.off);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -626,8 +627,8 @@ void main() {
         );
 
         // Act
-        await camera.setExposureMode(cameraId!, ExposureMode.auto);
-        await camera.setExposureMode(cameraId!, ExposureMode.locked);
+        await camera.setExposureMode(cameraId, ExposureMode.auto);
+        await camera.setExposureMode(cameraId, ExposureMode.locked);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -646,8 +647,8 @@ void main() {
         );
 
         // Act
-        await camera.setExposurePoint(cameraId!, Point<double>(0.5, 0.5));
-        await camera.setExposurePoint(cameraId!, null);
+        await camera.setExposurePoint(cameraId, Point<double>(0.5, 0.5));
+        await camera.setExposurePoint(cameraId, null);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -674,7 +675,7 @@ void main() {
         );
 
         // Act
-        final minExposureOffset = await camera.getMinExposureOffset(cameraId!);
+        final minExposureOffset = await camera.getMinExposureOffset(cameraId);
 
         // Assert
         expect(minExposureOffset, 2.0);
@@ -693,7 +694,7 @@ void main() {
         );
 
         // Act
-        final maxExposureOffset = await camera.getMaxExposureOffset(cameraId!);
+        final maxExposureOffset = await camera.getMaxExposureOffset(cameraId);
 
         // Assert
         expect(maxExposureOffset, 2.0);
@@ -712,7 +713,7 @@ void main() {
         );
 
         // Act
-        final stepSize = await camera.getExposureOffsetStepSize(cameraId!);
+        final stepSize = await camera.getExposureOffsetStepSize(cameraId);
 
         // Assert
         expect(stepSize, 0.25);
@@ -731,7 +732,7 @@ void main() {
         );
 
         // Act
-        final actualOffset = await camera.setExposureOffset(cameraId!, 0.5);
+        final actualOffset = await camera.setExposureOffset(cameraId, 0.5);
 
         // Assert
         expect(actualOffset, 0.6);
@@ -751,8 +752,8 @@ void main() {
         );
 
         // Act
-        await camera.setFocusMode(cameraId!, FocusMode.auto);
-        await camera.setFocusMode(cameraId!, FocusMode.locked);
+        await camera.setFocusMode(cameraId, FocusMode.auto);
+        await camera.setFocusMode(cameraId, FocusMode.locked);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -771,8 +772,8 @@ void main() {
         );
 
         // Act
-        await camera.setFocusPoint(cameraId!, Point<double>(0.5, 0.5));
-        await camera.setFocusPoint(cameraId!, null);
+        await camera.setFocusPoint(cameraId, Point<double>(0.5, 0.5));
+        await camera.setFocusPoint(cameraId, null);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -793,7 +794,7 @@ void main() {
 
       test('Should build a texture widget as preview widget', () async {
         // Act
-        Widget widget = camera.buildPreview(cameraId!);
+        Widget widget = camera.buildPreview(cameraId);
 
         // Act
         expect(widget is Texture, isTrue);
@@ -818,7 +819,7 @@ void main() {
         );
 
         // Act
-        final maxZoomLevel = await camera.getMaxZoomLevel(cameraId!);
+        final maxZoomLevel = await camera.getMaxZoomLevel(cameraId);
 
         // Assert
         expect(maxZoomLevel, 10.0);
@@ -837,7 +838,7 @@ void main() {
         );
 
         // Act
-        final maxZoomLevel = await camera.getMinZoomLevel(cameraId!);
+        final maxZoomLevel = await camera.getMinZoomLevel(cameraId);
 
         // Assert
         expect(maxZoomLevel, 1.0);
@@ -856,7 +857,7 @@ void main() {
         );
 
         // Act
-        await camera.setZoomLevel(cameraId!, 2.0);
+        await camera.setZoomLevel(cameraId, 2.0);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -881,7 +882,7 @@ void main() {
 
         // Act & assert
         expect(
-            () => camera.setZoomLevel(cameraId!, -1.0),
+            () => camera.setZoomLevel(cameraId, -1.0),
             throwsA(isA<CameraException>()
                 .having((e) => e.code, 'code', 'ZOOM_ERROR')
                 .having((e) => e.description, 'description',
@@ -897,7 +898,7 @@ void main() {
 
         // Act
         await camera.lockCaptureOrientation(
-            cameraId!, DeviceOrientation.portraitUp);
+            cameraId, DeviceOrientation.portraitUp);
 
         // Assert
         expect(channel.log, <Matcher>[
@@ -914,7 +915,7 @@ void main() {
         );
 
         // Act
-        await camera.unlockCaptureOrientation(cameraId!);
+        await camera.unlockCaptureOrientation(cameraId);
 
         // Assert
         expect(channel.log, <Matcher>[
