@@ -512,29 +512,21 @@ void main() {
 
       test('Should stop a video recording and return the file', () async {
         // Arrange
-        final Stream<VideoRecordedEvent> eventStream =
-            camera.onVideoRecordedEvent(cameraId);
-        final streamQueue = StreamQueue(eventStream);
-
-        // Emit test events
-        final event = VideoRecordedEvent(
-          cameraId,
-          XFile('/test/path.mp4'),
-          Duration(milliseconds: 100),
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'stopVideoRecording': '/test/path.mp4'},
         );
 
         // Act
-        await camera.handleCameraMethodCall(
-            MethodCall('video_recorded', event.toJson()), cameraId);
-        final nextEvent = await streamQueue.next;
+        XFile file = await camera.stopVideoRecording(cameraId);
 
         // Assert
-        expect(nextEvent.file.path, event.file.path);
-        expect(nextEvent.maxVideoDuration, event.maxVideoDuration);
-        expect(nextEvent.cameraId, event.cameraId);
-
-        // Clean up
-        await streamQueue.cancel();
+        expect(channel.log, <Matcher>[
+          isMethodCall('stopVideoRecording', arguments: {
+            'cameraId': cameraId,
+          }),
+        ]);
+        expect(file.path, '/test/path.mp4');
       });
 
       test('Should pause a video recording', () async {
