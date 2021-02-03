@@ -30,7 +30,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data!.startsWith('Temp Directory: /tmp'),
+                widget.data.startsWith('Temp Directory: /tmp'),
           ),
           findsOneWidget,
         );
@@ -48,7 +48,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data!.startsWith('Documents Directory: /'),
+                widget.data.startsWith('Documents Directory: /'),
           ),
           findsOneWidget,
         );
@@ -66,7 +66,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data!.startsWith('Downloads Directory: /'),
+                widget.data.startsWith('Downloads Directory: /'),
           ),
           findsOneWidget,
         );
@@ -85,7 +85,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data!.startsWith('Application Support Directory: /'),
+                widget.data.startsWith('Application Support Directory: /'),
           ),
           findsOneWidget,
         );
