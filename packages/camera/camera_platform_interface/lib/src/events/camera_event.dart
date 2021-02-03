@@ -266,7 +266,6 @@ class VideoRecordedEvent extends CameraEvent {
       super == other &&
           other is VideoRecordedEvent &&
           runtimeType == other.runtimeType &&
-          file == other.file &&
           maxVideoDuration == other.maxVideoDuration;
 
   @override
