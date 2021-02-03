@@ -21,6 +21,7 @@ readonly NNBD_PLUGINS_LIST=(
   "url_launcher"
   "video_player"
   "webview_flutter"
+  "image_picker"
   "image_picker_platform_interface"
 )
 
