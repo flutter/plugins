@@ -19,6 +19,9 @@ These plugins are also available on
 Please file any issues, bugs, or feature requests in the [main flutter
 repo](https://github.com/flutter/flutter/issues/new).
 
+Issues pertaining to this repository are [labeled
+"plugin"](https://github.com/flutter/flutter/issues?q=is%3Aopen+is%3Aissue+label%3Aplugin).
+
 ## Contributing
 
 If you wish to contribute a new plugin to the Flutter ecosystem, please
