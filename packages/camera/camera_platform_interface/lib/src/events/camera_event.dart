@@ -70,12 +70,12 @@ class CameraInitializedEvent extends CameraEvent {
   CameraInitializedEvent(
     int cameraId,
     this.previewWidth,
-    this.previewHeight, [
-    this.exposureMode = ExposureMode.auto,
-    this.exposurePointSupported = false,
-    this.focusMode = FocusMode.auto,
-    this.focusPointSupported = false,
-  ]) : super(cameraId);
+    this.previewHeight,
+    this.exposureMode,
+    this.exposurePointSupported,
+    this.focusMode,
+    this.focusPointSupported,
+  ) : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [CameraInitializedEvent]
   /// class.
