@@ -38,37 +38,37 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   }
 
   /// Open file dialog for loading files and return a file path
-  Future<XFile> openFile({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String confirmButtonText,
+  Future<XFile?> openFile({
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? confirmButtonText,
   }) {
     throw UnimplementedError('openFile() has not been implemented.');
   }
 
   /// Open file dialog for loading files and return a list of file paths
   Future<List<XFile>> openFiles({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String confirmButtonText,
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? confirmButtonText,
   }) {
     throw UnimplementedError('openFiles() has not been implemented.');
   }
 
   /// Open file dialog for saving files and return a file path at which to save
-  Future<String> getSavePath({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String suggestedName,
-    String confirmButtonText,
+  Future<String?> getSavePath({
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? suggestedName,
+    String? confirmButtonText,
   }) {
     throw UnimplementedError('getSavePath() has not been implemented.');
   }
 
   /// Open file dialog for loading directories and return a directory path
-  Future<String> getDirectoryPath({
-    String initialDirectory,
-    String confirmButtonText,
+  Future<String?> getDirectoryPath({
+    String? initialDirectory,
+    String? confirmButtonText,
   }) {
     throw UnimplementedError('getDirectoryPath() has not been implemented.');
   }
