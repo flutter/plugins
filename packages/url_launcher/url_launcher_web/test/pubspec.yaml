@@ -2,7 +2,8 @@ name: regular_integration_tests
 publish_to: none
 
 environment:
-  sdk: ">=2.10.0-56.0.dev <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
+  flutter: ">=1.26.0-0" # For integration_test from sdk
 
 dependencies:
   flutter:
@@ -14,9 +15,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   http: ^0.12.2
-  mockito: ^4.1.1
+  mockito: ^5.0.0-nullsafety.5
   url_launcher_web:
     path: ../
   integration_test:
-    path: ../../../integration_test
+    sdk: flutter
 

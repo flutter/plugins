@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
 import 'dart:html' as html;
 import 'dart:js_util';
 import 'package:flutter/widgets.dart';
@@ -219,7 +218,7 @@ void main() {
         child: WebLinkDelegate(TestLinkInfo(
           uri: uri,
           target: LinkTarget.blank,
-          builder: (BuildContext context, FollowLink followLink) {
+          builder: (BuildContext context, FollowLink? followLink) {
             return Container(width: 100, height: 100);
           },
         )),
@@ -237,7 +236,7 @@ void main() {
         child: WebLinkDelegate(TestLinkInfo(
           uri: uri2,
           target: LinkTarget.self,
-          builder: (BuildContext context, FollowLink followLink) {
+          builder: (BuildContext context, FollowLink? followLink) {
             return Container(width: 100, height: 100);
           },
         )),
@@ -260,7 +259,7 @@ void main() {
             child: WebLinkDelegate(TestLinkInfo(
               uri: uri,
               target: LinkTarget.blank,
-              builder: (BuildContext context, FollowLink followLink) {
+              builder: (BuildContext context, FollowLink? followLink) {
                 return Container(
                   key: containerKey,
                   child: SizedBox(width: 50.0, height: 50.0),
@@ -294,7 +293,7 @@ html.Element _findSingleAnchor() {
   // Search inside platform views with shadow roots as well.
   for (final html.Element platformView
       in html.document.querySelectorAll('flt-platform-view')) {
-    final html.ShadowRoot shadowRoot = platformView.shadowRoot;
+    final html.ShadowRoot shadowRoot = platformView.shadowRoot!;
     if (shadowRoot != null) {
       for (final html.Element anchor in shadowRoot.querySelectorAll('a')) {
         if (hasProperty(anchor, linkViewIdProperty)) {
@@ -321,8 +320,8 @@ class TestLinkInfo extends LinkInfo {
   bool get isDisabled => uri == null;
 
   TestLinkInfo({
-    @required this.uri,
-    @required this.target,
-    @required this.builder,
+    required this.uri,
+    required this.target,
+    required this.builder,
   });
 }
