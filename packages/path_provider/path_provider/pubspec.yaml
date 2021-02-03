@@ -23,8 +23,7 @@ dependencies:
     sdk: flutter
   path_provider_platform_interface: ^2.0.0-nullsafety
   path_provider_macos: ^0.0.4
-#  TODO(bparrishMines): Add dependency once path_provider_linux is migrated to null safety.
-#  path_provider_linux: ^0.0.1
+  path_provider_linux: ^0.2.0-nullsafety
   path_provider_windows: ^0.1.0-nullsafety
 
 dev_dependencies:

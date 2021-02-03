@@ -6,8 +6,7 @@ import 'dart:async';
 import 'dart:io' show Directory, Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
-// TODO:
-//import 'package:path_provider_linux/path_provider_linux.dart';
+import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:path_provider_platform_interface/src/method_channel_path_provider.dart';
