@@ -1,3 +1,7 @@
+## 1.5.1
+
+- Added VideoRecordedEvent to support ending a video recording in the native implementation. 
+
 ## 1.5.0
 
 - Introduces interface methods for locking and unlocking the capture orientation.

@@ -87,6 +87,11 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('onCameraError() is not implemented.');
   }
 
+  /// The camera finished recording a video
+  Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
+    throw UnimplementedError('onCameraTimeLimitReached() is not implemented.');
+  }
+
   /// The device orientation changed.
   ///
   /// Implementations for this:
