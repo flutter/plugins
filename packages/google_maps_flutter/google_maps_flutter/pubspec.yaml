@@ -7,7 +7,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^1.0.0
-  google_maps_flutter_platform_interface: ^1.1.0
+  google_maps_flutter_platform_interface: ^1.2.0
 
 dev_dependencies:
   flutter_test:
