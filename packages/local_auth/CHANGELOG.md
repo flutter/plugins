@@ -2,10 +2,14 @@
 
 * Allow pin, passcode, and pattern authentication with `authenticate` method
 * **Breaking change**. Parameter names refactored to use the generic `biometric` prefix in place of `fingerprint` in the `AndroidAuthMessages` class
-  * `fingerprintHint` is now `biometricHint`  
-  * `fingerprintNotRecognized`is now `biometricNotRecognized`  
-  * `fingerprintSuccess`is now `biometricSuccess`  
-  * `fingerprintRequiredTitle` is now `biometricRequiredTitle` 
+  * `fingerprintHint` is now `biometricHint`
+  * `fingerprintNotRecognized`is now `biometricNotRecognized`
+  * `fingerprintSuccess`is now `biometricSuccess`
+  * `fingerprintRequiredTitle` is now `biometricRequiredTitle`
+
+## 1.0.0-nullsafety.4
+
+* Fix incorrect error handling switch case fallthrough.
 
 ## 1.0.0-nullsafety.3
 
