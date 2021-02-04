@@ -1,3 +1,6 @@
+## 0.2.0-nullsafety
+
+* Migrate to null safety.
 ## 1.1.6
 
 * Fix test asset file location.
