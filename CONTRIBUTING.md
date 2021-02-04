@@ -19,10 +19,10 @@ for any of the following plugins, we encourage you to submit it
 - `battery`
 - `connectivity`
 - `device_info`
-- `wifi_info_flutter` (corresponds to `network_info_plus`)
 - `package_info`
 - `sensors`
 - `share`
+- `wifi_info_flutter` (corresponds to `network_info_plus`)
 
 ## Things you will need
 
