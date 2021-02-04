@@ -18,7 +18,6 @@ dependencies:
   shared_preferences_platform_interface: ^1.0.0
   flutter:
     sdk: flutter
-  ffi: ">=0.1.3 < 0.3.0"
   file: ">=5.1.0 <7.0.0"
   meta: ^1.1.7
   path: ^1.6.4
