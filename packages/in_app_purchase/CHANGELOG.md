@@ -1,3 +1,7 @@
+## 0.3.5+2
+
+* Migrate deprecated references.
+
 ## 0.3.5+1
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
