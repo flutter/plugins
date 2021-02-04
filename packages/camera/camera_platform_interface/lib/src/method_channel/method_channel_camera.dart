@@ -131,15 +131,16 @@ class MethodChannelCamera extends CameraPlatform {
 
   @override
   Future<void> dispose(int cameraId) async {
+    if (_channels.containsKey(cameraId)) {
+      final cameraChannel = _channels[cameraId];
+      cameraChannel?.setMethodCallHandler(null);
+      _channels.remove(cameraId);
+    }
+
     await _channel.invokeMethod<void>(
       'dispose',
       <String, dynamic>{'cameraId': cameraId},
     );
-
-    if (_channels.containsKey(cameraId)) {
-      _channels[cameraId]!.setMethodCallHandler(null);
-      _channels.remove(cameraId);
-    }
   }
 
   @override
