@@ -45,3 +45,19 @@ function check_changed_packages() {
   fi
   return 0
 }
+
+# Normalizes the call to the pub command.
+function pub_command() {
+  if [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
+    pub.bat "$@"
+  else
+    pub "$@"
+  fi
+}
+
+# Activates the Flutter plugin tool to ensures that the plugin tools dependencies
+# are resolved  using the current Dart SDK.
+# Finally, runs the tool with the parameters.
+function plugin_tools() {
+  pub_command global activate flutter_plugin_tools && pub_command global run flutter_plugin_tools "$@"
+}
