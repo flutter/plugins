@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart' show required;
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
@@ -61,11 +61,11 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostDataAsDartIoFile] when your app relaunches to retrieve the lost data.
   @Deprecated('Use pickImage instead.')
-  Future<String> pickImagePath({
-    @required ImageSource source,
-    double maxWidth,
-    double maxHeight,
-    int imageQuality,
+  Future<String?> pickImagePath({
+    required ImageSource source,
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     throw UnimplementedError('legacyPickImage() has not been implemented.');
@@ -86,10 +86,10 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostDataAsDartIoFile] when your app relaunches to retrieve the lost data.
   @Deprecated('Use pickVideo instead.')
-  Future<String> pickVideoPath({
-    @required ImageSource source,
+  Future<String?> pickVideoPath({
+    required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-    Duration maxDuration,
+    Duration? maxDuration,
   }) {
     throw UnimplementedError('pickVideoPath() has not been implemented.');
   }
@@ -141,11 +141,11 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  Future<PickedFile> pickImage({
-    @required ImageSource source,
-    double maxWidth,
-    double maxHeight,
-    int imageQuality,
+  Future<PickedFile?> pickImage({
+    required ImageSource source,
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     throw UnimplementedError('pickImage() has not been implemented.');
@@ -165,10 +165,10 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
-  Future<PickedFile> pickVideo({
-    @required ImageSource source,
+  Future<PickedFile?> pickVideo({
+    required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-    Duration maxDuration,
+    Duration? maxDuration,
   }) {
     throw UnimplementedError('pickVideo() has not been implemented.');
   }

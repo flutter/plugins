@@ -9,15 +9,15 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.1.8
-  http: ^0.12.1
-  plugin_platform_interface: ^1.0.2
+  http: ^0.13.0-nullsafety.0
+  plugin_platform_interface: ^1.1.0-nullsafety.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mockito: ^4.1.1
-  pedantic: ^1.8.0+1
+  mockito: ^5.0.0-nullsafety.6
+  pedantic: ^1.10.0-nullsafety.3
 
 environment:
-  sdk: ">=2.5.0 <3.0.0"
+  sdk: '>=2.12.0-133.7.beta <3.0.0'
   flutter: ">=1.10.0"

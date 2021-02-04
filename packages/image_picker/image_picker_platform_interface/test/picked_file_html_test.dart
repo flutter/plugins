@@ -12,7 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
 final String expectedStringContents = 'Hello, world!';
-final Uint8List bytes = utf8.encode(expectedStringContents);
+final Uint8List bytes = utf8.encode(expectedStringContents) as Uint8List;
 final html.File textFile = html.File([bytes], 'hello.txt');
 final String textFileUrl = html.Url.createObjectUrl(textFile);
 

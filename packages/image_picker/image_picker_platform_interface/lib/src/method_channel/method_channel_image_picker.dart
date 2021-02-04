@@ -7,7 +7,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart' show required, visibleForTesting;
+import 'package:meta/meta.dart' show  visibleForTesting;
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
@@ -20,14 +20,14 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   MethodChannel get channel => _channel;
 
   @override
-  Future<PickedFile> pickImage({
-    @required ImageSource source,
-    double maxWidth,
-    double maxHeight,
-    int imageQuality,
+  Future<PickedFile?> pickImage({
+    required ImageSource source,
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
-    String path = await pickImagePath(
+    String? path = await pickImagePath(
       source: source,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
@@ -38,14 +38,14 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
-  Future<String> pickImagePath({
-    @required ImageSource source,
-    double maxWidth,
-    double maxHeight,
-    int imageQuality,
+  Future<String?> pickImagePath({
+    required ImageSource source,
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
-    assert(source != null);
+
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
@@ -72,12 +72,12 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
-  Future<PickedFile> pickVideo({
-    @required ImageSource source,
+  Future<PickedFile?> pickVideo({
+    required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-    Duration maxDuration,
+    Duration? maxDuration,
   }) async {
-    String path = await pickVideoPath(
+    String? path = await pickVideoPath(
       source: source,
       maxDuration: maxDuration,
       preferredCameraDevice: preferredCameraDevice,
@@ -86,12 +86,12 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
-  Future<String> pickVideoPath({
-    @required ImageSource source,
+  Future<String?> pickVideoPath({
+    required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-    Duration maxDuration,
+    Duration? maxDuration,
   }) {
-    assert(source != null);
+
     return _channel.invokeMethod<String>(
       'pickVideo',
       <String, dynamic>{
@@ -104,7 +104,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
 
   @override
   Future<LostData> retrieveLostData() async {
-    final Map<String, dynamic> result =
+    final Map<String, dynamic>? result =
         await _channel.invokeMapMethod<String, dynamic>('retrieve');
 
     if (result == null) {
@@ -113,23 +113,23 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
 
     assert(result.containsKey('path') ^ result.containsKey('errorCode'));
 
-    final String type = result['type'];
+    final String? type = result['type'];
     assert(type == kTypeImage || type == kTypeVideo);
 
-    RetrieveType retrieveType;
+    RetrieveType? retrieveType;
     if (type == kTypeImage) {
       retrieveType = RetrieveType.image;
     } else if (type == kTypeVideo) {
       retrieveType = RetrieveType.video;
     }
 
-    PlatformException exception;
+    PlatformException? exception;
     if (result.containsKey('errorCode')) {
       exception = PlatformException(
           code: result['errorCode'], message: result['errorMessage']);
     }
 
-    final String path = result['path'];
+    final String? path = result['path'];
 
     return LostData(
       file: path != null ? PickedFile(path) : null,
@@ -141,7 +141,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   @override
   // ignore: deprecated_member_use_from_same_package
   Future<LostDataResponse> retrieveLostDataAsDartIoFile() async {
-    final Map<String, dynamic> result =
+    final Map<String, dynamic>? result =
         await _channel.invokeMapMethod<String, dynamic>('retrieve');
     if (result == null) {
       // ignore: deprecated_member_use_from_same_package
@@ -149,23 +149,23 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     }
     assert(result.containsKey('path') ^ result.containsKey('errorCode'));
 
-    final String type = result['type'];
+    final String? type = result['type'];
     assert(type == kTypeImage || type == kTypeVideo);
 
-    RetrieveType retrieveType;
+    RetrieveType? retrieveType;
     if (type == kTypeImage) {
       retrieveType = RetrieveType.image;
     } else if (type == kTypeVideo) {
       retrieveType = RetrieveType.video;
     }
 
-    PlatformException exception;
+    PlatformException? exception;
     if (result.containsKey('errorCode')) {
       exception = PlatformException(
           code: result['errorCode'], message: result['errorMessage']);
     }
 
-    final String path = result['path'];
+    final String? path = result['path'];
 
     // ignore: deprecated_member_use_from_same_package
     return LostDataResponse(
