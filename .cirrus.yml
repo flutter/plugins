@@ -146,6 +146,7 @@ task:
     - flutter upgrade
     - git fetch origin master
   create_simulator_script:
+    - xcrun simctl shutdown all
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
   matrix:
@@ -199,6 +200,7 @@ task:
     - flutter upgrade
     - git fetch origin master
   create_simulator_script:
+    - xcrun simctl shutdown all
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
   matrix:
