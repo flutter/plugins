@@ -29,8 +29,7 @@ PathProviderPlatform get _platform {
     // with a non-default instance.
     if (!kIsWeb && PathProviderPlatform.instance is MethodChannelPathProvider) {
       if (Platform.isLinux) {
-        // TODO:
-        //PathProviderPlatform.instance = PathProviderLinux();
+        PathProviderPlatform.instance = PathProviderLinux();
       } else if (Platform.isWindows) {
         PathProviderPlatform.instance = PathProviderWindows();
       }

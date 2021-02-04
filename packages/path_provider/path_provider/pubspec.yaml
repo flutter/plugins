@@ -22,7 +22,7 @@ dependencies:
   flutter:
     sdk: flutter
   path_provider_platform_interface: ^2.0.0-nullsafety
-  path_provider_macos: ^0.0.4
+  path_provider_macos: ^0.0.5-nullsafety
   path_provider_linux: ^0.2.0-nullsafety
   path_provider_windows: ^0.1.0-nullsafety
 
