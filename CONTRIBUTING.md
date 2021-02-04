@@ -9,7 +9,7 @@ _See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/m
 
 As of January 2021, we are no longer accepting non-critical PRs for plugins
 for which there is a corresponding [Flutter Community Plus
-Plugin](https://plus.fluttercommunity.dev/), as we hope that in time we're able
+Plugin](https://plus.fluttercommunity.dev/), as we hope in time to be able
 to transition users to those versions of the plugins. If you have a PR for
 something other than a critical issue (crashes, build failures, null safety, etc.)
 for any of the following plugins, we encourage you to submit it
