@@ -96,6 +96,45 @@ void main() {
       );
     });
 
+    test(
+        'Default implementation of onDeviceOrientationChanged() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.onDeviceOrientationChanged(),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of lockCaptureOrientation() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.lockCaptureOrientation(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of unlockCaptureOrientation() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.unlockCaptureOrientation(1),
+        throwsUnimplementedError,
+      );
+    });
+
     test('Default implementation of dispose() should throw unimplemented error',
         () {
       // Arrange
@@ -182,6 +221,110 @@ void main() {
       // Act & Assert
       expect(
         () => cameraPlatform.setFlashMode(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of setExposureMode() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setExposureMode(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of setExposurePoint() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setExposurePoint(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of getMinExposureOffset() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.getMinExposureOffset(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of getMaxExposureOffset() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.getMaxExposureOffset(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of getExposureOffsetStepSize() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.getExposureOffsetStepSize(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of setExposureOffset() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setExposureOffset(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of setFocusMode() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setFocusMode(1, null),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of setFocusPoint() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.setFocusPoint(1, null),
         throwsUnimplementedError,
       );
     });

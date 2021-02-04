@@ -62,7 +62,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// is set to true and the universal link failed to launch.
 Future<bool> launch(
   String urlString, {
-  bool forceSafariVC = false,
+  bool? forceSafariVC,
   bool forceWebView = false,
   bool enableJavaScript = false,
   bool enableDomStorage = false,
@@ -95,7 +95,7 @@ Future<bool> launch(
 
   final bool result = await UrlLauncherPlatform.instance.launch(
     urlString,
-    useSafariVC: forceSafariVC,
+    useSafariVC: forceSafariVC ?? isWebURL,
     useWebView: forceWebView,
     enableJavaScript: enableJavaScript,
     enableDomStorage: enableDomStorage,

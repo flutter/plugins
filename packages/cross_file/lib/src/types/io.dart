@@ -11,20 +11,20 @@ import './base.dart';
 /// A CrossFile backed by a dart:io File.
 class XFile extends XFileBase {
   final File _file;
-  final String mimeType;
-  final DateTime _lastModified;
-  int _length;
+  final String? mimeType;
+  final DateTime? _lastModified;
+  int? _length;
 
-  final Uint8List _bytes;
+  final Uint8List? _bytes;
 
   /// Construct a CrossFile object backed by a dart:io File.
   XFile(
     String path, {
     this.mimeType,
-    String name,
-    int length,
-    Uint8List bytes,
-    DateTime lastModified,
+    String? name,
+    int? length,
+    Uint8List? bytes,
+    DateTime? lastModified,
   })  : _file = File(path),
         _bytes = null,
         _lastModified = lastModified,
@@ -34,10 +34,10 @@ class XFile extends XFileBase {
   XFile.fromData(
     Uint8List bytes, {
     this.mimeType,
-    String path,
-    String name,
-    int length,
-    DateTime lastModified,
+    String? path,
+    String? name,
+    int? length,
+    DateTime? lastModified,
   })  : _bytes = bytes,
         _file = File(path ?? ''),
         _length = length,
@@ -57,7 +57,7 @@ class XFile extends XFileBase {
   }
 
   @override
-  void saveTo(String path) async {
+  Future<void> saveTo(String path) async {
     File fileToSave = File(path);
     await fileToSave.writeAsBytes(_bytes ?? (await readAsBytes()));
     await fileToSave.create();
@@ -84,7 +84,7 @@ class XFile extends XFileBase {
   @override
   Future<String> readAsString({Encoding encoding = utf8}) {
     if (_bytes != null) {
-      return Future.value(String.fromCharCodes(_bytes));
+      return Future.value(String.fromCharCodes(_bytes!));
     }
     return _file.readAsString(encoding: encoding);
   }
@@ -97,13 +97,13 @@ class XFile extends XFileBase {
     return _file.readAsBytes();
   }
 
-  Stream<Uint8List> _getBytes(int start, int end) async* {
-    final bytes = _bytes;
+  Stream<Uint8List> _getBytes(int? start, int? end) async* {
+    final bytes = _bytes!;
     yield bytes.sublist(start ?? 0, end ?? bytes.length);
   }
 
   @override
-  Stream<Uint8List> openRead([int start, int end]) {
+  Stream<Uint8List> openRead([int? start, int? end]) {
     if (_bytes != null) {
       return _getBytes(start, end);
     } else {

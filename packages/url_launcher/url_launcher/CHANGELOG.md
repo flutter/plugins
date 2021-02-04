@@ -1,6 +1,10 @@
+## 6.0.0-nullsafety.6
+
+* Correct statement in description about which platforms url_launcher supports.
+
 ## 6.0.0-nullsafety.5
 
-* Fix PlatformException when not specifying `forceSafariVC` for non-web URLs
+* Document that the web plugin is not endorsed in the `nullsafety` prerelease for now.
 
 ## 6.0.0-nullsafety.4
 
@@ -21,6 +25,7 @@
 ## 6.0.0-nullsafety
 
 * Migrate to null safety.
+* **Breaking change**: web plugins aren't endorsed in null-safe plugins yet.
 
 ## 5.7.13
 
