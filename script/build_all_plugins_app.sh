@@ -30,6 +30,7 @@ readonly EXCLUDED_PLUGINS_LIST=(
   "google_sign_in_platform_interface"
   "google_sign_in_web"
   "image_picker_platform_interface"
+  "image_picker"
   "instrumentation_adapter"
   "local_auth" # flutter_plugin_android_lifecycle conflict
   "path_provider_linux"

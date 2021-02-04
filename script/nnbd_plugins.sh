@@ -22,7 +22,6 @@ readonly NNBD_PLUGINS_LIST=(
   "video_player"
   "webview_flutter"
   "image_picker"
-  "image_picker_platform_interface"
 )
 
 # This list contains the list of plugins that have *not* been
