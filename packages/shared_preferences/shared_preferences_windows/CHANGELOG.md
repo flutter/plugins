@@ -1,3 +1,7 @@
+## 0.0.2+3
+
+* Remove 'ffi' dependency.
+
 ## 0.0.2+2
 
 * Relax 'ffi' version constraint.
