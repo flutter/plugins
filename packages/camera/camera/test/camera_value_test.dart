@@ -27,6 +27,7 @@ void main() {
         deviceOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation: DeviceOrientation.portraitUp,
         recordingOrientation: DeviceOrientation.portraitUp,
+        focusPointSupported: true,
       );
 
       expect(cameraValue, isA<CameraValue>());
