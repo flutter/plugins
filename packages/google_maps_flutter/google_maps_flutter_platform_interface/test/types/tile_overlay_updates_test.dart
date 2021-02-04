@@ -51,10 +51,10 @@ void main() {
 
       final Map<String, dynamic> json = updates.toJson();
       expect(json, <String, dynamic>{
-        'tileOverlaysToAdd': serializeTileOverlaySet(updates.tileOverlaysToAdd),
+        'tileOverlaysToAdd': serializeTileOverlaySet(updates.tileOverlaysToAdd!),
         'tileOverlaysToChange':
-            serializeTileOverlaySet(updates.tileOverlaysToChange),
-        'tileOverlayIdsToRemove': updates.tileOverlayIdsToRemove
+            serializeTileOverlaySet(updates.tileOverlaysToChange!),
+        'tileOverlayIdsToRemove': updates.tileOverlayIdsToRemove!
             .map<dynamic>((TileOverlayId m) => m.value)
             .toList()
       });

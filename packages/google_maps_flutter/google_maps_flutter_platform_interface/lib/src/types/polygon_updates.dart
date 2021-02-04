@@ -31,7 +31,7 @@ class PolygonUpdates {
     final Set<PolygonId> currentPolygonIds = currentPolygons.keys.toSet();
 
     Polygon idToCurrentPolygon(PolygonId id) {
-      return currentPolygons[id];
+      return currentPolygons[id]!;
     }
 
     final Set<PolygonId> _polygonIdsToRemove =
@@ -45,7 +45,7 @@ class PolygonUpdates {
     /// Returns `true` if [current] is not equals to previous one with the
     /// same id.
     bool hasChanged(Polygon current) {
-      final Polygon previous = previousPolygons[current.polygonId];
+      final Polygon previous = previousPolygons[current.polygonId]!;
       return current != previous;
     }
 
@@ -61,13 +61,13 @@ class PolygonUpdates {
   }
 
   /// Set of Polygons to be added in this update.
-  Set<Polygon> polygonsToAdd;
+  Set<Polygon>? polygonsToAdd;
 
   /// Set of PolygonIds to be removed in this update.
-  Set<PolygonId> polygonIdsToRemove;
+  Set<PolygonId>? polygonIdsToRemove;
 
   /// Set of Polygons to be changed in this update.
-  Set<Polygon> polygonsToChange;
+  Set<Polygon>? polygonsToChange;
 
   /// Converts this object to something serializable in JSON.
   Map<String, dynamic> toJson() {
@@ -79,10 +79,10 @@ class PolygonUpdates {
       }
     }
 
-    addIfNonNull('polygonsToAdd', serializePolygonSet(polygonsToAdd));
-    addIfNonNull('polygonsToChange', serializePolygonSet(polygonsToChange));
+    addIfNonNull('polygonsToAdd', serializePolygonSet(polygonsToAdd!));
+    addIfNonNull('polygonsToChange', serializePolygonSet(polygonsToChange!));
     addIfNonNull('polygonIdsToRemove',
-        polygonIdsToRemove.map<dynamic>((PolygonId m) => m.value).toList());
+        polygonIdsToRemove!.map<dynamic>((PolygonId m) => m.value).toList());
 
     return updateMap;
   }
@@ -91,7 +91,7 @@ class PolygonUpdates {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final PolygonUpdates typedOther = other;
+    final PolygonUpdates typedOther = other as PolygonUpdates;
     return setEquals(polygonsToAdd, typedOther.polygonsToAdd) &&
         setEquals(polygonIdsToRemove, typedOther.polygonIdsToRemove) &&
         setEquals(polygonsToChange, typedOther.polygonsToChange);

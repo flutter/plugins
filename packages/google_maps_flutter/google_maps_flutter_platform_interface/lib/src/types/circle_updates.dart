@@ -31,7 +31,7 @@ class CircleUpdates {
     final Set<CircleId> currentCircleIds = currentCircles.keys.toSet();
 
     Circle idToCurrentCircle(CircleId id) {
-      return currentCircles[id];
+      return currentCircles[id]!;
     }
 
     final Set<CircleId> _circleIdsToRemove =
@@ -45,7 +45,7 @@ class CircleUpdates {
     /// Returns `true` if [current] is not equals to previous one with the
     /// same id.
     bool hasChanged(Circle current) {
-      final Circle previous = previousCircles[current.circleId];
+      final Circle previous = previousCircles[current.circleId]!;
       return current != previous;
     }
 
@@ -61,13 +61,13 @@ class CircleUpdates {
   }
 
   /// Set of Circles to be added in this update.
-  Set<Circle> circlesToAdd;
+  Set<Circle>? circlesToAdd;
 
   /// Set of CircleIds to be removed in this update.
-  Set<CircleId> circleIdsToRemove;
+  Set<CircleId>? circleIdsToRemove;
 
   /// Set of Circles to be changed in this update.
-  Set<Circle> circlesToChange;
+  Set<Circle>? circlesToChange;
 
   /// Converts this object to something serializable in JSON.
   Map<String, dynamic> toJson() {
@@ -79,10 +79,10 @@ class CircleUpdates {
       }
     }
 
-    addIfNonNull('circlesToAdd', serializeCircleSet(circlesToAdd));
-    addIfNonNull('circlesToChange', serializeCircleSet(circlesToChange));
+    addIfNonNull('circlesToAdd', serializeCircleSet(circlesToAdd!));
+    addIfNonNull('circlesToChange', serializeCircleSet(circlesToChange!));
     addIfNonNull('circleIdsToRemove',
-        circleIdsToRemove.map<dynamic>((CircleId m) => m.value).toList());
+        circleIdsToRemove!.map<dynamic>((CircleId m) => m.value).toList());
 
     return updateMap;
   }
@@ -91,7 +91,7 @@ class CircleUpdates {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final CircleUpdates typedOther = other;
+    final CircleUpdates typedOther = other as CircleUpdates;
     return setEquals(circlesToAdd, typedOther.circlesToAdd) &&
         setEquals(circleIdsToRemove, typedOther.circleIdsToRemove) &&
         setEquals(circlesToChange, typedOther.circlesToChange);

@@ -14,7 +14,7 @@ Map<MarkerId, Marker> keyByMarkerId(Iterable<Marker> markers) {
 }
 
 /// Converts a Set of Markers into something serializable in JSON.
-List<Map<String, dynamic>> serializeMarkerSet(Set<Marker> markers) {
+List<Map<String, dynamic>>? serializeMarkerSet(Set<Marker> markers) {
   if (markers == null) {
     return null;
   }

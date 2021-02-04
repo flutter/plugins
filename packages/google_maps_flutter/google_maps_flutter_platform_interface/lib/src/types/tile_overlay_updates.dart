@@ -31,7 +31,7 @@ class TileOverlayUpdates {
         currentTileOverlays.keys.toSet();
 
     TileOverlay idToCurrentTileOverlay(TileOverlayId id) {
-      return currentTileOverlays[id];
+      return currentTileOverlays[id]!;
     }
 
     _tileOverlayIdsToRemove =
@@ -45,7 +45,7 @@ class TileOverlayUpdates {
     // Returns `true` if [current] is not equals to previous one with the
     // same id.
     bool hasChanged(TileOverlay current) {
-      final TileOverlay previous = previousTileOverlays[current.tileOverlayId];
+      final TileOverlay previous = previousTileOverlays[current.tileOverlayId]!;
       return current != previous;
     }
 
@@ -57,25 +57,25 @@ class TileOverlayUpdates {
   }
 
   /// Set of TileOverlays to be added in this update.
-  Set<TileOverlay> get tileOverlaysToAdd {
+  Set<TileOverlay>? get tileOverlaysToAdd {
     return _tileOverlaysToAdd;
   }
 
-  Set<TileOverlay> _tileOverlaysToAdd;
+  Set<TileOverlay>? _tileOverlaysToAdd;
 
   /// Set of TileOverlayIds to be removed in this update.
-  Set<TileOverlayId> get tileOverlayIdsToRemove {
+  Set<TileOverlayId>? get tileOverlayIdsToRemove {
     return _tileOverlayIdsToRemove;
   }
 
-  Set<TileOverlayId> _tileOverlayIdsToRemove;
+  Set<TileOverlayId>? _tileOverlayIdsToRemove;
 
   /// Set of TileOverlays to be changed in this update.
-  Set<TileOverlay> get tileOverlaysToChange {
+  Set<TileOverlay>? get tileOverlaysToChange {
     return _tileOverlaysToChange;
   }
 
-  Set<TileOverlay> _tileOverlaysToChange;
+  Set<TileOverlay>? _tileOverlaysToChange;
 
   /// Converts this object to JSON.
   Map<String, dynamic> toJson() {
@@ -88,12 +88,12 @@ class TileOverlayUpdates {
     }
 
     addIfNonNull(
-        'tileOverlaysToAdd', serializeTileOverlaySet(_tileOverlaysToAdd));
+        'tileOverlaysToAdd', serializeTileOverlaySet(_tileOverlaysToAdd!));
     addIfNonNull(
-        'tileOverlaysToChange', serializeTileOverlaySet(_tileOverlaysToChange));
+        'tileOverlaysToChange', serializeTileOverlaySet(_tileOverlaysToChange!));
     addIfNonNull(
         'tileOverlayIdsToRemove',
-        _tileOverlayIdsToRemove
+        _tileOverlayIdsToRemove!
             .map<dynamic>((TileOverlayId m) => m.value)
             .toList());
 

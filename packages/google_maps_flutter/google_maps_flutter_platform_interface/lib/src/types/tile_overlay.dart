@@ -64,7 +64,7 @@ class TileOverlayId {
 class TileOverlay {
   /// Creates an immutable representation of a [TileOverlay] to draw on [GoogleMap].
   const TileOverlay({
-    @required this.tileOverlayId,
+    required this.tileOverlayId,
     this.fadeIn = true,
     this.tileProvider,
     this.transparency = 0.0,
@@ -80,14 +80,14 @@ class TileOverlay {
   final bool fadeIn;
 
   /// The tile provider to use for this tile overlay.
-  final TileProvider tileProvider;
+  final TileProvider? tileProvider;
 
   /// The transparency of the tile overlay. The default transparency is 0 (opaque).
   final double transparency;
 
   /// The tile overlay's zIndex, i.e., the order in which it will be drawn where
   /// overlays with larger values are drawn above those with lower values
-  final int zIndex;
+  final int? zIndex;
 
   /// The visibility for the tile overlay. The default visibility is true.
   final bool visible;
@@ -104,15 +104,15 @@ class TileOverlay {
   /// Creates a new [TileOverlay] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   TileOverlay copyWith({
-    TileOverlayId tileOverlayId,
-    bool fadeInParam,
-    double transparencyParam,
-    int zIndexParam,
-    bool visibleParam,
-    int tileSizeParam,
+    TileOverlayId? tileOverlayId,
+    bool? fadeInParam,
+    double? transparencyParam,
+    int? zIndexParam,
+    bool? visibleParam,
+    int? tileSizeParam,
   }) {
     return TileOverlay(
-      tileOverlayId: tileOverlayId,
+      tileOverlayId: tileOverlayId!,
       fadeIn: fadeInParam ?? fadeIn,
       transparency: transparencyParam ?? transparency,
       zIndex: zIndexParam ?? zIndex,

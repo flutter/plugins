@@ -15,8 +15,8 @@ import 'package:meta/meta.dart' show immutable, required;
 class ScreenCoordinate {
   /// Creates an immutable representation of a point coordinate in the [GoogleMap]'s view.
   const ScreenCoordinate({
-    @required this.x,
-    @required this.y,
+    required this.x,
+    required this.y,
   });
 
   /// Represents the number of pixels from the left of the [GoogleMap].

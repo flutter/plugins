@@ -24,7 +24,7 @@ class PolygonId {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final PolygonId typedOther = other;
+    final PolygonId typedOther = other as PolygonId;
     return value == typedOther.value;
   }
 
@@ -42,7 +42,7 @@ class PolygonId {
 class Polygon {
   /// Creates an immutable representation of a polygon through geographical locations on the map.
   const Polygon({
-    @required this.polygonId,
+    required this.polygonId,
     this.consumeTapEvents = false,
     this.fillColor = Colors.black,
     this.geodesic = false,
@@ -107,21 +107,21 @@ class Polygon {
   final int zIndex;
 
   /// Callbacks to receive tap events for polygon placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Creates a new [Polygon] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Polygon copyWith({
-    bool consumeTapEventsParam,
-    Color fillColorParam,
-    bool geodesicParam,
-    List<LatLng> pointsParam,
-    List<List<LatLng>> holesParam,
-    Color strokeColorParam,
-    int strokeWidthParam,
-    bool visibleParam,
-    int zIndexParam,
-    VoidCallback onTapParam,
+    bool? consumeTapEventsParam,
+    Color? fillColorParam,
+    bool? geodesicParam,
+    List<LatLng>? pointsParam,
+    List<List<LatLng>>? holesParam,
+    Color? strokeColorParam,
+    int? strokeWidthParam,
+    bool? visibleParam,
+    int? zIndexParam,
+    VoidCallback? onTapParam,
   }) {
     return Polygon(
       polygonId: polygonId,
@@ -177,7 +177,7 @@ class Polygon {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final Polygon typedOther = other;
+    final Polygon typedOther = other as Polygon;
     return polygonId == typedOther.polygonId &&
         consumeTapEvents == typedOther.consumeTapEvents &&
         fillColor == typedOther.fillColor &&

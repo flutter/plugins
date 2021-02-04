@@ -34,7 +34,7 @@ class LatLng {
   }
 
   /// Initialize a LatLng from an \[lat, lng\] array.
-  static LatLng fromJson(dynamic json) {
+  static LatLng? fromJson(dynamic json) {
     if (json == null) {
       return null;
     }
@@ -66,7 +66,7 @@ class LatLngBounds {
   ///
   /// The latitude of the southwest corner cannot be larger than the
   /// latitude of the northeast corner.
-  LatLngBounds({@required this.southwest, @required this.northeast})
+  LatLngBounds({required this.southwest, required this.northeast})
       : assert(southwest != null),
         assert(northeast != null),
         assert(southwest.latitude <= northeast.latitude);
@@ -102,13 +102,13 @@ class LatLngBounds {
 
   /// Converts a list to [LatLngBounds].
   @visibleForTesting
-  static LatLngBounds fromList(dynamic json) {
+  static LatLngBounds? fromList(dynamic json) {
     if (json == null) {
       return null;
     }
     return LatLngBounds(
-      southwest: LatLng.fromJson(json[0]),
-      northeast: LatLng.fromJson(json[1]),
+      southwest: LatLng.fromJson(json[0])!,
+      northeast: LatLng.fromJson(json[1])!,
     );
   }
 

@@ -23,7 +23,7 @@ class CircleId {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final CircleId typedOther = other;
+    final CircleId typedOther = other as CircleId;
     return value == typedOther.value;
   }
 
@@ -41,7 +41,7 @@ class CircleId {
 class Circle {
   /// Creates an immutable representation of a [Circle] to draw on [GoogleMap].
   const Circle({
-    @required this.circleId,
+    required this.circleId,
     this.consumeTapEvents = false,
     this.fillColor = Colors.transparent,
     this.center = const LatLng(0.0, 0.0),
@@ -91,20 +91,20 @@ class Circle {
   final int zIndex;
 
   /// Callbacks to receive tap events for circle placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Creates a new [Circle] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Circle copyWith({
-    bool consumeTapEventsParam,
-    Color fillColorParam,
-    LatLng centerParam,
-    double radiusParam,
-    Color strokeColorParam,
-    int strokeWidthParam,
-    bool visibleParam,
-    int zIndexParam,
-    VoidCallback onTapParam,
+    bool? consumeTapEventsParam,
+    Color? fillColorParam,
+    LatLng? centerParam,
+    double? radiusParam,
+    Color? strokeColorParam,
+    int? strokeWidthParam,
+    bool? visibleParam,
+    int? zIndexParam,
+    VoidCallback? onTapParam,
   }) {
     return Circle(
       circleId: circleId,
@@ -150,7 +150,7 @@ class Circle {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final Circle typedOther = other;
+    final Circle typedOther = other as Circle;
     return circleId == typedOther.circleId &&
         consumeTapEvents == typedOther.consumeTapEvents &&
         fillColor == typedOther.fillColor &&

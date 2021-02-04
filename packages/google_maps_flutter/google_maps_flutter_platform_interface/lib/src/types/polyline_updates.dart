@@ -32,7 +32,7 @@ class PolylineUpdates {
     final Set<PolylineId> currentPolylineIds = currentPolylines.keys.toSet();
 
     Polyline idToCurrentPolyline(PolylineId id) {
-      return currentPolylines[id];
+      return currentPolylines[id]!;
     }
 
     final Set<PolylineId> _polylineIdsToRemove =
@@ -46,7 +46,7 @@ class PolylineUpdates {
     /// Returns `true` if [current] is not equals to previous one with the
     /// same id.
     bool hasChanged(Polyline current) {
-      final Polyline previous = previousPolylines[current.polylineId];
+      final Polyline previous = previousPolylines[current.polylineId]!;
       return current != previous;
     }
 
@@ -62,13 +62,13 @@ class PolylineUpdates {
   }
 
   /// Set of Polylines to be added in this update.
-  Set<Polyline> polylinesToAdd;
+  Set<Polyline>? polylinesToAdd;
 
   /// Set of PolylineIds to be removed in this update.
-  Set<PolylineId> polylineIdsToRemove;
+  Set<PolylineId>? polylineIdsToRemove;
 
   /// Set of Polylines to be changed in this update.
-  Set<Polyline> polylinesToChange;
+  Set<Polyline>? polylinesToChange;
 
   /// Converts this object to something serializable in JSON.
   Map<String, dynamic> toJson() {
@@ -80,10 +80,10 @@ class PolylineUpdates {
       }
     }
 
-    addIfNonNull('polylinesToAdd', serializePolylineSet(polylinesToAdd));
-    addIfNonNull('polylinesToChange', serializePolylineSet(polylinesToChange));
+    addIfNonNull('polylinesToAdd', serializePolylineSet(polylinesToAdd!));
+    addIfNonNull('polylinesToChange', serializePolylineSet(polylinesToChange!));
     addIfNonNull('polylineIdsToRemove',
-        polylineIdsToRemove.map<dynamic>((PolylineId m) => m.value).toList());
+        polylineIdsToRemove!.map<dynamic>((PolylineId m) => m.value).toList());
 
     return updateMap;
   }
@@ -92,7 +92,7 @@ class PolylineUpdates {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final PolylineUpdates typedOther = other;
+    final PolylineUpdates typedOther = other as PolylineUpdates;
     return setEquals(polylinesToAdd, typedOther.polylinesToAdd) &&
         setEquals(polylineIdsToRemove, typedOther.polylineIdsToRemove) &&
         setEquals(polylinesToChange, typedOther.polylinesToChange);

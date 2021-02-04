@@ -32,12 +32,12 @@ class InfoWindow {
   /// Text displayed in an info window when the user taps the marker.
   ///
   /// A null value means no title.
-  final String title;
+  final String? title;
 
   /// Additional text displayed below the [title].
   ///
   /// A null value means no additional text.
-  final String snippet;
+  final String? snippet;
 
   /// The icon image point that will be the anchor of the info window when
   /// displayed.
@@ -45,18 +45,18 @@ class InfoWindow {
   /// The image point is specified in normalized coordinates: An anchor of
   /// (0.0, 0.0) means the top left corner of the image. An anchor
   /// of (1.0, 1.0) means the bottom right corner of the image.
-  final Offset anchor;
+  final Offset? anchor;
 
   /// onTap callback for this [InfoWindow].
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Creates a new [InfoWindow] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   InfoWindow copyWith({
-    String titleParam,
-    String snippetParam,
-    Offset anchorParam,
-    VoidCallback onTapParam,
+    String? titleParam,
+    String? snippetParam,
+    Offset? anchorParam,
+    VoidCallback? onTapParam,
   }) {
     return InfoWindow(
       title: titleParam ?? title,
@@ -77,7 +77,7 @@ class InfoWindow {
 
     addIfPresent('title', title);
     addIfPresent('snippet', snippet);
-    addIfPresent('anchor', _offsetToJson(anchor));
+    addIfPresent('anchor', _offsetToJson(anchor!));
 
     return json;
   }
@@ -86,7 +86,7 @@ class InfoWindow {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final InfoWindow typedOther = other;
+    final InfoWindow typedOther = other as InfoWindow;
     return title == typedOther.title &&
         snippet == typedOther.snippet &&
         anchor == typedOther.anchor;
@@ -116,7 +116,7 @@ class MarkerId {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final MarkerId typedOther = other;
+    final MarkerId typedOther = other as MarkerId;
     return value == typedOther.value;
   }
 
@@ -156,7 +156,7 @@ class Marker {
   /// * reports [onTap] events
   /// * reports [onDragEnd] events
   const Marker({
-    @required this.markerId,
+    required this.markerId,
     this.alpha = 1.0,
     this.anchor = const Offset(0.5, 1.0),
     this.consumeTapEvents = false,
@@ -224,27 +224,27 @@ class Marker {
   final double zIndex;
 
   /// Callbacks to receive tap events for markers placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Signature reporting the new [LatLng] at the end of a drag event.
-  final ValueChanged<LatLng> onDragEnd;
+  final ValueChanged<LatLng>? onDragEnd;
 
   /// Creates a new [Marker] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Marker copyWith({
-    double alphaParam,
-    Offset anchorParam,
-    bool consumeTapEventsParam,
-    bool draggableParam,
-    bool flatParam,
-    BitmapDescriptor iconParam,
-    InfoWindow infoWindowParam,
-    LatLng positionParam,
-    double rotationParam,
-    bool visibleParam,
-    double zIndexParam,
-    VoidCallback onTapParam,
-    ValueChanged<LatLng> onDragEndParam,
+    double? alphaParam,
+    Offset? anchorParam,
+    bool? consumeTapEventsParam,
+    bool? draggableParam,
+    bool? flatParam,
+    BitmapDescriptor? iconParam,
+    InfoWindow? infoWindowParam,
+    LatLng? positionParam,
+    double? rotationParam,
+    bool? visibleParam,
+    double? zIndexParam,
+    VoidCallback? onTapParam,
+    ValueChanged<LatLng>? onDragEndParam,
   }) {
     return Marker(
       markerId: markerId,
@@ -283,9 +283,9 @@ class Marker {
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('draggable', draggable);
     addIfPresent('flat', flat);
-    addIfPresent('icon', icon?.toJson());
-    addIfPresent('infoWindow', infoWindow?._toJson());
-    addIfPresent('position', position?.toJson());
+    addIfPresent('icon', icon.toJson());
+    addIfPresent('infoWindow', infoWindow._toJson());
+    addIfPresent('position', position.toJson());
     addIfPresent('rotation', rotation);
     addIfPresent('visible', visible);
     addIfPresent('zIndex', zIndex);
@@ -296,7 +296,7 @@ class Marker {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final Marker typedOther = other;
+    final Marker typedOther = other as Marker;
     return markerId == typedOther.markerId &&
         alpha == typedOther.alpha &&
         anchor == typedOther.anchor &&
