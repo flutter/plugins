@@ -146,8 +146,6 @@ task:
     - flutter upgrade
     - git fetch origin master
   create_simulator_script:
-    - xcrun simctl shutdown all
-    - xcrun simctl erase all
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
   matrix:
@@ -184,6 +182,9 @@ task:
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples
         - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=14.3"
+  cleanup_script:
+      - xcrun simctl shutdown all
+      - xcrun simctl erase all
 
 task:
   # Xcode 11 task
@@ -217,6 +218,9 @@ task:
         # Skip the dummy podspecs used to placate the tool.
         - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
         - ./script/incremental_build.sh podspecs
+  cleanup_script:
+    - xcrun simctl shutdown all
+    - xcrun simctl erase all
 
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
