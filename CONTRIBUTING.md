@@ -5,6 +5,25 @@
 
 _See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/master/CODE_OF_CONDUCT.md)_
 
+## Important note
+
+As of January 2021, we are no longer accepting non-critical PRs for plugins
+for which there is a corresponding [Flutter Community Plus
+Plugin](https://plus.fluttercommunity.dev/), as we hope that in time we're able
+to transition users to those versions of the plugins. If you have a feature
+addition or other non-critical PR for any of the following plugins, we
+encourage you to submit it
+[there](https://github.com/fluttercommunity/plus_plugins/pulls) instead:
+- `android_alarm_manager`
+- `android_intent`
+- `battery`
+- `connectivity`
+- `device_info`
+- `wifi_info_flutter` (corresponds to `network_info_plus`)
+- `package_info`
+- `sensors`
+- `share`
+
 ## Things you will need
 
 
