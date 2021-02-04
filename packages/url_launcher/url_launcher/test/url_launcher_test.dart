@@ -57,7 +57,7 @@ void main() {
         )).captured,
         <dynamic>[
           'http://flutter.dev/',
-          false,
+          true,
           false,
           false,
           false,
