@@ -1,6 +1,6 @@
 ## 2.0.0-nullsafety
 
-* Migrate to null safe.
+* Migrate to null safety.
 
 ## 1.6.28
 
