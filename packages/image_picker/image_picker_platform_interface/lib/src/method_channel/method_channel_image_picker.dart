@@ -7,7 +7,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart' show  visibleForTesting;
+import 'package:meta/meta.dart' show visibleForTesting;
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
@@ -45,7 +45,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
-
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
@@ -91,7 +90,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) {
-
     return _channel.invokeMethod<String>(
       'pickVideo',
       <String, dynamic>{

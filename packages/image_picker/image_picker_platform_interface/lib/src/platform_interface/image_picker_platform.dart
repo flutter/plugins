@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:image_picker_platform_interface/src/method_channel/method_channel_image_picker.dart';
