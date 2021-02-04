@@ -15,6 +15,7 @@ readonly NNBD_PLUGINS_LIST=(
   "google_sign_in"
   "local_auth"
   "path_provider"
+  "package_info"
   "plugin_platform_interface"
   "share"
   "shared_preferences"
