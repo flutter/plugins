@@ -208,12 +208,18 @@ void main() {
     });
 
     test('cannot send e-mail with forceSafariVC: true', () async {
-      expect(() async => await launch('mailto:gmail-noreply@google.com?subject=Hello', forceSafariVC: true),
+      expect(
+          () async => await launch(
+              'mailto:gmail-noreply@google.com?subject=Hello',
+              forceSafariVC: true),
           throwsA(isA<PlatformException>()));
     });
 
     test('cannot send e-mail with forceWebView: true', () async {
-      expect(() async => await launch('mailto:gmail-noreply@google.com?subject=Hello', forceWebView: true),
+      expect(
+          () async => await launch(
+              'mailto:gmail-noreply@google.com?subject=Hello',
+              forceWebView: true),
           throwsA(isA<PlatformException>()));
     });
 
