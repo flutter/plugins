@@ -1,3 +1,7 @@
+## 0.1.0-nullsafety.2
+
+* Bump ffi dependency to 0.3.0-nullsafety.1
+
 ## 0.1.0-nullsafety.1
 
 * Bump win32 dependency to latest version.
