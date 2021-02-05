@@ -8,7 +8,7 @@ readonly NNBD_PLUGINS_LIST=(
   "android_alarm_manager"
   "android_intent"
   "battery"
-  "camera"
+  "camera_platform_interface"
   "connectivity"
   "cross_file"
   "device_info"

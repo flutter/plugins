@@ -19,7 +19,6 @@ source "$SCRIPT_DIR/nnbd_plugins.sh"
 check_changed_packages > /dev/null
 
 readonly EXCLUDED_PLUGINS_LIST=(
-  "camera_platform_interface" # currently out of sync with google_maps_flutter due to NNBD migration
   "connectivity_macos"
   "connectivity_platform_interface"
   "connectivity_web"
