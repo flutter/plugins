@@ -430,7 +430,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// The video is returned as a [XFile] after calling [stopVideoRecording].
   /// Throws a [CameraException] if the capture fails.
-  Future<void> startVideoRecording() async {
+  Future<void> startVideoRecording({Duration maxVideoDuration}) async {
     _throwIfNotInitialized("startVideoRecording");
     if (value.isRecordingVideo) {
       throw CameraException(
@@ -446,12 +446,19 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
 
     try {
-      await CameraPlatform.instance.startVideoRecording(_cameraId);
+      await CameraPlatform.instance.startVideoRecording(
+        _cameraId,
+        maxVideoDuration: maxVideoDuration,
+      );
       value = value.copyWith(
           isRecordingVideo: true,
           isRecordingPaused: false,
           recordingOrientation: Optional.fromNullable(
               value.lockedCaptureOrientation ?? value.deviceOrientation));
+      // Listen for VideoRecordedEvent to reset isRecordingVideo
+      CameraPlatform.instance.onVideoRecordedEvent(_cameraId).listen((event) {
+        value = value.copyWith(isRecordingVideo: false);
+      });
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -516,6 +523,19 @@ class CameraController extends ValueNotifier<CameraValue> {
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
+  }
+
+  /// Stream yielding a [VideoRecordedEvent] every time a video stops recording
+  Stream<VideoRecordedEvent> onVideoRecordedEvent() {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'cameraTimeLimitReachedEventStream was called on uninitialized CameraController',
+      );
+    }
+    return CameraPlatform.instance
+        .onVideoRecordedEvent(_cameraId)
+        .asBroadcastStream();
   }
 
   /// Returns a widget showing a live camera preview.

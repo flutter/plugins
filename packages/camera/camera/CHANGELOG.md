@@ -1,3 +1,7 @@
+## 0.7.1
+
+* Implemented maxVideoDuration to limit the duration of a video recording.
+
 ## 0.7.0+2
 
 * Fix example reference in README.

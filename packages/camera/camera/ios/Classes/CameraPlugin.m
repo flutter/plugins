@@ -782,7 +782,8 @@ NSString *const errorMethod = @"error";
   return pixelBuffer;
 }
 
-- (void)startVideoRecordingWithResult:(FlutterResult)result {
+- (void)startVideoRecordingWithResult:(FlutterResult)result
+                    maxVideoDuration:(int64_t)maxVideoDuration {
   if (!_isRecording) {
     NSError *error;
     _videoRecordingPath = [self getTemporaryFilePathWithExtension:@"mp4"
@@ -797,6 +798,14 @@ NSString *const errorMethod = @"error";
       result([FlutterError errorWithCode:@"IOError" message:@"Setup Writer Failed" details:nil]);
       return;
     }
+        if (maxVideoDuration != 0) {
+          dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(maxVideoDuration * NSEC_PER_MSEC)),
+                         dispatch_get_main_queue(), ^{
+                           if (self->_isRecording) {
+                             [self stopVideoRecordingWithResult:nil maxVideoRecording:maxVideoDuration];
+                           }
+                         });
+        }
     _isRecording = YES;
     _isRecordingPaused = NO;
     _videoTimeOffset = CMTimeMake(0, 1);
@@ -809,18 +818,30 @@ NSString *const errorMethod = @"error";
   }
 }
 
-- (void)stopVideoRecordingWithResult:(FlutterResult)result {
+- (void)stopVideoRecordingWithResult:(FlutterResult)result
+maxVideoDuration:(int64_t)maxVideoDuration {
   if (_isRecording) {
     _isRecording = NO;
     if (_videoWriter.status != AVAssetWriterStatusUnknown) {
       [_videoWriter finishWritingWithCompletionHandler:^{
         if (self->_videoWriter.status == AVAssetWriterStatusCompleted) {
-          result(self->_videoRecordingPath);
+          if(result != nil) {
+            result(self->_videoRecordingPath);
+          }
+           [self->_methodChannel invokeMethod:@"video_recorded"
+                                             arguments:@{
+                                               @"path" : self->_videoRecordingPath,
+                                               @"maxVideoDuration" : @(maxVideoDuration),
+                                             }];
           self->_videoRecordingPath = nil;
         } else {
-          result([FlutterError errorWithCode:@"IOError"
+          if(result != nil) {
+            result([FlutterError errorWithCode:@"IOError"
                                      message:@"AVAssetWriter could not finish writing!"
                                      details:nil]);
+          }
+          [self->_methodChannel invokeMethod:errorMethod
+                                   arguments:@"AVAssetWriter could not finish writing!"];
         }
       }];
     }
@@ -829,7 +850,9 @@ NSString *const errorMethod = @"error";
         [NSError errorWithDomain:NSCocoaErrorDomain
                             code:NSURLErrorResourceUnavailable
                         userInfo:@{NSLocalizedDescriptionKey : @"Video is not recording!"}];
-    result(getFlutterError(error));
+if(result != nil){    result(getFlutterError(error));
+}    [self->_methodChannel invokeMethod:errorMethod arguments:@"Video is not recording!"];
+
   }
 }
 
@@ -1385,7 +1408,13 @@ NSString *const errorMethod = @"error";
       [_camera setUpCaptureSessionForAudio];
       result(nil);
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
-      [_camera startVideoRecordingWithResult:result];
+        if ([call.arguments[@"maxVideoDuration"] class] != [NSNull class]) {
+              [_camera startVideoRecordingWithResult:result
+                                    maxVideoDuration:((NSNumber *)call.arguments[@"maxVideoDuration"])
+                                                         .intValue];
+            } else {
+              [_camera startVideoRecordingWithResult:result maxVideoDuration:0];
+            }
     } else if ([@"stopVideoRecording" isEqualToString:call.method]) {
       [_camera stopVideoRecordingWithResult:result];
     } else if ([@"pauseVideoRecording" isEqualToString:call.method]) {

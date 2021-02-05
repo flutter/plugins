@@ -32,7 +32,8 @@ class DartMessenger {
   enum CameraEventType {
     ERROR("error"),
     CLOSING("camera_closing"),
-    INITIALIZED("initialized");
+    INITIALIZED("initialized"),
+    VIDEO_RECORDED("video_recorded");
 
     private final String method;
 
@@ -96,6 +97,17 @@ class DartMessenger {
             if (!TextUtils.isEmpty(description)) put("description", description);
           }
         });
+  }
+
+  void sendVideoRecordedEvent(String path, Integer maxVideoDuration) {
+    this.send(
+            CameraEventType.VIDEO_RECORDED,
+            new HashMap<String, Object>() {
+              {
+                if (path != null) put("path", path);
+                if (maxVideoDuration != null) put("maxVideoDuration", maxVideoDuration);
+              }
+            });
   }
 
   void send(CameraEventType eventType) {

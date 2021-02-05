@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.camera;
 
+import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED;
 import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 import android.annotation.SuppressLint;
@@ -105,6 +106,7 @@ public class Camera {
   private boolean useAutoFocus = true;
   private Range<Integer> fpsRange;
   private PlatformChannel.DeviceOrientation lockedCaptureOrientation;
+  private Integer maxDurationLimit;
 
   private static final HashMap<String, Integer> supportedImageFormats;
   // Current supported outputs
@@ -178,19 +180,24 @@ public class Camera {
     Log.i("Camera", "[FPS Range] is:" + fpsRange);
   }
 
-  private void prepareMediaRecorder(String outputFilePath) throws IOException {
+  private void prepareMediaRecorder(String outputFilePath, Integer maxVideoDuration) throws IOException {
     if (mediaRecorder != null) {
       mediaRecorder.release();
     }
 
-    mediaRecorder =
+    MediaRecorderBuilder mediaRecorderBuilder =
         new MediaRecorderBuilder(recordingProfile, outputFilePath)
             .setEnableAudio(enableAudio)
             .setMediaOrientation(
                 lockedCaptureOrientation == null
                     ? deviceOrientationListener.getMediaOrientation()
                     : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation))
-            .build();
+                .setMediaOrientation(getMediaOrientation());
+
+    if (maxVideoDuration != null) {
+      mediaRecorderBuilder.setMaxVideoDuration(maxVideoDuration);
+    }
+    mediaRecorder = mediaRecorderBuilder.build();
   }
 
   @SuppressLint("MissingPermission")
@@ -609,8 +616,9 @@ public class Camera {
         (errorCode, errorMessage) -> pictureCaptureRequest.error(errorCode, errorMessage, null));
   }
 
-  public void startVideoRecording(Result result) {
+  public void startVideoRecording(Result result, Integer maxVideoDuration) {
     final File outputDir = applicationContext.getCacheDir();
+    maxDurationLimit = maxVideoDuration;
     try {
       videoRecordingFile = File.createTempFile("REC", ".mp4", outputDir);
     } catch (IOException | SecurityException e) {
@@ -619,10 +627,27 @@ public class Camera {
     }
 
     try {
-      prepareMediaRecorder(videoRecordingFile.getAbsolutePath());
+      prepareMediaRecorder(videoRecordingFile.getAbsolutePath(), maxVideoDuration);
       recordingVideo = true;
       createCaptureSession(
           CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
+      if (maxVideoDuration != null) {
+        mediaRecorder.setOnInfoListener(
+                (mr, what, extra) -> {
+                  if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                    try {
+                      dartMessenger.sendVideoRecordedEvent(
+                              videoRecordingFile.getAbsolutePath(), maxVideoDuration);
+                      recordingVideo = false;
+                      videoRecordingFile = null;
+                      maxDurationLimit = null;
+                      resetCaptureSession();
+                    } catch (CameraAccessException e) {
+                      result.error("videoRecordingFailed", e.getMessage(), null);
+                    }
+                  }
+                });
+      }
       result.success(null);
     } catch (CameraAccessException | IOException e) {
       recordingVideo = false;
@@ -630,6 +655,19 @@ public class Camera {
       result.error("videoRecordingFailed", e.getMessage(), null);
     }
   }
+
+  public void resetCaptureSession() throws CameraAccessException {
+    try {
+      cameraCaptureSession.abortCaptures();
+      mediaRecorder.stop();
+    } catch (IllegalStateException e) {
+      // Ignore exceptions and try to continue (chances are camera session already aborted capture)
+    }
+
+    mediaRecorder.reset();
+    startPreview();
+  }
+
 
   public void stopVideoRecording(@NonNull final Result result) {
     if (!recordingVideo) {
@@ -639,19 +677,12 @@ public class Camera {
 
     try {
       recordingVideo = false;
-
-      try {
-        cameraCaptureSession.abortCaptures();
-        mediaRecorder.stop();
-      } catch (CameraAccessException | IllegalStateException e) {
-        // Ignore exceptions and try to continue (changes are camera session already aborted capture)
-      }
-
-      mediaRecorder.reset();
-      startPreview();
+      resetCaptureSession();
+      dartMessenger.sendVideoRecordedEvent(videoRecordingFile.getAbsolutePath(), maxDurationLimit);
+      maxDurationLimit = null;
       result.success(videoRecordingFile.getAbsolutePath());
       videoRecordingFile = null;
-    } catch (CameraAccessException | IllegalStateException e) {
+    } catch (CameraAccessException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
     }
   }

@@ -47,7 +47,7 @@ It's important to note that the `MediaRecorder` class is not working properly on
 
 ### Handling Lifecycle states
 
-As of version [0.5.0](https://github.com/flutter/plugins/blob/master/packages/camera/CHANGELOG.md#050) of the camera plugin, lifecycle changes are no longer handled by the plugin. This means developers are now responsible to control camera resources when the lifecycle state is updated. Failure to do so might lead to unexpected behavior (for example as described in issue [#39109](https://github.com/flutter/flutter/issues/39109)). Handling lifecycle changes can be done by overriding the `didChangeAppLifecycleState` method like so:
+As of version [0.5.0](https://github.com/flutter/plugins/blob/master/packages/camera/camera/CHANGELOG.md#050) of the camera plugin, lifecycle changes are no longer handled by the plugin. This means developers are now responsible to control camera resources when the lifecycle state is updated. Failure to do so might lead to unexpected behavior (for example as described in issue [#39109](https://github.com/flutter/flutter/issues/39109)). Handling lifecycle changes can be done by overriding the `didChangeAppLifecycleState` method like so:
 
 ```dart
   @override
@@ -64,6 +64,16 @@ As of version [0.5.0](https://github.com/flutter/plugins/blob/master/packages/ca
       }
     }
   }
+```
+
+As of version [0.6.5](https://github.com/flutter/plugins/blob/master/packages/camera/camera/CHANGELOG.md#065) the startVideoRecording method can be used with the maxVideoDuration parameter. To do this the result of the recording needs to be retrieved by listening to controller.onVideoRecordedEvent which yields a VideoRecordedEvent when the recording is finished. Like so:
+```dart
+recordVideo() async {
+    controller.onVideoRecordedEvent().listen((VideoRecordedEvent event) {
+               // Handle VideoRecordedEvent
+       });
+    await controller.startVideoRecording(maxVideoDuration: const Duration(seconds: 5));
+}
 ```
 
 ### Example
