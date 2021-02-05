@@ -132,7 +132,7 @@ class WifiInfoFlutter {
       Log.w(
           TAG,
           "Attempted to get Wi-Fi data that requires additional permission(s).\n"
-              + "To successfully get WiFi Name or Wi-Fi BSSID starting with Android O, please ensure your app has the CHANGE_WIFI_STATE and ACCESS_FINE_LOCATION permission.\n"
+              + "To successfully get WiFi Name or Wi-Fi BSSID starting with Android Q, please ensure your app has the CHANGE_WIFI_STATE and ACCESS_FINE_LOCATION permission.\n"
               + "For more information about Wi-Fi Restrictions in Android 8.0 and above, please consult the following link:\n"
               + "https://developer.android.com/guide/topics/connectivity/wifi-scan");
       return false;
