@@ -15,6 +15,7 @@ readonly NNBD_PLUGINS_LIST=(
   "google_sign_in"
   "local_auth"
   "path_provider"
+  "package_info"
   "plugin_platform_interface"
   "share"
   "shared_preferences"
@@ -22,6 +23,7 @@ readonly NNBD_PLUGINS_LIST=(
   "video_player"
   "webview_flutter"
   "shared_preferences_windows"
+  "image_picker"
 )
 
 # This list contains the list of plugins that have *not* been
