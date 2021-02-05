@@ -1,3 +1,29 @@
+## 0.1.2
+
+* Add support for Custom Tiles.
+
+## 0.1.1
+
+* Auto-reverse holes if they're the same direction as the polygon. [Issue](https://github.com/flutter/flutter/issues/74096).
+
+## 0.1.0+10
+
+* Update `package:google_maps_flutter_platform_interface` to `^1.1.0`.
+* Add support for Polygon Holes.
+
+## 0.1.0+9
+
+* Update Flutter SDK constraint.
+
+## 0.1.0+8
+
+* Update `package:google_maps_flutter_platform_interface` to `^1.0.5`.
+* Add support for `fromBitmap` BitmapDescriptors. [Issue](https://github.com/flutter/flutter/issues/66622).
+
+## 0.1.0+7
+
+* Substitute `undefined_prefixed_name: ignore` analyzer setting by a `dart:ui` shim with conditional exports. [Issue](https://github.com/flutter/flutter/issues/69309).
+
 ## 0.1.0+6
 
 * Ensure a single `InfoWindow` is shown at a time. [Issue](https://github.com/flutter/flutter/issues/67380).

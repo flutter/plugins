@@ -1,3 +1,24 @@
+## 5.0.0-nullsafety.1
+
+* Document that the web plugin is not endorsed in the `nullsafety` prerelease for now.
+
+## 5.0.0-nullsafety
+
+* Migrate to nnbd.
+* **Breaking change**: web plugins aren't endorsed in null-safe plugins yet.
+
+## 4.5.9
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 4.5.8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 4.5.7
+
+* Update Flutter SDK constraint.
+
 ## 4.5.6
 
 * Fix deprecated member warning in tests.

@@ -3,7 +3,26 @@
 
 [![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
 
-_See also: [Flutter's code of conduct](https://flutter.io/design-principles/#code-of-conduct)_
+_See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/master/CODE_OF_CONDUCT.md)_
+
+## Important note
+
+As of January 2021, we are no longer accepting non-critical PRs for plugins
+for which there is a corresponding [Flutter Community Plus
+Plugin](https://plus.fluttercommunity.dev/), as we hope in time to be able
+to transition users to those versions of the plugins. If you have a PR for
+something other than a critical issue (crashes, build failures, null safety, etc.)
+for any of the following plugins, we encourage you to submit it
+[there](https://github.com/fluttercommunity/plus_plugins/pulls) instead:
+- `android_alarm_manager`
+- `android_intent`
+- `battery`
+- `connectivity`
+- `device_info`
+- `package_info`
+- `sensors`
+- `share`
+- `wifi_info_flutter` (corresponds to `network_info_plus`)
 
 ## Things you will need
 
@@ -131,9 +150,8 @@ pub global run flutter_plugin_tools xctest --target RunnerUITests --skip <plugin
 We gladly accept contributions via GitHub pull requests.
 
 Please peruse our
-[style guide](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo) and
-[design principles](https://flutter.io/design-principles/) before
-working on anything non-trivial. These guidelines are intended to
+[style guide](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo)
+before working on anything non-trivial. These guidelines are intended to
 keep the code consistent and avoid common pitfalls.
 
 To start working on a patch:
@@ -141,7 +159,7 @@ To start working on a patch:
  * `git fetch upstream`
  * `git checkout upstream/master -b <name_of_your_branch>`
  * Hack away.
- * Verify changes with [flutter_plugin_tools](https://pub.dartlang.org/packages/flutter_plugin_tools)
+ * Verify changes with [flutter_plugin_tools](https://pub.dev/packages/flutter_plugin_tools)
 ```
 pub global activate flutter_plugin_tools
 pub global run flutter_plugin_tools format --plugins plugin_name

@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart = 2.9
+
 import 'dart:async';
 import 'dart:ui';
 
 import 'package:integration_test/integration_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
+import 'package:google_maps/google_maps.dart' as gmaps;
+import 'package:google_maps/google_maps_geometry.dart' as geometry;
 import 'package:flutter_test/flutter_test.dart';
 
 // This value is used when comparing the results of
@@ -187,6 +191,92 @@ void main() {
       expect(polygon.get('fillOpacity'), closeTo(0.5, _acceptableDelta));
       expect(polygon.get('strokeColor'), '#c0ffee');
       expect(polygon.get('strokeOpacity'), closeTo(1, _acceptableDelta));
+    });
+
+    testWidgets('Handle Polygons with holes', (WidgetTester tester) async {
+      final polygons = {
+        Polygon(
+          polygonId: PolygonId('BermudaTriangle'),
+          points: [
+            LatLng(25.774, -80.19),
+            LatLng(18.466, -66.118),
+            LatLng(32.321, -64.757),
+          ],
+          holes: [
+            [
+              LatLng(28.745, -70.579),
+              LatLng(29.57, -67.514),
+              LatLng(27.339, -66.668),
+            ],
+          ],
+        ),
+      };
+
+      controller.addPolygons(polygons);
+
+      expect(controller.polygons.length, 1);
+      expect(controller.polygons, contains(PolygonId('BermudaTriangle')));
+      expect(controller.polygons, isNot(contains(PolygonId('66'))));
+    });
+
+    testWidgets('Polygon with hole has a hole', (WidgetTester tester) async {
+      final polygons = {
+        Polygon(
+          polygonId: PolygonId('BermudaTriangle'),
+          points: [
+            LatLng(25.774, -80.19),
+            LatLng(18.466, -66.118),
+            LatLng(32.321, -64.757),
+          ],
+          holes: [
+            [
+              LatLng(28.745, -70.579),
+              LatLng(29.57, -67.514),
+              LatLng(27.339, -66.668),
+            ],
+          ],
+        ),
+      };
+
+      controller.addPolygons(polygons);
+
+      final polygon = controller.polygons.values.first.polygon;
+      final pointInHole = gmaps.LatLng(28.632, -68.401);
+
+      expect(geometry.poly.containsLocation(pointInHole, polygon), false);
+    });
+
+    testWidgets('Hole Path gets reversed to display correctly',
+        (WidgetTester tester) async {
+      final polygons = {
+        Polygon(
+          polygonId: PolygonId('BermudaTriangle'),
+          points: [
+            LatLng(25.774, -80.19),
+            LatLng(18.466, -66.118),
+            LatLng(32.321, -64.757),
+          ],
+          holes: [
+            [
+              LatLng(27.339, -66.668),
+              LatLng(29.57, -67.514),
+              LatLng(28.745, -70.579),
+            ],
+          ],
+        ),
+      };
+
+      controller.addPolygons(polygons);
+
+      expect(
+          controller.polygons.values.first.polygon.paths.getAt(1).getAt(0).lat,
+          28.745);
+      expect(
+          controller.polygons.values.first.polygon.paths.getAt(1).getAt(1).lat,
+          29.57);
+      expect(
+          controller.polygons.values.first.polygon.paths.getAt(1).getAt(2).lat,
+          27.339);
     });
   });
 

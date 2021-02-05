@@ -1,3 +1,19 @@
+## 2.0.0-nullsafety.2
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 2.0.0-nullsafety.1
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 0.6.5+5
+
+* Update Flutter SDK constraint.
+
 ## 0.6.5+4
 
 * Fix iPad share window not showing when `origin` is null.

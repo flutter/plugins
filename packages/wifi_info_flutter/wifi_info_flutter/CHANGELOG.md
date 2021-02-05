@@ -1,7 +1,15 @@
+## 1.0.4
+
+* Android: Add Log warning for unsatisfied requirement(s) in Android P or higher.
+* Android: Update Example project.
+
+## 1.0.3
+
+* Fix README example.
+
 ## 1.0.2
 
-* Android: Add Log warning for unsatisfied requirement(s) in Android O or higher.
-* Android: Update Example project.
+* Update Flutter SDK constraint.
 
 ## 1.0.1
 

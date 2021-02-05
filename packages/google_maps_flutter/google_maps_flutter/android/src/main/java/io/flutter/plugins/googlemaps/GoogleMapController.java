@@ -76,10 +76,12 @@ final class GoogleMapController
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
+  private final TileOverlaysController tileOverlaysController;
   private List<Object> initialMarkers;
   private List<Object> initialPolygons;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
+  private List<Map<String, ?>> initialTileOverlays;
 
   GoogleMapController(
       int id,
@@ -99,6 +101,7 @@ final class GoogleMapController
     this.polygonsController = new PolygonsController(methodChannel, density);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel, density);
+    this.tileOverlaysController = new TileOverlaysController(methodChannel);
   }
 
   @Override
@@ -140,10 +143,12 @@ final class GoogleMapController
     polygonsController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
+    tileOverlaysController.setGoogleMap(googleMap);
     updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialCircles();
+    updateInitialTileOverlays();
   }
 
   @Override
@@ -239,12 +244,12 @@ final class GoogleMapController
         }
       case "markers#update":
         {
-          Object markersToAdd = call.argument("markersToAdd");
-          markersController.addMarkers((List<Object>) markersToAdd);
-          Object markersToChange = call.argument("markersToChange");
-          markersController.changeMarkers((List<Object>) markersToChange);
-          Object markerIdsToRemove = call.argument("markerIdsToRemove");
-          markersController.removeMarkers((List<Object>) markerIdsToRemove);
+          List<Object> markersToAdd = call.argument("markersToAdd");
+          markersController.addMarkers(markersToAdd);
+          List<Object> markersToChange = call.argument("markersToChange");
+          markersController.changeMarkers(markersToChange);
+          List<Object> markerIdsToRemove = call.argument("markerIdsToRemove");
+          markersController.removeMarkers(markerIdsToRemove);
           result.success(null);
           break;
         }
@@ -268,34 +273,34 @@ final class GoogleMapController
         }
       case "polygons#update":
         {
-          Object polygonsToAdd = call.argument("polygonsToAdd");
-          polygonsController.addPolygons((List<Object>) polygonsToAdd);
-          Object polygonsToChange = call.argument("polygonsToChange");
-          polygonsController.changePolygons((List<Object>) polygonsToChange);
-          Object polygonIdsToRemove = call.argument("polygonIdsToRemove");
-          polygonsController.removePolygons((List<Object>) polygonIdsToRemove);
+          List<Object> polygonsToAdd = call.argument("polygonsToAdd");
+          polygonsController.addPolygons(polygonsToAdd);
+          List<Object> polygonsToChange = call.argument("polygonsToChange");
+          polygonsController.changePolygons(polygonsToChange);
+          List<Object> polygonIdsToRemove = call.argument("polygonIdsToRemove");
+          polygonsController.removePolygons(polygonIdsToRemove);
           result.success(null);
           break;
         }
       case "polylines#update":
         {
-          Object polylinesToAdd = call.argument("polylinesToAdd");
-          polylinesController.addPolylines((List<Object>) polylinesToAdd);
-          Object polylinesToChange = call.argument("polylinesToChange");
-          polylinesController.changePolylines((List<Object>) polylinesToChange);
-          Object polylineIdsToRemove = call.argument("polylineIdsToRemove");
-          polylinesController.removePolylines((List<Object>) polylineIdsToRemove);
+          List<Object> polylinesToAdd = call.argument("polylinesToAdd");
+          polylinesController.addPolylines(polylinesToAdd);
+          List<Object> polylinesToChange = call.argument("polylinesToChange");
+          polylinesController.changePolylines(polylinesToChange);
+          List<Object> polylineIdsToRemove = call.argument("polylineIdsToRemove");
+          polylinesController.removePolylines(polylineIdsToRemove);
           result.success(null);
           break;
         }
       case "circles#update":
         {
-          Object circlesToAdd = call.argument("circlesToAdd");
-          circlesController.addCircles((List<Object>) circlesToAdd);
-          Object circlesToChange = call.argument("circlesToChange");
-          circlesController.changeCircles((List<Object>) circlesToChange);
-          Object circleIdsToRemove = call.argument("circleIdsToRemove");
-          circlesController.removeCircles((List<Object>) circleIdsToRemove);
+          List<Object> circlesToAdd = call.argument("circlesToAdd");
+          circlesController.addCircles(circlesToAdd);
+          List<Object> circlesToChange = call.argument("circlesToChange");
+          circlesController.changeCircles(circlesToChange);
+          List<Object> circleIdsToRemove = call.argument("circleIdsToRemove");
+          circlesController.removeCircles(circleIdsToRemove);
           result.success(null);
           break;
         }
@@ -383,6 +388,30 @@ final class GoogleMapController
                 "Unable to set the map style. Please check console logs for errors.");
           }
           result.success(mapStyleResult);
+          break;
+        }
+      case "tileOverlays#update":
+        {
+          List<Map<String, ?>> tileOverlaysToAdd = call.argument("tileOverlaysToAdd");
+          tileOverlaysController.addTileOverlays(tileOverlaysToAdd);
+          List<Map<String, ?>> tileOverlaysToChange = call.argument("tileOverlaysToChange");
+          tileOverlaysController.changeTileOverlays(tileOverlaysToChange);
+          List<String> tileOverlaysToRemove = call.argument("tileOverlayIdsToRemove");
+          tileOverlaysController.removeTileOverlays(tileOverlaysToRemove);
+          result.success(null);
+          break;
+        }
+      case "tileOverlays#clearTileCache":
+        {
+          String tileOverlayId = call.argument("tileOverlayId");
+          tileOverlaysController.clearTileCache(tileOverlayId);
+          result.success(null);
+          break;
+        }
+      case "map#getTileOverlayInfo":
+        {
+          String tileOverlayId = call.argument("tileOverlayId");
+          result.success(tileOverlaysController.getTileOverlayInfo(tileOverlayId));
           break;
         }
       default:
@@ -682,7 +711,8 @@ final class GoogleMapController
 
   @Override
   public void setInitialMarkers(Object initialMarkers) {
-    this.initialMarkers = (List<Object>) initialMarkers;
+    ArrayList<?> markers = (ArrayList<?>) initialMarkers;
+    this.initialMarkers = markers != null ? new ArrayList<>(markers) : null;
     if (googleMap != null) {
       updateInitialMarkers();
     }
@@ -694,7 +724,8 @@ final class GoogleMapController
 
   @Override
   public void setInitialPolygons(Object initialPolygons) {
-    this.initialPolygons = (List<Object>) initialPolygons;
+    ArrayList<?> polygons = (ArrayList<?>) initialPolygons;
+    this.initialPolygons = polygons != null ? new ArrayList<>(polygons) : null;
     if (googleMap != null) {
       updateInitialPolygons();
     }
@@ -706,7 +737,8 @@ final class GoogleMapController
 
   @Override
   public void setInitialPolylines(Object initialPolylines) {
-    this.initialPolylines = (List<Object>) initialPolylines;
+    ArrayList<?> polylines = (ArrayList<?>) initialPolylines;
+    this.initialPolylines = polylines != null ? new ArrayList<>(polylines) : null;
     if (googleMap != null) {
       updateInitialPolylines();
     }
@@ -718,7 +750,8 @@ final class GoogleMapController
 
   @Override
   public void setInitialCircles(Object initialCircles) {
-    this.initialCircles = (List<Object>) initialCircles;
+    ArrayList<?> circles = (ArrayList<?>) initialCircles;
+    this.initialCircles = circles != null ? new ArrayList<>(circles) : null;
     if (googleMap != null) {
       updateInitialCircles();
     }
@@ -726,6 +759,18 @@ final class GoogleMapController
 
   private void updateInitialCircles() {
     circlesController.addCircles(initialCircles);
+  }
+
+  @Override
+  public void setInitialTileOverlays(List<Map<String, ?>> initialTileOverlays) {
+    this.initialTileOverlays = initialTileOverlays;
+    if (googleMap != null) {
+      updateInitialTileOverlays();
+    }
+  }
+
+  private void updateInitialTileOverlays() {
+    tileOverlaysController.addTileOverlays(initialTileOverlays);
   }
 
   @SuppressLint("MissingPermission")
