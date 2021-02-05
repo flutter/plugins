@@ -71,7 +71,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+  public void onMethodCall(MethodCall call, @NonNull MethodChannel.Result result) {
     String key = call.argument("key");
     try {
       switch (call.method) {
