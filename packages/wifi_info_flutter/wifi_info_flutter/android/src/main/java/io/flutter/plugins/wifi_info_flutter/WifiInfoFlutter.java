@@ -119,7 +119,7 @@ class WifiInfoFlutter {
       Log.w(
           TAG,
           "Attempted to get Wi-Fi data that requires additional permission(s).\n"
-              + "To successfully get WiFi Name or Wi-Fi BSSID starting with Android O, additional to CHANGE_WIFI_STATE please ensure your app has one of the following permissions too:\n"
+              + "To successfully get WiFi Name or Wi-Fi BSSID starting with Android P, additional to CHANGE_WIFI_STATE please ensure your app has one of the following permissions too:\n"
               + "- ACCESS_FINE_LOCATION\n"
               + "- ACCESS_COARSE_LOCATION\n"
               + "For more information about Wi-Fi Restrictions in Android 9.0 and above, please consult the following link:\n"
