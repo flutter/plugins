@@ -148,7 +148,7 @@ class WifiInfoFlutter {
           TAG,
           "Attempted to get Wi-Fi data that requires additional permission(s).\n"
               + "To successfully get WiFi Name or Wi-Fi BSSID starting with Android P, please ensure Location services are enabled on the device (under Settings > Location).\n"
-              + "For more information about Wi-Fi Restrictions in Android 8.0 and above, please consult the following link:\n"
+              + "For more information about Wi-Fi Restrictions in Android 9.0 and above, please consult the following link:\n"
               + "https://developer.android.com/guide/topics/connectivity/wifi-scan");
       return false;
     }
