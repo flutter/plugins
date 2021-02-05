@@ -1,4 +1,4 @@
-## 1.5.1
+## 1.6.0
 
 - Added VideoRecordedEvent to support ending a video recording in the native implementation. 
 
