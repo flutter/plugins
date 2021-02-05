@@ -103,3 +103,4 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
     return _writePreferences(preferences);
   }
 }
+
