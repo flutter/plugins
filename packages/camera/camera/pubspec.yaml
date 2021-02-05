@@ -8,8 +8,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/camera/camera
 dependencies:
   flutter:
     sdk: flutter
-  camera_platform_interface: #^1.5.0
-    path: ../camera_platform_interface
+  camera_platform_interface: ^1.5.0
   pedantic: ^1.8.0
   quiver: ^2.1.5
 
