@@ -240,6 +240,7 @@ class CameraErrorEvent extends CameraEvent {
 class VideoRecordedEvent extends CameraEvent {
   /// XFile of the recorded video.
   final XFile file;
+
   /// Maximum duration of the recorded video.
   final Duration maxVideoDuration;
 
@@ -263,18 +264,18 @@ class VideoRecordedEvent extends CameraEvent {
   /// Converts the [VideoRecordedEvent] instance into a [Map] instance that can be
   /// serialized to JSON.
   Map<String, dynamic> toJson() => {
-    'cameraId': cameraId,
-    'path': file.path,
-    'maxVideoDuration': maxVideoDuration?.inMilliseconds
-  };
+        'cameraId': cameraId,
+        'path': file.path,
+        'maxVideoDuration': maxVideoDuration?.inMilliseconds
+      };
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          super == other &&
-              other is VideoRecordedEvent &&
-              runtimeType == other.runtimeType &&
-              maxVideoDuration == other.maxVideoDuration;
+      super == other &&
+          other is VideoRecordedEvent &&
+          runtimeType == other.runtimeType &&
+          maxVideoDuration == other.maxVideoDuration;
 
   @override
   int get hashCode =>
