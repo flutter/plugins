@@ -122,7 +122,7 @@ class WifiInfoFlutter {
               + "To successfully get WiFi Name or Wi-Fi BSSID starting with Android O, additional to CHANGE_WIFI_STATE please ensure your app has one of the following permissions too:\n"
               + "- ACCESS_FINE_LOCATION\n"
               + "- ACCESS_COARSE_LOCATION\n"
-              + "For more information about Wi-Fi Restrictions in Android 8.0 and above, please consult the following link:\n"
+              + "For more information about Wi-Fi Restrictions in Android 9.0 and above, please consult the following link:\n"
               + "https://developer.android.com/guide/topics/connectivity/wifi-scan");
       return false;
     }
