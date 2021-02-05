@@ -66,7 +66,7 @@ As of version [0.5.0](https://github.com/flutter/plugins/blob/master/packages/ca
   }
 ```
 
-As of version [0.6.5](https://github.com/flutter/plugins/blob/master/packages/camera/camera/CHANGELOG.md#065) the startVideoRecording method can be used with the maxVideoDuration parameter. To do this the result of the recording needs to be retrieved by listening to controller.onVideoRecordedEvent which yields a VideoRecordedEvent when the recording is finished. Like so:
+As of version [0.7.1](https://github.com/flutter/plugins/blob/master/packages/camera/camera/CHANGELOG.md#071) the startVideoRecording method can be used with the maxVideoDuration parameter. To do this the result of the recording needs to be retrieved by listening to controller.onVideoRecordedEvent which yields a VideoRecordedEvent when the recording is finished. Like so:
 ```dart
 recordVideo() async {
     controller.onVideoRecordedEvent().listen((VideoRecordedEvent event) {
