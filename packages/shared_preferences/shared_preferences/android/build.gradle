@@ -40,3 +40,7 @@ android {
         disable 'InvalidPackage'
     }
 }
+
+dependencies {
+    implementation 'com.google.guava:guava:28.1-android'
+}

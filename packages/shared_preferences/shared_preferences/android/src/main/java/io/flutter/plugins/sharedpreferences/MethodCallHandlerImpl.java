@@ -7,9 +7,24 @@ package io.flutter.plugins.sharedpreferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.util.Base64;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.SettableFuture;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,6 +36,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin. It is also
@@ -30,6 +49,7 @@ import java.util.Set;
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
+  private static final String SHARED_PREFERENCES_ERROR_CODE = "shared-preferences-error";
 
   // Fun fact: The following is a base64 encoding of the string "This is the prefix for a list."
   private static final String LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
@@ -37,6 +57,8 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private static final String DOUBLE_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu";
 
   private final android.content.SharedPreferences preferences;
+  private final ExecutorService executor;
+  private final Executor uiThreadExecutor;
 
   /**
    * Constructs a {@link MethodCallHandlerImpl} instance. Creates a {@link
@@ -44,6 +66,13 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    */
   MethodCallHandlerImpl(Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    executor = Executors.newSingleThreadExecutor(
+        new ThreadFactoryBuilder()
+            .setNameFormat("shared-preferences-background-%d")
+            .setPriority(Thread.NORM_PRIORITY)
+            .build()
+    );
+    uiThreadExecutor = new UiThreadExecutor();
   }
 
   @Override
@@ -118,17 +147,38 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private void commitAsync(
       final SharedPreferences.Editor editor, final MethodChannel.Result result) {
-    new AsyncTask<Void, Void, Boolean>() {
-      @Override
-      protected Boolean doInBackground(Void... voids) {
-        return editor.commit();
-      }
+    final SettableFuture<Boolean> future = SettableFuture.create();
 
+    Futures.addCallback(
+        future,
+        new FutureCallback<Boolean>() {
+          @Override
+          public void onSuccess(@Nullable Boolean b) {
+            if (b != null) {
+              result.success(b);
+            } else {
+              result.error(SHARED_PREFERENCES_ERROR_CODE, "Null result", null);
+            }
+          }
+
+          @Override
+          public void onFailure(@NonNull Throwable t) {
+            result.error(SHARED_PREFERENCES_ERROR_CODE, t.getMessage(), null);
+          }
+        },
+        uiThreadExecutor
+    );
+
+    executor.execute(new Runnable() {
       @Override
-      protected void onPostExecute(Boolean value) {
-        result.success(value);
+      public void run() {
+        try {
+          future.set(editor.commit());
+        } catch (Throwable t) {
+          future.setException(t);
+        }
       }
-    }.execute();
+    });
   }
 
   private List<String> decodeList(String encodedList) throws IOException {
@@ -199,5 +249,18 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       }
     }
     return filteredPrefs;
+  }
+
+  public void teardown() {
+    executor.shutdown();
+  }
+
+  private static class UiThreadExecutor implements Executor {
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    public void execute(Runnable command) {
+      handler.post(command);
+    }
   }
 }
