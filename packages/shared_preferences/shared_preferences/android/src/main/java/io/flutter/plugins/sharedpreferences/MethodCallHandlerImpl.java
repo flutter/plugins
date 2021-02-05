@@ -9,15 +9,14 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,9 +31,6 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
 
 /**
  * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin. It is also
@@ -61,12 +57,12 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    */
   MethodCallHandlerImpl(Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-    executor = Executors.newSingleThreadExecutor(
-        new ThreadFactoryBuilder()
-            .setNameFormat("shared-preferences-background-%d")
-            .setPriority(Thread.NORM_PRIORITY)
-            .build()
-    );
+    executor =
+        Executors.newSingleThreadExecutor(
+            new ThreadFactoryBuilder()
+                .setNameFormat("shared-preferences-background-%d")
+                .setPriority(Thread.NORM_PRIORITY)
+                .build());
     uiThreadExecutor = new UiThreadExecutor();
   }
 
