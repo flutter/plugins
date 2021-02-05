@@ -5,11 +5,14 @@
 package io.flutter.plugins.sharedpreferences;
 
 import android.content.Context;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 
-/** SharedPreferencesPlugin */
+/**
+ * SharedPreferencesPlugin
+ */
 public class SharedPreferencesPlugin implements FlutterPlugin {
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
   private MethodChannel channel;
