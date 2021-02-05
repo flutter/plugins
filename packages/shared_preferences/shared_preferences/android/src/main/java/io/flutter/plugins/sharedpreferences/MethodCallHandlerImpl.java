@@ -165,19 +165,19 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
             result.error(SHARED_PREFERENCES_ERROR_CODE, t.getMessage(), null);
           }
         },
-        uiThreadExecutor
-    );
+        uiThreadExecutor);
 
-    executor.execute(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          future.set(editor.commit());
-        } catch (Throwable t) {
-          future.setException(t);
-        }
-      }
-    });
+    executor.execute(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              future.set(editor.commit());
+            } catch (Throwable t) {
+              future.setException(t);
+            }
+          }
+        });
   }
 
   private List<String> decodeList(String encodedList) throws IOException {
