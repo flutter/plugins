@@ -222,14 +222,6 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<void> stopRecordingVideo(int cameraId) async {
-    await _channel.invokeMethod<void>(
-      'stopVideoRecording',
-      <String, dynamic>{'cameraId': cameraId},
-    );
-  }
-
-  @override
   Future<void> pauseVideoRecording(int cameraId) => _channel.invokeMethod<void>(
         'pauseVideoRecording',
         <String, dynamic>{'cameraId': cameraId},
