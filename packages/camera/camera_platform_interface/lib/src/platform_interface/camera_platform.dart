@@ -134,16 +134,13 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Stops the video recording and returns the file where it was saved.
-  /// Function is deprecated and is replaced by [stopRecordingVideo].
-  /// This function will be removed in 2.0.0
-  @deprecated
   Future<XFile> stopVideoRecording(int cameraId) {
     throw UnimplementedError('stopVideoRecording() is not implemented.');
   }
 
-  /// Stops the video recording and returns the file where it was saved.
-  Future<XFile> stopRecordingVideo(int cameraId) {
-    throw UnimplementedError('stopVideoRecording() is not implemented.');
+  /// Stops the video recording. The file will be returned in [onVideoRecordedEvent].
+  Future<void> stopRecordingVideo(int cameraId) {
+    throw UnimplementedError('stopRecordingVideo() is not implemented.');
   }
 
   /// Pause video recording.
