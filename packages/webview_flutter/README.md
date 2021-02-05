@@ -64,7 +64,7 @@ android {
         // Required by the Flutter WebView plugin.
         minSdkVersion 19
     }
-  }
+}
 ```
 
 #### Enable Material Components for Android
