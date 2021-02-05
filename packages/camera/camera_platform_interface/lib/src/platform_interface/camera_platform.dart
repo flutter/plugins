@@ -128,7 +128,8 @@ abstract class CameraPlatform extends PlatformInterface {
   /// The length of the recording can be limited by specifying the [maxVideoDuration].
   /// By default no maximum duration is specified,
   /// meaning the recording will continue until manually stopped.
-  /// The video is returned in a [VideoRecordedEvent] in the [onVideoRecordedEvent] stream.
+  /// With [maxVideoDuration] set the video is returned in a [VideoRecordedEvent]
+  /// in the [onVideoRecordedEvent] stream.
   Future<void> startVideoRecording(int cameraId, {Duration maxVideoDuration}) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
