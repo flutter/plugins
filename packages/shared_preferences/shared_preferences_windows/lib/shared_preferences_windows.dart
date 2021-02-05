@@ -20,49 +20,51 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
 
   /// File system used to store to disk. Exposed for testing only.
   @visibleForTesting
-  FileSystem fs = LocalFileSystem();
+  FileSystem? fs = LocalFileSystem();
 
   /// The path_provider_windows instance used to find the support directory.
   @visibleForTesting
-  PathProviderWindows pathProvider = PathProviderWindows();
+  PathProviderWindows? pathProvider = PathProviderWindows();
 
   /// Local copy of preferences
-  Map<String, Object> _cachedPreferences;
+  Map<String, Object>? _cachedPreferences;
 
   /// Cached file for storing preferences.
-  File _localDataFilePath;
+  File? _localDataFilePath;
 
   /// Gets the file where the preferences are stored.
   Future<File> _getLocalDataFile() async {
-    if (_localDataFilePath == null) {
-      final directory = await pathProvider.getApplicationSupportPath();
-      _localDataFilePath =
-          fs.file(path.join(directory, 'shared_preferences.json'));
+    if (_localDataFilePath != null) {
+      return _localDataFilePath!;
     }
-    return _localDataFilePath;
+    final directory =
+        await (pathProvider!.getApplicationSupportPath() as FutureOr<String>);
+    return _localDataFilePath =
+        fs!.file(path.join(directory, 'shared_preferences.json'));
   }
 
   /// Gets the preferences from the stored file. Once read, the preferences are
   /// maintained in memory.
   Future<Map<String, Object>> _readPreferences() async {
-    if (_cachedPreferences == null) {
-      _cachedPreferences = {};
-      File localDataFile = await _getLocalDataFile();
-      if (localDataFile.existsSync()) {
-        String stringMap = localDataFile.readAsStringSync();
-        if (stringMap.isNotEmpty) {
-          _cachedPreferences = json.decode(stringMap) as Map<String, Object>;
-        }
+    if (_cachedPreferences != null) {
+      return (_cachedPreferences as Future<Map<String, Object>>);
+    }
+    Map<String, Object> _cachedPrefs = {};
+    File localDataFile = await (_getLocalDataFile());
+    if (localDataFile.existsSync()) {
+      String stringMap = localDataFile.readAsStringSync();
+      if (stringMap.isNotEmpty) {
+        _cachedPrefs = json.decode(stringMap).cast<String, Object>();
       }
     }
-    return _cachedPreferences;
+    return _cachedPrefs;
   }
 
   /// Writes the cached preferences to disk. Returns [true] if the operation
   /// succeeded.
   Future<bool> _writePreferences(Map<String, Object> preferences) async {
     try {
-      File localDataFile = await _getLocalDataFile();
+      File localDataFile = await (_getLocalDataFile());
       if (!localDataFile.existsSync()) {
         localDataFile.createSync(recursive: true);
       }
@@ -77,7 +79,7 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
 
   @override
   Future<bool> clear() async {
-    var preferences = await _readPreferences();
+    var preferences = await (_readPreferences());
     preferences.clear();
     return _writePreferences(preferences);
   }
@@ -89,14 +91,14 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
 
   @override
   Future<bool> remove(String key) async {
-    var preferences = await _readPreferences();
+    var preferences = await (_readPreferences());
     preferences.remove(key);
     return _writePreferences(preferences);
   }
 
   @override
   Future<bool> setValue(String valueType, String key, Object value) async {
-    var preferences = await _readPreferences();
+    var preferences = await (_readPreferences());
     preferences[key] = value;
     return _writePreferences(preferences);
   }
