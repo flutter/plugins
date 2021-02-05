@@ -191,8 +191,7 @@ public class Camera {
             .setMediaOrientation(
                 lockedCaptureOrientation == null
                     ? deviceOrientationListener.getMediaOrientation()
-                    : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation))
-                .setMediaOrientation(getMediaOrientation());
+                    : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation));
 
     if (maxVideoDuration != null) {
       mediaRecorderBuilder.setMaxVideoDuration(maxVideoDuration);
