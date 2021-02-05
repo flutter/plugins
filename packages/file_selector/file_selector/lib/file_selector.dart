@@ -14,7 +14,7 @@ Future<XFile?> openFile({
   String? initialDirectory,
   String? confirmButtonText,
 }) {
-  _verifyExtensions(acceptedTypeGroups);
+  acceptedTypeGroups = _verifyTypeGroups(acceptedTypeGroups);
   return FileSelectorPlatform.instance.openFile(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
@@ -27,7 +27,7 @@ Future<List<XFile>> openFiles({
   String? initialDirectory,
   String? confirmButtonText,
 }) {
-  _verifyExtensions(acceptedTypeGroups);
+  acceptedTypeGroups = _verifyTypeGroups(acceptedTypeGroups);
   return FileSelectorPlatform.instance.openFiles(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
@@ -41,7 +41,7 @@ Future<String?> getSavePath({
   String? suggestedName,
   String? confirmButtonText,
 }) async {
-  _verifyExtensions(acceptedTypeGroups);
+  acceptedTypeGroups = _verifyTypeGroups(acceptedTypeGroups);
   return FileSelectorPlatform.instance.getSavePath(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
@@ -58,15 +58,21 @@ Future<String?> getDirectoryPath({
       initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);
 }
 
-void _verifyExtensions(List<XTypeGroup> acceptedTypeGroups) {
-  acceptedTypeGroups?.asMap()?.forEach((i, acceptedTypeGroup) {
-    acceptedTypeGroup.extensions?.asMap()?.forEach((j, ext) {
-      if (kDebugMode && ext.startsWith('.')) {
-        print(
-          'acceptedTypeGroups[${i}].extensions[${j}] with value "${ext}" is invalid.'
-          ' Remove the leading dot.',
-        );
+List<XTypeGroup> _verifyTypeGroups(List<XTypeGroup> groups) {
+  if (groups == null) return groups;
+  for (var i = 0; i < groups.length; i++) {
+    if (groups[i] == null || groups[i].extensions == null) continue;
+    for (var j = 0; j < groups[i].extensions.length; j++) {
+      if (groups[i].extensions[j] == null) continue;
+      if (groups[i].extensions[j].startsWith('.')) {
+        if (kDebugMode) {
+          print('acceptedTypeGroups[${i}].extensions[${j}]'
+              ' with value "${groups[i].extensions[j]} is invalid.'
+              ' Please remove the leading dot.');
+        }
+        groups[i].extensions[j] = groups[i].extensions[j].substring(1);
       }
-    });
-  });
+    }
+  }
+  return groups;
 }

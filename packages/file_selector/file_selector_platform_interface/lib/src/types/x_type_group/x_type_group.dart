@@ -41,4 +41,11 @@ class XTypeGroup {
       'webWildCards': webWildCards,
     };
   }
+
+  bool operator ==(o) =>
+      label == o.label &&
+      listEquals(extensions, o.extensions) &&
+      listEquals(mimeTypes, o.mimeTypes) &&
+      listEquals(macUTIs, o.macUTIs) &&
+      listEquals(webWildCards, o.webWildCards);
 }
