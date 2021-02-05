@@ -7,7 +7,9 @@
 @import XCTest;
 @import google_sign_in;
 @import GoogleSignIn;
-@import OCMock;
+
+// OCMock library doesn't generate a valid modulemap.
+#import <OCMock/OCMock.h>
 
 @interface FLTGoogleSignInPluginTest : XCTestCase
 

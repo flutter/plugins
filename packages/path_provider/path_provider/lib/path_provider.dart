@@ -3,18 +3,51 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Directory;
+import 'dart:io' show Directory, Platform;
 
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
+import 'package:path_provider_linux/path_provider_linux.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:path_provider_platform_interface/src/method_channel_path_provider.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
 
-PathProviderPlatform get _platform => PathProviderPlatform.instance;
+@visibleForTesting
+@Deprecated('This is no longer necessary, and is now a no-op')
+set disablePathProviderPlatformOverride(bool override) {}
+
+bool _manualDartRegistrationNeeded = true;
+
+PathProviderPlatform get _platform {
+  // This is to manually endorse Dart implementations until automatic
+  // registration of Dart plugins is implemented. For details see
+  // https://github.com/flutter/flutter/issues/52267.
+  if (_manualDartRegistrationNeeded) {
+    // Only do the initial registration if it hasn't already been overridden
+    // with a non-default instance.
+    if (!kIsWeb && PathProviderPlatform.instance is MethodChannelPathProvider) {
+      if (Platform.isLinux) {
+        PathProviderPlatform.instance = PathProviderLinux();
+      } else if (Platform.isWindows) {
+        PathProviderPlatform.instance = PathProviderWindows();
+      }
+    }
+    _manualDartRegistrationNeeded = false;
+  }
+
+  return PathProviderPlatform.instance;
+}
 
 /// Get a [Directory] from [path] string.
-Directory _getDirectory(String path) {
-  return path == null ? path : Directory(path);
+Directory? _getDirectory(String? path) {
+  return path == null ? null : Directory(path);
+}
+
+/// Get list of [Directory] from [paths] strings.
+List<Directory>? _getDirectories(List<String>? paths) {
+  return paths == null ? null : paths.map((String path) => Directory(path)).toList();
 }
 
 /// Path to the temporary directory on the device that is not backed up and is
@@ -28,8 +61,8 @@ Directory _getDirectory(String path) {
 /// On iOS, this uses the `NSCachesDirectory` API.
 ///
 /// On Android, this uses the `getCacheDir` API on the context.
-Future<Directory> getTemporaryDirectory() async {
-  final String path = await _platform.getTemporaryPath();
+Future<Directory?> getTemporaryDirectory() async {
+  final String? path = await _platform.getTemporaryPath();
   return _getDirectory(path);
 }
 
@@ -43,8 +76,8 @@ Future<Directory> getTemporaryDirectory() async {
 /// If this directory does not exist, it is created automatically.
 ///
 /// On Android, this function uses the `getFilesDir` API on the context.
-Future<Directory> getApplicationSupportDirectory() async {
-  final String path = await _platform.getApplicationSupportPath();
+Future<Directory?> getApplicationSupportDirectory() async {
+  final String? path = await _platform.getApplicationSupportPath();
   return _getDirectory(path);
 }
 
@@ -53,8 +86,8 @@ Future<Directory> getApplicationSupportDirectory() async {
 ///
 /// On Android, this function throws an [UnsupportedError] as no equivalent
 /// path exists.
-Future<Directory> getLibraryDirectory() async {
-  final String path = await _platform.getLibraryPath();
+Future<Directory?> getLibraryDirectory() async {
+  final String? path = await _platform.getLibraryPath();
   return _getDirectory(path);
 }
 
@@ -67,8 +100,8 @@ Future<Directory> getLibraryDirectory() async {
 /// On Android, this uses the `getDataDirectory` API on the context. Consider
 /// using [getExternalStorageDirectory] instead if data is intended to be visible
 /// to the user.
-Future<Directory> getApplicationDocumentsDirectory() async {
-  final String path = await _platform.getApplicationDocumentsPath();
+Future<Directory?> getApplicationDocumentsDirectory() async {
+  final String? path = await _platform.getApplicationDocumentsPath();
   return _getDirectory(path);
 }
 
@@ -80,8 +113,8 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 /// to access outside the app's sandbox.
 ///
 /// On Android this uses the `getExternalFilesDir(null)`.
-Future<Directory> getExternalStorageDirectory() async {
-  final String path = await _platform.getExternalStoragePath();
+Future<Directory?> getExternalStorageDirectory() async {
+  final String? path = await _platform.getExternalStoragePath();
   return _getDirectory(path);
 }
 
@@ -98,10 +131,9 @@ Future<Directory> getExternalStorageDirectory() async {
 ///
 /// On Android this returns Context.getExternalCacheDirs() or
 /// Context.getExternalCacheDir() on API levels below 19.
-Future<List<Directory>> getExternalCacheDirectories() async {
-  final List<String> paths = await _platform.getExternalCachePaths();
-
-  return paths.map((String path) => Directory(path)).toList();
+Future<List<Directory>?> getExternalCacheDirectories() async {
+  final List<String>? paths = await _platform.getExternalCachePaths();
+  return _getDirectories(paths);
 }
 
 /// Paths to directories where application specific data can be stored.
@@ -116,15 +148,14 @@ Future<List<Directory>> getExternalCacheDirectories() async {
 ///
 /// On Android this returns Context.getExternalFilesDirs(String type) or
 /// Context.getExternalFilesDir(String type) on API levels below 19.
-Future<List<Directory>> getExternalStorageDirectories({
+Future<List<Directory>?> getExternalStorageDirectories({
   /// Optional parameter. See [StorageDirectory] for more informations on
   /// how this type translates to Android storage directories.
-  StorageDirectory type,
+  StorageDirectory? type,
 }) async {
-  final List<String> paths =
+  final List<String>? paths =
       await _platform.getExternalStoragePaths(type: type);
-
-  return paths.map((String path) => Directory(path)).toList();
+  return _getDirectories(paths);
 }
 
 /// Path to the directory where downloaded files can be stored.
@@ -132,7 +163,7 @@ Future<List<Directory>> getExternalStorageDirectories({
 ///
 /// On Android and on iOS, this function throws an [UnsupportedError] as no equivalent
 /// path exists.
-Future<Directory> getDownloadsDirectory() async {
-  final String path = await _platform.getDownloadsPath();
+Future<Directory?> getDownloadsDirectory() async {
+  final String? path = await _platform.getDownloadsPath();
   return _getDirectory(path);
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "GoogleMapController.h"
+#import "FLTGoogleMapTileOverlayController.h"
 #import "JsonConversions.h"
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
@@ -50,15 +51,12 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   FlutterMethodChannel* _channel;
   BOOL _trackCameraPosition;
   NSObject<FlutterPluginRegistrar>* _registrar;
-  // Used for the temporary workaround for a bug that the camera is not properly positioned at
-  // initialization. https://github.com/flutter/flutter/issues/24806
-  // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-  // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
   FLTMarkersController* _markersController;
   FLTPolygonsController* _polygonsController;
   FLTPolylinesController* _polylinesController;
   FLTCirclesController* _circlesController;
+  FLTTileOverlaysController* _tileOverlaysController;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -98,6 +96,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _circlesController = [[FLTCirclesController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
+    _tileOverlaysController = [[FLTTileOverlaysController alloc] init:_channel
+                                                              mapView:_mapView
+                                                            registrar:registrar];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
@@ -114,12 +115,43 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     if ([circlesToAdd isKindOfClass:[NSArray class]]) {
       [_circlesController addCircles:circlesToAdd];
     }
+    id tileOverlaysToAdd = args[@"tileOverlaysToAdd"];
+    if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {
+      [_tileOverlaysController addTileOverlays:tileOverlaysToAdd];
+    }
   }
   return self;
 }
 
 - (UIView*)view {
+  [_mapView addObserver:self forKeyPath:@"frame" options:0 context:nil];
   return _mapView;
+}
+
+- (void)observeValueForKeyPath:(NSString*)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context {
+  if (_cameraDidInitialSetup) {
+    // We only observe the frame for initial setup.
+    [_mapView removeObserver:self forKeyPath:@"frame"];
+    return;
+  }
+  if (object == _mapView && [keyPath isEqualToString:@"frame"]) {
+    CGRect bounds = _mapView.bounds;
+    if (CGRectEqualToRect(bounds, CGRectZero)) {
+      // The workaround is to fix an issue that the camera location is not current when
+      // the size of the map is zero at initialization.
+      // So We only care about the size of the `_mapView`, ignore the frame changes when the size is
+      // zero.
+      return;
+    }
+    _cameraDidInitialSetup = YES;
+    [_mapView removeObserver:self forKeyPath:@"frame"];
+    [_mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
+  } else {
+    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+  }
 }
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -172,20 +204,25 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
     result(nil);
   } else if ([call.method isEqualToString:@"map#takeSnapshot"]) {
-    if (_mapView != nil) {
-      UIGraphicsImageRendererFormat* format = [UIGraphicsImageRendererFormat defaultFormat];
-      format.scale = [[UIScreen mainScreen] scale];
-      UIGraphicsImageRenderer* renderer =
-          [[UIGraphicsImageRenderer alloc] initWithSize:_mapView.frame.size format:format];
+    if (@available(iOS 10.0, *)) {
+      if (_mapView != nil) {
+        UIGraphicsImageRendererFormat* format = [UIGraphicsImageRendererFormat defaultFormat];
+        format.scale = [[UIScreen mainScreen] scale];
+        UIGraphicsImageRenderer* renderer =
+            [[UIGraphicsImageRenderer alloc] initWithSize:_mapView.frame.size format:format];
 
-      UIImage* image = [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-        [_mapView.layer renderInContext:context.CGContext];
-      }];
-      result([FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)]);
+        UIImage* image = [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+          [_mapView.layer renderInContext:context.CGContext];
+        }];
+        result([FlutterStandardTypedData typedDataWithBytes:UIImagePNGRepresentation(image)]);
+      } else {
+        result([FlutterError errorWithCode:@"GoogleMap uninitialized"
+                                   message:@"takeSnapshot called prior to map initialization"
+                                   details:nil]);
+      }
     } else {
-      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
-                                 message:@"takeSnapshot called prior to map initialization"
-                                 details:nil]);
+      NSLog(@"Taking snapshots is not supported for Flutter Google Maps prior to iOS 10.");
+      result(nil);
     }
   } else if ([call.method isEqualToString:@"markers#update"]) {
     id markersToAdd = call.arguments[@"markersToAdd"];
@@ -270,6 +307,24 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_circlesController removeCircleIds:circleIdsToRemove];
     }
     result(nil);
+  } else if ([call.method isEqualToString:@"tileOverlays#update"]) {
+    id tileOverlaysToAdd = call.arguments[@"tileOverlaysToAdd"];
+    if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {
+      [_tileOverlaysController addTileOverlays:tileOverlaysToAdd];
+    }
+    id tileOverlaysToChange = call.arguments[@"tileOverlaysToChange"];
+    if ([tileOverlaysToChange isKindOfClass:[NSArray class]]) {
+      [_tileOverlaysController changeTileOverlays:tileOverlaysToChange];
+    }
+    id tileOverlayIdsToRemove = call.arguments[@"tileOverlayIdsToRemove"];
+    if ([tileOverlayIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_tileOverlaysController removeTileOverlayIds:tileOverlayIdsToRemove];
+    }
+    result(nil);
+  } else if ([call.method isEqualToString:@"tileOverlays#clearTileCache"]) {
+    id rawTileOverlayId = call.arguments[@"tileOverlayId"];
+    [_tileOverlaysController clearTileCache:rawTileOverlayId];
+    result(nil);
   } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
     NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
     result(isCompassEnabled);
@@ -284,6 +339,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isZoomGesturesEnabled"]) {
     NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
     result(isZoomGesturesEnabled);
+  } else if ([call.method isEqualToString:@"map#isZoomControlsEnabled"]) {
+    NSNumber* isZoomControlsEnabled = [NSNumber numberWithBool:NO];
+    result(isZoomControlsEnabled);
   } else if ([call.method isEqualToString:@"map#isTiltGesturesEnabled"]) {
     NSNumber* isTiltGesturesEnabled = @(_mapView.settings.tiltGestures);
     result(isTiltGesturesEnabled);
@@ -310,6 +368,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     } else {
       result(@[ @(NO), error ]);
     }
+  } else if ([call.method isEqualToString:@"map#getTileOverlayInfo"]) {
+    NSString* rawTileOverlayId = call.arguments[@"tileOverlayId"];
+    result([_tileOverlaysController getTileOverlayInfo:rawTileOverlayId]);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -429,16 +490,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 }
 
 - (void)mapView:(GMSMapView*)mapView didChangeCameraPosition:(GMSCameraPosition*)position {
-  if (!_cameraDidInitialSetup) {
-    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
-    // initialization. https://github.com/flutter/flutter/issues/24806
-    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
-    // still being investigated.
-    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-    // https://github.com/flutter/flutter/issues/27550
-    _cameraDidInitialSetup = YES;
-    [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
-  }
   if (_trackCameraPosition) {
     [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : PositionToJson(position)}];
   }
@@ -503,8 +554,8 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
 
 static NSDictionary* PointToJson(CGPoint point) {
   return @{
-    @"x" : @((int)point.x),
-    @"y" : @((int)point.y),
+    @"x" : @(lroundf(point.x)),
+    @"y" : @(lroundf(point.y)),
   };
 }
 

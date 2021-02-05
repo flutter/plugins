@@ -5,10 +5,13 @@
 
 #import "FLTLocalAuthPlugin.h"
 
-@implementation FLTLocalAuthPlugin {
-  NSDictionary *lastCallArgs;
-  FlutterResult lastResult;
-}
+@interface FLTLocalAuthPlugin ()
+@property(copy, nullable) NSDictionary<NSString *, NSNumber *> *lastCallArgs;
+@property(nullable) FlutterResult lastResult;
+@end
+
+@implementation FLTLocalAuthPlugin
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/local_auth"
@@ -19,10 +22,17 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"authenticateWithBiometrics" isEqualToString:call.method]) {
-    [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
+  if ([@"authenticate" isEqualToString:call.method]) {
+    bool isBiometricOnly = [call.arguments[@"biometricOnly"] boolValue];
+    if (isBiometricOnly) {
+      [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
+    } else {
+      [self authenticate:call.arguments withFlutterResult:result];
+    }
   } else if ([@"getAvailableBiometrics" isEqualToString:call.method]) {
     [self getAvailableBiometrics:result];
+  } else if ([@"isDeviceSupported" isEqualToString:call.method]) {
+    result(@YES);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -86,13 +96,12 @@
   }
   result(biometrics);
 }
-
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments
                  withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
-  lastCallArgs = nil;
-  lastResult = nil;
+  self.lastCallArgs = nil;
+  self.lastResult = nil;
   context.localizedFallbackTitle = @"";
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
@@ -114,8 +123,8 @@
                               return;
                             case LAErrorSystemCancel:
                               if ([arguments[@"stickyAuth"] boolValue]) {
-                                lastCallArgs = arguments;
-                                lastResult = result;
+                                self.lastCallArgs = arguments;
+                                self.lastResult = result;
                                 return;
                               }
                           }
@@ -124,6 +133,48 @@
                       }];
   } else {
     [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
+  }
+}
+
+- (void)authenticate:(NSDictionary *)arguments withFlutterResult:(FlutterResult)result {
+  LAContext *context = [[LAContext alloc] init];
+  NSError *authError = nil;
+  _lastCallArgs = nil;
+  _lastResult = nil;
+  context.localizedFallbackTitle = @"";
+
+  if (@available(iOS 9.0, *)) {
+    if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&authError]) {
+      [context evaluatePolicy:kLAPolicyDeviceOwnerAuthentication
+              localizedReason:arguments[@"localizedReason"]
+                        reply:^(BOOL success, NSError *error) {
+                          if (success) {
+                            result(@YES);
+                          } else {
+                            switch (error.code) {
+                              case LAErrorPasscodeNotSet:
+                              case LAErrorTouchIDNotAvailable:
+                              case LAErrorTouchIDNotEnrolled:
+                              case LAErrorTouchIDLockout:
+                                [self handleErrors:error
+                                     flutterArguments:arguments
+                                    withFlutterResult:result];
+                                return;
+                              case LAErrorSystemCancel:
+                                if ([arguments[@"stickyAuth"] boolValue]) {
+                                  self->_lastCallArgs = arguments;
+                                  self->_lastResult = result;
+                                  return;
+                                }
+                            }
+                            result(@NO);
+                          }
+                        }];
+    } else {
+      [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
+    }
+  } else {
+    // Fallback on earlier versions
   }
 }
 
@@ -158,8 +209,8 @@
 #pragma mark - AppDelegate
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-  if (lastCallArgs != nil && lastResult != nil) {
-    [self authenticateWithBiometrics:lastCallArgs withFlutterResult:lastResult];
+  if (self.lastCallArgs != nil && self.lastResult != nil) {
+    [self authenticateWithBiometrics:_lastCallArgs withFlutterResult:self.lastResult];
   }
 }
 

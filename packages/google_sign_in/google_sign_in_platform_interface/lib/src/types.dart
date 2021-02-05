@@ -24,15 +24,19 @@ enum SignInOption {
 
 /// Holds information about the signed in user.
 class GoogleSignInUserData {
-  /// Uses the given data to construct an instance. Any of these parameters
-  /// could be null.
-  GoogleSignInUserData(
-      {this.displayName, this.email, this.id, this.photoUrl, this.idToken});
+  /// Uses the given data to construct an instance.
+  GoogleSignInUserData({
+    required this.email,
+    required this.id,
+    this.displayName,
+    this.photoUrl,
+    this.idToken,
+  });
 
   /// The display name of the signed in user.
   ///
   /// Not guaranteed to be present for all users, even when configured.
-  String displayName;
+  String? displayName;
 
   /// The email address of the signed in user.
   ///
@@ -56,15 +60,15 @@ class GoogleSignInUserData {
   /// The photo url of the signed in user if the user has a profile picture.
   ///
   /// Not guaranteed to be present for all users, even when configured.
-  String photoUrl;
+  String? photoUrl;
 
   /// A token that can be sent to your own server to verify the authentication
   /// data.
-  String idToken;
+  String? idToken;
 
   @override
   int get hashCode =>
-      hashObjects(<String>[displayName, email, id, photoUrl, idToken]);
+      hashObjects(<String?>[displayName, email, id, photoUrl, idToken]);
 
   @override
   bool operator ==(dynamic other) {
@@ -81,17 +85,24 @@ class GoogleSignInUserData {
 
 /// Holds authentication data after sign in.
 class GoogleSignInTokenData {
-  /// Either or both parameters may be null.
-  GoogleSignInTokenData({this.idToken, this.accessToken});
+  /// Build `GoogleSignInTokenData`.
+  GoogleSignInTokenData({
+    this.idToken,
+    this.accessToken,
+    this.serverAuthCode,
+  });
 
   /// An OpenID Connect ID token for the authenticated user.
-  String idToken;
+  String? idToken;
 
   /// The OAuth2 access token used to access Google services.
-  String accessToken;
+  String? accessToken;
+
+  /// Server auth code used to access Google Login
+  String? serverAuthCode;
 
   @override
-  int get hashCode => hash2(idToken, accessToken);
+  int get hashCode => hash3(idToken, accessToken, serverAuthCode);
 
   @override
   bool operator ==(dynamic other) {
@@ -99,6 +110,7 @@ class GoogleSignInTokenData {
     if (other is! GoogleSignInTokenData) return false;
     final GoogleSignInTokenData otherTokenData = other;
     return otherTokenData.idToken == idToken &&
-        otherTokenData.accessToken == accessToken;
+        otherTokenData.accessToken == accessToken &&
+        otherTokenData.serverAuthCode == serverAuthCode;
   }
 }

@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(mvanbeusekom): Remove once Mockito is migrated to null safety.
+// @dart = 2.9
+
 import 'dart:async';
 import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter/foundation.dart';
@@ -39,10 +43,6 @@ void main() {
     });
   });
   group('launch', () {
-    test('requires a non-null urlString', () {
-      expect(() => launch(null), throwsAssertionError);
-    });
-
     test('default behavior', () async {
       await launch('http://flutter.dev/');
       expect(
@@ -204,6 +204,21 @@ void main() {
       expect(binding.renderView.automaticSystemUiAdjustment, isFalse);
       await launchResult;
       expect(binding.renderView.automaticSystemUiAdjustment, isTrue);
+    });
+
+    test('sets automaticSystemUiAdjustment to not be null', () async {
+      final TestWidgetsFlutterBinding binding =
+          TestWidgetsFlutterBinding.ensureInitialized();
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      expect(binding.renderView.automaticSystemUiAdjustment, true);
+      final Future<bool> launchResult =
+          launch('http://flutter.dev/', statusBarBrightness: Brightness.dark);
+
+      // The automaticSystemUiAdjustment should be set before the launch
+      // and equal to true after the launch result is complete.
+      expect(binding.renderView.automaticSystemUiAdjustment, true);
+      await launchResult;
+      expect(binding.renderView.automaticSystemUiAdjustment, true);
     });
   });
 }

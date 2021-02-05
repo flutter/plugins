@@ -1,31 +1,49 @@
 #!/bin/bash
 
+#  Usage:
+#
+#   ./script/build_all_plugins_app.sh apk
+#   ./script/build_all_plugins_app.sh ios
+
 # This script builds the app in flutter/plugins/example/all_plugins to make
 # sure all first party plugins can be compiled together.
 
 # So that users can run this script from anywhere and it will work as expected.
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
+
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
+source "$SCRIPT_DIR/nnbd_plugins.sh"
+
 check_changed_packages > /dev/null
 
 readonly EXCLUDED_PLUGINS_LIST=(
   "connectivity_macos"
   "connectivity_platform_interface"
   "connectivity_web"
+  "extension_google_sign_in_as_googleapis_auth"
+  "file_selector" # currently out of sync with camera
   "flutter_plugin_android_lifecycle"
+  "google_maps_flutter_platform_interface"
+  "google_maps_flutter_web"
   "google_sign_in_platform_interface"
   "google_sign_in_web"
+  "image_picker_platform_interface"
+  "image_picker"
   "instrumentation_adapter"
+  "local_auth" # flutter_plugin_android_lifecycle conflict
+  "path_provider_linux"
   "path_provider_macos"
   "path_provider_platform_interface"
   "path_provider_web"
   "plugin_platform_interface"
+  "shared_preferences_linux"
   "shared_preferences_macos"
   "shared_preferences_platform_interface"
   "shared_preferences_web"
   "shared_preferences_windows"
+  "url_launcher_linux"
   "url_launcher_macos"
   "url_launcher_platform_interface"
   "url_launcher_web"
@@ -35,7 +53,19 @@ readonly EXCLUDED_PLUGINS_LIST=(
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
 
-(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude $EXCLUDED)
+ALL_EXCLUDED=($EXCLUDED)
+# Exclude nnbd plugins from stable.
+if [ "$CHANNEL" == "stable" ]; then
+  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_STABLE")
+fi
+# Exclude non-nnbd plugins from master.
+if [ "$CHANNEL" != "stable" ]; then
+  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_MASTER")
+fi
+
+echo "Excluding the following plugins: $ALL_EXCLUDED"
+
+(cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
 
 function error() {
   echo "$@" 1>&2
