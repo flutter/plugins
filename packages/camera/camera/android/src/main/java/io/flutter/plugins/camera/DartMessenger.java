@@ -101,13 +101,13 @@ class DartMessenger {
 
   void sendVideoRecordedEvent(String path, Integer maxVideoDuration) {
     this.send(
-            CameraEventType.VIDEO_RECORDED,
-            new HashMap<String, Object>() {
-              {
-                if (path != null) put("path", path);
-                if (maxVideoDuration != null) put("maxVideoDuration", maxVideoDuration);
-              }
-            });
+        CameraEventType.VIDEO_RECORDED,
+        new HashMap<String, Object>() {
+          {
+            if (path != null) put("path", path);
+            if (maxVideoDuration != null) put("maxVideoDuration", maxVideoDuration);
+          }
+        });
   }
 
   void send(CameraEventType eventType) {

@@ -180,7 +180,8 @@ public class Camera {
     Log.i("Camera", "[FPS Range] is:" + fpsRange);
   }
 
-  private void prepareMediaRecorder(String outputFilePath, Integer maxVideoDuration) throws IOException {
+  private void prepareMediaRecorder(String outputFilePath, Integer maxVideoDuration)
+      throws IOException {
     if (mediaRecorder != null) {
       mediaRecorder.release();
     }
@@ -632,20 +633,20 @@ public class Camera {
           CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
       if (maxVideoDuration != null) {
         mediaRecorder.setOnInfoListener(
-                (mr, what, extra) -> {
-                  if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-                    try {
-                      dartMessenger.sendVideoRecordedEvent(
-                              videoRecordingFile.getAbsolutePath(), maxVideoDuration);
-                      recordingVideo = false;
-                      videoRecordingFile = null;
-                      maxDurationLimit = null;
-                      resetCaptureSession();
-                    } catch (CameraAccessException e) {
-                      result.error("videoRecordingFailed", e.getMessage(), null);
-                    }
-                  }
-                });
+            (mr, what, extra) -> {
+              if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                try {
+                  dartMessenger.sendVideoRecordedEvent(
+                      videoRecordingFile.getAbsolutePath(), maxVideoDuration);
+                  recordingVideo = false;
+                  videoRecordingFile = null;
+                  maxDurationLimit = null;
+                  resetCaptureSession();
+                } catch (CameraAccessException e) {
+                  result.error("videoRecordingFailed", e.getMessage(), null);
+                }
+              }
+            });
       }
       result.success(null);
     } catch (CameraAccessException | IOException e) {
@@ -666,7 +667,6 @@ public class Camera {
     mediaRecorder.reset();
     startPreview();
   }
-
 
   public void stopVideoRecording(@NonNull final Result result) {
     if (!recordingVideo) {
