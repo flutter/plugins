@@ -38,6 +38,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   }
 
   /// Open file dialog for loading files and return a file path
+  /// Returns `null` if user cancels the operation.
   Future<XFile?> openFile({
     List<XTypeGroup>? acceptedTypeGroups,
     String? initialDirectory,
@@ -56,6 +57,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   }
 
   /// Open file dialog for saving files and return a file path at which to save
+  /// Returns `null` if user cancels the operation.
   Future<String?> getSavePath({
     List<XTypeGroup>? acceptedTypeGroups,
     String? initialDirectory,
@@ -66,6 +68,7 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   }
 
   /// Open file dialog for loading directories and return a directory path
+  /// Returns `null` if user cancels the operation.
   Future<String?> getDirectoryPath({
     String? initialDirectory,
     String? confirmButtonText,
