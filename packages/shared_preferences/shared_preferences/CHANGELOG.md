@@ -1,3 +1,7 @@
+## 0.5.13+3
+
+* Android: replace [AsyncTask](https://developer.android.com/reference/android/os/AsyncTask) (was deprecated in API level 30) by [Executor](https://developer.android.com/reference/java/util/concurrent/Executor)
+
 ## 0.5.13+2
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
