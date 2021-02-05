@@ -142,6 +142,10 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private void commitAsync(
       final SharedPreferences.Editor editor, final MethodChannel.Result result) {
+    if (executor.isShutdown()) {
+      return;
+    }
+
     final SettableFuture<Boolean> future = SettableFuture.create();
 
     Futures.addCallback(
