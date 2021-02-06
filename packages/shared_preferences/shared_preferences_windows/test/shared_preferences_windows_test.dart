@@ -21,8 +21,7 @@ void main() {
   tearDown(() {});
 
   Future<String> _getFilePath() async {
-    final directory =
-        await pathProvider.getApplicationSupportPath();
+    final directory = await pathProvider.getApplicationSupportPath();
     return path.join(directory!, 'shared_preferences.json');
   }
 

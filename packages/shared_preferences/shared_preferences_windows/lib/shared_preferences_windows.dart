@@ -37,8 +37,7 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
     if (_localDataFilePath != null) {
       return _localDataFilePath!;
     }
-    final directory =
-        await pathProvider.getApplicationSupportPath();
+    final directory = await pathProvider.getApplicationSupportPath();
     return _localDataFilePath =
         fs.file(path.join(directory!, 'shared_preferences.json'));
   }
