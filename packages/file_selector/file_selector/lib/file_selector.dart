@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+
 export 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
     show XFile, XTypeGroup;
 
@@ -14,7 +15,6 @@ Future<XFile?> openFile({
   String? initialDirectory,
   String? confirmButtonText,
 }) {
-  acceptedTypeGroups = _verifyTypeGroups(acceptedTypeGroups);
   return FileSelectorPlatform.instance.openFile(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
@@ -27,7 +27,6 @@ Future<List<XFile>> openFiles({
   String? initialDirectory,
   String? confirmButtonText,
 }) {
-  acceptedTypeGroups = _verifyTypeGroups(acceptedTypeGroups);
   return FileSelectorPlatform.instance.openFiles(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
@@ -41,7 +40,6 @@ Future<String?> getSavePath({
   String? suggestedName,
   String? confirmButtonText,
 }) async {
-  acceptedTypeGroups = _verifyTypeGroups(acceptedTypeGroups);
   return FileSelectorPlatform.instance.getSavePath(
       acceptedTypeGroups: acceptedTypeGroups,
       initialDirectory: initialDirectory,
@@ -56,23 +54,4 @@ Future<String?> getDirectoryPath({
 }) async {
   return FileSelectorPlatform.instance.getDirectoryPath(
       initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);
-}
-
-List<XTypeGroup> _verifyTypeGroups(List<XTypeGroup> groups) {
-  if (groups == null) return groups;
-  for (var i = 0; i < groups.length; i++) {
-    if (groups[i] == null || groups[i].extensions == null) continue;
-    for (var j = 0; j < groups[i].extensions.length; j++) {
-      if (groups[i].extensions[j] == null) continue;
-      if (groups[i].extensions[j].startsWith('.')) {
-        if (kDebugMode) {
-          print('acceptedTypeGroups[${i}].extensions[${j}]'
-              ' with value "${groups[i].extensions[j]} is invalid.'
-              ' Please remove the leading dot.');
-        }
-        groups[i].extensions[j] = groups[i].extensions[j].substring(1);
-      }
-    }
-  }
-  return groups;
 }

@@ -1,6 +1,7 @@
 // Copyright 2020 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'package:flutter/foundation.dart';
 
 /// A set of allowed XTypes
 class XTypeGroup {
@@ -14,7 +15,22 @@ class XTypeGroup {
     this.mimeTypes,
     this.macUTIs,
     this.webWildCards,
-  });
+  }) {
+    _verifyExtensions();
+  }
+
+  void _verifyExtensions() {
+    if (extensions == null) return;
+    for (var i = 0; i < extensions!.length; i++) {
+      if (!extensions![i].startsWith('.')) continue;
+      if (kDebugMode) {
+        print('extensions[${i}] with value "${extensions![i]}" is invalid.'
+            ' We are mutating the extensions list to remove the leading dot.'
+            ' Please fix it.');
+      }
+      extensions![i] = extensions![i].substring(1);
+    }
+  }
 
   /// The 'name' or reference to this group of types
   final String? label;
@@ -41,11 +57,4 @@ class XTypeGroup {
       'webWildCards': webWildCards,
     };
   }
-
-  bool operator ==(o) =>
-      label == o.label &&
-      listEquals(extensions, o.extensions) &&
-      listEquals(mimeTypes, o.mimeTypes) &&
-      listEquals(macUTIs, o.macUTIs) &&
-      listEquals(webWildCards, o.webWildCards);
 }

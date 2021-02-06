@@ -9,7 +9,7 @@ void main() {
   group('XTypeGroup', () {
     test('toJSON() creates correct map', () {
       final label = 'test group';
-      final extensions = ['.txt', '.jpg'];
+      final extensions = ['txt', 'jpg'];
       final mimeTypes = ['text/plain'];
       final macUTIs = ['public.plain-text'];
       final webWildCards = ['image/*'];
@@ -40,6 +40,13 @@ void main() {
       expect(jsonMap['mimeTypes'], null);
       expect(jsonMap['macUTIs'], null);
       expect(jsonMap['webWildCards'], null);
+    });
+
+    test('Validates extensions have not leading dots', () {
+      final extensions = ['.txt', '.jpg'];
+      final group = XTypeGroup(extensions: extensions);
+
+      expect(group.extensions, ['txt', 'jpg']);
     });
   });
 }

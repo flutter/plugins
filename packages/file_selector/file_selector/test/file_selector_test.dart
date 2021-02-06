@@ -83,24 +83,6 @@ void main() {
       final file = await openFile(acceptedTypeGroups: acceptedTypeGroups);
       expect(file, expectedFile);
     });
-
-    test('works with an extension with leading dot', () async {
-      final correctTypeGroups = [
-        XTypeGroup(label: 'images', extensions: [
-          'jpg',
-          'png',
-        ]),
-      ];
-      final incorrectTypeGroups = [
-        XTypeGroup(label: 'images', extensions: [
-          '.jpg',
-          '.png',
-        ]),
-      ];
-
-      openFile(acceptedTypeGroups: incorrectTypeGroups);
-      verify(mock.openFile(acceptedTypeGroups: incorrectTypeGroups));
-    });
   });
 
   group('openFiles', () {
