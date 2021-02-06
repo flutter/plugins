@@ -21,11 +21,11 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
 
   /// File system used to store to disk. Exposed for testing only.
   @visibleForTesting
-  FileSystem? fs = LocalFileSystem();
+  FileSystem fs = LocalFileSystem();
 
   /// The path_provider_windows instance used to find the support directory.
   @visibleForTesting
-  PathProviderWindows? pathProvider = PathProviderWindows();
+  PathProviderWindows pathProvider = PathProviderWindows();
 
   /// Local copy of preferences
   Map<String, Object>? _cachedPreferences;
@@ -36,9 +36,9 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   /// Gets the file where the preferences are stored.
   Future<File> _getLocalDataFile() async {
     if (_localDataFilePath == null) {
-      final directory = await pathProvider!.getApplicationSupportPath();
+      final directory = await pathProvider.getApplicationSupportPath();
       _localDataFilePath =
-          fs!.file(path.join(directory!, 'shared_preferences.json'));
+          fs.file(path.join(directory!, 'shared_preferences.json'));
     }
     return _localDataFilePath!;
   }

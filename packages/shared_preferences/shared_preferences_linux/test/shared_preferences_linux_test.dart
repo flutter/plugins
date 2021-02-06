@@ -7,9 +7,9 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
 
-MemoryFileSystem? fs;
-
 void main() {
+  late MemoryFileSystem fs;
+
   setUp(() {
     fs = MemoryFileSystem.test();
   });
@@ -23,13 +23,13 @@ void main() {
   }
 
   _writeTestFile(String value) async {
-    fs!.file(await _getFilePath())
+    fs.file(await _getFilePath())
       ..createSync(recursive: true)
       ..writeAsStringSync(value);
   }
 
   Future<String> _readTestFile() async {
-    return fs!.file(await _getFilePath()).readAsStringSync();
+    return fs.file(await _getFilePath()).readAsStringSync();
   }
 
   SharedPreferencesLinux _getPreferences() {

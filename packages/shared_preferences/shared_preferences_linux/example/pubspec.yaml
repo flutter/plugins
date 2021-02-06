@@ -9,8 +9,8 @@ dependencies:
 dependency_overrides:
   shared_preferences_linux:
     path: ../
-  shared_preferences:
-    path: ../../shared_preferences
+  shared_preferences_platform_interface:
+    path: ../../shared_preferences_platform_interface
 
 dev_dependencies:
   flutter_driver:

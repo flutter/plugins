@@ -10,8 +10,8 @@ import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 void main() {
-  MemoryFileSystem? fileSystem;
-  PathProviderWindows? pathProvider;
+  late MemoryFileSystem fileSystem;
+  late PathProviderWindows pathProvider;
 
   setUp(() {
     fileSystem = MemoryFileSystem.test();
@@ -21,18 +21,18 @@ void main() {
   tearDown(() {});
 
   Future<String> _getFilePath() async {
-    final directory = await pathProvider!.getApplicationSupportPath();
+    final directory = await pathProvider.getApplicationSupportPath();
     return path.join(directory!, 'shared_preferences.json');
   }
 
   _writeTestFile(String value) async {
-    fileSystem!.file(await _getFilePath())
+    fileSystem.file(await _getFilePath())
       ..createSync(recursive: true)
       ..writeAsStringSync(value);
   }
 
   Future<String> _readTestFile() async {
-    return fileSystem!.file(await _getFilePath()).readAsStringSync();
+    return fileSystem.file(await _getFilePath()).readAsStringSync();
   }
 
   SharedPreferencesWindows _getPreferences() {
@@ -90,7 +90,7 @@ class FakePathProviderWindows extends PathProviderPlatform
   late VersionInfoQuerier versionInfoQuerier;
 
   @override
-  Future<String> getApplicationSupportPath() async => r'C:\appsupport';
+  Future<String?> getApplicationSupportPath() async => r'C:\appsupport';
 
   @override
   Future<String?> getTemporaryPath() async => null;
