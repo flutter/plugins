@@ -26,7 +26,8 @@ void main() {
 
     test('registers itself', () {
       SharedPreferencesPlugin.registerWith(null);
-      expect(SharedPreferencesStorePlatform.instance, isA<SharedPreferencesPlugin>());
+      expect(SharedPreferencesStorePlatform.instance,
+          isA<SharedPreferencesPlugin>());
     });
 
     test('getAll', () async {

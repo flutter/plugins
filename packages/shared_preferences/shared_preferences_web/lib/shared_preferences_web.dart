@@ -63,7 +63,8 @@ class SharedPreferencesPlugin extends SharedPreferencesStorePlatform {
   }
 
   Iterable<String> get _storedFlutterKeys {
-    return html.window.localStorage.keys.where((key) => key.startsWith('flutter.'));
+    return html.window.localStorage.keys
+        .where((key) => key.startsWith('flutter.'));
   }
 
   String _encodeValue(Object? value) {

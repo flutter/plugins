@@ -37,7 +37,8 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   Future<File> _getLocalDataFile() async {
     if (_localDataFilePath == null) {
       final directory = await pathProvider!.getApplicationSupportPath();
-      _localDataFilePath = fs!.file(path.join(directory!, 'shared_preferences.json'));
+      _localDataFilePath =
+          fs!.file(path.join(directory!, 'shared_preferences.json'));
     }
     return _localDataFilePath!;
   }
@@ -51,7 +52,8 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
       if (localDataFile.existsSync()) {
         String stringMap = localDataFile.readAsStringSync();
         if (stringMap.isNotEmpty) {
-          _cachedPreferences = (json.decode(stringMap) as Map).cast<String, Object>();
+          _cachedPreferences =
+              (json.decode(stringMap) as Map).cast<String, Object>();
         }
       }
     }
