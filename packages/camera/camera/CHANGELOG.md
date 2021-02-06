@@ -1,3 +1,7 @@
+## 0.7.0+3
+
+* Clockwise rotation of focus point in android 
+
 ## 0.7.0+2
 
 * Fix example reference in README.
