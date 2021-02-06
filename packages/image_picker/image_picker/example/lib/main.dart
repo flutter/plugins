@@ -72,7 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _onImageButtonPressed(ImageSource source, {BuildContext? context}) async {
+  void _onImageButtonPressed(ImageSource source,
+      {BuildContext? context}) async {
     if (_controller != null) {
       await _controller!.setVolume(0.0);
     }
@@ -104,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void deactivate() {
-    if (_controller!= null) {
+    if (_controller != null) {
       _controller!.setVolume(0.0);
       _controller!.pause();
     }
