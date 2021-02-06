@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@TestOn('chrome') // Uses web-only Flutter SDK
-
+@TestOn('chrome')
 import 'dart:convert' show json;
 import 'dart:html' as html;
 
@@ -26,11 +25,8 @@ void main() {
     });
 
     test('registers itself', () {
-      expect(SharedPreferencesStorePlatform.instance,
-          isNot(isA<SharedPreferencesPlugin>()));
       SharedPreferencesPlugin.registerWith(null);
-      expect(SharedPreferencesStorePlatform.instance,
-          isA<SharedPreferencesPlugin>());
+      expect(SharedPreferencesStorePlatform.instance, isA<SharedPreferencesPlugin>());
     });
 
     test('getAll', () async {

@@ -4,12 +4,13 @@
 
 import 'dart:async';
 import 'dart:convert' show json;
+
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
-import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 /// The Windows implementation of [SharedPreferencesStorePlatform].
 ///
@@ -20,26 +21,25 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
 
   /// File system used to store to disk. Exposed for testing only.
   @visibleForTesting
-  FileSystem fs = LocalFileSystem();
+  FileSystem? fs = LocalFileSystem();
 
   /// The path_provider_windows instance used to find the support directory.
   @visibleForTesting
-  PathProviderWindows pathProvider = PathProviderWindows();
+  PathProviderWindows? pathProvider = PathProviderWindows();
 
   /// Local copy of preferences
-  Map<String, Object> _cachedPreferences;
+  Map<String, Object>? _cachedPreferences;
 
   /// Cached file for storing preferences.
-  File _localDataFilePath;
+  File? _localDataFilePath;
 
   /// Gets the file where the preferences are stored.
   Future<File> _getLocalDataFile() async {
     if (_localDataFilePath == null) {
-      final directory = await pathProvider.getApplicationSupportPath();
-      _localDataFilePath =
-          fs.file(path.join(directory, 'shared_preferences.json'));
+      final directory = await pathProvider!.getApplicationSupportPath();
+      _localDataFilePath = fs!.file(path.join(directory!, 'shared_preferences.json'));
     }
-    return _localDataFilePath;
+    return _localDataFilePath!;
   }
 
   /// Gets the preferences from the stored file. Once read, the preferences are
@@ -51,11 +51,11 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
       if (localDataFile.existsSync()) {
         String stringMap = localDataFile.readAsStringSync();
         if (stringMap.isNotEmpty) {
-          _cachedPreferences = json.decode(stringMap) as Map<String, Object>;
+          _cachedPreferences = (json.decode(stringMap) as Map).cast<String, Object>();
         }
       }
     }
-    return _cachedPreferences;
+    return _cachedPreferences!;
   }
 
   /// Writes the cached preferences to disk. Returns [true] if the operation
