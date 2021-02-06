@@ -10,8 +10,8 @@ import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 void main() {
-  late MemoryFileSystem fileSystem;
-  late PathProviderWindows pathProvider;
+  MemoryFileSystem fileSystem;
+  PathProviderWindows pathProvider;
 
   setUp(() {
     fileSystem = MemoryFileSystem.test();
@@ -22,7 +22,7 @@ void main() {
 
   Future<String> _getFilePath() async {
     final directory = await pathProvider.getApplicationSupportPath();
-    return path.join(directory!, 'shared_preferences.json');
+    return path.join(directory, 'shared_preferences.json');
   }
 
   _writeTestFile(String value) async {
@@ -87,23 +87,23 @@ void main() {
 /// path it returns is a root path that does not actually exist on Windows.
 class FakePathProviderWindows extends PathProviderPlatform
     implements PathProviderWindows {
-  late VersionInfoQuerier versionInfoQuerier;
+  VersionInfoQuerier versionInfoQuerier;
 
   @override
-  Future<String?> getApplicationSupportPath() async => r'C:\appsupport';
+  Future<String> getApplicationSupportPath() async => r'C:\appsupport';
 
   @override
-  Future<String?> getTemporaryPath() async => null;
+  Future<String> getTemporaryPath() async => null;
 
   @override
-  Future<String?> getLibraryPath() async => null;
+  Future<String> getLibraryPath() async => null;
 
   @override
-  Future<String?> getApplicationDocumentsPath() async => null;
+  Future<String> getApplicationDocumentsPath() async => null;
 
   @override
-  Future<String?> getDownloadsPath() async => null;
+  Future<String> getDownloadsPath() async => null;
 
   @override
-  Future<String> getPath(String folderID) async => '';
+  Future<String> getPath(String folderID) async => null;
 }
