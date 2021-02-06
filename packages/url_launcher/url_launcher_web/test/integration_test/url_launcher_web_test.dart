@@ -4,27 +4,36 @@
 
 import 'dart:html' as html;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
 import 'package:mockito/mockito.dart';
 import 'package:integration_test/integration_test.dart';
 
-class _MockWindow extends Mock implements html.Window {}
+import 'url_launcher_web_test.mocks.dart';
 
-class _MockNavigator extends Mock implements html.Navigator {}
-
+@GenerateMocks([], customMocks: [
+  MockSpec<html.Window>(returnNullOnMissingStub: true),
+  MockSpec<html.Navigator>(returnNullOnMissingStub: true)
+])
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('UrlLauncherPlugin', () {
-    late _MockWindow mockWindow;
-    late _MockNavigator mockNavigator;
+    late MockWindow mockWindow;
+    late MockNavigator mockNavigator;
 
     late UrlLauncherPlugin plugin;
 
     setUp(() {
-      mockWindow = _MockWindow();
-      mockNavigator = _MockNavigator();
+      mockWindow = MockWindow();
+      mockNavigator = MockNavigator();
       when(mockWindow.navigator).thenReturn(mockNavigator);
+
+      // Simulate that window.open does something.
+      when(mockWindow.open(any, any)).thenReturn(MockWindow());
+
+      when(mockNavigator.vendor).thenReturn('Google LLC');
+      when(mockNavigator.appVersion).thenReturn('Mock version!');
 
       plugin = UrlLauncherPlugin(debugWindow: mockWindow);
     });
@@ -55,17 +64,6 @@ void main() {
     });
 
     group('launch', () {
-      setUp(() {
-        // Simulate that window.open does something.
-        when(mockWindow.open('https://www.google.com', ''))
-            .thenReturn(_MockWindow());
-        when(mockWindow.open('mailto:name@mydomain.com', ''))
-            .thenReturn(_MockWindow());
-        when(mockWindow.open('tel:5551234567', '')).thenReturn(_MockWindow());
-        when(mockWindow.open('sms:+19725551212?body=hello%20there', ''))
-            .thenReturn(_MockWindow());
-      });
-
       testWidgets('launching a URL returns true', (WidgetTester _) async {
         expect(
             plugin.launch(

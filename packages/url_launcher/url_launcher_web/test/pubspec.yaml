@@ -20,4 +20,4 @@ dev_dependencies:
     path: ../
   integration_test:
     sdk: flutter
-
+  build_runner: ^1.10.0
