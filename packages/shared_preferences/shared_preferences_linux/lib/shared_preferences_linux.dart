@@ -45,7 +45,8 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
     if (localDataFile.existsSync()) {
       String stringMap = localDataFile.readAsStringSync();
       if (stringMap.isNotEmpty) {
-        _cachedPreferences = json.decode(stringMap) as Map<String, Object>?;
+        _cachedPreferences =
+            (json.decode(stringMap) as Map).cast<String, Object>();
       }
     }
 
