@@ -19,12 +19,7 @@ source "$SCRIPT_DIR/nnbd_plugins.sh"
 check_changed_packages > /dev/null
 
 readonly EXCLUDED_PLUGINS_LIST=(
-<<<<<<< HEAD
   "camera_platform_interface"
-||||||| constructed merge base
-=======
-  "camera_platform_interface",
->>>>>>> Attempt to fix dependency problem building all plugins
   "connectivity_macos"
   "connectivity_platform_interface"
   "connectivity_web"
