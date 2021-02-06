@@ -15,10 +15,11 @@ environment:
   flutter: ">=1.12.8"
 
 dependencies:
-  file: ">=6.0.0-nullsafety.4 <7.0.0"
   flutter:
     sdk: flutter
+  file: ">=6.0.0-nullsafety.4 <7.0.0"
   meta: ^1.0.4
+  path: ^1.8.0-nullsafety.3
   path_provider_linux: ^0.2.0-nullsafety
   shared_preferences_platform_interface: ^2.0.0-nullsafety
 
