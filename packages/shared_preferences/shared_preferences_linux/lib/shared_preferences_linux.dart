@@ -40,7 +40,6 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
       return _cachedPreferences!;
     }
 
-    _cachedPreferences = {};
     var localDataFile = await _getLocalDataFile();
     if (localDataFile.existsSync()) {
       String stringMap = localDataFile.readAsStringSync();
@@ -50,6 +49,7 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
       }
     }
 
+    _cachedPreferences ??= {};
     return _cachedPreferences!;
   }
 
