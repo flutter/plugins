@@ -21,5 +21,5 @@ dev_dependencies:
   pedantic: ^1.10.0-nullsafety.3
 
 environment:
-  sdk: '>=2.12.0-133.7.beta <3.0.0'
+  sdk: '>=2.12.0-0 <3.0.0'
   flutter: ">=1.22.0"
