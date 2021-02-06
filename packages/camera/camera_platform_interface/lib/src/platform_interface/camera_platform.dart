@@ -87,6 +87,11 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('onCameraError() is not implemented.');
   }
 
+  /// The camera finished recording a video
+  Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
+    throw UnimplementedError('onCameraTimeLimitReached() is not implemented.');
+  }
+
   /// The device orientation changed.
   ///
   /// Implementations for this:
@@ -123,7 +128,8 @@ abstract class CameraPlatform extends PlatformInterface {
   /// The length of the recording can be limited by specifying the [maxVideoDuration].
   /// By default no maximum duration is specified,
   /// meaning the recording will continue until manually stopped.
-  /// The video is returned as a [XFile] after calling [stopVideoRecording].
+  /// With [maxVideoDuration] set the video is returned in a [VideoRecordedEvent]
+  /// through the [onVideoRecordedEvent] stream when the set duration is reached.
   Future<void> startVideoRecording(int cameraId, {Duration maxVideoDuration}) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
