@@ -10,6 +10,7 @@ readonly NNBD_PLUGINS_LIST=(
   "connectivity"
   "cross_file"
   "device_info"
+  "file_selector"
   "flutter_plugin_android_lifecycle"
   "flutter_webview"
   "google_sign_in"
@@ -30,7 +31,6 @@ readonly NNBD_PLUGINS_LIST=(
 readonly NON_NNBD_PLUGINS_LIST=(
   # "android_alarm_manager"
   "camera"
-  # "file_selector"
   # "google_maps_flutter"
   # "image_picker"
   # "in_app_purchase"
