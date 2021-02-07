@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.9
+
+* Fixed an issue on iOS where the platform video player says it is initialized before it has a valid Presentation Size, and causes a white frame to render indefinitely.
+
 ## 2.0.0-nullsafety.8
 
 * Migrated from deprecated `defaultBinaryMessenger`.
@@ -147,7 +151,6 @@
 
 * Added support for cleaning up the plugin if used for add-to-app (Flutter
   v1.15.3 is required for that feature).
-
 
 ## 0.10.7
 
