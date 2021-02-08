@@ -77,9 +77,13 @@ class CameraPosition {
     if (json == null) {
       return null;
     }
+    final LatLng target = LatLng.fromJson(json['target']);
+    if (target == null) {
+      return null;
+    }
     return CameraPosition(
       bearing: json['bearing'],
-      target: LatLng.fromJson(json['target']),
+      target: target,
       tilt: json['tilt'],
       zoom: json['zoom'],
     );

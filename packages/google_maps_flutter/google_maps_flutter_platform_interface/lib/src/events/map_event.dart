@@ -51,7 +51,7 @@ class MapEvent<T> {
 /// A `MapEvent` associated to a `position`.
 class _PositionedMapEvent<T> extends MapEvent<T> {
   /// The position where this event happened.
-  final LatLng position;
+  final LatLng/*!*/ position;
 
   /// Build a Positioned MapEvent, that relates a mapId and a position with a value.
   ///
@@ -73,11 +73,11 @@ class CameraMoveStartedEvent extends MapEvent<void> {
 }
 
 /// An event fired while the Camera of a [mapId] moves.
-class CameraMoveEvent extends MapEvent<CameraPosition> {
+class CameraMoveEvent extends MapEvent<CameraPosition/*!*/> {
   /// Build a CameraMove Event triggered from the map represented by `mapId`.
   ///
   /// The `value` of this event is a [CameraPosition] object with the current position of the Camera.
-  CameraMoveEvent(int mapId, CameraPosition position) : super(mapId, position);
+  CameraMoveEvent(int mapId, CameraPosition/*!*/ position) : super(mapId, position);
 }
 
 /// An event fired when the Camera of a [mapId] becomes idle.
@@ -141,7 +141,7 @@ class MapTapEvent extends _PositionedMapEvent<void> {
   /// Build an MapTap Event triggered from the map represented by `mapId`.
   ///
   /// The `position` of this event is the LatLng where the Map was tapped.
-  MapTapEvent(int mapId, LatLng position) : super(mapId, position, null);
+  MapTapEvent(int mapId, LatLng/*!*/ position) : super(mapId, position, null);
 }
 
 /// An event fired when a Map is long pressed.
@@ -149,5 +149,5 @@ class MapLongPressEvent extends _PositionedMapEvent<void> {
   /// Build an MapTap Event triggered from the map represented by `mapId`.
   ///
   /// The `position` of this event is the LatLng where the Map was long pressed.
-  MapLongPressEvent(int mapId, LatLng position) : super(mapId, position, null);
+  MapLongPressEvent(int mapId, LatLng/*!*/ position) : super(mapId, position, null);
 }

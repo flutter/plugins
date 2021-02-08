@@ -28,7 +28,7 @@ import '../types/utils/tile_overlay.dart';
 class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   // Keep a collection of id -> channel
   // Every method call passes the int mapId
-  final Map<int, MethodChannel> _channels = {};
+  final Map<int, MethodChannel/*!*/> _channels = {};
 
   /// Accesses the MethodChannel associated to the passed mapId.
   MethodChannel channel(int mapId) {
@@ -43,8 +43,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// This method is called when the plugin is first initialized.
   @override
   Future<void> init(int mapId) {
-    MethodChannel channel;
-    if (!_channels.containsKey(mapId)) {
+    MethodChannel channel = _channels[mapId];
+    if (channel == null) {
       channel = MethodChannel('plugins.flutter.io/google_maps_$mapId');
       channel.setMethodCallHandler(
           (MethodCall call) => _handleMethodCall(call, mapId));

@@ -125,7 +125,7 @@ class TileOverlay {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
-    void addIfPresent(String fieldName, dynamic value) {
+    void addIfPresent(String fieldName, Object/*?*/ value) {
       if (value != null) {
         json[fieldName] = value;
       }

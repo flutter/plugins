@@ -1,8 +1,8 @@
 import '../types.dart';
 
 /// Converts an [Iterable] of TileOverlay in a Map of TileOverlayId -> TileOverlay.
-Map<TileOverlayId, TileOverlay> keyTileOverlayId(
-    Iterable<TileOverlay> tileOverlays) {
+Map<TileOverlayId/*!*/, TileOverlay> keyTileOverlayId(
+    Iterable<TileOverlay>/*!*/ tileOverlays) {
   if (tileOverlays == null) {
     return <TileOverlayId, TileOverlay>{};
   }
@@ -13,7 +13,7 @@ Map<TileOverlayId, TileOverlay> keyTileOverlayId(
 
 /// Converts a Set of TileOverlays into something serializable in JSON.
 List<Map<String, dynamic>> serializeTileOverlaySet(
-    Set<TileOverlay> tileOverlays) {
+    Set<TileOverlay/*!*/>/*!*/ tileOverlays) {
   if (tileOverlays == null) {
     return null;
   }

@@ -15,7 +15,7 @@ Map<PolylineId, Polyline> keyByPolylineId(Iterable<Polyline> polylines) {
 }
 
 /// Converts a Set of Polylines into something serializable in JSON.
-List<Map<String, dynamic>> serializePolylineSet(Set<Polyline> polylines) {
+List<Map<String, dynamic>> serializePolylineSet(Set<Polyline/*!*/>/*!*/ polylines) {
   if (polylines == null) {
     return null;
   }

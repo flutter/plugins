@@ -4,6 +4,7 @@
 
 import 'dart:async' show Future;
 import 'dart:typed_data' show Uint8List;
+import 'dart:ui' show Size;
 
 import 'package:flutter/material.dart'
     show ImageConfiguration, AssetImage, AssetBundleImageKey;
@@ -110,14 +111,15 @@ class BitmapDescriptor {
         AssetImage(assetName, package: package, bundle: bundle);
     final AssetBundleImageKey assetBundleImageKey =
         await assetImage.obtainKey(configuration);
+    final Size size = configuration?.size;
     return BitmapDescriptor._(<dynamic>[
       _fromAssetImage,
       assetBundleImageKey.name,
       assetBundleImageKey.scale,
-      if (kIsWeb && configuration?.size != null)
+      if (kIsWeb && size != null)
         [
-          configuration.size.width,
-          configuration.size.height,
+          size.width,
+          size.height,
         ],
     ]);
   }
