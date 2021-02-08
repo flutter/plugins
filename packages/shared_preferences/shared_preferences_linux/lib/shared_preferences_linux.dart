@@ -41,21 +41,16 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
       return _cachedPreferences!;
     }
 
-    var localDataFile = await _getLocalDataFile();
-    if (localDataFile == null) {
-      _cachedPreferences ??= {};
-      return _cachedPreferences!;
-    }
-    if (localDataFile.existsSync()) {
+    Map<String, Object> preferences = {};
+    final File? localDataFile = await _getLocalDataFile();
+    if (localDataFile != null && localDataFile.existsSync()) {
       String stringMap = localDataFile.readAsStringSync();
       if (stringMap.isNotEmpty) {
-        _cachedPreferences =
-            (json.decode(stringMap) as Map).cast<String, Object>();
+        preferences = json.decode(stringMap).cast<String, Object>();
       }
     }
-
-    _cachedPreferences ??= {};
-    return _cachedPreferences!;
+    _cachedPreferences = preferences;
+    return preferences;
   }
 
   /// Writes the cached preferences to disk. Returns [true] if the operation
@@ -63,7 +58,10 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
   Future<bool> _writePreferences(Map<String, Object> preferences) async {
     try {
       var localDataFile = await _getLocalDataFile();
-      if (localDataFile == null) return false;
+      if (localDataFile == null) {
+        print("Unable to determine where to write preferences.");
+        return false;
+      }
       if (!localDataFile.existsSync()) {
         localDataFile.createSync(recursive: true);
       }
