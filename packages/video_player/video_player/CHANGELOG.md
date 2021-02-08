@@ -1,3 +1,7 @@
+# 2.0.0-nullsafety.9
+
+* Fixed issue where audio file streaming doesn't works on iOS.
+
 ## 2.0.0-nullsafety.8
 
 * Migrated from deprecated `defaultBinaryMessenger`.
