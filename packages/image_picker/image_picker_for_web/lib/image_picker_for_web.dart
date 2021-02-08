@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:html' as html;
+import 'dart:math' as math;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:meta/meta.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:meta/meta.dart';
 
 final String _kImagePickerInputsDomId = '__image_picker_web-file-input';
 final String _kAcceptImageMimeType = 'image/*';
@@ -37,9 +38,85 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double maxHeight,
     int imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-  }) {
+  }) async {
     String capture = computeCaptureAttribute(source, preferredCameraDevice);
-    return pickFile(accept: _kAcceptImageMimeType, capture: capture);
+
+    final pickedFile = await pickFile(
+      accept: _kAcceptImageMimeType,
+      capture: capture,
+    );
+
+    if (maxWidth != null && maxHeight != null) {
+      return _resizeImage(pickedFile.path, maxWidth, maxHeight, imageQuality);
+    } else {
+      return pickedFile;
+    }
+  }
+
+  static Future<PickedFile> _resizeImage(
+    String src,
+    double maxWidth,
+    double maxHeight,
+    int imageQuality,
+  ) {
+    final completer = Completer<PickedFile>();
+    final img = html.ImageElement();
+
+    img.onError.listen((event) {
+      completer.complete(PickedFile(''));
+    });
+
+    img.onLoad.listen((event) {
+      if (img.width > 1 && img.height > 1) {
+        final canvas = html.CanvasElement();
+        final ctx = canvas.context2D;
+
+        var width = math.min(img.width, maxWidth);
+        var height = math.min(img.height, maxHeight);
+
+        if (!_isImageQualityValid(imageQuality)) {
+          imageQuality = 100;
+        }
+
+        final shouldDownscale = maxWidth < img.width || maxHeight < img.height;
+        if (shouldDownscale) {
+          final downscaledWidth = (height / img.height) * img.width;
+          final downscaledHeight = (width / img.width) * img.height;
+
+          if (width < height) {
+            height = downscaledHeight;
+          } else if (height < width) {
+            width = downscaledWidth;
+          } else {
+            if (img.width < img.height) {
+              width = downscaledWidth;
+            } else if (img.height < img.width) {
+              height = downscaledHeight;
+            }
+          }
+        }
+
+        canvas.height = height.floor();
+        canvas.width = width.floor();
+
+        // Draw the image to canvas and resize
+        ctx.drawImageScaled(img, 0, 0, canvas.width, canvas.height);
+        final base64 = canvas.toDataUrl('image/png', imageQuality / 100);
+        completer.complete(PickedFile(base64));
+      }
+    });
+
+    img.src = src;
+    // make sure the load event fires for cached images too
+    if (img.complete) {
+      // Flush cache
+      img.src =
+          'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+      // Try again
+      img.src = src;
+    }
+
+    return completer.future;
   }
 
   @override
@@ -118,6 +195,10 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     // "input" gets re-created in the DOM every time the user needs to
     // pick a file.
     return _completer.future;
+  }
+
+  static bool _isImageQualityValid(int imageQuality) {
+    return imageQuality != null && imageQuality > 0 && imageQuality < 100;
   }
 
   /// Initializes a DOM container where we can host input elements.
