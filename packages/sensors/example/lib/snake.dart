@@ -61,10 +61,10 @@ class SnakeState extends State<Snake> {
   }
 
   double cellSize;
-  late final GameState state;
-  AccelerometerEvent? acceleration;
-  late final StreamSubscription<AccelerometerEvent> _streamSubscription;
-  late final Timer _timer;
+  GameState state;
+  AccelerometerEvent acceleration;
+  StreamSubscription<AccelerometerEvent> _streamSubscription;
+  Timer _timer;
 
   @override
   Widget build(BuildContext context) {
@@ -96,14 +96,13 @@ class SnakeState extends State<Snake> {
   }
 
   void _step() {
-    final math.Point<int>? newDirection = acceleration == null
+    final math.Point<int> newDirection = acceleration == null
         ? null
-        : acceleration!.x.abs() < 1.0 && acceleration!.y.abs() < 1.0
+        : acceleration.x.abs() < 1.0 && acceleration.y.abs() < 1.0
             ? null
-            : (acceleration!.x.abs() < acceleration!.y.abs())
-                ? math.Point<int>(0, acceleration!.y.sign.toInt())
-                : math.Point<int>(-acceleration!.x.sign.toInt(), 0);
-
+            : (acceleration.x.abs() < acceleration.y.abs())
+                ? math.Point<int>(0, acceleration.y.sign.toInt())
+                : math.Point<int>(-acceleration.x.sign.toInt(), 0);
     state.step(newDirection);
   }
 }
@@ -115,12 +114,12 @@ class GameState {
 
   int rows;
   int columns;
-  late int snakeLength;
+  int snakeLength;
 
   List<math.Point<int>> body = <math.Point<int>>[const math.Point<int>(0, 0)];
   math.Point<int> direction = const math.Point<int>(1, 0);
 
-  void step(math.Point<int>? newDirection) {
+  void step(math.Point<int> newDirection) {
     math.Point<int> next = body.last + direction;
     next = math.Point<int>(next.x % columns, next.y % rows);
 
