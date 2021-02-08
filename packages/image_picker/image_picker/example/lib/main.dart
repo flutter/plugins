@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   dynamic _pickImageError;
   bool isVideo = false;
   VideoPlayerController? _controller;
-  late VideoPlayerController _toBeDisposed;
+  VideoPlayerController? _toBeDisposed;
   String? _retrieveDataError;
 
   final ImagePicker _picker = ImagePicker();
@@ -53,21 +53,23 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _playVideo(PickedFile? file) async {
     if (file != null && mounted) {
       await _disposeVideoController();
+      late VideoPlayerController controller;
       if (kIsWeb) {
-        _controller = VideoPlayerController.network(file.path);
-        // In web, most browsers won't honor a programmatic call to .play
-        // if the video has a sound track (and is not muted).
-        // Mute the video so it auto-plays in web!
-        // This is not needed if the call to .play is the result of user
-        // interaction (clicking on a "play" button, for example).
-        await _controller!.setVolume(0.0);
+        controller = VideoPlayerController.network(file.path);
       } else {
-        _controller = VideoPlayerController.file(File(file.path));
-        await _controller!.setVolume(1.0);
+        controller = VideoPlayerController.file(File(file.path));
       }
-      await _controller!.initialize();
-      await _controller!.setLooping(true);
-      await _controller!.play();
+      _controller = controller;
+      // In web, most browsers won't honor a programmatic call to .play
+      // if the video has a sound track (and is not muted).
+      // Mute the video so it auto-plays in web!
+      // This is not needed if the call to .play is the result of user
+      // interaction (clicking on a "play" button, for example).
+      final double volume = kIsWeb ? 0.0 : 1.0;
+      await controller.setVolume(volume);
+      await controller.initialize();
+      await controller.setLooping(true);
+      await controller.play();
       setState(() {});
     }
   }
@@ -123,9 +125,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _disposeVideoController() async {
     if (_toBeDisposed != null) {
-      await _toBeDisposed.dispose();
+      await _toBeDisposed!.dispose();
     }
-    _toBeDisposed = _controller!;
+    _toBeDisposed = _controller;
     _controller = null;
   }
 
