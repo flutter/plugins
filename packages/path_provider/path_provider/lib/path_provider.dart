@@ -47,7 +47,9 @@ Directory? _getDirectory(String? path) {
 
 /// Get list of [Directory] from [paths] strings.
 List<Directory>? _getDirectories(List<String>? paths) {
-  return paths == null ? null : paths.map((String path) => Directory(path)).toList();
+  return paths == null
+      ? null
+      : paths.map((String path) => Directory(path)).toList();
 }
 
 /// Path to the temporary directory on the device that is not backed up and is
