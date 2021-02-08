@@ -33,13 +33,16 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   File? _localDataFilePath;
 
   /// Gets the file where the preferences are stored.
-  Future<File> _getLocalDataFile() async {
+  Future<File?> _getLocalDataFile() async {
     if (_localDataFilePath != null) {
       return _localDataFilePath!;
     }
     final directory = await pathProvider.getApplicationSupportPath();
+    if (directory == null) {
+      return null;
+    }
     return _localDataFilePath =
-        fs.file(path.join(directory!, 'shared_preferences.json'));
+        fs.file(path.join(directory, 'shared_preferences.json'));
   }
 
   /// Gets the preferences from the stored file. Once read, the preferences are
@@ -49,8 +52,8 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
       return _cachedPreferences!;
     }
     Map<String, Object> preferences = {};
-    File localDataFile = await _getLocalDataFile();
-    if (localDataFile.existsSync()) {
+    final File? localDataFile = await _getLocalDataFile();
+    if (localDataFile != null && localDataFile.existsSync()) {
       String stringMap = localDataFile.readAsStringSync();
       if (stringMap.isNotEmpty) {
         preferences = json.decode(stringMap).cast<String, Object>();
@@ -64,7 +67,11 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   /// succeeded.
   Future<bool> _writePreferences(Map<String, Object> preferences) async {
     try {
-      File localDataFile = await _getLocalDataFile();
+      final File? localDataFile = await _getLocalDataFile();
+      if (localDataFile == null) {
+        print("Unable to determine where to write preferences.");
+        return false;
+      }
       if (!localDataFile.existsSync()) {
         localDataFile.createSync(recursive: true);
       }

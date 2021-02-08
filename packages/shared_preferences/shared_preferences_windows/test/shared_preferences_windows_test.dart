@@ -46,7 +46,7 @@ void main() {
     await _writeTestFile('{"key1": "one", "key2": 2}');
     var prefs = _getPreferences();
 
-    var values = await (prefs.getAll());
+    var values = await prefs.getAll();
     expect(values, hasLength(2));
     expect(values['key1'], 'one');
     expect(values['key2'], 2);
