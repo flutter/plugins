@@ -15,6 +15,7 @@ readonly NNBD_PLUGINS_LIST=(
   "flutter_plugin_android_lifecycle"
   "flutter_webview"
   "google_sign_in"
+  "ios_platform_images"
   "local_auth"
   "path_provider"
   "package_info"
