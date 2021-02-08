@@ -3,7 +3,7 @@ description: macOS implementation of the connectivity plugin.
 # 0.1.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.2.0-nullsafety
+version: 0.2.0-nullsafety.1
 homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity_macos
 
 flutter:

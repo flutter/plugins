@@ -1,3 +1,15 @@
+## 6.0.0-nullsafety.6
+
+* Correct statement in description about which platforms url_launcher supports.
+
+## 6.0.0-nullsafety.5
+
+* Document that the web plugin is not endorsed in the `nullsafety` prerelease for now.
+
+## 6.0.0-nullsafety.4
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
 ## 6.0.0-nullsafety.3
 
 * forceSafariVC should be nullable.
@@ -13,6 +25,7 @@
 ## 6.0.0-nullsafety
 
 * Migrate to null safety.
+* **Breaking change**: web plugins aren't endorsed in null-safe plugins yet.
 
 ## 5.7.13
 
