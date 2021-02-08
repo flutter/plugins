@@ -7,7 +7,7 @@
 readonly NNBD_PLUGINS_LIST=(
   "android_intent"
   "battery"
-  "camera_platform_interface"
+  "camera"
   "connectivity"
   "cross_file"
   "device_info"
