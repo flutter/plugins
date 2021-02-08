@@ -14,6 +14,9 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+  submodules_script:
+    - git submodule init
+    - git submodule update
   matrix:
     - name: publishable
       script:
@@ -121,6 +124,9 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+  submodules_script:
+    - git submodule init
+    - git submodule update
   matrix:
     - name: build-linux+drive-examples
       install_script:
@@ -145,6 +151,9 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+  submodules_script:
+    - git submodule init
+    - git submodule update
   create_simulator_script:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
@@ -198,6 +207,9 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+  submodules_script:
+    - git submodule init
+    - git submodule update
   create_simulator_script:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
@@ -227,6 +239,9 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+  submodules_script:
+    - git submodule init
+    - git submodule update
   matrix:
     - name: build_all_plugins_app
       script:
