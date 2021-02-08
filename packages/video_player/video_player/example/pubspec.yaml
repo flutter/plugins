@@ -18,6 +18,7 @@ dev_dependencies:
     path: ../../../integration_test
   test: any
   pedantic: ^1.10.0-nullsafety.1
+  path_provider: ^1.6.27
 
 flutter:
   uses-material-design: true

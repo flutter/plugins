@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.9
+
+* Integration test for `VideoPlayerController.file()`.
+
 ## 2.0.0-nullsafety.8
 
 * Migrated from deprecated `defaultBinaryMessenger`.
