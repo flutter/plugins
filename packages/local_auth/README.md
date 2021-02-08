@@ -191,12 +191,12 @@ class MainActivity: FlutterFragmentActivity() {
 ```
 
 Update your project's `AndroidManifest.xml` file to include the
-`USE_FINGERPRINT` permissions:
+`USE_BIOMETRIC` permissions:
 
 ```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.example.app">
-  <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+  <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
 <manifest>
 ```
 
