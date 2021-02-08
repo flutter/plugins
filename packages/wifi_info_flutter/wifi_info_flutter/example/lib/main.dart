@@ -114,12 +114,12 @@ class _MyHomePageState extends State<MyHomePage> {
             }
             if (status == LocationAuthorizationStatus.authorizedAlways ||
                 status == LocationAuthorizationStatus.authorizedWhenInUse) {
-              wifiName = await _connectivity.getWifiName();
+              wifiName = await _wifiInfo.getWifiName();
             } else {
-              wifiName = await _connectivity.getWifiName();
+              wifiName = await _wifiInfo.getWifiName();
             }
           } else {
-            wifiName = await _connectivity.getWifiName();
+            wifiName = await _wifiInfo.getWifiName();
           }
         } on PlatformException catch (e) {
           print(e.toString());
@@ -135,12 +135,12 @@ class _MyHomePageState extends State<MyHomePage> {
             }
             if (status == LocationAuthorizationStatus.authorizedAlways ||
                 status == LocationAuthorizationStatus.authorizedWhenInUse) {
-              wifiBSSID = await _connectivity.getWifiBSSID();
+              wifiBSSID = await _wifiInfo.getWifiBSSID();
             } else {
-              wifiBSSID = await _connectivity.getWifiBSSID();
+              wifiBSSID = await _wifiInfo.getWifiBSSID();
             }
           } else {
-            wifiBSSID = await _connectivity.getWifiBSSID();
+            wifiBSSID = await _wifiInfo.getWifiBSSID();
           }
         } on PlatformException catch (e) {
           print(e.toString());
@@ -148,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         try {
-          wifiIP = await _connectivity.getWifiIP();
+          wifiIP = await _wifiInfo.getWifiIP();
         } on PlatformException catch (e) {
           print(e.toString());
           wifiIP = "Failed to get Wifi IP";

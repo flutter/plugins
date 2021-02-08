@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/url_launcher.svg)](https://pub.dev/packages/url_launcher)
 
-A Flutter plugin for launching a URL in the mobile platform. Supports
+A Flutter plugin for launching a URL. Supports
 iOS, Android, web, Windows, macOS, and Linux.
 
 ## Usage

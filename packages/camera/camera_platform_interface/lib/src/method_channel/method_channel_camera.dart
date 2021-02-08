@@ -157,6 +157,11 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
+  Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
+    return _cameraEvents(cameraId).whereType<VideoRecordedEvent>();
+  }
+
+  @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
     return deviceEventStreamController.stream
         .whereType<DeviceOrientationChangedEvent>();
@@ -431,6 +436,15 @@ class MethodChannelCamera extends CameraPlatform {
       case 'camera_closing':
         cameraEventStreamController.add(CameraClosingEvent(
           cameraId,
+        ));
+        break;
+      case 'video_recorded':
+        cameraEventStreamController.add(VideoRecordedEvent(
+          cameraId,
+          XFile(call.arguments['path']),
+          call.arguments['maxVideoDuration'] != null
+              ? Duration(milliseconds: call.arguments['maxVideoDuration'])
+              : null,
         ));
         break;
       case 'error':

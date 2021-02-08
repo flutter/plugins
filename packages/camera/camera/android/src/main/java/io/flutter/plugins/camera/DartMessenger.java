@@ -4,6 +4,8 @@
 
 package io.flutter.plugins.camera;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
@@ -104,7 +106,14 @@ class DartMessenger {
     if (cameraChannel == null) {
       return;
     }
-    cameraChannel.invokeMethod(eventType.method, args);
+    new Handler(Looper.getMainLooper())
+        .post(
+            new Runnable() {
+              @Override
+              public void run() {
+                cameraChannel.invokeMethod(eventType.method, args);
+              }
+            });
   }
 
   void send(DeviceEventType eventType) {
@@ -115,6 +124,13 @@ class DartMessenger {
     if (deviceChannel == null) {
       return;
     }
-    deviceChannel.invokeMethod(eventType.method, args);
+    new Handler(Looper.getMainLooper())
+        .post(
+            new Runnable() {
+              @Override
+              public void run() {
+                deviceChannel.invokeMethod(eventType.method, args);
+              }
+            });
   }
 }
