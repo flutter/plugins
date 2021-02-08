@@ -4,7 +4,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/shared_prefere
 # 0.1.y+z is compatible with 1.0.0, if you land a breaking change bump
 # the version to 2.0.0.
 # See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.1.2+8
+version: 0.2.0-nullsafety
 
 flutter:
   plugin:
@@ -14,7 +14,7 @@ flutter:
         fileName: shared_preferences_web.dart
 
 dependencies:
-  shared_preferences_platform_interface: ^1.0.0
+  shared_preferences_platform_interface: ^2.0.0-nullsafety
   flutter:
     sdk: flutter
   flutter_web_plugins:
@@ -27,5 +27,5 @@ dev_dependencies:
   pedantic: ^1.8.0
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
   flutter: ">=1.12.13+hotfix.4"
