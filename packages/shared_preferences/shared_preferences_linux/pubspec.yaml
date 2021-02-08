@@ -11,7 +11,7 @@ flutter:
         pluginClass: none
 
 environment:
-  sdk: ">=2.12.0-259.8.beta <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
   flutter: ">=1.12.8"
 
 dependencies:

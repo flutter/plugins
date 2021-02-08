@@ -27,10 +27,11 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
   FileSystem fs = LocalFileSystem();
 
   /// Gets the file where the preferences are stored.
-  Future<File> _getLocalDataFile() async {
+  Future<File?> _getLocalDataFile() async {
     final pathProvider = PathProviderLinux();
     final directory = await pathProvider.getApplicationSupportPath();
-    return fs.file(path.join(directory!, 'shared_preferences.json'));
+    if (directory == null) return null;
+    return fs.file(path.join(directory, 'shared_preferences.json'));
   }
 
   /// Gets the preferences from the stored file. Once read, the preferences are
@@ -41,6 +42,10 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
     }
 
     var localDataFile = await _getLocalDataFile();
+    if (localDataFile == null) {
+      _cachedPreferences ??= {};
+      return _cachedPreferences!;
+    }
     if (localDataFile.existsSync()) {
       String stringMap = localDataFile.readAsStringSync();
       if (stringMap.isNotEmpty) {
@@ -58,6 +63,7 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
   Future<bool> _writePreferences(Map<String, Object> preferences) async {
     try {
       var localDataFile = await _getLocalDataFile();
+      if (localDataFile == null) return false;
       if (!localDataFile.existsSync()) {
         localDataFile.createSync(recursive: true);
       }

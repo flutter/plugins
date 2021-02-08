@@ -4,13 +4,8 @@ description: Demonstrates how to use the shared_preferences_linux plugin.
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: any
-
-dependency_overrides:
   shared_preferences_linux:
     path: ../
-  shared_preferences_platform_interface:
-    path: ../../shared_preferences_platform_interface
 
 dev_dependencies:
   flutter_driver:
