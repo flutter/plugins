@@ -245,10 +245,12 @@ class _MyAppState extends State<_MyApp> {
             ),
             trailing: previousPurchase != null
                 ? Icon(Icons.check)
-                : FlatButton(
+                : TextButton(
                     child: Text(productDetails.price),
-                    color: Colors.green[800],
-                    textColor: Colors.white,
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.green[800],
+                      primary: Colors.white,
+                    ),
                     onPressed: () {
                       PurchaseParam purchaseParam = PurchaseParam(
                           productDetails: productDetails,
