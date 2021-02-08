@@ -12,35 +12,16 @@ import 'types.dart';
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
-class PolylineId {
+class PolylineId extends MapsObjectId<Polyline> {
   /// Creates an immutable object representing a [PolylineId] among [GoogleMap] polylines.
   ///
   /// An [AssertionError] will be thrown if [value] is null.
-  PolylineId(this.value) : assert(value != null);
-
-  /// value of the [PolylineId].
-  final String value;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final PolylineId typedOther = other;
-    return value == typedOther.value;
-  }
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'PolylineId{value: $value}';
-  }
+  PolylineId(String value) : super(value);
 }
 
 /// Draws a line through geographical locations on the map.
 @immutable
-class Polyline {
+class Polyline implements MapsObject {
   /// Creates an immutable object representing a line drawn through geographical locations on the map.
   const Polyline({
     @required this.polylineId,
@@ -60,6 +41,9 @@ class Polyline {
 
   /// Uniquely identifies a [Polyline].
   final PolylineId polylineId;
+
+  @override
+  PolylineId get mapsId => polylineId;
 
   /// True if the [Polyline] consumes tap events.
   ///

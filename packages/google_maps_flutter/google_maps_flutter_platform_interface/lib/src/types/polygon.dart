@@ -13,33 +13,14 @@ import 'types.dart';
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
-class PolygonId {
+class PolygonId extends MapsObjectId<Polygon> {
   /// Creates an immutable identifier for a [Polygon].
-  PolygonId(this.value) : assert(value != null);
-
-  /// value of the [PolygonId].
-  final String value;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final PolygonId typedOther = other;
-    return value == typedOther.value;
-  }
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'PolygonId{value: $value}';
-  }
+  PolygonId(String value) : super(value);
 }
 
 /// Draws a polygon through geographical locations on the map.
 @immutable
-class Polygon {
+class Polygon implements MapsObject {
   /// Creates an immutable representation of a polygon through geographical locations on the map.
   const Polygon({
     @required this.polygonId,
@@ -57,6 +38,9 @@ class Polygon {
 
   /// Uniquely identifies a [Polygon].
   final PolygonId polygonId;
+
+  @override
+  PolygonId get mapsId => polygonId;
 
   /// True if the [Polygon] consumes tap events.
   ///

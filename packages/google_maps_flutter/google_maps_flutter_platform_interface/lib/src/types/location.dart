@@ -34,11 +34,13 @@ class LatLng {
   }
 
   /// Initialize a LatLng from an \[lat, lng\] array.
-  static LatLng fromJson(dynamic json) {
+  static LatLng fromJson(Object json) {
     if (json == null) {
       return null;
     }
-    return LatLng(json[0], json[1]);
+    assert(json is List && json.length == 2);
+    final list = json as List;
+    return LatLng(list[0], list[1]);
   }
 
   @override
@@ -102,13 +104,15 @@ class LatLngBounds {
 
   /// Converts a list to [LatLngBounds].
   @visibleForTesting
-  static LatLngBounds fromList(dynamic json) {
+  static LatLngBounds/*?*/ fromList(Object/*?*/ json) {
     if (json == null) {
       return null;
     }
+    assert(json is List && json.length == 2);
+    final list = json as List;
     return LatLngBounds(
-      southwest: LatLng.fromJson(json[0]),
-      northeast: LatLng.fromJson(json[1]),
+      southwest: LatLng.fromJson(list[0]),
+      northeast: LatLng.fromJson(list[1]),
     );
   }
 

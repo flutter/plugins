@@ -117,9 +117,9 @@ void main() {
           TileOverlayUpdates.from(previous, current);
       expect(
           updates.toString(),
-          'TileOverlayUpdates(${updates.tileOverlaysToAdd}, '
-          '${updates.tileOverlayIdsToRemove}, '
-          '${updates.tileOverlaysToChange})');
+          'TileOverlayUpdates{add: ${updates.tileOverlaysToAdd}, '
+          'remove: ${updates.tileOverlayIdsToRemove}, '
+          'change: ${updates.tileOverlaysToChange}}');
     });
   });
 }

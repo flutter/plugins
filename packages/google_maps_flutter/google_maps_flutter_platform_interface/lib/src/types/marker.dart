@@ -105,28 +105,9 @@ class InfoWindow {
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
-class MarkerId {
+class MarkerId extends MapsObjectId<Marker> {
   /// Creates an immutable identifier for a [Marker].
-  MarkerId(this.value) : assert(value != null);
-
-  /// value of the [MarkerId].
-  final String value;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final MarkerId typedOther = other;
-    return value == typedOther.value;
-  }
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'MarkerId{value: $value}';
-  }
+  MarkerId(String value) : super(value);
 }
 
 /// Marks a geographical location on the map.
@@ -135,7 +116,7 @@ class MarkerId {
 /// the map's surface; that is, it will not necessarily change orientation
 /// due to map rotations, tilting, or zooming.
 @immutable
-class Marker {
+class Marker implements MapsObject {
   /// Creates a set of marker configuration options.
   ///
   /// Default marker options.
@@ -174,6 +155,9 @@ class Marker {
 
   /// Uniquely identifies a [Marker].
   final MarkerId markerId;
+
+  @override
+  MarkerId get mapsId => markerId;
 
   /// The opacity of the marker, between 0.0 and 1.0 inclusive.
   ///

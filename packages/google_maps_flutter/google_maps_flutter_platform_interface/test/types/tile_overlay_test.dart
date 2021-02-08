@@ -20,7 +20,7 @@ void main() {
 
     test('toString', () async {
       final TileOverlayId id1 = TileOverlayId('1');
-      expect(id1.toString(), 'TileOverlayId(1)');
+      expect(id1.toString(), 'TileOverlayId{value: 1}');
     });
   });
 

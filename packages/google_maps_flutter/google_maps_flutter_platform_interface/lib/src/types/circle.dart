@@ -12,33 +12,14 @@ import 'types.dart';
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
-class CircleId {
+class CircleId extends MapsObjectId<Circle> {
   /// Creates an immutable identifier for a [Circle].
-  CircleId(this.value) : assert(value != null);
-
-  /// value of the [CircleId].
-  final String value;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final CircleId typedOther = other;
-    return value == typedOther.value;
-  }
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'CircleId{value: $value}';
-  }
+  CircleId(String value) : super(value);
 }
 
 /// Draws a circle on the map.
 @immutable
-class Circle {
+class Circle implements MapsObject<Circle> {
   /// Creates an immutable representation of a [Circle] to draw on [GoogleMap].
   const Circle({
     @required this.circleId,
@@ -55,6 +36,9 @@ class Circle {
 
   /// Uniquely identifies a [Circle].
   final CircleId circleId;
+
+  @override
+  CircleId get mapsId => circleId;
 
   /// True if the [Circle] consumes tap events.
   ///

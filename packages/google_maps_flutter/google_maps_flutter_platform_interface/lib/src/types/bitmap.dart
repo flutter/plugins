@@ -134,7 +134,7 @@ class BitmapDescriptor {
   // This is needed in Web to re-hydrate BitmapDescriptors that have been
   // transformed to JSON for transport.
   // TODO(https://github.com/flutter/flutter/issues/70330): Clean this up.
-  BitmapDescriptor.fromJson(dynamic json) : _json = json {
+  BitmapDescriptor.fromJson(Object json) : _json = json {
     assert(_validTypes.contains(_json[0]));
     switch (_json[0]) {
       case _defaultMarker:
