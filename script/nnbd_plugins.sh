@@ -15,6 +15,7 @@ readonly NNBD_PLUGINS_LIST=(
   "flutter_plugin_android_lifecycle"
   "flutter_webview"
   "google_sign_in"
+  "image_picker"
   "ios_platform_images"
   "local_auth"
   "path_provider"
@@ -27,7 +28,7 @@ readonly NNBD_PLUGINS_LIST=(
   "url_launcher"
   "video_player"
   "webview_flutter"
-  "image_picker"
+  "wifi_info_flutter"
 )
 
 # This list contains the list of plugins that have *not* been
