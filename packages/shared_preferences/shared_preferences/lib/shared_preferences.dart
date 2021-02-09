@@ -51,19 +51,20 @@ class SharedPreferences {
   /// performance-sensitive blocks.
   static Future<SharedPreferences> getInstance() async {
     if (_completer == null) {
-      _completer = Completer<SharedPreferences>();
+      final completer = Completer<SharedPreferences>();
       try {
-        final Map<String, Object?> preferencesMap =
+        final Map<String, Object> preferencesMap =
             await _getSharedPreferencesMap();
-        _completer!.complete(SharedPreferences._(preferencesMap));
+        completer.complete(SharedPreferences._(preferencesMap));
       } on Exception catch (e) {
         // If there's an error, explicitly return the future with an error.
         // then set the completer to null so we can retry.
-        _completer!.completeError(e);
-        final Future<SharedPreferences> sharedPrefsFuture = _completer!.future;
+        completer.completeError(e);
+        final Future<SharedPreferences> sharedPrefsFuture = completer.future;
         _completer = null;
         return sharedPrefsFuture;
       }
+      _completer = completer;
     }
     return _completer!.future;
   }
@@ -76,7 +77,7 @@ class SharedPreferences {
   ///
   /// It is NOT guaranteed that this cache and the device prefs will remain
   /// in sync since the setter method might fail for any reason.
-  final Map<String, Object?> _preferenceCache;
+  final Map<String, Object> _preferenceCache;
 
   /// Returns all keys in the persistent storage.
   Set<String> getKeys() => Set<String>.from(_preferenceCache.keys);
@@ -116,53 +117,42 @@ class SharedPreferences {
   }
 
   /// Saves a boolean [value] to persistent storage in the background.
-  ///
-  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  Future<bool> setBool(String key, bool? value) =>
-      _setValue('Bool', key, value);
+  Future<bool> setBool(String key, bool value) => _setValue('Bool', key, value);
 
   /// Saves an integer [value] to persistent storage in the background.
-  ///
-  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  Future<bool> setInt(String key, int? value) => _setValue('Int', key, value);
+  Future<bool> setInt(String key, int value) => _setValue('Int', key, value);
 
   /// Saves a double [value] to persistent storage in the background.
   ///
   /// Android doesn't support storing doubles, so it will be stored as a float.
-  ///
-  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  Future<bool> setDouble(String key, double? value) =>
+  Future<bool> setDouble(String key, double value) =>
       _setValue('Double', key, value);
 
   /// Saves a string [value] to persistent storage in the background.
-  ///
-  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  Future<bool> setString(String key, String? value) =>
+
+  Future<bool> setString(String key, String value) =>
       _setValue('String', key, value);
 
   /// Saves a list of strings [value] to persistent storage in the background.
-  ///
-  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  Future<bool> setStringList(String key, List<String>? value) =>
+  Future<bool> setStringList(String key, List<String> value) =>
       _setValue('StringList', key, value);
 
   /// Removes an entry from persistent storage.
-  Future<bool> remove(String key) => _setValue(null, key, null);
-
-  Future<bool> _setValue(String? valueType, String key, Object? value) {
+  Future<bool> remove(String key) {
     final String prefixedKey = '$_prefix$key';
-    if (value == null) {
-      _preferenceCache.remove(key);
-      return _store.remove(prefixedKey);
+    _preferenceCache.remove(key);
+    return _store.remove(prefixedKey);
+  }
+
+  Future<bool> _setValue(String valueType, String key, Object value) {
+    final String prefixedKey = '$_prefix$key';
+    if (value is List<String>) {
+      // Make a copy of the list so that later mutations won't propagate
+      _preferenceCache[key] = value.toList();
     } else {
-      if (value is List<String>) {
-        // Make a copy of the list so that later mutations won't propagate
-        _preferenceCache[key] = value.toList();
-      } else {
-        _preferenceCache[key] = value;
-      }
-      return _store.setValue(valueType!, prefixedKey, value);
+      _preferenceCache[key] = value;
     }
+    return _store.setValue(valueType, prefixedKey, value);
   }
 
   /// Always returns true.
@@ -181,20 +171,20 @@ class SharedPreferences {
   /// Use this method to observe modifications that were made in native code
   /// (without using the plugin) while the app is running.
   Future<void> reload() async {
-    final Map<String, Object?> preferences =
+    final Map<String, Object> preferences =
         await SharedPreferences._getSharedPreferencesMap();
     _preferenceCache.clear();
     _preferenceCache.addAll(preferences);
   }
 
-  static Future<Map<String, Object?>> _getSharedPreferencesMap() async {
+  static Future<Map<String, Object>> _getSharedPreferencesMap() async {
     final Map<String, Object> fromSystem = await _store.getAll();
     assert(fromSystem != null);
     // Strip the flutter. prefix from the returned preferences.
-    final Map<String, Object?> preferencesMap = <String, Object?>{};
+    final Map<String, Object> preferencesMap = <String, Object>{};
     for (String key in fromSystem.keys) {
       assert(key.startsWith(_prefix));
-      preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
+      preferencesMap[key.substring(_prefix.length)] = fromSystem[key]!;
     }
     return preferencesMap;
   }
@@ -203,18 +193,17 @@ class SharedPreferences {
   ///
   /// If the singleton instance has been initialized already, it is nullified.
   @visibleForTesting
-  static void setMockInitialValues(Map<String, dynamic> values) {
-    final Map<String, dynamic> newValues =
-        values.map<String, dynamic>((String key, dynamic value) {
+  static void setMockInitialValues(Map<String, Object> values) {
+    final Map<String, Object> newValues =
+        values.map<String, Object>((String key, Object value) {
       String newKey = key;
       if (!key.startsWith(_prefix)) {
         newKey = '$_prefix$key';
       }
-      return MapEntry<String, dynamic>(newKey, value);
+      return MapEntry<String, Object>(newKey, value);
     });
     SharedPreferencesStorePlatform.instance =
-        InMemorySharedPreferencesStore.withData(
-            newValues.cast<String, Object>());
+        InMemorySharedPreferencesStore.withData(newValues);
     _completer = null;
   }
 }

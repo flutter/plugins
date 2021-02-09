@@ -105,16 +105,11 @@ void main() {
 
     test('removing', () async {
       const String key = 'testKey';
-      await preferences.setString(key, null);
-      await preferences.setBool(key, null);
-      await preferences.setInt(key, null);
-      await preferences.setDouble(key, null);
-      await preferences.setStringList(key, null);
       await preferences.remove(key);
       expect(
           store!.log,
           List<Matcher>.filled(
-            6,
+            1,
             isMethodCall(
               'remove',
               arguments: 'flutter.$key',
@@ -146,7 +141,8 @@ void main() {
       await preferences.setString('String', kTestValues['flutter.String']);
       expect(preferences.getString('String'), kTestValues['flutter.String']);
 
-      SharedPreferences.setMockInitialValues(kTestValues2);
+      SharedPreferences.setMockInitialValues(
+          kTestValues2.cast<String, Object>());
       expect(preferences.getString('String'), kTestValues['flutter.String']);
 
       await preferences.reload();
@@ -165,7 +161,7 @@ void main() {
 
       test('test 1', () async {
         SharedPreferences.setMockInitialValues(
-            <String, dynamic>{_prefixedKey: 'my string'});
+            <String, Object>{_prefixedKey: 'my string'});
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         final String? value = prefs.getString(_key);
         expect(value, 'my string');
@@ -173,7 +169,7 @@ void main() {
 
       test('test 2', () async {
         SharedPreferences.setMockInitialValues(
-            <String, dynamic>{_prefixedKey: 'my other string'});
+            <String, Object>{_prefixedKey: 'my other string'});
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         final String? value = prefs.getString(_key);
         expect(value, 'my other string');
