@@ -191,6 +191,38 @@ void main() {
           throwsA(isA<PlatformException>()));
     });
 
+    test('send e-mail', () async {
+      await launch('mailto:gmail-noreply@google.com?subject=Hello');
+      expect(
+        verify(await mock.launch(
+          any,
+          useSafariVC: anyNamed('useSafariVC'),
+          useWebView: anyNamed('useWebView'),
+          enableJavaScript: anyNamed('enableJavaScript'),
+          enableDomStorage: anyNamed('enableDomStorage'),
+          universalLinksOnly: anyNamed('universalLinksOnly'),
+          headers: anyNamed('headers'),
+        )),
+        isInstanceOf<VerificationResult>(),
+      );
+    });
+
+    test('cannot send e-mail with forceSafariVC: true', () async {
+      expect(
+          () async => await launch(
+              'mailto:gmail-noreply@google.com?subject=Hello',
+              forceSafariVC: true),
+          throwsA(isA<PlatformException>()));
+    });
+
+    test('cannot send e-mail with forceWebView: true', () async {
+      expect(
+          () async => await launch(
+              'mailto:gmail-noreply@google.com?subject=Hello',
+              forceWebView: true),
+          throwsA(isA<PlatformException>()));
+    });
+
     test('controls system UI when changing statusBarBrightness', () async {
       final TestWidgetsFlutterBinding binding =
           TestWidgetsFlutterBinding.ensureInitialized();
