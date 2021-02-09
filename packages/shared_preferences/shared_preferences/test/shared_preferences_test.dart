@@ -27,14 +27,14 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    FakeSharedPreferencesStore? store;
+    late FakeSharedPreferencesStore store;
     late SharedPreferences preferences;
 
     setUp(() async {
       store = FakeSharedPreferencesStore(kTestValues.cast<String, Object>());
-      SharedPreferencesStorePlatform.instance = store!;
+      SharedPreferencesStorePlatform.instance = store;
       preferences = await SharedPreferences.getInstance();
-      store!.log.clear();
+      store.log.clear();
     });
 
     tearDown(() async {
@@ -52,7 +52,7 @@ void main() {
       expect(preferences.getInt('int'), kTestValues['flutter.int']);
       expect(preferences.getDouble('double'), kTestValues['flutter.double']);
       expect(preferences.getStringList('List'), kTestValues['flutter.List']);
-      expect(store!.log, <Matcher>[]);
+      expect(store.log, <Matcher>[]);
     });
 
     test('writing', () async {
@@ -64,7 +64,7 @@ void main() {
         preferences.setStringList('List', kTestValues2['flutter.List'])
       ]);
       expect(
-        store!.log,
+        store.log,
         <Matcher>[
           isMethodCall('setValue', arguments: <dynamic>[
             'String',
@@ -93,21 +93,21 @@ void main() {
           ]),
         ],
       );
-      store!.log.clear();
+      store.log.clear();
 
       expect(preferences.getString('String'), kTestValues2['flutter.String']);
       expect(preferences.getBool('bool'), kTestValues2['flutter.bool']);
       expect(preferences.getInt('int'), kTestValues2['flutter.int']);
       expect(preferences.getDouble('double'), kTestValues2['flutter.double']);
       expect(preferences.getStringList('List'), kTestValues2['flutter.List']);
-      expect(store!.log, equals(<MethodCall>[]));
+      expect(store.log, equals(<MethodCall>[]));
     });
 
     test('removing', () async {
       const String key = 'testKey';
       await preferences.remove(key);
       expect(
-          store!.log,
+          store.log,
           List<Matcher>.filled(
             1,
             isMethodCall(
@@ -134,7 +134,7 @@ void main() {
       expect(preferences.getInt('int'), null);
       expect(preferences.getDouble('double'), null);
       expect(preferences.getStringList('List'), null);
-      expect(store!.log, <Matcher>[isMethodCall('clear', arguments: null)]);
+      expect(store.log, <Matcher>[isMethodCall('clear', arguments: null)]);
     });
 
     test('reloading', () async {
