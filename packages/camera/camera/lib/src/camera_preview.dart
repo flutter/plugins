@@ -11,10 +11,13 @@ import 'package:flutter/services.dart';
 /// A widget showing a live camera preview.
 class CameraPreview extends StatelessWidget {
   /// Creates a preview widget for the given camera controller.
-  const CameraPreview(this.controller, {this.child});
+  const CameraPreview(this.controller, {this.freeze, this.child});
 
   /// The controller for the camera that the preview is shown for.
   final CameraController controller;
+
+  /// When true the preview will not be updated with new frames.
+  final bool freeze;
 
   /// A widget to overlay on top of the camera preview
   final Widget child;
@@ -31,8 +34,10 @@ class CameraPreview extends StatelessWidget {
               children: [
                 RotatedBox(
                   quarterTurns: _getQuarterTurns(),
-                  child:
-                      CameraPlatform.instance.buildPreview(controller.cameraId),
+                  child: CameraPlatform.instance.buildPreview(
+                    controller.cameraId,
+                    freeze: freeze,
+                  ),
                 ),
                 child ?? Container(),
               ],

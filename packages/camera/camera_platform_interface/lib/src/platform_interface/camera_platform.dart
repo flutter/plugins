@@ -234,7 +234,9 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Returns a widget showing a live camera preview.
-  Widget buildPreview(int cameraId) {
+  ///
+  /// When [freeze] is true the preview will not be updated with new frames.
+  Widget buildPreview(int cameraId, {bool freeze = false}) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
 
