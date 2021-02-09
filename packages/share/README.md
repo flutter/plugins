@@ -17,7 +17,7 @@ For more details see: https://github.com/flutter/flutter/wiki/Package-migration-
 
 ## Usage
 
-To use this plugin, add `share` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
+To use this plugin, add `share` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/packages-and-plugins/using-packages/).
 
 ## Example
 
