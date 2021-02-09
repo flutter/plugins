@@ -6,7 +6,6 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
