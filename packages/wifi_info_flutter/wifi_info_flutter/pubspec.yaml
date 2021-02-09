@@ -10,14 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  wifi_info_flutter_platform_interface:
-    git:
-      url: git@github.com:bparrishMines/plugins.git
-      ref: wifi_info_flutter_platform_interface_nnbd
-      path: packages/wifi_info_flutter/wifi_info_flutter_platform_interface
+  wifi_info_flutter_platform_interface: 2.0.0-nullsafety
 
 dev_dependencies:
-  mockito: ^5.0.0-nullsafety.0
   plugin_platform_interface: ^1.1.0-nullsafety
   integration_test:
     path: ../../integration_test
