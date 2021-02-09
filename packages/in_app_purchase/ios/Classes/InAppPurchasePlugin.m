@@ -179,8 +179,10 @@
   NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
   payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
   if (@available(iOS 8.3, *)) {
-    payment.simulatesAskToBuyInSandbox =
-        [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
+    NSNumber *simulatesAskToBuyInSandbox = [paymentMap objectForKey:@"simulatesAskToBuyInSandbox"];
+    payment.simulatesAskToBuyInSandbox = (id)simulatesAskToBuyInSandbox == (id)[NSNull null]
+                                             ? NO
+                                             : [simulatesAskToBuyInSandbox boolValue];
   }
 
   if (![self.paymentQueueHandler addPayment:payment]) {
@@ -197,38 +199,38 @@
 }
 
 - (void)finishTransaction:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (![call.arguments isKindOfClass:[NSString class]]) {
+  if (![call.arguments isKindOfClass:[NSDictionary class]]) {
     result([FlutterError errorWithCode:@"storekit_invalid_argument"
-                               message:@"Argument type of finishTransaction is not a string."
+                               message:@"Argument type of finishTransaction is not a Dictionary"
                                details:call.arguments]);
     return;
   }
-  NSString *identifier = call.arguments;
-  NSMutableArray *transactions = [self.paymentQueueHandler.transactions objectForKey:identifier];
-  if (!transactions) {
-    result([FlutterError
-        errorWithCode:@"storekit_platform_invalid_transaction"
-              message:[NSString
-                          stringWithFormat:@"The transaction with transactionIdentifer:%@ does not "
-                                           @"exist. Note that if the transactionState is "
-                                           @"purchasing, the transactionIdentifier will be "
-                                           @"nil(null).",
-                                           identifier]
-              details:call.arguments]);
-    return;
-  }
-  @try {
-    for (SKPaymentTransaction *transaction in transactions) {
-      [self.paymentQueueHandler finishTransaction:transaction];
+  NSDictionary *paymentMap = (NSDictionary *)call.arguments;
+  NSString *transactionIdentifier = [paymentMap objectForKey:@"transactionIdentifier"];
+  NSString *productIdentifier = [paymentMap objectForKey:@"productIdentifier"];
+
+  NSArray<SKPaymentTransaction *> *pendingTransactions =
+      [self.paymentQueueHandler getUnfinishedTransactions];
+
+  for (SKPaymentTransaction *transaction in pendingTransactions) {
+    // If the user cancels the purchase dialog we won't have a transactionIdentifier.
+    // So if it is null AND a transaction in the pendingTransactions list has
+    // also a null transactionIdentifier we check for equal product identifiers.
+    if ([transaction.transactionIdentifier isEqualToString:transactionIdentifier] ||
+        ([transactionIdentifier isEqual:[NSNull null]] &&
+         transaction.transactionIdentifier == nil &&
+         [transaction.payment.productIdentifier isEqualToString:productIdentifier])) {
+      @try {
+        [self.paymentQueueHandler finishTransaction:transaction];
+      } @catch (NSException *e) {
+        result([FlutterError errorWithCode:@"storekit_finish_transaction_exception"
+                                   message:e.name
+                                   details:e.description]);
+        return;
+      }
     }
-    // finish transaction will throw exception if the transaction type is purchasing. Notify dart
-    // about this exception.
-  } @catch (NSException *e) {
-    result([FlutterError errorWithCode:@"storekit_finish_transaction_exception"
-                               message:e.name
-                               details:e.description]);
-    return;
   }
+
   result(nil);
 }
 
@@ -241,6 +243,7 @@
     return;
   }
   [self.paymentQueueHandler restoreTransactions:call.arguments];
+  result(nil);
 }
 
 - (void)retrieveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {

@@ -20,6 +20,8 @@ interface PolygonOptionsSink {
 
   void setPoints(List<LatLng> points);
 
+  void setHoles(List<List<LatLng>> holes);
+
   void setVisible(boolean visible);
 
   void setStrokeWidth(float width);

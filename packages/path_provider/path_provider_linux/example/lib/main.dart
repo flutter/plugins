@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_linux/path_provider_linux.dart';
 
 void main() async {
   runApp(MyApp());
@@ -19,6 +19,7 @@ class _MyAppState extends State<MyApp> {
   String _downloadsDirectory = 'Unknown';
   String _appSupportDirectory = 'Unknown';
   String _documentsDirectory = 'Unknown';
+  final PathProviderLinux _provider = PathProviderLinux();
 
   @override
   void initState() {
@@ -34,26 +35,30 @@ class _MyAppState extends State<MyApp> {
     String documentsDirectory;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      tempDirectory = (await getTemporaryDirectory()).path;
-    } on PlatformException {
+      tempDirectory = await _provider.getTemporaryPath();
+    } on PlatformException catch (e, stackTrace) {
       tempDirectory = 'Failed to get temp directory.';
+      print('$tempDirectory $e $stackTrace');
     }
     try {
-      downloadsDirectory = (await getDownloadsDirectory()).path;
-    } on PlatformException {
+      downloadsDirectory = await _provider.getDownloadsPath();
+    } on PlatformException catch (e, stackTrace) {
       downloadsDirectory = 'Failed to get downloads directory.';
+      print('$downloadsDirectory $e $stackTrace');
     }
 
     try {
-      documentsDirectory = (await getApplicationDocumentsDirectory()).path;
-    } on PlatformException {
+      documentsDirectory = await _provider.getApplicationDocumentsPath();
+    } on PlatformException catch (e, stackTrace) {
       documentsDirectory = 'Failed to get documents directory.';
+      print('$documentsDirectory $e $stackTrace');
     }
 
     try {
-      appSupportDirectory = (await getApplicationSupportDirectory()).path;
-    } on PlatformException {
+      appSupportDirectory = await _provider.getApplicationSupportPath();
+    } on PlatformException catch (e, stackTrace) {
       appSupportDirectory = 'Failed to get documents directory.';
+      print('$appSupportDirectory $e $stackTrace');
     }
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling

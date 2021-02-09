@@ -30,34 +30,34 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     _platform = platform;
   }
 
-  Future<String> getTemporaryPath() {
+  Future<String?> getTemporaryPath() {
     return methodChannel.invokeMethod<String>('getTemporaryDirectory');
   }
 
-  Future<String> getApplicationSupportPath() {
+  Future<String?> getApplicationSupportPath() {
     return methodChannel.invokeMethod<String>('getApplicationSupportDirectory');
   }
 
-  Future<String> getLibraryPath() {
+  Future<String?> getLibraryPath() {
     if (!_platform.isIOS && !_platform.isMacOS) {
       throw UnsupportedError('Functionality only available on iOS/macOS');
     }
     return methodChannel.invokeMethod<String>('getLibraryDirectory');
   }
 
-  Future<String> getApplicationDocumentsPath() {
+  Future<String?> getApplicationDocumentsPath() {
     return methodChannel
         .invokeMethod<String>('getApplicationDocumentsDirectory');
   }
 
-  Future<String> getExternalStoragePath() {
+  Future<String?> getExternalStoragePath() {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');
     }
     return methodChannel.invokeMethod<String>('getStorageDirectory');
   }
 
-  Future<List<String>> getExternalCachePaths() {
+  Future<List<String>?> getExternalCachePaths() {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');
     }
@@ -65,8 +65,8 @@ class MethodChannelPathProvider extends PathProviderPlatform {
         .invokeListMethod<String>('getExternalCacheDirectories');
   }
 
-  Future<List<String>> getExternalStoragePaths({
-    StorageDirectory type,
+  Future<List<String>?> getExternalStoragePaths({
+    StorageDirectory? type,
   }) async {
     if (!_platform.isAndroid) {
       throw UnsupportedError('Functionality only available on Android');

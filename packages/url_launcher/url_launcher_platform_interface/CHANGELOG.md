@@ -1,3 +1,19 @@
+## 2.0.0-nullsafety.1
+
+* Bump Dart SDK to support null safety.
+
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 1.0.10
+
+* Update Flutter SDK constraint.
+
+## 1.0.9
+
+* Laid the groundwork for introducing a Link widget.
+
 ## 1.0.8
 
 * Added webOnlyWindowName parameter

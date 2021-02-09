@@ -1,6 +1,69 @@
-## 1.6.15
+## 2.0.1-nullsafety
 
 * Removed pre-screening for platform when calling getDownloadsPath
+
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 1.6.28
+
+* Drop unused UUID dependency for tests.
+
+## 1.6.27
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 1.6.26
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 1.6.25
+
+* Update Flutter SDK constraint.
+
+## 1.6.24
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 1.6.23
+
+* Check in windows/ directory for example/
+
+## 1.6.22
+
+* Switch to guava-android dependency instead of full guava.
+
+## 1.6.21
+
+* Update android compileSdkVersion to 29.
+
+## 1.6.20
+
+* Check in linux/ directory for example/
+
+## 1.6.19
+
+* Android implementation does path queries in the background thread rather than UI thread.
+
+## 1.6.18
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 1.6.17
+
+* Update Windows endorsement verison again, to pick up the fix for
+  web compilation in projects that include path_provider.
+
+## 1.6.16
+
+* Update Windows endorsement verison
+
+## 1.6.15
+
+* Endorse Windows implementation.
+* Remove the need to call disablePathProviderPlatformOverride in tests
 
 ## 1.6.14
 

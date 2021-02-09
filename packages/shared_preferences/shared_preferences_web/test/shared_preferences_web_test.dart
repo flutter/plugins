@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@TestOn('chrome') // Uses web-only Flutter SDK
-
+@TestOn('chrome')
 import 'dart:convert' show json;
 import 'dart:html' as html;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences_platform_interface/method_channel_shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:shared_preferences_web/shared_preferences_web.dart';
 
@@ -26,6 +26,8 @@ void main() {
     });
 
     test('registers itself', () {
+      SharedPreferencesStorePlatform.instance =
+          MethodChannelSharedPreferencesStore();
       expect(SharedPreferencesStorePlatform.instance,
           isNot(isA<SharedPreferencesPlugin>()));
       SharedPreferencesPlugin.registerWith(null);

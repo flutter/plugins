@@ -33,8 +33,8 @@ class Share {
   /// from [MethodChannel].
   static Future<void> share(
     String text, {
-    String subject,
-    Rect sharePositionOrigin,
+    String? subject,
+    Rect? sharePositionOrigin,
   }) {
     assert(text != null);
     assert(text.isNotEmpty);
@@ -67,10 +67,10 @@ class Share {
   /// from [MethodChannel].
   static Future<void> shareFiles(
     List<String> paths, {
-    List<String> mimeTypes,
-    String subject,
-    String text,
-    Rect sharePositionOrigin,
+    List<String>? mimeTypes,
+    String? subject,
+    String? text,
+    Rect? sharePositionOrigin,
   }) {
     assert(paths != null);
     assert(paths.isNotEmpty);
