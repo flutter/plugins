@@ -42,9 +42,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, this.title}) : super(key: key);
+  MyHomePage({Key key, this.title}) : super(key: key);
 
-  final String? title;
+  final String title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _connectionStatus = 'Unknown';
   final Connectivity _connectivity = Connectivity();
   final WifiInfo _wifiInfo = WifiInfo();
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
   void initState() {
@@ -72,13 +72,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initConnectivity() async {
-    late final ConnectivityResult result;
+    ConnectivityResult result;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       result = await _connectivity.checkConnectivity();
     } on PlatformException catch (e) {
       print(e.toString());
-      return;
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -104,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
     switch (result) {
       case ConnectivityResult.wifi:
-        String? wifiName, wifiBSSID, wifiIP;
+        String wifiName, wifiBSSID, wifiIP;
 
         try {
           if (!kIsWeb && Platform.isIOS) {
