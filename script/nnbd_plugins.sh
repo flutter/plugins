@@ -20,6 +20,7 @@ readonly NNBD_PLUGINS_LIST=(
   "path_provider"
   "package_info"
   "plugin_platform_interface"
+  "sensors"
   "share"
   "shared_preferences"
   "url_launcher"
