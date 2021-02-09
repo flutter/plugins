@@ -48,6 +48,6 @@ function check_changed_packages() {
 
 # Runs the plugin tools from the plugin_tools git submodule.
 function plugin_tools() {
-  (pushd "$REPO_DIR/script/plugin_tools" && pub get && popd) >/dev/null
+  (pushd "$REPO_DIR/script/plugin_tools" && dart pub get && popd) >/dev/null
   dart run "$REPO_DIR/script/plugin_tools/lib/src/main.dart" "$@"
 }
