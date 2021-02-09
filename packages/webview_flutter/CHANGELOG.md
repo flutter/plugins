@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.5
+
+* Add section to the wiki explaining how to use Material components.
+
 ## 2.0.0-nullsafety.4
 
 * Update integration test to workaround an iOS 14 issue with `evaluateJavascript`.
