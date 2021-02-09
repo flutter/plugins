@@ -70,21 +70,4 @@ android {
 #### Enable Material Components for Android
 
 To use Material Components when the user interacts with input elements in the WebView,
-follow the steps described in the [Getting Started guide for Android](https://material.io/develop/android/docs/getting-started). For example:
-
-1. Add the dependency on Android's Material in `<my-app>/android/app/build.gradle`:
-  ```groovy
-dependencies {
-    // ...
-    implementation 'com.google.android.material:material:<version>'
-    // ...
-}
-```
-
-To find out the latest version, visit [Google Maven](https://maven.google.com/web/index.html#com.google.android.material:material).
-
-2. Set the theme in `<my-app>/android/app/src/main/res/values/styles.xml`:
-```diff
--<style name="LaunchTheme" parent="Theme.AppCompat">
-+<style name="LaunchTheme" parent="Theme.MaterialComponents.NoActionBar">
-```
+follow the steps described in the [Enabling Material Components instructions](https://flutter.dev/docs/deployment/android#enabling-material-components).
