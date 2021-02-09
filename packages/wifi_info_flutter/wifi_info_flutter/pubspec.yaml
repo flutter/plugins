@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  wifi_info_flutter_platform_interface: 2.0.0-nullsafety
+  wifi_info_flutter_platform_interface: ^2.0.0-nullsafety
 
 dev_dependencies:
   plugin_platform_interface: ^1.1.0-nullsafety
