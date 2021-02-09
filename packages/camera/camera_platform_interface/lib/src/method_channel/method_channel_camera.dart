@@ -11,7 +11,6 @@ import 'package:camera_platform_interface/src/types/focus_mode.dart';
 import 'package:camera_platform_interface/src/types/image_format_group.dart';
 import 'package:camera_platform_interface/src/utils/utils.dart';
 import 'package:cross_file/cross_file.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -59,13 +58,8 @@ class MethodChannelCamera extends CameraPlatform {
   @override
   Future<List<CameraDescription>> availableCameras() async {
     try {
-      final cameras = await _channel
+      final List<Map<dynamic, dynamic>> cameras = await _channel
           .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
-
-      if (cameras == null) {
-        return <CameraDescription>[];
-      }
-
       return cameras.map((Map<dynamic, dynamic> camera) {
         return CameraDescription(
           name: camera['name'],
@@ -81,30 +75,30 @@ class MethodChannelCamera extends CameraPlatform {
   @override
   Future<int> createCamera(
     CameraDescription cameraDescription,
-    ResolutionPreset? resolutionPreset, {
-    bool enableAudio = true,
+    ResolutionPreset resolutionPreset, {
+    bool enableAudio,
   }) async {
     try {
-      final reply = await _channel
-          .invokeMapMethod<String, dynamic>('create', <String, dynamic>{
-        'cameraName': cameraDescription.name,
-        'resolutionPreset': resolutionPreset != null
-            ? _serializeResolutionPreset(resolutionPreset)
-            : null,
-        'enableAudio': enableAudio,
-      });
-
-      return reply!['cameraId'];
+      final Map<String, dynamic> reply =
+          await _channel.invokeMapMethod<String, dynamic>(
+        'create',
+        <String, dynamic>{
+          'cameraName': cameraDescription.name,
+          'resolutionPreset': resolutionPreset != null
+              ? _serializeResolutionPreset(resolutionPreset)
+              : null,
+          'enableAudio': enableAudio,
+        },
+      );
+      return reply['cameraId'];
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
   }
 
   @override
-  Future<void> initializeCamera(
-    int cameraId, {
-    ImageFormatGroup imageFormatGroup = ImageFormatGroup.unknown,
-  }) {
+  Future<void> initializeCamera(int cameraId,
+      {ImageFormatGroup imageFormatGroup}) {
     _channels.putIfAbsent(cameraId, () {
       final channel = MethodChannel('flutter.io/cameraPlugin/camera$cameraId');
       channel.setMethodCallHandler(
@@ -131,16 +125,15 @@ class MethodChannelCamera extends CameraPlatform {
 
   @override
   Future<void> dispose(int cameraId) async {
-    if (_channels.containsKey(cameraId)) {
-      final cameraChannel = _channels[cameraId];
-      cameraChannel?.setMethodCallHandler(null);
-      _channels.remove(cameraId);
-    }
-
     await _channel.invokeMethod<void>(
       'dispose',
       <String, dynamic>{'cameraId': cameraId},
     );
+
+    if (_channels.containsKey(cameraId)) {
+      _channels[cameraId].setMethodCallHandler(null);
+      _channels.remove(cameraId);
+    }
   }
 
   @override
@@ -176,9 +169,7 @@ class MethodChannelCamera extends CameraPlatform {
 
   @override
   Future<void> lockCaptureOrientation(
-    int cameraId,
-    DeviceOrientation orientation,
-  ) async {
+      int cameraId, DeviceOrientation orientation) async {
     await _channel.invokeMethod<String>(
       'lockCaptureOrientation',
       <String, dynamic>{
@@ -198,18 +189,10 @@ class MethodChannelCamera extends CameraPlatform {
 
   @override
   Future<XFile> takePicture(int cameraId) async {
-    final path = await _channel.invokeMethod<String>(
+    String path = await _channel.invokeMethod<String>(
       'takePicture',
       <String, dynamic>{'cameraId': cameraId},
     );
-
-    if (path == null) {
-      throw CameraException(
-        'INVALID_PATH',
-        'The platform "$defaultTargetPlatform" did not return a path while reporting success. The platform should always return a valid path or report an error.',
-      );
-    }
-
     return XFile(path);
   }
 
@@ -219,7 +202,7 @@ class MethodChannelCamera extends CameraPlatform {
 
   @override
   Future<void> startVideoRecording(int cameraId,
-      {Duration? maxVideoDuration}) async {
+      {Duration maxVideoDuration}) async {
     await _channel.invokeMethod<void>(
       'startVideoRecording',
       <String, dynamic>{
@@ -231,18 +214,10 @@ class MethodChannelCamera extends CameraPlatform {
 
   @override
   Future<XFile> stopVideoRecording(int cameraId) async {
-    final path = await _channel.invokeMethod<String>(
+    String path = await _channel.invokeMethod<String>(
       'stopVideoRecording',
       <String, dynamic>{'cameraId': cameraId},
     );
-
-    if (path == null) {
-      throw CameraException(
-        'INVALID_PATH',
-        'The platform "$defaultTargetPlatform" did not return a path while reporting success. The platform should always return a valid path or report an error.',
-      );
-    }
-
     return XFile(path);
   }
 
@@ -280,10 +255,9 @@ class MethodChannelCamera extends CameraPlatform {
       );
 
   @override
-  Future<void> setExposurePoint(int cameraId, Point<double>? point) {
+  Future<void> setExposurePoint(int cameraId, Point<double> point) {
     assert(point == null || point.x >= 0 && point.x <= 1);
     assert(point == null || point.y >= 0 && point.y <= 1);
-
     return _channel.invokeMethod<void>(
       'setExposurePoint',
       <String, dynamic>{
@@ -296,47 +270,35 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<double> getMinExposureOffset(int cameraId) async {
-    final minExposureOffset = await _channel.invokeMethod<double>(
-      'getMinExposureOffset',
-      <String, dynamic>{'cameraId': cameraId},
-    );
-
-    return minExposureOffset!;
-  }
+  Future<double> getMinExposureOffset(int cameraId) =>
+      _channel.invokeMethod<double>(
+        'getMinExposureOffset',
+        <String, dynamic>{'cameraId': cameraId},
+      );
 
   @override
-  Future<double> getMaxExposureOffset(int cameraId) async {
-    final maxExposureOffset = await _channel.invokeMethod<double>(
-      'getMaxExposureOffset',
-      <String, dynamic>{'cameraId': cameraId},
-    );
-
-    return maxExposureOffset!;
-  }
+  Future<double> getMaxExposureOffset(int cameraId) =>
+      _channel.invokeMethod<double>(
+        'getMaxExposureOffset',
+        <String, dynamic>{'cameraId': cameraId},
+      );
 
   @override
-  Future<double> getExposureOffsetStepSize(int cameraId) async {
-    final stepSize = await _channel.invokeMethod<double>(
-      'getExposureOffsetStepSize',
-      <String, dynamic>{'cameraId': cameraId},
-    );
-
-    return stepSize!;
-  }
+  Future<double> getExposureOffsetStepSize(int cameraId) =>
+      _channel.invokeMethod<double>(
+        'getExposureOffsetStepSize',
+        <String, dynamic>{'cameraId': cameraId},
+      );
 
   @override
-  Future<double> setExposureOffset(int cameraId, double offset) async {
-    final appliedOffset = await _channel.invokeMethod<double>(
-      'setExposureOffset',
-      <String, dynamic>{
-        'cameraId': cameraId,
-        'offset': offset,
-      },
-    );
-
-    return appliedOffset!;
-  }
+  Future<double> setExposureOffset(int cameraId, double offset) =>
+      _channel.invokeMethod<double>(
+        'setExposureOffset',
+        <String, dynamic>{
+          'cameraId': cameraId,
+          'offset': offset,
+        },
+      );
 
   @override
   Future<void> setFocusMode(int cameraId, FocusMode mode) =>
@@ -349,10 +311,9 @@ class MethodChannelCamera extends CameraPlatform {
       );
 
   @override
-  Future<void> setFocusPoint(int cameraId, Point<double>? point) {
+  Future<void> setFocusPoint(int cameraId, Point<double> point) {
     assert(point == null || point.x >= 0 && point.x <= 1);
     assert(point == null || point.y >= 0 && point.y <= 1);
-
     return _channel.invokeMethod<void>(
       'setFocusPoint',
       <String, dynamic>{
@@ -365,24 +326,16 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Future<double> getMaxZoomLevel(int cameraId) async {
-    final maxZoomLevel = await _channel.invokeMethod<double>(
-      'getMaxZoomLevel',
-      <String, dynamic>{'cameraId': cameraId},
-    );
-
-    return maxZoomLevel!;
-  }
+  Future<double> getMaxZoomLevel(int cameraId) => _channel.invokeMethod<double>(
+        'getMaxZoomLevel',
+        <String, dynamic>{'cameraId': cameraId},
+      );
 
   @override
-  Future<double> getMinZoomLevel(int cameraId) async {
-    final minZoomLevel = await _channel.invokeMethod<double>(
-      'getMinZoomLevel',
-      <String, dynamic>{'cameraId': cameraId},
-    );
-
-    return minZoomLevel!;
-  }
+  Future<double> getMinZoomLevel(int cameraId) => _channel.invokeMethod<double>(
+        'getMinZoomLevel',
+        <String, dynamic>{'cameraId': cameraId},
+      );
 
   @override
   Future<void> setZoomLevel(int cameraId, double zoom) async {

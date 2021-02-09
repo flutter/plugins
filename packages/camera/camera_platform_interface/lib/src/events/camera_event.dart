@@ -70,12 +70,12 @@ class CameraInitializedEvent extends CameraEvent {
   CameraInitializedEvent(
     int cameraId,
     this.previewWidth,
-    this.previewHeight,
+    this.previewHeight, [
     this.exposureMode,
-    this.exposurePointSupported,
+    this.exposurePointSupported = false,
     this.focusMode,
-    this.focusPointSupported,
-  ) : super(cameraId);
+    this.focusPointSupported = false,
+  ]) : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [CameraInitializedEvent]
   /// class.
@@ -242,7 +242,7 @@ class VideoRecordedEvent extends CameraEvent {
   final XFile file;
 
   /// Maximum duration of the recorded video.
-  final Duration? maxVideoDuration;
+  final Duration maxVideoDuration;
 
   /// Build a VideoRecordedEvent triggered from the camera with the `cameraId`.
   ///

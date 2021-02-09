@@ -5,15 +5,15 @@
 import 'package:flutter/services.dart';
 
 class MethodChannelMock {
-  final Duration? delay;
+  final Duration delay;
   final MethodChannel methodChannel;
   final Map<String, dynamic> methods;
   final log = <MethodCall>[];
 
   MethodChannelMock({
-    required String channelName,
+    String channelName,
     this.delay,
-    required this.methods,
+    this.methods,
   }) : methodChannel = MethodChannel(channelName) {
     methodChannel.setMockMethodCallHandler(_handler);
   }

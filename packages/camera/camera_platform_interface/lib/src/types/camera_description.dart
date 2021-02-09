@@ -17,11 +17,7 @@ enum CameraLensDirection {
 /// Properties of a camera device.
 class CameraDescription {
   /// Creates a new camera description with the given properties.
-  CameraDescription({
-    required this.name,
-    required this.lensDirection,
-    required this.sensorOrientation,
-  });
+  CameraDescription({this.name, this.lensDirection, this.sensorOrientation});
 
   /// The name of the camera device.
   final String name;

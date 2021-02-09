@@ -37,10 +37,7 @@ void main() {
 
         // Act
         final cameraId = await camera.createCamera(
-          CameraDescription(
-              name: 'Test',
-              lensDirection: CameraLensDirection.back,
-              sensorOrientation: 0),
+          CameraDescription(name: 'Test'),
           ResolutionPreset.high,
         );
 
@@ -51,7 +48,7 @@ void main() {
             arguments: {
               'cameraName': 'Test',
               'resolutionPreset': 'high',
-              'enableAudio': true
+              'enableAudio': null
             },
           ),
         ]);
@@ -73,11 +70,7 @@ void main() {
         // Act
         expect(
           () => camera.createCamera(
-            CameraDescription(
-              name: 'Test',
-              lensDirection: CameraLensDirection.back,
-              sensorOrientation: 0,
-            ),
+            CameraDescription(name: 'Test'),
             ResolutionPreset.high,
           ),
           throwsA(
@@ -104,11 +97,7 @@ void main() {
         // Act
         expect(
           () => camera.createCamera(
-            CameraDescription(
-              name: 'Test',
-              lensDirection: CameraLensDirection.back,
-              sensorOrientation: 0,
-            ),
+            CameraDescription(name: 'Test'),
             ResolutionPreset.high,
           ),
           throwsA(
@@ -133,11 +122,7 @@ void main() {
             });
         final camera = MethodChannelCamera();
         final cameraId = await camera.createCamera(
-          CameraDescription(
-            name: 'Test',
-            lensDirection: CameraLensDirection.back,
-            sensorOrientation: 0,
-          ),
+          CameraDescription(name: 'Test'),
           ResolutionPreset.high,
         );
 
@@ -180,11 +165,7 @@ void main() {
 
         final camera = MethodChannelCamera();
         final cameraId = await camera.createCamera(
-          CameraDescription(
-            name: 'Test',
-            lensDirection: CameraLensDirection.back,
-            sensorOrientation: 0,
-          ),
+          CameraDescription(name: 'Test'),
           ResolutionPreset.high,
         );
         Future<void> initializeFuture = camera.initializeCamera(cameraId);
@@ -216,8 +197,8 @@ void main() {
     });
 
     group('Event Tests', () {
-      late MethodChannelCamera camera;
-      late int cameraId;
+      MethodChannelCamera camera;
+      int cameraId;
       setUp(() async {
         MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
@@ -228,11 +209,7 @@ void main() {
         );
         camera = MethodChannelCamera();
         cameraId = await camera.createCamera(
-          CameraDescription(
-            name: 'Test',
-            lensDirection: CameraLensDirection.back,
-            sensorOrientation: 0,
-          ),
+          CameraDescription(name: 'Test'),
           ResolutionPreset.high,
         );
         Future<void> initializeFuture = camera.initializeCamera(cameraId);
@@ -375,9 +352,8 @@ void main() {
     });
 
     group('Function Tests', () {
-      late MethodChannelCamera camera;
-      late int cameraId;
-
+      MethodChannelCamera camera;
+      int cameraId;
       setUp(() async {
         MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
@@ -388,11 +364,7 @@ void main() {
         );
         camera = MethodChannelCamera();
         cameraId = await camera.createCamera(
-          CameraDescription(
-            name: 'Test',
-            lensDirection: CameraLensDirection.back,
-            sensorOrientation: 0,
-          ),
+          CameraDescription(name: 'Test'),
           ResolutionPreset.high,
         );
         Future<void> initializeFuture = camera.initializeCamera(cameraId);
