@@ -294,5 +294,7 @@ html.Element? getLinkElementFromTarget(html.Event event) {
 /// Checks if the given [element] is a link that was created by
 /// [LinkViewController].
 bool isLinkElement(html.Element? element) {
-  return element != null && element.tagName == 'A' && hasProperty(element, linkViewIdProperty);
+  return element != null &&
+      element.tagName == 'A' &&
+      hasProperty(element, linkViewIdProperty);
 }
