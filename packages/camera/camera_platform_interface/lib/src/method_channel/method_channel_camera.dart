@@ -82,7 +82,7 @@ class MethodChannelCamera extends CameraPlatform {
   Future<int> createCamera(
     CameraDescription cameraDescription,
     ResolutionPreset? resolutionPreset, {
-    bool enableAudio = true,
+    bool enableAudio = false,
   }) async {
     try {
       final reply = await _channel

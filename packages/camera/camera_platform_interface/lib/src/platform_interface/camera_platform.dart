@@ -52,7 +52,7 @@ abstract class CameraPlatform extends PlatformInterface {
   Future<int> createCamera(
     CameraDescription cameraDescription,
     ResolutionPreset? resolutionPreset, {
-    bool enableAudio = true,
+    bool enableAudio = false,
   }) {
     throw UnimplementedError('createCamera() is not implemented.');
   }
