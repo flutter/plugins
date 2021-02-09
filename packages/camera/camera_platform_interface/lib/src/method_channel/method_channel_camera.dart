@@ -59,7 +59,7 @@ class MethodChannelCamera extends CameraPlatform {
   @override
   Future<List<CameraDescription>> availableCameras() async {
     try {
-      final cameras = await _channel
+      final List<Map<dynamic, dynamic>>? cameras = await _channel
           .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
 
       if (cameras == null) {
@@ -82,7 +82,7 @@ class MethodChannelCamera extends CameraPlatform {
   Future<int> createCamera(
     CameraDescription cameraDescription,
     ResolutionPreset? resolutionPreset, {
-    bool enableAudio = true,
+    bool enableAudio = false,
   }) async {
     try {
       final reply = await _channel
