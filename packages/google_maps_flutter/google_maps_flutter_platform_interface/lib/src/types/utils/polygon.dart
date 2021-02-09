@@ -6,8 +6,8 @@ import '../types.dart';
 import 'maps_object.dart';
 
 /// Converts an [Iterable] of Polygons in a Map of PolygonId -> Polygon.
-Map<PolygonId, Polygon> keyByPolygonId(Iterable<Polygon> polygons) {
-  return keyByMapsObjectId<Polygon>(polygons);
+Map<PolygonId, Polygon> keyByPolygonId(Iterable<Polygon>/*?*/ polygons) {
+  return keyByMapsObjectId<Polygon>(polygons).cast<PolygonId, Polygon>();
 }
 
 /// Converts a Set of Polygons into something serializable in JSON.

@@ -6,8 +6,8 @@ import '../types.dart';
 import 'maps_object.dart';
 
 /// Converts an [Iterable] of Polylines in a Map of PolylineId -> Polyline.
-Map<PolylineId, Polyline> keyByPolylineId(Iterable<Polyline> polylines) {
-  return keyByMapsObjectId<Polyline>(polylines);
+Map<PolylineId, Polyline> keyByPolylineId(Iterable<Polyline>/*?*/ polylines) {
+  return keyByMapsObjectId<Polyline>(polylines).cast<PolylineId, Polyline>();
 }
 
 /// Converts a Set of Polylines into something serializable in JSON.
