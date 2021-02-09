@@ -2,7 +2,7 @@ name: battery
 description: Flutter plugin for accessing information about the battery state
   (full, charging, discharging) on Android and iOS.
 homepage: https://github.com/flutter/plugins/tree/master/packages/battery/battery
-version: 1.0.9
+version: 2.0.0-nullsafety
 
 flutter:
   plugin:
@@ -16,20 +16,18 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  meta: ^1.0.5
-  battery_platform_interface: ^1.0.0
+  meta: ^1.3.0-nullsafety
+  battery_platform_interface: ^2.0.0-nullsafety
 
 dev_dependencies:
-  async: ^2.0.8
-  test: ^1.3.0
-  mockito: ^4.1.1
+  mockito: ^5.0.0-nullsafety.0
   flutter_test:
     sdk: flutter
-  plugin_platform_interface: ^1.0.0
+  plugin_platform_interface: ^1.1.0-nullsafety
   integration_test:
     path: ../../integration_test
-  pedantic: ^1.8.0
+  pedantic: ^1.10.0-nullsafety
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5"

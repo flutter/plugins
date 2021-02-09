@@ -13,7 +13,7 @@ A Flutter plugin to access the accelerometer and gyroscope sensors.
 ## Usage
 
 To use this plugin, add `sensors` as a [dependency in your pubspec.yaml
-file](https://flutter.io/platform-plugins/).
+file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 
 This will expose three classes of sensor events, through three different
 streams.

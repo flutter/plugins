@@ -5,6 +5,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:mockito/mockito.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +27,15 @@ void main() {
       });
 
       log.clear();
+    });
+
+    test('ImagePicker platform instance overrides the actual platform used',
+        () {
+      final ImagePickerPlatform savedPlatform = ImagePickerPlatform.instance;
+      final MockPlatform mockPlatform = MockPlatform();
+      ImagePickerPlatform.instance = mockPlatform;
+      expect(ImagePicker.platform, mockPlatform);
+      ImagePickerPlatform.instance = savedPlatform;
     });
 
     group('#pickImage', () {
@@ -298,7 +310,7 @@ void main() {
         });
         final LostData response = await picker.getLostData();
         expect(response.type, RetrieveType.image);
-        expect(response.file.path, '/example/path');
+        expect(response.file!.path, '/example/path');
       });
 
       test('retrieveLostData get error response', () async {
@@ -311,8 +323,8 @@ void main() {
         });
         final LostData response = await picker.getLostData();
         expect(response.type, RetrieveType.video);
-        expect(response.exception.code, 'test_error_code');
-        expect(response.exception.message, 'test_error_message');
+        expect(response.exception!.code, 'test_error_code');
+        expect(response.exception!.message, 'test_error_message');
       });
 
       test('retrieveLostData get null response', () async {
@@ -336,3 +348,7 @@ void main() {
     });
   });
 }
+
+class MockPlatform extends Mock
+    with MockPlatformInterfaceMixin
+    implements ImagePickerPlatform {}

@@ -1,6 +1,6 @@
 # Camera Plugin
 
-[![pub package](https://img.shields.io/pub/v/camera.svg)](https://pub.dartlang.org/packages/camera)
+[![pub package](https://img.shields.io/pub/v/camera.svg)](https://pub.dev/packages/camera)
 
 A Flutter plugin for iOS and Android allowing access to the device cameras.
 
@@ -15,7 +15,7 @@ A Flutter plugin for iOS and Android allowing access to the device cameras.
 
 ## Installation
 
-First, add `camera` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
+First, add `camera` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
 
 ### iOS
 
@@ -122,7 +122,7 @@ class _CameraAppState extends State<CameraApp> {
 }
 ```
 
-For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/master/packages/camera/example).
+For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/master/packages/camera/camera/example).
 
 *Note*: This plugin is still under development, and some APIs might not be available yet.
 [Feedback welcome](https://github.com/flutter/flutter/issues) and

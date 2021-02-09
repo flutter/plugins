@@ -1,3 +1,11 @@
+## 0.5.0-nullsafety
+
+* Migrate to null safety.
+
+## 0.4.3+4
+
+* Ensure `IntegrationTestPlugin` is registered in `example` app, so Firebase Test Lab tests report test results correctly. [Issue](https://github.com/flutter/flutter/issues/74944).
+
 ## 0.4.3+3
 
 * Update Flutter SDK constraint.

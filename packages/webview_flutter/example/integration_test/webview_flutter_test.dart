@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// @dart = 2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -142,7 +144,11 @@ void main() {
     await pageLoaded.future;
 
     expect(messagesReceived, isEmpty);
-    await controller.evaluateJavascript('Echo.postMessage("hello");');
+    // Append a return value "1" in the end will prevent an iOS platform exception.
+    // See: https://github.com/flutter/flutter/issues/66318#issuecomment-701105380
+    // TODO(cyanglaz): remove the workaround "1" in the end when the below issue is fixed.
+    // https://github.com/flutter/flutter/issues/66318
+    await controller.evaluateJavascript('Echo.postMessage("hello");1;');
     expect(messagesReceived, equals(<String>['hello']));
   });
 
@@ -358,12 +364,12 @@ void main() {
       videoTestBase64 = base64Encode(const Utf8Encoder().convert(videoTest));
     });
 
-    test('Auto media playback', () async {
+    testWidgets('Auto media playback', (WidgetTester tester) async {
       Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
 
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -390,7 +396,7 @@ void main() {
       pageLoaded = Completer<void>();
 
       // We change the key to re-create a new webview as we change the initialMediaPlaybackPolicy
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -414,15 +420,16 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(true));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
 
-    test('Changes to initialMediaPlaybackPolicy are ignored', () async {
+    testWidgets('Changes to initialMediaPlaybackPolicy are ignored',
+        (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
 
       final GlobalKey key = GlobalKey();
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -447,7 +454,7 @@ void main() {
 
       pageLoaded = Completer<void>();
 
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -472,14 +479,15 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(false));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
 
-    test('Video plays inline when allowsInlineMediaPlayback is true', () async {
+    testWidgets('Video plays inline when allowsInlineMediaPlayback is true',
+        (WidgetTester tester) async {
       Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
 
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -507,7 +515,7 @@ void main() {
       controllerCompleter = Completer<WebViewController>();
       pageLoaded = Completer<void>();
 
-      await pumpWidget(
+      await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
@@ -531,7 +539,7 @@ void main() {
 
       isFullScreen = await controller.evaluateJavascript('isFullScreen();');
       expect(isFullScreen, _webviewBool(true));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
   });
 
   group('Audio playback policy', () {
@@ -631,7 +639,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(true));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
 
     testWidgets('Changes to initialMediaPlaybackPolocy are ignored',
         (WidgetTester tester) async {
@@ -700,7 +708,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(false));
-    });
+    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
   });
 
   testWidgets('getTitle', (WidgetTester tester) async {
