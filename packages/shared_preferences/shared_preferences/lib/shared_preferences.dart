@@ -129,7 +129,6 @@ class SharedPreferences {
       _setValue('Double', key, value);
 
   /// Saves a string [value] to persistent storage in the background.
-
   Future<bool> setString(String key, String value) =>
       _setValue('String', key, value);
 

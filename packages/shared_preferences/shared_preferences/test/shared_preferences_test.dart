@@ -11,7 +11,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('SharedPreferences', () {
-    const Map<String, dynamic> kTestValues = <String, dynamic>{
+    const Map<String, Object> kTestValues = <String, Object>{
       'flutter.String': 'hello world',
       'flutter.bool': true,
       'flutter.int': 42,
@@ -31,7 +31,7 @@ void main() {
     late SharedPreferences preferences;
 
     setUp(() async {
-      store = FakeSharedPreferencesStore(kTestValues.cast<String, Object>());
+      store = FakeSharedPreferencesStore(kTestValues);
       SharedPreferencesStorePlatform.instance = store;
       preferences = await SharedPreferences.getInstance();
       store.log.clear();
@@ -138,7 +138,8 @@ void main() {
     });
 
     test('reloading', () async {
-      await preferences.setString('String', kTestValues['flutter.String']);
+      await preferences.setString(
+          'String', kTestValues['flutter.String'] as String);
       expect(preferences.getString('String'), kTestValues['flutter.String']);
 
       SharedPreferences.setMockInitialValues(
