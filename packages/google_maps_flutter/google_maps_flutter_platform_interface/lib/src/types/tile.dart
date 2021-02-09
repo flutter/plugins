@@ -12,10 +12,10 @@ class Tile {
   const Tile(this.width, this.height, this.data);
 
   /// The width of the image encoded by data in logical pixels.
-  final int width;
+  final int/*!*/ width;
 
   /// The height of the image encoded by data in logical pixels.
-  final int height;
+  final int/*!*/ height;
 
   /// A byte array containing the image data.
   ///

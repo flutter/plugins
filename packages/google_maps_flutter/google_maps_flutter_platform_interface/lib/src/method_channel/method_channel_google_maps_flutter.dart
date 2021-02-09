@@ -15,6 +15,22 @@ import 'package:stream_transform/stream_transform.dart';
 import '../types/tile_overlay_updates.dart';
 import '../types/utils/tile_overlay.dart';
 
+/// Error thrown when an unknown map ID is provided to a method channel API.
+class UnknownMapIDError extends Error {
+  /// Message describing the assertion error.
+  final Object message;
+
+  /// Creates an assertion error with the provided [message].
+  UnknownMapIDError([this.message]);
+
+  String toString() {
+    if (message != null) {
+      return "Unknown map ID: ${Error.safeToString(message)}";
+    }
+    return "Unknown map ID";
+  }
+}
+
 /// An implementation of [GoogleMapsFlutterPlatform] that uses [MethodChannel] to communicate with the native code.
 ///
 /// The `google_maps_flutter` plugin code itself never talks to the native code directly. It delegates
@@ -32,7 +48,11 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
   /// Accesses the MethodChannel associated to the passed mapId.
   MethodChannel channel(int mapId) {
-    return _channels[mapId];
+    MethodChannel channel = _channels[mapId];
+    if (channel == null) {
+      throw UnknownMapIDError();
+    }
+    return channel;
   }
 
   // Keep a collection of mapId to a map of TileOverlays.
@@ -190,16 +210,17 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         ));
         break;
       case 'tileOverlay#getTile':
-        final Map<TileOverlayId, TileOverlay> tileOverlaysForThisMap =
+        final Map<TileOverlayId, TileOverlay>/*?*/ tileOverlaysForThisMap =
             _tileOverlays[mapId];
         final String tileOverlayId = call.arguments['tileOverlayId'];
+        /* XXX fix this*/
         final TileOverlay tileOverlay =
-            tileOverlaysForThisMap[TileOverlayId(tileOverlayId)];
-        Tile tile;
-        if (tileOverlay == null || tileOverlay.tileProvider == null) {
+            tileOverlaysForThisMap/*?*/[TileOverlayId(tileOverlayId)];
+        TileProvider tileProvider = tileOverlay?.tileProvider;
+        if (tileProvider == null) {
           return TileProvider.noTile.toJson();
         }
-        tile = await tileOverlay.tileProvider.getTile(
+        final Tile tile = await tileProvider.getTile(
           call.arguments['x'],
           call.arguments['y'],
           call.arguments['zoom'],
@@ -312,7 +333,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// If `newTileOverlays` is null, all the [TileOverlays] are removed for the Map with `mapId`.
   @override
   Future<void> updateTileOverlays({
-    Set<TileOverlay> newTileOverlays,
+    @required Set<TileOverlay> newTileOverlays,
     @required int mapId,
   }) {
     final Map<TileOverlayId, TileOverlay> currentTileOverlays =
@@ -491,7 +512,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   @override
-  Future<bool> isMarkerInfoWindowShown(
+  Future<bool/*!*/> isMarkerInfoWindowShown(
     MarkerId markerId, {
     @required int mapId,
   }) {
@@ -502,7 +523,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
   /// Returns the current zoom level of the map
   @override
-  Future<double> getZoomLevel({
+  Future<double/*!*/> getZoomLevel({
     @required int mapId,
   }) {
     return channel(mapId).invokeMethod<double>('map#getZoomLevel');

@@ -122,7 +122,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> updateTileOverlays({
-    Set<TileOverlay> newTileOverlays,
+    @required Set<TileOverlay> newTileOverlays,
     @required int mapId,
   }) {
     throw UnimplementedError('updateTileOverlays() has not been implemented.');
@@ -252,7 +252,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
-  Future<bool> isMarkerInfoWindowShown(
+  Future<bool/*!*/> isMarkerInfoWindowShown(
     MarkerId markerId, {
     @required int mapId,
   }) {
@@ -260,7 +260,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   }
 
   /// Returns the current zoom level of the map
-  Future<double> getZoomLevel({
+  Future<double/*!*/> getZoomLevel({
     @required int mapId,
   }) {
     throw UnimplementedError('getZoomLevel() has not been implemented.');

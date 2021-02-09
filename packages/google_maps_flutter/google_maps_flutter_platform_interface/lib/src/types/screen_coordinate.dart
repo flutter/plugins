@@ -20,14 +20,14 @@ class ScreenCoordinate {
   });
 
   /// Represents the number of pixels from the left of the [GoogleMap].
-  final int x;
+  final int/*!*/ x;
 
   /// Represents the number of pixels from the top of the [GoogleMap].
-  final int y;
+  final int/*!*/ y;
 
   /// Converts this object to something serializable in JSON.
   dynamic toJson() {
-    return <String, int>{
+    return <String, int/*!*/>{
       "x": x,
       "y": y,
     };

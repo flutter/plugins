@@ -40,7 +40,7 @@ class MapsObjectUpdates<T extends MapsObject> {
     ///
     /// It is a programming error to call this with an ID that is not guaranteed
     /// to be in [currentObjects].
-    T _idToCurrentObject(MapsObjectId<T> id) {
+    T/*!*/ _idToCurrentObject(MapsObjectId<T> id) {
       return currentObjects[id];
     }
 
@@ -73,21 +73,21 @@ class MapsObjectUpdates<T extends MapsObject> {
     return _objectsToAdd;
   }
 
-  Set<T> _objectsToAdd;
+  /*late*/ Set<T> _objectsToAdd;
 
   /// Set of objects to be removed in this update.
   Set<MapsObjectId<T>> get objectIdsToRemove {
     return _objectIdsToRemove;
   }
 
-  Set<MapsObjectId<T>> _objectIdsToRemove;
+  /*late*/ Set<MapsObjectId<T>> _objectIdsToRemove;
 
   /// Set of objects to be changed in this update.
   Set<T> get objectsToChange {
     return _objectsToChange;
   }
 
-  Set<T> _objectsToChange;
+  /*late*/ Set<T> _objectsToChange;
 
   /// Converts this object to JSON.
   Map<String, dynamic> toJson() {

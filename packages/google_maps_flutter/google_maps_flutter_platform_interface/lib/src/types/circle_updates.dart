@@ -13,11 +13,11 @@ class CircleUpdates extends MapsObjectUpdates<Circle> {
   CircleUpdates.from(Set<Circle> previous, Set<Circle> current) : super.from(previous, current, objectName: 'circle');
 
   /// Set of Circles to be added in this update.
-  Set<Circle/*!*/> get circlesToAdd => objectsToAdd;
+  Set<Circle> get circlesToAdd => objectsToAdd;
 
   /// Set of CircleIds to be removed in this update.
-  Set<CircleId>/*?*/ get circleIdsToRemove => objectIdsToRemove.cast<CircleId>();
+  Set<CircleId> get circleIdsToRemove => objectIdsToRemove.cast<CircleId>();
 
   /// Set of Circles to be changed in this update.
-  Set<Circle/*!*/> get circlesToChange => objectsToChange;
+  Set<Circle> get circlesToChange => objectsToChange;
 }
