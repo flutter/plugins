@@ -1,3 +1,8 @@
+## 4.0.0-nullsafety.0
+
+* Update to latest Pigeon.
+  This includes a breaking change to how the test logic is exposed.
+
 ## 3.0.0-nullsafety.3
 
 * `messages.dart` sets Dart `2.12`.

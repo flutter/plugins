@@ -14,8 +14,6 @@ You can now include a WebView widget in your widget tree. See the
 [WebView](https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebView-class.html)
 widget's Dartdoc for more details on how to use the widget.
 
-
-
 ## Android Platform Views
 The WebView is relying on
 [Platform Views](https://flutter.dev/docs/development/platform-integration/platform-views) to embed
@@ -66,5 +64,10 @@ android {
         // Required by the Flutter WebView plugin.
         minSdkVersion 19
     }
-  }
+}
 ```
+
+#### Enable Material Components for Android
+
+To use Material Components when the user interacts with input elements in the WebView,
+follow the steps described in the [Enabling Material Components instructions](https://flutter.dev/docs/deployment/android#enabling-material-components).

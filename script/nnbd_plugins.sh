@@ -7,20 +7,28 @@
 readonly NNBD_PLUGINS_LIST=(
   "android_intent"
   "battery"
+  "camera"
   "connectivity"
   "cross_file"
   "device_info"
+  "file_selector"
   "flutter_plugin_android_lifecycle"
   "flutter_webview"
   "google_sign_in"
+  "image_picker"
+  "ios_platform_images"
   "local_auth"
   "path_provider"
+  "package_info"
   "plugin_platform_interface"
+  "quick_actions"
+  "sensors"
   "share"
   "shared_preferences"
   "url_launcher"
   "video_player"
   "webview_flutter"
+  "wifi_info_flutter"
 )
 
 # This list contains the list of plugins that have *not* been
@@ -30,7 +38,6 @@ readonly NNBD_PLUGINS_LIST=(
 readonly NON_NNBD_PLUGINS_LIST=(
   # "android_alarm_manager"
   "camera"
-  # "file_selector"
   # "google_maps_flutter"
   # "image_picker"
   # "in_app_purchase"
