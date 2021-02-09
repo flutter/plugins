@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,14 +27,14 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    FakeSharedPreferencesStore store;
-    SharedPreferences preferences;
+    FakeSharedPreferencesStore? store;
+    late SharedPreferences preferences;
 
     setUp(() async {
-      store = FakeSharedPreferencesStore(kTestValues);
-      SharedPreferencesStorePlatform.instance = store;
+      store = FakeSharedPreferencesStore(kTestValues.cast<String, Object>());
+      SharedPreferencesStorePlatform.instance = store!;
       preferences = await SharedPreferences.getInstance();
-      store.log.clear();
+      store!.log.clear();
     });
 
     tearDown(() async {
@@ -54,7 +52,7 @@ void main() {
       expect(preferences.getInt('int'), kTestValues['flutter.int']);
       expect(preferences.getDouble('double'), kTestValues['flutter.double']);
       expect(preferences.getStringList('List'), kTestValues['flutter.List']);
-      expect(store.log, <Matcher>[]);
+      expect(store!.log, <Matcher>[]);
     });
 
     test('writing', () async {
@@ -66,7 +64,7 @@ void main() {
         preferences.setStringList('List', kTestValues2['flutter.List'])
       ]);
       expect(
-        store.log,
+        store!.log,
         <Matcher>[
           isMethodCall('setValue', arguments: <dynamic>[
             'String',
@@ -95,14 +93,14 @@ void main() {
           ]),
         ],
       );
-      store.log.clear();
+      store!.log.clear();
 
       expect(preferences.getString('String'), kTestValues2['flutter.String']);
       expect(preferences.getBool('bool'), kTestValues2['flutter.bool']);
       expect(preferences.getInt('int'), kTestValues2['flutter.int']);
       expect(preferences.getDouble('double'), kTestValues2['flutter.double']);
       expect(preferences.getStringList('List'), kTestValues2['flutter.List']);
-      expect(store.log, equals(<MethodCall>[]));
+      expect(store!.log, equals(<MethodCall>[]));
     });
 
     test('removing', () async {
@@ -114,7 +112,7 @@ void main() {
       await preferences.setStringList(key, null);
       await preferences.remove(key);
       expect(
-          store.log,
+          store!.log,
           List<Matcher>.filled(
             6,
             isMethodCall(
@@ -141,7 +139,7 @@ void main() {
       expect(preferences.getInt('int'), null);
       expect(preferences.getDouble('double'), null);
       expect(preferences.getStringList('List'), null);
-      expect(store.log, <Matcher>[isMethodCall('clear', arguments: null)]);
+      expect(store!.log, <Matcher>[isMethodCall('clear', arguments: null)]);
     });
 
     test('reloading', () async {
@@ -169,7 +167,7 @@ void main() {
         SharedPreferences.setMockInitialValues(
             <String, dynamic>{_prefixedKey: 'my string'});
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        final String value = prefs.getString(_key);
+        final String? value = prefs.getString(_key);
         expect(value, 'my string');
       });
 
@@ -177,7 +175,7 @@ void main() {
         SharedPreferences.setMockInitialValues(
             <String, dynamic>{_prefixedKey: 'my other string'});
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        final String value = prefs.getString(_key);
+        final String? value = prefs.getString(_key);
         expect(value, 'my other string');
       });
     });
@@ -187,7 +185,7 @@ void main() {
       await preferences.setStringList("myList", myList);
       myList.add("foobar");
 
-      final List<String> cachedList = preferences.getStringList('myList');
+      final List<String> cachedList = preferences.getStringList('myList')!;
       expect(cachedList, <String>[]);
 
       cachedList.add("foobar2");
@@ -197,11 +195,11 @@ void main() {
   });
 
   test('calling mock initial values with non-prefixed keys succeeds', () async {
-    SharedPreferences.setMockInitialValues(<String, String>{
+    SharedPreferences.setMockInitialValues(<String, Object>{
       'test': 'foo',
     });
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String value = prefs.getString('test');
+    final String? value = prefs.getString('test');
     expect(value, 'foo');
   });
 }
