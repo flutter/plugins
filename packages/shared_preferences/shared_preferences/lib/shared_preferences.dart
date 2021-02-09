@@ -144,6 +144,7 @@ class SharedPreferences {
   }
 
   Future<bool> _setValue(String valueType, String key, Object value) {
+    ArgumentError.checkNotNull(value, 'value');
     final String prefixedKey = '$_prefix$key';
     if (value is List<String>) {
       // Make a copy of the list so that later mutations won't propagate
