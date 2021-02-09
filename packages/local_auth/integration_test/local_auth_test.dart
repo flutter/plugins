@@ -13,6 +13,9 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('canCheckBiometrics', (WidgetTester tester) async {
-    expect(LocalAuthentication().getAvailableBiometrics(), completion(isList));
+    expect(
+      LocalAuthentication().getAvailableBiometrics(),
+      completion(isList),
+    );
   });
 }

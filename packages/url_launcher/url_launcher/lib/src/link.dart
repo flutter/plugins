@@ -17,7 +17,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// ```dart
 /// Link(
 ///   uri: Uri.parse('https://flutter.dev'),
-///   builder: (BuildContext context, FollowLink followLink) => RaisedButton(
+///   builder: (BuildContext context, FollowLink followLink) => ElevatedButton(
 ///     onPressed: followLink,
 ///     // ... other properties here ...
 ///   )},
@@ -29,7 +29,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// ```dart
 /// Link(
 ///   uri: Uri.parse('/home'),
-///   builder: (BuildContext context, FollowLink followLink) => RaisedButton(
+///   builder: (BuildContext context, FollowLink followLink) => ElevatedButton(
 ///     onPressed: followLink,
 ///     // ... other properties here ...
 ///   )},

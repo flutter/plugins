@@ -1,3 +1,16 @@
+## 0.1.2
+
+* Add support for Custom Tiles.
+
+## 0.1.1
+
+* Auto-reverse holes if they're the same direction as the polygon. [Issue](https://github.com/flutter/flutter/issues/74096).
+
+## 0.1.0+10
+
+* Update `package:google_maps_flutter_platform_interface` to `^1.1.0`.
+* Add support for Polygon Holes.
+
 ## 0.1.0+9
 
 * Update Flutter SDK constraint.

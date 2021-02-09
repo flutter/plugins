@@ -1,3 +1,15 @@
+## 2.0.0-nullsafety.9
+
+* Fixed an issue where a crash can occur after a closing a video player view on iOS.
+
+## 2.0.0-nullsafety.8
+
+* Migrated from deprecated `defaultBinaryMessenger`.
+
+## 2.0.0-nullsafety.7
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
 ## 2.0.0-nullsafety.6
 
 * Fix `VideoPlayerValue toString()` test.
