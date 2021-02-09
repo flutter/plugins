@@ -6,8 +6,6 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -25,11 +23,6 @@ void main() {
 
     test('Can be extended', () {
       CameraPlatform.instance = ExtendsCameraPlatform();
-    });
-
-    test('Can be mocked with `implements`', () {
-      final mock = MockCameraPlatform();
-      CameraPlatform.instance = mock;
     });
 
     test(
@@ -422,12 +415,5 @@ class ImplementsCameraPlatform implements CameraPlatform {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
-
-class MockCameraPlatform extends Mock
-    with
-        // ignore: prefer_mixin
-        MockPlatformInterfaceMixin
-    implements
-        CameraPlatform {}
 
 class ExtendsCameraPlatform extends CameraPlatform {}
