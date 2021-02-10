@@ -16,6 +16,25 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 // views seem to re-render much more often that mobile platform views.
 int _webOnlyMapId = 0;
 
+/// Error thrown when an unknown map object ID is provided to a method.
+class UnknownMapObjectIDError extends Error {
+  /// Creates an assertion error with the provided [message].
+  UnknownMapObjectIDError(this.objectType, [this.context]);
+
+  /// The name of the map object whose ID is unknown.
+  final String objectType;
+
+  /// The context where the error occurred.
+  final String context;
+
+  String toString() {
+    if (context != null) {
+      return "Unknown $objectType ID in $context";
+    }
+    return "Unknown $objectType ID";
+  }
+}
+
 /// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
   /// Creates a widget displaying data from Google Maps services.
@@ -45,12 +64,12 @@ class GoogleMap extends StatefulWidget {
     this.indoorViewEnabled = false,
     this.trafficEnabled = false,
     this.buildingsEnabled = true,
-    this.markers,
-    this.polygons,
-    this.polylines,
-    this.circles,
+    this.markers = const <Marker>{},
+    this.polygons = const <Polygon>{},
+    this.polylines = const <Polyline>{},
+    this.circles = const <Circle>{},
     this.onCameraMoveStarted,
-    this.tileOverlays,
+    this.tileOverlays = const <TileOverlay>{},
     this.onCameraMove,
     this.onCameraIdle,
     this.onTap,
@@ -110,19 +129,19 @@ class GoogleMap extends StatefulWidget {
   final EdgeInsets padding;
 
   /// Markers to be placed on the map.
-  final Set<Marker> markers;
+  final Set<Marker> /*!*/ markers;
 
   /// Polygons to be placed on the map.
-  final Set<Polygon> polygons;
+  final Set<Polygon> /*!*/ polygons;
 
   /// Polylines to be placed on the map.
-  final Set<Polyline> polylines;
+  final Set<Polyline> /*!*/ polylines;
 
   /// Circles to be placed on the map.
-  final Set<Circle> circles;
+  final Set<Circle> /*!*/ circles;
 
   /// Tile overlays to be placed on the map.
-  final Set<TileOverlay> tileOverlays;
+  final Set<TileOverlay> /*!*/ tileOverlays;
 
   /// Called when the camera starts moving.
   ///
@@ -333,115 +352,123 @@ class _GoogleMapState extends State<GoogleMap> {
     );
     _controller.complete(controller);
     _updateTileOverlays();
-    if (widget.onMapCreated != null) {
-      widget.onMapCreated(controller);
+    final onMapCreated = widget.onMapCreated;
+    if (onMapCreated != null) {
+      onMapCreated(controller);
     }
   }
 
   void onMarkerTap(MarkerId markerId) {
     assert(markerId != null);
-    if (_markers[markerId]?.onTap != null) {
-      _markers[markerId].onTap();
+    final Marker marker = _markers[markerId];
+    if (marker == null) {
+      throw UnknownMapObjectIDError('marker', 'onTap');
+    }
+    final onTap = marker.onTap;
+    if (onTap != null) {
+      onTap();
     }
   }
 
   void onMarkerDragEnd(MarkerId markerId, LatLng position) {
     assert(markerId != null);
-    if (_markers[markerId]?.onDragEnd != null) {
-      _markers[markerId].onDragEnd(position);
+    final Marker marker = _markers[markerId];
+    if (marker == null) {
+      throw UnknownMapObjectIDError('marker', 'onDragEnd');
+    }
+    final onDragEnd = marker.onDragEnd;
+    if (onDragEnd != null) {
+      onDragEnd(position);
     }
   }
 
   void onPolygonTap(PolygonId polygonId) {
     assert(polygonId != null);
-    _polygons[polygonId].onTap();
+    final Polygon polygon = _polygons[polygonId];
+    if (polygon == null) {
+      throw UnknownMapObjectIDError('polygon', 'onTap');
+    }
+    final onTap = polygon.onTap;
+    if (onTap != null) {
+      onTap();
+    }
   }
 
   void onPolylineTap(PolylineId polylineId) {
     assert(polylineId != null);
-    if (_polylines[polylineId]?.onTap != null) {
-      _polylines[polylineId].onTap();
+    final Polyline polyline = _polylines[polylineId];
+    if (polyline == null) {
+      throw UnknownMapObjectIDError('polyline', 'onTap');
+    }
+    final onTap = polyline?.onTap;
+    if (onTap != null) {
+      onTap();
     }
   }
 
   void onCircleTap(CircleId circleId) {
     assert(circleId != null);
-    _circles[circleId].onTap();
+    final Circle circle = _circles[circleId];
+    if (circle == null) {
+      throw UnknownMapObjectIDError('marker', 'onTap');
+    }
+    final onTap = circle?.onTap;
+    if (onTap != null) {
+      onTap();
+    }
   }
 
   void onInfoWindowTap(MarkerId markerId) {
     assert(markerId != null);
-    if (_markers[markerId]?.infoWindow?.onTap != null) {
-      _markers[markerId].infoWindow.onTap();
+    final Marker marker = _markers[markerId];
+    if (marker == null) {
+      throw UnknownMapObjectIDError('marker', 'InfoWindow onTap');
+    }
+    final onTap = marker.infoWindow?.onTap;
+    if (onTap != null) {
+      onTap();
     }
   }
 
   void onTap(LatLng position) {
     assert(position != null);
-    if (widget.onTap != null) {
-      widget.onTap(position);
+    final onTap = widget.onTap;
+    if (onTap != null) {
+      onTap(position);
     }
   }
 
   void onLongPress(LatLng position) {
     assert(position != null);
-    if (widget.onLongPress != null) {
-      widget.onLongPress(position);
+    final onLongPress = widget.onLongPress;
+    if (onLongPress != null) {
+      onLongPress(position);
     }
   }
 }
 
 /// Configuration options for the GoogleMaps user interface.
-///
-/// When used to change configuration, null values will be interpreted as
-/// "do not change this configuration option".
 class _GoogleMapOptions {
-  _GoogleMapOptions({
-    this.compassEnabled,
-    this.mapToolbarEnabled,
-    this.cameraTargetBounds,
-    this.mapType,
-    this.minMaxZoomPreference,
-    this.rotateGesturesEnabled,
-    this.scrollGesturesEnabled,
-    this.tiltGesturesEnabled,
-    this.trackCameraPosition,
-    this.zoomControlsEnabled,
-    this.zoomGesturesEnabled,
-    this.liteModeEnabled,
-    this.myLocationEnabled,
-    this.myLocationButtonEnabled,
-    this.padding,
-    this.indoorViewEnabled,
-    this.trafficEnabled,
-    this.buildingsEnabled,
-  }) {
-    assert(liteModeEnabled == null ||
-        !liteModeEnabled ||
-        (liteModeEnabled && Platform.isAndroid));
-  }
-
-  static _GoogleMapOptions fromWidget(GoogleMap map) {
-    return _GoogleMapOptions(
-      compassEnabled: map.compassEnabled,
-      mapToolbarEnabled: map.mapToolbarEnabled,
-      cameraTargetBounds: map.cameraTargetBounds,
-      mapType: map.mapType,
-      minMaxZoomPreference: map.minMaxZoomPreference,
-      rotateGesturesEnabled: map.rotateGesturesEnabled,
-      scrollGesturesEnabled: map.scrollGesturesEnabled,
-      tiltGesturesEnabled: map.tiltGesturesEnabled,
-      trackCameraPosition: map.onCameraMove != null,
-      zoomControlsEnabled: map.zoomControlsEnabled,
-      zoomGesturesEnabled: map.zoomGesturesEnabled,
-      liteModeEnabled: map.liteModeEnabled,
-      myLocationEnabled: map.myLocationEnabled,
-      myLocationButtonEnabled: map.myLocationButtonEnabled,
-      padding: map.padding,
-      indoorViewEnabled: map.indoorViewEnabled,
-      trafficEnabled: map.trafficEnabled,
-      buildingsEnabled: map.buildingsEnabled,
-    );
+  _GoogleMapOptions.fromWidget(GoogleMap map)
+      : compassEnabled = map.compassEnabled,
+        mapToolbarEnabled = map.mapToolbarEnabled,
+        cameraTargetBounds = map.cameraTargetBounds,
+        mapType = map.mapType,
+        minMaxZoomPreference = map.minMaxZoomPreference,
+        rotateGesturesEnabled = map.rotateGesturesEnabled,
+        scrollGesturesEnabled = map.scrollGesturesEnabled,
+        tiltGesturesEnabled = map.tiltGesturesEnabled,
+        trackCameraPosition = map.onCameraMove != null,
+        zoomControlsEnabled = map.zoomControlsEnabled,
+        zoomGesturesEnabled = map.zoomGesturesEnabled,
+        liteModeEnabled = map.liteModeEnabled,
+        myLocationEnabled = map.myLocationEnabled,
+        myLocationButtonEnabled = map.myLocationButtonEnabled,
+        padding = map.padding,
+        indoorViewEnabled = map.indoorViewEnabled,
+        trafficEnabled = map.trafficEnabled,
+        buildingsEnabled = map.buildingsEnabled {
+    assert(!liteModeEnabled || Platform.isAndroid);
   }
 
   final bool compassEnabled;
@@ -481,38 +508,31 @@ class _GoogleMapOptions {
   final bool buildingsEnabled;
 
   Map<String, dynamic> toMap() {
-    final Map<String, dynamic> optionsMap = <String, dynamic>{};
-
-    void addIfNonNull(String fieldName, dynamic value) {
-      if (value != null) {
-        optionsMap[fieldName] = value;
-      }
-    }
-
-    addIfNonNull('compassEnabled', compassEnabled);
-    addIfNonNull('mapToolbarEnabled', mapToolbarEnabled);
-    addIfNonNull('cameraTargetBounds', cameraTargetBounds?.toJson());
-    addIfNonNull('mapType', mapType?.index);
-    addIfNonNull('minMaxZoomPreference', minMaxZoomPreference?.toJson());
-    addIfNonNull('rotateGesturesEnabled', rotateGesturesEnabled);
-    addIfNonNull('scrollGesturesEnabled', scrollGesturesEnabled);
-    addIfNonNull('tiltGesturesEnabled', tiltGesturesEnabled);
-    addIfNonNull('zoomControlsEnabled', zoomControlsEnabled);
-    addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
-    addIfNonNull('liteModeEnabled', liteModeEnabled);
-    addIfNonNull('trackCameraPosition', trackCameraPosition);
-    addIfNonNull('myLocationEnabled', myLocationEnabled);
-    addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
-    addIfNonNull('padding', <double>[
-      padding?.top,
-      padding?.left,
-      padding?.bottom,
-      padding?.right,
-    ]);
-    addIfNonNull('indoorEnabled', indoorViewEnabled);
-    addIfNonNull('trafficEnabled', trafficEnabled);
-    addIfNonNull('buildingsEnabled', buildingsEnabled);
-    return optionsMap;
+    return <String, dynamic>{
+      'compassEnabled': compassEnabled,
+      'mapToolbarEnabled': mapToolbarEnabled,
+      'cameraTargetBounds': cameraTargetBounds.toJson(),
+      'mapType': mapType?.index,
+      'minMaxZoomPreference': minMaxZoomPreference.toJson(),
+      'rotateGesturesEnabled': rotateGesturesEnabled,
+      'scrollGesturesEnabled': scrollGesturesEnabled,
+      'tiltGesturesEnabled': tiltGesturesEnabled,
+      'zoomControlsEnabled': zoomControlsEnabled,
+      'zoomGesturesEnabled': zoomGesturesEnabled,
+      'liteModeEnabled': liteModeEnabled,
+      'trackCameraPosition': trackCameraPosition,
+      'myLocationEnabled': myLocationEnabled,
+      'myLocationButtonEnabled': myLocationButtonEnabled,
+      'padding': <double>[
+        padding?.top,
+        padding?.left,
+        padding?.bottom,
+        padding?.right,
+      ],
+      'indoorEnabled': indoorViewEnabled,
+      'trafficEnabled': trafficEnabled,
+      'buildingsEnabled': buildingsEnabled,
+    };
   }
 
   Map<String, dynamic> updatesMap(_GoogleMapOptions newOptions) {

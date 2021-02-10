@@ -58,16 +58,13 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
   }
 
   Set<Marker> _createMarker() {
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    return <Marker>[
+    return <Marker>{
       Marker(
         markerId: MarkerId("marker_1"),
         position: _kMapCenter,
         icon: _markerIcon,
       ),
-    ].toSet();
+    };
   }
 
   Future<void> _createMarkerImageFromAsset(BuildContext context) async {

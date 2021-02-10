@@ -9,20 +9,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'fake_maps_controllers.dart';
 
-Set<Polygon> _toSet({Polygon p1, Polygon p2, Polygon p3}) {
-  final Set<Polygon> res = Set<Polygon>.identity();
-  if (p1 != null) {
-    res.add(p1);
-  }
-  if (p2 != null) {
-    res.add(p2);
-  }
-  if (p3 != null) {
-    res.add(p3);
-  }
-  return res;
-}
-
 Widget _mapWithPolygons(Set<Polygon> polygons) {
   return Directionality(
     textDirection: TextDirection.ltr,
@@ -73,7 +59,7 @@ void main() {
 
   testWidgets('Initializing a polygon', (WidgetTester tester) async {
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -89,8 +75,8 @@ void main() {
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
     final Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
 
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1, p2: p2)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1, p2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -107,7 +93,7 @@ void main() {
   testWidgets("Removing a polygon", (WidgetTester tester) async {
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
 
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
     await tester.pumpWidget(_mapWithPolygons(null));
 
     final FakePlatformGoogleMap platformGoogleMap =
@@ -124,8 +110,8 @@ void main() {
     final Polygon p2 =
         Polygon(polygonId: PolygonId("polygon_1"), geodesic: true);
 
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p2)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -141,10 +127,10 @@ void main() {
       polygonId: PolygonId("polygon_1"),
       points: <LatLng>[const LatLng(0.0, 0.0)],
     );
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
     p1.points.add(const LatLng(1.0, 1.0));
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -158,10 +144,10 @@ void main() {
   testWidgets("Multi Update", (WidgetTester tester) async {
     Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
     Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
-    final Set<Polygon> prev = _toSet(p1: p1, p2: p2);
+    final Set<Polygon> prev = <Polygon>{p1, p2};
     p1 = Polygon(polygonId: PolygonId("polygon_1"), visible: false);
     p2 = Polygon(polygonId: PolygonId("polygon_2"), geodesic: true);
-    final Set<Polygon> cur = _toSet(p1: p1, p2: p2);
+    final Set<Polygon> cur = <Polygon>{p1, p2};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
     await tester.pumpWidget(_mapWithPolygons(cur));
@@ -177,12 +163,12 @@ void main() {
   testWidgets("Multi Update", (WidgetTester tester) async {
     Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
     final Polygon p3 = Polygon(polygonId: PolygonId("polygon_3"));
-    final Set<Polygon> prev = _toSet(p2: p2, p3: p3);
+    final Set<Polygon> prev = <Polygon>{p2, p3};
 
     // p1 is added, p2 is updated, p3 is removed.
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
     p2 = Polygon(polygonId: PolygonId("polygon_2"), geodesic: true);
-    final Set<Polygon> cur = _toSet(p1: p1, p2: p2);
+    final Set<Polygon> cur = <Polygon>{p1, p2};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
     await tester.pumpWidget(_mapWithPolygons(cur));
@@ -203,9 +189,9 @@ void main() {
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
     final Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
     Polygon p3 = Polygon(polygonId: PolygonId("polygon_3"));
-    final Set<Polygon> prev = _toSet(p1: p1, p2: p2, p3: p3);
+    final Set<Polygon> prev = <Polygon>{p1, p2, p3};
     p3 = Polygon(polygonId: PolygonId("polygon_3"), geodesic: true);
-    final Set<Polygon> cur = _toSet(p1: p1, p2: p2, p3: p3);
+    final Set<Polygon> cur = <Polygon>{p1, p2, p3};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
     await tester.pumpWidget(_mapWithPolygons(cur));
@@ -213,16 +199,16 @@ void main() {
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformGoogleMap.polygonsToChange, _toSet(p3: p3));
+    expect(platformGoogleMap.polygonsToChange, <Polygon>{p3});
     expect(platformGoogleMap.polygonIdsToRemove.isEmpty, true);
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });
 
   testWidgets("Update non platform related attr", (WidgetTester tester) async {
     Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    final Set<Polygon> prev = _toSet(p1: p1);
+    final Set<Polygon> prev = <Polygon>{p1};
     p1 = Polygon(polygonId: PolygonId("polygon_1"), onTap: () => print(2 + 2));
-    final Set<Polygon> cur = _toSet(p1: p1);
+    final Set<Polygon> cur = <Polygon>{p1};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
     await tester.pumpWidget(_mapWithPolygons(cur));
@@ -238,7 +224,7 @@ void main() {
   testWidgets('Initializing a polygon with points and hole',
       (WidgetTester tester) async {
     final Polygon p1 = _polygonWithPointsAndHole(PolygonId("polygon_1"));
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -255,8 +241,8 @@ void main() {
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
     final Polygon p2 = _polygonWithPointsAndHole(PolygonId("polygon_2"));
 
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1, p2: p2)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1, p2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -274,7 +260,7 @@ void main() {
       (WidgetTester tester) async {
     final Polygon p1 = _polygonWithPointsAndHole(PolygonId("polygon_1"));
 
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
     await tester.pumpWidget(_mapWithPolygons(null));
 
     final FakePlatformGoogleMap platformGoogleMap =
@@ -291,8 +277,8 @@ void main() {
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
     final Polygon p2 = _polygonWithPointsAndHole(PolygonId("polygon_1"));
 
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p2)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -310,7 +296,7 @@ void main() {
       points: _rectPoints(size: 1),
       holes: [_rectPoints(size: 0.5)],
     );
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
     p1.points
       ..clear()
@@ -318,7 +304,7 @@ void main() {
     p1.holes
       ..clear()
       ..addAll([_rectPoints(size: 1)]);
-    await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -337,13 +323,13 @@ void main() {
       points: _rectPoints(size: 2),
       holes: [_rectPoints(size: 1)],
     );
-    final Set<Polygon> prev = _toSet(p1: p1, p2: p2);
+    final Set<Polygon> prev = <Polygon>{p1, p2};
     p1 = Polygon(polygonId: PolygonId("polygon_1"), visible: false);
     p2 = p2.copyWith(
       pointsParam: _rectPoints(size: 5),
       holesParam: [_rectPoints(size: 2)],
     );
-    final Set<Polygon> cur = _toSet(p1: p1, p2: p2);
+    final Set<Polygon> cur = <Polygon>{p1, p2};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
     await tester.pumpWidget(_mapWithPolygons(cur));
@@ -364,7 +350,7 @@ void main() {
       holes: [_rectPoints(size: 1)],
     );
     final Polygon p3 = Polygon(polygonId: PolygonId("polygon_3"));
-    final Set<Polygon> prev = _toSet(p2: p2, p3: p3);
+    final Set<Polygon> prev = <Polygon>{p2, p3};
 
     // p1 is added, p2 is updated, p3 is removed.
     final Polygon p1 = _polygonWithPointsAndHole(PolygonId("polygon_1"));
@@ -372,7 +358,7 @@ void main() {
       pointsParam: _rectPoints(size: 5),
       holesParam: [_rectPoints(size: 3)],
     );
-    final Set<Polygon> cur = _toSet(p1: p1, p2: p2);
+    final Set<Polygon> cur = <Polygon>{p1, p2};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
     await tester.pumpWidget(_mapWithPolygons(cur));
@@ -398,12 +384,12 @@ void main() {
       points: _rectPoints(size: 2),
       holes: [_rectPoints(size: 1)],
     );
-    final Set<Polygon> prev = _toSet(p1: p1, p2: p2, p3: p3);
+    final Set<Polygon> prev = <Polygon>{p1, p2, p3};
     p3 = p3.copyWith(
       pointsParam: _rectPoints(size: 5),
       holesParam: [_rectPoints(size: 3)],
     );
-    final Set<Polygon> cur = _toSet(p1: p1, p2: p2, p3: p3);
+    final Set<Polygon> cur = <Polygon>{p1, p2, p3};
 
     await tester.pumpWidget(_mapWithPolygons(prev));
     await tester.pumpWidget(_mapWithPolygons(cur));
@@ -411,7 +397,7 @@ void main() {
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformGoogleMap.polygonsToChange, _toSet(p3: p3));
+    expect(platformGoogleMap.polygonsToChange, <Polygon>{p3});
     expect(platformGoogleMap.polygonIdsToRemove.isEmpty, true);
     expect(platformGoogleMap.polygonsToAdd.isEmpty, true);
   });

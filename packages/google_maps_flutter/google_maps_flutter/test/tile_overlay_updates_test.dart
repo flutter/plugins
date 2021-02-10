@@ -5,20 +5,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'fake_maps_controllers.dart';
 
-Set<TileOverlay> _toSet({TileOverlay t1, TileOverlay t2, TileOverlay t3}) {
-  final Set<TileOverlay> res = Set<TileOverlay>.identity();
-  if (t1 != null) {
-    res.add(t1);
-  }
-  if (t2 != null) {
-    res.add(t2);
-  }
-  if (t3 != null) {
-    res.add(t3);
-  }
-  return res;
-}
-
 Widget _mapWithTileOverlays(Set<TileOverlay> tileOverlays) {
   return Directionality(
     textDirection: TextDirection.ltr,
@@ -45,7 +31,7 @@ void main() {
   testWidgets('Initializing a tile overlay', (WidgetTester tester) async {
     final TileOverlay t1 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
-    await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1)));
+    await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -64,8 +50,8 @@ void main() {
     final TileOverlay t2 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
 
-    await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1)));
-    await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1, t2: t2)));
+    await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t1}));
+    await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t1, t2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -83,7 +69,7 @@ void main() {
     final TileOverlay t1 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
 
-    await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1)));
+    await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t1}));
     await tester.pumpWidget(_mapWithTileOverlays(null));
 
     final FakePlatformGoogleMap platformGoogleMap =
@@ -102,8 +88,8 @@ void main() {
     final TileOverlay t2 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"), zIndex: 10);
 
-    await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1)));
-    await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t2)));
+    await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t1}));
+    await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -120,8 +106,8 @@ void main() {
     final TileOverlay t2 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"), zIndex: 10);
 
-    await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t1)));
-    await tester.pumpWidget(_mapWithTileOverlays(_toSet(t1: t2)));
+    await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t1}));
+    await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -137,12 +123,12 @@ void main() {
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
     TileOverlay t2 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
-    final Set<TileOverlay> prev = _toSet(t1: t1, t2: t2);
+    final Set<TileOverlay> prev = <TileOverlay>{t1, t2};
     t1 = TileOverlay(
         tileOverlayId: TileOverlayId("tile_overlay_1"), visible: false);
     t2 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"), zIndex: 10);
-    final Set<TileOverlay> cur = _toSet(t1: t1, t2: t2);
+    final Set<TileOverlay> cur = <TileOverlay>{t1, t2};
 
     await tester.pumpWidget(_mapWithTileOverlays(prev));
     await tester.pumpWidget(_mapWithTileOverlays(cur));
@@ -160,14 +146,14 @@ void main() {
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
     final TileOverlay t3 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_3"));
-    final Set<TileOverlay> prev = _toSet(t2: t2, t3: t3);
+    final Set<TileOverlay> prev = <TileOverlay>{t2, t3};
 
     // t1 is added, t2 is updated, t3 is removed.
     final TileOverlay t1 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
     t2 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"), zIndex: 10);
-    final Set<TileOverlay> cur = _toSet(t1: t1, t2: t2);
+    final Set<TileOverlay> cur = <TileOverlay>{t1, t2};
 
     await tester.pumpWidget(_mapWithTileOverlays(prev));
     await tester.pumpWidget(_mapWithTileOverlays(cur));
@@ -192,10 +178,10 @@ void main() {
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_2"));
     TileOverlay t3 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_3"));
-    final Set<TileOverlay> prev = _toSet(t1: t1, t2: t2, t3: t3);
+    final Set<TileOverlay> prev = <TileOverlay>{t1, t2, t3};
     t3 =
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_3"), zIndex: 10);
-    final Set<TileOverlay> cur = _toSet(t1: t1, t2: t2, t3: t3);
+    final Set<TileOverlay> cur = <TileOverlay>{t1, t2, t3};
 
     await tester.pumpWidget(_mapWithTileOverlays(prev));
     await tester.pumpWidget(_mapWithTileOverlays(cur));
@@ -203,7 +189,7 @@ void main() {
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformGoogleMap.tileOverlaysToChange, _toSet(t3: t3));
+    expect(platformGoogleMap.tileOverlaysToChange, <TileOverlay>{t3});
     expect(platformGoogleMap.tileOverlayIdsToRemove.isEmpty, true);
     expect(platformGoogleMap.tileOverlaysToAdd.isEmpty, true);
   });

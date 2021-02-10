@@ -9,10 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class FakePlatformGoogleMap {
-  FakePlatformGoogleMap(int id, Map<dynamic, dynamic> params) {
-    cameraPosition = CameraPosition.fromMap(params['initialCameraPosition']);
-    channel = MethodChannel(
-        'plugins.flutter.io/google_maps_$id', const StandardMethodCodec());
+  FakePlatformGoogleMap(int /*!*/ id, Map<dynamic, dynamic> params)
+      : cameraPosition =
+            CameraPosition.fromMap(params['initialCameraPosition']),
+        channel = MethodChannel(
+            'plugins.flutter.io/google_maps_$id', const StandardMethodCodec()) {
     channel.setMockMethodCallHandler(onMethodCall);
     updateOptions(params['options']);
     updateMarkers(params);
@@ -60,35 +61,35 @@ class FakePlatformGoogleMap {
 
   List<dynamic> padding;
 
-  Set<MarkerId> markerIdsToRemove;
+  Set<MarkerId> markerIdsToRemove = <MarkerId>{};
 
-  Set<Marker> markersToAdd;
+  Set<Marker> markersToAdd = <Marker>{};
 
-  Set<Marker> markersToChange;
+  Set<Marker> markersToChange = <Marker>{};
 
-  Set<PolygonId> polygonIdsToRemove;
+  Set<PolygonId> polygonIdsToRemove = <PolygonId>{};
 
-  Set<Polygon> polygonsToAdd;
+  Set<Polygon> polygonsToAdd = <Polygon>{};
 
-  Set<Polygon> polygonsToChange;
+  Set<Polygon> polygonsToChange = <Polygon>{};
 
-  Set<PolylineId> polylineIdsToRemove;
+  Set<PolylineId> polylineIdsToRemove = <PolylineId>{};
 
-  Set<Polyline> polylinesToAdd;
+  Set<Polyline> polylinesToAdd = <Polyline>{};
 
-  Set<Polyline> polylinesToChange;
+  Set<Polyline> polylinesToChange = <Polyline>{};
 
-  Set<CircleId> circleIdsToRemove;
+  Set<CircleId> circleIdsToRemove = <CircleId>{};
 
-  Set<Circle> circlesToAdd;
+  Set<Circle> circlesToAdd = <Circle>{};
 
-  Set<Circle> circlesToChange;
+  Set<Circle> circlesToChange = <Circle>{};
 
-  Set<TileOverlayId> tileOverlayIdsToRemove;
+  Set<TileOverlayId> tileOverlayIdsToRemove = <TileOverlayId>{};
 
-  Set<TileOverlay> tileOverlaysToAdd;
+  Set<TileOverlay> tileOverlaysToAdd = <TileOverlay>{};
 
-  Set<TileOverlay> tileOverlaysToChange;
+  Set<TileOverlay> tileOverlaysToChange = <TileOverlay>{};
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -128,26 +129,17 @@ class FakePlatformGoogleMap {
 
   Set<MarkerId> _deserializeMarkerIds(List<dynamic> markerIds) {
     if (markerIds == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<MarkerId>();
+      return <MarkerId>{};
     }
     return markerIds.map((dynamic markerId) => MarkerId(markerId)).toSet();
   }
 
   Set<Marker> _deserializeMarkers(dynamic markers) {
     if (markers == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<Marker>();
+      return <Marker>{};
     }
     final List<dynamic> markersData = markers;
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    final Set<Marker> result = Set<Marker>();
+    final Set<Marker> result = <Marker>{};
     for (Map<dynamic, dynamic> markerData in markersData) {
       final String markerId = markerData['markerId'];
       final double alpha = markerData['alpha'];
@@ -188,26 +180,17 @@ class FakePlatformGoogleMap {
 
   Set<PolygonId> _deserializePolygonIds(List<dynamic> polygonIds) {
     if (polygonIds == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<PolygonId>();
+      return <PolygonId>{};
     }
     return polygonIds.map((dynamic polygonId) => PolygonId(polygonId)).toSet();
   }
 
   Set<Polygon> _deserializePolygons(dynamic polygons) {
     if (polygons == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<Polygon>();
+      return <Polygon>{};
     }
     final List<dynamic> polygonsData = polygons;
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    final Set<Polygon> result = Set<Polygon>();
+    final Set<Polygon> result = <Polygon>{};
     for (Map<dynamic, dynamic> polygonData in polygonsData) {
       final String polygonId = polygonData['polygonId'];
       final bool visible = polygonData['visible'];
@@ -234,7 +217,7 @@ class FakePlatformGoogleMap {
   }
 
   List<List<LatLng>> _deserializeHoles(List<dynamic> holes) {
-    return holes.map<List<LatLng>>((dynamic hole) {
+    return holes.map<List<LatLng>/*!*/>((dynamic hole) {
       return hole.map<LatLng>((dynamic list) {
         return LatLng(list[0], list[1]);
       }).toList();
@@ -254,10 +237,7 @@ class FakePlatformGoogleMap {
 
   Set<PolylineId> _deserializePolylineIds(List<dynamic> polylineIds) {
     if (polylineIds == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<PolylineId>();
+      return <PolylineId>{};
     }
     return polylineIds
         .map((dynamic polylineId) => PolylineId(polylineId))
@@ -266,16 +246,10 @@ class FakePlatformGoogleMap {
 
   Set<Polyline> _deserializePolylines(dynamic polylines) {
     if (polylines == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<Polyline>();
+      return <Polyline>{};
     }
     final List<dynamic> polylinesData = polylines;
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    final Set<Polyline> result = Set<Polyline>();
+    final Set<Polyline> result = <Polyline>{};
     for (Map<dynamic, dynamic> polylineData in polylinesData) {
       final String polylineId = polylineData['polylineId'];
       final bool visible = polylineData['visible'];
@@ -330,26 +304,17 @@ class FakePlatformGoogleMap {
 
   Set<CircleId> _deserializeCircleIds(List<dynamic> circleIds) {
     if (circleIds == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<CircleId>();
+      return <CircleId>{};
     }
     return circleIds.map((dynamic circleId) => CircleId(circleId)).toSet();
   }
 
   Set<Circle> _deserializeCircles(dynamic circles) {
     if (circles == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<Circle>();
+      return <Circle>{};
     }
     final List<dynamic> circlesData = circles;
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    final Set<Circle> result = Set<Circle>();
+    final Set<Circle> result = <Circle>{};
     for (Map<dynamic, dynamic> circleData in circlesData) {
       final String circleId = circleData['circleId'];
       final bool visible = circleData['visible'];
@@ -367,10 +332,7 @@ class FakePlatformGoogleMap {
 
   Set<TileOverlayId> _deserializeTileOverlayIds(List<String> tileOverlayIds) {
     if (tileOverlayIds == null || tileOverlayIds.isEmpty) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<TileOverlayId>();
+      return <TileOverlayId>{};
     }
     return tileOverlayIds
         .map((String tileOverlayId) => TileOverlayId(tileOverlayId))
@@ -380,15 +342,9 @@ class FakePlatformGoogleMap {
   Set<TileOverlay> _deserializeTileOverlays(
       List<Map<dynamic, dynamic>> tileOverlays) {
     if (tileOverlays == null || tileOverlays.isEmpty) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<TileOverlay>();
+      return <TileOverlay>{};
     }
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    final Set<TileOverlay> result = Set<TileOverlay>();
+    final Set<TileOverlay> result = <TileOverlay>{};
     for (Map<dynamic, dynamic> tileOverlayData in tileOverlays) {
       final String tileOverlayId = tileOverlayData['tileOverlayId'];
       final bool fadeIn = tileOverlayData['fadeIn'];

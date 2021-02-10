@@ -9,20 +9,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'fake_maps_controllers.dart';
 
-Set<Polyline> _toSet({Polyline p1, Polyline p2, Polyline p3}) {
-  final Set<Polyline> res = Set<Polyline>.identity();
-  if (p1 != null) {
-    res.add(p1);
-  }
-  if (p2 != null) {
-    res.add(p2);
-  }
-  if (p3 != null) {
-    res.add(p3);
-  }
-  return res;
-}
-
 Widget _mapWithPolylines(Set<Polyline> polylines) {
   return Directionality(
     textDirection: TextDirection.ltr,
@@ -50,7 +36,7 @@ void main() {
 
   testWidgets('Initializing a polyline', (WidgetTester tester) async {
     final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
-    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -66,8 +52,8 @@ void main() {
     final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
     final Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
 
-    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
-    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1, p2: p2)));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1, p2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -84,7 +70,7 @@ void main() {
   testWidgets("Removing a polyline", (WidgetTester tester) async {
     final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
 
-    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
     await tester.pumpWidget(_mapWithPolylines(null));
 
     final FakePlatformGoogleMap platformGoogleMap =
@@ -101,8 +87,8 @@ void main() {
     final Polyline p2 =
         Polyline(polylineId: PolylineId("polyline_1"), geodesic: true);
 
-    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
-    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p2)));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{p2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -118,8 +104,8 @@ void main() {
     final Polyline p2 =
         Polyline(polylineId: PolylineId("polyline_1"), geodesic: true);
 
-    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
-    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p2)));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{p2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -135,10 +121,10 @@ void main() {
       polylineId: PolylineId("polyline_1"),
       points: <LatLng>[const LatLng(0.0, 0.0)],
     );
-    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
 
     p1.points.add(const LatLng(1.0, 1.0));
-    await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
@@ -152,10 +138,10 @@ void main() {
   testWidgets("Multi Update", (WidgetTester tester) async {
     Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
     Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
-    final Set<Polyline> prev = _toSet(p1: p1, p2: p2);
+    final Set<Polyline> prev = <Polyline>{p1, p2};
     p1 = Polyline(polylineId: PolylineId("polyline_1"), visible: false);
     p2 = Polyline(polylineId: PolylineId("polyline_2"), geodesic: true);
-    final Set<Polyline> cur = _toSet(p1: p1, p2: p2);
+    final Set<Polyline> cur = <Polyline>{p1, p2};
 
     await tester.pumpWidget(_mapWithPolylines(prev));
     await tester.pumpWidget(_mapWithPolylines(cur));
@@ -171,12 +157,12 @@ void main() {
   testWidgets("Multi Update", (WidgetTester tester) async {
     Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
     final Polyline p3 = Polyline(polylineId: PolylineId("polyline_3"));
-    final Set<Polyline> prev = _toSet(p2: p2, p3: p3);
+    final Set<Polyline> prev = <Polyline>{p2, p3};
 
     // p1 is added, p2 is updated, p3 is removed.
     final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
     p2 = Polyline(polylineId: PolylineId("polyline_2"), geodesic: true);
-    final Set<Polyline> cur = _toSet(p1: p1, p2: p2);
+    final Set<Polyline> cur = <Polyline>{p1, p2};
 
     await tester.pumpWidget(_mapWithPolylines(prev));
     await tester.pumpWidget(_mapWithPolylines(cur));
@@ -197,9 +183,9 @@ void main() {
     final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
     final Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
     Polyline p3 = Polyline(polylineId: PolylineId("polyline_3"));
-    final Set<Polyline> prev = _toSet(p1: p1, p2: p2, p3: p3);
+    final Set<Polyline> prev = <Polyline>{p1, p2, p3};
     p3 = Polyline(polylineId: PolylineId("polyline_3"), geodesic: true);
-    final Set<Polyline> cur = _toSet(p1: p1, p2: p2, p3: p3);
+    final Set<Polyline> cur = <Polyline>{p1, p2, p3};
 
     await tester.pumpWidget(_mapWithPolylines(prev));
     await tester.pumpWidget(_mapWithPolylines(cur));
@@ -207,21 +193,17 @@ void main() {
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformGoogleMap.polylinesToChange, _toSet(p3: p3));
+    expect(platformGoogleMap.polylinesToChange, <Polyline>{p3});
     expect(platformGoogleMap.polylineIdsToRemove.isEmpty, true);
     expect(platformGoogleMap.polylinesToAdd.isEmpty, true);
   });
 
   testWidgets("Update non platform related attr", (WidgetTester tester) async {
     Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"), onTap: null);
-    final Set<Polyline> prev = _toSet(
-      p1: p1,
-    );
+    final Set<Polyline> prev = <Polyline>{p1};
     p1 = Polyline(
         polylineId: PolylineId("polyline_1"), onTap: () => print(2 + 2));
-    final Set<Polyline> cur = _toSet(
-      p1: p1,
-    );
+    final Set<Polyline> cur = <Polyline>{p1};
 
     await tester.pumpWidget(_mapWithPolylines(prev));
     await tester.pumpWidget(_mapWithPolylines(cur));
