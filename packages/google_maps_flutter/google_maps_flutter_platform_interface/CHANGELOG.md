@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety
+
+* Migrated to null-safety.
+
 ## 1.2.0
 
 * Add TileOverlay support.
