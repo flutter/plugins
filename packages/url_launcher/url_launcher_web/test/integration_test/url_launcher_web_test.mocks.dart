@@ -1,14 +1,13 @@
 import 'dart:async' as _i4;
 import 'dart:html' as _i2;
 import 'dart:math' as _i5;
+import 'dart:web_sql' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: comment_references
 
 // ignore_for_file: unnecessary_parenthesis
-
-// ignore_for_file: extra_positional_arguments_could_be_named
 
 class _FakeDocument extends _i1.Fake implements _i2.Document {}
 
@@ -39,6 +38,8 @@ class _FakeMediaQueryList extends _i1.Fake implements _i2.MediaQueryList {}
 
 class _FakeEntry extends _i1.Fake implements _i2.Entry {}
 
+class _FakeSqlDatabase extends _i1.Fake implements _i3.SqlDatabase {}
+
 class _FakeGeolocation extends _i1.Fake implements _i2.Geolocation {}
 
 class _FakeMediaStream extends _i1.Fake implements _i2.MediaStream {}
@@ -50,10 +51,6 @@ class _FakeRelatedApplication extends _i1.Fake
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWindow extends _i1.Mock implements _i2.Window {
-  MockWindow() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i4.Future<num> get animationFrame =>
       (super.noSuchMethod(Invocation.getter(#animationFrame), Future.value(0))
@@ -529,6 +526,14 @@ class MockWindow extends _i1.Mock implements _i2.Window {
   void moveTo(_i5.Point<num>? p) =>
       super.noSuchMethod(Invocation.method(#moveTo, [p]));
   @override
+  _i3.SqlDatabase openDatabase(String? name, String? version,
+          String? displayName, int? estimatedSize,
+          [_i2.DatabaseCallback? creationCallback]) =>
+      (super.noSuchMethod(
+          Invocation.method(#openDatabase,
+              [name, version, displayName, estimatedSize, creationCallback]),
+          _FakeSqlDatabase()) as _i3.SqlDatabase);
+  @override
   void addEventListener(String? type, _i2.EventListener? listener,
           [bool? useCapture]) =>
       super.noSuchMethod(
@@ -554,10 +559,6 @@ class MockWindow extends _i1.Mock implements _i2.Window {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockNavigator extends _i1.Mock implements _i2.Navigator {
-  MockNavigator() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   String get language =>
       (super.noSuchMethod(Invocation.getter(#language), '') as String);
