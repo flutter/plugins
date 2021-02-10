@@ -88,7 +88,7 @@ class CameraValue {
 
   /// The size of the preview in pixels.
   ///
-  /// Is `null` until  [isInitialized] is `true`.
+  /// Is `null` until [isInitialized] is `true`.
   final Size? previewSize;
 
   /// Convenience getter for `previewSize.width / previewSize.height`.
