@@ -6,7 +6,7 @@ import '../types.dart';
 import 'maps_object.dart';
 
 /// Converts an [Iterable] of Markers in a Map of MarkerId -> Marker.
-Map<MarkerId, Marker> keyByMarkerId(Iterable<Marker>? markers) {
+Map<MarkerId, Marker> keyByMarkerId(Iterable<Marker> markers) {
   return keyByMapsObjectId<Marker>(markers).cast<MarkerId, Marker>();
 }
 

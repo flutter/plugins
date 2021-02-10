@@ -339,7 +339,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// Returns a widget displaying the map view
   Widget buildView(
       Map<String, dynamic> creationParams,
-      Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+      Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
       PlatformViewCreatedCallback onPlatformViewCreated) {
     throw UnimplementedError('buildView() has not been implemented.');
   }

@@ -11,50 +11,37 @@ import 'test_maps_object.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('keyByMapsObjectId tests', () {
-    test('normal', () async {
-      final MapsObjectId<TestMapsObject> id1 =
-          MapsObjectId<TestMapsObject>('1');
-      final MapsObjectId<TestMapsObject> id2 =
-          MapsObjectId<TestMapsObject>('2');
-      final MapsObjectId<TestMapsObject> id3 =
-          MapsObjectId<TestMapsObject>('3');
-      final TestMapsObject object1 = TestMapsObject(id1);
-      final TestMapsObject object2 = TestMapsObject(id2, data: 2);
-      final TestMapsObject object3 = TestMapsObject(id3);
-      expect(
-          keyByMapsObjectId(<TestMapsObject>{object1, object2, object3}),
-          <MapsObjectId<TestMapsObject>, TestMapsObject>{
-            id1: object1,
-            id2: object2,
-            id3: object3,
-          });
-    });
-
-    test('null', () async {
-      expect(keyByMapsObjectId(null),
-          <MapsObjectId<TestMapsObject>, TestMapsObject>{});
-    });
+  test('keyByMapsObjectId', () async {
+    final MapsObjectId<TestMapsObject> id1 =
+        MapsObjectId<TestMapsObject>('1');
+    final MapsObjectId<TestMapsObject> id2 =
+        MapsObjectId<TestMapsObject>('2');
+    final MapsObjectId<TestMapsObject> id3 =
+        MapsObjectId<TestMapsObject>('3');
+    final TestMapsObject object1 = TestMapsObject(id1);
+    final TestMapsObject object2 = TestMapsObject(id2, data: 2);
+    final TestMapsObject object3 = TestMapsObject(id3);
+    expect(
+        keyByMapsObjectId(<TestMapsObject>{object1, object2, object3}),
+        <MapsObjectId<TestMapsObject>, TestMapsObject>{
+          id1: object1,
+          id2: object2,
+          id3: object3,
+        });
   });
 
-  group('serializeMapsObjectSet tests', () {
-    test('normal', () async {
-      final MapsObjectId<TestMapsObject> id1 =
-          MapsObjectId<TestMapsObject>('1');
-      final MapsObjectId<TestMapsObject> id2 =
-          MapsObjectId<TestMapsObject>('2');
-      final MapsObjectId<TestMapsObject> id3 =
-          MapsObjectId<TestMapsObject>('3');
-      final TestMapsObject object1 = TestMapsObject(id1);
-      final TestMapsObject object2 = TestMapsObject(id2, data: 2);
-      final TestMapsObject object3 = TestMapsObject(id3);
-      expect(
-          serializeMapsObjectSet(<TestMapsObject>{object1, object2, object3}),
-          <Map<String, dynamic>>[{'id': '1'}, {'id': '2'}, {'id': '3'}]);
-    });
-
-    test('null', () async {
-      expect(serializeMapsObjectSet(null), isNull);
-    });
+  test('serializeMapsObjectSet', () async {
+    final MapsObjectId<TestMapsObject> id1 =
+        MapsObjectId<TestMapsObject>('1');
+    final MapsObjectId<TestMapsObject> id2 =
+        MapsObjectId<TestMapsObject>('2');
+    final MapsObjectId<TestMapsObject> id3 =
+        MapsObjectId<TestMapsObject>('3');
+    final TestMapsObject object1 = TestMapsObject(id1);
+    final TestMapsObject object2 = TestMapsObject(id2, data: 2);
+    final TestMapsObject object3 = TestMapsObject(id3);
+    expect(
+        serializeMapsObjectSet(<TestMapsObject>{object1, object2, object3}),
+        <Map<String, dynamic>>[{'id': '1'}, {'id': '2'}, {'id': '3'}]);
   });
 }
