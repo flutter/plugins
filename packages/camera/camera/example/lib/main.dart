@@ -727,7 +727,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.startVideoRecording(
-          maxVideoDuration: Duration(seconds: 5));
+          maxVideoDuration: null);
     } on CameraException catch (e) {
       _showCameraException(e);
       return;

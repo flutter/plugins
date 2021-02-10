@@ -1,3 +1,7 @@
+## 0.7.1
+
+* Implemented option to provide a maxVideoDuration to limit a video recording in time.
+
 ## 0.7.0+3
 
 * Clockwise rotation of focus point in android 
