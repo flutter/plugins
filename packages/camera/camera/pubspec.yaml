@@ -6,7 +6,7 @@ version: 0.8.0-nullsafety
 homepage: https://github.com/flutter/plugins/tree/master/packages/camera/camera
 
 # TODO(mvanbeusekom): Contains temporary path reference so should not be publishable. Remove once
-#                     PR 3497 has been merged and published.
+#                     PR 3530 has been merged and published.
 publish_to: none
 
 dependencies:
@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
 
   # TODO(mvanbeusekom): Temporary reference via path to continue NNDB development. Remove once
-  #                     PR 3497 has been merged and published.
+  #                     PR 3530 has been merged and published.
   camera_platform_interface:
     path: ../camera_platform_interface
 
@@ -40,5 +40,5 @@ flutter:
         pluginClass: CameraPlugin
 
 environment:
-  sdk: '>=2.12.0-133.7.beta <3.0.0'
-  flutter: ">=1.12.13+hotfix.5"
+  sdk: '>=2.12.0-0 <3.0.0'
+  flutter: ">=1.22.0"

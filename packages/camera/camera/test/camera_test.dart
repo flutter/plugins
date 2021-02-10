@@ -1315,12 +1315,16 @@ class MockCameraPlatform extends Mock
       .noSuchMethod(Invocation.method(#unlockCaptureOrientation, [cameraId]));
 
   @override
-  Future<double> getMaxZoomLevel(int? cameraId) async =>
-      super.noSuchMethod(Invocation.method(#getMaxZoomLevel, [cameraId]), 1.0);
+  Future<double> getMaxZoomLevel(int? cameraId) async => super.noSuchMethod(
+        Invocation.method(#getMaxZoomLevel, [cameraId]),
+        returnValue: 1.0,
+      );
 
   @override
-  Future<double> getMinZoomLevel(int? cameraId) async =>
-      super.noSuchMethod(Invocation.method(#getMinZoomLevel, [cameraId]), 0.0);
+  Future<double> getMinZoomLevel(int? cameraId) async => super.noSuchMethod(
+        Invocation.method(#getMinZoomLevel, [cameraId]),
+        returnValue: 0.0,
+      );
 
   @override
   Future<void> setZoomLevel(int? cameraId, double? zoom) async =>
@@ -1340,22 +1344,32 @@ class MockCameraPlatform extends Mock
           Invocation.method(#setExposurePoint, [cameraId, point]));
 
   @override
-  Future<double> getMinExposureOffset(int? cameraId) async => super
-      .noSuchMethod(Invocation.method(#getMinExposureOffset, [cameraId]), 0.0);
+  Future<double> getMinExposureOffset(int? cameraId) async =>
+      super.noSuchMethod(
+        Invocation.method(#getMinExposureOffset, [cameraId]),
+        returnValue: 0.0,
+      );
 
   @override
-  Future<double> getMaxExposureOffset(int? cameraId) async => super
-      .noSuchMethod(Invocation.method(#getMaxExposureOffset, [cameraId]), 1.0);
+  Future<double> getMaxExposureOffset(int? cameraId) async =>
+      super.noSuchMethod(
+        Invocation.method(#getMaxExposureOffset, [cameraId]),
+        returnValue: 1.0,
+      );
 
   @override
   Future<double> getExposureOffsetStepSize(int? cameraId) async =>
       super.noSuchMethod(
-          Invocation.method(#getExposureOffsetStepSize, [cameraId]), 1.0);
+        Invocation.method(#getExposureOffsetStepSize, [cameraId]),
+        returnValue: 1.0,
+      );
 
   @override
   Future<double> setExposureOffset(int? cameraId, double? offset) async =>
       super.noSuchMethod(
-          Invocation.method(#setExposureOffset, [cameraId, offset]), 1.0);
+        Invocation.method(#setExposureOffset, [cameraId, offset]),
+        returnValue: 1.0,
+      );
 }
 
 class MockCameraDescription extends CameraDescription {
