@@ -25,7 +25,7 @@ class UnknownMapObjectIDError extends Error {
   final String objectType;
 
   /// The context where the error occurred.
-  final String context;
+  final String? context;
 
   String toString() {
     if (context != null) {
@@ -41,8 +41,8 @@ class GoogleMap extends StatefulWidget {
   ///
   /// [AssertionError] will be thrown if [initialCameraPosition] is null;
   const GoogleMap({
-    Key key,
-    @required this.initialCameraPosition,
+    Key? key,
+    required this.initialCameraPosition,
     this.onMapCreated,
     this.gestureRecognizers,
     this.compassEnabled = true,
@@ -80,7 +80,7 @@ class GoogleMap extends StatefulWidget {
   /// Callback method for when the map is ready to be used.
   ///
   /// Used to receive a [GoogleMapController] for this [GoogleMap].
-  final MapCreatedCallback onMapCreated;
+  final MapCreatedCallback? onMapCreated;
 
   /// The initial position of the map's camera.
   final CameraPosition initialCameraPosition;
@@ -129,19 +129,19 @@ class GoogleMap extends StatefulWidget {
   final EdgeInsets padding;
 
   /// Markers to be placed on the map.
-  final Set<Marker> /*!*/ markers;
+  final Set<Marker> markers;
 
   /// Polygons to be placed on the map.
-  final Set<Polygon> /*!*/ polygons;
+  final Set<Polygon> polygons;
 
   /// Polylines to be placed on the map.
-  final Set<Polyline> /*!*/ polylines;
+  final Set<Polyline> polylines;
 
   /// Circles to be placed on the map.
-  final Set<Circle> /*!*/ circles;
+  final Set<Circle> circles;
 
   /// Tile overlays to be placed on the map.
-  final Set<TileOverlay> /*!*/ tileOverlays;
+  final Set<TileOverlay> tileOverlays;
 
   /// Called when the camera starts moving.
   ///
@@ -151,24 +151,24 @@ class GoogleMap extends StatefulWidget {
   /// 2. Programmatically initiated animation.
   /// 3. Camera motion initiated in response to user gestures on the map.
   ///    For example: pan, tilt, pinch to zoom, or rotate.
-  final VoidCallback onCameraMoveStarted;
+  final VoidCallback? onCameraMoveStarted;
 
   /// Called repeatedly as the camera continues to move after an
   /// onCameraMoveStarted call.
   ///
   /// This may be called as often as once every frame and should
   /// not perform expensive operations.
-  final CameraPositionCallback onCameraMove;
+  final CameraPositionCallback? onCameraMove;
 
   /// Called when camera movement has ended, there are no pending
   /// animations and the user has stopped interacting with the map.
-  final VoidCallback onCameraIdle;
+  final VoidCallback? onCameraIdle;
 
   /// Called every time a [GoogleMap] is tapped.
-  final ArgumentCallback<LatLng> onTap;
+  final ArgumentCallback<LatLng>? onTap;
 
   /// Called every time a [GoogleMap] is long pressed.
-  final ArgumentCallback<LatLng> onLongPress;
+  final ArgumentCallback<LatLng>? onLongPress;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
@@ -226,7 +226,7 @@ class GoogleMap extends StatefulWidget {
   ///
   /// When this set is empty or null, the map will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
-  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+  final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
 
   /// Creates a [State] for this [GoogleMap].
   @override
@@ -243,7 +243,7 @@ class _GoogleMapState extends State<GoogleMap> {
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
-  _GoogleMapOptions _googleMapOptions;
+  late _GoogleMapOptions _googleMapOptions;
 
   @override
   Widget build(BuildContext context) {
@@ -360,7 +360,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onMarkerTap(MarkerId markerId) {
     assert(markerId != null);
-    final Marker marker = _markers[markerId];
+    final Marker? marker = _markers[markerId];
     if (marker == null) {
       throw UnknownMapObjectIDError('marker', 'onTap');
     }
@@ -372,7 +372,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onMarkerDragEnd(MarkerId markerId, LatLng position) {
     assert(markerId != null);
-    final Marker marker = _markers[markerId];
+    final Marker? marker = _markers[markerId];
     if (marker == null) {
       throw UnknownMapObjectIDError('marker', 'onDragEnd');
     }
@@ -384,7 +384,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onPolygonTap(PolygonId polygonId) {
     assert(polygonId != null);
-    final Polygon polygon = _polygons[polygonId];
+    final Polygon? polygon = _polygons[polygonId];
     if (polygon == null) {
       throw UnknownMapObjectIDError('polygon', 'onTap');
     }
@@ -396,7 +396,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onPolylineTap(PolylineId polylineId) {
     assert(polylineId != null);
-    final Polyline polyline = _polylines[polylineId];
+    final Polyline? polyline = _polylines[polylineId];
     if (polyline == null) {
       throw UnknownMapObjectIDError('polyline', 'onTap');
     }
@@ -408,7 +408,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onCircleTap(CircleId circleId) {
     assert(circleId != null);
-    final Circle circle = _circles[circleId];
+    final Circle? circle = _circles[circleId];
     if (circle == null) {
       throw UnknownMapObjectIDError('marker', 'onTap');
     }
@@ -420,7 +420,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onInfoWindowTap(MarkerId markerId) {
     assert(markerId != null);
-    final Marker marker = _markers[markerId];
+    final Marker? marker = _markers[markerId];
     if (marker == null) {
       throw UnknownMapObjectIDError('marker', 'InfoWindow onTap');
     }

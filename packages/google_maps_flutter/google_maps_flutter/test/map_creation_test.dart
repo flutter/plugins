@@ -51,14 +51,14 @@ void main() {
     // Verify that each one was created with a different _webOnlyMapCreationId.
     verifyInOrder([
       platform.buildView(
-        argThat(containsPair('_webOnlyMapCreationId', 0)),
+        argThat(containsPair('_webOnlyMapCreationId', 0))!,
         any,
-        any,
+        any!,
       ),
       platform.buildView(
-        argThat(containsPair('_webOnlyMapCreationId', 1)),
+        argThat(containsPair('_webOnlyMapCreationId', 1))!,
         any,
-        any,
+        any!,
       ),
     ]);
   });
@@ -75,7 +75,7 @@ void main() {
     // Now dispose of the map...
     await tester.pumpWidget(Container());
 
-    verify(platform.dispose(mapId: anyNamed('mapId')));
+    verify(platform.dispose(mapId: anyNamed('mapId')!));
   });
 }
 
@@ -88,7 +88,7 @@ typedef _CreationCallback = void Function(int);
 // Installs test mocks on the platform
 void _setupMock(MockGoogleMapsFlutterPlatform platform) {
   // Used to create the view of the map...
-  when(platform.buildView(any, any, any)).thenAnswer((realInvocation) {
+  when(platform.buildView(any!, any, any!)).thenAnswer((realInvocation) {
     // Call the onPlatformViewCreated callback so the controller gets created.
     _CreationCallback onPlatformViewCreatedCb =
         realInvocation.positionalArguments[2];
@@ -96,26 +96,26 @@ void _setupMock(MockGoogleMapsFlutterPlatform platform) {
     return Container();
   });
   // Used to create the Controller
-  when(platform.onCameraIdle(mapId: anyNamed('mapId')))
+  when(platform.onCameraIdle(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<CameraIdleEvent>());
-  when(platform.onCameraMove(mapId: anyNamed('mapId')))
+  when(platform.onCameraMove(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<CameraMoveEvent>());
-  when(platform.onCameraMoveStarted(mapId: anyNamed('mapId')))
+  when(platform.onCameraMoveStarted(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<CameraMoveStartedEvent>());
-  when(platform.onCircleTap(mapId: anyNamed('mapId')))
+  when(platform.onCircleTap(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<CircleTapEvent>());
-  when(platform.onInfoWindowTap(mapId: anyNamed('mapId')))
+  when(platform.onInfoWindowTap(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<InfoWindowTapEvent>());
-  when(platform.onLongPress(mapId: anyNamed('mapId')))
+  when(platform.onLongPress(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<MapLongPressEvent>());
-  when(platform.onMarkerDragEnd(mapId: anyNamed('mapId')))
+  when(platform.onMarkerDragEnd(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<MarkerDragEndEvent>());
-  when(platform.onMarkerTap(mapId: anyNamed('mapId')))
+  when(platform.onMarkerTap(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<MarkerTapEvent>());
-  when(platform.onPolygonTap(mapId: anyNamed('mapId')))
+  when(platform.onPolygonTap(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<PolygonTapEvent>());
-  when(platform.onPolylineTap(mapId: anyNamed('mapId')))
+  when(platform.onPolylineTap(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<PolylineTapEvent>());
-  when(platform.onTap(mapId: anyNamed('mapId')))
+  when(platform.onTap(mapId: anyNamed('mapId')!))
       .thenAnswer((_) => _MockStream<MapTapEvent>());
 }

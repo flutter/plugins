@@ -15,7 +15,7 @@ class GoogleMapController {
   GoogleMapController._(
     CameraPosition initialCameraPosition,
     this._googleMapState, {
-    @required this.mapId,
+    required this.mapId,
   }) : assert(_googleMapsFlutterPlatform != null) {
     _connectStreams(mapId);
   }
@@ -43,7 +43,7 @@ class GoogleMapController {
   /// Accessible only for testing.
   // TODO(dit) https://github.com/flutter/flutter/issues/55504 Remove this getter.
   @visibleForTesting
-  MethodChannel get channel {
+  MethodChannel? get channel {
     if (_googleMapsFlutterPlatform is MethodChannelGoogleMapsFlutter) {
       return (_googleMapsFlutterPlatform as MethodChannelGoogleMapsFlutter)
           .channel(mapId);
@@ -57,16 +57,16 @@ class GoogleMapController {
     if (_googleMapState.widget.onCameraMoveStarted != null) {
       _googleMapsFlutterPlatform
           .onCameraMoveStarted(mapId: mapId)
-          .listen((_) => _googleMapState.widget.onCameraMoveStarted());
+          .listen((_) => _googleMapState.widget.onCameraMoveStarted!());
     }
     if (_googleMapState.widget.onCameraMove != null) {
       _googleMapsFlutterPlatform.onCameraMove(mapId: mapId).listen(
-          (CameraMoveEvent e) => _googleMapState.widget.onCameraMove(e.value));
+          (CameraMoveEvent e) => _googleMapState.widget.onCameraMove!(e.value));
     }
     if (_googleMapState.widget.onCameraIdle != null) {
       _googleMapsFlutterPlatform
           .onCameraIdle(mapId: mapId)
-          .listen((_) => _googleMapState.widget.onCameraIdle());
+          .listen((_) => _googleMapState.widget.onCameraIdle!());
     }
     _googleMapsFlutterPlatform
         .onMarkerTap(mapId: mapId)
@@ -279,7 +279,7 @@ class GoogleMapController {
   }
 
   /// Returns the image bytes of the map
-  Future<Uint8List> takeSnapshot() {
+  Future<Uint8List?> takeSnapshot() {
     return _googleMapsFlutterPlatform.takeSnapshot(mapId: mapId);
   }
 

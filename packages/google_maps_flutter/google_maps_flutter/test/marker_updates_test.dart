@@ -39,7 +39,7 @@ void main() {
     await tester.pumpWidget(_mapWithMarkers(<Marker>{m1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.markersToAdd.length, 1);
 
     final Marker initializedMarker = platformGoogleMap.markersToAdd.first;
@@ -56,7 +56,7 @@ void main() {
     await tester.pumpWidget(_mapWithMarkers(<Marker>{m1, m2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.markersToAdd.length, 1);
 
     final Marker addedMarker = platformGoogleMap.markersToAdd.first;
@@ -74,7 +74,7 @@ void main() {
     await tester.pumpWidget(_mapWithMarkers(null));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.markerIdsToRemove.length, 1);
     expect(platformGoogleMap.markerIdsToRemove.first, equals(m1.markerId));
 
@@ -90,7 +90,7 @@ void main() {
     await tester.pumpWidget(_mapWithMarkers(<Marker>{m2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.markersToChange.length, 1);
     expect(platformGoogleMap.markersToChange.first, equals(m2));
 
@@ -109,7 +109,7 @@ void main() {
     await tester.pumpWidget(_mapWithMarkers(<Marker>{m2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.markersToChange.length, 1);
 
     final Marker update = platformGoogleMap.markersToChange.first;
@@ -129,7 +129,7 @@ void main() {
     await tester.pumpWidget(_mapWithMarkers(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.markersToChange, cur);
     expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
@@ -150,7 +150,7 @@ void main() {
     await tester.pumpWidget(_mapWithMarkers(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.markersToChange.length, 1);
     expect(platformGoogleMap.markersToAdd.length, 1);
@@ -173,7 +173,7 @@ void main() {
     await tester.pumpWidget(_mapWithMarkers(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.markersToChange, <Marker>{m3});
     expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);
@@ -193,7 +193,7 @@ void main() {
     await tester.pumpWidget(_mapWithMarkers(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.markersToChange.isEmpty, true);
     expect(platformGoogleMap.markerIdsToRemove.isEmpty, true);

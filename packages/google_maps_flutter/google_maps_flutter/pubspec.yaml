@@ -33,5 +33,5 @@ flutter:
         pluginClass: FLTGoogleMapsPlugin
 
 environment:
-  sdk: ">=2.3.0 <3.0.0"
+  sdk: '>=2.12.0-0 <3.0.0'
   flutter: ">=1.22.0"

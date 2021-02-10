@@ -34,7 +34,7 @@ void main() {
     await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.tileOverlaysToAdd.length, 1);
 
     final TileOverlay initializedTileOverlay =
@@ -54,7 +54,7 @@ void main() {
     await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t1, t2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.tileOverlaysToAdd.length, 1);
 
     final TileOverlay addedTileOverlay =
@@ -73,7 +73,7 @@ void main() {
     await tester.pumpWidget(_mapWithTileOverlays(null));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.tileOverlayIdsToRemove.length, 1);
     expect(platformGoogleMap.tileOverlayIdsToRemove.first,
         equals(t1.tileOverlayId));
@@ -92,7 +92,7 @@ void main() {
     await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.tileOverlaysToChange.length, 1);
     expect(platformGoogleMap.tileOverlaysToChange.first, equals(t2));
 
@@ -110,7 +110,7 @@ void main() {
     await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.tileOverlaysToChange.length, 1);
 
     final TileOverlay update = platformGoogleMap.tileOverlaysToChange.first;
@@ -134,7 +134,7 @@ void main() {
     await tester.pumpWidget(_mapWithTileOverlays(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.tileOverlaysToChange, cur);
     expect(platformGoogleMap.tileOverlayIdsToRemove.isEmpty, true);
@@ -159,7 +159,7 @@ void main() {
     await tester.pumpWidget(_mapWithTileOverlays(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.tileOverlaysToChange.length, 1);
     expect(platformGoogleMap.tileOverlaysToAdd.length, 1);
@@ -187,7 +187,7 @@ void main() {
     await tester.pumpWidget(_mapWithTileOverlays(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.tileOverlaysToChange, <TileOverlay>{t3});
     expect(platformGoogleMap.tileOverlayIdsToRemove.isEmpty, true);
