@@ -6,7 +6,7 @@ import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
 
 import 'types.dart';
-import 'package:meta/meta.dart' show immutable, required;
+import 'package:meta/meta.dart' show immutable;
 
 /// Uniquely identifies a [TileOverlay] among [GoogleMap] tile overlays.
 @immutable
@@ -47,7 +47,7 @@ class TileOverlayId extends MapsObjectId<TileOverlay> {
 class TileOverlay implements MapsObject {
   /// Creates an immutable representation of a [TileOverlay] to draw on [GoogleMap].
   const TileOverlay({
-    @required this.tileOverlayId,
+    required this.tileOverlayId,
     this.fadeIn = true,
     this.tileProvider,
     this.transparency = 0.0,
@@ -57,7 +57,7 @@ class TileOverlay implements MapsObject {
   }) : assert(transparency >= 0.0 && transparency <= 1.0);
 
   /// Uniquely identifies a [TileOverlay].
-  final TileOverlayId/*!*/ tileOverlayId;
+  final TileOverlayId tileOverlayId;
 
   @override
   TileOverlayId get mapsId => tileOverlayId;
@@ -66,7 +66,7 @@ class TileOverlay implements MapsObject {
   final bool fadeIn;
 
   /// The tile provider to use for this tile overlay.
-  final TileProvider tileProvider;
+  final TileProvider? tileProvider;
 
   /// The transparency of the tile overlay. The default transparency is 0 (opaque).
   final double transparency;
@@ -90,11 +90,11 @@ class TileOverlay implements MapsObject {
   /// Creates a new [TileOverlay] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   TileOverlay copyWith({
-    bool fadeInParam,
-    double transparencyParam,
-    int zIndexParam,
-    bool visibleParam,
-    int tileSizeParam,
+    bool? fadeInParam,
+    double? transparencyParam,
+    int? zIndexParam,
+    bool? visibleParam,
+    int? tileSizeParam,
   }) {
     return TileOverlay(
       tileOverlayId: tileOverlayId,
@@ -112,7 +112,7 @@ class TileOverlay implements MapsObject {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
-    void addIfPresent(String fieldName, Object/*?*/ value) {
+    void addIfPresent(String fieldName, Object? value) {
       if (value != null) {
         json[fieldName] = value;
       }

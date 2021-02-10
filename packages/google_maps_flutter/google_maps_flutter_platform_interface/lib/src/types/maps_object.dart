@@ -23,7 +23,7 @@ class MapsObjectId<T> {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final MapsObjectId<T> typedOther = other;
+    final MapsObjectId<T> typedOther = other as MapsObjectId<T>;
     return value == typedOther.value;
   }
 

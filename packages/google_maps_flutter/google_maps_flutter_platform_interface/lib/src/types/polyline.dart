@@ -4,7 +4,7 @@
 
 import 'package:flutter/foundation.dart' show listEquals, VoidCallback;
 import 'package:flutter/material.dart' show Color, Colors;
-import 'package:meta/meta.dart' show immutable, required;
+import 'package:meta/meta.dart' show immutable;
 
 import 'types.dart';
 
@@ -24,7 +24,7 @@ class PolylineId extends MapsObjectId<Polyline> {
 class Polyline implements MapsObject {
   /// Creates an immutable object representing a line drawn through geographical locations on the map.
   const Polyline({
-    @required this.polylineId,
+    required this.polylineId,
     this.consumeTapEvents = false,
     this.color = Colors.black,
     this.endCap = Cap.buttCap,
@@ -113,23 +113,23 @@ class Polyline implements MapsObject {
   final int zIndex;
 
   /// Callbacks to receive tap events for polyline placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Creates a new [Polyline] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Polyline copyWith({
-    Color colorParam,
-    bool consumeTapEventsParam,
-    Cap endCapParam,
-    bool geodesicParam,
-    JointType jointTypeParam,
-    List<PatternItem> patternsParam,
-    List<LatLng> pointsParam,
-    Cap startCapParam,
-    bool visibleParam,
-    int widthParam,
-    int zIndexParam,
-    VoidCallback onTapParam,
+    Color? colorParam,
+    bool? consumeTapEventsParam,
+    Cap? endCapParam,
+    bool? geodesicParam,
+    JointType? jointTypeParam,
+    List<PatternItem>? patternsParam,
+    List<LatLng>? pointsParam,
+    Cap? startCapParam,
+    bool? visibleParam,
+    int? widthParam,
+    int? zIndexParam,
+    VoidCallback? onTapParam,
   }) {
     return Polyline(
       polylineId: polylineId,
@@ -161,7 +161,7 @@ class Polyline implements MapsObject {
   dynamic toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
-    void addIfPresent(String fieldName, Object/*?*/ value) {
+    void addIfPresent(String fieldName, Object? value) {
       if (value != null) {
         json[fieldName] = value;
       }
@@ -170,10 +170,10 @@ class Polyline implements MapsObject {
     addIfPresent('polylineId', polylineId.value);
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('color', color.value);
-    addIfPresent('endCap', endCap?.toJson());
+    addIfPresent('endCap', endCap.toJson());
     addIfPresent('geodesic', geodesic);
-    addIfPresent('jointType', jointType?.value);
-    addIfPresent('startCap', startCap?.toJson());
+    addIfPresent('jointType', jointType.value);
+    addIfPresent('startCap', startCap.toJson());
     addIfPresent('visible', visible);
     addIfPresent('width', width);
     addIfPresent('zIndex', zIndex);
@@ -193,7 +193,7 @@ class Polyline implements MapsObject {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final Polyline typedOther = other;
+    final Polyline typedOther = other as Polyline;
     return polylineId == typedOther.polylineId &&
         consumeTapEvents == typedOther.consumeTapEvents &&
         color == typedOther.color &&

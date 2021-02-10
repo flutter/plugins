@@ -4,7 +4,7 @@
 
 import 'dart:ui' show hashValues;
 
-import 'package:meta/meta.dart' show immutable, required;
+import 'package:meta/meta.dart' show immutable;
 
 /// Represents a point coordinate in the [GoogleMap]'s view.
 ///
@@ -15,19 +15,19 @@ import 'package:meta/meta.dart' show immutable, required;
 class ScreenCoordinate {
   /// Creates an immutable representation of a point coordinate in the [GoogleMap]'s view.
   const ScreenCoordinate({
-    @required this.x,
-    @required this.y,
+    required this.x,
+    required this.y,
   });
 
   /// Represents the number of pixels from the left of the [GoogleMap].
-  final int/*!*/ x;
+  final int x;
 
   /// Represents the number of pixels from the top of the [GoogleMap].
-  final int/*!*/ y;
+  final int y;
 
   /// Converts this object to something serializable in JSON.
   dynamic toJson() {
-    return <String, int/*!*/>{
+    return <String, int>{
       "x": x,
       "y": y,
     };

@@ -6,11 +6,11 @@ import '../types.dart';
 import 'maps_object.dart';
 
 /// Converts an [Iterable] of Circles in a Map of CircleId -> Circle.
-Map<CircleId, Circle> keyByCircleId(Iterable<Circle>/*?*/ circles) {
+Map<CircleId, Circle> keyByCircleId(Iterable<Circle>? circles) {
   return keyByMapsObjectId<Circle>(circles).cast<CircleId, Circle>();
 }
 
 /// Converts a Set of Circles into something serializable in JSON.
-List<Map<String, dynamic>> serializeCircleSet(Set<Circle> circles) {
+List<Map<String, dynamic>>? serializeCircleSet(Set<Circle> circles) {
   return serializeMapsObjectSet(circles);
 }

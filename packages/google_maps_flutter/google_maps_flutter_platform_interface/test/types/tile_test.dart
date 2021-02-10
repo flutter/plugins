@@ -19,10 +19,12 @@ void main() {
       expect(json['data'], data);
     });
 
-    test('toJson returns empty if nothing presents', () async {
-      final Tile tile = Tile(null, null, null);
+    test('toJson handles null data', () async {
+      final Tile tile = Tile(0, 0, null);
       final Map<String, dynamic> json = tile.toJson();
-      expect(json.isEmpty, true);
+      expect(json['width'], 0);
+      expect(json['height'], 0);
+      expect(json['data'], isNull);
     });
   });
 }

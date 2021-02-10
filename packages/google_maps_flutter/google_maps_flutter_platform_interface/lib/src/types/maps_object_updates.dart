@@ -5,7 +5,6 @@
 import 'dart:ui' show hashValues, hashList;
 
 import 'package:flutter/foundation.dart' show objectRuntimeType, setEquals;
-import 'package:meta/meta.dart' show required;
 
 import 'maps_object.dart';
 import 'utils/maps_object.dart';
@@ -18,9 +17,9 @@ class MapsObjectUpdates<T extends MapsObject> {
   /// dictionary. E.g., 'circle' will give 'circlesToAdd', 'circlesToUpdate',
   /// 'circleIdsToRemove'.
   MapsObjectUpdates.from(
-    Set<T> previous,
+    Set<T>? previous,
     Set<T> current, {
-    @required this.objectName,
+    required this.objectName,
   }) {
     if (previous == null) {
       previous = Set<T>.identity();
@@ -40,8 +39,8 @@ class MapsObjectUpdates<T extends MapsObject> {
     ///
     /// It is a programming error to call this with an ID that is not guaranteed
     /// to be in [currentObjects].
-    T/*!*/ _idToCurrentObject(MapsObjectId<T> id) {
-      return currentObjects[id];
+    T _idToCurrentObject(MapsObjectId<T> id) {
+      return currentObjects[id]!;
     }
 
     _objectIdsToRemove = previousObjectIds.difference(currentObjectIds);
@@ -54,7 +53,7 @@ class MapsObjectUpdates<T extends MapsObject> {
     // Returns `true` if [current] is not equals to previous one with the
     // same id.
     bool hasChanged(T current) {
-      final T previous = previousObjects[current.mapsId];
+      final T? previous = previousObjects[current.mapsId as MapsObjectId<T>];
       return current != previous;
     }
 
@@ -73,27 +72,27 @@ class MapsObjectUpdates<T extends MapsObject> {
     return _objectsToAdd;
   }
 
-  /*late*/ Set<T> _objectsToAdd;
+  late Set<T> _objectsToAdd;
 
   /// Set of objects to be removed in this update.
   Set<MapsObjectId<T>> get objectIdsToRemove {
     return _objectIdsToRemove;
   }
 
-  /*late*/ Set<MapsObjectId<T>> _objectIdsToRemove;
+  late Set<MapsObjectId<T>> _objectIdsToRemove;
 
   /// Set of objects to be changed in this update.
   Set<T> get objectsToChange {
     return _objectsToChange;
   }
 
-  /*late*/ Set<T> _objectsToChange;
+  late Set<T> _objectsToChange;
 
   /// Converts this object to JSON.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
 
-    void addIfNonNull(String fieldName, Object /*?*/ value) {
+    void addIfNonNull(String fieldName, Object? value) {
       if (value != null) {
         updateMap[fieldName] = value;
       }

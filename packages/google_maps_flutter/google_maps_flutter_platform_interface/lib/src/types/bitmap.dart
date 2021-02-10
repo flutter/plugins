@@ -72,20 +72,6 @@ class BitmapDescriptor {
     return BitmapDescriptor._(<dynamic>[_defaultMarker, hue]);
   }
 
-  /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
-  /// directory.
-  ///
-  /// Use [fromAssetImage]. This method does not respect the screen dpi when
-  /// picking an asset image.
-  @Deprecated("Use fromAssetImage instead")
-  static BitmapDescriptor fromAsset(String assetName, {String package}) {
-    if (package == null) {
-      return BitmapDescriptor._(<dynamic>[_fromAsset, assetName]);
-    } else {
-      return BitmapDescriptor._(<dynamic>[_fromAsset, assetName, package]);
-    }
-  }
-
   /// Creates a [BitmapDescriptor] from an asset image.
   ///
   /// Asset images in flutter are stored per:
@@ -96,8 +82,8 @@ class BitmapDescriptor {
   static Future<BitmapDescriptor> fromAssetImage(
     ImageConfiguration configuration,
     String assetName, {
-    AssetBundle bundle,
-    String package,
+    AssetBundle? bundle,
+    String? package,
     bool mipmaps = true,
   }) async {
     if (!mipmaps && configuration.devicePixelRatio != null) {
@@ -111,7 +97,7 @@ class BitmapDescriptor {
         AssetImage(assetName, package: package, bundle: bundle);
     final AssetBundleImageKey assetBundleImageKey =
         await assetImage.obtainKey(configuration);
-    final Size size = configuration?.size;
+    final Size? size = configuration.size;
     return BitmapDescriptor._(<dynamic>[
       _fromAssetImage,
       assetBundleImageKey.name,

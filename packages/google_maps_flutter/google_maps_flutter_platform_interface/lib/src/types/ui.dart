@@ -39,7 +39,7 @@ class CameraTargetBounds {
   /// The geographical bounding box for the map camera target.
   ///
   /// A null value means the camera target is unbounded.
-  final LatLngBounds bounds;
+  final LatLngBounds? bounds;
 
   /// Unbounded camera target.
   static const CameraTargetBounds unbounded = CameraTargetBounds(null);
@@ -76,10 +76,10 @@ class MinMaxZoomPreference {
       : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
 
   /// The preferred minimum zoom level or null, if unbounded from below.
-  final double minZoom;
+  final double? minZoom;
 
   /// The preferred maximum zoom level or null, if unbounded from above.
-  final double maxZoom;
+  final double? maxZoom;
 
   /// Unbounded zooming.
   static const MinMaxZoomPreference unbounded =

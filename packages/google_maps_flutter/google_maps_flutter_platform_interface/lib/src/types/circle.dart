@@ -4,7 +4,7 @@
 
 import 'package:flutter/foundation.dart' show VoidCallback;
 import 'package:flutter/material.dart' show Color, Colors;
-import 'package:meta/meta.dart' show immutable, required;
+import 'package:meta/meta.dart' show immutable;
 
 import 'types.dart';
 
@@ -22,7 +22,7 @@ class CircleId extends MapsObjectId<Circle> {
 class Circle implements MapsObject<Circle> {
   /// Creates an immutable representation of a [Circle] to draw on [GoogleMap].
   const Circle({
-    @required this.circleId,
+    required this.circleId,
     this.consumeTapEvents = false,
     this.fillColor = Colors.transparent,
     this.center = const LatLng(0.0, 0.0),
@@ -75,20 +75,20 @@ class Circle implements MapsObject<Circle> {
   final int zIndex;
 
   /// Callbacks to receive tap events for circle placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Creates a new [Circle] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Circle copyWith({
-    bool consumeTapEventsParam,
-    Color fillColorParam,
-    LatLng centerParam,
-    double radiusParam,
-    Color strokeColorParam,
-    int strokeWidthParam,
-    bool visibleParam,
-    int zIndexParam,
-    VoidCallback onTapParam,
+    bool? consumeTapEventsParam,
+    Color? fillColorParam,
+    LatLng? centerParam,
+    double? radiusParam,
+    Color? strokeColorParam,
+    int? strokeWidthParam,
+    bool? visibleParam,
+    int? zIndexParam,
+    VoidCallback? onTapParam,
   }) {
     return Circle(
       circleId: circleId,
@@ -111,7 +111,7 @@ class Circle implements MapsObject<Circle> {
   dynamic toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
-    void addIfPresent(String fieldName, Object/*?*/ value) {
+    void addIfPresent(String fieldName, Object? value) {
       if (value != null) {
         json[fieldName] = value;
       }
@@ -134,7 +134,7 @@ class Circle implements MapsObject<Circle> {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final Circle typedOther = other;
+    final Circle typedOther = other as Circle;
     return circleId == typedOther.circleId &&
         consumeTapEvents == typedOther.consumeTapEvents &&
         fillColor == typedOther.fillColor &&
