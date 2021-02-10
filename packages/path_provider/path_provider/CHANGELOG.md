@@ -1,6 +1,7 @@
-## 2.0.1-nullsafety
+## 2.0.0-nullsafety.1
 
-* Removed pre-screening for platform when calling getDownloadsPath
+* Removed pre-screening for platform.
+* Updated tests accordingly.
 
 ## 2.0.0-nullsafety
 

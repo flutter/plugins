@@ -1,3 +1,8 @@
+## 2.0.0-nullsafety.1
+
+* Removed pre-screening for platform.
+* Updated tests accordingly.
+
 ## 2.0.0-nullsafety
 
 * Migrate to null safety.
