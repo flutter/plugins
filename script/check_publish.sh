@@ -12,8 +12,7 @@ source "$SCRIPT_DIR/common.sh"
 
 function check_publish() {
   local failures=()
-  pub_command global activate flutter_plugin_tools
-  for dir in $(pub_command global run flutter_plugin_tools list --plugins="$1"); do
+  for dir in $(plugin_tools list --plugins="$1"); do
     local package_name=$(basename "$dir")
 
     echo "Checking that $package_name can be published."

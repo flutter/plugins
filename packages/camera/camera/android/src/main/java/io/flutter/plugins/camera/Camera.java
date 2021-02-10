@@ -816,7 +816,7 @@ public class Camera {
     }
     // Set the metering rectangle
     if (x == null || y == null) cameraRegions.resetAutoExposureMeteringRectangle();
-    else cameraRegions.setAutoExposureMeteringRectangleFromPoint(x, y);
+    else cameraRegions.setAutoExposureMeteringRectangleFromPoint(y, 1 - x);
     // Apply it
     updateExposure(exposureMode);
     refreshPreviewCaptureSession(
@@ -868,7 +868,7 @@ public class Camera {
     if (x == null || y == null) {
       cameraRegions.resetAutoFocusMeteringRectangle();
     } else {
-      cameraRegions.setAutoFocusMeteringRectangleFromPoint(x, y);
+      cameraRegions.setAutoFocusMeteringRectangleFromPoint(y, 1 - x);
     }
 
     // Apply the new metering rectangle
