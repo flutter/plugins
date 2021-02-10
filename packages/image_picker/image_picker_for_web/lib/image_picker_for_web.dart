@@ -62,7 +62,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     String? accept,
     String? capture,
   }) {
-    html.FileUploadInputElement input = createInputElement(accept, capture) as html.FileUploadInputElement;
+    html.FileUploadInputElement input =
+        createInputElement(accept, capture) as html.FileUploadInputElement;
     _injectAndActivate(input);
     return _getSelectedFile(input);
   }
@@ -90,7 +91,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// Handles the OnChange event from a FileUploadInputElement object
   /// Returns the objectURL of the selected file.
   String? _handleOnChangeEvent(html.Event event) {
-    final html.FileUploadInputElement? input = event.target as html.FileUploadInputElement;
+    final html.FileUploadInputElement? input =
+        event.target as html.FileUploadInputElement;
     final html.File? file = _getFileFromInput(input);
 
     if (file != null) {
