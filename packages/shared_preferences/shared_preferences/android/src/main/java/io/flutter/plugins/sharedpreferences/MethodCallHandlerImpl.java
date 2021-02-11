@@ -123,7 +123,8 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private void commitAsync(
       final SharedPreferences.Editor editor, final MethodChannel.Result result) {
-    final ExecutorService executor = new ThreadPoolExecutor(0, 1, 30L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+    final ExecutorService executor = 
+        new ThreadPoolExecutor(0, 1, 30L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
     final Handler handler = new Handler(Looper.getMainLooper());
 
     executor.execute(
