@@ -71,7 +71,7 @@ void main() {
     final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
 
     await tester.pumpWidget(_mapWithPolylines(<Polyline>{p1}));
-    await tester.pumpWidget(_mapWithPolylines(null));
+    await tester.pumpWidget(_mapWithPolylines(<Polyline>{}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView!;

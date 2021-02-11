@@ -70,7 +70,7 @@ void main() {
         TileOverlay(tileOverlayId: TileOverlayId("tile_overlay_1"));
 
     await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{t1}));
-    await tester.pumpWidget(_mapWithTileOverlays(null));
+    await tester.pumpWidget(_mapWithTileOverlays(<TileOverlay>{}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView!;

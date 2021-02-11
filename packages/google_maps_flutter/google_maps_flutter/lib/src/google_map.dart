@@ -248,7 +248,7 @@ class _GoogleMapState extends State<GoogleMap> {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> creationParams = <String, dynamic>{
-      'initialCameraPosition': widget.initialCameraPosition?.toMap(),
+      'initialCameraPosition': widget.initialCameraPosition.toMap(),
       'options': _googleMapOptions.toMap(),
       'markersToAdd': serializeMarkerSet(widget.markers),
       'polygonsToAdd': serializePolygonSet(widget.polygons),
@@ -258,7 +258,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'tileOverlaysToAdd': serializeTileOverlaySet(widget.tileOverlays),
     };
 
-    return _googleMapsFlutterPlatform.buildView(
+    return GoogleMapsFlutterPlatform.instance.buildView(
       creationParams,
       widget.gestureRecognizers,
       onPlatformViewCreated,
@@ -400,7 +400,7 @@ class _GoogleMapState extends State<GoogleMap> {
     if (polyline == null) {
       throw UnknownMapObjectIDError('polyline', 'onTap');
     }
-    final onTap = polyline?.onTap;
+    final onTap = polyline.onTap;
     if (onTap != null) {
       onTap();
     }
@@ -412,7 +412,7 @@ class _GoogleMapState extends State<GoogleMap> {
     if (circle == null) {
       throw UnknownMapObjectIDError('marker', 'onTap');
     }
-    final onTap = circle?.onTap;
+    final onTap = circle.onTap;
     if (onTap != null) {
       onTap();
     }
@@ -424,7 +424,7 @@ class _GoogleMapState extends State<GoogleMap> {
     if (marker == null) {
       throw UnknownMapObjectIDError('marker', 'InfoWindow onTap');
     }
-    final onTap = marker.infoWindow?.onTap;
+    final onTap = marker.infoWindow.onTap;
     if (onTap != null) {
       onTap();
     }
@@ -512,7 +512,7 @@ class _GoogleMapOptions {
       'compassEnabled': compassEnabled,
       'mapToolbarEnabled': mapToolbarEnabled,
       'cameraTargetBounds': cameraTargetBounds.toJson(),
-      'mapType': mapType?.index,
+      'mapType': mapType.index,
       'minMaxZoomPreference': minMaxZoomPreference.toJson(),
       'rotateGesturesEnabled': rotateGesturesEnabled,
       'scrollGesturesEnabled': scrollGesturesEnabled,
@@ -524,10 +524,10 @@ class _GoogleMapOptions {
       'myLocationEnabled': myLocationEnabled,
       'myLocationButtonEnabled': myLocationButtonEnabled,
       'padding': <double>[
-        padding?.top,
-        padding?.left,
-        padding?.bottom,
-        padding?.right,
+        padding.top,
+        padding.left,
+        padding.bottom,
+        padding.right,
       ],
       'indoorEnabled': indoorViewEnabled,
       'trafficEnabled': trafficEnabled,

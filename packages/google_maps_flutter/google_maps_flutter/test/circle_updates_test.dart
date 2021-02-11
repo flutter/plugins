@@ -71,7 +71,7 @@ void main() {
     final Circle c1 = Circle(circleId: CircleId("circle_1"));
 
     await tester.pumpWidget(_mapWithCircles(<Circle>{c1}));
-    await tester.pumpWidget(_mapWithCircles(null));
+    await tester.pumpWidget(_mapWithCircles(<Circle>{}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView!;

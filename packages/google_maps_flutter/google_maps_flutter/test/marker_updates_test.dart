@@ -71,7 +71,7 @@ void main() {
     final Marker m1 = Marker(markerId: MarkerId("marker_1"));
 
     await tester.pumpWidget(_mapWithMarkers(<Marker>{m1}));
-    await tester.pumpWidget(_mapWithMarkers(null));
+    await tester.pumpWidget(_mapWithMarkers(<Marker>{}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView!;

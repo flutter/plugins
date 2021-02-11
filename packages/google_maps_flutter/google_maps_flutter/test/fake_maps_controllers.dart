@@ -140,7 +140,7 @@ class FakePlatformGoogleMap {
     }
     final List<dynamic> markersData = markers;
     final Set<Marker> result = <Marker>{};
-    for (Map<dynamic, dynamic> markerData in markersData as Iterable<Map<dynamic, dynamic>>) {
+    for (Map<dynamic, dynamic> markerData in markersData.cast<Map<dynamic, dynamic>>()) {
       final String markerId = markerData['markerId'];
       final double alpha = markerData['alpha'];
       final bool draggable = markerData['draggable'];
@@ -191,7 +191,7 @@ class FakePlatformGoogleMap {
     }
     final List<dynamic> polygonsData = polygons;
     final Set<Polygon> result = <Polygon>{};
-    for (Map<dynamic, dynamic> polygonData in polygonsData as Iterable<Map<dynamic, dynamic>>) {
+    for (Map<dynamic, dynamic> polygonData in polygonsData.cast<Map<dynamic, dynamic>>()) {
       final String polygonId = polygonData['polygonId'];
       final bool visible = polygonData['visible'];
       final bool geodesic = polygonData['geodesic'];
@@ -250,7 +250,7 @@ class FakePlatformGoogleMap {
     }
     final List<dynamic> polylinesData = polylines;
     final Set<Polyline> result = <Polyline>{};
-    for (Map<dynamic, dynamic> polylineData in polylinesData as Iterable<Map<dynamic, dynamic>>) {
+    for (Map<dynamic, dynamic> polylineData in polylinesData.cast<Map<dynamic, dynamic>>()) {
       final String polylineId = polylineData['polylineId'];
       final bool visible = polylineData['visible'];
       final bool geodesic = polylineData['geodesic'];
@@ -315,7 +315,7 @@ class FakePlatformGoogleMap {
     }
     final List<dynamic> circlesData = circles;
     final Set<Circle> result = <Circle>{};
-    for (Map<dynamic, dynamic> circleData in circlesData as Iterable<Map<dynamic, dynamic>>) {
+    for (Map<dynamic, dynamic> circleData in circlesData.cast<Map<dynamic, dynamic>>()) {
       final String circleId = circleData['circleId'];
       final bool visible = circleData['visible'];
       final double radius = circleData['radius'];

@@ -94,7 +94,7 @@ void main() {
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
 
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
-    await tester.pumpWidget(_mapWithPolygons(null));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView!;
@@ -261,7 +261,7 @@ void main() {
     final Polygon p1 = _polygonWithPointsAndHole(PolygonId("polygon_1"));
 
     await tester.pumpWidget(_mapWithPolygons(<Polygon>{p1}));
-    await tester.pumpWidget(_mapWithPolygons(null));
+    await tester.pumpWidget(_mapWithPolygons(<Polygon>{}));
 
     final FakePlatformGoogleMap platformGoogleMap =
         fakePlatformViewsController.lastCreatedView!;
