@@ -1,10 +1,8 @@
 name: image_picker_for_web
 description: Web platform implementation of image_picker
 homepage: https://github.com/flutter/plugins/tree/master/packages/image_picker/image_picker_for_web
-# 0.1.y+z is compatible with 1.0.0, if you land a breaking change bump
-# the version to 2.0.0.
-# See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 1.0.0-nullsafety
+
+version: 2.0.0-nullsafety
 
 flutter:
   plugin:

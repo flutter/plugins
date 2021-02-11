@@ -81,17 +81,17 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return null;
   }
 
-  html.File? _getFileFromInput(html.FileUploadInputElement? input) {
+  html.File? _getFileFromInput(html.FileUploadInputElement input) {
     if (_hasOverrides) {
       return _overrides!.getFileFromInput(input);
     }
-    return input?.files?.first;
+    return input.files?.first;
   }
 
   /// Handles the OnChange event from a FileUploadInputElement object
   /// Returns the objectURL of the selected file.
   String? _handleOnChangeEvent(html.Event event) {
-    final html.FileUploadInputElement? input =
+    final html.FileUploadInputElement input =
         event.target as html.FileUploadInputElement;
     final html.File? file = _getFileFromInput(input);
 
@@ -107,8 +107,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     // Observe the input until we can return something
     input.onChange.first.then((event) {
       final objectUrl = _handleOnChangeEvent(event);
-      if (!_completer.isCompleted) {
-        _completer.complete(PickedFile(objectUrl!));
+      if (!_completer.isCompleted && objectUrl != null) {
+        _completer.complete(PickedFile(objectUrl));
       }
     });
     input.onError.first.then((event) {
