@@ -40,8 +40,8 @@ class CameraValue {
     required this.isStreamingImages,
     required bool isRecordingPaused,
     required this.flashMode,
-    this.exposureMode,
-    this.focusMode,
+    required this.exposureMode,
+    required this.focusMode,
     required this.exposurePointSupported,
     required this.focusPointSupported,
     required this.deviceOrientation,
@@ -58,7 +58,9 @@ class CameraValue {
           isStreamingImages: false,
           isRecordingPaused: false,
           flashMode: FlashMode.auto,
+          exposureMode: ExposureMode.auto,
           exposurePointSupported: false,
+          focusMode: FocusMode.auto,
           focusPointSupported: false,
           deviceOrientation: DeviceOrientation.portraitUp,
         );
@@ -105,10 +107,10 @@ class CameraValue {
   final FlashMode flashMode;
 
   /// The exposure mode the camera is currently set to.
-  final ExposureMode? exposureMode;
+  final ExposureMode exposureMode;
 
   /// The focus mode the camera is currently set to.
-  final FocusMode? focusMode;
+  final FocusMode focusMode;
 
   /// Whether setting the exposure point is supported.
   final bool exposurePointSupported;
