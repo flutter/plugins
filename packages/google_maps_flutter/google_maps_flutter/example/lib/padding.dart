@@ -152,10 +152,10 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
             onPressed: () {
               setState(() {
                 _padding = EdgeInsets.fromLTRB(
-                    double.tryParse(_leftController.value?.text) ?? 0,
-                    double.tryParse(_topController.value?.text) ?? 0,
-                    double.tryParse(_rightController.value?.text) ?? 0,
-                    double.tryParse(_bottomController.value?.text) ?? 0);
+                    double.tryParse(_leftController.value.text) ?? 0,
+                    double.tryParse(_topController.value.text) ?? 0,
+                    double.tryParse(_rightController.value.text) ?? 0,
+                    double.tryParse(_bottomController.value.text) ?? 0);
               });
             },
           ),
