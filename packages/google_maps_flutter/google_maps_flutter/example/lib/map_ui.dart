@@ -56,7 +56,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _myLocationEnabled = true;
   bool _myTrafficEnabled = false;
   bool _myLocationButtonEnabled = true;
-  GoogleMapController _controller;
+  late GoogleMapController _controller;
   bool _nightMode = false;
 
   @override

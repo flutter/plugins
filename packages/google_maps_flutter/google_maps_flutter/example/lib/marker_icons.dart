@@ -29,8 +29,8 @@ class MarkerIconsBody extends StatefulWidget {
 const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
 
 class MarkerIconsBodyState extends State<MarkerIconsBody> {
-  GoogleMapController controller;
-  BitmapDescriptor _markerIcon;
+  GoogleMapController? controller;
+  BitmapDescriptor? _markerIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
       return Marker(
         markerId: MarkerId("marker_1"),
         position: _kMapCenter,
-        icon: _markerIcon,
+        icon: _markerIcon!,
       );
     } else {
       return Marker(

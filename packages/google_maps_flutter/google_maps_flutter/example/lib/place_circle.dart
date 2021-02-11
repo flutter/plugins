@@ -28,10 +28,10 @@ class PlaceCircleBody extends StatefulWidget {
 class PlaceCircleBodyState extends State<PlaceCircleBody> {
   PlaceCircleBodyState();
 
-  GoogleMapController controller;
-  Map<CircleId /*!*/, Circle> circles = <CircleId /*!*/, Circle>{};
+  GoogleMapController? controller;
+  Map<CircleId, Circle> circles = <CircleId, Circle>{};
   int _circleIdCounter = 1;
-  CircleId selectedCircle;
+  CircleId? selectedCircle;
 
   // Values when toggling circle color
   int fillColorsIndex = 0;
@@ -102,8 +102,8 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
     });
   }
 
-  void _toggleVisible(CircleId/*!*/ circleId) {
-    final Circle/*!*/ circle = circles[circleId];
+  void _toggleVisible(CircleId circleId) {
+    final Circle circle = circles[circleId]!;
     setState(() {
       circles[circleId] = circle.copyWith(
         visibleParam: !circle.visible,
@@ -111,8 +111,8 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
     });
   }
 
-  void _changeFillColor(CircleId/*!*/ circleId) {
-    final Circle/*!*/ circle = circles[circleId];
+  void _changeFillColor(CircleId circleId) {
+    final Circle circle = circles[circleId]!;
     setState(() {
       circles[circleId] = circle.copyWith(
         fillColorParam: colors[++fillColorsIndex % colors.length],
@@ -120,8 +120,8 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
     });
   }
 
-  void _changeStrokeColor(CircleId/*!*/ circleId) {
-    final Circle/*!*/ circle = circles[circleId];
+  void _changeStrokeColor(CircleId circleId) {
+    final Circle circle = circles[circleId]!;
     setState(() {
       circles[circleId] = circle.copyWith(
         strokeColorParam: colors[++strokeColorsIndex % colors.length],
@@ -129,8 +129,8 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
     });
   }
 
-  void _changeStrokeWidth(CircleId/*!*/ circleId) {
-    final Circle/*!*/ circle = circles[circleId];
+  void _changeStrokeWidth(CircleId circleId) {
+    final Circle circle = circles[circleId]!;
     setState(() {
       circles[circleId] = circle.copyWith(
         strokeWidthParam: widths[++widthsIndex % widths.length],
@@ -140,7 +140,7 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
 
   @override
   Widget build(BuildContext context) {
-    final CircleId selectedId = selectedCircle;
+    final CircleId? selectedId = selectedCircle;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,

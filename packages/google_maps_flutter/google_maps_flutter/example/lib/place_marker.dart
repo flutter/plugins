@@ -35,9 +35,9 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   PlaceMarkerBodyState();
   static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
-  GoogleMapController controller;
-  Map<MarkerId /*!*/, Marker> markers = <MarkerId /*!*/, Marker>{};
-  MarkerId selectedMarker;
+  GoogleMapController? controller;
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  MarkerId? selectedMarker;
   int _markerIdCounter = 1;
 
   void _onMapCreated(GoogleMapController controller) {
@@ -50,11 +50,11 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   void _onMarkerTapped(MarkerId markerId) {
-    final Marker tappedMarker = markers[markerId];
+    final Marker? tappedMarker = markers[markerId];
     if (tappedMarker != null) {
       setState(() {
         if (markers.containsKey(markerId)) {
-          final Marker resetOld = markers[markerId]
+          final Marker resetOld = markers[markerId]!
               .copyWith(iconParam: BitmapDescriptor.defaultMarker);
           markers[markerId] = resetOld;
         }
@@ -70,7 +70,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   void _onMarkerDragEnd(MarkerId markerId, LatLng newPosition) async {
-    final Marker tappedMarker = markers[markerId];
+    final Marker? tappedMarker = markers[markerId];
     if (tappedMarker != null) {
       await showDialog<void>(
           context: context,
@@ -126,7 +126,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  void _remove(MarkerId /*!*/ markerId) {
+  void _remove(MarkerId markerId) {
     setState(() {
       if (markers.containsKey(markerId)) {
         markers.remove(markerId);
@@ -134,8 +134,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  void _changePosition(MarkerId /*!*/ markerId) {
-    final Marker marker = markers[markerId];
+  void _changePosition(MarkerId markerId) {
+    final Marker marker = markers[markerId]!;
     final LatLng current = marker.position;
     final Offset offset = Offset(
       center.latitude - current.latitude,
@@ -151,8 +151,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  void _changeAnchor(MarkerId /*!*/ markerId) {
-    final Marker marker = markers[markerId];
+  void _changeAnchor(MarkerId markerId) {
+    final Marker marker = markers[markerId]!;
     final Offset currentAnchor = marker.anchor;
     final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
     setState(() {
@@ -162,8 +162,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  Future<void> _changeInfoAnchor(MarkerId /*!*/ markerId) async {
-    final Marker marker = markers[markerId];
+  Future<void> _changeInfoAnchor(MarkerId markerId) async {
+    final Marker marker = markers[markerId]!;
     final Offset currentAnchor = marker.infoWindow.anchor;
     final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
     setState(() {
@@ -175,8 +175,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  Future<void> _toggleDraggable(MarkerId /*!*/ markerId) async {
-    final Marker/*!*/ marker = markers[markerId];
+  Future<void> _toggleDraggable(MarkerId markerId) async {
+    final Marker marker = markers[markerId]!;
     setState(() {
       markers[markerId] = marker.copyWith(
         draggableParam: !marker.draggable,
@@ -184,8 +184,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  Future<void> _toggleFlat(MarkerId /*!*/ markerId) async {
-    final Marker/*!*/ marker = markers[markerId];
+  Future<void> _toggleFlat(MarkerId markerId) async {
+    final Marker marker = markers[markerId]!;
     setState(() {
       markers[markerId] = marker.copyWith(
         flatParam: !marker.flat,
@@ -193,9 +193,9 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  Future<void> _changeInfo(MarkerId /*!*/ markerId) async {
-    final Marker marker = markers[markerId];
-    final String newSnippet = marker.infoWindow.snippet + '*';
+  Future<void> _changeInfo(MarkerId markerId) async {
+    final Marker marker = markers[markerId]!;
+    final String newSnippet = marker.infoWindow.snippet! + '*';
     setState(() {
       markers[markerId] = marker.copyWith(
         infoWindowParam: marker.infoWindow.copyWith(
@@ -205,8 +205,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  Future<void> _changeAlpha(MarkerId /*!*/ markerId) async {
-    final Marker marker = markers[markerId];
+  Future<void> _changeAlpha(MarkerId markerId) async {
+    final Marker marker = markers[markerId]!;
     final double current = marker.alpha;
     setState(() {
       markers[markerId] = marker.copyWith(
@@ -215,8 +215,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  Future<void> _changeRotation(MarkerId /*!*/ markerId) async {
-    final Marker marker = markers[markerId];
+  Future<void> _changeRotation(MarkerId markerId) async {
+    final Marker marker = markers[markerId]!;
     final double current = marker.rotation;
     setState(() {
       markers[markerId] = marker.copyWith(
@@ -225,8 +225,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  Future<void> _toggleVisible(MarkerId /*!*/ markerId) async {
-    final Marker/*!*/ marker = markers[markerId];
+  Future<void> _toggleVisible(MarkerId markerId) async {
+    final Marker marker = markers[markerId]!;
     setState(() {
       markers[markerId] = marker.copyWith(
         visibleParam: !marker.visible,
@@ -234,8 +234,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  Future<void> _changeZIndex(MarkerId /*!*/ markerId) async {
-    final Marker marker = markers[markerId];
+  Future<void> _changeZIndex(MarkerId markerId) async {
+    final Marker marker = markers[markerId]!;
     final double current = marker.zIndex;
     setState(() {
       markers[markerId] = marker.copyWith(
@@ -283,7 +283,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
 
   @override
   Widget build(BuildContext context) {
-    final MarkerId selectedId = selectedMarker;
+    final MarkerId? selectedId = selectedMarker;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
