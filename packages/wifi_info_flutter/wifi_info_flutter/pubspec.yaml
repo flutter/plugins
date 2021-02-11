@@ -13,7 +13,6 @@ dependencies:
   wifi_info_flutter_platform_interface: ^2.0.0-nullsafety
 
 dev_dependencies:
-  plugin_platform_interface: ^1.1.0-nullsafety
   integration_test:
     path: ../../integration_test
   flutter_test:
