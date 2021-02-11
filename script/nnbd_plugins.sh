@@ -38,8 +38,9 @@ readonly NNBD_PLUGINS_LIST=(
 # building the all plugins app. This list should be kept empty.
 
 readonly NON_NNBD_PLUGINS_LIST=(
-  "camera"
-  "google_maps_flutter" # half migrated
+  # "android_alarm_manager"
+  # "camera"
+  "google_maps_flutter"
   # "image_picker"
   # "in_app_purchase"
   # "quick_actions"
