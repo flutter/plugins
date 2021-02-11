@@ -3,7 +3,7 @@ description: Demonstrates how to use the google_maps_flutter plugin.
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
-  flutter: ">=1.22.0 <2.0.0"
+  flutter: ">=1.22.0"
 
 dependencies:
   flutter:

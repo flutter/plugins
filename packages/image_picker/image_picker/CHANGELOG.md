@@ -1,3 +1,13 @@
+## 0.7.0-nullsafety
+* Migrate to nullsafety
+* Breaking Changes:
+    * Removed the deprecated methods: `ImagePicker.pickImage`, `ImagePicker.pickVideo`,
+`ImagePicker.retrieveLostData`
+
+## 0.6.7+22
+
+* iOS: update XCUITests to separate each test session.
+
 ## 0.6.7+21
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
