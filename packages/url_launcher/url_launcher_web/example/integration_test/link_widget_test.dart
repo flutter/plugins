@@ -83,6 +83,25 @@ void main() {
       expect(containerSize.width, 100.0);
       expect(containerSize.height, 100.0);
     });
+
+    // See: https://github.com/flutter/plugins/pull/3522#discussion_r574703724
+    testWidgets('uri can be null', (WidgetTester tester) async {
+      await tester.pumpWidget(Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebLinkDelegate(TestLinkInfo(
+          uri: null,
+          target: LinkTarget.defaultTarget,
+          builder: (BuildContext context, FollowLink? followLink) {
+            return Container(width: 100, height: 100);
+          },
+        )),
+      ));
+      // Platform view creation happens asynchronously.
+      await tester.pumpAndSettle();
+
+      final html.Element anchor = _findSingleAnchor();
+      expect(anchor.hasAttribute('href'), false);
+    });
   });
 }
 
@@ -115,7 +134,7 @@ class TestLinkInfo extends LinkInfo {
   final LinkWidgetBuilder builder;
 
   @override
-  final Uri uri;
+  final Uri? uri;
 
   @override
   final LinkTarget target;

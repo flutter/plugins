@@ -51,7 +51,7 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
   void didUpdateWidget(WebLinkDelegate oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.link.uri != oldWidget.link.uri) {
-      _controller.setUri(widget.link.uri!);
+      _controller.setUri(widget.link.uri);
     }
     if (widget.link.target != oldWidget.link.target) {
       _controller.setTarget(widget.link.target);
@@ -78,7 +78,7 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
             onCreatePlatformView: (PlatformViewCreationParams params) {
               _controller = LinkViewController.fromParams(params, context);
               return _controller
-                ..setUri(widget.link.uri!)
+                ..setUri(widget.link.uri)
                 ..setTarget(widget.link.target);
             },
             surfaceFactory:
@@ -193,7 +193,7 @@ class LinkViewController extends PlatformViewController {
       return;
     }
 
-    if (_uri.hasScheme) {
+    if (_uri != null && _uri!.hasScheme) {
       // External links will be handled by the browser, so we don't have to do
       // anything.
       return;
@@ -207,10 +207,12 @@ class LinkViewController extends PlatformViewController {
     pushRouteNameToFramework(context, routeName);
   }
 
-  late Uri _uri;
+  Uri? _uri;
 
   /// Set the [Uri] value for this link.
-  void setUri(Uri uri) {
+  ///
+  /// When Uri is null, the `href` attribute of the link is removed.
+  void setUri(Uri? uri) {
     assert(_isInitialized);
     _uri = uri;
     if (uri == null) {
