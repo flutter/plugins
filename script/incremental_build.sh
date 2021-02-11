@@ -41,9 +41,7 @@ BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
 # otherwise it gets treated as a single argument.
 PLUGIN_SHARDING=($PLUGIN_SHARDING)
 
-#if [[ "${BRANCH_NAME}" == "master" ]]; then
-# XXX For PR testing purposes, run everything on beta too. DO NOT LAND
-if [[ "${BRANCH_NAME}" != "stable" ]]; then
+if [[ "${BRANCH_NAME}" == "master" ]]; then
   echo "Running for all packages"
   (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
 else
