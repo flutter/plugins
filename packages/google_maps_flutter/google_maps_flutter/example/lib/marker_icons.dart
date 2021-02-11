@@ -48,7 +48,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
                 target: _kMapCenter,
                 zoom: 7.0,
               ),
-              markers: _createMarker(),
+              markers: <Marker>{_createMarker()},
               onMapCreated: _onMapCreated,
             ),
           ),
@@ -57,14 +57,19 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     );
   }
 
-  Set<Marker> _createMarker() {
-    return <Marker>{
-      Marker(
+  Marker _createMarker() {
+    if (_markerIcon != null) {
+      return Marker(
         markerId: MarkerId("marker_1"),
         position: _kMapCenter,
         icon: _markerIcon,
-      ),
-    };
+      );
+    } else {
+      return Marker(
+        markerId: MarkerId("marker_1"),
+        position: _kMapCenter,
+      );
+    }
   }
 
   Future<void> _createMarkerImageFromAsset(BuildContext context) async {

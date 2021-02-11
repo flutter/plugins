@@ -67,6 +67,9 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
 
   @override
   Widget build(BuildContext context) {
+    Set<TileOverlay> overlays = <TileOverlay>{
+      if (_tileOverlay != null) _tileOverlay,
+    };
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -81,8 +84,7 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
                 target: LatLng(59.935460, 30.325177),
                 zoom: 7.0,
               ),
-              tileOverlays:
-                  _tileOverlay != null ? <TileOverlay>{_tileOverlay} : null,
+              tileOverlays: overlays,
               onMapCreated: _onMapCreated,
             ),
           ),

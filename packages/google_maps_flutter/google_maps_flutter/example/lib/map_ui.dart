@@ -249,10 +249,9 @@ class MapUiBodyState extends State<MapUiBody> {
     });
   }
 
+  // Should only be called if _isMapCreated is true.
   Widget _nightModeToggler() {
-    if (!_isMapCreated) {
-      return null;
-    }
+    assert(_isMapCreated);
     return TextButton(
       child: Text('${_nightMode ? 'disable' : 'enable'} night mode'),
       onPressed: () {
