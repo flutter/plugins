@@ -10,7 +10,8 @@ import 'types.dart';
 // (Do not re-export)
 class CircleUpdates extends MapsObjectUpdates<Circle> {
   /// Computes [CircleUpdates] given previous and current [Circle]s.
-  CircleUpdates.from(Set<Circle> previous, Set<Circle> current) : super.from(previous, current, objectName: 'circle');
+  CircleUpdates.from(Set<Circle> previous, Set<Circle> current)
+      : super.from(previous, current, objectName: 'circle');
 
   /// Set of Circles to be added in this update.
   Set<Circle> get circlesToAdd => objectsToAdd;

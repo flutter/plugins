@@ -525,7 +525,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   Future<double> getZoomLevel({
     required int mapId,
   }) {
-    return channel(mapId).invokeMethod<double>('map#getZoomLevel') as Future<double>;
+    return channel(mapId).invokeMethod<double>('map#getZoomLevel')
+        as Future<double>;
   }
 
   /// Returns the image bytes of the map
