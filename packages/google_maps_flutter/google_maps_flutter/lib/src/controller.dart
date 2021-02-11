@@ -202,7 +202,7 @@ class GoogleMapController {
   /// Also, refer [iOS](https://developers.google.com/maps/documentation/ios-sdk/style-reference)
   /// and [Android](https://developers.google.com/maps/documentation/android-sdk/style-reference)
   /// style reference for more information regarding the supported styles.
-  Future<void> setMapStyle(String mapStyle) {
+  Future<void> setMapStyle(String? mapStyle) {
     return GoogleMapsFlutterPlatform.instance.setMapStyle(mapStyle, mapId: mapId);
   }
 
