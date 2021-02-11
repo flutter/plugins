@@ -175,7 +175,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   ///
   /// The style string can be generated using [map style tool](https://mapstyle.withgoogle.com/).
   Future<void> setMapStyle(
-    String mapStyle, {
+    String? mapStyle, {
     required int mapId,
   }) {
     throw UnimplementedError('setMapStyle() has not been implemented.');

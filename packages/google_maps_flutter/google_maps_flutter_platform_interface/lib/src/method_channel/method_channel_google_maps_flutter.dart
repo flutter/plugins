@@ -410,11 +410,11 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// style reference for more information regarding the supported styles.
   @override
   Future<void> setMapStyle(
-    String mapStyle, {
+    String? mapStyle, {
     required int mapId,
   }) async {
-    final List<dynamic> successAndError = await (channel(mapId)
-        .invokeMethod<List<dynamic>>('map#setStyle', mapStyle) as FutureOr<List<dynamic>>);
+    final List<dynamic> successAndError = (await channel(mapId)
+        .invokeMethod<List<dynamic>>('map#setStyle', mapStyle))!;
     final bool success = successAndError[0];
     if (!success) {
       throw MapStyleException(successAndError[1]);
@@ -426,8 +426,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   Future<LatLngBounds> getVisibleRegion({
     required int mapId,
   }) async {
-    final Map<String, dynamic> latLngBounds = await (channel(mapId)
-        .invokeMapMethod<String, dynamic>('map#getVisibleRegion') as FutureOr<Map<String, dynamic>>);
+    final Map<String, dynamic> latLngBounds = (await channel(mapId)
+        .invokeMapMethod<String, dynamic>('map#getVisibleRegion'))!;
     final LatLng southwest = LatLng.fromJson(latLngBounds['southwest'])!;
     final LatLng northeast = LatLng.fromJson(latLngBounds['northeast'])!;
 
@@ -444,9 +444,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     LatLng latLng, {
     required int mapId,
   }) async {
-    final Map<String, int> point = await (channel(mapId)
+    final Map<String, int> point = (await channel(mapId)
         .invokeMapMethod<String, int>(
-            'map#getScreenCoordinate', latLng.toJson()) as FutureOr<Map<String, int>>);
+            'map#getScreenCoordinate', latLng.toJson()))!;
 
     return ScreenCoordinate(x: point['x']!, y: point['y']!);
   }
@@ -460,9 +460,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     ScreenCoordinate screenCoordinate, {
     required int mapId,
   }) async {
-    final List<dynamic> latLng = await (channel(mapId)
+    final List<dynamic> latLng = (await channel(mapId)
         .invokeMethod<List<dynamic>>(
-            'map#getLatLng', screenCoordinate.toJson()) as FutureOr<List<dynamic>>);
+            'map#getLatLng', screenCoordinate.toJson()))!;
     return LatLng(latLng[0], latLng[1]);
   }
 
