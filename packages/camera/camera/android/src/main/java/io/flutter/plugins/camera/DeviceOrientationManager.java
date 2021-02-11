@@ -57,7 +57,7 @@ class DeviceOrientationManager {
     int angle = 0;
 
     // Fallback to device orientation when the orientation value is null
-    if(orientation==null){
+    if (orientation == null) {
       orientation = getUIOrientation();
     }
 
