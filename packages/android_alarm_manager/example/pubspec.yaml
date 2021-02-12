@@ -6,10 +6,10 @@ dependencies:
     sdk: flutter
   android_alarm_manager:
     path: ../
-  shared_preferences: ^0.5.6
+  shared_preferences: ^2.0.0-nullsafety
   integration_test:
     path: ../../integration_test
-  path_provider: ^1.3.1
+  path_provider: ^2.0.0-nullsafety
 
 dev_dependencies:
   espresso: ^0.0.1+3
