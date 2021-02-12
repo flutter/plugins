@@ -5,6 +5,11 @@ dependencies:
   flutter:
     sdk: flutter
   android_alarm_manager:
+    # When depending on this package from a real application you should use:
+    #   android_alarm_manager: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
     path: ../
   shared_preferences: ^0.5.6
   integration_test:
