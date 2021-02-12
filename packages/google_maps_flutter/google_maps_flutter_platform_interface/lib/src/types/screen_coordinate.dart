@@ -26,7 +26,7 @@ class ScreenCoordinate {
   final int y;
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
+  Object toJson() {
     return <String, int>{
       "x": x,
       "y": y,

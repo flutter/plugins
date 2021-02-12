@@ -21,8 +21,8 @@ class TestMapsObject implements MapsObject {
   }
 
   @override
-  dynamic toJson() {
-    return <String, dynamic>{'id': mapsId.value};
+  Object toJson() {
+    return <String, Object>{'id': mapsId.value};
   }
 
   @override

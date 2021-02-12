@@ -13,8 +13,6 @@ Map<MapsObjectId<T>, T> keyByMapsObjectId<T extends MapsObject>(
 }
 
 /// Converts a Set of [MapsObject]s into something serializable in JSON.
-List<Map<String, dynamic>> serializeMapsObjectSet(Set<MapsObject> mapsObjects) {
-  return mapsObjects
-      .map<Map<String, dynamic>>((MapsObject p) => p.toJson())
-      .toList();
+Object serializeMapsObjectSet(Set<MapsObject> mapsObjects) {
+  return mapsObjects.map<Object>((MapsObject p) => p.toJson()).toList();
 }

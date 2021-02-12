@@ -11,6 +11,6 @@ Map<PolygonId, Polygon> keyByPolygonId(Iterable<Polygon> polygons) {
 }
 
 /// Converts a Set of Polygons into something serializable in JSON.
-List<Map<String, dynamic>>? serializePolygonSet(Set<Polygon> polygons) {
+Object serializePolygonSet(Set<Polygon> polygons) {
   return serializeMapsObjectSet(polygons);
 }

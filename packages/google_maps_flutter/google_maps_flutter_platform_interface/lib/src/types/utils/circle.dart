@@ -11,6 +11,6 @@ Map<CircleId, Circle> keyByCircleId(Iterable<Circle> circles) {
 }
 
 /// Converts a Set of Circles into something serializable in JSON.
-List<Map<String, dynamic>>? serializeCircleSet(Set<Circle> circles) {
+Object serializeCircleSet(Set<Circle> circles) {
   return serializeMapsObjectSet(circles);
 }

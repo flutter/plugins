@@ -108,8 +108,8 @@ class Circle implements MapsObject<Circle> {
   Circle clone() => copyWith();
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
+  Object toJson() {
+    final Map<String, Object> json = <String, Object>{};
 
     void addIfPresent(String fieldName, Object? value) {
       if (value != null) {

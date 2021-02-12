@@ -17,18 +17,10 @@ class MapsObjectUpdates<T extends MapsObject> {
   /// dictionary. E.g., 'circle' will give 'circlesToAdd', 'circlesToUpdate',
   /// 'circleIdsToRemove'.
   MapsObjectUpdates.from(
-    Set<T>? previous,
+    Set<T> previous,
     Set<T> current, {
     required this.objectName,
   }) {
-    if (previous == null) {
-      previous = Set<T>.identity();
-    }
-
-    if (current == null) {
-      current = Set<T>.identity();
-    }
-
     final Map<MapsObjectId<T>, T> previousObjects = keyByMapsObjectId(previous);
     final Map<MapsObjectId<T>, T> currentObjects = keyByMapsObjectId(current);
 
@@ -89,8 +81,8 @@ class MapsObjectUpdates<T extends MapsObject> {
   late Set<T> _objectsToChange;
 
   /// Converts this object to JSON.
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> updateMap = <String, dynamic>{};
+  Object toJson() {
+    final Map<String, Object> updateMap = <String, Object>{};
 
     void addIfNonNull(String fieldName, Object? value) {
       if (value != null) {
@@ -104,7 +96,7 @@ class MapsObjectUpdates<T extends MapsObject> {
     addIfNonNull(
         '${objectName}IdsToRemove',
         _objectIdsToRemove
-            .map<dynamic>((MapsObjectId<T> m) => m.value)
+            .map<String>((MapsObjectId<T> m) => m.value)
             .toList());
 
     return updateMap;
@@ -127,8 +119,8 @@ class MapsObjectUpdates<T extends MapsObject> {
 
   @override
   String toString() {
-    return '${objectRuntimeType(this, 'MapsObjectUpdates')}{add: $objectsToAdd, '
+    return '${objectRuntimeType(this, 'MapsObjectUpdates')}(add: $objectsToAdd, '
         'remove: $objectIdsToRemove, '
-        'change: $objectsToChange}';
+        'change: $objectsToChange)';
   }
 }

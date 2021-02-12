@@ -70,12 +70,12 @@ void main() {
       final TestMapsObjectUpdate updates =
           TestMapsObjectUpdate.from(previous, current);
 
-      final Map<String, dynamic> json = updates.toJson();
-      expect(json, <String, dynamic>{
+      final Object json = updates.toJson();
+      expect(json, <String, Object>{
         'testObjectsToAdd': serializeMapsObjectSet(updates.objectsToAdd),
         'testObjectsToChange': serializeMapsObjectSet(updates.objectsToChange),
         'testObjectIdsToRemove': updates.objectIdsToRemove
-            .map<dynamic>((MapsObjectId<TestMapsObject> m) => m.value)
+            .map<String>((MapsObjectId<TestMapsObject> m) => m.value)
             .toList()
       });
     });
@@ -152,9 +152,9 @@ void main() {
           TestMapsObjectUpdate.from(previous, current);
       expect(
           updates.toString(),
-          'TestMapsObjectUpdate{add: ${updates.objectsToAdd}, '
+          'TestMapsObjectUpdate(add: ${updates.objectsToAdd}, '
           'remove: ${updates.objectIdsToRemove}, '
-          'change: ${updates.objectsToChange}}');
+          'change: ${updates.objectsToChange})');
     });
   });
 }

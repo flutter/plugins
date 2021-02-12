@@ -158,8 +158,8 @@ class Polyline implements MapsObject {
   }
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
+  Object toJson() {
+    final Map<String, Object> json = <String, Object>{};
 
     void addIfPresent(String fieldName, Object? value) {
       if (value != null) {
@@ -211,16 +211,16 @@ class Polyline implements MapsObject {
   @override
   int get hashCode => polylineId.hashCode;
 
-  dynamic _pointsToJson() {
-    final List<dynamic> result = <dynamic>[];
+  Object _pointsToJson() {
+    final List<Object> result = <Object>[];
     for (final LatLng point in points) {
       result.add(point.toJson());
     }
     return result;
   }
 
-  dynamic _patternToJson() {
-    final List<dynamic> result = <dynamic>[];
+  Object _patternToJson() {
+    final List<Object> result = <Object>[];
     for (final PatternItem patternItem in patterns) {
       if (patternItem != null) {
         result.add(patternItem.toJson());

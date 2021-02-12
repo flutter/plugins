@@ -259,14 +259,16 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('updateMapOptions() has not been implemented.');
   }
 
-  /// Returns the current zoom level of the map
+  /// Returns the current zoom level of the map.
   Future<double> getZoomLevel({
     required int mapId,
   }) {
     throw UnimplementedError('getZoomLevel() has not been implemented.');
   }
 
-  /// Returns the image bytes of the map
+  /// Returns the image bytes of the map.
+  ///
+  /// Returns null if a snapshot cannot be created.
   Future<Uint8List?> takeSnapshot({
     required int mapId,
   }) {

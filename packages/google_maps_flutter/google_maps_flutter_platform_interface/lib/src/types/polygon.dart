@@ -128,8 +128,8 @@ class Polygon implements MapsObject {
   }
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
+  Object toJson() {
+    final Map<String, Object> json = <String, Object>{};
 
     void addIfPresent(String fieldName, Object? value) {
       if (value != null) {
@@ -177,18 +177,18 @@ class Polygon implements MapsObject {
   @override
   int get hashCode => polygonId.hashCode;
 
-  dynamic _pointsToJson() {
-    final List<dynamic> result = <dynamic>[];
+  Object _pointsToJson() {
+    final List<Object> result = <Object>[];
     for (final LatLng point in points) {
       result.add(point.toJson());
     }
     return result;
   }
 
-  List<List<dynamic>> _holesToJson() {
-    final List<List<dynamic>> result = <List<dynamic>>[];
+  List<List<Object>> _holesToJson() {
+    final List<List<Object>> result = <List<Object>>[];
     for (final List<LatLng> hole in holes) {
-      final List<dynamic> jsonHole = <dynamic>[];
+      final List<Object> jsonHole = <Object>[];
       for (final LatLng point in hole) {
         jsonHole.add(point.toJson());
       }

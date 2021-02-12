@@ -29,7 +29,7 @@ class LatLng {
   final double longitude;
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
+  Object toJson() {
     return <double>[latitude, longitude];
   }
 
@@ -80,8 +80,8 @@ class LatLngBounds {
   final LatLng northeast;
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
-    return <dynamic>[southwest.toJson(), northeast.toJson()];
+  Object toJson() {
+    return <Object>[southwest.toJson(), northeast.toJson()];
   }
 
   /// Returns whether this rectangle contains the given [LatLng].

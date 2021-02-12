@@ -32,7 +32,7 @@ class MapsObjectId<T> {
 
   @override
   String toString() {
-    return '${objectRuntimeType(this, 'MapsObjectId')}{value: $value}';
+    return '${objectRuntimeType(this, 'MapsObjectId')}($value)';
   }
 }
 
@@ -45,5 +45,5 @@ abstract class MapsObject<T> {
   T clone();
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson();
+  Object toJson();
 }

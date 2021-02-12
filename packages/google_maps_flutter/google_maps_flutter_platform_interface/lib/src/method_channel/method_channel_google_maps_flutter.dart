@@ -58,9 +58,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   // Keep a collection of mapId to a map of TileOverlays.
   final Map<int, Map<TileOverlayId, TileOverlay>> _tileOverlays = {};
 
-  /// Initializes the platform interface with [id].
-  ///
-  /// This method is called when the plugin is first initialized.
   @override
   Future<void> init(int mapId) {
     MethodChannel? channel = _channels[mapId];
@@ -73,9 +70,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return channel.invokeMethod<void>('map#waitForMap');
   }
 
-  /// Dispose of the native resources.
   @override
-  void dispose({int? mapId}) {
+  void dispose({required mapId}) {
     // Noop!
   }
 
@@ -230,12 +226,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     }
   }
 
-  /// Updates configuration options of the map user interface.
-  ///
-  /// Change listeners are notified once the update has been made on the
-  /// platform side.
-  ///
-  /// The returned [Future] completes after listeners have been notified.
   @override
   Future<void> updateMapOptions(
     Map<String, dynamic> optionsUpdate, {
@@ -250,12 +240,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     );
   }
 
-  /// Updates marker configuration.
-  ///
-  /// Change listeners are notified once the update has been made on the
-  /// platform side.
-  ///
-  /// The returned [Future] completes after listeners have been notified.
   @override
   Future<void> updateMarkers(
     MarkerUpdates markerUpdates, {
@@ -268,12 +252,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     );
   }
 
-  /// Updates polygon configuration.
-  ///
-  /// Change listeners are notified once the update has been made on the
-  /// platform side.
-  ///
-  /// The returned [Future] completes after listeners have been notified.
   @override
   Future<void> updatePolygons(
     PolygonUpdates polygonUpdates, {
@@ -286,12 +264,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     );
   }
 
-  /// Updates polyline configuration.
-  ///
-  /// Change listeners are notified once the update has been made on the
-  /// platform side.
-  ///
-  /// The returned [Future] completes after listeners have been notified.
   @override
   Future<void> updatePolylines(
     PolylineUpdates polylineUpdates, {
@@ -304,12 +276,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     );
   }
 
-  /// Updates circle configuration.
-  ///
-  /// Change listeners are notified once the update has been made on the
-  /// platform side.
-  ///
-  /// The returned [Future] completes after listeners have been notified.
   @override
   Future<void> updateCircles(
     CircleUpdates circleUpdates, {
@@ -322,14 +288,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     );
   }
 
-  /// Updates tile overlay configuration.
-  ///
-  /// Change listeners are notified once the update has been made on the
-  /// platform side.
-  ///
-  /// The returned [Future] completes after listeners have been notified.
-  ///
-  /// If `newTileOverlays` is null, all the [TileOverlays] are removed for the Map with `mapId`.
   @override
   Future<void> updateTileOverlays({
     required Set<TileOverlay> newTileOverlays,
@@ -337,8 +295,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }) {
     final Map<TileOverlayId, TileOverlay>? currentTileOverlays =
         _tileOverlays[mapId];
-    Set<TileOverlay>? previousSet =
-        currentTileOverlays != null ? currentTileOverlays.values.toSet() : null;
+    Set<TileOverlay> previousSet = currentTileOverlays != null
+        ? currentTileOverlays.values.toSet()
+        : <TileOverlay>{};
     final TileOverlayUpdates updates =
         TileOverlayUpdates.from(previousSet, newTileOverlays);
     _tileOverlays[mapId] = keyTileOverlayId(newTileOverlays);
@@ -348,43 +307,27 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     );
   }
 
-  /// Clears the tile cache so that all tiles will be requested again from the
-  /// [TileProvider].
-  ///
-  /// The current tiles from this tile overlay will also be
-  /// cleared from the map after calling this method. The Google Map SDK maintains a small
-  /// in-memory cache of tiles. If you want to cache tiles for longer, you
-  /// should implement an on-disk cache.
   @override
   Future<void> clearTileCache(
     TileOverlayId tileOverlayId, {
     required int mapId,
   }) {
     return channel(mapId)
-        .invokeMethod<void>('tileOverlays#clearTileCache', <String, dynamic>{
+        .invokeMethod<void>('tileOverlays#clearTileCache', <String, Object>{
       'tileOverlayId': tileOverlayId.value,
     });
   }
 
-  /// Starts an animated change of the map camera position.
-  ///
-  /// The returned [Future] completes after the change has been started on the
-  /// platform side.
   @override
   Future<void> animateCamera(
     CameraUpdate cameraUpdate, {
     required int mapId,
   }) {
-    return channel(mapId)
-        .invokeMethod<void>('camera#animate', <String, dynamic>{
+    return channel(mapId).invokeMethod<void>('camera#animate', <String, Object>{
       'cameraUpdate': cameraUpdate.toJson(),
     });
   }
 
-  /// Changes the map camera position.
-  ///
-  /// The returned [Future] completes after the change has been made on the
-  /// platform side.
   @override
   Future<void> moveCamera(
     CameraUpdate cameraUpdate, {
@@ -395,19 +338,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     });
   }
 
-  /// Sets the styling of the base map.
-  ///
-  /// Set to `null` to clear any previous custom styling.
-  ///
-  /// If problems were detected with the [mapStyle], including un-parsable
-  /// styling JSON, unrecognized feature type, unrecognized element type, or
-  /// invalid styler keys: [MapStyleException] is thrown and the current
-  /// style is left unchanged.
-  ///
-  /// The style string can be generated using [map style tool](https://mapstyle.withgoogle.com/).
-  /// Also, refer [iOS](https://developers.google.com/maps/documentation/ios-sdk/style-reference)
-  /// and [Android](https://developers.google.com/maps/documentation/android-sdk/style-reference)
-  /// style reference for more information regarding the supported styles.
   @override
   Future<void> setMapStyle(
     String? mapStyle, {
@@ -421,7 +351,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     }
   }
 
-  /// Return the region that is visible in a map.
   @override
   Future<LatLngBounds> getVisibleRegion({
     required int mapId,
@@ -434,11 +363,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return LatLngBounds(northeast: northeast, southwest: southwest);
   }
 
-  /// Return point [Map<String, int>] of the [screenCoordinateInJson] in the current map view.
-  ///
-  /// A projection is used to translate between on screen location and geographic coordinates.
-  /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
-  /// of the map, not necessarily of the whole screen.
   @override
   Future<ScreenCoordinate> getScreenCoordinate(
     LatLng latLng, {
@@ -451,10 +375,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return ScreenCoordinate(x: point['x']!, y: point['y']!);
   }
 
-  /// Returns [LatLng] corresponding to the [ScreenCoordinate] in the current map view.
-  ///
-  /// Returned [LatLng] corresponds to a screen location. The screen location is specified in screen
-  /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
   @override
   Future<LatLng> getLatLng(
     ScreenCoordinate screenCoordinate, {
@@ -466,14 +386,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return LatLng(latLng[0], latLng[1]);
   }
 
-  /// Programmatically show the Info Window for a [Marker].
-  ///
-  /// The `markerId` must match one of the markers on the map.
-  /// An invalid `markerId` triggers an "Invalid markerId" error.
-  ///
-  /// * See also:
-  ///   * [hideMarkerInfoWindow] to hide the Info Window.
-  ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
   @override
   Future<void> showMarkerInfoWindow(
     MarkerId markerId, {
@@ -484,14 +396,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         'markers#showInfoWindow', <String, String>{'markerId': markerId.value});
   }
 
-  /// Programmatically hide the Info Window for a [Marker].
-  ///
-  /// The `markerId` must match one of the markers on the map.
-  /// An invalid `markerId` triggers an "Invalid markerId" error.
-  ///
-  /// * See also:
-  ///   * [showMarkerInfoWindow] to show the Info Window.
-  ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
   @override
   Future<void> hideMarkerInfoWindow(
     MarkerId markerId, {
@@ -502,14 +406,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         'markers#hideInfoWindow', <String, String>{'markerId': markerId.value});
   }
 
-  /// Returns `true` when the [InfoWindow] is showing, `false` otherwise.
-  ///
-  /// The `markerId` must match one of the markers on the map.
-  /// An invalid `markerId` triggers an "Invalid markerId" error.
-  ///
-  /// * See also:
-  ///   * [showMarkerInfoWindow] to show the Info Window.
-  ///   * [hideMarkerInfoWindow] to hide the Info Window.
   @override
   Future<bool> isMarkerInfoWindowShown(
     MarkerId markerId, {
@@ -520,7 +416,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         <String, String>{'markerId': markerId.value}) as Future<bool>;
   }
 
-  /// Returns the current zoom level of the map
   @override
   Future<double> getZoomLevel({
     required int mapId,
@@ -529,7 +424,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         as Future<double>;
   }
 
-  /// Returns the image bytes of the map
   @override
   Future<Uint8List?> takeSnapshot({
     required int mapId,
@@ -537,10 +431,6 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return channel(mapId).invokeMethod<Uint8List>('map#takeSnapshot');
   }
 
-  /// This method builds the appropriate platform view where the map
-  /// can be rendered.
-  /// The `mapId` is passed as a parameter from the framework on the
-  /// `onPlatformViewCreated` callback.
   @override
   Widget buildView(
       Map<String, dynamic> creationParams,

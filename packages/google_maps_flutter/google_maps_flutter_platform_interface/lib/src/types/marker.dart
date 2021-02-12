@@ -9,11 +9,8 @@ import 'package:meta/meta.dart' show immutable;
 
 import 'types.dart';
 
-dynamic _offsetToJson(Offset offset) {
-  if (offset == null) {
-    return null;
-  }
-  return <dynamic>[offset.dx, offset.dy];
+Object _offsetToJson(Offset offset) {
+  return <Object>[offset.dx, offset.dy];
 }
 
 /// Text labels for a [Marker] info window.
@@ -66,8 +63,8 @@ class InfoWindow {
     );
   }
 
-  dynamic _toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
+  Object _toJson() {
+    final Map<String, Object> json = <String, Object>{};
 
     void addIfPresent(String fieldName, Object? value) {
       if (value != null) {
@@ -252,8 +249,8 @@ class Marker implements MapsObject {
   Marker clone() => copyWith();
 
   /// Converts this object to something serializable in JSON.
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
+  Object toJson() {
+    final Map<String, Object> json = <String, Object>{};
 
     void addIfPresent(String fieldName, Object? value) {
       if (value != null) {
