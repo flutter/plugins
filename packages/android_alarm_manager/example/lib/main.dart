@@ -22,7 +22,7 @@ const String isolateName = 'isolate';
 final ReceivePort port = ReceivePort();
 
 /// Global [SharedPreferences] object.
-SharedPreferences? prefs;
+late SharedPreferences prefs;
 
 Future<void> main() async {
   // TODO(bkonyi): uncomment
@@ -35,8 +35,8 @@ Future<void> main() async {
     isolateName,
   );
   prefs = await SharedPreferences.getInstance();
-  if (!prefs!.containsKey(countKey)) {
-    await prefs!.setInt(countKey, 0);
+  if (!prefs.containsKey(countKey)) {
+    await prefs.setInt(countKey, 0);
   }
   runApp(AlarmManagerExampleApp());
 }
@@ -54,8 +54,8 @@ class AlarmManagerExampleApp extends StatelessWidget {
 }
 
 class _AlarmHomePage extends StatefulWidget {
-  _AlarmHomePage({Key? key, this.title}) : super(key: key);
-  final String? title;
+  _AlarmHomePage({Key? key, required this.title}) : super(key: key);
+  final String title;
 
   @override
   _AlarmHomePageState createState() => _AlarmHomePageState();
@@ -78,7 +78,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
     print('Increment counter!');
 
     // Ensure we've loaded the updated count from the background isolate.
-    await prefs!.reload();
+    await prefs.reload();
 
     setState(() {
       _counter++;
@@ -107,7 +107,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
     final textStyle = Theme.of(context).textTheme.headline4;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title!),
+        title: Text(widget.title),
       ),
       body: Center(
         child: Column(
@@ -125,7 +125,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
                   style: textStyle,
                 ),
                 Text(
-                  prefs!.getInt(countKey).toString(),
+                  prefs.getInt(countKey).toString(),
                   key: ValueKey('BackgroundCountText'),
                   style: textStyle,
                 ),
