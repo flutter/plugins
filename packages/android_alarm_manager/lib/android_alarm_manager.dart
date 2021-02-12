@@ -222,7 +222,7 @@ class AndroidAlarmManager {
       rescheduleOnReboot,
       handle.toRawHandle(),
     ]);
-    return (r == null) ? false : r;
+    return r ?? false;
   }
 
   /// Schedules a repeating timer to run `callback` with period `duration`.
@@ -288,7 +288,7 @@ class AndroidAlarmManager {
       rescheduleOnReboot,
       handle.toRawHandle()
     ]);
-    return (r == null) ? false : r;
+    return r ?? false;
   }
 
   /// Cancels a timer.
@@ -301,6 +301,6 @@ class AndroidAlarmManager {
   static Future<bool> cancel(int id) async {
     final bool? r =
         await _channel.invokeMethod<bool>('Alarm.cancel', <dynamic>[id]);
-    return (r == null) ? false : r;
+    return r ?? false;
   }
 }
