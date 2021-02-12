@@ -1,3 +1,7 @@
+## 0.8.0-nullsafety
+
+* Migrated to null safety.
+
 ## 0.7.0+4
 
 * Fix crash when taking picture with orientation lock
