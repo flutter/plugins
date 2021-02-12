@@ -1,3 +1,0 @@
-[submodule "script/plugin_tools"]
-	path = script/plugin_tools
-	url = https://github.com/flutter/plugin_tools.git
