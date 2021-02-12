@@ -51,6 +51,10 @@ class _FakeRelatedApplication extends _i1.Fake
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWindow extends _i1.Mock implements _i2.Window {
+  MockWindow() {
+    _i1.throwOnMissingStub(this);
+  }
+
   @override
   _i4.Future<num> get animationFrame =>
       (super.noSuchMethod(Invocation.getter(#animationFrame), Future.value(0))
@@ -559,6 +563,10 @@ class MockWindow extends _i1.Mock implements _i2.Window {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockNavigator extends _i1.Mock implements _i2.Navigator {
+  MockNavigator() {
+    _i1.throwOnMissingStub(this);
+  }
+
   @override
   String get language =>
       (super.noSuchMethod(Invocation.getter(#language), '') as String);

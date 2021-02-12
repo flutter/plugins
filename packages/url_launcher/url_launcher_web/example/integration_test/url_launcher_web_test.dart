@@ -11,10 +11,7 @@ import 'package:integration_test/integration_test.dart';
 
 import 'url_launcher_web_test.mocks.dart';
 
-@GenerateMocks([], customMocks: [
-  MockSpec<html.Window>(returnNullOnMissingStub: true),
-  MockSpec<html.Navigator>(returnNullOnMissingStub: true)
-])
+@GenerateMocks([html.Window, html.Navigator])
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
