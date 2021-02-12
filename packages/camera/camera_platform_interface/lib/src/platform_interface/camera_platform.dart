@@ -44,6 +44,8 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Completes with a list of available cameras.
+  ///
+  /// This method returns an empty list when no cameras are available.
   Future<List<CameraDescription>> availableCameras() {
     throw UnimplementedError('availableCameras() is not implemented.');
   }
@@ -51,8 +53,8 @@ abstract class CameraPlatform extends PlatformInterface {
   /// Creates an uninitialized camera instance and returns the cameraId.
   Future<int> createCamera(
     CameraDescription cameraDescription,
-    ResolutionPreset resolutionPreset, {
-    bool enableAudio,
+    ResolutionPreset? resolutionPreset, {
+    bool enableAudio = false,
   }) {
     throw UnimplementedError('createCamera() is not implemented.');
   }
@@ -62,8 +64,10 @@ abstract class CameraPlatform extends PlatformInterface {
   /// [imageFormatGroup] is used to specify the image formatting used.
   /// On Android this defaults to ImageFormat.YUV_420_888 and applies only to the imageStream.
   /// On iOS this defaults to kCVPixelFormatType_32BGRA.
-  Future<void> initializeCamera(int cameraId,
-      {ImageFormatGroup imageFormatGroup}) {
+  Future<void> initializeCamera(
+    int cameraId, {
+    ImageFormatGroup imageFormatGroup = ImageFormatGroup.unknown,
+  }) {
     throw UnimplementedError('initializeCamera() is not implemented.');
   }
 
@@ -85,6 +89,11 @@ abstract class CameraPlatform extends PlatformInterface {
   /// The camera experienced an error.
   Stream<CameraErrorEvent> onCameraError(int cameraId) {
     throw UnimplementedError('onCameraError() is not implemented.');
+  }
+
+  /// The camera finished recording a video
+  Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
+    throw UnimplementedError('onCameraTimeLimitReached() is not implemented.');
   }
 
   /// The device orientation changed.
@@ -123,8 +132,9 @@ abstract class CameraPlatform extends PlatformInterface {
   /// The length of the recording can be limited by specifying the [maxVideoDuration].
   /// By default no maximum duration is specified,
   /// meaning the recording will continue until manually stopped.
-  /// The video is returned as a [XFile] after calling [stopVideoRecording].
-  Future<void> startVideoRecording(int cameraId, {Duration maxVideoDuration}) {
+  /// With [maxVideoDuration] set the video is returned in a [VideoRecordedEvent]
+  /// through the [onVideoRecordedEvent] stream when the set duration is reached.
+  Future<void> startVideoRecording(int cameraId, {Duration? maxVideoDuration}) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
@@ -154,7 +164,10 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Sets the exposure point for automatically determining the exposure values.
-  Future<void> setExposurePoint(int cameraId, Point<double> point) {
+  ///
+  /// Supplying `null` for the [point] argument will result in resetting to the
+  /// original exposure point value.
+  Future<void> setExposurePoint(int cameraId, Point<double>? point) {
     throw UnimplementedError('setExposurePoint() is not implemented.');
   }
 
@@ -196,7 +209,10 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Sets the focus point for automatically determining the focus values.
-  Future<void> setFocusPoint(int cameraId, Point<double> point) {
+  ///
+  /// Supplying `null` for the [point] argument will result in resetting to the
+  /// original focus point value.
+  Future<void> setFocusPoint(int cameraId, Point<double>? point) {
     throw UnimplementedError('setFocusPoint() is not implemented.');
   }
 

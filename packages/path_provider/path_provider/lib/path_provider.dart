@@ -51,8 +51,8 @@ PathProviderPlatform get _platform {
 /// On iOS, this uses the `NSCachesDirectory` API.
 ///
 /// On Android, this uses the `getCacheDir` API on the context.
-Future<Directory> getTemporaryDirectory() async {
-  final String path = await _platform.getTemporaryPath();
+Future<Directory?> getTemporaryDirectory() async {
+  final String? path = await _platform.getTemporaryPath();
   if (path == null) {
     return null;
   }
@@ -69,8 +69,8 @@ Future<Directory> getTemporaryDirectory() async {
 /// If this directory does not exist, it is created automatically.
 ///
 /// On Android, this function uses the `getFilesDir` API on the context.
-Future<Directory> getApplicationSupportDirectory() async {
-  final String path = await _platform.getApplicationSupportPath();
+Future<Directory?> getApplicationSupportDirectory() async {
+  final String? path = await _platform.getApplicationSupportPath();
   if (path == null) {
     return null;
   }
@@ -83,8 +83,8 @@ Future<Directory> getApplicationSupportDirectory() async {
 ///
 /// On Android, this function throws an [UnsupportedError] as no equivalent
 /// path exists.
-Future<Directory> getLibraryDirectory() async {
-  final String path = await _platform.getLibraryPath();
+Future<Directory?> getLibraryDirectory() async {
+  final String? path = await _platform.getLibraryPath();
   if (path == null) {
     return null;
   }
@@ -100,8 +100,8 @@ Future<Directory> getLibraryDirectory() async {
 /// On Android, this uses the `getDataDirectory` API on the context. Consider
 /// using [getExternalStorageDirectory] instead if data is intended to be visible
 /// to the user.
-Future<Directory> getApplicationDocumentsDirectory() async {
-  final String path = await _platform.getApplicationDocumentsPath();
+Future<Directory?> getApplicationDocumentsDirectory() async {
+  final String? path = await _platform.getApplicationDocumentsPath();
   if (path == null) {
     return null;
   }
@@ -116,8 +116,8 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 /// to access outside the app's sandbox.
 ///
 /// On Android this uses the `getExternalFilesDir(null)`.
-Future<Directory> getExternalStorageDirectory() async {
-  final String path = await _platform.getExternalStoragePath();
+Future<Directory?> getExternalStorageDirectory() async {
+  final String? path = await _platform.getExternalStoragePath();
   if (path == null) {
     return null;
   }
@@ -137,8 +137,11 @@ Future<Directory> getExternalStorageDirectory() async {
 ///
 /// On Android this returns Context.getExternalCacheDirs() or
 /// Context.getExternalCacheDir() on API levels below 19.
-Future<List<Directory>> getExternalCacheDirectories() async {
-  final List<String> paths = await _platform.getExternalCachePaths();
+Future<List<Directory>?> getExternalCacheDirectories() async {
+  final List<String>? paths = await _platform.getExternalCachePaths();
+  if (paths == null) {
+    return null;
+  }
 
   return paths.map((String path) => Directory(path)).toList();
 }
@@ -155,13 +158,16 @@ Future<List<Directory>> getExternalCacheDirectories() async {
 ///
 /// On Android this returns Context.getExternalFilesDirs(String type) or
 /// Context.getExternalFilesDir(String type) on API levels below 19.
-Future<List<Directory>> getExternalStorageDirectories({
+Future<List<Directory>?> getExternalStorageDirectories({
   /// Optional parameter. See [StorageDirectory] for more informations on
   /// how this type translates to Android storage directories.
-  StorageDirectory type,
+  StorageDirectory? type,
 }) async {
-  final List<String> paths =
+  final List<String>? paths =
       await _platform.getExternalStoragePaths(type: type);
+  if (paths == null) {
+    return null;
+  }
 
   return paths.map((String path) => Directory(path)).toList();
 }
@@ -171,8 +177,8 @@ Future<List<Directory>> getExternalStorageDirectories({
 ///
 /// On Android and on iOS, this function throws an [UnsupportedError] as no equivalent
 /// path exists.
-Future<Directory> getDownloadsDirectory() async {
-  final String path = await _platform.getDownloadsPath();
+Future<Directory?> getDownloadsDirectory() async {
+  final String? path = await _platform.getDownloadsPath();
   if (path == null) {
     return null;
   }
