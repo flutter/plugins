@@ -5,13 +5,6 @@
 A Flutter plugin for accessing the Android AlarmManager service, and running
 Dart code in the background when alarms fire.
 
-**Please set your constraint to `android_alarm_manager: '>=0.4.y+x <2.0.0'`**
-
-## Backward compatible 1.0.0 version is coming
-The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.4.y+z`.
-Please use `android_alarm_manager: '>=0.4.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
-For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-
 ## Getting Started
 
 After importing this plugin to your project as usual, add the following to your
@@ -109,16 +102,11 @@ Which must be reflected in the application's `AndroidManifest.xml`. E.g.:
 **Note:** Not calling `AlarmService.setPluginRegistrant` will result in an exception being
 thrown when an alarm eventually fires.
 
-### Flutter Android Embedding V2 (Flutter Version >= 1.12)
+### Flutter Android Embedding V2
 
 For the Flutter Android Embedding V2, plugins are registered with the background
 isolate via reflection so `AlarmService.setPluginRegistrant` does not need to be
 called.
-
-**NOTE: this plugin is not completely compatible with the V2 embedding on
-Flutter versions < 1.12 as the background isolate will not automatically
-register plugins. This can be resolved by running `flutter upgrade` to upgrade
-to the latest Flutter version.**
 
 For help getting started with Flutter, view our online
 [documentation](https://flutter.dev/).
