@@ -5,7 +5,7 @@ if pgrep -lf chromedriver > /dev/null; then
   flutter pub get
 
   echo "(Re)generating mocks."
-  flutter pub run build_runner build
+  flutter pub run build_runner build --delete-conflicting-outputs
 
   if [ $# -eq 0 ]; then
     echo "No target specified, running all tests..."

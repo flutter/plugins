@@ -25,4 +25,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=2.12.0-0 <3.0.0"
-  flutter: ">=1.26.0-0" # For integration_test from sdk
+  flutter: ">=1.12.13+hotfix.5"
