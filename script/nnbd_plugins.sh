@@ -5,6 +5,7 @@
 # null-safe is available on stable.
 
 readonly NNBD_PLUGINS_LIST=(
+  "android_alarm_manager"
   "android_intent"
   "battery"
   "connectivity"
@@ -27,7 +28,6 @@ readonly NNBD_PLUGINS_LIST=(
 # building the all plugins app. This list should be kept empty.
 
 readonly NON_NNBD_PLUGINS_LIST=(
-  # "android_alarm_manager"
   "camera"
   # "file_selector"
   # "google_maps_flutter"
