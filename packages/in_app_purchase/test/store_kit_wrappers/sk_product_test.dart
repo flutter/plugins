@@ -17,17 +17,8 @@ void main() {
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
           SKProductSubscriptionPeriodWrapper.fromJson(
-              buildSubscriptionPeriodMap(dummySubscription));
+              buildSubscriptionPeriodMap(dummySubscription)!);
       expect(wrapper, equals(dummySubscription));
-    });
-
-    test(
-        'SKProductSubscriptionPeriodWrapper should have properties to be null if map is empty',
-        () {
-      final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromJson(<String, dynamic>{});
-      expect(wrapper.numberOfUnits, null);
-      expect(wrapper.unit, null);
     });
 
     test(
@@ -38,36 +29,11 @@ void main() {
       expect(wrapper, equals(dummyDiscount));
     });
 
-    test(
-        'SKProductDiscountWrapper should have properties to be null if map is empty',
-        () {
-      final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromJson(<String, dynamic>{});
-      expect(wrapper.price, null);
-      expect(wrapper.priceLocale, null);
-      expect(wrapper.numberOfPeriods, null);
-      expect(wrapper.paymentMode, null);
-      expect(wrapper.subscriptionPeriod, null);
-    });
-
     test('SKProductWrapper should have property values consistent with map',
         () {
       final SKProductWrapper wrapper =
           SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
       expect(wrapper, equals(dummyProductWrapper));
-    });
-
-    test('SKProductWrapper should have properties to be null if map is empty',
-        () {
-      final SKProductWrapper wrapper =
-          SKProductWrapper.fromJson(<String, dynamic>{});
-      expect(wrapper.productIdentifier, null);
-      expect(wrapper.localizedTitle, null);
-      expect(wrapper.localizedDescription, null);
-      expect(wrapper.priceLocale, null);
-      expect(wrapper.subscriptionGroupIdentifier, null);
-      expect(wrapper.price, null);
-      expect(wrapper.subscriptionPeriod, null);
     });
 
     test('toProductDetails() should return correct Product object', () {
@@ -132,7 +98,8 @@ void main() {
           PurchaseDetails.fromSKTransaction(dummyTransaction, 'receipt data');
       expect(dummyTransaction.transactionIdentifier, details.purchaseID);
       expect(dummyTransaction.payment.productIdentifier, details.productID);
-      expect((dummyTransaction.transactionTimeStamp * 1000).toInt().toString(),
+      expect(dummyTransaction.transactionTimeStamp, isNotNull);
+      expect((dummyTransaction.transactionTimeStamp! * 1000).toInt().toString(),
           details.transactionDate);
       expect(details.verificationData.localVerificationData, 'receipt data');
       expect(details.verificationData.serverVerificationData, 'receipt data');

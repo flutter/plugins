@@ -5,4 +5,3 @@ targets:
         options:
           any_map: true
           create_to_json: true
-          nullable: false

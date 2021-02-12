@@ -13,16 +13,20 @@ part 'enum_converters.g.dart';
 /// Use these in `@JsonSerializable()` classes by annotating them with
 /// `@SKTransactionStatusConverter()`.
 class SKTransactionStatusConverter
-    implements JsonConverter<SKPaymentTransactionStateWrapper, int> {
+    implements JsonConverter<SKPaymentTransactionStateWrapper, int?> {
   /// Default const constructor.
   const SKTransactionStatusConverter();
 
   @override
-  SKPaymentTransactionStateWrapper fromJson(int json) =>
-      _$enumDecode<SKPaymentTransactionStateWrapper>(
-          _$SKPaymentTransactionStateWrapperEnumMap
-              .cast<SKPaymentTransactionStateWrapper, dynamic>(),
-          json);
+  SKPaymentTransactionStateWrapper fromJson(int? json) {
+    if (json == null) {
+      return SKPaymentTransactionStateWrapper.unspecified;
+    }
+    return _$enumDecode<SKPaymentTransactionStateWrapper, dynamic>(
+        _$SKPaymentTransactionStateWrapperEnumMap
+            .cast<SKPaymentTransactionStateWrapper, dynamic>(),
+        json);
+  }
 
   /// Converts an [SKPaymentTransactionStateWrapper] to a [PurchaseStatus].
   PurchaseStatus toPurchaseStatus(SKPaymentTransactionStateWrapper object) {
@@ -34,19 +38,18 @@ class SKTransactionStatusConverter
       case SKPaymentTransactionStateWrapper.restored:
         return PurchaseStatus.purchased;
       case SKPaymentTransactionStateWrapper.failed:
+      case SKPaymentTransactionStateWrapper.unspecified:
         return PurchaseStatus.error;
     }
-
-    throw ArgumentError('$object isn\'t mapped to PurchaseStatus');
   }
 
   @override
   int toJson(SKPaymentTransactionStateWrapper object) =>
-      _$SKPaymentTransactionStateWrapperEnumMap[object];
+      _$SKPaymentTransactionStateWrapperEnumMap[object]!;
 }
 
 // Define a class so we generate serializer helper methods for the enums
 @JsonSerializable()
 class _SerializedEnums {
-  SKPaymentTransactionStateWrapper response;
+  late SKPaymentTransactionStateWrapper response;
 }

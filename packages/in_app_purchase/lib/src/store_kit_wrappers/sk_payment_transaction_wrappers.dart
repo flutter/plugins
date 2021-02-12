@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:ui' show hashValues;
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'sk_product_wrapper.dart';
 import 'sk_payment_queue_wrapper.dart';
@@ -20,13 +19,15 @@ part 'sk_payment_transaction_wrappers.g.dart';
 /// This class is a Dart wrapper around [SKTransactionObserver](https://developer.apple.com/documentation/storekit/skpaymenttransactionobserver?language=objc).
 abstract class SKTransactionObserverWrapper {
   /// Triggered when any transactions are updated.
-  void updatedTransactions({List<SKPaymentTransactionWrapper> transactions});
+  void updatedTransactions(
+      {required List<SKPaymentTransactionWrapper> transactions});
 
   /// Triggered when any transactions are removed from the payment queue.
-  void removedTransactions({List<SKPaymentTransactionWrapper> transactions});
+  void removedTransactions(
+      {required List<SKPaymentTransactionWrapper> transactions});
 
   /// Triggered when there is an error while restoring transactions.
-  void restoreCompletedTransactionsFailed({SKError error});
+  void restoreCompletedTransactionsFailed({required SKError error});
 
   /// Triggered when payment queue has finished sending restored transactions.
   void paymentQueueRestoreCompletedTransactionsFinished();
@@ -41,7 +42,7 @@ abstract class SKTransactionObserverWrapper {
   /// continue the transaction later by calling [addPayment] with the
   /// `payment` param from this method.
   bool shouldAddStorePayment(
-      {SKPaymentWrapper payment, SKProductWrapper product});
+      {required SKPaymentWrapper payment, required SKProductWrapper product});
 }
 
 /// The state of a transaction.
@@ -85,6 +86,10 @@ enum SKPaymentTransactionStateWrapper {
   /// transaction to update to another state.
   @JsonValue(4)
   deferred,
+
+  /// Indicates the transaction is in an unspecified state.
+  @JsonValue(-1)
+  unspecified,
 }
 
 /// Created when a payment is added to the [SKPaymentQueueWrapper].
@@ -96,16 +101,16 @@ enum SKPaymentTransactionStateWrapper {
 ///
 /// Dart wrapper around StoreKit's
 /// [SKPaymentTransaction](https://developer.apple.com/documentation/storekit/skpaymenttransaction?language=objc).
-@JsonSerializable(nullable: true)
+@JsonSerializable()
 class SKPaymentTransactionWrapper {
   /// Creates a new [SKPaymentTransactionWrapper] with the provided information.
   SKPaymentTransactionWrapper({
-    @required this.payment,
-    @required this.transactionState,
-    @required this.originalTransaction,
-    @required this.transactionTimeStamp,
-    @required this.transactionIdentifier,
-    @required this.error,
+    required this.payment,
+    required this.transactionState,
+    this.originalTransaction,
+    this.transactionTimeStamp,
+    this.transactionIdentifier,
+    this.error,
   });
 
   /// Constructs an instance of this from a key value map of data.
@@ -113,10 +118,7 @@ class SKPaymentTransactionWrapper {
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class. The `map` parameter must not be
   /// null.
-  factory SKPaymentTransactionWrapper.fromJson(Map map) {
-    if (map == null) {
-      return null;
-    }
+  factory SKPaymentTransactionWrapper.fromJson(Map<String, dynamic> map) {
     return _$SKPaymentTransactionWrapperFromJson(map);
   }
 
@@ -130,18 +132,21 @@ class SKPaymentTransactionWrapper {
 
   /// The original Transaction.
   ///
-  /// Only available if the [transactionState] is
-  /// [SKPaymentTransactionStateWrapper.restored]. When the [transactionState]
+  /// Only available if the [transactionState] is [SKPaymentTransactionStateWrapper.restored].
+  /// Otherwise the value is `null`.
+  ///
+  /// When the [transactionState]
   /// is [SKPaymentTransactionStateWrapper.restored], the current transaction
   /// object holds a new [transactionIdentifier].
-  final SKPaymentTransactionWrapper originalTransaction;
+  final SKPaymentTransactionWrapper? originalTransaction;
 
   /// The timestamp of the transaction.
   ///
   /// Seconds since epoch. It is only defined when the [transactionState] is
   /// [SKPaymentTransactionStateWrapper.purchased] or
   /// [SKPaymentTransactionStateWrapper.restored].
-  final double transactionTimeStamp;
+  /// Otherwise, the value is `null`.
+  final double? transactionTimeStamp;
 
   /// The unique string identifer of the transaction.
   ///
@@ -150,13 +155,15 @@ class SKPaymentTransactionWrapper {
   /// [SKPaymentTransactionStateWrapper.restored]. You may wish to record this
   /// string as part of an audit trail for App Store purchases. The value of
   /// this string corresponds to the same property in the receipt.
-  final String transactionIdentifier;
+  ///
+  /// The value is `null` if it is an unsuccessful transaction.
+  final String? transactionIdentifier;
 
   /// The error object
   ///
   /// Only available if the [transactionState] is
   /// [SKPaymentTransactionStateWrapper.failed].
-  final SKError error;
+  final SKError? error;
 
   @override
   bool operator ==(Object other) {
@@ -166,7 +173,8 @@ class SKPaymentTransactionWrapper {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    final SKPaymentTransactionWrapper typedOther = other;
+    final SKPaymentTransactionWrapper typedOther =
+        other as SKPaymentTransactionWrapper;
     return typedOther.payment == payment &&
         typedOther.transactionState == transactionState &&
         typedOther.originalTransaction == originalTransaction &&
@@ -189,7 +197,7 @@ class SKPaymentTransactionWrapper {
 
   /// The payload that is used to finish this transaction.
   Map<String, String> toFinishMap() => {
-        "transactionIdentifier": this.transactionIdentifier,
-        "productIdentifier": this.payment?.productIdentifier,
+        "transactionIdentifier": this.transactionIdentifier ?? '',
+        "productIdentifier": this.payment.productIdentifier,
       };
 }

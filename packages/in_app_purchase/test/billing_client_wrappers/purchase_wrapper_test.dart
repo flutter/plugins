@@ -62,6 +62,7 @@ void main() {
       expect(details.purchaseID, dummyPurchase.orderId);
       expect(details.productID, dummyPurchase.sku);
       expect(details.transactionDate, dummyPurchase.purchaseTime.toString());
+      expect(details.verificationData, isNotNull);
       expect(details.verificationData.source, IAPSource.GooglePlay);
       expect(details.verificationData.localVerificationData,
           dummyPurchase.originalJson);

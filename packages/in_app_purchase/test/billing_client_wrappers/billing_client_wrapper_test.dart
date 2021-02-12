@@ -16,7 +16,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
-  BillingClient billingClient;
+  late BillingClient billingClient;
 
   setUpAll(() =>
       channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler));
@@ -228,10 +228,6 @@ void main() {
       expect(response.purchasesList, equals(expectedList));
     });
 
-    test('checks for null params', () async {
-      expect(() => billingClient.queryPurchases(null), throwsAssertionError);
-    });
-
     test('handles empty purchases', () async {
       final BillingResponse expectedCode = BillingResponse.userCanceled;
       const String debugMessage = 'dummy message';
@@ -280,11 +276,6 @@ void main() {
           await billingClient.queryPurchaseHistory(SkuType.inapp);
       expect(response.billingResult, equals(expectedBillingResult));
       expect(response.purchaseHistoryRecordList, equals(expectedList));
-    });
-
-    test('checks for null params', () async {
-      expect(
-          () => billingClient.queryPurchaseHistory(null), throwsAssertionError);
     });
 
     test('handles empty purchases', () async {

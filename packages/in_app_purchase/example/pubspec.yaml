@@ -5,11 +5,9 @@ author: Flutter Team <flutter-dev@googlegroups.com>
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^0.1.2
   shared_preferences: ^0.5.2
 
 dev_dependencies:
-  test: ^1.5.2
   flutter_driver:
     sdk: flutter
   in_app_purchase:

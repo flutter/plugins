@@ -8,12 +8,16 @@ part of 'sk_product_wrapper.dart';
 
 SkProductResponseWrapper _$SkProductResponseWrapperFromJson(Map json) {
   return SkProductResponseWrapper(
-    products: (json['products'] as List)
-        .map((e) => SKProductWrapper.fromJson(e as Map))
-        .toList(),
-    invalidProductIdentifiers: (json['invalidProductIdentifiers'] as List)
-        .map((e) => e as String)
-        .toList(),
+    products: (json['products'] as List<dynamic>?)
+            ?.map((e) =>
+                SKProductWrapper.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList() ??
+        [],
+    invalidProductIdentifiers:
+        (json['invalidProductIdentifiers'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            [],
   );
 }
 
@@ -27,8 +31,8 @@ Map<String, dynamic> _$SkProductResponseWrapperToJson(
 SKProductSubscriptionPeriodWrapper _$SKProductSubscriptionPeriodWrapperFromJson(
     Map json) {
   return SKProductSubscriptionPeriodWrapper(
-    numberOfUnits: json['numberOfUnits'] as int,
-    unit: _$enumDecodeNullable(_$SKSubscriptionPeriodUnitEnumMap, json['unit']),
+    numberOfUnits: json['numberOfUnits'] as int? ?? 1,
+    unit: _$enumDecode(_$SKSubscriptionPeriodUnitEnumMap, json['unit']),
   );
 }
 
@@ -39,36 +43,30 @@ Map<String, dynamic> _$SKProductSubscriptionPeriodWrapperToJson(
       'unit': _$SKSubscriptionPeriodUnitEnumMap[instance.unit],
     };
 
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
+K _$enumDecode<K, V>(
+  Map<K, V> enumValues,
+  Object? source, {
+  K? unknownValue,
 }) {
   if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
+    throw ArgumentError(
+      'A value must be provided. Supported values: '
+      '${enumValues.values.join(', ')}',
+    );
   }
 
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
-}
-
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+  return enumValues.entries.singleWhere(
+    (e) => e.value == source,
+    orElse: () {
+      if (unknownValue == null) {
+        throw ArgumentError(
+          '`$source` is not one of the supported values: '
+          '${enumValues.values.join(', ')}',
+        );
+      }
+      return MapEntry(unknownValue, enumValues.values.first);
+    },
+  ).key;
 }
 
 const _$SKSubscriptionPeriodUnitEnumMap = {
@@ -80,17 +78,14 @@ const _$SKSubscriptionPeriodUnitEnumMap = {
 
 SKProductDiscountWrapper _$SKProductDiscountWrapperFromJson(Map json) {
   return SKProductDiscountWrapper(
-    price: json['price'] as String,
-    priceLocale: json['priceLocale'] == null
-        ? null
-        : SKPriceLocaleWrapper.fromJson(json['priceLocale'] as Map),
-    numberOfPeriods: json['numberOfPeriods'] as int,
-    paymentMode: _$enumDecodeNullable(
+    price: json['price'] as String? ?? '',
+    priceLocale: SKPriceLocaleWrapper.fromJson(
+        Map<String, dynamic>.from(json['priceLocale'] as Map)),
+    numberOfPeriods: json['numberOfPeriods'] as int? ?? 1,
+    paymentMode: _$enumDecode(
         _$SKProductDiscountPaymentModeEnumMap, json['paymentMode']),
-    subscriptionPeriod: json['subscriptionPeriod'] == null
-        ? null
-        : SKProductSubscriptionPeriodWrapper.fromJson(
-            json['subscriptionPeriod'] as Map),
+    subscriptionPeriod: SKProductSubscriptionPeriodWrapper.fromJson(
+        Map<String, dynamic>.from(json['subscriptionPeriod'] as Map)),
   );
 }
 
@@ -109,25 +104,26 @@ const _$SKProductDiscountPaymentModeEnumMap = {
   SKProductDiscountPaymentMode.payAsYouGo: 0,
   SKProductDiscountPaymentMode.payUpFront: 1,
   SKProductDiscountPaymentMode.freeTrail: 2,
+  SKProductDiscountPaymentMode.unspecified: -1,
 };
 
 SKProductWrapper _$SKProductWrapperFromJson(Map json) {
   return SKProductWrapper(
-    productIdentifier: json['productIdentifier'] as String,
-    localizedTitle: json['localizedTitle'] as String,
-    localizedDescription: json['localizedDescription'] as String,
-    priceLocale: json['priceLocale'] == null
-        ? null
-        : SKPriceLocaleWrapper.fromJson(json['priceLocale'] as Map),
-    subscriptionGroupIdentifier: json['subscriptionGroupIdentifier'] as String,
-    price: json['price'] as String,
+    productIdentifier: json['productIdentifier'] as String? ?? '',
+    localizedTitle: json['localizedTitle'] as String? ?? '',
+    localizedDescription: json['localizedDescription'] as String? ?? '',
+    priceLocale: SKPriceLocaleWrapper.fromJson(
+        Map<String, dynamic>.from(json['priceLocale'] as Map)),
+    subscriptionGroupIdentifier: json['subscriptionGroupIdentifier'] as String?,
+    price: json['price'] as String? ?? '',
     subscriptionPeriod: json['subscriptionPeriod'] == null
         ? null
         : SKProductSubscriptionPeriodWrapper.fromJson(
-            json['subscriptionPeriod'] as Map),
+            Map<String, dynamic>.from(json['subscriptionPeriod'] as Map)),
     introductoryPrice: json['introductoryPrice'] == null
         ? null
-        : SKProductDiscountWrapper.fromJson(json['introductoryPrice'] as Map),
+        : SKProductDiscountWrapper.fromJson(
+            Map<String, dynamic>.from(json['introductoryPrice'] as Map)),
   );
 }
 
@@ -145,8 +141,8 @@ Map<String, dynamic> _$SKProductWrapperToJson(SKProductWrapper instance) =>
 
 SKPriceLocaleWrapper _$SKPriceLocaleWrapperFromJson(Map json) {
   return SKPriceLocaleWrapper(
-    currencySymbol: json['currencySymbol'] as String,
-    currencyCode: json['currencyCode'] as String,
+    currencySymbol: json['currencySymbol'] as String? ?? '',
+    currencyCode: json['currencyCode'] as String? ?? '',
   );
 }
 

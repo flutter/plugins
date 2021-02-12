@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/purchase_wrapper.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/enum_converters.dart';
@@ -59,9 +58,9 @@ class PurchaseVerificationData {
 
   /// Creates a [PurchaseVerificationData] object with the provided information.
   PurchaseVerificationData(
-      {@required this.localVerificationData,
-      @required this.serverVerificationData,
-      @required this.source});
+      {required this.localVerificationData,
+      required this.serverVerificationData,
+      required this.source});
 }
 
 /// Status for a [PurchaseDetails].
@@ -88,9 +87,10 @@ enum PurchaseStatus {
 class PurchaseParam {
   /// Creates a new purchase parameter object with the given data.
   PurchaseParam(
-      {@required this.productDetails,
+      {required this.productDetails,
       this.applicationUserName,
-      this.sandboxTesting});
+      this.sandboxTesting = false,
+      this.simulatesAskToBuyInSandbox = false});
 
   /// The product to create payment for.
   ///
@@ -103,10 +103,16 @@ class PurchaseParam {
   /// Do not pass in a clear text, your developer ID, the user’s Apple ID, or the
   /// user's Google ID for this field.
   /// For example, you can use a one-way hash of the user’s account name on your server.
-  final String applicationUserName;
+  final String? applicationUserName;
 
-  /// The 'sandboxTesting' is only available on iOS, set it to `true` for testing in AppStore's sandbox environment. The default value is `false`.
+  /// @deprecated Use [simulatesAskToBuyInSandbox] instead.
+  ///
+  /// This parameter has no effect and will be removed shortly.
+  @deprecated
   final bool sandboxTesting;
+
+  /// Only available on iOS, set it to `true` to produce an "ask to buy" flow for this payment in the sandbox.
+  final bool simulatesAskToBuyInSandbox;
 }
 
 /// Represents the transaction details of a purchase.
@@ -115,7 +121,9 @@ class PurchaseParam {
 /// This class for simple operations. If you would like to see the detailed representation of the product, instead,  use [PurchaseWrapper] on Android and [SKPaymentTransactionWrapper] on iOS.
 class PurchaseDetails {
   /// A unique identifier of the purchase.
-  final String purchaseID;
+  ///
+  /// The `value` is null on iOS if it is not a successful purchase.
+  final String? purchaseID;
 
   /// The product identifier of the purchase.
   final String productID;
@@ -126,15 +134,16 @@ class PurchaseDetails {
   /// details on how to verify purchase use this data. You should never use any
   /// purchase data until verified.
   ///
-  /// On iOS, this may be null. Call
-  /// [InAppPurchaseConnection.refreshPurchaseVerificationData] to get a new
+  /// On iOS, [InAppPurchaseConnection.refreshPurchaseVerificationData] can be used to get a new
   /// [PurchaseVerificationData] object for further validation.
   final PurchaseVerificationData verificationData;
 
   /// The timestamp of the transaction.
   ///
   /// Milliseconds since epoch.
-  final String transactionDate;
+  ///
+  /// The value is `null` is [status] is not [PurchaseStatus.purchased].
+  final String? transactionDate;
 
   /// The status that this [PurchaseDetails] is currently on.
   PurchaseStatus get status => _status;
@@ -153,20 +162,22 @@ class PurchaseDetails {
     _status = status;
   }
 
-  PurchaseStatus _status;
+  late PurchaseStatus _status;
 
-  /// The error is only available when [status] is [PurchaseStatus.error].
-  IAPError error;
+  /// The error details when the [status] is [PurchaseStatus.error].
+  ///
+  /// The value is `null` if [status] is not [PurchaseStatus.error].
+  IAPError? error;
 
   /// Points back to the `StoreKits`'s [SKPaymentTransactionWrapper] object that generated this [PurchaseDetails] object.
   ///
-  /// This is null on Android.
-  final SKPaymentTransactionWrapper skPaymentTransaction;
+  /// This is `null` on Android.
+  final SKPaymentTransactionWrapper? skPaymentTransaction;
 
   /// Points back to the `BillingClient`'s [PurchaseWrapper] object that generated this [PurchaseDetails] object.
   ///
-  /// This is null on iOS.
-  final PurchaseWrapper billingClientPurchase;
+  /// This is `null` on iOS.
+  final PurchaseWrapper? billingClientPurchase;
 
   /// The developer has to call [InAppPurchaseConnection.completePurchase] if the value is `true`
   /// and the product has been delivered to the user.
@@ -179,14 +190,14 @@ class PurchaseDetails {
   // The platform that the object is created on.
   //
   // The value is either '_kPlatformIOS' or '_kPlatformAndroid'.
-  String _platform;
+  String? _platform;
 
   /// Creates a new PurchaseDetails object with the provided data.
   PurchaseDetails({
-    @required this.purchaseID,
-    @required this.productID,
-    @required this.verificationData,
-    @required this.transactionDate,
+    this.purchaseID,
+    required this.productID,
+    required this.verificationData,
+    required this.transactionDate,
     this.skPaymentTransaction,
     this.billingClientPurchase,
   });
@@ -201,7 +212,7 @@ class PurchaseDetails {
             serverVerificationData: base64EncodedReceipt,
             source: IAPSource.AppStore),
         this.transactionDate = transaction.transactionTimeStamp != null
-            ? (transaction.transactionTimeStamp * 1000).toInt().toString()
+            ? (transaction.transactionTimeStamp! * 1000).toInt().toString()
             : null,
         this.skPaymentTransaction = transaction,
         this.billingClientPurchase = null,
@@ -212,8 +223,8 @@ class PurchaseDetails {
       error = IAPError(
         source: IAPSource.AppStore,
         code: kPurchaseErrorCode,
-        message: transaction.error.domain,
-        details: transaction.error.userInfo,
+        message: transaction.error?.domain ?? '',
+        details: transaction.error?.userInfo,
       );
     }
   }
@@ -235,7 +246,7 @@ class PurchaseDetails {
       error = IAPError(
         source: IAPSource.GooglePlay,
         code: kPurchaseErrorCode,
-        message: null,
+        message: '',
       );
     }
   }
@@ -246,7 +257,7 @@ class PurchaseDetails {
 /// An instance of this class is returned in [InAppPurchaseConnection.queryPastPurchases].
 class QueryPurchaseDetailsResponse {
   /// Creates a new [QueryPurchaseDetailsResponse] object with the provider information.
-  QueryPurchaseDetailsResponse({@required this.pastPurchases, this.error});
+  QueryPurchaseDetailsResponse({required this.pastPurchases, this.error});
 
   /// A list of successfully fetched past purchases.
   ///
@@ -257,6 +268,6 @@ class QueryPurchaseDetailsResponse {
 
   /// The error when fetching past purchases.
   ///
-  /// If the fetch is successful, the value is null.
-  final IAPError error;
+  /// If the fetch is successful, the value is `null`.
+  final IAPError? error;
 }
