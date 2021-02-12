@@ -11,10 +11,10 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  shared_preferences: ^0.5.6
+  shared_preferences: ^2.0.0-nullsafety
   integration_test:
     path: ../../integration_test
-  path_provider: ^1.3.1
+  path_provider: ^2.0.0-nullsafety
 
 dev_dependencies:
   espresso: ^0.0.1+3
@@ -28,5 +28,5 @@ flutter:
   uses-material-design: true
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.12.0-0 <3.0.0'
   flutter: ">=1.12.13+hotfix.5"
