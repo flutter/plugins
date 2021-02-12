@@ -5,20 +5,13 @@ description: A Flutter plugin for getting information about and controlling the
 version: 0.8.0-nullsafety
 homepage: https://github.com/flutter/plugins/tree/master/packages/camera/camera
 
-# TODO(mvanbeusekom): Contains temporary path reference so should not be publishable. Remove once
-#                     PR 3530 has been merged and published.
-publish_to: none
-
 dependencies:
   flutter:
     sdk: flutter
 
-  # TODO(mvanbeusekom): Temporary reference via path to continue NNDB development. Remove once
-  #                     PR 3530 has been merged and published.
-  camera_platform_interface:
-    path: ../camera_platform_interface
+  camera_platform_interface: ^2.0.0-nullsafety
 
-  pedantic: ^1.10.0-nullsafety.3
+  pedantic: ^1.10.0
   quiver: ^3.0.0-nullsafety.3
 
 dev_dependencies:
