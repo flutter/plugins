@@ -38,7 +38,7 @@ readonly NNBD_PLUGINS_LIST=(
 readonly NON_NNBD_PLUGINS_LIST=(
   # "android_alarm_manager"
   "camera"
-  # "google_maps_flutter"
+  "google_maps_flutter"
   # "image_picker"
   # "in_app_purchase"
   # "quick_actions"

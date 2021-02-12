@@ -1,6 +1,7 @@
 ## 2.0.0-nullsafety
 
 * Migrated to null-safety.
+* BREAKING CHANGE: Removed deprecated APIs.
 
 ## 1.2.0
 
