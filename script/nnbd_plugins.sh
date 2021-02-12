@@ -14,6 +14,7 @@ readonly NNBD_PLUGINS_LIST=(
   "file_selector"
   "flutter_plugin_android_lifecycle"
   "flutter_webview"
+  "google_maps_flutter"
   "google_sign_in"
   "image_picker"
   "ios_platform_images"
@@ -38,7 +39,6 @@ readonly NNBD_PLUGINS_LIST=(
 readonly NON_NNBD_PLUGINS_LIST=(
   # "android_alarm_manager"
   "camera"
-  "google_maps_flutter"
   # "image_picker"
   # "in_app_purchase"
   # "quick_actions"
