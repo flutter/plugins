@@ -56,7 +56,7 @@ void _alarmManagerCallbackDispatcher() {
 // A lambda that returns the current instant in the form of a [DateTime].
 typedef DateTime _Now();
 // A lambda that gets the handle for the given [callback].
-typedef CallbackHandle _GetCallbackHandle(Function callback);
+typedef CallbackHandle? _GetCallbackHandle(Function callback);
 
 /// A Flutter plugin for registering Dart callbacks with the Android
 /// AlarmManager service.
@@ -71,7 +71,7 @@ class AndroidAlarmManager {
   // Callback used to get the handle for a callback. It's
   // [PluginUtilities.getCallbackHandle] by default.
   static _GetCallbackHandle _getCallbackHandle =
-      (Function callback) => PluginUtilities.getCallbackHandle(callback)!;
+      (Function callback) => PluginUtilities.getCallbackHandle(callback);
 
   /// This is exposed for the unit tests. It should not be accessed by users of
   /// the plugin.
@@ -88,7 +88,7 @@ class AndroidAlarmManager {
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> initialize() async {
-    final CallbackHandle handle =
+    final CallbackHandle? handle =
         _getCallbackHandle(_alarmManagerCallbackDispatcher);
     if (handle == null) {
       return false;
@@ -207,7 +207,7 @@ class AndroidAlarmManager {
     assert(callback is Function() || callback is Function(int));
     assert(id.bitLength < 32);
     final int startMillis = time.millisecondsSinceEpoch;
-    final CallbackHandle handle = _getCallbackHandle(callback);
+    final CallbackHandle? handle = _getCallbackHandle(callback);
     if (handle == null) {
       return false;
     }
@@ -274,7 +274,7 @@ class AndroidAlarmManager {
     final int period = duration.inMilliseconds;
     final int first =
         startAt != null ? startAt.millisecondsSinceEpoch : now + period;
-    final CallbackHandle handle = _getCallbackHandle(callback);
+    final CallbackHandle? handle = _getCallbackHandle(callback);
     if (handle == null) {
       return false;
     }
