@@ -18,5 +18,6 @@ if pgrep -lf chromedriver > /dev/null; then
 
   else
     echo "chromedriver is not running."
+    echo "Please, check the README.md for instructions on how to use run_test.sh"
 fi
 
