@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety
+
+* Update version to (semi-belatedly) meet 1.0-consistency promise.
+
 ## 0.1.0-nullsafety.3
 
 * Bump ffi dependency to 1.0.0
