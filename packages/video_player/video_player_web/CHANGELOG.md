@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.3
+
+* Updated to video_player_platform_interface 4.0.
+
 ## 2.0.0-nullsafety.2
 
 * Fixed an issue where `isBuffering` was not updating on Web.
