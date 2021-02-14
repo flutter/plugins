@@ -17,17 +17,21 @@ import '../types/utils/tile_overlay.dart';
 
 /// Error thrown when an unknown map ID is provided to a method channel API.
 class UnknownMapIDError extends Error {
+  /// Creates an assertion error with the provided [mapId] and optional
+  /// [message].
+  UnknownMapIDError(this.mapId, [this.message]);
+
+  /// The unknown ID.
+  final int mapId;
+
   /// Message describing the assertion error.
   final Object? message;
 
-  /// Creates an assertion error with the provided [message].
-  UnknownMapIDError([this.message]);
-
   String toString() {
     if (message != null) {
-      return "Unknown map ID: ${Error.safeToString(message)}";
+      return "Unknown map ID $mapId: ${Error.safeToString(message)}";
     }
-    return "Unknown map ID";
+    return "Unknown map ID $mapId";
   }
 }
 
@@ -50,7 +54,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   MethodChannel channel(int mapId) {
     MethodChannel? channel = _channels[mapId];
     if (channel == null) {
-      throw UnknownMapIDError();
+      throw UnknownMapIDError(mapId);
     }
     return channel;
   }
@@ -71,7 +75,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }
 
   @override
-  void dispose({required mapId}) {
+  void dispose({required int mapId}) {
     // Noop!
   }
 
@@ -433,9 +437,26 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
   @override
   Widget buildView(
-      Map<String, dynamic> creationParams,
-      Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
-      PlatformViewCreatedCallback onPlatformViewCreated) {
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required CameraPosition initialCameraPosition,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  }) {
+    final Map<String, dynamic> creationParams = <String, dynamic>{
+      'initialCameraPosition': initialCameraPosition.toMap(),
+      'options': mapOptions,
+      'markersToAdd': serializeMarkerSet(markers),
+      'polygonsToAdd': serializePolygonSet(polygons),
+      'polylinesToAdd': serializePolylineSet(polylines),
+      'circlesToAdd': serializeCircleSet(circles),
+      'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
+    };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: 'plugins.flutter.io/google_maps',
