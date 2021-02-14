@@ -49,9 +49,9 @@ void main() {
     );
 
     // Verify that each one was created with a different _webOnlyMapCreationId.
-    expect(platform.buildViewParams.length, 2);
-    expect(platform.buildViewParams[0]['_webOnlyMapCreationId'], 0);
-    expect(platform.buildViewParams[1]['_webOnlyMapCreationId'], 1);
+    expect(platform.createdIds.length, 2);
+    expect(platform.createdIds[0], 0);
+    expect(platform.createdIds[1], 1);
   });
 
   testWidgets('Calls platform.dispose when GoogleMap is disposed of', (
@@ -74,8 +74,8 @@ void main() {
 class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
   TestGoogleMapsFlutterPlatform();
 
-  // The params passed to each call to buildView, in call order.
-  List<Map<String, dynamic>> buildViewParams = <Map<String, dynamic>>[];
+  // The IDs passed to each call to buildView, in call order.
+  List<int> createdIds = <int>[];
 
   // Whether `dispose` has been called.
   bool disposed = false;
@@ -266,11 +266,22 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
 
   /// Returns a widget displaying the map view
   Widget buildView(
-      Map<String, dynamic> creationParams,
-      Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
-      PlatformViewCreatedCallback onPlatformViewCreated) {
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required CameraPosition initialCameraPosition,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
+        const <Factory<OneSequenceGestureRecognizer>>{},
+    // TODO: Replace with a structured type that's part of the interface.
+    // See https://github.com/flutter/flutter/issues/70330.
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  }) {
     onPlatformViewCreated(0);
-    buildViewParams.add(creationParams);
+    createdIds.add(creationId);
     return Container();
   }
 }

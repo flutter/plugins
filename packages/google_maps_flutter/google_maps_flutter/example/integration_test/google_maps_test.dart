@@ -955,10 +955,8 @@ void main() {
     final BitmapDescriptor scaled = await BitmapDescriptor.fromAssetImage(
         imageConfiguration, 'red_square.png',
         mipmaps: false);
-    // ignore: invalid_use_of_visible_for_testing_member
-    expect(mip.toJson()[2], 1);
-    // ignore: invalid_use_of_visible_for_testing_member
-    expect(scaled.toJson()[2], 2);
+    expect((mip.toJson() as List<dynamic>)[2], 1);
+    expect((scaled.toJson() as List<dynamic>)[2], 2);
   });
 
   testWidgets('testTakeSnapshot', (WidgetTester tester) async {

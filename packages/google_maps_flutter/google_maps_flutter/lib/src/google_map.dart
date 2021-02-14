@@ -14,7 +14,7 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 // to the buildView function, so the web implementation can use it as a
 // cache key. This needs to be provided from the outside, because web
 // views seem to re-render much more often that mobile platform views.
-int _webOnlyMapId = 0;
+int _nextMapCreationId = 0;
 
 /// Error thrown when an unknown map object ID is provided to a method.
 class UnknownMapObjectIDError extends Error {
@@ -234,7 +234,7 @@ class GoogleMap extends StatefulWidget {
 }
 
 class _GoogleMapState extends State<GoogleMap> {
-  final _webOnlyMapCreationId = _webOnlyMapId++;
+  final _mapId = _nextMapCreationId++;
 
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
@@ -247,21 +247,16 @@ class _GoogleMapState extends State<GoogleMap> {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> creationParams = <String, dynamic>{
-      'initialCameraPosition': widget.initialCameraPosition.toMap(),
-      'options': _googleMapOptions.toMap(),
-      'markersToAdd': serializeMarkerSet(widget.markers),
-      'polygonsToAdd': serializePolygonSet(widget.polygons),
-      'polylinesToAdd': serializePolylineSet(widget.polylines),
-      'circlesToAdd': serializeCircleSet(widget.circles),
-      '_webOnlyMapCreationId': _webOnlyMapCreationId,
-      'tileOverlaysToAdd': serializeTileOverlaySet(widget.tileOverlays),
-    };
-
     return GoogleMapsFlutterPlatform.instance.buildView(
-      creationParams,
-      widget.gestureRecognizers,
+      _mapId,
       onPlatformViewCreated,
+      initialCameraPosition: widget.initialCameraPosition,
+      markers: widget.markers,
+      polygons: widget.polygons,
+      polylines: widget.polylines,
+      circles: widget.circles,
+      gestureRecognizers: widget.gestureRecognizers,
+      mapOptions: _googleMapOptions.toMap(),
     );
   }
 
