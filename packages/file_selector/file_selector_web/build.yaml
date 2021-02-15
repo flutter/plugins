@@ -1,6 +1,0 @@
-targets:
-  $default:
-    sources:
-      - integration_test/*.dart
-      - lib/$lib$
-      - $package$
