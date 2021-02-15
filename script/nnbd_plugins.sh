@@ -39,7 +39,6 @@ readonly NNBD_PLUGINS_LIST=(
 
 readonly NON_NNBD_PLUGINS_LIST=(
   "camera"
-  "google_maps_flutter" # half migrated
   # "image_picker"
   # "in_app_purchase"
   # "quick_actions"
