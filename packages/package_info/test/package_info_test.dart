@@ -46,4 +46,18 @@ void main() {
       ],
     );
   });
+
+  test('Mock initial values', () async {
+    PackageInfo.setMockInitialValues(
+      appName: 'mock_package_info_example',
+      packageName: 'io.flutter.plugins.mockpackageinfoexample',
+      version: '1.1',
+      buildNumber: '2',
+    );
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    expect(info.appName, 'mock_package_info_example');
+    expect(info.buildNumber, '2');
+    expect(info.packageName, 'io.flutter.plugins.mockpackageinfoexample');
+    expect(info.version, '1.1');
+  });
 }

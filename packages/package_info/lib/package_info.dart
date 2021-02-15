@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 const MethodChannel _kChannel =
     MethodChannel('plugins.flutter.io/package_info');
@@ -62,4 +63,21 @@ class PackageInfo {
 
   /// The build number. `CFBundleVersion` on iOS, `versionCode` on Android.
   final String buildNumber;
+
+  /// Initializes the application metadata with mock values for testing.
+  ///
+  /// If the singleton instance has been initialized already, it is overwritten.
+  @visibleForTesting
+  static void setMockInitialValues({
+    required String appName,
+    required String packageName,
+    required String version,
+    required String buildNumber,
+  }) {
+    _fromPlatform = PackageInfo(
+        appName: appName,
+        packageName: packageName,
+        version: version,
+        buildNumber: buildNumber);
+  }
 }
