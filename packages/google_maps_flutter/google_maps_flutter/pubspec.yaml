@@ -7,8 +7,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.0-nullsafety.2
-  google_maps_flutter_platform_interface: #XXX
-    path: ../google_maps_flutter_platform_interface
+  google_maps_flutter_platform_interface: ^2.0.0-nullsafety
 
 dev_dependencies:
   flutter_test:
