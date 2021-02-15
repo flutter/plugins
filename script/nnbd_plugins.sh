@@ -9,6 +9,7 @@ readonly NNBD_PLUGINS_LIST=(
   "android_intent"
   "battery"
   "camera"
+  "camera_platform_interface"
   "connectivity"
   "cross_file"
   "device_info"
@@ -38,8 +39,8 @@ readonly NNBD_PLUGINS_LIST=(
 # building the all plugins app. This list should be kept empty.
 
 readonly NON_NNBD_PLUGINS_LIST=(
-  "camera"
-  "google_maps_flutter" # half migrated
+  #"camera"
+  "google_maps_flutter"
   # "image_picker"
   # "in_app_purchase"
   # "quick_actions"
