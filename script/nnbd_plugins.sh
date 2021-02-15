@@ -9,6 +9,7 @@ readonly NNBD_PLUGINS_LIST=(
   "android_intent"
   "battery"
   "camera"
+  "camera_platform_interface"
   "connectivity"
   "cross_file"
   "device_info"
@@ -38,10 +39,9 @@ readonly NNBD_PLUGINS_LIST=(
 # building the all plugins app. This list should be kept empty.
 
 readonly NON_NNBD_PLUGINS_LIST=(
-  "camera" # partially migrated
   "extension_google_sign_in_as_googleapis_auth"
   "google_maps_flutter" # partially migrated
 )
 
 export EXCLUDED_PLUGINS_FROM_STABLE=$(IFS=, ; echo "${NNBD_PLUGINS_LIST[*]}")
-export EXCLUDED_PLUGINS_FROM_MASTER=$(IFS=, ; echo "${NON_NNBD_PLUGINS_LIST[*]}")
+export EXCLUDED_PLUGINS_FOR_NNBD=$(IFS=, ; echo "${NON_NNBD_PLUGINS_LIST[*]}")
