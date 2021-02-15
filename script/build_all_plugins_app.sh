@@ -54,13 +54,11 @@ readonly EXCLUDED_PLUGINS_LIST=(
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
 
 ALL_EXCLUDED=($EXCLUDED)
-# Exclude nnbd plugins from stable.
+# Exclude nnbd plugins from stable, and conflicting plugins otherwise.
 if [ "$CHANNEL" == "stable" ]; then
   ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_STABLE")
-fi
-# Exclude non-nnbd plugins from master.
-if [ "$CHANNEL" != "stable" ]; then
-  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_MASTER")
+else
+  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FOR_NNBD")
 fi
 
 echo "Excluding the following plugins: $ALL_EXCLUDED"
