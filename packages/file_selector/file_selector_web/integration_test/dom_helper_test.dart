@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
+
 
 import 'dart:html';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,18 +13,18 @@ import 'package:file_selector_platform_interface/file_selector_platform_interfac
 void main() {
   group('FileSelectorWeb', () {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-    DomHelper domHelper;
-    FileUploadInputElement input;
+    late DomHelper domHelper;
+    FileUploadInputElement? input;
 
-    FileList FileListItems(List<File> files) {
+    FileList? FileListItems(List<File> files) {
       final dataTransfer = DataTransfer();
-      files.forEach(dataTransfer.items.add);
-      return dataTransfer.files;
+      files.forEach(dataTransfer.items!.add);
+      return dataTransfer.files as FileList?;
     }
 
     void setFilesAndTriggerChange(List<File> files) {
-      input.files = FileListItems(files);
-      input.dispatchEvent(Event('change'));
+      input!.files = FileListItems(files);
+      input!.dispatchEvent(Event('change'));
     }
 
     setUp(() {
@@ -87,7 +87,7 @@ void main() {
         bool wasClicked = false;
 
         //ignore: unawaited_futures
-        input.onClick.first.then((_) => wasClicked = true);
+        input!.onClick.first.then((_) => wasClicked = true);
 
         final futureFile = domHelper.getFiles(
           accept: accept,
@@ -95,9 +95,9 @@ void main() {
           input: input,
         );
 
-        expect(input.matchesWithAncestors('body'), true);
-        expect(input.accept, accept);
-        expect(input.multiple, multiple);
+        expect(input!.matchesWithAncestors('body'), true);
+        expect(input!.accept, accept);
+        expect(input!.multiple, multiple);
         expect(
           wasClicked,
           true,
@@ -109,7 +109,7 @@ void main() {
         await futureFile;
 
         // It should be already removed from the DOM after the file is resolved.
-        expect(input.parent, isNull);
+        expect(input!.parent, isNull);
       });
     });
   });
