@@ -26,10 +26,10 @@ check_changed_packages > /dev/null
 # updating multiple plugins for a breaking change in a common dependency in
 # cases where using a relaxed version constraint isn't possible.
 readonly EXCLUDED_PLUGINS_LIST=(
-  "file_selector" # currently out of sync with camera
-  "flutter_plugin_android_lifecycle"
-  "image_picker"
-  "local_auth" # flutter_plugin_android_lifecycle conflict
+  # "file_selector" # currently out of sync with camera
+  # "flutter_plugin_android_lifecycle"
+  # "image_picker"
+  # "local_auth" # flutter_plugin_android_lifecycle conflict
   "plugin_platform_interface" # This should never be a direct app dependency.
 )
 # Comma-separated string of the list above
