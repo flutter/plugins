@@ -1,7 +1,7 @@
 name: file_selector_web
 description: Web platform implementation of file_selector
 homepage: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_web
-version: 0.7.0+1
+version: 1.0.0-nullsafety.0
 
 flutter:
   plugin:
