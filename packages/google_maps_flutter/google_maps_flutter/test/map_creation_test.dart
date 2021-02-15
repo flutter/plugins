@@ -264,7 +264,7 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
     disposed = true;
   }
 
-  /// Returns a widget displaying the map view
+  @override
   Widget buildView(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
@@ -276,8 +276,6 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
         const <Factory<OneSequenceGestureRecognizer>>{},
-    // TODO: Replace with a structured type that's part of the interface.
-    // See https://github.com/flutter/flutter/issues/70330.
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {
     onPlatformViewCreated(0);

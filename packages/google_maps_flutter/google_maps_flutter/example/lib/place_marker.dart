@@ -298,9 +298,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                 target: LatLng(-33.852, 151.211),
                 zoom: 11.0,
               ),
-              // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-              // https://github.com/flutter/flutter/issues/28312
-              // ignore: prefer_collection_literals
               markers: Set<Marker>.of(markers.values),
             ),
           ),
