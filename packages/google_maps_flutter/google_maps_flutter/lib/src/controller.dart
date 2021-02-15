@@ -42,7 +42,8 @@ class GoogleMapController {
   @visibleForTesting
   MethodChannel? get channel {
     if (GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter) {
-      return (GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter)
+      return (GoogleMapsFlutterPlatform.instance
+              as MethodChannelGoogleMapsFlutter)
           .channel(mapId);
     }
     return null;
@@ -97,8 +98,8 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) {
     assert(optionsUpdate != null);
-    return GoogleMapsFlutterPlatform.instance.updateMapOptions(optionsUpdate,
-        mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .updateMapOptions(optionsUpdate, mapId: mapId);
   }
 
   /// Updates marker configuration.
@@ -109,8 +110,8 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMarkers(MarkerUpdates markerUpdates) {
     assert(markerUpdates != null);
-    return GoogleMapsFlutterPlatform.instance.updateMarkers(markerUpdates,
-        mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .updateMarkers(markerUpdates, mapId: mapId);
   }
 
   /// Updates polygon configuration.
@@ -121,8 +122,8 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updatePolygons(PolygonUpdates polygonUpdates) {
     assert(polygonUpdates != null);
-    return GoogleMapsFlutterPlatform.instance.updatePolygons(polygonUpdates,
-        mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .updatePolygons(polygonUpdates, mapId: mapId);
   }
 
   /// Updates polyline configuration.
@@ -133,8 +134,8 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updatePolylines(PolylineUpdates polylineUpdates) {
     assert(polylineUpdates != null);
-    return GoogleMapsFlutterPlatform.instance.updatePolylines(polylineUpdates,
-        mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .updatePolylines(polylineUpdates, mapId: mapId);
   }
 
   /// Updates circle configuration.
@@ -145,8 +146,8 @@ class GoogleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateCircles(CircleUpdates circleUpdates) {
     assert(circleUpdates != null);
-    return GoogleMapsFlutterPlatform.instance.updateCircles(circleUpdates,
-        mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .updateCircles(circleUpdates, mapId: mapId);
   }
 
   /// Updates tile overlays configuration.
@@ -156,8 +157,8 @@ class GoogleMapController {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateTileOverlays(Set<TileOverlay> newTileOverlays) {
-    return GoogleMapsFlutterPlatform.instance.updateTileOverlays(
-        newTileOverlays: newTileOverlays, mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .updateTileOverlays(newTileOverlays: newTileOverlays, mapId: mapId);
   }
 
   /// Clears the tile cache so that all tiles will be requested again from the
@@ -169,8 +170,8 @@ class GoogleMapController {
   /// should implement an on-disk cache.
   Future<void> clearTileCache(TileOverlayId tileOverlayId) async {
     assert(tileOverlayId != null);
-    return GoogleMapsFlutterPlatform.instance.clearTileCache(tileOverlayId,
-        mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .clearTileCache(tileOverlayId, mapId: mapId);
   }
 
   /// Starts an animated change of the map camera position.
@@ -178,7 +179,8 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
   Future<void> animateCamera(CameraUpdate cameraUpdate) {
-    return GoogleMapsFlutterPlatform.instance.animateCamera(cameraUpdate, mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .animateCamera(cameraUpdate, mapId: mapId);
   }
 
   /// Changes the map camera position.
@@ -186,7 +188,8 @@ class GoogleMapController {
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> moveCamera(CameraUpdate cameraUpdate) {
-    return GoogleMapsFlutterPlatform.instance.moveCamera(cameraUpdate, mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .moveCamera(cameraUpdate, mapId: mapId);
   }
 
   /// Sets the styling of the base map.
@@ -203,7 +206,8 @@ class GoogleMapController {
   /// and [Android](https://developers.google.com/maps/documentation/android-sdk/style-reference)
   /// style reference for more information regarding the supported styles.
   Future<void> setMapStyle(String? mapStyle) {
-    return GoogleMapsFlutterPlatform.instance.setMapStyle(mapStyle, mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .setMapStyle(mapStyle, mapId: mapId);
   }
 
   /// Return [LatLngBounds] defining the region that is visible in a map.
@@ -217,7 +221,8 @@ class GoogleMapController {
   /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
   /// of the map, not necessarily of the whole screen.
   Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) {
-    return GoogleMapsFlutterPlatform.instance.getScreenCoordinate(latLng, mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .getScreenCoordinate(latLng, mapId: mapId);
   }
 
   /// Returns [LatLng] corresponding to the [ScreenCoordinate] in the current map view.
@@ -225,7 +230,8 @@ class GoogleMapController {
   /// Returned [LatLng] corresponds to a screen location. The screen location is specified in screen
   /// pixels (not display pixels) relative to the top left of the map, not top left of the whole screen.
   Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) {
-    return GoogleMapsFlutterPlatform.instance.getLatLng(screenCoordinate, mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .getLatLng(screenCoordinate, mapId: mapId);
   }
 
   /// Programmatically show the Info Window for a [Marker].
@@ -238,8 +244,8 @@ class GoogleMapController {
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
   Future<void> showMarkerInfoWindow(MarkerId markerId) {
     assert(markerId != null);
-    return GoogleMapsFlutterPlatform.instance.showMarkerInfoWindow(markerId,
-        mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .showMarkerInfoWindow(markerId, mapId: mapId);
   }
 
   /// Programmatically hide the Info Window for a [Marker].
@@ -252,8 +258,8 @@ class GoogleMapController {
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
   Future<void> hideMarkerInfoWindow(MarkerId markerId) {
     assert(markerId != null);
-    return GoogleMapsFlutterPlatform.instance.hideMarkerInfoWindow(markerId,
-        mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .hideMarkerInfoWindow(markerId, mapId: mapId);
   }
 
   /// Returns `true` when the [InfoWindow] is showing, `false` otherwise.
@@ -266,8 +272,8 @@ class GoogleMapController {
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   Future<bool> isMarkerInfoWindowShown(MarkerId markerId) {
     assert(markerId != null);
-    return GoogleMapsFlutterPlatform.instance.isMarkerInfoWindowShown(markerId,
-        mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .isMarkerInfoWindowShown(markerId, mapId: mapId);
   }
 
   /// Returns the current zoom level of the map

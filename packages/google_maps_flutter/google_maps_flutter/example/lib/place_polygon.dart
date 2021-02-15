@@ -150,7 +150,8 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
   void _addHoles(PolygonId polygonId) {
     final Polygon polygon = polygons[polygonId]!;
     setState(() {
-      polygons[polygonId] = polygon.copyWith(holesParam: _createHoles(polygonId));
+      polygons[polygonId] =
+          polygon.copyWith(holesParam: _createHoles(polygonId));
     });
   }
 
