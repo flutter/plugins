@@ -14,7 +14,7 @@ class DomHelper {
 
   /// Default constructor, initializes the container DOM element.
   DomHelper() {
-    final body = querySelector('body');
+    final body = querySelector('body')!;
     body.children.add(_container);
   }
 
@@ -22,7 +22,7 @@ class DomHelper {
   Future<List<XFile>> getFiles({
     String accept = '',
     bool multiple = false,
-    @visibleForTesting FileUploadInputElement input,
+    @visibleForTesting FileUploadInputElement? input,
   }) {
     final Completer<List<XFile>> _completer = Completer();
     input = input ?? FileUploadInputElement();
@@ -34,18 +34,18 @@ class DomHelper {
     );
 
     input.onChange.first.then((_) {
-      final List<XFile> files = input.files.map(_convertFileToXFile).toList();
+      final List<XFile> files = input!.files!.map(_convertFileToXFile).toList();
       input.remove();
       _completer.complete(files);
     });
 
     input.onError.first.then((event) {
-      final ErrorEvent error = event;
+      final ErrorEvent error = event as ErrorEvent;
       final platformException = PlatformException(
         code: error.type,
         message: error.message,
       );
-      input.remove();
+      input!.remove();
       _completer.completeError(platformException);
     });
 
@@ -58,6 +58,6 @@ class DomHelper {
         Url.createObjectUrl(file),
         name: file.name,
         length: file.size,
-        lastModified: DateTime.fromMillisecondsSinceEpoch(file.lastModified),
+        lastModified: DateTime.fromMillisecondsSinceEpoch(file.lastModified!),
       );
 }
