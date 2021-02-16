@@ -200,11 +200,9 @@ Tried searching for the following:
     if (isAndroid) {
       return (isAndroidPlugin(plugin, fileSystem));
     }
-    // When we are here, no flags are specified. Only return true if the plugin supports mobile for legacy command support.
-    // TODO(cyanglaz): Make mobile platforms flags also required like other platforms (breaking change).
+    // When we are here, no flags are specified. Only return true if the plugin
+    // supports Android for legacy command support. TODO(cyanglaz): Make Android
+    // flag also required like other platforms (breaking change).
     // https://github.com/flutter/flutter/issues/58285
-    final bool isMobilePlugin =
-        isIosPlugin(plugin, fileSystem) || isAndroidPlugin(plugin, fileSystem);
-    return isMobilePlugin;
-  }
+    return isAndroidPlugin(plugin, fileSystem);
 }
