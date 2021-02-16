@@ -72,7 +72,7 @@ class CameraPosition {
   ///
   /// Mainly for internal use.
   static CameraPosition? fromMap(Object? json) {
-    if (json == null || !(json is Map<String, dynamic>)) {
+    if (json == null || !(json is Map<dynamic, dynamic>)) {
       return null;
     }
     final LatLng? target = LatLng.fromJson(json['target']);
