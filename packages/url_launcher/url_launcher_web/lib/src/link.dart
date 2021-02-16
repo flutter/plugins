@@ -66,6 +66,7 @@ class WebLinkDelegateState extends State<WebLinkDelegate> {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      fit: StackFit.passthrough,
       children: <Widget>[
         widget.link.builder(
           context,

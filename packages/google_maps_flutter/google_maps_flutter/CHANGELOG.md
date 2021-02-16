@@ -1,3 +1,11 @@
+## 1.2.0
+
+* Support custom tiles.
+
+## 1.1.1
+
+* Fix in example app to properly place polyline at initial camera position.
+
 ## 1.1.0
 
 * Add support for holes in Polygons.

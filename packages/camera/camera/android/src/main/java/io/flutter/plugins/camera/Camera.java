@@ -216,7 +216,6 @@ public class Camera {
           public void onOpened(@NonNull CameraDevice device) {
             cameraDevice = device;
             try {
-              cameraRegions = new CameraRegions(getRegionBoundaries());
               startPreview();
               dartMessenger.sendCameraInitializedEvent(
                   previewSize.getWidth(),
@@ -299,6 +298,8 @@ public class Camera {
         captureRequestBuilder.addTarget(surface);
       }
     }
+
+    cameraRegions = new CameraRegions(getRegionBoundaries());
 
     // Prepare the callback
     CameraCaptureSession.StateCallback callback =
@@ -543,10 +544,14 @@ public class Camera {
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
       captureBuilder.set(
+          CaptureRequest.SCALER_CROP_REGION,
+          captureRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
+      captureBuilder.set(
           CaptureRequest.JPEG_ORIENTATION,
           lockedCaptureOrientation == null
               ? deviceOrientationListener.getMediaOrientation()
               : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation));
+
       switch (flashMode) {
         case off:
           captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
@@ -781,7 +786,7 @@ public class Camera {
     }
     // Set the metering rectangle
     if (x == null || y == null) cameraRegions.resetAutoExposureMeteringRectangle();
-    else cameraRegions.setAutoExposureMeteringRectangleFromPoint(x, y);
+    else cameraRegions.setAutoExposureMeteringRectangleFromPoint(y, 1 - x);
     // Apply it
     updateExposure(exposureMode);
     refreshPreviewCaptureSession(
@@ -833,7 +838,7 @@ public class Camera {
     if (x == null || y == null) {
       cameraRegions.resetAutoFocusMeteringRectangle();
     } else {
-      cameraRegions.setAutoFocusMeteringRectangleFromPoint(x, y);
+      cameraRegions.setAutoFocusMeteringRectangleFromPoint(y, 1 - x);
     }
 
     // Apply the new metering rectangle

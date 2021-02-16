@@ -1,3 +1,11 @@
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 1.6.28
+
+* Drop unused UUID dependency for tests.
+
 ## 1.6.27
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
