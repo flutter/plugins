@@ -34,13 +34,15 @@ void main() {
           zIndex: 1,
           visible: false,
           tileSize: 128);
-      final Map<String, dynamic> json = tileOverlay.toJson();
-      expect(json['tileOverlayId'], 'id');
-      expect(json['fadeIn'], false);
-      expect(json['transparency'], moreOrLessEquals(0.1));
-      expect(json['zIndex'], 1);
-      expect(json['visible'], false);
-      expect(json['tileSize'], 128);
+      final Object json = tileOverlay.toJson();
+      expect(json, <String, Object>{
+        'tileOverlayId': 'id',
+        'fadeIn': false,
+        'transparency': moreOrLessEquals(0.1),
+        'zIndex': 1,
+        'visible': false,
+        'tileSize': 128,
+      });
     });
 
     test('invalid transparency throws', () async {

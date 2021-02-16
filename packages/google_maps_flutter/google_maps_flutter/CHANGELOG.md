@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Support custom tiles.
+
 ## 1.1.1
 
 * Fix in example app to properly place polyline at initial camera position.

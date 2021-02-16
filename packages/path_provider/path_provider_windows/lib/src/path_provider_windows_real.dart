@@ -28,17 +28,17 @@ class VersionInfoQuerier {
     }
     const kEnUsLanguageCode = '040904e4';
     final keyPath = TEXT('\\StringFileInfo\\$kEnUsLanguageCode\\$key');
-    final length = allocate<Uint32>();
-    final valueAddress = allocate<Pointer<Utf16>>();
+    final length = calloc<Uint32>();
+    final valueAddress = calloc<Pointer<Utf16>>();
     try {
       if (VerQueryValue(versionInfo, keyPath, valueAddress, length) == 0) {
         return null;
       }
-      return valueAddress.value.unpackString(length.value);
+      return valueAddress.value.toDartString();
     } finally {
-      free(keyPath);
-      free(length);
-      free(valueAddress);
+      calloc.free(keyPath);
+      calloc.free(length);
+      calloc.free(valueAddress);
     }
   }
 }
@@ -54,7 +54,7 @@ class PathProviderWindows extends PathProviderPlatform {
   /// This is typically the same as the TMP environment variable.
   @override
   Future<String?> getTemporaryPath() async {
-    final buffer = allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
+    final buffer = calloc<Uint16>(MAX_PATH + 1).cast<Utf16>();
     String path;
 
     try {
@@ -64,7 +64,7 @@ class PathProviderWindows extends PathProviderPlatform {
         final error = GetLastError();
         throw WindowsException(error);
       } else {
-        path = buffer.unpackString(length);
+        path = buffer.toDartString();
 
         // GetTempPath adds a trailing backslash, but SHGetKnownFolderPath does
         // not. Strip off trailing backslash for consistency with other methods
@@ -82,7 +82,7 @@ class PathProviderWindows extends PathProviderPlatform {
 
       return Future.value(path);
     } finally {
-      free(buffer);
+      calloc.free(buffer);
     }
   }
 
@@ -115,7 +115,7 @@ class PathProviderWindows extends PathProviderPlatform {
   /// folderID is a GUID that represents a specific known folder ID, drawn from
   /// [WindowsKnownFolder].
   Future<String> getPath(String folderID) {
-    final pathPtrPtr = allocate<Pointer<Utf16>>();
+    final pathPtrPtr = calloc<Pointer<Utf16>>();
     final Pointer<GUID> knownFolderID = calloc<GUID>()..ref.setGUID(folderID);
 
     try {
@@ -132,11 +132,11 @@ class PathProviderWindows extends PathProviderPlatform {
         }
       }
 
-      final path = pathPtrPtr.value.unpackString(MAX_PATH);
+      final path = pathPtrPtr.value.toDartString();
       return Future.value(path);
     } finally {
-      free(pathPtrPtr);
-      free(knownFolderID);
+      calloc.free(pathPtrPtr);
+      calloc.free(knownFolderID);
     }
   }
 
@@ -155,8 +155,8 @@ class PathProviderWindows extends PathProviderPlatform {
     String? productName;
 
     final Pointer<Utf16> moduleNameBuffer =
-        allocate<Uint16>(count: MAX_PATH + 1).cast<Utf16>();
-    final Pointer<Uint32> unused = allocate<Uint32>();
+        calloc<Uint16>(MAX_PATH + 1).cast<Utf16>();
+    final Pointer<Uint32> unused = calloc<Uint32>();
     Pointer<Uint8>? infoBuffer;
     try {
       // Get the module name.
@@ -169,10 +169,10 @@ class PathProviderWindows extends PathProviderPlatform {
       // From that, load the VERSIONINFO resource
       int infoSize = GetFileVersionInfoSize(moduleNameBuffer, unused);
       if (infoSize != 0) {
-        infoBuffer = allocate<Uint8>(count: infoSize);
+        infoBuffer = calloc<Uint8>(infoSize);
         if (GetFileVersionInfo(moduleNameBuffer, 0, infoSize, infoBuffer) ==
             0) {
-          free(infoBuffer);
+          calloc.free(infoBuffer);
           infoBuffer = null;
         }
       }
@@ -183,18 +183,18 @@ class PathProviderWindows extends PathProviderPlatform {
 
       // If there was no product name, use the executable name.
       if (productName == null) {
-        productName = path.basenameWithoutExtension(
-            moduleNameBuffer.unpackString(moduleNameLength));
+        productName =
+            path.basenameWithoutExtension(moduleNameBuffer.toDartString());
       }
 
       return companyName != null
           ? path.join(companyName, productName)
           : productName;
     } finally {
-      free(moduleNameBuffer);
-      free(unused);
+      calloc.free(moduleNameBuffer);
+      calloc.free(unused);
       if (infoBuffer != null) {
-        free(infoBuffer);
+        calloc.free(infoBuffer);
       }
     }
   }

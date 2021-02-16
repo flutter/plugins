@@ -17,7 +17,7 @@ class CameraPreview extends StatelessWidget {
   final CameraController controller;
 
   /// A widget to overlay on top of the camera preview
-  final Widget child;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class CameraPreview extends StatelessWidget {
 
   DeviceOrientation _getApplicableOrientation() {
     return controller.value.isRecordingVideo
-        ? controller.value.recordingOrientation
+        ? controller.value.recordingOrientation!
         : (controller.value.lockedCaptureOrientation ??
             controller.value.deviceOrientation);
   }
@@ -61,6 +61,6 @@ class CameraPreview extends StatelessWidget {
       DeviceOrientation.portraitDown: 2,
       DeviceOrientation.landscapeRight: 3,
     };
-    return turns[_getApplicableOrientation()] + platformOffset;
+    return turns[_getApplicableOrientation()]! + platformOffset;
   }
 }
