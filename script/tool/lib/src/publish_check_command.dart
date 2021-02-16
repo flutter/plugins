@@ -42,7 +42,7 @@ class PublishCheckCommand extends PluginCommand {
       final Colorize colorizedError = Colorize('$error\n$joinedFailedPackages')
         ..red();
       print(colorizedError);
-      throw ToolExit(64);
+      throw ToolExit(1);
     }
 
     final Colorize passedMessage =
@@ -53,17 +53,14 @@ class PublishCheckCommand extends PluginCommand {
   Pubspec tryParsePubspec(Directory package) {
     final File pubspecFile = package.childFile('pubspec.yaml');
 
-    Pubspec pubspec;
     try {
-      pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+      return Pubspec.parse(pubspecFile.readAsStringSync());
     } on Exception catch (exception) {
       print(
         'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}',
       );
       return null;
     }
-
-    return pubspec;
   }
 
   Future<bool> passesPublishCheck(Directory package) async {
