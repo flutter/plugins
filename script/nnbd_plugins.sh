@@ -40,6 +40,7 @@ readonly NNBD_PLUGINS_LIST=(
 
 readonly NON_NNBD_PLUGINS_LIST=(
   "extension_google_sign_in_as_googleapis_auth"
+  "google_maps_flutter_web" # Not yet migrated.
 )
 
 export EXCLUDED_PLUGINS_FROM_STABLE=$(IFS=, ; echo "${NNBD_PLUGINS_LIST[*]}")
