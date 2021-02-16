@@ -11,7 +11,7 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 ## Installation
 
 ### iOS 
-Add scheme for any URL passed on `canLaunch` to your _Info.plist_ file.  
+Add any URL scheme passed to canLaunch in your Info.plist file.
 
 Example:  
 ```
