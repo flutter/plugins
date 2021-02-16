@@ -205,4 +205,5 @@ Tried searching for the following:
     // flag also required like other platforms (breaking change).
     // https://github.com/flutter/flutter/issues/58285
     return isAndroidPlugin(plugin, fileSystem);
+  }
 }
