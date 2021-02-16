@@ -14,5 +14,5 @@ source "$SCRIPT_DIR/common.sh"
 check_changed_packages
 
 if [[ "${#CHANGED_PACKAGE_LIST[@]}" != 0 ]]; then
-  plugin_tools publish_check --plugins="${CHANGED_PACKAGES}"
+  plugin_tools publish-check --plugins="${CHANGED_PACKAGES}"
 fi
