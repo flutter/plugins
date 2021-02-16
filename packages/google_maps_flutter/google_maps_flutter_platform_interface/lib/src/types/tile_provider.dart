@@ -12,5 +12,5 @@ abstract class TileProvider {
   /// Returns the tile to be used for this tile coordinate.
   ///
   /// See [TileOverlay] for the specification of tile coordinates.
-  Future<Tile> getTile(int x, int y, int zoom);
+  Future<Tile> getTile(int x, int y, int? zoom);
 }
