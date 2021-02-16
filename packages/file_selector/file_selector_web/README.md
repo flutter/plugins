@@ -27,4 +27,4 @@ dependencies:
 Once you have the `file_selector_web` dependency in your pubspec, you should
 be able to use `package:file_selector` as normal.
 
-[1]: ../file_selector/file_selector
+[1]: https://pub.dev/packages/file_selector
