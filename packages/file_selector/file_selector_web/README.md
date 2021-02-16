@@ -18,8 +18,8 @@ This is what the above means to your `pubspec.yaml`:
 ...
 dependencies:
   ...
-  file_picker: ^0.7.0
-  file_picker_web: ^0.7.0
+  file_picker: ^0.7.0+2
+  file_picker_web: ^0.7.0+1
   ...
 ```
 
