@@ -4,6 +4,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:xdg_directories/xdg_directories.dart' as xdg;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -35,8 +36,19 @@ void main() {
   });
 
   test('getApplicationSupportPath', () async {
-    final PathProviderPlatform plugin = PathProviderPlatform.instance;
-    expect(await plugin.getApplicationSupportPath(), startsWith('/'));
+    final PathProviderPlatform plugin = PathProviderLinux.private(
+        executableName: 'test', applicationId: 'com.example.Test');
+    // Note this will fail if ${xdg.dataHome.path}/test exists on the local filesystem.
+    expect(await plugin.getApplicationSupportPath(),
+        '${xdg.dataHome.path}/com.example.Test');
+  });
+
+  test('getApplicationSupportPath uses executable name if no application Id',
+      () async {
+    final PathProviderPlatform plugin =
+        PathProviderLinux.private(executableName: 'test');
+    expect(
+        await plugin.getApplicationSupportPath(), '${xdg.dataHome.path}/test');
   });
 
   test('getApplicationDocumentsPath', () async {
