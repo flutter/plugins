@@ -1,7 +1,10 @@
+## 2.0.0-nullsafety.10
+
+* iOS: Update texture on `seekTo`.
 
 ## 2.0.0-nullsafety.9
 
-* iOS: Update texture on `seekTo`.
+* Fixed an issue where a crash can occur after a closing a video player view on iOS.
 
 ## 2.0.0-nullsafety.8
 

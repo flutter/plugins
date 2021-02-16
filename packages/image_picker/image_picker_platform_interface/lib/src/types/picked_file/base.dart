@@ -52,7 +52,7 @@ abstract class PickedFileBase {
   /// If `end` is present, only up to byte-index `end` will be read. Otherwise, until end of file.
   ///
   /// In order to make sure that system resources are freed, the stream must be read to completion or the subscription on the stream must be cancelled.
-  Stream<Uint8List> openRead([int start, int end]) {
+  Stream<Uint8List> openRead([int? start, int? end]) {
     throw UnimplementedError('openRead() has not been implemented.');
   }
 }

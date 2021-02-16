@@ -50,6 +50,7 @@ class GoogleMap extends StatefulWidget {
     this.polylines,
     this.circles,
     this.onCameraMoveStarted,
+    this.tileOverlays,
     this.onCameraMove,
     this.onCameraIdle,
     this.onTap,
@@ -119,6 +120,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Circles to be placed on the map.
   final Set<Circle> circles;
+
+  /// Tile overlays to be placed on the map.
+  final Set<TileOverlay> tileOverlays;
 
   /// Called when the camera starts moving.
   ///
@@ -232,6 +236,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'polylinesToAdd': serializePolylineSet(widget.polylines),
       'circlesToAdd': serializeCircleSet(widget.circles),
       '_webOnlyMapCreationId': _webOnlyMapCreationId,
+      'tileOverlaysToAdd': serializeTileOverlaySet(widget.tileOverlays),
     };
 
     return _googleMapsFlutterPlatform.buildView(
@@ -266,6 +271,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _updatePolygons();
     _updatePolylines();
     _updateCircles();
+    _updateTileOverlays();
   }
 
   void _updateOptions() async {
@@ -313,6 +319,12 @@ class _GoogleMapState extends State<GoogleMap> {
     _circles = keyByCircleId(widget.circles);
   }
 
+  void _updateTileOverlays() async {
+    final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
+    controller._updateTileOverlays(widget.tileOverlays);
+  }
+
   Future<void> onPlatformViewCreated(int id) async {
     final GoogleMapController controller = await GoogleMapController.init(
       id,
@@ -320,6 +332,7 @@ class _GoogleMapState extends State<GoogleMap> {
       this,
     );
     _controller.complete(controller);
+    _updateTileOverlays();
     if (widget.onMapCreated != null) {
       widget.onMapCreated(controller);
     }

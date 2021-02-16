@@ -13,19 +13,14 @@ export 'package:wifi_info_flutter_platform_interface/wifi_info_flutter_platform_
 
 /// Checks WI-FI status and more.
 class WifiInfo {
+  WifiInfo._();
+
   /// Constructs a singleton instance of [WifiInfo].
   ///
   /// [WifiInfo] is designed to work as a singleton.
-  factory WifiInfo() {
-    if (_singleton == null) {
-      _singleton = WifiInfo._();
-    }
-    return _singleton;
-  }
+  factory WifiInfo() => _singleton;
 
-  WifiInfo._();
-
-  static WifiInfo _singleton;
+  static final WifiInfo _singleton = WifiInfo._();
 
   static WifiInfoFlutterPlatform get _platform =>
       WifiInfoFlutterPlatform.instance;
@@ -36,7 +31,7 @@ class WifiInfo {
   ///
   /// From android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the SSID.
-  Future<String> getWifiName() {
+  Future<String?> getWifiName() {
     return _platform.getWifiName();
   }
 
@@ -46,12 +41,12 @@ class WifiInfo {
   ///
   /// From Android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the BSSID.
-  Future<String> getWifiBSSID() {
+  Future<String?> getWifiBSSID() {
     return _platform.getWifiBSSID();
   }
 
   /// Obtains the IP address of the connected wifi network
-  Future<String> getWifiIP() {
+  Future<String?> getWifiIP() {
     return _platform.getWifiIP();
   }
 
