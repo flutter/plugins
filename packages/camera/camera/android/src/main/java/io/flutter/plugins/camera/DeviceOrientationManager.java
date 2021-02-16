@@ -55,6 +55,12 @@ class DeviceOrientationManager {
 
   public int getMediaOrientation(PlatformChannel.DeviceOrientation orientation) {
     int angle = 0;
+
+    // Fallback to device orientation when the orientation value is null
+    if (orientation == null) {
+      orientation = getUIOrientation();
+    }
+
     switch (orientation) {
       case PORTRAIT_UP:
         angle = 0;
