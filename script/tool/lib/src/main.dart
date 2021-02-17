@@ -7,6 +7,7 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:flutter_plugin_tools/src/publish_check_command.dart';
 import 'package:flutter_plugin_tools/src/publish_plugin_command.dart';
 import 'package:path/path.dart' as p;
 
@@ -51,6 +52,7 @@ void main(List<String> args) {
     ..addCommand(JavaTestCommand(packagesDir, fileSystem))
     ..addCommand(LintPodspecsCommand(packagesDir, fileSystem))
     ..addCommand(ListCommand(packagesDir, fileSystem))
+    ..addCommand(PublishCheckCommand(packagesDir, fileSystem))
     ..addCommand(PublishPluginCommand(packagesDir, fileSystem))
     ..addCommand(TestCommand(packagesDir, fileSystem))
     ..addCommand(VersionCheckCommand(packagesDir, fileSystem))
