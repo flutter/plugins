@@ -74,9 +74,7 @@ interface ErrorCallback {
 public class Camera {
   private static final String TAG = "Camera";
 
-  /**
-   * Timeout for the pre-capture sequence.
-   */
+  /** Timeout for the pre-capture sequence. */
   private static final long PRECAPTURE_TIMEOUT_MS = 1000;
 
   private final SurfaceTextureEntry flutterTexture;
@@ -1154,9 +1152,7 @@ public class Camera {
     startPreview();
   }
 
-  /**
-   * Sets the time the pre-capture sequence started.
-   */
+  /** Sets the time the pre-capture sequence started. */
   private void setPreCaptureStartTime() {
     preCaptureStartTime = SystemClock.elapsedRealtime();
   }
