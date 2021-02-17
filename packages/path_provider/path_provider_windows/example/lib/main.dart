@@ -20,10 +20,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _tempDirectory = 'Unknown';
-  String _downloadsDirectory = 'Unknown';
-  String _appSupportDirectory = 'Unknown';
-  String _documentsDirectory = 'Unknown';
+  String? _tempDirectory = 'Unknown';
+  String? _downloadsDirectory = 'Unknown';
+  String? _appSupportDirectory = 'Unknown';
+  String? _documentsDirectory = 'Unknown';
 
   @override
   void initState() {
@@ -33,10 +33,10 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initDirectories() async {
-    String tempDirectory;
-    String downloadsDirectory;
-    String appSupportDirectory;
-    String documentsDirectory;
+    String? tempDirectory;
+    String? downloadsDirectory;
+    String? appSupportDirectory;
+    String? documentsDirectory;
     final PathProviderWindows provider = PathProviderWindows();
 
     try {
