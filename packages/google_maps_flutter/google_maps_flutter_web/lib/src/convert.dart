@@ -366,6 +366,11 @@ Set<Polygon> _rawOptionsToInitialPolygons(Map<String, dynamic> rawOptions) {
           points: rawPolygon['points']
               ?.map<LatLng>((rawPoint) => LatLng.fromJson(rawPoint))
               ?.toList(),
+          holes: rawPolygon['holes']
+              ?.map<List<LatLng>>((List hole) => hole
+                  ?.map<LatLng>((rawPoint) => LatLng.fromJson(rawPoint))
+                  ?.toList())
+              ?.toList(),
         );
       }) ??
       []);
@@ -473,9 +478,27 @@ gmaps.CircleOptions _circleOptionsFromCircle(Circle circle) {
 
 gmaps.PolygonOptions _polygonOptionsFromPolygon(
     gmaps.GMap googleMap, Polygon polygon) {
-  List<gmaps.LatLng> paths = [];
+  List<gmaps.LatLng> path = [];
   polygon.points.forEach((point) {
-    paths.add(_latLngToGmLatLng(point));
+    path.add(_latLngToGmLatLng(point));
+  });
+  final polygonDirection = _isPolygonClockwise(path);
+  List<List<gmaps.LatLng>> paths = [path];
+  int holeIndex = 0;
+  polygon.holes?.forEach((hole) {
+    List<gmaps.LatLng> holePath =
+        hole.map((point) => _latLngToGmLatLng(point)).toList();
+    if (_isPolygonClockwise(holePath) == polygonDirection) {
+      holePath = holePath.reversed.toList();
+      if (kDebugMode) {
+        print(
+            'Hole [$holeIndex] in Polygon [${polygon.polygonId.value}] has been reversed.'
+            ' Ensure holes in polygons are "wound in the opposite direction to the outer path."'
+            ' More info: https://github.com/flutter/flutter/issues/74096');
+      }
+    }
+    paths.add(holePath);
+    holeIndex++;
   });
   return gmaps.PolygonOptions()
     ..paths = paths
@@ -487,6 +510,20 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
     ..visible = polygon.visible
     ..zIndex = polygon.zIndex
     ..geodesic = polygon.geodesic;
+}
+
+/// Calculates the direction of a given Polygon
+/// based on: https://stackoverflow.com/a/1165943
+///
+/// returns [true] if clockwise [false] if counterclockwise
+bool _isPolygonClockwise(List<gmaps.LatLng> path) {
+  var direction = 0.0;
+  for (var i = 0; i < path.length; i++) {
+    direction = direction +
+        ((path[(i + 1) % path.length].lat - path[i].lat) *
+            (path[(i + 1) % path.length].lng + path[i].lng));
+  }
+  return direction >= 0;
 }
 
 gmaps.PolylineOptions _polylineOptionsFromPolyline(

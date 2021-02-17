@@ -12,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_platform_interface/messages.dart';
+import 'package:video_player_platform_interface/test.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 class FakeController extends ValueNotifier<VideoPlayerValue>
@@ -795,11 +796,7 @@ class FakeEventsChannel {
   }
 
   void _sendMessage(ByteData data) {
-    // TODO(jackson): This has been deprecated and should be replaced
-    // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-    // available on all the versions of Flutter that we test.
-    // ignore: deprecated_member_use
-    defaultBinaryMessenger.handlePlatformMessage(
+    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
         eventsMethodChannel.name, data, (ByteData? data) {});
   }
 }

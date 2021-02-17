@@ -1,3 +1,11 @@
+## 2.0.0-nullsafety
+
+* Migrate to null-safety.
+
+**Breaking changes**:
+
+* Setters no longer accept null to mean removing values. If you were previously using `set*(key, null)` for removing, use `remove(key)` instead.
+
 ## 0.5.13+2
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))

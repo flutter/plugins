@@ -2,7 +2,7 @@ name: share
 description: Flutter plugin for sharing content via the platform share UI, using
   the ACTION_SEND intent on Android and UIActivityViewController on iOS.
 homepage: https://github.com/flutter/plugins/tree/master/packages/share
-version: 2.0.0-nullsafety.1
+version: 2.0.0-nullsafety.3
 
 flutter:
   plugin:
