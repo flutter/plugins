@@ -17,21 +17,24 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 int _nextMapCreationId = 0;
 
 /// Error thrown when an unknown map object ID is provided to a method.
-class UnknownMapObjectIDError extends Error {
+class UnknownMapObjectIdError extends Error {
   /// Creates an assertion error with the provided [message].
-  UnknownMapObjectIDError(this.objectType, [this.context]);
+  UnknownMapObjectIdError(this.objectType, this.objectId, [this.context]);
 
   /// The name of the map object whose ID is unknown.
   final String objectType;
+
+  /// The unknown maps object ID.
+  final MapsObjectId objectId;
 
   /// The context where the error occurred.
   final String? context;
 
   String toString() {
     if (context != null) {
-      return "Unknown $objectType ID in $context";
+      return 'Unknown $objectType ID "${objectId.value}" in $context';
     }
-    return "Unknown $objectType ID";
+    return 'Unknown $objectType ID "${objectId.value}"';
   }
 }
 
@@ -357,7 +360,7 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(markerId != null);
     final Marker? marker = _markers[markerId];
     if (marker == null) {
-      throw UnknownMapObjectIDError('marker', 'onTap');
+      throw UnknownMapObjectIdError('marker', markerId, 'onTap');
     }
     final onTap = marker.onTap;
     if (onTap != null) {
@@ -369,7 +372,7 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(markerId != null);
     final Marker? marker = _markers[markerId];
     if (marker == null) {
-      throw UnknownMapObjectIDError('marker', 'onDragEnd');
+      throw UnknownMapObjectIdError('marker', markerId, 'onDragEnd');
     }
     final onDragEnd = marker.onDragEnd;
     if (onDragEnd != null) {
@@ -381,7 +384,7 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(polygonId != null);
     final Polygon? polygon = _polygons[polygonId];
     if (polygon == null) {
-      throw UnknownMapObjectIDError('polygon', 'onTap');
+      throw UnknownMapObjectIdError('polygon', polygonId, 'onTap');
     }
     final onTap = polygon.onTap;
     if (onTap != null) {
@@ -393,7 +396,7 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(polylineId != null);
     final Polyline? polyline = _polylines[polylineId];
     if (polyline == null) {
-      throw UnknownMapObjectIDError('polyline', 'onTap');
+      throw UnknownMapObjectIdError('polyline', polylineId, 'onTap');
     }
     final onTap = polyline.onTap;
     if (onTap != null) {
@@ -405,7 +408,7 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(circleId != null);
     final Circle? circle = _circles[circleId];
     if (circle == null) {
-      throw UnknownMapObjectIDError('marker', 'onTap');
+      throw UnknownMapObjectIdError('marker', circleId, 'onTap');
     }
     final onTap = circle.onTap;
     if (onTap != null) {
@@ -417,7 +420,7 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(markerId != null);
     final Marker? marker = _markers[markerId];
     if (marker == null) {
-      throw UnknownMapObjectIDError('marker', 'InfoWindow onTap');
+      throw UnknownMapObjectIdError('marker', markerId, 'InfoWindow onTap');
     }
     final onTap = marker.infoWindow.onTap;
     if (onTap != null) {
@@ -462,9 +465,8 @@ class _GoogleMapOptions {
         padding = map.padding,
         indoorViewEnabled = map.indoorViewEnabled,
         trafficEnabled = map.trafficEnabled,
-        buildingsEnabled = map.buildingsEnabled {
-    assert(!liteModeEnabled || Platform.isAndroid);
-  }
+        buildingsEnabled = map.buildingsEnabled,
+        assert(!map.liteModeEnabled || Platform.isAndroid);
 
   final bool compassEnabled;
 
