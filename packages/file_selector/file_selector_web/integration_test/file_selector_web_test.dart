@@ -86,8 +86,9 @@ class MockDomHelper extends Mock implements DomHelper {
     String accept = '',
     bool multiple = false,
     FileUploadInputElement? input,
-  }){
-    return super.noSuchMethod(Invocation.method(#getFiles, [accept, multiple, input]));
+  }) {
+    return super
+        .noSuchMethod(Invocation.method(#getFiles, [accept, multiple, input]));
   }
 }
 
