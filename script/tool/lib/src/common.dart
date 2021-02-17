@@ -294,8 +294,10 @@ abstract class PluginCommand extends Command<Null> {
             // passed.
             final String relativePath =
                 p.relative(subdir.path, from: packagesDir.path);
+            final String packageName = p.basename(subdir.path);
             final String basenamePath = p.basename(entity.path);
             if (!excludedPlugins.contains(basenamePath) &&
+                !excludedPlugins.contains(packageName) &&
                 !excludedPlugins.contains(relativePath) &&
                 (plugins.isEmpty ||
                     plugins.contains(relativePath) ||
