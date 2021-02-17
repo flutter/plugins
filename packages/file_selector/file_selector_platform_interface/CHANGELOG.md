@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.0
+
+* Migration to null-safety
+
 ## 1.0.3+1
 
 * Bump the [cross_file](https://pub.dev/packages/cross_file) package version.
