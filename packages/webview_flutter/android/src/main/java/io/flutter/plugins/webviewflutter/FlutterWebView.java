@@ -16,6 +16,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import androidx.annotation.NonNull;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.io.ByteArrayOutputStream;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
@@ -229,6 +232,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getScrollY":
         getScrollY(result);
         break;
+      case "takeScreenshot":
+        takeScreenshot(result);
+        break;
       default:
         result.notImplemented();
     }
@@ -350,6 +356,41 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void getScrollY(Result result) {
     result.success(webView.getScrollY());
+  }
+
+  private void takeScreenshot(Result result){
+    View view = getView();
+
+    float scale = view.getContext().getResources().getDisplayMetrics().density;
+    int height = (int) (webView.getContentHeight() * scale);
+
+    Bitmap b = Bitmap.createBitmap(view.getWidth(),
+                  height, Bitmap.Config.ARGB_8888);
+    Canvas c = new Canvas(b);
+    view.draw(c);
+    int scrollY = webView.getScrollY();
+    int measuredHeight = webView.getMeasuredHeight();
+    int bitmapHeight = b.getHeight();
+
+    int scrollOffset = (scrollY + measuredHeight > bitmapHeight)
+                  ? (bitmapHeight - measuredHeight) : scrollY;
+    
+     if (scrollOffset < 0) {
+          scrollOffset = 0;
+    }
+
+    int rectX = 0;
+    int rectY = scrollOffset;
+    int rectWidth = b.getWidth();
+    int rectHeight = measuredHeight;
+
+    Bitmap resized = Bitmap.createBitmap(b, rectX, rectY, rectWidth, rectHeight);
+
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    resized.compress(Bitmap.CompressFormat.PNG, 100, stream);
+    byte[] imageByteArray = stream.toByteArray();
+    
+    result.success(imageByteArray);
   }
 
   private void applySettings(Map<String, Object> settings) {

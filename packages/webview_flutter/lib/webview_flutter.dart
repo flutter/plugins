@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -777,6 +778,11 @@ class WebViewController {
   /// Scroll position is measured from top.
   Future<int> getScrollY() {
     return _webViewPlatformController.getScrollY();
+  }
+
+  /// Return a screenshot of the content that is displayed in the webview.
+  Future<Uint8List> takeScreenshot(){
+    return _webViewPlatformController.takeScreenshot();
   }
 }
 
