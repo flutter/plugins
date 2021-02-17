@@ -4,7 +4,8 @@ description: Demonstrates how to use the path_provider plugin.
 dependencies:
   flutter:
     sdk: flutter
-  path_provider: ^1.6.14
+  path_provider_macos: any
+  path_provider_platform_interface: 2.0.0-nullsafety
 
 # path_provider_macos is endorsed, so we need to add it to dependency_overrides
 # to depend on it from path:
@@ -28,5 +29,5 @@ flutter:
   uses-material-design: true
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
   flutter: ">=1.10.0"
