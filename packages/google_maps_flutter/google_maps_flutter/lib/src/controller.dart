@@ -13,7 +13,7 @@ class GoogleMapController {
     CameraPosition initialCameraPosition,
     this._googleMapState, {
     required this.mapId,
-  }) : assert(GoogleMapsFlutterPlatform.instance != null) {
+  }) {
     _connectStreams(mapId);
   }
 
