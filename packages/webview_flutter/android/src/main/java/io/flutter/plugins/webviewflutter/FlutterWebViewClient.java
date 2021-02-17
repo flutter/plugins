@@ -30,7 +30,7 @@ class FlutterWebViewClient {
   private static final String TAG = "FlutterWebViewClient";
   private final MethodChannel methodChannel;
   private boolean hasNavigationDelegate;
-  private boolean hasProgressTracking;
+  boolean hasProgressTracking;
 
   FlutterWebViewClient(MethodChannel methodChannel) {
     this.methodChannel = methodChannel;
@@ -127,9 +127,11 @@ class FlutterWebViewClient {
   }
 
   void onLoadingProgress(int progress) {
-    Map<String, Object> args = new HashMap<>();
-    args.put("progress", progress);
-    methodChannel.invokeMethod("onProgress", args);
+    if (hasProgressTracking) {
+      Map<String, Object> args = new HashMap<>();
+      args.put("progress", progress);
+      methodChannel.invokeMethod("onProgress", args);
+    }
   }
 
   private void onWebResourceError(

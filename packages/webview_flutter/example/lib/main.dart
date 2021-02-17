@@ -65,8 +65,6 @@ class _WebViewExampleState extends State<WebViewExample> {
           onProgress: (int progress) {
             print("WebView is loading (progress : $progress%)");
           },
-          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-          // ignore: prefer_collection_literals
           javascriptChannels: <JavascriptChannel>{
             _toasterJavascriptChannel(context),
           },
