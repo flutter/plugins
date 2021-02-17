@@ -23,5 +23,3 @@ flutter:
       android:
         package: com.example.espresso
         pluginClass: EspressoPlugin
-      ios:
-        pluginClass: EspressoPlugin
