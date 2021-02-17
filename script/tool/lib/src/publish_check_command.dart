@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io' as io;
 
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
@@ -63,6 +64,33 @@ class PublishCheckCommand extends PluginCommand {
     }
   }
 
+  Future<bool> hasValidPublishCheckRun(Directory package) async {
+    final io.Process process = await io.Process.start(
+      'flutter',
+      <String>['pub', 'publish', '--', '--dry-run'],
+      workingDirectory: package.path,
+    );
+
+    String output = '';
+    process.stdout.listen((List<int> event) {
+      io.stdout.add(event);
+      output += String.fromCharCodes(event);
+    });
+
+    process.stderr.listen((List<int> event) {
+      io.stderr.add(event);
+      output += String.fromCharCodes(event);
+    });
+
+    final int exitCode = await process.exitCode;
+
+    final bool hasPreReleaseSdk = output.contains('Package has 1 warning.') &&
+        output.contains(
+            'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.');
+
+    return exitCode == 0 || hasPreReleaseSdk;
+  }
+
   Future<bool> passesPublishCheck(Directory package) async {
     final String packageName = package.basename;
     print('Checking that $packageName can be published.');
@@ -75,13 +103,7 @@ class PublishCheckCommand extends PluginCommand {
       return true;
     }
 
-    final int exitCode = await processRunner.runAndStream(
-      'flutter',
-      <String>['pub', 'publish', '--', '--dry-run'],
-      workingDir: package,
-    );
-
-    if (exitCode == 0) {
+    if (await hasValidPublishCheckRun(package)) {
       print("Package $packageName is able to be published.");
       return true;
     } else {
