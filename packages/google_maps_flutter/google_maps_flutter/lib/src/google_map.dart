@@ -47,7 +47,7 @@ class GoogleMap extends StatefulWidget {
     Key? key,
     required this.initialCameraPosition,
     this.onMapCreated,
-    this.gestureRecognizers,
+    this.gestureRecognizers = const <Factory<OneSequenceGestureRecognizer>>{},
     this.compassEnabled = true,
     this.mapToolbarEnabled = true,
     this.cameraTargetBounds = CameraTargetBounds.unbounded,
@@ -227,9 +227,9 @@ class GoogleMap extends StatefulWidget {
   /// vertical drags. The map will claim gestures that are recognized by any of the
   /// recognizers on this list.
   ///
-  /// When this set is empty or null, the map will only handle pointer events for gestures that
+  /// When this set is empty, the map will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
-  final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
+  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
   /// Creates a [State] for this [GoogleMap].
   @override
@@ -350,7 +350,7 @@ class _GoogleMapState extends State<GoogleMap> {
     );
     _controller.complete(controller);
     _updateTileOverlays();
-    final onMapCreated = widget.onMapCreated;
+    final MapCreatedCallback? onMapCreated = widget.onMapCreated;
     if (onMapCreated != null) {
       onMapCreated(controller);
     }
@@ -362,7 +362,7 @@ class _GoogleMapState extends State<GoogleMap> {
     if (marker == null) {
       throw UnknownMapObjectIdError('marker', markerId, 'onTap');
     }
-    final onTap = marker.onTap;
+    final VoidCallback? onTap = marker.onTap;
     if (onTap != null) {
       onTap();
     }
@@ -374,7 +374,7 @@ class _GoogleMapState extends State<GoogleMap> {
     if (marker == null) {
       throw UnknownMapObjectIdError('marker', markerId, 'onDragEnd');
     }
-    final onDragEnd = marker.onDragEnd;
+    final ValueChanged<LatLng>? onDragEnd = marker.onDragEnd;
     if (onDragEnd != null) {
       onDragEnd(position);
     }
@@ -386,7 +386,7 @@ class _GoogleMapState extends State<GoogleMap> {
     if (polygon == null) {
       throw UnknownMapObjectIdError('polygon', polygonId, 'onTap');
     }
-    final onTap = polygon.onTap;
+    final VoidCallback? onTap = polygon.onTap;
     if (onTap != null) {
       onTap();
     }
@@ -398,7 +398,7 @@ class _GoogleMapState extends State<GoogleMap> {
     if (polyline == null) {
       throw UnknownMapObjectIdError('polyline', polylineId, 'onTap');
     }
-    final onTap = polyline.onTap;
+    final VoidCallback? onTap = polyline.onTap;
     if (onTap != null) {
       onTap();
     }
@@ -410,7 +410,7 @@ class _GoogleMapState extends State<GoogleMap> {
     if (circle == null) {
       throw UnknownMapObjectIdError('marker', circleId, 'onTap');
     }
-    final onTap = circle.onTap;
+    final VoidCallback? onTap = circle.onTap;
     if (onTap != null) {
       onTap();
     }
@@ -422,7 +422,7 @@ class _GoogleMapState extends State<GoogleMap> {
     if (marker == null) {
       throw UnknownMapObjectIdError('marker', markerId, 'InfoWindow onTap');
     }
-    final onTap = marker.infoWindow.onTap;
+    final VoidCallback? onTap = marker.infoWindow.onTap;
     if (onTap != null) {
       onTap();
     }
@@ -430,7 +430,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onTap(LatLng position) {
     assert(position != null);
-    final onTap = widget.onTap;
+    final ArgumentCallback<LatLng>? onTap = widget.onTap;
     if (onTap != null) {
       onTap(position);
     }
@@ -438,7 +438,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onLongPress(LatLng position) {
     assert(position != null);
-    final onLongPress = widget.onLongPress;
+    final ArgumentCallback<LatLng>? onLongPress = widget.onLongPress;
     if (onLongPress != null) {
       onLongPress(position);
     }
