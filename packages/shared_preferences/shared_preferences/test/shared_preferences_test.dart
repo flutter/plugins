@@ -158,8 +158,9 @@ void main() {
     });
 
     test('string list type is dynamic (usually from method channel)', () async {
-      SharedPreferences.setMockInitialValues(
-          <String, Object>{'dynamic_list': <dynamic>['1', '2']});
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'dynamic_list': <dynamic>['1', '2']
+      });
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final List<String>? value = prefs.getStringList('dynamic_list');
       expect(value, <String>['1', '2']);

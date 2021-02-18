@@ -111,7 +111,8 @@ class SharedPreferences {
     if (rawValue == null) {
       return null;
     }
-    List<Object>? list = List.castFrom<dynamic, String>(rawValue as List<dynamic>);
+    List<Object>? list =
+        List.castFrom<dynamic, String>(rawValue as List<dynamic>);
     if (list != null && list is! List<String>) {
       list = list.cast<String>().toList();
       _preferenceCache[key] = list;
