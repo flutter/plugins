@@ -9,7 +9,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
 
-void main() async {
+void main() {
   runApp(MyApp());
 }
 

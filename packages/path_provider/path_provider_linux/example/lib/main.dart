@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:path_provider_linux/path_provider_linux.dart';
 
-void main() async {
+void main() {
   runApp(MyApp());
 }
 
