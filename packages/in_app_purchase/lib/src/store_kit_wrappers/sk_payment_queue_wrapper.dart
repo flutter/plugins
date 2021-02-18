@@ -46,7 +46,7 @@ class SKPaymentQueueWrapper {
 
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
   static Future<bool> canMakePayments() async =>
-      (await channel.invokeMethod<bool>('-[SKPaymentQueue canMakePayments:]'))!;
+      (await channel.invokeMethod<bool>('-[SKPaymentQueue canMakePayments:]')) ?? false;
 
   /// Sets an observer to listen to all incoming transaction events.
   ///

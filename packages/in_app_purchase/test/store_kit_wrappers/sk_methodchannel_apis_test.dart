@@ -20,6 +20,10 @@ void main() {
 
   setUp(() {});
 
+  tearDown(() {
+    fakeIOSPlatform.testReturnNull = false;
+  });
+
   group('sk_request_maker', () {
     test('get products method channel', () async {
       SkProductResponseWrapper productResponseWrapper =
@@ -84,6 +88,11 @@ void main() {
       expect(await SKPaymentQueueWrapper.canMakePayments(), true);
     });
 
+    test('canMakePayment returns false if method channel returns null', () async {
+      fakeIOSPlatform.testReturnNull = true;
+      expect(await SKPaymentQueueWrapper.canMakePayments(), false);
+    });
+
     test('transactions should return a valid list of transactions', () async {
       expect(await SKPaymentQueueWrapper().transactions(), isNotEmpty);
     });
@@ -132,6 +141,7 @@ class FakeIOSPlatform {
   // get product request
   List<dynamic> startProductRequestParam = [];
   bool getProductRequestFailTest = false;
+  bool testReturnNull = false;
 
   // refresh receipt request
   int refreshReceipt = 0;
@@ -165,6 +175,9 @@ class FakeIOSPlatform {
         return Future<String>.value('receipt data');
       // payment queue
       case '-[SKPaymentQueue canMakePayments:]':
+        if (testReturnNull) {
+          return Future<dynamic>.value(null);
+        }
         return Future<bool>.value(true);
       case '-[SKPaymentQueue transactions]':
         return Future<List<dynamic>>.value(

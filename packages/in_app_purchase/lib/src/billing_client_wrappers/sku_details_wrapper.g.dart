@@ -49,8 +49,10 @@ Map<String, dynamic> _$SkuDetailsWrapperToJson(SkuDetailsWrapper instance) =>
 
 SkuDetailsResponseWrapper _$SkuDetailsResponseWrapperFromJson(Map json) {
   return SkuDetailsResponseWrapper(
-    billingResult: BillingResultWrapper.fromJson(
-        Map<String, dynamic>.from(json['billingResult'] as Map)),
+    billingResult:
+        BillingResultWrapper.fromJson((json['billingResult'] as Map?)?.map(
+      (k, e) => MapEntry(k as String, e),
+    )),
     skuDetailsList: (json['skuDetailsList'] as List<dynamic>?)
             ?.map((e) =>
                 SkuDetailsWrapper.fromJson(Map<String, dynamic>.from(e as Map)))

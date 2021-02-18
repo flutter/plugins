@@ -65,8 +65,10 @@ PurchasesResultWrapper _$PurchasesResultWrapperFromJson(Map json) {
   return PurchasesResultWrapper(
     responseCode:
         const BillingResponseConverter().fromJson(json['responseCode'] as int?),
-    billingResult: BillingResultWrapper.fromJson(
-        Map<String, dynamic>.from(json['billingResult'] as Map)),
+    billingResult:
+        BillingResultWrapper.fromJson((json['billingResult'] as Map?)?.map(
+      (k, e) => MapEntry(k as String, e),
+    )),
     purchasesList: (json['purchasesList'] as List<dynamic>?)
             ?.map((e) =>
                 PurchaseWrapper.fromJson(Map<String, dynamic>.from(e as Map)))
@@ -86,8 +88,10 @@ Map<String, dynamic> _$PurchasesResultWrapperToJson(
 
 PurchasesHistoryResult _$PurchasesHistoryResultFromJson(Map json) {
   return PurchasesHistoryResult(
-    billingResult: BillingResultWrapper.fromJson(
-        Map<String, dynamic>.from(json['billingResult'] as Map)),
+    billingResult:
+        BillingResultWrapper.fromJson((json['billingResult'] as Map?)?.map(
+      (k, e) => MapEntry(k as String, e),
+    )),
     purchaseHistoryRecordList:
         (json['purchaseHistoryRecordList'] as List<dynamic>?)
                 ?.map((e) => PurchaseHistoryRecordWrapper.fromJson(

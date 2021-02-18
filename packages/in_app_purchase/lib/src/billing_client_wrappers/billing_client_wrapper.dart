@@ -113,7 +113,7 @@ class BillingClient {
             <String, dynamic>{
           'handle': disconnectCallbacks.length - 1,
           'enablePendingPurchases': _enablePendingPurchases
-        }))!);
+        })) ?? <String, dynamic>{});
   }
 
   /// Calls
@@ -145,7 +145,7 @@ class BillingClient {
     return SkuDetailsResponseWrapper.fromJson((await channel.invokeMapMethod<
             String, dynamic>(
         'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)',
-        arguments))!);
+        arguments)) ?? <String, dynamic>{});
   }
 
   /// Attempt to launch the Play Billing Flow for a given [skuDetails].
@@ -181,7 +181,7 @@ class BillingClient {
     return BillingResultWrapper.fromJson(
         (await channel.invokeMapMethod<String, dynamic>(
             'BillingClient#launchBillingFlow(Activity, BillingFlowParams)',
-            arguments))!);
+            arguments)) ?? <String, dynamic>{});
   }
 
   /// Fetches recent purchases for the given [SkuType].
@@ -201,7 +201,7 @@ class BillingClient {
         .invokeMapMethod<String, dynamic>(
             'BillingClient#queryPurchases(String)', <String, dynamic>{
       'skuType': SkuTypeConverter().toJson(skuType)
-    }))!);
+    })) ?? <String, dynamic>{});
   }
 
   /// Fetches purchase history for the given [SkuType].
@@ -222,7 +222,7 @@ class BillingClient {
     return PurchasesHistoryResult.fromJson((await channel.invokeMapMethod<
             String, dynamic>(
         'BillingClient#queryPurchaseHistoryAsync(String, PurchaseHistoryResponseListener)',
-        <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)}))!);
+        <String, dynamic>{'skuType': SkuTypeConverter().toJson(skuType)})) ?? <String, dynamic>{});
   }
 
   /// Consumes a given in-app product.
@@ -242,7 +242,7 @@ class BillingClient {
             <String, dynamic>{
           'purchaseToken': purchaseToken,
           'developerPayload': developerPayload,
-        }))!);
+        }))??<String, dynamic>{});
   }
 
   /// Acknowledge an in-app purchase.
@@ -273,7 +273,7 @@ class BillingClient {
         <String, dynamic>{
           'purchaseToken': purchaseToken,
           'developerPayload': developerPayload,
-        }))!);
+        }))??<String, dynamic>{});
   }
 
   /// The method call handler for [channel].
