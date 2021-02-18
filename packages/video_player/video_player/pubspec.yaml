@@ -25,7 +25,7 @@ dependencies:
   # the constraints on the interface pins it.
   # TODO(amirh): Revisit this (either update this part in the design or the pub tool).
   # https://github.com/flutter/flutter/issues/46264
-  video_player_web: ^2.0.0-nullsafety.4
+  video_player_web: ^2.0.0-nullsafety.1
 
   flutter:
     sdk: flutter
