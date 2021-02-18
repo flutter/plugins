@@ -12,6 +12,7 @@ import android.os.Build;
 import android.provider.Settings;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,11 +90,13 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     if (featureInfos == null) {
       return EMPTY_STRING_LIST;
     }
-    String[] features = new String[featureInfos.length];
+    ArrayList<String> features = new ArrayList<>(featureInfos.length);
     for (int i = 0; i < featureInfos.length; i++) {
-      features[i] = featureInfos[i].name;
+      if (featureInfos[i].name != null) {
+        features.add(featureInfos[i].name);
+      }
     }
-    return features;
+    return features.toArray(new String[0]);
   }
 
   /**
