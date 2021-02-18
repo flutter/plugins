@@ -88,7 +88,8 @@ void main() {
       expect(await SKPaymentQueueWrapper.canMakePayments(), true);
     });
 
-    test('canMakePayment returns false if method channel returns null', () async {
+    test('canMakePayment returns false if method channel returns null',
+        () async {
       fakeIOSPlatform.testReturnNull = true;
       expect(await SKPaymentQueueWrapper.canMakePayments(), false);
     });

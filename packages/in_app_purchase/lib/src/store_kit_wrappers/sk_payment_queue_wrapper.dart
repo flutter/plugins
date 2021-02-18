@@ -46,7 +46,9 @@ class SKPaymentQueueWrapper {
 
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
   static Future<bool> canMakePayments() async =>
-      (await channel.invokeMethod<bool>('-[SKPaymentQueue canMakePayments:]')) ?? false;
+      (await channel
+          .invokeMethod<bool>('-[SKPaymentQueue canMakePayments:]')) ??
+      false;
 
   /// Sets an observer to listen to all incoming transaction events.
   ///
@@ -321,7 +323,7 @@ class SKPaymentWrapper {
   ///
   /// The default is 1. The minimum is 1. The maximum is 10.
   ///
-  /// If the object is invalid, the value could be 0. 
+  /// If the object is invalid, the value could be 0.
   @JsonKey(defaultValue: 0)
   final int quantity;
 

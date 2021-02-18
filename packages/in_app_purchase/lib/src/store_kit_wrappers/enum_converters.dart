@@ -63,7 +63,8 @@ class SKSubscriptionPeriodUnitConverter
       return SKSubscriptionPeriodUnit.day;
     }
     return _$enumDecode<SKSubscriptionPeriodUnit, dynamic>(
-        _$SKSubscriptionPeriodUnitEnumMap.cast<SKSubscriptionPeriodUnit, dynamic>(),
+        _$SKSubscriptionPeriodUnitEnumMap
+            .cast<SKSubscriptionPeriodUnit, dynamic>(),
         json);
   }
 
@@ -87,7 +88,8 @@ class SKProductDiscountPaymentModeConverter
       return SKProductDiscountPaymentMode.payAsYouGo;
     }
     return _$enumDecode<SKProductDiscountPaymentMode, dynamic>(
-        _$SKProductDiscountPaymentModeEnumMap.cast<SKProductDiscountPaymentMode, dynamic>(),
+        _$SKProductDiscountPaymentModeEnumMap
+            .cast<SKProductDiscountPaymentMode, dynamic>(),
         json);
   }
 

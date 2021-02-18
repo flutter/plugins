@@ -104,7 +104,8 @@ class SKProductSubscriptionPeriodWrapper {
   factory SKProductSubscriptionPeriodWrapper.fromJson(
       Map<String, dynamic>? map) {
     if (map == null) {
-      return SKProductSubscriptionPeriodWrapper(numberOfUnits: 0, unit: SKSubscriptionPeriodUnit.day);
+      return SKProductSubscriptionPeriodWrapper(
+          numberOfUnits: 0, unit: SKSubscriptionPeriodUnit.day);
     }
     return _$SKProductSubscriptionPeriodWrapperFromJson(map);
   }

@@ -116,7 +116,11 @@ void main() {
     test('parsed from empty map', () {
       final PurchasesResultWrapper parsed =
           PurchasesResultWrapper.fromJson(<String, dynamic>{});
-      expect(parsed.billingResult, equals(BillingResultWrapper(responseCode: BillingResponse.error, debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(
+          parsed.billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
       expect(parsed.responseCode, BillingResponse.error);
       expect(parsed.purchasesList, isEmpty);
     });
@@ -152,7 +156,11 @@ void main() {
     test('parsed from empty map', () {
       final PurchasesHistoryResult parsed =
           PurchasesHistoryResult.fromJson(<String, dynamic>{});
-      expect(parsed.billingResult, equals(BillingResultWrapper(responseCode: BillingResponse.error, debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(
+          parsed.billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
       expect(parsed.purchaseHistoryRecordList, isEmpty);
     });
   });

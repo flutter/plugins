@@ -107,7 +107,8 @@ void main() {
           await billingClient.startConnection(
               onBillingServiceDisconnected: () {}),
           equals(BillingResultWrapper(
-          responseCode: BillingResponse.error, debugMessage: kInvalidBillingResultErrorMessage)));
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
     });
   });
 
@@ -173,7 +174,8 @@ void main() {
               skuType: SkuType.inapp, skusList: <String>['invalid']);
 
       BillingResultWrapper billingResult = BillingResultWrapper(
-          responseCode: BillingResponse.error, debugMessage: kInvalidBillingResultErrorMessage);
+          responseCode: BillingResponse.error,
+          debugMessage: kInvalidBillingResultErrorMessage);
       expect(response.billingResult, equals(billingResult));
       expect(response.skuDetailsList, isEmpty);
     });
@@ -233,7 +235,8 @@ void main() {
       expect(
           await billingClient.launchBillingFlow(sku: skuDetails.sku),
           equals(BillingResultWrapper(
-          responseCode: BillingResponse.error, debugMessage: kInvalidBillingResultErrorMessage)));
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
     });
   });
 
@@ -294,7 +297,11 @@ void main() {
       final PurchasesResultWrapper response =
           await billingClient.queryPurchases(SkuType.inapp);
 
-      expect(response.billingResult, equals(BillingResultWrapper(responseCode: BillingResponse.error, debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(
+          response.billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
       expect(response.responseCode, BillingResponse.error);
       expect(response.purchasesList, isEmpty);
     });
@@ -354,7 +361,11 @@ void main() {
       final PurchasesHistoryResult response =
           await billingClient.queryPurchaseHistory(SkuType.inapp);
 
-      expect(response.billingResult, equals(BillingResultWrapper(responseCode: BillingResponse.error, debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(
+          response.billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
       expect(response.purchaseHistoryRecordList, isEmpty);
     });
   });
@@ -385,7 +396,11 @@ void main() {
       final BillingResultWrapper billingResult = await billingClient
           .consumeAsync('dummy token', developerPayload: 'dummy payload');
 
-      expect(billingResult, equals(BillingResultWrapper(responseCode: BillingResponse.error, debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(
+          billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
     });
   });
 
@@ -416,7 +431,11 @@ void main() {
           await billingClient.acknowledgePurchase('dummy token',
               developerPayload: 'dummy payload');
 
-      expect(billingResult, equals(BillingResultWrapper(responseCode: BillingResponse.error, debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(
+          billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
     });
   });
 }

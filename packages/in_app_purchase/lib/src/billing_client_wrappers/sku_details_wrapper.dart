@@ -16,7 +16,8 @@ part 'sku_details_wrapper.g.dart';
 /// The error message shown when the map represents billing result is invalid from method channel.
 ///
 /// This usually indicates a series underlining code issue in the plugin.
-const kInvalidBillingResultErrorMessage = 'Invalid billing result map from method channel.';
+const kInvalidBillingResultErrorMessage =
+    'Invalid billing result map from method channel.';
 
 /// Dart wrapper around [`com.android.billingclient.api.SkuDetails`](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails).
 ///
@@ -214,10 +215,12 @@ class BillingResultWrapper {
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class.
   factory BillingResultWrapper.fromJson(Map<String, dynamic>? map) {
-      if (map == null || map.isEmpty) {
-        return BillingResultWrapper(responseCode: BillingResponse.error, debugMessage: kInvalidBillingResultErrorMessage);
-      }
-      return _$BillingResultWrapperFromJson(map);
+    if (map == null || map.isEmpty) {
+      return BillingResultWrapper(
+          responseCode: BillingResponse.error,
+          debugMessage: kInvalidBillingResultErrorMessage);
+    }
+    return _$BillingResultWrapperFromJson(map);
   }
 
   /// Response code returned in the Play Billing API calls.
