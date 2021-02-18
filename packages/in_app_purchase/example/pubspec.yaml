@@ -5,13 +5,8 @@ author: Flutter Team <flutter-dev@googlegroups.com>
 dependencies:
   flutter:
     sdk: flutter
-<<<<<<< Updated upstream
   cupertino_icons: ^0.1.2
   shared_preferences: ^0.5.2
-=======
-  shared_preferences:
-    path: ../../shared_preferences/shared_preferences
->>>>>>> Stashed changes
 
 dev_dependencies:
   test: ^1.5.2
