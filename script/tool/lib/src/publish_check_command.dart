@@ -71,18 +71,32 @@ class PublishCheckCommand extends PluginCommand {
       workingDirectory: package.path,
     );
 
-    io.stdout.addStream(process.stdout);
-    io.stderr.addStream(process.stderr);
+    final StringBuffer outputBuffer = StringBuffer();
 
-    // process.stderr.listen((List<int> event) {
-    //   io.stderr.add(event);
-    //   output += String.fromCharCodes(event);
-    // });
+    final Completer<void> stdOutCompleter = Completer<void>();
+    process.stdout.listen(
+      (List<int> event) {
+        io.stdout.add(event);
+        outputBuffer.write(String.fromCharCodes(event));
+      },
+      onDone: () => stdOutCompleter.complete(),
+    );
+
+    final Completer<void> stdInCompleter = Completer<void>();
+    process.stderr.listen(
+      (List<int> event) {
+        io.stderr.add(event);
+        outputBuffer.write(String.fromCharCodes(event));
+      },
+      onDone: () => stdInCompleter.complete(),
+    );
 
     if (await process.exitCode == 0) return true;
 
-    String output = await process.stdout.join();
-    output += await process.stderr.join();
+    await stdOutCompleter.future;
+    await stdInCompleter.future;
+
+    final String output = outputBuffer.toString();
     return output.contains('Package has 1 warning.') &&
         output.contains(
             'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.');
