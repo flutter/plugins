@@ -1268,7 +1268,7 @@ class MockCameraPlatform extends Mock
   Future<int> createCamera(
     CameraDescription description,
     ResolutionPreset? resolutionPreset, {
-    bool enableAudio = true,
+    bool enableAudio = false,
   }) =>
       mockPlatformException
           ? throw PlatformException(code: 'foo', message: 'bar')
