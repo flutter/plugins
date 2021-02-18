@@ -139,13 +139,14 @@ class SKPaymentQueueWrapper {
   Future<void> _handleObserverCallbacks(MethodCall call) async {
     assert(_observer != null,
         '[in_app_purchase]: (Fatal)The observer has not been set but we received a purchase transaction notification. Please ensure the observer has been set using `setTransactionObserver`. Make sure the observer is added right at the App Launch.');
+    final SKTransactionObserverWrapper observer = _observer!;
     switch (call.method) {
       case 'updatedTransactions':
         {
           final List<SKPaymentTransactionWrapper> transactions =
               _getTransactionList(call.arguments);
           return Future<void>(() {
-            return _observer!.updatedTransactions(transactions: transactions);
+            return observer.updatedTransactions(transactions: transactions);
           });
         }
       case 'removedTransactions':
@@ -153,20 +154,20 @@ class SKPaymentQueueWrapper {
           final List<SKPaymentTransactionWrapper> transactions =
               _getTransactionList(call.arguments);
           return Future<void>(() {
-            _observer!.removedTransactions(transactions: transactions);
+            observer.removedTransactions(transactions: transactions);
           });
         }
       case 'restoreCompletedTransactionsFailed':
         {
           SKError error = SKError.fromJson(call.arguments);
           return Future<void>(() {
-            _observer!.restoreCompletedTransactionsFailed(error: error);
+            observer.restoreCompletedTransactionsFailed(error: error);
           });
         }
       case 'paymentQueueRestoreCompletedTransactionsFinished':
         {
           return Future<void>(() {
-            _observer!.paymentQueueRestoreCompletedTransactionsFinished();
+            observer.paymentQueueRestoreCompletedTransactionsFinished();
           });
         }
       case 'shouldAddStorePayment':
@@ -176,7 +177,7 @@ class SKPaymentQueueWrapper {
           SKProductWrapper product =
               SKProductWrapper.fromJson(call.arguments['product']);
           return Future<void>(() {
-            if (_observer!.shouldAddStorePayment(
+            if (observer.shouldAddStorePayment(
                     payment: payment, product: product) ==
                 true) {
               SKPaymentQueueWrapper().addPayment(payment);
@@ -319,11 +320,17 @@ class SKPaymentWrapper {
   /// The amount of the product this payment is for.
   ///
   /// The default is 1. The minimum is 1. The maximum is 10.
-  @JsonKey(defaultValue: 1)
+  ///
+  /// If the object is invalid, the value could be 0. 
+  @JsonKey(defaultValue: 0)
   final int quantity;
 
-  /// Produces an "ask to buy" flow in the sandbox if set to true. Default is
-  /// false.
+  /// Produces an "ask to buy" flow in the sandbox.
+  ///
+  /// Setting it to `true` will cause a transaction to be in the state [SKPaymentTransactionStateWrapper.deferred],
+  /// which produce an "ask to buy" prompt that interrupts the the payment flow.
+  ///
+  /// Default is `false`.
   ///
   /// See https://developer.apple.com/in-app-purchase/ for a guide on Sandbox
   /// testing.

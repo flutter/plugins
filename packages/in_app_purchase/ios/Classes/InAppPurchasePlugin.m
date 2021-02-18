@@ -290,7 +290,7 @@
   }];
 }
 
-#pragma mark - delegatestransactionIdentifier:
+#pragma mark - delegates:
 
 - (void)handleTransactionsUpdated:(NSArray<SKPaymentTransaction *> *)transactions {
   NSMutableArray *maps = [NSMutableArray new];

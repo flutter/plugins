@@ -22,11 +22,32 @@ void main() {
     });
 
     test(
+        'SKProductSubscriptionPeriodWrapper should have properties to be default values if map is empty',	
+        () {
+      final SKProductSubscriptionPeriodWrapper wrapper =
+          SKProductSubscriptionPeriodWrapper.fromJson(<String, dynamic>{});
+      expect(wrapper.numberOfUnits, 0);
+      expect(wrapper.unit, SKSubscriptionPeriodUnit.day);
+    });
+
+    test(
         'SKProductDiscountWrapper should have property values consistent with map',
         () {
       final SKProductDiscountWrapper wrapper =
           SKProductDiscountWrapper.fromJson(buildDiscountMap(dummyDiscount));
       expect(wrapper, equals(dummyDiscount));
+    });
+
+     test(
+        'SKProductDiscountWrapper should have properties to be default if map is empty',
+        () {
+      final SKProductDiscountWrapper wrapper =
+          SKProductDiscountWrapper.fromJson(<String, dynamic>{});
+      expect(wrapper.price, '');
+      expect(wrapper.priceLocale, SKPriceLocaleWrapper(currencyCode: '', currencySymbol: ''));
+      expect(wrapper.numberOfPeriods, 0);
+      expect(wrapper.paymentMode, SKProductDiscountPaymentMode.payAsYouGo);
+      expect(wrapper.subscriptionPeriod, SKProductSubscriptionPeriodWrapper(numberOfUnits: 0, unit: SKSubscriptionPeriodUnit.day));
     });
 
     test('SKProductWrapper should have property values consistent with map',
@@ -35,6 +56,20 @@ void main() {
           SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
       expect(wrapper, equals(dummyProductWrapper));
     });
+
+     test('SKProductWrapper should have properties to be default if map is empty',
+        () {
+      final SKProductWrapper wrapper =
+          SKProductWrapper.fromJson(<String, dynamic>{});
+      expect(wrapper.productIdentifier, '');
+      expect(wrapper.localizedTitle, '');
+      expect(wrapper.localizedDescription, '');
+      expect(wrapper.priceLocale, SKPriceLocaleWrapper(currencyCode: '', currencySymbol: ''));
+      expect(wrapper.subscriptionGroupIdentifier, null);
+      expect(wrapper.price, '');
+      expect(wrapper.subscriptionPeriod, null);
+    });
+
 
     test('toProductDetails() should return correct Product object', () {
       final SKProductWrapper wrapper =

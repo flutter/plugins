@@ -5,7 +5,7 @@ author: Flutter Team <flutter-dev@googlegroups.com>
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^0.5.2
+  shared_preferences: ^2.0.0-nullsafety
 
 dev_dependencies:
   flutter_driver:
@@ -19,11 +19,11 @@ dev_dependencies:
     path: ../
   integration_test:
     path: ../../integration_test
-  pedantic: ^1.8.0
+  pedantic: ^1.10.0
 
 flutter:
   uses-material-design: true
 
 environment:
-  sdk: ">=2.3.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.9.1+hotfix.2"

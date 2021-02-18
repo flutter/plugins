@@ -107,11 +107,15 @@ class PurchaseParam {
 
   /// @deprecated Use [simulatesAskToBuyInSandbox] instead.
   ///
-  /// This parameter has no effect and will be removed shortly.
+  /// Only available on iOS, set it to `true` to produce an "ask to buy" flow for this payment in the sandbox.
+  ///
+  /// See also [SKPaymentWrapper.simulatesAskToBuyInSandbox].
   @deprecated
   final bool sandboxTesting;
 
   /// Only available on iOS, set it to `true` to produce an "ask to buy" flow for this payment in the sandbox.
+  ///
+  /// See also [SKPaymentWrapper.simulatesAskToBuyInSandbox].
   final bool simulatesAskToBuyInSandbox;
 }
 
@@ -142,7 +146,7 @@ class PurchaseDetails {
   ///
   /// Milliseconds since epoch.
   ///
-  /// The value is `null` is [status] is not [PurchaseStatus.purchased].
+  /// The value is `null` if [status] is not [PurchaseStatus.purchased].
   final String? transactionDate;
 
   /// The status that this [PurchaseDetails] is currently on.

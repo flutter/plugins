@@ -5,6 +5,7 @@
 import 'dart:ui' show hashValues;
 import 'package:collection/collection.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'enum_converters.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -24,7 +25,6 @@ class SkProductResponseWrapper {
   /// Constructing an instance from a map from the Objective-C layer.
   ///
   /// This method should only be used with `map` values returned by [SKRequestMaker.startProductRequest].
-  /// The `map` parameter must not be null.
   factory SkProductResponseWrapper.fromJson(Map<String, dynamic> map) {
     return _$SkProductResponseWrapperFromJson(map);
   }
@@ -101,19 +101,22 @@ class SKProductSubscriptionPeriodWrapper {
   /// Constructing an instance from a map from the Objective-C layer.
   ///
   /// This method should only be used with `map` values returned by [SKProductDiscountWrapper.fromJson] or [SKProductWrapper.fromJson].
-  /// The `map` parameter must not be null.
   factory SKProductSubscriptionPeriodWrapper.fromJson(
-      Map<String, dynamic> map) {
+      Map<String, dynamic>? map) {
+    if (map == null) {
+      return SKProductSubscriptionPeriodWrapper(numberOfUnits: 0, unit: SKSubscriptionPeriodUnit.day);
+    }
     return _$SKProductSubscriptionPeriodWrapperFromJson(map);
   }
 
   /// The number of [unit] units in this period.
   ///
-  /// Must be greater than 0.
-  @JsonKey(defaultValue: 1)
+  /// Must be greater than 0 if the object is valid.
+  @JsonKey(defaultValue: 0)
   final int numberOfUnits;
 
   /// The time unit used to specify the length of this period.
+  @SKSubscriptionPeriodUnitConverter()
   final SKSubscriptionPeriodUnit unit;
 
   @override
@@ -172,7 +175,6 @@ class SKProductDiscountWrapper {
   /// Constructing an instance from a map from the Objective-C layer.
   ///
   /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson].
-  /// The `map` parameter must not be null.
   factory SKProductDiscountWrapper.fromJson(Map<String, dynamic> map) {
     return _$SKProductDiscountWrapperFromJson(map);
   }
@@ -186,11 +188,12 @@ class SKProductDiscountWrapper {
 
   /// The object represent the discount period length.
   ///
-  /// The value must be >= 0.
-  @JsonKey(defaultValue: 1)
+  /// The value must be >= 0 if the object is valid.
+  @JsonKey(defaultValue: 0)
   final int numberOfPeriods;
 
   /// The object indicates how the discount price is charged.
+  @SKProductDiscountPaymentModeConverter()
   final SKProductDiscountPaymentMode paymentMode;
 
   /// The object represents the duration of single subscription period for the discount.
@@ -242,7 +245,6 @@ class SKProductWrapper {
   /// Constructing an instance from a map from the Objective-C layer.
   ///
   /// This method should only be used with `map` values returned by [SkProductResponseWrapper.fromJson].
-  /// The `map` parameter must not be null.
   factory SKProductWrapper.fromJson(Map<String, dynamic> map) {
     return _$SKProductWrapperFromJson(map);
   }
@@ -338,8 +340,10 @@ class SKPriceLocaleWrapper {
   /// Constructing an instance from a map from the Objective-C layer.
   ///
   /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson] and [SKProductDiscountWrapper.fromJson].
-  /// The `map` parameter must not be null.
-  factory SKPriceLocaleWrapper.fromJson(Map<String, dynamic> map) {
+  factory SKPriceLocaleWrapper.fromJson(Map<String, dynamic>? map) {
+    if (map == null) {
+      return SKPriceLocaleWrapper(currencyCode: '', currencySymbol: '');
+    }
     return _$SKPriceLocaleWrapperFromJson(map);
   }
 

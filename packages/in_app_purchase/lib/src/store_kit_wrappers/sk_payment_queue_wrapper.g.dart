@@ -28,7 +28,7 @@ SKPaymentWrapper _$SKPaymentWrapperFromJson(Map json) {
     productIdentifier: json['productIdentifier'] as String? ?? '',
     applicationUsername: json['applicationUsername'] as String?,
     requestData: json['requestData'] as String?,
-    quantity: json['quantity'] as int? ?? 1,
+    quantity: json['quantity'] as int? ?? 0,
     simulatesAskToBuyInSandbox:
         json['simulatesAskToBuyInSandbox'] as bool? ?? false,
   );

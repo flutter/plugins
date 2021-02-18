@@ -14,12 +14,12 @@ PurchaseWrapper _$PurchaseWrapperFromJson(Map json) {
     purchaseToken: json['purchaseToken'] as String? ?? '',
     signature: json['signature'] as String? ?? '',
     sku: json['sku'] as String? ?? '',
-    isAutoRenewing: json['isAutoRenewing'] as bool?,
+    isAutoRenewing: json['isAutoRenewing'] as bool,
     originalJson: json['originalJson'] as String? ?? '',
-    developerPayload: json['developerPayload'] as String? ?? '',
+    developerPayload: json['developerPayload'] as String?,
     isAcknowledged: json['isAcknowledged'] as bool? ?? false,
     purchaseState:
-        _$enumDecode(_$PurchaseStateWrapperEnumMap, json['purchaseState']),
+        const PurchaseStateConverter().fromJson(json['purchaseState'] as int?),
   );
 }
 
@@ -35,40 +35,9 @@ Map<String, dynamic> _$PurchaseWrapperToJson(PurchaseWrapper instance) =>
       'originalJson': instance.originalJson,
       'developerPayload': instance.developerPayload,
       'isAcknowledged': instance.isAcknowledged,
-      'purchaseState': _$PurchaseStateWrapperEnumMap[instance.purchaseState],
+      'purchaseState':
+          const PurchaseStateConverter().toJson(instance.purchaseState),
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
-
-const _$PurchaseStateWrapperEnumMap = {
-  PurchaseStateWrapper.unspecified_state: 0,
-  PurchaseStateWrapper.purchased: 1,
-  PurchaseStateWrapper.pending: 2,
-};
 
 PurchaseHistoryRecordWrapper _$PurchaseHistoryRecordWrapperFromJson(Map json) {
   return PurchaseHistoryRecordWrapper(
@@ -77,7 +46,7 @@ PurchaseHistoryRecordWrapper _$PurchaseHistoryRecordWrapperFromJson(Map json) {
     signature: json['signature'] as String? ?? '',
     sku: json['sku'] as String? ?? '',
     originalJson: json['originalJson'] as String? ?? '',
-    developerPayload: json['developerPayload'] as String? ?? '',
+    developerPayload: json['developerPayload'] as String?,
   );
 }
 
@@ -95,8 +64,7 @@ Map<String, dynamic> _$PurchaseHistoryRecordWrapperToJson(
 PurchasesResultWrapper _$PurchasesResultWrapperFromJson(Map json) {
   return PurchasesResultWrapper(
     responseCode:
-        _$enumDecodeNullable(_$BillingResponseEnumMap, json['responseCode']) ??
-            BillingResponse.error,
+        const BillingResponseConverter().fromJson(json['responseCode'] as int?),
     billingResult: BillingResultWrapper.fromJson(
         Map<String, dynamic>.from(json['billingResult'] as Map)),
     purchasesList: (json['purchasesList'] as List<dynamic>?)
@@ -111,35 +79,10 @@ Map<String, dynamic> _$PurchasesResultWrapperToJson(
         PurchasesResultWrapper instance) =>
     <String, dynamic>{
       'billingResult': instance.billingResult,
-      'responseCode': _$BillingResponseEnumMap[instance.responseCode],
+      'responseCode':
+          const BillingResponseConverter().toJson(instance.responseCode),
       'purchasesList': instance.purchasesList,
     };
-
-K? _$enumDecodeNullable<K, V>(
-  Map<K, V> enumValues,
-  dynamic source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
-}
-
-const _$BillingResponseEnumMap = {
-  BillingResponse.serviceTimeout: -3,
-  BillingResponse.featureNotSupported: -2,
-  BillingResponse.serviceDisconnected: -1,
-  BillingResponse.ok: 0,
-  BillingResponse.userCanceled: 1,
-  BillingResponse.serviceUnavailable: 2,
-  BillingResponse.billingUnavailable: 3,
-  BillingResponse.itemUnavailable: 4,
-  BillingResponse.developerError: 5,
-  BillingResponse.error: 6,
-  BillingResponse.itemAlreadyOwned: 7,
-  BillingResponse.itemNotOwned: 8,
-};
 
 PurchasesHistoryResult _$PurchasesHistoryResultFromJson(Map json) {
   return PurchasesHistoryResult(

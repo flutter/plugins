@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.10
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -33,7 +32,7 @@ class _MyApp extends StatefulWidget {
 
 class _MyAppState extends State<_MyApp> {
   final InAppPurchaseConnection _connection = InAppPurchaseConnection.instance;
-  StreamSubscription<List<PurchaseDetails>> _subscription;
+  late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
   List<ProductDetails> _products = [];
   List<PurchaseDetails> _purchases = [];
@@ -41,11 +40,11 @@ class _MyAppState extends State<_MyApp> {
   bool _isAvailable = false;
   bool _purchasePending = false;
   bool _loading = true;
-  String _queryProductError;
+  String? _queryProductError;
 
   @override
   void initState() {
-    Stream purchaseUpdated =
+    final Stream<List<PurchaseDetails>> purchaseUpdated =
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
@@ -77,7 +76,7 @@ class _MyAppState extends State<_MyApp> {
         await _connection.queryProductDetails(_kProductIds.toSet());
     if (productDetailResponse.error != null) {
       setState(() {
-        _queryProductError = productDetailResponse.error.message;
+        _queryProductError = productDetailResponse.error!.message;
         _isAvailable = isAvailable;
         _products = productDetailResponse.productDetails;
         _purchases = [];
@@ -147,7 +146,7 @@ class _MyAppState extends State<_MyApp> {
       );
     } else {
       stack.add(Center(
-        child: Text(_queryProductError),
+        child: Text(_queryProductError!),
       ));
     }
     if (_purchasePending) {
@@ -236,7 +235,7 @@ class _MyAppState extends State<_MyApp> {
     }));
     productList.addAll(_products.map(
       (ProductDetails productDetails) {
-        PurchaseDetails previousPurchase = purchases[productDetails.id];
+        PurchaseDetails? previousPurchase = purchases[productDetails.id];
         return ListTile(
             title: Text(
               productDetails.title,
@@ -329,7 +328,7 @@ class _MyAppState extends State<_MyApp> {
   void deliverProduct(PurchaseDetails purchaseDetails) async {
     // IMPORTANT!! Always verify a purchase purchase details before delivering the product.
     if (purchaseDetails.productID == _kConsumableId) {
-      await ConsumableStore.save(purchaseDetails.purchaseID);
+      await ConsumableStore.save(purchaseDetails.purchaseID!);
       List<String> consumables = await ConsumableStore.load();
       setState(() {
         _purchasePending = false;
@@ -365,7 +364,7 @@ class _MyAppState extends State<_MyApp> {
         showPendingUI();
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
-          handleError(purchaseDetails.error);
+          handleError(purchaseDetails.error!);
         } else if (purchaseDetails.status == PurchaseStatus.purchased) {
           bool valid = await _verifyPurchase(purchaseDetails);
           if (valid) {

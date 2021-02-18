@@ -1,4 +1,4 @@
-## 0.4.0-nullsafety.0
+## 0.4.0
 
 * Migrate to nullsafety.
 * Deprecate `sandboxTesting`, introduce `simulatesAskToBuyInSandbox`.

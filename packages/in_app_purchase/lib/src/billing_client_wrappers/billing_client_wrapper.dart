@@ -53,8 +53,6 @@ class BillingClient {
   bool _enablePendingPurchases = false;
 
   /// Creates a billing client.
-  ///
-  /// The `onPurchasesUpdated` parameter must not be null.
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
     channel.setMethodCallHandler(callHandler);
     _callbacks[kOnPurchasesUpdated] = [onPurchasesUpdated];
@@ -74,11 +72,9 @@ class BillingClient {
   /// [`BillingClient#isReady()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#isReady())
   /// to get the ready status of the BillingClient instance.
   Future<bool> isReady() async {
-    bool? ready = await channel.invokeMethod<bool>('BillingClient#isReady()');
-    if (ready == null) {
-      return false;
-    }
-    return ready;
+    final bool? ready =
+        await channel.invokeMethod<bool>('BillingClient#isReady()');
+    return ready ?? false;
   }
 
   /// Enable the [BillingClientWrapper] to handle pending purchases.
@@ -234,7 +230,6 @@ class BillingClient {
   /// Consuming can only be done on an item that's owned, and as a result of consumption, the user will no longer own it.
   /// Consumption is done asynchronously. The method returns a Future containing a [BillingResultWrapper].
   ///
-  /// The `purchaseToken` must not be null.
   /// The `developerPayload` is the developer data associated with the purchase to be consumed, it defaults to null.
   ///
   /// This wraps [`BillingClient#consumeAsync(String, ConsumeResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#consumeAsync(java.lang.String,%20com.android.billingclient.api.ConsumeResponseListener))
@@ -266,7 +261,6 @@ class BillingClient {
   /// Please refer to [acknowledge](https://developer.android.com/google/play/billing/billing_library_overview#acknowledge) for more
   /// details.
   ///
-  /// The `purchaseToken` must not be null.
   /// The `developerPayload` is the developer data associated with the purchase to be consumed, it defaults to null.
   ///
   /// This wraps [`BillingClient#acknowledgePurchase(String, AcknowledgePurchaseResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#acknowledgePurchase(com.android.billingclient.api.AcknowledgePurchaseParams,%20com.android.billingclient.api.AcknowledgePurchaseResponseListener))
@@ -292,7 +286,7 @@ class BillingClient {
         final PurchasesUpdatedListener listener =
             _callbacks[kOnPurchasesUpdated]!.first as PurchasesUpdatedListener;
         listener(PurchasesResultWrapper.fromJson(
-            Map<String, dynamic>.from(call.arguments)));
+            call.arguments.cast<String, dynamic>()));
         break;
       case _kOnBillingServiceDisconnected:
         final int handle = call.arguments['handle'];

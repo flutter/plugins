@@ -9,12 +9,18 @@ part of 'enum_converters.dart';
 _SerializedEnums _$_SerializedEnumsFromJson(Map json) {
   return _SerializedEnums()
     ..response = _$enumDecode(
-        _$SKPaymentTransactionStateWrapperEnumMap, json['response']);
+        _$SKPaymentTransactionStateWrapperEnumMap, json['response'])
+    ..unit = _$enumDecode(_$SKSubscriptionPeriodUnitEnumMap, json['unit'])
+    ..discountPaymentMode = _$enumDecode(
+        _$SKProductDiscountPaymentModeEnumMap, json['discountPaymentMode']);
 }
 
 Map<String, dynamic> _$_SerializedEnumsToJson(_SerializedEnums instance) =>
     <String, dynamic>{
       'response': _$SKPaymentTransactionStateWrapperEnumMap[instance.response],
+      'unit': _$SKSubscriptionPeriodUnitEnumMap[instance.unit],
+      'discountPaymentMode':
+          _$SKProductDiscountPaymentModeEnumMap[instance.discountPaymentMode],
     };
 
 K _$enumDecode<K, V>(
@@ -50,4 +56,18 @@ const _$SKPaymentTransactionStateWrapperEnumMap = {
   SKPaymentTransactionStateWrapper.restored: 3,
   SKPaymentTransactionStateWrapper.deferred: 4,
   SKPaymentTransactionStateWrapper.unspecified: -1,
+};
+
+const _$SKSubscriptionPeriodUnitEnumMap = {
+  SKSubscriptionPeriodUnit.day: 0,
+  SKSubscriptionPeriodUnit.week: 1,
+  SKSubscriptionPeriodUnit.month: 2,
+  SKSubscriptionPeriodUnit.year: 3,
+};
+
+const _$SKProductDiscountPaymentModeEnumMap = {
+  SKProductDiscountPaymentMode.payAsYouGo: 0,
+  SKProductDiscountPaymentMode.payUpFront: 1,
+  SKProductDiscountPaymentMode.freeTrail: 2,
+  SKProductDiscountPaymentMode.unspecified: -1,
 };

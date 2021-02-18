@@ -35,7 +35,7 @@ class PurchaseWrapper {
       required this.sku,
       required this.isAutoRenewing,
       required this.originalJson,
-      required this.developerPayload,
+      this.developerPayload,
       required this.isAcknowledged,
       required this.purchaseState});
 
@@ -104,7 +104,9 @@ class PurchaseWrapper {
   ///
   /// For [SkuType.subs] this means that the subscription is canceled when it is
   /// false.
-  final bool? isAutoRenewing;
+  ///
+  /// The value is `false` for [SkuType.inapp] products.
+  final bool isAutoRenewing;
 
   /// Details about this purchase, in JSON.
   ///
@@ -116,8 +118,9 @@ class PurchaseWrapper {
   final String originalJson;
 
   /// The payload specified by the developer when the purchase was acknowledged or consumed.
-  @JsonKey(defaultValue: '')
-  final String developerPayload;
+  ///
+  /// The value is `null` if it wasn't specified when the purchase was acknowledged or consumed.
+  final String? developerPayload;
 
   /// Whether the purchase has been acknowledged.
   ///
@@ -186,8 +189,9 @@ class PurchaseHistoryRecordWrapper {
   final String originalJson;
 
   /// The payload specified by the developer when the purchase was acknowledged or consumed.
-  @JsonKey(defaultValue: '')
-  final String developerPayload;
+  ///
+  /// If the value is `null` if it wasn't specified when the purchase was acknowledged or consumed.
+  final String? developerPayload;
 
   @override
   bool operator ==(Object other) {
@@ -248,7 +252,6 @@ class PurchasesResultWrapper {
   ///
   /// This can represent either the status of the "query purchase history" half
   /// of the operation and the "user made purchases" transaction itself.
-  @JsonKey(defaultValue: BillingResponse.error)
   final BillingResponse responseCode;
 
   /// The list of successful purchases made in this transaction.
