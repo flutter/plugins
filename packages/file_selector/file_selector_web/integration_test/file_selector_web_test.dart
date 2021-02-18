@@ -5,7 +5,6 @@
 import 'dart:html';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_web/file_selector_web.dart';
@@ -14,16 +13,18 @@ import 'package:file_selector_web/src/dom_helper.dart';
 void main() {
   group('FileSelectorWeb', () {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-    late MockDomHelper mockDomHelper;
-    late FileSelectorWeb plugin;
-
-    setUp(() {
-      mockDomHelper = MockDomHelper();
-      plugin = FileSelectorWeb(domHelper: mockDomHelper);
-    });
 
     group('openFile', () {
-      final mockFile = createXFile('1001', 'identity.png');
+      late MockDomHelper mockDomHelper;
+      late FileSelectorWeb plugin;
+      late XFile mockFile;
+
+      setUp(() {
+        mockFile = createXFile('1001', 'identity.png');
+
+        mockDomHelper = MockDomHelper()..setFiles([mockFile]);
+        plugin = FileSelectorWeb(domHelper: mockDomHelper);
+      });
 
       testWidgets('works', (WidgetTester _) async {
         final typeGroup = XTypeGroup(
@@ -32,11 +33,6 @@ void main() {
           mimeTypes: ['image/png'],
           webWildCards: ['image/*'],
         );
-
-        when(mockDomHelper.getFiles(
-          accept: '.jpg,.jpeg,image/png,image/*',
-          multiple: false,
-        )).thenAnswer((_) async => [mockFile]);
 
         final file = await plugin.openFile(acceptedTypeGroups: [typeGroup]);
 
@@ -48,19 +44,23 @@ void main() {
     });
 
     group('openFiles', () {
-      final mockFile1 = createXFile('123456', 'file1.txt');
-      final mockFile2 = createXFile('', 'file2.txt');
+      late MockDomHelper mockDomHelper;
+      late FileSelectorWeb plugin;
+      late XFile mockFile1, mockFile2;
+
+      setUp(() {
+        mockFile1 = createXFile('123456', 'file1.txt');
+        mockFile2 = createXFile('', 'file2.txt');
+
+        mockDomHelper = MockDomHelper()..setFiles([mockFile1, mockFile2]);
+        plugin = FileSelectorWeb(domHelper: mockDomHelper);
+      });
 
       testWidgets('works', (WidgetTester _) async {
         final typeGroup = XTypeGroup(
           label: 'files',
           extensions: ['.txt'],
         );
-
-        when(mockDomHelper.getFiles(
-          accept: '.txt',
-          multiple: true,
-        )).thenAnswer((_) async => [mockFile1, mockFile2]);
 
         final files = await plugin.openFiles(acceptedTypeGroups: [typeGroup]);
 
@@ -80,15 +80,20 @@ void main() {
   });
 }
 
-class MockDomHelper extends Mock implements DomHelper {
+class MockDomHelper implements DomHelper {
+  List<XFile> _files = <XFile>[];
+
   @override
   Future<List<XFile>> getFiles({
     String accept = '',
     bool multiple = false,
     FileUploadInputElement? input,
   }) {
-    return super
-        .noSuchMethod(Invocation.method(#getFiles, [accept, multiple, input]));
+    return Future.value(_files);
+  }
+
+  void setFiles(List<XFile> files) {
+    _files = files;
   }
 }
 
