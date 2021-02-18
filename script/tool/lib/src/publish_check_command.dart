@@ -71,24 +71,21 @@ class PublishCheckCommand extends PluginCommand {
       workingDirectory: package.path,
     );
 
-    String output = '';
-    process.stdout.listen((List<int> event) {
-      io.stdout.add(event);
-      output += String.fromCharCodes(event);
-    });
+    io.stdout.addStream(process.stdout);
+    io.stderr.addStream(process.stderr);
 
-    process.stderr.listen((List<int> event) {
-      io.stderr.add(event);
-      output += String.fromCharCodes(event);
-    });
+    // process.stderr.listen((List<int> event) {
+    //   io.stderr.add(event);
+    //   output += String.fromCharCodes(event);
+    // });
 
-    final int exitCode = await process.exitCode;
+    if (await process.exitCode == 0) return true;
 
-    final bool hasPreReleaseSdk = output.contains('Package has 1 warning.') &&
+    String output = await process.stdout.join();
+    output += await process.stderr.join();
+    return output.contains('Package has 1 warning.') &&
         output.contains(
             'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.');
-
-    return exitCode == 0 || hasPreReleaseSdk;
   }
 
   Future<bool> passesPublishCheck(Directory package) async {
