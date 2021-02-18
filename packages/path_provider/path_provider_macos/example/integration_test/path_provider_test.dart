@@ -30,22 +30,40 @@ void main() {
     _verifySampleFile(result, 'applicationSupport');
   });
 
+  testWidgets('getLibraryDirectory', (WidgetTester tester) async {
+    final PathProviderPlatform provider = PathProviderPlatform.instance;
+    final String result = await provider.getLibraryPath();
+    _verifySampleFile(result, 'library');
+  });
+
   testWidgets('getDownloadsDirectory', (WidgetTester tester) async {
     final PathProviderPlatform provider = PathProviderPlatform.instance;
     final String result = await provider.getDownloadsPath();
-    _verifySampleFile(result, 'downloads');
+    // Create if necessary, since the native implementation doesn't guarantee
+    // that the folder exists.
+    _verifySampleFile(result, 'downloads', createDirectory: true);
   });
 }
 
 /// Verify a file called [name] in [directoryPath] by recreating it with test
 /// contents when necessary.
-void _verifySampleFile(String directoryPath, String name) {
+///
+/// If [createDirectory] is true, the directory will be created if missing.
+void _verifySampleFile(
+  String directoryPath,
+  String name, {
+  bool createDirectory = false,
+}) {
   final Directory directory = Directory(directoryPath);
   final File file = File('${directory.path}${Platform.pathSeparator}$name');
 
   if (file.existsSync()) {
     file.deleteSync();
     expect(file.existsSync(), isFalse);
+  }
+
+  if (createDirectory) {
+    directory.createSync(recursive: true);
   }
 
   file.writeAsStringSync('Hello world!');
