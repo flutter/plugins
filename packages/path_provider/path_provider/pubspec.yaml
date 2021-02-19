@@ -1,7 +1,7 @@
 name: path_provider
 description: Flutter plugin for getting commonly used locations on host platform file systems, such as the temp and app data directories.
 homepage: https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider
-version: 1.6.27
+version: 2.0.0-nullsafety.1
 
 flutter:
   plugin:
@@ -21,10 +21,10 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  path_provider_platform_interface: ^1.0.1
-  path_provider_macos: ^0.0.4
-  path_provider_linux: ^0.0.1
-  path_provider_windows: ^0.0.4
+  path_provider_platform_interface: ^2.0.0-nullsafety
+  path_provider_macos: ^0.0.5-nullsafety
+  path_provider_linux: ^0.2.0-nullsafety
+  path_provider_windows: ^0.1.0-nullsafety.3
 
 dev_dependencies:
   integration_test:
@@ -33,11 +33,10 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  uuid: "^1.0.0"
-  pedantic: ^1.8.0
-  mockito: ^4.1.1
-  plugin_platform_interface: ^1.0.0
+  pedantic: ^1.10.0-nullsafety
+  mockito: ^5.0.0-nullsafety.0
+  plugin_platform_interface: ^1.1.0-nullsafety
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5"

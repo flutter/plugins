@@ -17,17 +17,17 @@ class MethodChannelWifiInfoFlutter extends WifiInfoFlutterPlatform {
       MethodChannel('plugins.flutter.io/wifi_info_flutter');
 
   @override
-  Future<String> getWifiName() async {
+  Future<String?> getWifiName() async {
     return methodChannel.invokeMethod<String>('wifiName');
   }
 
   @override
-  Future<String> getWifiBSSID() {
+  Future<String?> getWifiBSSID() {
     return methodChannel.invokeMethod<String>('wifiBSSID');
   }
 
   @override
-  Future<String> getWifiIP() {
+  Future<String?> getWifiIP() {
     return methodChannel.invokeMethod<String>('wifiIPAddress');
   }
 
@@ -50,7 +50,7 @@ class MethodChannelWifiInfoFlutter extends WifiInfoFlutterPlatform {
 }
 
 /// Convert a String to a LocationAuthorizationStatus value.
-LocationAuthorizationStatus _parseLocationAuthorizationStatus(String result) {
+LocationAuthorizationStatus _parseLocationAuthorizationStatus(String? result) {
   return LocationAuthorizationStatus.values.firstWhere(
     (LocationAuthorizationStatus status) => result == describeEnum(status),
     orElse: () => LocationAuthorizationStatus.unknown,
