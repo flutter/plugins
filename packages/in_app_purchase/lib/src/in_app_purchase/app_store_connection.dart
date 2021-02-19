@@ -61,7 +61,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
         quantity: 1,
         applicationUsername: purchaseParam.applicationUserName,
         simulatesAskToBuyInSandbox: purchaseParam.simulatesAskToBuyInSandbox ||
-        // ignore: deprecated_member_use_from_same_package
+            // ignore: deprecated_member_use_from_same_package
             purchaseParam.sandboxTesting,
         requestData: null));
     return true; // There's no error feedback from iOS here to return.
