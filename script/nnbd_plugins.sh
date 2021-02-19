@@ -40,6 +40,7 @@ readonly NNBD_PLUGINS_LIST=(
 
 readonly NON_NNBD_PLUGINS_LIST=(
   "extension_google_sign_in_as_googleapis_auth"
+  "in_app_purchase" # dev dependency on old shared_preferences
   "google_maps_flutter" # partially migrated
 )
 
