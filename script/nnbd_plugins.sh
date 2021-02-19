@@ -32,6 +32,7 @@ readonly NNBD_PLUGINS_LIST=(
   "video_player"
   "webview_flutter"
   "wifi_info_flutter"
+  "in_app_purchase"
 )
 
 # This list contains the list of plugins that have *not* been

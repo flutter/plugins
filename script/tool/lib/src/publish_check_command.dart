@@ -97,7 +97,7 @@ class PublishCheckCommand extends PluginCommand {
     await stdInCompleter.future;
 
     final String output = outputBuffer.toString();
-    return output.contains('Package has 1 warning.') &&
+    return output.contains('Package has 1 warning') &&
         output.contains(
             'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.');
   }
