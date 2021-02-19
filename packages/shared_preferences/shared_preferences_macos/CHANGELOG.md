@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.1
+
+* Add `implements` to the pubspec.
+
 ## 2.0.0-nullsafety
 
 * Update version to (semi-belatedly) meet 1.0-consistency promise.

@@ -1,10 +1,11 @@
 name: shared_preferences_linux
 description: Linux implementation of the shared_preferences plugin
-version: 2.0.0-nullsafety
+version: 2.0.0-nullsafety.1
 homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences_linux
 
 flutter:
   plugin:
+    implements: shared_preferences
     platforms:
       linux:
         dartPluginClass: SharedPreferencesLinux

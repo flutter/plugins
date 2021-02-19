@@ -1,3 +1,6 @@
+## 2.0.0-nullsafety.1
+
+* Add `implements` to the pubspec.
 
 ## 2.0.0-nullsafety
 

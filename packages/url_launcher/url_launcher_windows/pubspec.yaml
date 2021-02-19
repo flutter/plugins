@@ -1,10 +1,11 @@
 name: url_launcher_windows
 description: Windows implementation of the url_launcher plugin.
-version: 2.0.0-nullsafety
+version: 2.0.0-nullsafety.1
 homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher_windows
 
 flutter:
   plugin:
+    implements: url_launcher
     platforms:
       windows:
         pluginClass: UrlLauncherPlugin
