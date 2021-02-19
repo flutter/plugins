@@ -39,9 +39,7 @@ void main() {
   testWidgets('getDownloadsDirectory', (WidgetTester tester) async {
     final PathProviderPlatform provider = PathProviderPlatform.instance;
     final String result = await provider.getDownloadsPath();
-    // Create if necessary, since the native implementation doesn't guarantee
-    // that the folder exists.
-    _verifySampleFile(result, 'downloads', createDirectory: true);
+    _verifySampleFile(result, 'downloads');
   });
 }
 
@@ -49,21 +47,13 @@ void main() {
 /// contents when necessary.
 ///
 /// If [createDirectory] is true, the directory will be created if missing.
-void _verifySampleFile(
-  String directoryPath,
-  String name, {
-  bool createDirectory = false,
-}) {
+void _verifySampleFile(String directoryPath, String name) {
   final Directory directory = Directory(directoryPath);
   final File file = File('${directory.path}${Platform.pathSeparator}$name');
 
   if (file.existsSync()) {
     file.deleteSync();
     expect(file.existsSync(), isFalse);
-  }
-
-  if (createDirectory) {
-    directory.createSync(recursive: true);
   }
 
   file.writeAsStringSync('Hello world!');
