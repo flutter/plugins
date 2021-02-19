@@ -1,3 +1,15 @@
+## 0.8.0-nullsafety.1
+
+* Added a timeout to the pre-capture sequence on Android to prevent crashes when the camera cannot get a focus.
+
+## 0.8.0-nullsafety
+
+* Migrated to null safety.
+
+## 0.7.0+4
+
+* Fix crash when taking picture with orientation lock
+
 ## 0.7.0+3
 
 * Clockwise rotation of focus point in android 
