@@ -1,3 +1,11 @@
+## 2.0.0
+
+* Migrate to null safety.
+
+## 1.0.3
+
+* Fix homepage in `pubspec.yaml`.
+
 ## 1.0.2
 
 * Make the pedantic dev_dependency explicit.

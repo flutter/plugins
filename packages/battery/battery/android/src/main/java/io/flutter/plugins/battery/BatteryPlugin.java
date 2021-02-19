@@ -21,7 +21,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
 
 /** BatteryPlugin */
 public class BatteryPlugin implements MethodCallHandler, StreamHandler, FlutterPlugin {
@@ -32,7 +31,8 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler, FlutterP
   private EventChannel eventChannel;
 
   /** Plugin registration. */
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     final BatteryPlugin instance = new BatteryPlugin();
     instance.onAttachedToEngine(registrar.context(), registrar.messenger());
   }

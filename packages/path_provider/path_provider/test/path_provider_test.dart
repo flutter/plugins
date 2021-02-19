@@ -25,52 +25,48 @@ void main() {
 
     setUp(() async {
       PathProviderPlatform.instance = MockPathProviderPlatform();
-      // This is required because we manually register the Linux path provider when on the Linux platform.
-      // Will be removed when automatic registration of dart plugins is implemented.
-      // See this issue https://github.com/flutter/flutter/issues/52267 for details
-      disablePathProviderPlatformOverride = true;
     });
 
     test('getTemporaryDirectory', () async {
-      Directory result = await getTemporaryDirectory();
-      expect(result.path, kTemporaryPath);
+      Directory? result = await getTemporaryDirectory();
+      expect(result?.path, kTemporaryPath);
     });
 
     test('getApplicationSupportDirectory', () async {
-      Directory result = await getApplicationSupportDirectory();
-      expect(result.path, kApplicationSupportPath);
+      Directory? result = await getApplicationSupportDirectory();
+      expect(result?.path, kApplicationSupportPath);
     });
 
     test('getLibraryDirectory', () async {
-      Directory result = await getLibraryDirectory();
-      expect(result.path, kLibraryPath);
+      Directory? result = await getLibraryDirectory();
+      expect(result?.path, kLibraryPath);
     });
 
     test('getApplicationDocumentsDirectory', () async {
-      Directory result = await getApplicationDocumentsDirectory();
-      expect(result.path, kApplicationDocumentsPath);
+      Directory? result = await getApplicationDocumentsDirectory();
+      expect(result?.path, kApplicationDocumentsPath);
     });
 
     test('getExternalStorageDirectory', () async {
-      Directory result = await getExternalStorageDirectory();
-      expect(result.path, kExternalStoragePath);
+      Directory? result = await getExternalStorageDirectory();
+      expect(result?.path, kExternalStoragePath);
     });
 
     test('getExternalCacheDirectories', () async {
-      List<Directory> result = await getExternalCacheDirectories();
-      expect(result.length, 1);
-      expect(result.first.path, kExternalCachePath);
+      List<Directory>? result = await getExternalCacheDirectories();
+      expect(result?.length, 1);
+      expect(result?.first.path, kExternalCachePath);
     });
 
     test('getExternalStorageDirectories', () async {
-      List<Directory> result = await getExternalStorageDirectories();
-      expect(result.length, 1);
-      expect(result.first.path, kExternalStoragePath);
+      List<Directory>? result = await getExternalStorageDirectories();
+      expect(result?.length, 1);
+      expect(result?.first.path, kExternalStoragePath);
     });
 
     test('getDownloadsDirectory', () async {
-      Directory result = await getDownloadsDirectory();
-      expect(result.path, kDownloadsPath);
+      Directory? result = await getDownloadsDirectory();
+      expect(result?.path, kDownloadsPath);
     });
   });
 }
@@ -103,7 +99,7 @@ class MockPathProviderPlatform extends Mock
   }
 
   Future<List<String>> getExternalStoragePaths({
-    StorageDirectory type,
+    StorageDirectory? type,
   }) async {
     return <String>[kExternalStoragePath];
   }

@@ -22,7 +22,7 @@ export 'model/ios_device_info.dart';
 /// platform implementations that `implements` this interface will be broken by newly added
 /// [DeviceInfoPlatform] methods.
 abstract class DeviceInfoPlatform extends PlatformInterface {
-  /// Constructs a UrlLauncherPlatform.
+  /// Constructs a DeviceInfoPlatform.
   DeviceInfoPlatform() : super(token: _token);
 
   static final Object _token = Object();
@@ -41,14 +41,12 @@ abstract class DeviceInfoPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  // Gets the Android device information.
-  // ignore: public_member_api_docs
+  /// Gets the Android device information.
   Future<AndroidDeviceInfo> androidInfo() {
     throw UnimplementedError('androidInfo() has not been implemented.');
   }
 
-  // Gets the iOS device information.
-  // ignore: public_member_api_docs
+  /// Gets the iOS device information.
   Future<IosDeviceInfo> iosInfo() {
     throw UnimplementedError('iosInfo() has not been implemented.');
   }

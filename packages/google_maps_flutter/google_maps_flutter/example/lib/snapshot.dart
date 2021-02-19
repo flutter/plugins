@@ -47,7 +47,7 @@ class _SnapshotBodyState extends State<_SnapshotBody> {
               initialCameraPosition: _kInitialPosition,
             ),
           ),
-          FlatButton(
+          TextButton(
             child: Text('Take a snapshot'),
             onPressed: () async {
               final imageBytes = await _mapController?.takeSnapshot();

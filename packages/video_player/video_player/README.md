@@ -1,15 +1,8 @@
 # Video Player plugin for Flutter
 
-[![pub package](https://img.shields.io/pub/v/video_player.svg)](https://pub.dartlang.org/packages/video_player)
+[![pub package](https://img.shields.io/pub/v/video_player.svg)](https://pub.dev/packages/video_player)
 
 A Flutter plugin for iOS, Android and Web for playing back video on a Widget surface.
-
-**Please set your constraint to `video_player: '>=0.10.y+x <2.0.0'`**
-
-## Backward compatible 1.0.0 version is coming
-The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.10.y+z`.
-Please use `video_player: '>=0.10.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
-For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
 
 ![The example app running in iOS](https://github.com/flutter/plugins/blob/master/packages/video_player/video_player/doc/demo_ipod.gif?raw=true)
 
@@ -19,7 +12,7 @@ For more details see: https://github.com/flutter/flutter/wiki/Package-migration-
 
 ## Installation
 
-First, add `video_player` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
+First, add `video_player` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
 
 ### iOS
 
@@ -55,6 +48,8 @@ This plugin compiles for the web platform since version `0.10.5`, in recent enou
 
 Different web browsers may have different video-playback capabilities (supported formats, autoplay...). Check [package:video_player_web](https://pub.dev/packages/video_player_web) for more web-specific information.
 
+The `VideoPlayerOptions.mixWithOthers` option can't be implemented in web, at least at the moment. If you use this option in web it will be silently ignored.
+
 ## Supported Formats
 
 - On iOS, the backing player is [AVPlayer](https://developer.apple.com/documentation/avfoundation/avplayer).
@@ -84,7 +79,7 @@ class _VideoAppState extends State<VideoApp> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-        'http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4')
+        'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4')
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
@@ -127,3 +122,22 @@ class _VideoAppState extends State<VideoApp> {
   }
 }
 ```
+
+## Usage
+
+The following section contains usage information that goes beyond what is included in the
+documentation in order to give a more elaborate overview of the API.
+
+This is not complete as of now. You can contribute to this section by [opening a pull request](https://github.com/flutter/plugins/pulls).
+
+### Playback speed
+
+You can set the playback speed on your `_controller` (instance of `VideoPlayerController`) by
+calling `_controller.setPlaybackSpeed`. `setPlaybackSpeed` takes a `double` speed value indicating 
+the rate of playback for your video.  
+For example, when given a value of `2.0`, your video will play at 2x the regular playback speed
+and so on.
+
+To learn about playback speed limitations, see the [`setPlaybackSpeed` method documentation](https://pub.dev/documentation/video_player/latest/video_player/VideoPlayerController/setPlaybackSpeed.html).
+
+Furthermore, see the example app for an example playback speed implementation.

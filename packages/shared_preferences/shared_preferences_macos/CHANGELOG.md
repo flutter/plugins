@@ -1,3 +1,20 @@
+## 2.0.0-nullsafety
+
+* Update version to (semi-belatedly) meet 1.0-consistency promise.
+
+## 0.0.2-nullsafety
+
+* Update Dart SDK constraint for null safety.
+
+## 0.0.1+12
+
+* Update Flutter SDK constraint.
+
+## 0.0.1+11
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
 ## 0.0.1+10
 
 * Remove iOS and Android folders from the example app.

@@ -1,3 +1,36 @@
+## 2.0.0-nullsafety
+
+* Update version to (semi-belatedly) meet 1.0-consistency promise.
+
+## 0.0.5-nullsafety
+
+* Update Dart SDK constraint for null safety.
+
+## 0.0.4+9
+
+* Remove placeholder Dart file.
+
+## 0.0.4+8
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.0.4+7
+
+* Update Flutter SDK constraint.
+
+## 0.0.4+6
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 0.0.4+5
+
+* Update license header.
+
+## 0.0.4+4
+
+* Remove no-op android folder in the example app.
+
 ## 0.0.4+3
 
 * Remove Android folder from `path_provider_macos`.

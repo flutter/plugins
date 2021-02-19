@@ -1,3 +1,71 @@
+## 0.3.5+2
+
+* Migrate deprecated references.
+
+## 0.3.5+1
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.3.5
+
+* [Android] Fixed: added support for the SERVICE_TIMEOUT (-3) response code.
+
+## 0.3.4+18
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.3.4+17
+
+* Update Flutter SDK constraint.
+
+## 0.3.4+16
+
+* Add Dartdocs to all public APIs.
+
+## 0.3.4+15
+
+* Update android compileSdkVersion to 29.
+
+## 0.3.4+14
+
+* Add test target to iOS example app Podfile
+
+## 0.3.4+13
+
+* Android Code Inspection and Clean up.
+
+## 0.3.4+12
+
+* [iOS] Fixed: finishing purchases upon payment dialog cancellation.
+
+## 0.3.4+11
+
+* [iOS] Fixed: crash when sending null for simulatesAskToBuyInSandbox parameter.
+
+## 0.3.4+10
+
+* Fixed typo 'verity' for 'verify'.
+
+## 0.3.4+9
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
+
+## 0.3.4+8
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
+
+## 0.3.4+7
+
+* iOS: Fix typo of the `simulatesAskToBuyInSandbox` key.
+
+## 0.3.4+6
+
+* iOS: Fix the bug that prevent restored subscription transactions from being completed
+
 ## 0.3.4+5
 
 * Added necessary README docs for getting started with Android.

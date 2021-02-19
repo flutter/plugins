@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:test/test.dart';
 
-import 'package:flutter/widgets.dart' hide TypeMatcher;
+import 'package:flutter/widgets.dart' as widgets;
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/in_app_purchase/google_play_connection.dart';
@@ -34,7 +34,7 @@ void main() {
   });
 
   setUp(() {
-    WidgetsFlutterBinding.ensureInitialized();
+    widgets.WidgetsFlutterBinding.ensureInitialized();
     const String debugMessage = 'dummy message';
     final BillingResponse responseCode = BillingResponse.ok;
     final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
