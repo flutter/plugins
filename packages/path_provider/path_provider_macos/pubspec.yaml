@@ -1,6 +1,6 @@
 name: path_provider_macos
 description: macOS implementation of the path_provider plugin
-version: 2.0.0-nullsafety
+version: 2.0.0
 homepage: https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider_macos
 
 flutter:
@@ -10,7 +10,7 @@ flutter:
         pluginClass: PathProviderPlugin
 
 environment:
-  sdk: ">=2.12.0-0 <3.0.0"
+  sdk: ">=2.12.0-259.9.beta <3.0.0"
   flutter: ">=1.10.0"
 
 dependencies:
@@ -18,4 +18,4 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  pedantic: ^1.8.0
+  pedantic: ^1.10.0
