@@ -37,7 +37,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.liteModeEnabled, false);
 
