@@ -1,3 +1,8 @@
+## 2.0.0-nullsafety.1
+
+* Require latest path_provider_windows to avoid potential issues
+  with breaking changes in `ffi` and `win32`.
+
 ## 2.0.0-nullsafety
 
 * Migrate to null safety.

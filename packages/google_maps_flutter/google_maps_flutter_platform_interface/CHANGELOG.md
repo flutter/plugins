@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.1
+
+* Fix overly-restrictive type check.
+
 ## 2.0.0-nullsafety
 
 * Migrated to null-safety.

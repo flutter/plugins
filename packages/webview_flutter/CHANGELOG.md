@@ -1,3 +1,7 @@
+## 2.0.0-nullsafety.6
+
+* Added support for progress tracking.
+
 ## 2.0.0-nullsafety.5
 
 * Add section to the wiki explaining how to use Material components.

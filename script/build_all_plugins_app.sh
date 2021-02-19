@@ -18,37 +18,19 @@ source "$SCRIPT_DIR/nnbd_plugins.sh"
 
 check_changed_packages > /dev/null
 
+# This list should be kept as short as possible, and things should remain here
+# only as long as necessary, since in general the goal is for all of the latest
+# versions of plugins to be mutually compatible.
+#
+# An example use case for this list would be to temporarily add plugins while
+# updating multiple plugins for a breaking change in a common dependency in
+# cases where using a relaxed version constraint isn't possible.
 readonly EXCLUDED_PLUGINS_LIST=(
-  "connectivity_macos"
-  "connectivity_platform_interface"
-  "connectivity_web"
-  "extension_google_sign_in_as_googleapis_auth"
-  "file_selector" # currently out of sync with camera
-  "flutter_plugin_android_lifecycle"
-  "google_maps_flutter_platform_interface"
-  "google_maps_flutter_web"
-  "google_sign_in_platform_interface"
-  "google_sign_in_web"
-  "image_picker_platform_interface"
-  "image_picker"
-  "instrumentation_adapter"
-  "local_auth" # flutter_plugin_android_lifecycle conflict
-  "path_provider_linux"
-  "path_provider_macos"
-  "path_provider_platform_interface"
-  "path_provider_web"
-  "plugin_platform_interface"
-  "shared_preferences_linux"
-  "shared_preferences_macos"
-  "shared_preferences_platform_interface"
-  "shared_preferences_web"
-  "shared_preferences_windows"
-  "url_launcher_linux"
-  "url_launcher_macos"
-  "url_launcher_platform_interface"
-  "url_launcher_web"
-  "video_player_platform_interface"
-  "video_player_web"
+  # "file_selector" # currently out of sync with camera
+  # "flutter_plugin_android_lifecycle"
+  # "image_picker"
+  # "local_auth" # flutter_plugin_android_lifecycle conflict
+  "plugin_platform_interface" # This should never be a direct app dependency.
 )
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
