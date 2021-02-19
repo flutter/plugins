@@ -25,7 +25,6 @@ package io.flutter.plugins.imagepicker;
 
 import android.content.Context;
 import android.net.Uri;
-import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,8 +39,7 @@ class FileUtils {
     OutputStream outputStream = null;
     boolean success = false;
     try {
-      String fileType = context.getContentResolver().getType(uri);
-      String extension = "." + MimeTypeMap.getSingleton().getExtensionFromMimeType(fileType);
+      String extension = getImageExtension(uri);
       inputStream = context.getContentResolver().openInputStream(uri);
       file = File.createTempFile("image_picker", extension, context.getCacheDir());
       file.deleteOnExit();
@@ -66,6 +64,27 @@ class FileUtils {
       }
     }
     return success ? file.getPath() : null;
+  }
+
+  /** @return extension of image with dot, or default .jpg if it none. */
+  private static String getImageExtension(Uri uriImage) {
+    String extension = null;
+
+    try {
+      String imagePath = uriImage.getPath();
+      if (imagePath != null && imagePath.lastIndexOf(".") != -1) {
+        extension = imagePath.substring(imagePath.lastIndexOf(".") + 1);
+      }
+    } catch (Exception e) {
+      extension = null;
+    }
+
+    if (extension == null || extension.isEmpty()) {
+      //default extension for matches the previous behavior of the plugin
+      extension = "jpg";
+    }
+
+    return "." + extension;
   }
 
   private static void copy(InputStream in, OutputStream out) throws IOException {
