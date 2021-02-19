@@ -1,3 +1,10 @@
+## 0.4.0
+
+* Migrate to nullsafety.
+* Deprecate `sandboxTesting`, introduce `simulatesAskToBuyInSandbox`.
+* **Breaking Change:**
+  * Removed `callbackChannel` in `channels.dart`, see https://github.com/flutter/flutter/issues/69225.
+
 ## 0.3.5+2
 
 * Migrate deprecated references.
