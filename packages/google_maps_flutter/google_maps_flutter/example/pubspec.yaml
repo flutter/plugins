@@ -2,7 +2,7 @@ name: google_maps_flutter_example
 description: Demonstrates how to use the google_maps_flutter plugin.
 
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: '>=2.12.0-0 <3.0.0'
   flutter: ">=1.22.0"
 
 dependencies:
@@ -19,7 +19,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  flutter_plugin_android_lifecycle: ^1.0.0
+  flutter_plugin_android_lifecycle: ^2.0.0-nullsafety.2
 
 dev_dependencies:
   flutter_driver:
