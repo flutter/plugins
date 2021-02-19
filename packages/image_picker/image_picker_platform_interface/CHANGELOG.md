@@ -1,3 +1,22 @@
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+* Breaking Changes:
+    * Removed the deprecated methods: `ImagePickerPlatform.retrieveLostDataAsDartIoFile`,`ImagePickerPlatform.pickImagePath` and `ImagePickerPlatform.pickVideoPath`.
+    * Removed deprecated class: `LostDataResponse`.
+
+## 1.1.6
+
+* Fix test asset file location.
+
+## 1.1.5
+
+* Update Flutter SDK constraint.
+
+## 1.1.4
+
+* Pass `Uri`s to `package:http` methods, instead of strings, in preparation for a major version update in `http`.
+
 ## 1.1.3
 
 * Update documentation of `pickImage()` regarding HEIC images.

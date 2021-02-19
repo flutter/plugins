@@ -39,6 +39,24 @@ void main() {
     });
   });
 
+  // Make sure that the enum values are supported and that the converter call
+  // does not fail
+  test('response states', () async {
+    BillingResponseConverter converter = BillingResponseConverter();
+    converter.fromJson(-3);
+    converter.fromJson(-2);
+    converter.fromJson(-1);
+    converter.fromJson(0);
+    converter.fromJson(1);
+    converter.fromJson(2);
+    converter.fromJson(3);
+    converter.fromJson(4);
+    converter.fromJson(5);
+    converter.fromJson(6);
+    converter.fromJson(7);
+    converter.fromJson(8);
+  });
+
   group('startConnection', () {
     final String methodName =
         'BillingClient#startConnection(BillingClientStateListener)';

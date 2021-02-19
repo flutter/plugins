@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.8
-
+// TODO(cyanglaz): Remove once Mockito is migrated to null safety.
+// @dart = 2.9
 import 'package:connectivity/connectivity.dart';
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';

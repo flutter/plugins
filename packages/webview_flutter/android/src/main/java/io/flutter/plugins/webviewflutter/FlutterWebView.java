@@ -72,6 +72,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
       return true;
     }
+
+    @Override
+    public void onProgressChanged(WebView view, int progress) {
+      flutterWebViewClient.onLoadingProgress(progress);
+    }
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -367,10 +372,16 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             webView.setWebContentsDebuggingEnabled(debuggingEnabled);
           }
           break;
+        case "hasProgressTracking":
+          flutterWebViewClient.hasProgressTracking = (boolean) settings.get(key);
+          break;
         case "gestureNavigationEnabled":
           break;
         case "userAgent":
           updateUserAgent((String) settings.get(key));
+          break;
+        case "allowsInlineMediaPlayback":
+          // no-op inline media playback is always allowed on Android.
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);

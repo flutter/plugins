@@ -1,3 +1,28 @@
+## 2.0.0-nullsafety.1
+
+* Fix overly-restrictive type check.
+
+## 2.0.0-nullsafety
+
+* Migrated to null-safety.
+* BREAKING CHANGE: Removed deprecated APIs.
+* BREAKING CHANGE: Many sets in APIs that used to treat null and empty set as
+  equivalent now require passing an empty set.
+* BREAKING CHANGE: toJson now always returns an `Object`; the details of the
+  object type and structure should be treated as an implementation detail.
+
+## 1.2.0
+
+* Add TileOverlay support.
+
+## 1.1.0
+
+* Add support for holes in Polygons.
+
+## 1.0.6
+
+* Update Flutter SDK constraint.
+
 ## 1.0.5
 
 * Temporarily add a `fromJson` constructor to `BitmapDescriptor` so serialized descriptors can be synchronously re-hydrated. This will be removed when a fix for [this issue](https://github.com/flutter/flutter/issues/70330) lands.

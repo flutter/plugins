@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.8
+// TODO(mvanbeusekom): Remove once Mockito is migrated to null safety.
+// @dart = 2.9
 
 import 'dart:async';
 import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter/foundation.dart';
@@ -41,10 +43,6 @@ void main() {
     });
   });
   group('launch', () {
-    test('requires a non-null urlString', () {
-      expect(() => launch(null), throwsAssertionError);
-    });
-
     test('default behavior', () async {
       await launch('http://flutter.dev/');
       expect(
@@ -190,6 +188,38 @@ void main() {
 
     test('cannot launch a non-web in webview', () async {
       expect(() async => await launch('tel:555-555-5555', forceWebView: true),
+          throwsA(isA<PlatformException>()));
+    });
+
+    test('send e-mail', () async {
+      await launch('mailto:gmail-noreply@google.com?subject=Hello');
+      expect(
+        verify(await mock.launch(
+          any,
+          useSafariVC: anyNamed('useSafariVC'),
+          useWebView: anyNamed('useWebView'),
+          enableJavaScript: anyNamed('enableJavaScript'),
+          enableDomStorage: anyNamed('enableDomStorage'),
+          universalLinksOnly: anyNamed('universalLinksOnly'),
+          headers: anyNamed('headers'),
+        )),
+        isInstanceOf<VerificationResult>(),
+      );
+    });
+
+    test('cannot send e-mail with forceSafariVC: true', () async {
+      expect(
+          () async => await launch(
+              'mailto:gmail-noreply@google.com?subject=Hello',
+              forceSafariVC: true),
+          throwsA(isA<PlatformException>()));
+    });
+
+    test('cannot send e-mail with forceWebView: true', () async {
+      expect(
+          () async => await launch(
+              'mailto:gmail-noreply@google.com?subject=Hello',
+              forceWebView: true),
           throwsA(isA<PlatformException>()));
     });
 

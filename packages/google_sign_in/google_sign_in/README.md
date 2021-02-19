@@ -1,6 +1,6 @@
 # google_sign_in
 
-[![pub package](https://img.shields.io/pub/v/google_sign_in.svg)](https://pub.dartlang.org/packages/google_sign_in)
+[![pub package](https://img.shields.io/pub/v/google_sign_in.svg)](https://pub.dev/packages/google_sign_in)
 
 A Flutter plugin for [Google Sign In](https://developers.google.com/identity/).
 
@@ -63,7 +63,7 @@ plugin could be an option.
 ## Usage
 
 ### Import the package
-To use this plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
+To use this plugin, follow the [plugin installation instructions](https://pub.dev/packages/google_sign_in#pub-pkg-tab-installing).
 
 ### Use the plugin
 Add the following import to your Dart code:

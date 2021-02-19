@@ -3,10 +3,16 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_platform_interface/src/events/device_event.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
+import 'package:camera_platform_interface/src/types/exposure_mode.dart';
+import 'package:camera_platform_interface/src/types/focus_mode.dart';
+import 'package:camera_platform_interface/src/types/image_format_group.dart';
 import 'package:cross_file/cross_file.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -38,6 +44,8 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Completes with a list of available cameras.
+  ///
+  /// This method returns an empty list when no cameras are available.
   Future<List<CameraDescription>> availableCameras() {
     throw UnimplementedError('availableCameras() is not implemented.');
   }
@@ -45,14 +53,21 @@ abstract class CameraPlatform extends PlatformInterface {
   /// Creates an uninitialized camera instance and returns the cameraId.
   Future<int> createCamera(
     CameraDescription cameraDescription,
-    ResolutionPreset resolutionPreset, {
-    bool enableAudio,
+    ResolutionPreset? resolutionPreset, {
+    bool enableAudio = false,
   }) {
     throw UnimplementedError('createCamera() is not implemented.');
   }
 
   /// Initializes the camera on the device.
-  Future<void> initializeCamera(int cameraId) {
+  ///
+  /// [imageFormatGroup] is used to specify the image formatting used.
+  /// On Android this defaults to ImageFormat.YUV_420_888 and applies only to the imageStream.
+  /// On iOS this defaults to kCVPixelFormatType_32BGRA.
+  Future<void> initializeCamera(
+    int cameraId, {
+    ImageFormatGroup imageFormatGroup = ImageFormatGroup.unknown,
+  }) {
     throw UnimplementedError('initializeCamera() is not implemented.');
   }
 
@@ -76,6 +91,32 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('onCameraError() is not implemented.');
   }
 
+  /// The camera finished recording a video
+  Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
+    throw UnimplementedError('onCameraTimeLimitReached() is not implemented.');
+  }
+
+  /// The device orientation changed.
+  ///
+  /// Implementations for this:
+  /// - Should support all 4 orientations.
+  /// - Should not emit new values when the screen orientation is locked.
+  Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
+    throw UnimplementedError(
+        'onDeviceOrientationChanged() is not implemented.');
+  }
+
+  /// Locks the capture orientation.
+  Future<void> lockCaptureOrientation(
+      int cameraId, DeviceOrientation orientation) {
+    throw UnimplementedError('lockCaptureOrientation() is not implemented.');
+  }
+
+  /// Unlocks the capture orientation.
+  Future<void> unlockCaptureOrientation(int cameraId) {
+    throw UnimplementedError('unlockCaptureOrientation() is not implemented.');
+  }
+
   /// Captures an image and returns the file where it was saved.
   Future<XFile> takePicture(int cameraId) {
     throw UnimplementedError('takePicture() is not implemented.');
@@ -88,8 +129,12 @@ abstract class CameraPlatform extends PlatformInterface {
 
   /// Starts a video recording.
   ///
-  /// The video is returned as a [XFile] after calling [stopVideoRecording].
-  Future<void> startVideoRecording(int cameraId) {
+  /// The length of the recording can be limited by specifying the [maxVideoDuration].
+  /// By default no maximum duration is specified,
+  /// meaning the recording will continue until manually stopped.
+  /// With [maxVideoDuration] set the video is returned in a [VideoRecordedEvent]
+  /// through the [onVideoRecordedEvent] stream when the set duration is reached.
+  Future<void> startVideoRecording(int cameraId, {Duration? maxVideoDuration}) {
     throw UnimplementedError('startVideoRecording() is not implemented.');
   }
 
@@ -106,6 +151,88 @@ abstract class CameraPlatform extends PlatformInterface {
   /// Resume video recording after pausing.
   Future<void> resumeVideoRecording(int cameraId) {
     throw UnimplementedError('resumeVideoRecording() is not implemented.');
+  }
+
+  /// Sets the flash mode for the selected camera.
+  Future<void> setFlashMode(int cameraId, FlashMode mode) {
+    throw UnimplementedError('setFlashMode() is not implemented.');
+  }
+
+  /// Sets the exposure mode for taking pictures.
+  Future<void> setExposureMode(int cameraId, ExposureMode mode) {
+    throw UnimplementedError('setExposureMode() is not implemented.');
+  }
+
+  /// Sets the exposure point for automatically determining the exposure values.
+  ///
+  /// Supplying `null` for the [point] argument will result in resetting to the
+  /// original exposure point value.
+  Future<void> setExposurePoint(int cameraId, Point<double>? point) {
+    throw UnimplementedError('setExposurePoint() is not implemented.');
+  }
+
+  /// Gets the minimum supported exposure offset for the selected camera in EV units.
+  Future<double> getMinExposureOffset(int cameraId) {
+    throw UnimplementedError('getMinExposureOffset() is not implemented.');
+  }
+
+  /// Gets the maximum supported exposure offset for the selected camera in EV units.
+  Future<double> getMaxExposureOffset(int cameraId) {
+    throw UnimplementedError('getMaxExposureOffset() is not implemented.');
+  }
+
+  /// Gets the supported step size for exposure offset for the selected camera in EV units.
+  ///
+  /// Returns 0 when the camera supports using a free value without stepping.
+  Future<double> getExposureOffsetStepSize(int cameraId) {
+    throw UnimplementedError('getMinExposureOffset() is not implemented.');
+  }
+
+  /// Sets the exposure offset for the selected camera.
+  ///
+  /// The supplied [offset] value should be in EV units. 1 EV unit represents a
+  /// doubling in brightness. It should be between the minimum and maximum offsets
+  /// obtained through `getMinExposureOffset` and `getMaxExposureOffset` respectively.
+  /// Throws a `CameraException` when an illegal offset is supplied.
+  ///
+  /// When the supplied [offset] value does not align with the step size obtained
+  /// through `getExposureStepSize`, it will automatically be rounded to the nearest step.
+  ///
+  /// Returns the (rounded) offset value that was set.
+  Future<double> setExposureOffset(int cameraId, double offset) {
+    throw UnimplementedError('setExposureOffset() is not implemented.');
+  }
+
+  /// Sets the focus mode for taking pictures.
+  Future<void> setFocusMode(int cameraId, FocusMode mode) {
+    throw UnimplementedError('setFocusMode() is not implemented.');
+  }
+
+  /// Sets the focus point for automatically determining the focus values.
+  ///
+  /// Supplying `null` for the [point] argument will result in resetting to the
+  /// original focus point value.
+  Future<void> setFocusPoint(int cameraId, Point<double>? point) {
+    throw UnimplementedError('setFocusPoint() is not implemented.');
+  }
+
+  /// Gets the maximum supported zoom level for the selected camera.
+  Future<double> getMaxZoomLevel(int cameraId) {
+    throw UnimplementedError('getMaxZoomLevel() is not implemented.');
+  }
+
+  /// Gets the minimum supported zoom level for the selected camera.
+  Future<double> getMinZoomLevel(int cameraId) {
+    throw UnimplementedError('getMinZoomLevel() is not implemented.');
+  }
+
+  /// Set the zoom level for the selected camera.
+  ///
+  /// The supplied [zoom] value should be between 1.0 and the maximum supported
+  /// zoom level returned by the `getMaxZoomLevel`. Throws a `CameraException`
+  /// when an illegal zoom level is supplied.
+  Future<void> setZoomLevel(int cameraId, double zoom) {
+    throw UnimplementedError('setZoomLevel() is not implemented.');
   }
 
   /// Returns a widget showing a live camera preview.

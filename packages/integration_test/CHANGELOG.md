@@ -1,3 +1,19 @@
+## 1.0.2+2
+
+* Fix tests from changes to `flutter test` machine output.
+
+## 1.0.2+1
+
+* Update vm_service constraint
+
+## 1.0.2
+
+* Update Flutter SDK constraint.
+
+## 1.0.1
+
+* Remove usages of deprecated `List` constructor.
+
 ## 1.0.0
 
 * Public stable release of plugin.

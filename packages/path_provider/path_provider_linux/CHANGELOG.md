@@ -1,3 +1,15 @@
+## 2.0.0-nullsafety
+
+* Update version to (semi-belatedly) meet 1.0-consistency promise.
+
+## 0.2.0-nullsafety
+
+* Migrate to null safety.
+
+## 0.1.1+3
+
+* Update Flutter SDK constraint.
+
 ## 0.1.1+2
 
 * Log errors in the example when calls to the `path_provider` fail.
