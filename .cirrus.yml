@@ -11,9 +11,14 @@ task:
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
+    - flutter channel beta
+    - flutter upgrade
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+  submodules_script:
+    - git submodule init
+    - git submodule update
   matrix:
     - name: publishable
       script:
@@ -30,6 +35,7 @@ task:
       env:
         matrix:
           CHANNEL: "master"
+          CHANNEL: "beta"
           CHANNEL: "stable"
       test_script:
         # TODO(jackson): Allow web plugins once supported on stable
@@ -41,12 +47,14 @@ task:
       env:
         matrix:
           CHANNEL: "master"
+          CHANNEL: "beta"
           CHANNEL: "stable"
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
       env:
         matrix:
           CHANNEL: "master"
+          CHANNEL: "beta"
           CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
@@ -76,6 +84,7 @@ task:
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
+          CHANNEL: "beta"
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
@@ -118,9 +127,14 @@ task:
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
+    - flutter channel beta
+    - flutter upgrade
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+  submodules_script:
+    - git submodule init
+    - git submodule update
   matrix:
     - name: build-linux+drive-examples
       install_script:
@@ -142,9 +156,14 @@ task:
     - sudo gem install cocoapods
     - flutter channel stable
     - flutter upgrade
+    - flutter channel beta
+    - flutter upgrade
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+  submodules_script:
+    - git submodule init
+    - git submodule update
   create_simulator_script:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
@@ -153,6 +172,7 @@ task:
       env:
         matrix:
           CHANNEL: "master"
+          CHANNEL: "beta"
           CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
@@ -171,6 +191,7 @@ task:
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
+          CHANNEL: "beta"
           CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       build_script:
@@ -180,7 +201,7 @@ task:
         - flutter channel $CHANNEL
         - flutter upgrade
         - ./script/incremental_build.sh build-examples --ipa
-        - ./script/incremental_build.sh drive-examples
+        - ./script/incremental_build.sh drive-examples --ios
         - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=14.3"
 
 task:
@@ -198,6 +219,9 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+  submodules_script:
+    - git submodule init
+    - git submodule update
   create_simulator_script:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
@@ -227,6 +251,9 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+  submodules_script:
+    - git submodule init
+    - git submodule update
   matrix:
     - name: build_all_plugins_app
       script:

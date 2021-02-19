@@ -13,6 +13,11 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   in_app_purchase:
+    # When depending on this package from a real application you should use:
+    #   in_app_purchase: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
     path: ../
   integration_test:
     path: ../../integration_test
@@ -23,4 +28,4 @@ flutter:
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
-  flutter: ">=1.9.1+hotfix.2 <2.0.0"
+  flutter: ">=1.9.1+hotfix.2"

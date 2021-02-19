@@ -49,13 +49,13 @@ void main() {
       final TileOverlayUpdates updates =
           TileOverlayUpdates.from(previous, current);
 
-      final Map<String, dynamic> json = updates.toJson();
-      expect(json, <String, dynamic>{
+      final Object json = updates.toJson();
+      expect(json, <String, Object>{
         'tileOverlaysToAdd': serializeTileOverlaySet(updates.tileOverlaysToAdd),
         'tileOverlaysToChange':
             serializeTileOverlaySet(updates.tileOverlaysToChange),
         'tileOverlayIdsToRemove': updates.tileOverlayIdsToRemove
-            .map<dynamic>((TileOverlayId m) => m.value)
+            .map<String>((TileOverlayId m) => m.value)
             .toList()
       });
     });
@@ -117,9 +117,9 @@ void main() {
           TileOverlayUpdates.from(previous, current);
       expect(
           updates.toString(),
-          'TileOverlayUpdates(${updates.tileOverlaysToAdd}, '
-          '${updates.tileOverlayIdsToRemove}, '
-          '${updates.tileOverlaysToChange})');
+          'TileOverlayUpdates(add: ${updates.tileOverlaysToAdd}, '
+          'remove: ${updates.tileOverlayIdsToRemove}, '
+          'change: ${updates.tileOverlaysToChange})');
     });
   });
 }

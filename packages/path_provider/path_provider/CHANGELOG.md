@@ -1,7 +1,12 @@
-## 2.0.0-nullsafety.1
+## 2.0.0-nullsafety.2
 
 * Removed pre-screening for platform.
 * Updated tests accordingly.
+
+## 2.0.0-nullsafety.1
+
+* Require latest path_provider_windows to avoid potential issues
+  with breaking changes in `ffi` and `win32`.
 
 ## 2.0.0-nullsafety
 

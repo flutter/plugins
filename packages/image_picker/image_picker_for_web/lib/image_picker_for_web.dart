@@ -13,14 +13,14 @@ final String _kAcceptVideoMimeType = 'video/3gpp,video/x-m4v,video/mp4,video/*';
 ///
 /// This class implements the `package:image_picker` functionality for the web.
 class ImagePickerPlugin extends ImagePickerPlatform {
-  final ImagePickerPluginTestOverrides _overrides;
+  final ImagePickerPluginTestOverrides? _overrides;
   bool get _hasOverrides => _overrides != null;
 
-  html.Element _target;
+  late html.Element _target;
 
   /// A constructor that allows tests to override the function that creates file inputs.
   ImagePickerPlugin({
-    @visibleForTesting ImagePickerPluginTestOverrides overrides,
+    @visibleForTesting ImagePickerPluginTestOverrides? overrides,
   }) : _overrides = overrides {
     _target = _ensureInitialized(_kImagePickerInputsDomId);
   }
@@ -32,23 +32,23 @@ class ImagePickerPlugin extends ImagePickerPlatform {
 
   @override
   Future<PickedFile> pickImage({
-    @required ImageSource source,
-    double maxWidth,
-    double maxHeight,
-    int imageQuality,
+    required ImageSource source,
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
-    String capture = computeCaptureAttribute(source, preferredCameraDevice);
+    String? capture = computeCaptureAttribute(source, preferredCameraDevice);
     return pickFile(accept: _kAcceptImageMimeType, capture: capture);
   }
 
   @override
   Future<PickedFile> pickVideo({
-    @required ImageSource source,
+    required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-    Duration maxDuration,
+    Duration? maxDuration,
   }) {
-    String capture = computeCaptureAttribute(source, preferredCameraDevice);
+    String? capture = computeCaptureAttribute(source, preferredCameraDevice);
     return pickFile(accept: _kAcceptVideoMimeType, capture: capture);
   }
 
@@ -59,10 +59,11 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// See https://caniuse.com/#feat=html-media-capture
   @visibleForTesting
   Future<PickedFile> pickFile({
-    String accept,
-    String capture,
+    String? accept,
+    String? capture,
   }) {
-    html.FileUploadInputElement input = createInputElement(accept, capture);
+    html.FileUploadInputElement input =
+        createInputElement(accept, capture) as html.FileUploadInputElement;
     _injectAndActivate(input);
     return _getSelectedFile(input);
   }
@@ -73,25 +74,26 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   ///
   /// See: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#capture
   @visibleForTesting
-  String computeCaptureAttribute(ImageSource source, CameraDevice device) {
+  String? computeCaptureAttribute(ImageSource source, CameraDevice device) {
     if (source == ImageSource.camera) {
       return (device == CameraDevice.front) ? 'user' : 'environment';
     }
     return null;
   }
 
-  html.File _getFileFromInput(html.FileUploadInputElement input) {
+  html.File? _getFileFromInput(html.FileUploadInputElement input) {
     if (_hasOverrides) {
-      return _overrides.getFileFromInput(input);
+      return _overrides!.getFileFromInput(input);
     }
-    return input?.files?.first;
+    return input.files?.first;
   }
 
   /// Handles the OnChange event from a FileUploadInputElement object
   /// Returns the objectURL of the selected file.
-  String _handleOnChangeEvent(html.Event event) {
-    final html.FileUploadInputElement input = event?.target;
-    final html.File file = _getFileFromInput(input);
+  String? _handleOnChangeEvent(html.Event event) {
+    final html.FileUploadInputElement input =
+        event.target as html.FileUploadInputElement;
+    final html.File? file = _getFileFromInput(input);
 
     if (file != null) {
       return html.Url.createObjectUrl(file);
@@ -105,7 +107,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     // Observe the input until we can return something
     input.onChange.first.then((event) {
       final objectUrl = _handleOnChangeEvent(event);
-      if (!_completer.isCompleted) {
+      if (!_completer.isCompleted && objectUrl != null) {
         _completer.complete(PickedFile(objectUrl));
       }
     });
@@ -127,7 +129,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       final html.Element targetElement =
           html.Element.tag('flt-image-picker-inputs')..id = id;
 
-      html.querySelector('body').children.add(targetElement);
+      html.querySelector('body')!.children.add(targetElement);
       target = targetElement;
     }
     return target;
@@ -136,9 +138,9 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// Creates an input element that accepts certain file types, and
   /// allows to `capture` from the device's cameras (where supported)
   @visibleForTesting
-  html.Element createInputElement(String accept, String capture) {
+  html.Element createInputElement(String? accept, String? capture) {
     if (_hasOverrides) {
-      return _overrides.createInputElement(accept, capture);
+      return _overrides!.createInputElement(accept, capture);
     }
 
     html.Element element = html.FileUploadInputElement()..accept = accept;
@@ -162,22 +164,22 @@ class ImagePickerPlugin extends ImagePickerPlatform {
 /// A function that creates a file input with the passed in `accept` and `capture` attributes.
 @visibleForTesting
 typedef OverrideCreateInputFunction = html.Element Function(
-  String accept,
-  String capture,
+  String? accept,
+  String? capture,
 );
 
 /// A function that extracts a [html.File] from the file `input` passed in.
 @visibleForTesting
 typedef OverrideExtractFilesFromInputFunction = html.File Function(
-  html.Element input,
+  html.Element? input,
 );
 
 /// Overrides for some of the functionality above.
 @visibleForTesting
 class ImagePickerPluginTestOverrides {
   /// Override the creation of the input element.
-  OverrideCreateInputFunction createInputElement;
+  late OverrideCreateInputFunction createInputElement;
 
   /// Override the extraction of the selected file from an input element.
-  OverrideExtractFilesFromInputFunction getFileFromInput;
+  late OverrideExtractFilesFromInputFunction getFileFromInput;
 }
