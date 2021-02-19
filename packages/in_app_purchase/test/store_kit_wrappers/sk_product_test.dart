@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
+import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase/src/in_app_purchase/in_app_purchase_connection.dart';
@@ -148,6 +149,29 @@ void main() {
       expect(details.billingClientPurchase, null);
       expect(details.pendingCompletePurchase, true);
     });
+
+    test('SKPaymentTransactionWrapper.toFinishMap set correct value', () {
+      final SKPaymentTransactionWrapper transactionWrapper =
+          SKPaymentTransactionWrapper(
+              payment: dummyPayment,
+              transactionState: SKPaymentTransactionStateWrapper.failed,
+              transactionIdentifier: 'abcd');
+      final Map<String, String?> finishMap = transactionWrapper.toFinishMap();
+      expect(finishMap['transactionIdentifier'], 'abcd');
+      expect(finishMap['productIdentifier'], dummyPayment.productIdentifier);
+    });
+
+    test(
+        'SKPaymentTransactionWrapper.toFinishMap should set transactionIdentifier to null when necessary',
+        () {
+      final SKPaymentTransactionWrapper transactionWrapper =
+          SKPaymentTransactionWrapper(
+              payment: dummyPayment,
+              transactionState: SKPaymentTransactionStateWrapper.failed);
+      final Map<String, String?> finishMap = transactionWrapper.toFinishMap();
+      expect(finishMap['transactionIdentifier'], null);
+    });
+
     test('Should generate correct map of the payment object', () {
       Map map = dummyPayment.toMap();
       expect(map['productIdentifier'], dummyPayment.productIdentifier);
