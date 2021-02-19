@@ -190,7 +190,7 @@ class PurchaseHistoryRecordWrapper {
 
   /// The payload specified by the developer when the purchase was acknowledged or consumed.
   ///
-  /// If the value is `null` if it wasn't specified when the purchase was acknowledged or consumed.
+  /// The value is `null` if it wasn't specified when the purchase was acknowledged or consumed.
   final String? developerPayload;
 
   @override

@@ -148,7 +148,7 @@ class SKPaymentQueueWrapper {
           final List<SKPaymentTransactionWrapper> transactions =
               _getTransactionList(call.arguments);
           return Future<void>(() {
-            return observer.updatedTransactions(transactions: transactions);
+            observer.updatedTransactions(transactions: transactions);
           });
         }
       case 'removedTransactions':
