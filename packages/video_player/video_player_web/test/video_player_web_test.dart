@@ -1,6 +1,7 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 @TestOn('browser')
 
 import 'dart:async';
@@ -8,7 +9,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player/video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:video_player_web/video_player_web.dart';
 
@@ -135,6 +135,11 @@ void main() {
     test('can build view', () {
       expect(VideoPlayerPlatform.instance.buildView(textureId),
           isInstanceOf<Widget>());
+    });
+
+    test('ignores setting mixWithOthers', () {
+      expect(VideoPlayerPlatform.instance.setMixWithOthers(true), completes);
+      expect(VideoPlayerPlatform.instance.setMixWithOthers(false), completes);
     });
   });
 }

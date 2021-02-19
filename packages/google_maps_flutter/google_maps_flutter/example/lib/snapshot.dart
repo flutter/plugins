@@ -30,8 +30,8 @@ class _SnapshotBody extends StatefulWidget {
 }
 
 class _SnapshotBodyState extends State<_SnapshotBody> {
-  GoogleMapController _mapController;
-  Uint8List _imageBytes;
+  GoogleMapController? _mapController;
+  Uint8List? _imageBytes;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class _SnapshotBodyState extends State<_SnapshotBody> {
           Container(
             decoration: BoxDecoration(color: Colors.blueGrey[50]),
             height: 180,
-            child: _imageBytes != null ? Image.memory(_imageBytes) : null,
+            child: _imageBytes != null ? Image.memory(_imageBytes!) : null,
           ),
         ],
       ),

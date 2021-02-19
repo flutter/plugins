@@ -1,6 +1,18 @@
-## 2.0.0-nullsafety.9
+## 2.0.0-nullsafety.12
 
 * Refactor `FLTCMTimeToMillis` to support indefinite streams - fixes [flutter/flutter#48670](Fixes https://github.com/flutter/flutter/issues/48670).
+
+## 2.0.0-nullsafety.11
+
+* Setting the `mixWithOthers` `VideoPlayerOptions` in web now is silently ignored instead of throwing an exception.
+
+## 2.0.0-nullsafety.10
+
+* Updated to video_player_platform_interface 4.0.
+
+## 2.0.0-nullsafety.9
+
+* Fixed an issue where a crash can occur after a closing a video player view on iOS.
 
 ## 2.0.0-nullsafety.8
 
