@@ -32,7 +32,7 @@ class SharedPreferencesDemo extends StatefulWidget {
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  Future<int>? _counter;
+  late Future<int> _counter;
 
   Future<void> _incrementCounter() async {
     final SharedPreferences prefs = await _prefs;
