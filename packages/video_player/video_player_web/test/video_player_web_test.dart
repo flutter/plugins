@@ -136,5 +136,10 @@ void main() {
       expect(VideoPlayerPlatform.instance.buildView(textureId),
           isInstanceOf<Widget>());
     });
+
+    test('ignores setting mixWithOthers', () {
+      expect(VideoPlayerPlatform.instance.setMixWithOthers(true), completes);
+      expect(VideoPlayerPlatform.instance.setMixWithOthers(false), completes);
+    });
   });
 }
