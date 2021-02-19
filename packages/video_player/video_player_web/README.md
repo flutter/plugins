@@ -28,6 +28,10 @@ The Web platform does **not** suppport `dart:io`, so attempts to create a `Video
 Playing videos without prior interaction with the site might be prohibited
 by the browser and lead to runtime errors. See also: https://goo.gl/xX8pDD.
 
+## Mixing audio with other audio sources
+
+The `VideoPlayerOptions.mixWithOthers` option can't be implemented in web, at least at the moment. If you use this option it will be silently ignored.
+
 ## Supported Formats
 
 **Different web browsers support different sets of video codecs.**
