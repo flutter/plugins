@@ -19,6 +19,11 @@ class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
   /// The default instance of [SharedPreferencesLinux] to use.
   static SharedPreferencesLinux instance = SharedPreferencesLinux();
 
+  /// Registers the Linux implementation.
+  static void registerWith() {
+    // TODO(stuartmorgan): Fill this up.
+  }
+
   /// Local copy of preferences
   Map<String, Object>? _cachedPreferences;
 

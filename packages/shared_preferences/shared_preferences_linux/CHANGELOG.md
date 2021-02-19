@@ -1,6 +1,7 @@
 ## 2.0.0-nullsafety.1
 
 * Add `implements` to the pubspec.
+* Add `registerWith` to the Dart main class.
 
 ## 2.0.0-nullsafety
 

@@ -1,10 +1,11 @@
 name: connectivity_macos
 description: macOS implementation of the connectivity plugin.
-version: 2.0.0-nullsafety
+version: 2.0.0-nullsafety.1
 homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity_macos
 
 flutter:
   plugin:
+    implements: connectivity
     platforms:
       macos:
         pluginClass: ConnectivityPlugin

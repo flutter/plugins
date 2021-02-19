@@ -18,6 +18,11 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   /// The default instance of [SharedPreferencesWindows] to use.
   static SharedPreferencesWindows instance = SharedPreferencesWindows();
 
+  /// Registers the Windows implementation.
+  static void registerWith() {
+    // TODO(stuartmorgan): Fill this up.
+  }
+
   /// File system used to store to disk. Exposed for testing only.
   @visibleForTesting
   FileSystem fs = LocalFileSystem();
