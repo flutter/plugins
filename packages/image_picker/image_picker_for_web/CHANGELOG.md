@@ -1,6 +1,6 @@
 # 2.0.0-nullsafety.1
 
-* Add doc comments to point out that some arguments aren't supported on the web
+* Add doc comments to point out that some arguments aren't supported on the web.
 
 # 2.0.0-nullsafety
 
