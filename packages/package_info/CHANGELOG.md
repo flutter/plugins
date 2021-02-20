@@ -1,12 +1,8 @@
-## 2.0.0-nullsafety.1
+## 2.0.1
 
 * Add `implements` to pubspec.yaml.
 
-## 2.0.0-nullsafety
-
-* Update version to (semi-belatedly) meet 1.0-consistency promise.
-
-## 0.5.0-nullsafety
+## 2.0.0
 
 * Migrate to null safety.
 
