@@ -8,6 +8,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,7 +32,7 @@ class SharedPreferencesDemo extends StatefulWidget {
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
-  final prefs = SharedPreferencesLinux.instance;
+  final prefs = SharedPreferencesStorePlatform.instance;
   late Future<int> _counter;
 
   Future<void> _incrementCounter() async {
