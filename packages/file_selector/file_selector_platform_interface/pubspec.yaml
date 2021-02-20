@@ -3,7 +3,7 @@ description: A common platform interface for the file_selector plugin.
 homepage: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_platform_interface
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
-version: 2.0.0
+version: 2.0.1
 
 dependencies:
   flutter:
