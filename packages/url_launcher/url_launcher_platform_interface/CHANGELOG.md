@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Fix SDK range.
+
 ## 2.0.0
 
 * Migrate to null safety.
