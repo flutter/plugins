@@ -56,6 +56,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   double _currentScale = 1.0;
   double _baseScale = 1.0;
 
+  // Counting pointers (number of user fingers on screen)
+  int _pointers = 0;
+
   @override
   void initState() {
     super.initState();
@@ -168,17 +171,21 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         ),
       );
     } else {
-      return CameraPreview(
-        controller,
-        child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-          return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onScaleStart: _handleScaleStart,
-            onScaleUpdate: _handleScaleUpdate,
-            onTapDown: (details) => onViewFinderTap(details, constraints),
-          );
-        }),
+      return Listener(
+        onPointerDown: (_) => _pointers++,
+        onPointerUp: (_) => _pointers--,
+        child: CameraPreview(
+          controller,
+          child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onScaleStart: _handleScaleStart,
+              onScaleUpdate: _handleScaleUpdate,
+              onTapDown: (details) => onViewFinderTap(details, constraints),
+            );
+          }),
+        ),
       );
     }
   }
@@ -189,7 +196,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
     // When there are not exactly two fingers on screen don't scale
-    if (details.pointerCount != 2) {
+    if (_pointers != 2) {
       return;
     }
 
