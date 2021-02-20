@@ -5,6 +5,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher/u
 
 flutter:
   plugin:
+    implements: url_launcher
     platforms:
       linux:
         pluginClass: UrlLauncherPlugin
