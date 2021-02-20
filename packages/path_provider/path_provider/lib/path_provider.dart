@@ -72,6 +72,9 @@ PathProviderPlatform get _platform {
 /// On iOS, this uses the `NSCachesDirectory` API.
 ///
 /// On Android, this uses the `getCacheDir` API on the context.
+///
+/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// provide the directory.
 Future<Directory> getTemporaryDirectory() async {
   final String? path = await _platform.getTemporaryPath();
   if (path == null) {
@@ -91,6 +94,9 @@ Future<Directory> getTemporaryDirectory() async {
 /// If this directory does not exist, it is created automatically.
 ///
 /// On Android, this function uses the `getFilesDir` API on the context.
+///
+/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// provide the directory.
 Future<Directory> getApplicationSupportDirectory() async {
   final String? path = await _platform.getApplicationSupportPath();
   if (path == null) {
@@ -106,6 +112,9 @@ Future<Directory> getApplicationSupportDirectory() async {
 ///
 /// On Android, this function throws an [UnsupportedError] as no equivalent
 /// path exists.
+///
+/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// provide the directory on a supported platform.
 Future<Directory> getLibraryDirectory() async {
   final String? path = await _platform.getLibraryPath();
   if (path == null) {
@@ -123,6 +132,9 @@ Future<Directory> getLibraryDirectory() async {
 /// On Android, this uses the `getDataDirectory` API on the context. Consider
 /// using [getExternalStorageDirectory] instead if data is intended to be visible
 /// to the user.
+///
+/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// provide the directory.
 Future<Directory> getApplicationDocumentsDirectory() async {
   final String? path = await _platform.getApplicationDocumentsPath();
   if (path == null) {
