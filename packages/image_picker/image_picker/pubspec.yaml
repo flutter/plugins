@@ -26,7 +26,7 @@ dev_dependencies:
     path: ../../integration_test
   mockito: ^5.0.0-nullsafety.7
   pedantic: ^1.10.0
-  plugin_platform_interface: ^1.0.3
+  plugin_platform_interface: ">=1.0.0 <3.0.0"
 
 environment:
   sdk: ">=2.12.0-259.9.beta <3.0.0"
