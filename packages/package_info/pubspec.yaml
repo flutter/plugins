@@ -6,7 +6,6 @@ version: 2.0.1
 
 flutter:
   plugin:
-    implements: package_info
     platforms:
       android:
         package: io.flutter.plugins.packageinfo
@@ -14,6 +13,7 @@ flutter:
       ios:
         pluginClass: FLTPackageInfoPlugin
       macos:
+        default_package: package_info
         pluginClass: FLTPackageInfoPlugin
 
 dependencies:

@@ -9,7 +9,6 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
-import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +33,7 @@ void main() {
     SharedPreferencesLinux preferences;
 
     setUp(() async {
-      preferences = SharedPreferencesStorePlatform.instance;
+      preferences = SharedPreferencesLinux();
     });
 
     tearDown(() {

@@ -32,7 +32,7 @@ void main() {
     SharedPreferencesWindows preferences;
 
     setUp(() async {
-      preferences = SharedPreferencesWindows.instance;
+      preferences = SharedPreferencesWindows();
     });
 
     tearDown(() {
