@@ -46,6 +46,7 @@ void main() {
       final extensions = ['.txt', '.jpg'];
       final group = XTypeGroup(extensions: extensions);
 
+      expect(group.extensions, extensions);
       expect(group.extensions, ['txt', 'jpg']);
     });
   });
