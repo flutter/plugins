@@ -49,7 +49,7 @@ class VersionInfoQuerier {
 class PathProviderWindows extends PathProviderPlatform {
   /// Registers the Windows implementation.
   static void registerWith() {
-    // TODO(stuartmorgan): Fill this up.
+    PathProviderPlatform.instance = PathProviderWindows();
   }
 
   /// The object to use for performing VerQueryValue calls.

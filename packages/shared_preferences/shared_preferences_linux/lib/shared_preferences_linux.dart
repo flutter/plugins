@@ -16,12 +16,9 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 ///
 /// This class implements the `package:shared_preferences` functionality for Linux.
 class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
-  /// The default instance of [SharedPreferencesLinux] to use.
-  static SharedPreferencesLinux instance = SharedPreferencesLinux();
-
   /// Registers the Linux implementation.
   static void registerWith() {
-    // TODO(stuartmorgan): Fill this up.
+    SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
   }
 
   /// Local copy of preferences
