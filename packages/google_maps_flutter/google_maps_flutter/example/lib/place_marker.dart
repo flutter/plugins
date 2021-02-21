@@ -53,10 +53,10 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     final Marker? tappedMarker = markers[markerId];
     if (tappedMarker != null) {
       setState(() {
-        if (markers.containsKey(markerId)) {
-          final Marker resetOld = markers[markerId]!
+        if (markers.containsKey(selectedMarker)) {
+          final Marker resetOld = markers[selectedMarker]!
               .copyWith(iconParam: BitmapDescriptor.defaultMarker);
-          markers[markerId] = resetOld;
+          markers[selectedMarker] = resetOld;
         }
         selectedMarker = markerId;
         final Marker newMarker = tappedMarker.copyWith(
