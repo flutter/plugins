@@ -1,4 +1,4 @@
-## 2.0.1-nullsafety
+## 2.0.0-nullsafety.1
 
 * Fix in example app to properly change marker icon.
 
