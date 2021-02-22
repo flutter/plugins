@@ -35,7 +35,6 @@ dev_dependencies:
   test: ^1.16.3
   integration_test:
     path: ../../integration_test
-  mockito: ^5.0.0-nullsafety.7
   plugin_platform_interface: ">=1.0.0 <3.0.0"
   pedantic: ^1.10.0
 
