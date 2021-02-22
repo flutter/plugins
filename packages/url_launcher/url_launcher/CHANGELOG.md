@@ -1,3 +1,7 @@
+## 5.5.1
+
+* Update result to `True` on iOS when the url was loaded successfully.
+
 ## 5.5.0
 
 * Support Linux by default.
