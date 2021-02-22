@@ -1,14 +1,10 @@
-## 2.0.0-nullsafety.1
+## 2.0.1
 
 * Add `implements` to the pubspec.
 
-## 2.0.0-nullsafety
+## 2.0.0
 
-* Update version to (semi-belatedly) meet 1.0-consistency promise.
-
-## 0.0.2-nullsafety
-
-* Update Dart SDK constraint for null safety.
+* Migrate to null safety.
 
 ## 0.0.1+12
 
