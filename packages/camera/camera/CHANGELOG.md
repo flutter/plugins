@@ -1,3 +1,7 @@
+## 0.8.0-nullsafety.3
+
+* Solved a rotation issue on iOS which caused the default preview to be displayed as landscape right instead of portrait.
+
 ## 0.8.0-nullsafety.2
 
 * Solved delay when using the zoom feature on iOS.

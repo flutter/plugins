@@ -392,7 +392,7 @@ NSString *const errorMethod = @"error";
   if ([_captureDevice position] == AVCaptureDevicePositionFront) {
     connection.videoMirrored = YES;
   }
-  connection.videoOrientation = AVCaptureVideoOrientationLandscapeRight;
+  connection.videoOrientation = AVCaptureVideoOrientationPortrait;
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
   [_captureSession addConnection:connection];

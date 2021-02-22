@@ -4,7 +4,6 @@
 
 import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -41,26 +40,25 @@ class CameraPreview extends StatelessWidget {
         : Container();
   }
 
-  DeviceOrientation _getApplicableOrientation() {
-    return controller.value.isRecordingVideo
-        ? controller.value.recordingOrientation!
-        : (controller.value.lockedCaptureOrientation ??
-            controller.value.deviceOrientation);
-  }
-
   bool _isLandscape() {
     return [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]
         .contains(_getApplicableOrientation());
   }
 
   int _getQuarterTurns() {
-    int platformOffset = defaultTargetPlatform == TargetPlatform.iOS ? 1 : 0;
     Map<DeviceOrientation, int> turns = {
       DeviceOrientation.portraitUp: 0,
       DeviceOrientation.landscapeLeft: 1,
       DeviceOrientation.portraitDown: 2,
       DeviceOrientation.landscapeRight: 3,
     };
-    return turns[_getApplicableOrientation()]! + platformOffset;
+    return turns[_getApplicableOrientation()]!;
+  }
+
+  DeviceOrientation _getApplicableOrientation() {
+    return controller.value.isRecordingVideo
+        ? controller.value.recordingOrientation!
+        : (controller.value.lockedCaptureOrientation ??
+            controller.value.deviceOrientation);
   }
 }
