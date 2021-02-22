@@ -1,3 +1,7 @@
+## 0.8.0-nullsafety.3
+
+* Updates the example code listed in the [README.md](README.md), so it runs without errors when you simply copy/ paste it into a Flutter App.
+
 ## 0.8.0-nullsafety.2
 
 * Solved delay when using the zoom feature on iOS.
