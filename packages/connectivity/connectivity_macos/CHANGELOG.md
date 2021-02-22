@@ -3,9 +3,6 @@
 * Remove placeholder Dart file.
 * Update Dart SDK constraint for compatibility with null safety.
 
-@cyanglaz	Reply…
-
-
 ## 0.1.0+8
 
 * Update Flutter SDK constraint.
