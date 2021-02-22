@@ -3,23 +3,22 @@ description: A common platform interface for the file_selector plugin.
 homepage: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_platform_interface
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
-version: 2.0.0-nullsafety.0
+version: 2.0.0
 
 dependencies:
   flutter:
     sdk: flutter
   meta: ^1.0.5
-  http: ^0.13.0-nullsafety.0
-  plugin_platform_interface: ^1.1.0-nullsafety.2
-  cross_file: ^0.3.0-nullsafety
+  http: ^0.13.0
+  plugin_platform_interface: ">=1.0.0 <3.0.0"
+  cross_file: ^0.3.0
 
 dev_dependencies:
   test: ^1.15.0
   flutter_test:
     sdk: flutter
-  mockito: ^5.0.0-nullsafety.5
   pedantic: ^1.8.0
 
 environment:
-  sdk: '>=2.12.0-0 <3.0.0'
-  flutter: ">=1.9.1+hotfix.4"
+  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  flutter: ">=1.20.0"
