@@ -9,11 +9,11 @@ class ImagePreviews extends StatelessWidget {
   final List<String> imagePaths;
 
   /// Callback when an image should be removed
-  final Function(int) onDelete;
+  final Function(int)? onDelete;
 
   /// Creates a widget for preview of images. [imagePaths] can not be empty
   /// and all contained paths need to be non empty.
-  const ImagePreviews(this.imagePaths, {Key key, this.onDelete})
+  const ImagePreviews(this.imagePaths, {Key? key, this.onDelete})
       : super(key: key);
 
   @override
@@ -26,7 +26,7 @@ class ImagePreviews extends StatelessWidget {
     for (int i = 0; i < imagePaths.length; i++) {
       imageWidgets.add(_ImagePreview(
         imagePaths[i],
-        onDelete: onDelete != null ? () => onDelete(i) : null,
+        onDelete: onDelete != null ? () => onDelete!(i) : null,
       ));
     }
 
@@ -39,9 +39,9 @@ class ImagePreviews extends StatelessWidget {
 
 class _ImagePreview extends StatelessWidget {
   final String imagePath;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
 
-  const _ImagePreview(this.imagePath, {Key key, this.onDelete})
+  const _ImagePreview(this.imagePath, {Key? key, this.onDelete})
       : super(key: key);
 
   @override
