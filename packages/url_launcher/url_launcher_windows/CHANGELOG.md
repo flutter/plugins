@@ -1,4 +1,4 @@
-## 2.0.1
+## 2.0.0
 
 * Migrate to null-safety.
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.

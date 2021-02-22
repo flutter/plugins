@@ -26,6 +26,6 @@ dependencies:
   path_provider_windows: ^2.0.0
 
 dev_dependencies:
-  flutter_test:p
+  flutter_test:
     sdk: flutter
   pedantic: ^1.10.0
