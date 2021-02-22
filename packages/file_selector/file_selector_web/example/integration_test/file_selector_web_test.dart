@@ -15,18 +15,16 @@ void main() {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
     group('openFile', () {
-      late MockDomHelper mockDomHelper;
-      late FileSelectorWeb plugin;
-      late XFile mockFile;
-
-      setUp(() {
-        mockFile = createXFile('1001', 'identity.png');
-
-        mockDomHelper = MockDomHelper()..setFiles([mockFile]);
-        plugin = FileSelectorWeb(domHelper: mockDomHelper);
-      });
-
       testWidgets('works', (WidgetTester _) async {
+        final mockFile = createXFile('1001', 'identity.png');
+
+        final mockDomHelper = MockDomHelper()
+          ..setFiles([mockFile])
+          ..expectAccept('.jpg,.jpeg,image/png,image/*')
+          ..expectMultiple(false);
+
+        final plugin = FileSelectorWeb(domHelper: mockDomHelper);
+
         final typeGroup = XTypeGroup(
           label: 'images',
           extensions: ['jpg', 'jpeg'],
@@ -44,19 +42,17 @@ void main() {
     });
 
     group('openFiles', () {
-      late MockDomHelper mockDomHelper;
-      late FileSelectorWeb plugin;
-      late XFile mockFile1, mockFile2;
-
-      setUp(() {
-        mockFile1 = createXFile('123456', 'file1.txt');
-        mockFile2 = createXFile('', 'file2.txt');
-
-        mockDomHelper = MockDomHelper()..setFiles([mockFile1, mockFile2]);
-        plugin = FileSelectorWeb(domHelper: mockDomHelper);
-      });
-
       testWidgets('works', (WidgetTester _) async {
+        final mockFile1 = createXFile('123456', 'file1.txt');
+        final mockFile2 = createXFile('', 'file2.txt');
+
+        final mockDomHelper = MockDomHelper()
+          ..setFiles([mockFile1, mockFile2])
+          ..expectAccept('.txt')
+          ..expectMultiple(true);
+
+        final plugin = FileSelectorWeb(domHelper: mockDomHelper);
+
         final typeGroup = XTypeGroup(
           label: 'files',
           extensions: ['.txt'],
@@ -82,6 +78,8 @@ void main() {
 
 class MockDomHelper implements DomHelper {
   List<XFile> _files = <XFile>[];
+  String _expectedAccept = '';
+  bool _expectedMultiple = false;
 
   @override
   Future<List<XFile>> getFiles({
@@ -89,11 +87,23 @@ class MockDomHelper implements DomHelper {
     bool multiple = false,
     FileUploadInputElement? input,
   }) {
+    expect(accept, _expectedAccept,
+        reason: 'Expected "accept" value does not match.');
+    expect(multiple, _expectedMultiple,
+        reason: 'Expected "multiple" value does not match.');
     return Future.value(_files);
   }
 
   void setFiles(List<XFile> files) {
     _files = files;
+  }
+
+  void expectAccept(String accept) {
+    _expectedAccept = accept;
+  }
+
+  void expectMultiple(bool multiple) {
+    _expectedMultiple = multiple;
   }
 }
 
