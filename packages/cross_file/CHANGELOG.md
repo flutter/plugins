@@ -1,4 +1,4 @@
-## 0.3.0-nullsafety
+## 0.3.0
 
 * Migrated package to null-safety.
 * **breaking change** According to our unit tests, the API should be backwards-compatible. Some relevant changes were made, however:
