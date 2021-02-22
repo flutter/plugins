@@ -1,8 +1,8 @@
 ## 2.0.0
 
+* Migrate to null safety.
 * Make `baseOS`, `previewSdkInt`, and `securityPatch` nullable types.
 * Remove default values for non-nullable types.
-* Migrate to null safety.
 
 ## 1.0.2
 
