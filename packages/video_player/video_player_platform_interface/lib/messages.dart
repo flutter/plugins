@@ -40,10 +40,11 @@ class CreateMessage {
   static CreateMessage decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return CreateMessage()
-      ..asset = pigeonMap['asset'] as String
-      ..uri = pigeonMap['uri'] as String
-      ..packageName = pigeonMap['packageName'] as String
-      ..formatHint = pigeonMap['formatHint'] as String;
+      // Modified manually until flutter/packages#292 lands
+      ..asset = pigeonMap['asset'] as String?
+      ..uri = pigeonMap['uri'] as String?
+      ..packageName = pigeonMap['packageName'] as String?
+      ..formatHint = pigeonMap['formatHint'] as String?;
   }
 }
 
