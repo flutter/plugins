@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Stable null safety release.
+
 ## 0.3.0-nullsafety
 
 * Migrated package to null-safety.
