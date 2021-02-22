@@ -7,6 +7,8 @@
 #include <flutter_linux/flutter_linux.h>
 #include <gtk/gtk.h>
 
+#include <cstring>
+
 // See url_launcher_channel.dart for documentation.
 const char kChannelName[] = "plugins.flutter.io/url_launcher";
 const char kBadArgumentsError[] = "Bad Arguments";

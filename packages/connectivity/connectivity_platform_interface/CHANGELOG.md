@@ -1,3 +1,11 @@
+## 2.0.0
+
+* Migrate to null safety.
+
+## 1.0.7
+
+* Update Flutter SDK constraint.
+
 ## 1.0.6
 
 * Update lower bound of dart dependency to 2.1.0.

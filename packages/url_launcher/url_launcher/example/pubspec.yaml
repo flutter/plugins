@@ -5,16 +5,25 @@ dependencies:
   flutter:
     sdk: flutter
   url_launcher:
+    # When depending on this package from a real application you should use:
+    #   url_launcher: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
     path: ../
 
 dev_dependencies:
-  e2e:
-    path: ../../../e2e
+  integration_test:
+    path: ../../../integration_test
   flutter_driver:
     sdk: flutter
-  pedantic: ^1.8.0
+  pedantic: ^1.10.0-nullsafety.1
   mockito: ^4.1.1
-  plugin_platform_interface: ^1.0.0
+  plugin_platform_interface: ^1.1.0-nullsafety.1
 
 flutter:
   uses-material-design: true
+
+environment:
+  sdk: ">=2.12.0-0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5"

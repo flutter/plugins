@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
  * Plugin implementation that uses the new {@code io.flutter.embedding} package.
@@ -32,7 +31,8 @@ public final class AndroidIntentPlugin implements FlutterPlugin, ActivityAware {
    * <p>Calling this automatically initializes the plugin. However plugins initialized this way
    * won't react to changes in activity or context, unlike {@link AndroidIntentPlugin}.
    */
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     IntentSender sender = new IntentSender(registrar.activity(), registrar.context());
     MethodCallHandlerImpl impl = new MethodCallHandlerImpl(sender);
     impl.startListening(registrar.messenger());

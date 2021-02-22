@@ -3,20 +3,14 @@
 // found in the LICENSE file.
 
 import '../types.dart';
+import 'maps_object.dart';
 
 /// Converts an [Iterable] of Circles in a Map of CircleId -> Circle.
 Map<CircleId, Circle> keyByCircleId(Iterable<Circle> circles) {
-  if (circles == null) {
-    return <CircleId, Circle>{};
-  }
-  return Map<CircleId, Circle>.fromEntries(circles.map((Circle circle) =>
-      MapEntry<CircleId, Circle>(circle.circleId, circle.clone())));
+  return keyByMapsObjectId<Circle>(circles).cast<CircleId, Circle>();
 }
 
 /// Converts a Set of Circles into something serializable in JSON.
-List<Map<String, dynamic>> serializeCircleSet(Set<Circle> circles) {
-  if (circles == null) {
-    return null;
-  }
-  return circles.map<Map<String, dynamic>>((Circle p) => p.toJson()).toList();
+Object serializeCircleSet(Set<Circle> circles) {
+  return serializeMapsObjectSet(circles);
 }

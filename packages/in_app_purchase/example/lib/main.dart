@@ -13,10 +13,10 @@ void main() {
   // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
   // as part of initializing the app.
   InAppPurchaseConnection.enablePendingPurchases();
-  runApp(MyApp());
+  runApp(_MyApp());
 }
 
-const bool kAutoConsume = true;
+const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
 const List<String> _kProductIds = <String>[
@@ -25,14 +25,14 @@ const List<String> _kProductIds = <String>[
   'subscription'
 ];
 
-class MyApp extends StatefulWidget {
+class _MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<_MyApp> {
   final InAppPurchaseConnection _connection = InAppPurchaseConnection.instance;
-  StreamSubscription<List<PurchaseDetails>> _subscription;
+  late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
   List<ProductDetails> _products = [];
   List<PurchaseDetails> _purchases = [];
@@ -40,11 +40,11 @@ class _MyAppState extends State<MyApp> {
   bool _isAvailable = false;
   bool _purchasePending = false;
   bool _loading = true;
-  String _queryProductError;
+  String? _queryProductError;
 
   @override
   void initState() {
-    Stream purchaseUpdated =
+    final Stream<List<PurchaseDetails>> purchaseUpdated =
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
@@ -76,7 +76,7 @@ class _MyAppState extends State<MyApp> {
         await _connection.queryProductDetails(_kProductIds.toSet());
     if (productDetailResponse.error != null) {
       setState(() {
-        _queryProductError = productDetailResponse.error.message;
+        _queryProductError = productDetailResponse.error!.message;
         _isAvailable = isAvailable;
         _products = productDetailResponse.productDetails;
         _purchases = [];
@@ -146,7 +146,7 @@ class _MyAppState extends State<MyApp> {
       );
     } else {
       stack.add(Center(
-        child: Text(_queryProductError),
+        child: Text(_queryProductError!),
       ));
     }
     if (_purchasePending) {
@@ -225,7 +225,7 @@ class _MyAppState extends State<MyApp> {
 
     // This loading previous purchases code is just a demo. Please do not use this as it is.
     // In your app you should always verify the purchase data using the `verificationData` inside the [PurchaseDetails] object before trusting it.
-    // We recommend that you use your own server to verity the purchase data.
+    // We recommend that you use your own server to verify the purchase data.
     Map<String, PurchaseDetails> purchases =
         Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
       if (purchase.pendingCompletePurchase) {
@@ -235,7 +235,7 @@ class _MyAppState extends State<MyApp> {
     }));
     productList.addAll(_products.map(
       (ProductDetails productDetails) {
-        PurchaseDetails previousPurchase = purchases[productDetails.id];
+        PurchaseDetails? previousPurchase = purchases[productDetails.id];
         return ListTile(
             title: Text(
               productDetails.title,
@@ -245,19 +245,20 @@ class _MyAppState extends State<MyApp> {
             ),
             trailing: previousPurchase != null
                 ? Icon(Icons.check)
-                : FlatButton(
+                : TextButton(
                     child: Text(productDetails.price),
-                    color: Colors.green[800],
-                    textColor: Colors.white,
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.green[800],
+                      primary: Colors.white,
+                    ),
                     onPressed: () {
                       PurchaseParam purchaseParam = PurchaseParam(
                           productDetails: productDetails,
-                          applicationUserName: null,
-                          sandboxTesting: true);
+                          applicationUserName: null);
                       if (productDetails.id == _kConsumableId) {
                         _connection.buyConsumable(
                             purchaseParam: purchaseParam,
-                            autoConsume: kAutoConsume || Platform.isIOS);
+                            autoConsume: _kAutoConsume || Platform.isIOS);
                       } else {
                         _connection.buyNonConsumable(
                             purchaseParam: purchaseParam);
@@ -327,7 +328,7 @@ class _MyAppState extends State<MyApp> {
   void deliverProduct(PurchaseDetails purchaseDetails) async {
     // IMPORTANT!! Always verify a purchase purchase details before delivering the product.
     if (purchaseDetails.productID == _kConsumableId) {
-      await ConsumableStore.save(purchaseDetails.purchaseID);
+      await ConsumableStore.save(purchaseDetails.purchaseID!);
       List<String> consumables = await ConsumableStore.load();
       setState(() {
         _purchasePending = false;
@@ -363,7 +364,7 @@ class _MyAppState extends State<MyApp> {
         showPendingUI();
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
-          handleError(purchaseDetails.error);
+          handleError(purchaseDetails.error!);
         } else if (purchaseDetails.status == PurchaseStatus.purchased) {
           bool valid = await _verifyPurchase(purchaseDetails);
           if (valid) {
@@ -374,7 +375,7 @@ class _MyAppState extends State<MyApp> {
           }
         }
         if (Platform.isAndroid) {
-          if (!kAutoConsume && purchaseDetails.productID == _kConsumableId) {
+          if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
             await InAppPurchaseConnection.instance
                 .consumePurchase(purchaseDetails);
           }

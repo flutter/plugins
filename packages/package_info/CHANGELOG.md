@@ -1,3 +1,28 @@
+## 2.0.0
+
+* Migrate to null safety.
+
+## 0.4.3+4
+
+* Ensure `IntegrationTestPlugin` is registered in `example` app, so Firebase Test Lab tests report test results correctly. [Issue](https://github.com/flutter/flutter/issues/74944).
+
+## 0.4.3+3
+
+* Update Flutter SDK constraint.
+
+## 0.4.3+2
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 0.4.3+1
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.3
+
+* Update package:e2e -> package:integration_test
+
 ## 0.4.2
 
 * Update package:e2e reference to use the local version in the flutter/plugins

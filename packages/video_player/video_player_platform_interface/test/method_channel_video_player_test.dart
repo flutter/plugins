@@ -2,23 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(egarciad): Remove once Mockito is migrated to null safety.
+// @dart = 2.9
+
 import 'dart:ui';
 
-import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:video_player_platform_interface/method_channel_video_player.dart';
-import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+import 'package:mockito/mockito.dart';
 import 'package:video_player_platform_interface/messages.dart';
+import 'package:video_player_platform_interface/method_channel_video_player.dart';
+import 'package:video_player_platform_interface/test.dart';
+import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-class _ApiLogger implements VideoPlayerApiTest {
+class _ApiLogger implements TestHostVideoPlayerApi {
   final List<String> log = [];
   TextureMessage textureMessage;
   CreateMessage createMessage;
   PositionMessage positionMessage;
   LoopingMessage loopingMessage;
   VolumeMessage volumeMessage;
+  PlaybackSpeedMessage playbackSpeedMessage;
+  MixWithOthersMessage mixWithOthersMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
@@ -51,6 +56,12 @@ class _ApiLogger implements VideoPlayerApiTest {
   }
 
   @override
+  void setMixWithOthers(MixWithOthersMessage arg) {
+    log.add('setMixWithOthers');
+    mixWithOthersMessage = arg;
+  }
+
+  @override
   PositionMessage position(TextureMessage arg) {
     log.add('position');
     textureMessage = arg;
@@ -73,6 +84,12 @@ class _ApiLogger implements VideoPlayerApiTest {
   void setVolume(VolumeMessage arg) {
     log.add('setVolume');
     volumeMessage = arg;
+  }
+
+  @override
+  void setPlaybackSpeed(PlaybackSpeedMessage arg) {
+    log.add('setPlaybackSpeed');
+    playbackSpeedMessage = arg;
   }
 }
 
@@ -109,7 +126,7 @@ void main() {
 
     setUp(() {
       log = _ApiLogger();
-      VideoPlayerApiTestSetup(log);
+      TestHostVideoPlayerApi.setup(log);
     });
 
     test('init', () async {
@@ -179,11 +196,28 @@ void main() {
       expect(log.textureMessage.textureId, 1);
     });
 
+    test('setMixWithOthers', () async {
+      await player.setMixWithOthers(true);
+      expect(log.log.last, 'setMixWithOthers');
+      expect(log.mixWithOthersMessage.mixWithOthers, true);
+
+      await player.setMixWithOthers(false);
+      expect(log.log.last, 'setMixWithOthers');
+      expect(log.mixWithOthersMessage.mixWithOthers, false);
+    });
+
     test('setVolume', () async {
       await player.setVolume(1, 0.7);
       expect(log.log.last, 'setVolume');
       expect(log.volumeMessage.textureId, 1);
       expect(log.volumeMessage.volume, 0.7);
+    });
+
+    test('setPlaybackSpeed', () async {
+      await player.setPlaybackSpeed(1, 1.5);
+      expect(log.log.last, 'setPlaybackSpeed');
+      expect(log.playbackSpeedMessage.textureId, 1);
+      expect(log.playbackSpeedMessage.speed, 1.5);
     });
 
     test('seekTo', () async {
@@ -201,82 +235,63 @@ void main() {
     });
 
     test('videoEventsFor', () async {
-      // TODO(cbenhagen): This has been deprecated and should be replaced
-      // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-      // available on all the versions of Flutter that we test.
-      // ignore: deprecated_member_use
-      defaultBinaryMessenger.setMockMessageHandler(
+      ServicesBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
         "flutter.io/videoPlayer/videoEvents123",
         (ByteData message) async {
           final MethodCall methodCall =
               const StandardMethodCodec().decodeMethodCall(message);
           if (methodCall.method == 'listen') {
-            // TODO(cbenhagen): This has been deprecated and should be replaced
-            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-            // available on all the versions of Flutter that we test.
-            // ignore: deprecated_member_use
-            await defaultBinaryMessenger.handlePlatformMessage(
-                "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec()
-                    .encodeSuccessEnvelope(<String, dynamic>{
-                  'event': 'initialized',
-                  'duration': 98765,
-                  'width': 1920,
-                  'height': 1080,
-                }),
-                (ByteData data) {});
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    "flutter.io/videoPlayer/videoEvents123",
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'initialized',
+                      'duration': 98765,
+                      'width': 1920,
+                      'height': 1080,
+                    }),
+                    (ByteData data) {});
 
-            // TODO(cbenhagen): This has been deprecated and should be replaced
-            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-            // available on all the versions of Flutter that we test.
-            // ignore: deprecated_member_use
-            await defaultBinaryMessenger.handlePlatformMessage(
-                "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec()
-                    .encodeSuccessEnvelope(<String, dynamic>{
-                  'event': 'completed',
-                }),
-                (ByteData data) {});
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    "flutter.io/videoPlayer/videoEvents123",
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'completed',
+                    }),
+                    (ByteData data) {});
 
-            // TODO(cbenhagen): This has been deprecated and should be replaced
-            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-            // available on all the versions of Flutter that we test.
-            // ignore: deprecated_member_use
-            await defaultBinaryMessenger.handlePlatformMessage(
-                "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec()
-                    .encodeSuccessEnvelope(<String, dynamic>{
-                  'event': 'bufferingUpdate',
-                  'values': <List<dynamic>>[
-                    <int>[0, 1234],
-                    <int>[1235, 4000],
-                  ],
-                }),
-                (ByteData data) {});
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    "flutter.io/videoPlayer/videoEvents123",
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'bufferingUpdate',
+                      'values': <List<dynamic>>[
+                        <int>[0, 1234],
+                        <int>[1235, 4000],
+                      ],
+                    }),
+                    (ByteData data) {});
 
-            // TODO(cbenhagen): This has been deprecated and should be replaced
-            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-            // available on all the versions of Flutter that we test.
-            // ignore: deprecated_member_use
-            await defaultBinaryMessenger.handlePlatformMessage(
-                "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec()
-                    .encodeSuccessEnvelope(<String, dynamic>{
-                  'event': 'bufferingStart',
-                }),
-                (ByteData data) {});
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    "flutter.io/videoPlayer/videoEvents123",
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'bufferingStart',
+                    }),
+                    (ByteData data) {});
 
-            // TODO(cbenhagen): This has been deprecated and should be replaced
-            // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-            // available on all the versions of Flutter that we test.
-            // ignore: deprecated_member_use
-            await defaultBinaryMessenger.handlePlatformMessage(
-                "flutter.io/videoPlayer/videoEvents123",
-                const StandardMethodCodec()
-                    .encodeSuccessEnvelope(<String, dynamic>{
-                  'event': 'bufferingEnd',
-                }),
-                (ByteData data) {});
+            await ServicesBinding.instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+                    "flutter.io/videoPlayer/videoEvents123",
+                    const StandardMethodCodec()
+                        .encodeSuccessEnvelope(<String, dynamic>{
+                      'event': 'bufferingEnd',
+                    }),
+                    (ByteData data) {});
 
             return const StandardMethodCodec().encodeSuccessEnvelope(null);
           } else if (methodCall.method == 'cancel') {

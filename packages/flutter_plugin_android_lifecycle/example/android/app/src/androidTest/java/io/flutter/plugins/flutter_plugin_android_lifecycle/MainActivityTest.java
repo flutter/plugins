@@ -5,7 +5,7 @@
 package io.flutter.plugins.flutter_plugin_android_lifecycle_example;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.e2e.FlutterTestRunner;
+import dev.flutter.plugins.integration_test.FlutterTestRunner;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 

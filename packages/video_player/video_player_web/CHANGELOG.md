@@ -1,3 +1,35 @@
+## 2.0.0-nullsafety.4
+
+* Calling `setMixWithOthers()` now is silently ignored instead of throwing an exception.
+
+## 2.0.0-nullsafety.3
+
+* Updated to video_player_platform_interface 4.0.
+
+## 2.0.0-nullsafety.2
+
+* Fixed an issue where `isBuffering` was not updating on Web.
+
+## 2.0.0-nullsafety.1
+
+* Bump Dart SDK to support null safety.
+
+## 2.0.0-nullsafety
+
+* Migrate to null safety.
+
+## 0.1.4+2
+
+* Update Flutter SDK constraint.
+
+## 0.1.4+1
+
+* Substitute `undefined_prefixed_name: ignore` analyzer setting by a `dart:ui` shim with conditional exports. [Issue](https://github.com/flutter/flutter/issues/69309).
+
+## 0.1.4
+
+* Added option to set the video playback speed on the video controller.
+
 ## 0.1.3+2
 
 * Allow users to set the 'muted' attribute on video elements by setting their volume to 0.

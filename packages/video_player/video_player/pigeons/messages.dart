@@ -1,3 +1,5 @@
+// @dart = 2.9
+
 import 'package:pigeon/pigeon_lib.dart';
 
 class TextureMessage {
@@ -14,6 +16,11 @@ class VolumeMessage {
   double volume;
 }
 
+class PlaybackSpeedMessage {
+  int textureId;
+  double speed;
+}
+
 class PositionMessage {
   int textureId;
   int position;
@@ -26,21 +33,28 @@ class CreateMessage {
   String formatHint;
 }
 
-@HostApi()
+class MixWithOthersMessage {
+  bool mixWithOthers;
+}
+
+@HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class VideoPlayerApi {
   void initialize();
   TextureMessage create(CreateMessage msg);
   void dispose(TextureMessage msg);
   void setLooping(LoopingMessage msg);
   void setVolume(VolumeMessage msg);
+  void setPlaybackSpeed(PlaybackSpeedMessage msg);
   void play(TextureMessage msg);
   PositionMessage position(TextureMessage msg);
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
+  void setMixWithOthers(MixWithOthersMessage msg);
 }
 
 void configurePigeon(PigeonOptions opts) {
   opts.dartOut = '../video_player_platform_interface/lib/messages.dart';
+  opts.dartTestOut = '../video_player_platform_interface/lib/test.dart';
   opts.objcHeaderOut = 'ios/Classes/messages.h';
   opts.objcSourceOut = 'ios/Classes/messages.m';
   opts.objcOptions.prefix = 'FLT';

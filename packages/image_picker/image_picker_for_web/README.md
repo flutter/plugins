@@ -2,7 +2,7 @@
 
 A web implementation of [`image_picker`][1].
 
-## Browser Support
+## Limitations on the web platform
 
 Since Web Browsers don't offer direct access to their users' file system,
 this plugin provides a `PickedFile` abstraction to make access access uniform
@@ -41,6 +41,12 @@ In order to "take a photo", some mobile browsers offer a [`capture` attribute](h
 
 Each browser may implement `capture` any way they please, so it may (or may not) make a
 difference in your users' experience.
+
+### pickImage()
+The arguments `maxWidth`, `maxHeight` and `imageQuality` are not supported on the web.
+
+### pickVideo()
+The argument `maxDuration` is not supported on the web.
 
 ## Usage
 

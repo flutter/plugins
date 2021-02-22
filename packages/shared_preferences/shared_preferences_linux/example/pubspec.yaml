@@ -4,24 +4,24 @@ description: Demonstrates how to use the shared_preferences_linux plugin.
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: any
-  shared_preferences_linux: ^0.1.0
-
-dependency_overrides:
   shared_preferences_linux:
+    # When depending on this package from a real application you should use:
+    #   shared_preferences_linux: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
     path: ../
-  # Remove this override once the endorsement is published.
-  shared_preferences:
-    path: ../../shared_preferences/
 
 dev_dependencies:
   flutter_driver:
     sdk: flutter
-  test: any
-  e2e:
-    path: ../../../e2e
-  pedantic: ^1.8.0
+  integration_test:
+    path: ../../../integration_test
+  pedantic: ^1.10.0
 
 flutter:
   uses-material-design: true
 
+environment:
+  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  flutter: ">=1.20.0"
