@@ -1,7 +1,7 @@
 name: file_selector_web
 description: Web platform implementation of file_selector
 homepage: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_web
-version: 1.0.0-nullsafety.0
+version: 1.0.0
 
 flutter:
   plugin:
@@ -11,7 +11,7 @@ flutter:
         fileName: file_selector_web.dart
 
 dependencies:
-  file_selector_platform_interface: ^2.0.0-nullsafety.0
+  file_selector_platform_interface: ^2.0.0-0
   flutter:
     sdk: flutter
   flutter_web_plugins:
@@ -25,4 +25,4 @@ dev_dependencies:
 
 environment:
   sdk: '>=2.12.0-0 <3.0.0'
-  flutter: ">=1.26.0-0"
+  flutter: ">=1.20.0-0"

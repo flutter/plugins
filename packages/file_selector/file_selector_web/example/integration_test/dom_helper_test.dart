@@ -9,19 +9,19 @@ import 'package:file_selector_web/src/dom_helper.dart';
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 void main() {
-  group('FileSelectorWeb', () {
+  group('dom_helper', () {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
     late DomHelper domHelper;
     FileUploadInputElement? input;
 
-    FileList? FileListItems(List<File> files) {
+    FileList? createFileList(List<File> files) {
       final dataTransfer = DataTransfer();
       files.forEach(dataTransfer.items!.add);
       return dataTransfer.files as FileList?;
     }
 
     void setFilesAndTriggerChange(List<File> files) {
-      input!.files = FileListItems(files);
+      input!.files = createFileList(files);
       input!.dispatchEvent(Event('change'));
     }
 

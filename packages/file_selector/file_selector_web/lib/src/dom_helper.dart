@@ -24,34 +24,34 @@ class DomHelper {
     bool multiple = false,
     @visibleForTesting FileUploadInputElement? input,
   }) {
-    final Completer<List<XFile>> _completer = Completer();
-    input = input ?? FileUploadInputElement();
+    final Completer<List<XFile>> completer = Completer();
+    final FileUploadInputElement inputElement = input ?? FileUploadInputElement();
 
     _container.children.add(
-      input
+      inputElement
         ..accept = accept
         ..multiple = multiple,
     );
 
-    input.onChange.first.then((_) {
+    inputElement.onChange.first.then((_) {
       final List<XFile> files = input!.files!.map(_convertFileToXFile).toList();
       input.remove();
-      _completer.complete(files);
+      completer.complete(files);
     });
 
-    input.onError.first.then((event) {
+    inputElement.onError.first.then((event) {
       final ErrorEvent error = event as ErrorEvent;
       final platformException = PlatformException(
         code: error.type,
         message: error.message,
       );
       input!.remove();
-      _completer.completeError(platformException);
+      completer.completeError(platformException);
     });
 
-    input.click();
+    inputElement.click();
 
-    return _completer.future;
+    return completer.future;
   }
 
   XFile _convertFileToXFile(File file) => XFile(
