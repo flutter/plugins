@@ -129,6 +129,7 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  loadDataWithBaseUrl
 }
 
 class SampleMenu extends StatelessWidget {
@@ -167,6 +168,9 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data, context);
                 break;
+              case MenuOptions.loadDataWithBaseUrl:
+                _onLoadDataWithBaseUrl(controller.data, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -198,6 +202,10 @@ class SampleMenu extends StatelessWidget {
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.loadDataWithBaseUrl,
+              child: Text('Load data with baseUrl example'),
             ),
           ],
         );
@@ -270,6 +278,13 @@ class SampleMenu extends StatelessWidget {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  void _onLoadDataWithBaseUrl(
+      WebViewController controller, BuildContext context) async {
+    final String data= "<p>Lorem ipsum soos oosoo f]]sfsf sf<br/>sf<br/>asf<br/><br/>s<br/>fsfsadf safsf<br/>aKs sf sfdasf sf sf  wr w erw t et y 4 y4 3646<br/><img src=\"https://homepages.cae.wisc.edu/~ece533/images/airplane.png\"/></p>";
+    final String baseDomain="https://dev.247software.com";
+    await controller.loadDataWithBaseURL(data: data,mimeType: 'text/html',baseUrl:baseDomain,encoding: Encoding.getByName('utf-8').toString());
   }
 
   Widget _getCookieList(String cookies) {

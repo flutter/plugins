@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../platform_interface.dart';
@@ -77,6 +78,23 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     return _channel.invokeMethod<void>('loadUrl', <String, dynamic>{
       'url': url,
       'headers': headers,
+    });
+  }
+
+  @override
+  Future<void> loadDataWithBaseURL(
+      {String baseUrl='', @required String data,
+        String mimeType,
+        String encoding,
+        String historyUrl,
+      }) {
+    assert(data != null);
+    return _channel.invokeMethod<void>('loadDataWithBaseURL', <String, dynamic>{
+      'data': data,
+      'baseUrl': baseUrl,
+      'mimeType': mimeType,
+      'encoding': encoding,
+      'historyUrl': historyUrl,
     });
   }
 

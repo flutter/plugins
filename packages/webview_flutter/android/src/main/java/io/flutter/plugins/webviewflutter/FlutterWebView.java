@@ -168,76 +168,91 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.setContainerView(null);
   }
 
-  @Override
-  public void onMethodCall(MethodCall methodCall, Result result) {
-    switch (methodCall.method) {
-      case "loadUrl":
-        loadUrl(methodCall, result);
-        break;
-      case "updateSettings":
-        updateSettings(methodCall, result);
-        break;
-      case "canGoBack":
-        canGoBack(result);
-        break;
-      case "canGoForward":
-        canGoForward(result);
-        break;
-      case "goBack":
-        goBack(result);
-        break;
-      case "goForward":
-        goForward(result);
-        break;
-      case "reload":
-        reload(result);
-        break;
-      case "currentUrl":
-        currentUrl(result);
-        break;
-      case "evaluateJavascript":
-        evaluateJavaScript(methodCall, result);
-        break;
-      case "addJavascriptChannels":
-        addJavaScriptChannels(methodCall, result);
-        break;
-      case "removeJavascriptChannels":
-        removeJavaScriptChannels(methodCall, result);
-        break;
-      case "clearCache":
-        clearCache(result);
-        break;
-      case "getTitle":
-        getTitle(result);
-        break;
-      case "scrollTo":
-        scrollTo(methodCall, result);
-        break;
-      case "scrollBy":
-        scrollBy(methodCall, result);
-        break;
-      case "getScrollX":
-        getScrollX(result);
-        break;
-      case "getScrollY":
-        getScrollY(result);
-        break;
-      default:
-        result.notImplemented();
+    @Override
+    public void onMethodCall(MethodCall methodCall, Result result) {
+        switch (methodCall.method) {
+            case "loadUrl":
+                loadUrl(methodCall, result);
+                break;
+            case "loadDataWithBaseURL":
+                loadDataWithBaseURL(methodCall, result);
+                break;
+            case "updateSettings":
+                updateSettings(methodCall, result);
+                break;
+            case "canGoBack":
+                canGoBack(result);
+                break;
+            case "canGoForward":
+                canGoForward(result);
+                break;
+            case "goBack":
+                goBack(result);
+                break;
+            case "goForward":
+                goForward(result);
+                break;
+            case "reload":
+                reload(result);
+                break;
+            case "currentUrl":
+                currentUrl(result);
+                break;
+            case "evaluateJavascript":
+                evaluateJavaScript(methodCall, result);
+                break;
+            case "addJavascriptChannels":
+                addJavaScriptChannels(methodCall, result);
+                break;
+            case "removeJavascriptChannels":
+                removeJavaScriptChannels(methodCall, result);
+                break;
+            case "clearCache":
+                clearCache(result);
+                break;
+            case "getTitle":
+                getTitle(result);
+                break;
+            case "scrollTo":
+                scrollTo(methodCall, result);
+                break;
+            case "scrollBy":
+                scrollBy(methodCall, result);
+                break;
+            case "getScrollX":
+                getScrollX(result);
+                break;
+            case "getScrollY":
+                getScrollY(result);
+                break;
+            default:
+                result.notImplemented();
+        }
     }
-  }
 
-  @SuppressWarnings("unchecked")
-  private void loadUrl(MethodCall methodCall, Result result) {
-    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
-    String url = (String) request.get("url");
-    Map<String, String> headers = (Map<String, String>) request.get("headers");
-    if (headers == null) {
-      headers = Collections.emptyMap();
+    @SuppressWarnings("unchecked")
+    private void loadUrl(MethodCall methodCall, Result result) {
+        Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+        String url = (String) request.get("url");
+        Map<String, String> headers = (Map<String, String>) request.get("headers");
+        if (headers == null) {
+            headers = Collections.emptyMap();
+        }
+        webView.loadUrl(url, headers);
+        result.success(null);
     }
-    webView.loadUrl(url, headers);
-    result.success(null);
-  }
+
+    @SuppressWarnings("unchecked")
+    private void loadDataWithBaseURL(MethodCall methodCall, Result result) {
+        Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+        String baseUrl = (String) request.get("baseUrl");
+        String data = (String) request.get("data");
+        String mimeType = (String) request.get("mimeType");
+        String encoding = (String) request.get("encoding");
+        String historyUrl = (String) request.get("historyUrl");
+        webView.loadDataWithBaseURL(baseUrl, data,mimeType,encoding,historyUrl);
+        result.success(null);
+    }
 
   private void canGoBack(Result result) {
     result.success(webView.canGoBack());

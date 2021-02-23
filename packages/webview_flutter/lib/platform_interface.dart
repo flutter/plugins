@@ -182,6 +182,23 @@ abstract class WebViewPlatformController {
         "WebView loadUrl is not implemented on the current platform");
   }
 
+  /// Loads the specified Data with [baseUrl].
+  /// [baseUrl] is the URL to use as the page's base URL. If null defaults to 'about:blank'. This value may be null.
+  /// [data] is a String of data in the given encoding This value cannot be null.
+  /// [mimeType] a String of data in the given encoding This value cannot be null.
+  /// [encoding] a String of data in the given encoding This value cannot be null.
+  ///
+  /// Throws an UnimplementedError if WebView loadDataWithBaseURL is not implemented on the current platform.
+  Future<void> loadDataWithBaseURL(
+      {String baseUrl='', @required String data,
+        String mimeType,
+        String encoding,
+        String historyUrl,
+      }) {
+    throw UnimplementedError(
+        "WebView loadUrl is not implemented on the current platform");
+  }
+
   /// Updates the webview settings.
   ///
   /// Any non null field in `settings` will be set as the new setting value.

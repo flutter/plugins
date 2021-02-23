@@ -1166,6 +1166,19 @@ class MyWebViewPlatformController extends WebViewPlatformController {
     lastRequestHeaders = headers;
     return null;
   }
+
+  @override
+  Future<void> loadDataWithBaseURL(
+      {String baseUrl='', @required String data,
+        String mimeType,
+        String encoding,
+        String historyUrl,
+      }) {
+    equals(1, 1);
+    lastUrlLoaded = baseUrl;
+    // lastRequestHeaders = headers;
+    return null;
+  }
 }
 
 class MatchesWebSettings extends Matcher {

@@ -613,6 +613,29 @@ class WebViewController {
     return _webViewPlatformController.loadUrl(url, headers);
   }
 
+  /// Loads the specified Data with [baseUrl].
+  /// [baseUrl] is the URL to use as the page's base URL. If null defaults to 'about:blank'. This value may be null.
+  /// [data] is a String of data in the given encoding This value cannot be null.
+  /// [mimeType] a String of data in the given encoding This value cannot be null.
+  /// [encoding] a String of data in the given encoding This value cannot be null.
+  /// Throws an ArgumentError if `url` is not a valid URL string.
+  Future<void> loadDataWithBaseURL({
+    String baseUrl = '',
+    @required String data,
+    String mimeType,
+    String encoding,
+    String historyUrl,
+  }) async {
+    assert(data != null);
+    if (baseUrl != null && baseUrl.isNotEmpty) _validateUrlString(baseUrl);
+    return _webViewPlatformController.loadDataWithBaseURL(
+        data: data,
+        baseUrl: baseUrl,
+        mimeType: mimeType,
+        encoding: encoding,
+        historyUrl: historyUrl);
+  }
+
   /// Accessor to the current URL that the WebView is displaying.
   ///
   /// If [WebView.initialUrl] was never specified, returns `null`.
