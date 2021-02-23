@@ -59,6 +59,6 @@ class DomHelper {
         Url.createObjectUrl(file),
         name: file.name,
         length: file.size,
-        lastModified: DateTime.fromMillisecondsSinceEpoch(file.lastModified!),
+        lastModified: DateTime.fromMillisecondsSinceEpoch(file.lastModified ?? DateTime.now().millisecondsSinceEpoch),
       );
 }
