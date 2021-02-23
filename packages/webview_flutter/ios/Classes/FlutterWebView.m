@@ -426,7 +426,18 @@
   }
   NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
   [request setAllHTTPHeaderFields:headers];
-  [_webView loadRequest:request];
+  if([url hasPrefix:@"file"]) {
+    NSString * allowingReadAccessToURL = [request.URL.path stringByDeletingLastPathComponent];
+    if (@available(iOS 9.0, *)) {
+      [_webView loadFileURL:request.URL allowingReadAccessToURL:[NSURL fileURLWithPath:allowingReadAccessToURL]];
+    }
+    else {
+      [_webView loadRequest:request];
+    }
+  }
+  else {
+    [_webView loadRequest:request];
+  }
   return true;
 }
 
