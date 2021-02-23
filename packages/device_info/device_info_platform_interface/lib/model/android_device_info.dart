@@ -147,7 +147,7 @@ class AndroidDeviceInfo {
     assert(message is List<dynamic>);
     final List<dynamic> list = List<dynamic>.from(message)
       ..removeWhere((value) => value == null);
-    return List<String>.from(list);
+    return list.cast<String>();
   }
 }
 

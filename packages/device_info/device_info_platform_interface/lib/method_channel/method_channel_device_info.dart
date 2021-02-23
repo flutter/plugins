@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:device_info_platform_interface/device_info_platform_interface.dart';
