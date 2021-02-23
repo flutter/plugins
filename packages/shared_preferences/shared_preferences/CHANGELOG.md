@@ -1,8 +1,4 @@
-## 2.0.0-nullsafety.1
-
-* Fix crash when list string's type is dynamic.
-
-## 2.0.0-nullsafety
+## 2.0.0
 
 * Migrate to null-safety.
 

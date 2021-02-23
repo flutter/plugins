@@ -35,7 +35,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.cameraPosition,
         const CameraPosition(target: LatLng(10.0, 15.0)));
@@ -62,7 +62,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.cameraPosition,
         const CameraPosition(target: LatLng(10.0, 15.0)));
@@ -80,7 +80,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.compassEnabled, false);
 
@@ -109,7 +109,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.mapToolbarEnabled, false);
 
@@ -144,7 +144,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(
         platformGoogleMap.cameraTargetBounds,
@@ -193,7 +193,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.mapType, MapType.hybrid);
 
@@ -222,7 +222,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.minMaxZoomPreference,
         const MinMaxZoomPreference(1.0, 3.0));
@@ -253,7 +253,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.rotateGesturesEnabled, false);
 
@@ -282,7 +282,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.scrollGesturesEnabled, false);
 
@@ -311,7 +311,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.tiltGesturesEnabled, false);
 
@@ -339,7 +339,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.trackCameraPosition, false);
 
@@ -369,7 +369,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.zoomGesturesEnabled, false);
 
@@ -398,7 +398,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.zoomControlsEnabled, false);
 
@@ -427,7 +427,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.myLocationEnabled, false);
 
@@ -457,7 +457,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.myLocationButtonEnabled, true);
 
@@ -485,7 +485,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.padding, <double>[0, 0, 0, 0]);
   });
@@ -501,7 +501,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.padding, <double>[0, 0, 0, 0]);
 
@@ -542,7 +542,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.trafficEnabled, false);
 
@@ -571,7 +571,7 @@ void main() {
     );
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.buildingsEnabled, false);
 

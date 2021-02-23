@@ -99,6 +99,33 @@ void main() {
       expect(parsed.billingResult, equals(expected.billingResult));
       expect(parsed.skuDetailsList, containsAll(expected.skuDetailsList));
     });
+
+    test('fromJson creates an object with default values', () {
+      final SkuDetailsResponseWrapper skuDetails =
+          SkuDetailsResponseWrapper.fromJson(<String, dynamic>{});
+      expect(
+          skuDetails.billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(skuDetails.skuDetailsList, isEmpty);
+    });
+  });
+
+  group('BillingResultWrapper', () {
+    test('fromJson on empty map creates an object with default values', () {
+      final BillingResultWrapper billingResult =
+          BillingResultWrapper.fromJson(<String, dynamic>{});
+      expect(billingResult.debugMessage, kInvalidBillingResultErrorMessage);
+      expect(billingResult.responseCode, BillingResponse.error);
+    });
+
+    test('fromJson on null creates an object with default values', () {
+      final BillingResultWrapper billingResult =
+          BillingResultWrapper.fromJson(null);
+      expect(billingResult.debugMessage, kInvalidBillingResultErrorMessage);
+      expect(billingResult.responseCode, BillingResponse.error);
+    });
   });
 }
 
