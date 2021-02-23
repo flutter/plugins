@@ -35,8 +35,8 @@ class DomHelper {
     );
 
     inputElement.onChange.first.then((_) {
-      final List<XFile> files = input!.files!.map(_convertFileToXFile).toList();
-      input.remove();
+      final List<XFile> files = inputElement.files!.map(_convertFileToXFile).toList();
+      inputElement.remove();
       completer.complete(files);
     });
 
@@ -46,7 +46,7 @@ class DomHelper {
         code: error.type,
         message: error.message,
       );
-      input!.remove();
+      inputElement.remove();
       completer.completeError(platformException);
     });
 
