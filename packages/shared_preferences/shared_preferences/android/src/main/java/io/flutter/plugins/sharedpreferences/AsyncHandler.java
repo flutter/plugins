@@ -27,7 +27,7 @@ class AsyncHandler {
                 public Thread newThread(Runnable r) {
                   Thread thread = new Thread(r, "SharedPreferencesAsync");
                   thread.setDaemon(true);
-                  return null;
+                  return thread;
                 }
               });
     }
