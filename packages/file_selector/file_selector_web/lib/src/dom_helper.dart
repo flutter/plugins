@@ -25,7 +25,8 @@ class DomHelper {
     @visibleForTesting FileUploadInputElement? input,
   }) {
     final Completer<List<XFile>> completer = Completer();
-    final FileUploadInputElement inputElement = input ?? FileUploadInputElement();
+    final FileUploadInputElement inputElement =
+        input ?? FileUploadInputElement();
 
     _container.children.add(
       inputElement
