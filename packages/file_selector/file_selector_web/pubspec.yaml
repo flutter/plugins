@@ -11,7 +11,7 @@ flutter:
         fileName: file_selector_web.dart
 
 dependencies:
-  file_selector_platform_interface: ^2.0.0-0
+  file_selector_platform_interface: ^2.0.0
   flutter:
     sdk: flutter
   flutter_web_plugins:
