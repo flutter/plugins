@@ -18,8 +18,6 @@ export 'package:path_provider_platform_interface/path_provider_platform_interfac
 @Deprecated('This is no longer necessary, and is now a no-op')
 set disablePathProviderPlatformOverride(bool override) {}
 
-bool _manualDartRegistrationNeeded = true;
-
 /// An exception thrown when a directory that should always be available on
 /// the current platform cannot be obtained.
 class MissingPlatformDirectoryException implements Exception {
@@ -41,26 +39,6 @@ class MissingPlatformDirectoryException implements Exception {
   }
 }
 
-PathProviderPlatform get _platform {
-  // This is to manually endorse Dart implementations until automatic
-  // registration of Dart plugins is implemented. For details see
-  // https://github.com/flutter/flutter/issues/52267.
-  if (_manualDartRegistrationNeeded) {
-    // Only do the initial registration if it hasn't already been overridden
-    // with a non-default instance.
-    if (!kIsWeb && PathProviderPlatform.instance is MethodChannelPathProvider) {
-      if (Platform.isLinux) {
-        PathProviderPlatform.instance = PathProviderLinux();
-      } else if (Platform.isWindows) {
-        PathProviderPlatform.instance = PathProviderWindows();
-      }
-    }
-    _manualDartRegistrationNeeded = false;
-  }
-
-  return PathProviderPlatform.instance;
-}
-
 /// Path to the temporary directory on the device that is not backed up and is
 /// suitable for storing caches of downloaded files.
 ///
@@ -76,7 +54,7 @@ PathProviderPlatform get _platform {
 /// Throws a `MissingPlatformDirectoryException` if the system is unable to
 /// provide the directory.
 Future<Directory> getTemporaryDirectory() async {
-  final String? path = await _platform.getTemporaryPath();
+  final String? path = await PathProviderPlatform.instance.getTemporaryPath();
   if (path == null) {
     throw MissingPlatformDirectoryException(
         'Unable to get temporary directory');
@@ -98,7 +76,7 @@ Future<Directory> getTemporaryDirectory() async {
 /// Throws a `MissingPlatformDirectoryException` if the system is unable to
 /// provide the directory.
 Future<Directory> getApplicationSupportDirectory() async {
-  final String? path = await _platform.getApplicationSupportPath();
+  final String? path = await PathProviderPlatform.instance.getApplicationSupportPath();
   if (path == null) {
     throw MissingPlatformDirectoryException(
         'Unable to get application support directory');
@@ -116,7 +94,7 @@ Future<Directory> getApplicationSupportDirectory() async {
 /// Throws a `MissingPlatformDirectoryException` if the system is unable to
 /// provide the directory on a supported platform.
 Future<Directory> getLibraryDirectory() async {
-  final String? path = await _platform.getLibraryPath();
+  final String? path = await PathProviderPlatform.instance.getLibraryPath();
   if (path == null) {
     throw MissingPlatformDirectoryException('Unable to get library directory');
   }
@@ -136,7 +114,7 @@ Future<Directory> getLibraryDirectory() async {
 /// Throws a `MissingPlatformDirectoryException` if the system is unable to
 /// provide the directory.
 Future<Directory> getApplicationDocumentsDirectory() async {
-  final String? path = await _platform.getApplicationDocumentsPath();
+  final String? path = await PathProviderPlatform.instance.getApplicationDocumentsPath();
   if (path == null) {
     throw MissingPlatformDirectoryException(
         'Unable to get application documents directory');
@@ -153,7 +131,7 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 ///
 /// On Android this uses the `getExternalFilesDir(null)`.
 Future<Directory?> getExternalStorageDirectory() async {
-  final String? path = await _platform.getExternalStoragePath();
+  final String? path = await PathProviderPlatform.instance.getExternalStoragePath();
   if (path == null) {
     return null;
   }
@@ -174,7 +152,7 @@ Future<Directory?> getExternalStorageDirectory() async {
 /// On Android this returns Context.getExternalCacheDirs() or
 /// Context.getExternalCacheDir() on API levels below 19.
 Future<List<Directory>?> getExternalCacheDirectories() async {
-  final List<String>? paths = await _platform.getExternalCachePaths();
+  final List<String>? paths = await PathProviderPlatform.instance.getExternalCachePaths();
   if (paths == null) {
     return null;
   }
@@ -200,7 +178,7 @@ Future<List<Directory>?> getExternalStorageDirectories({
   StorageDirectory? type,
 }) async {
   final List<String>? paths =
-      await _platform.getExternalStoragePaths(type: type);
+      await PathProviderPlatform.instance.getExternalStoragePaths(type: type);
   if (paths == null) {
     return null;
   }
@@ -214,7 +192,7 @@ Future<List<Directory>?> getExternalStorageDirectories({
 /// On Android and on iOS, this function throws an [UnsupportedError] as no equivalent
 /// path exists.
 Future<Directory?> getDownloadsDirectory() async {
-  final String? path = await _platform.getDownloadsPath();
+  final String? path = await PathProviderPlatform.instance.getDownloadsPath();
   if (path == null) {
     return null;
   }
