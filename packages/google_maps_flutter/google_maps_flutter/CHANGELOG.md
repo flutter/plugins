@@ -1,8 +1,4 @@
-## 2.0.0-nullsafety.1
-
-* Fix in example app to properly change marker icon.
-
-## 2.0.0-nullsafety
+## 2.0.0
 
 * Migrate to null-safety
 * BREAKING CHANGE: Passing an unknown map object ID (e.g., MarkerId) to a
