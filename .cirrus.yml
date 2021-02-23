@@ -19,7 +19,7 @@ task:
   matrix:
     - name: plugin_tools_tests
       script:
-        - cd script/plugin_tools
+        - cd script/tool
         - pub get
         - pub run test
     - name: publishable
