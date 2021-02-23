@@ -1,8 +1,4 @@
-## 2.0.0-nullsafety
-
-* Update version for consistency.
-
-## 0.0.4-nullsafety
+## 2.0.0
 
 * Migrate to null-safety.
 
