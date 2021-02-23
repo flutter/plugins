@@ -26,6 +26,15 @@ dependencies:
   path_provider_linux: ^2.0.0
   path_provider_windows: ^2.0.0
 
+# TODO(egarciad): Bump dependencies above and remove the overrides.
+dependency_overrides:
+  path_provider_macos:
+    path: ../path_provider_macos
+  path_provider_linux:
+    path: ../path_provider_linux
+  path_provider_windows:
+    path: ../path_provider_windows
+
 dev_dependencies:
   integration_test:
     path: ../../integration_test

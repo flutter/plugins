@@ -34,6 +34,16 @@ dependencies:
   shared_preferences_web: ^2.0.0
   shared_preferences_windows: ^2.0.0
 
+# TODO(egarciad): Bump dependencies above and remove the overrides.
+dependency_overrides:
+  shared_preferences_linux:
+    path: ../shared_preferences_linux
+  shared_preferences_macos:
+    path: ../shared_preferences_macos
+  shared_preferences_windows:
+    path: ../shared_preferences_windows
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
