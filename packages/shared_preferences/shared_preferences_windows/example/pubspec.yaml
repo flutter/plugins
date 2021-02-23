@@ -8,6 +8,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences_platform_interface: ^2.0.0
   shared_preferences_windows: ^2.0.0
 
 dependency_overrides:
