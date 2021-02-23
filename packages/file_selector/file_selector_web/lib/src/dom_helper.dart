@@ -35,7 +35,8 @@ class DomHelper {
     );
 
     inputElement.onChange.first.then((_) {
-      final List<XFile> files = inputElement.files!.map(_convertFileToXFile).toList();
+      final List<XFile> files =
+          inputElement.files!.map(_convertFileToXFile).toList();
       inputElement.remove();
       completer.complete(files);
     });
@@ -59,6 +60,7 @@ class DomHelper {
         Url.createObjectUrl(file),
         name: file.name,
         length: file.size,
-        lastModified: DateTime.fromMillisecondsSinceEpoch(file.lastModified ?? DateTime.now().millisecondsSinceEpoch),
+        lastModified: DateTime.fromMillisecondsSinceEpoch(
+            file.lastModified ?? DateTime.now().millisecondsSinceEpoch),
       );
 }
