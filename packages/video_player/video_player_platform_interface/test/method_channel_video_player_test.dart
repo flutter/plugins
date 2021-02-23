@@ -61,8 +61,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   PositionMessage position(TextureMessage arg) {
     log.add('position');
     textureMessage = arg;
-    return PositionMessage()
-      ..position = 234;
+    return PositionMessage()..position = 234;
   }
 
   @override
