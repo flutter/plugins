@@ -113,8 +113,9 @@ class AndroidDeviceInfo {
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo fromMap(Map<String, dynamic> map) {
     return AndroidDeviceInfo(
-      version:
-          AndroidBuildVersion._fromMap(map['version'] != null ? map['version'].cast<String, dynamic>() : <String, dynamic>{}),
+      version: AndroidBuildVersion._fromMap(map['version'] != null
+          ? map['version'].cast<String, dynamic>()
+          : <String, dynamic>{}),
       board: map['board'] ?? '',
       bootloader: map['bootloader'] ?? '',
       brand: map['brand'] ?? '',
@@ -144,7 +145,8 @@ class AndroidDeviceInfo {
       return <String>[];
     }
     assert(message is List<dynamic>);
-    final List<dynamic> list = List<dynamic>.from(message)..removeWhere((value) => value == null);
+    final List<dynamic> list = List<dynamic>.from(message)
+      ..removeWhere((value) => value == null);
     print(list);
     return List<String>.from(list);
   }
@@ -200,7 +202,7 @@ class AndroidBuildVersion {
       codename: map['codename'] ?? '',
       incremental: map['incremental'] ?? '',
       release: map['release'] ?? '',
-      sdkInt: map['sdkInt']  ?? -1,
+      sdkInt: map['sdkInt'] ?? -1,
     );
   }
 }

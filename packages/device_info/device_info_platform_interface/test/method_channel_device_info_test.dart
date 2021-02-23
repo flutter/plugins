@@ -159,8 +159,9 @@ void main() {
     });
   });
 
-
-  group("$MethodChannelDeviceInfo handles null value in the map returned from method channel", () {
+  group(
+      "$MethodChannelDeviceInfo handles null value in the map returned from method channel",
+      () {
     MethodChannelDeviceInfo methodChannelDeviceInfo;
 
     setUp(() async {
@@ -177,8 +178,7 @@ void main() {
               "brand": null,
               "device": null,
               "display": null,
-              "fingerprint":
-                  null,
+              "fingerprint": null,
               "hardware": null,
               "host": null,
               "id": null,
@@ -250,8 +250,7 @@ void main() {
       expect(result.systemVersion, '');
       expect(result.model, '');
       expect(result.localizedModel, '');
-      expect(
-          result.identifierForVendor, '');
+      expect(result.identifierForVendor, '');
       expect(result.isPhysicalDevice, false);
       expect(result.utsname.sysname, '');
       expect(result.utsname.nodename, '');
@@ -319,8 +318,7 @@ void main() {
       expect(result.systemVersion, '');
       expect(result.model, '');
       expect(result.localizedModel, '');
-      expect(
-          result.identifierForVendor, '');
+      expect(result.identifierForVendor, '');
       expect(result.isPhysicalDevice, false);
       expect(result.utsname.sysname, '');
       expect(result.utsname.nodename, '');
@@ -336,22 +334,14 @@ void main() {
     setUp(() async {
       methodChannelDeviceInfo = MethodChannelDeviceInfo();
 
-        methodChannelDeviceInfo.channel
+      methodChannelDeviceInfo.channel
           .setMockMethodCallHandler((MethodCall methodCall) async {
         switch (methodCall.method) {
           case 'getAndroidDeviceInfo':
             return ({
-              "supported32BitAbis": <String>[
-                "x86", null
-              ],
-              "supported64BitAbis": <String>[
-                "x86_64", null
-              ],
-              "supportedAbis": <String>[
-                "x86_64",
-                "x86",
-                null
-              ],
+              "supported32BitAbis": <String>["x86", null],
+              "supported64BitAbis": <String>["x86_64", null],
+              "supportedAbis": <String>["x86_64", "x86", null],
               "systemFeatures": <String>[
                 "android.hardware.sensor.proximity",
                 "android.software.adoptable_storage",
@@ -374,12 +364,14 @@ void main() {
       expect(result.supported32BitAbis, <String>['x86']);
       expect(result.supported64BitAbis, <String>['x86_64']);
       expect(result.supportedAbis, <String>['x86_64', 'x86']);
-      expect(result.systemFeatures, <String>[ "android.hardware.sensor.proximity",
-                "android.software.adoptable_storage",
-                "android.hardware.sensor.accelerometer",
-                "android.hardware.faketouch",
-                "android.software.backup",
-                "android.hardware.touchscreen"]);
+      expect(result.systemFeatures, <String>[
+        "android.hardware.sensor.proximity",
+        "android.software.adoptable_storage",
+        "android.hardware.sensor.accelerometer",
+        "android.hardware.faketouch",
+        "android.software.backup",
+        "android.hardware.touchscreen"
+      ]);
     });
   });
 }

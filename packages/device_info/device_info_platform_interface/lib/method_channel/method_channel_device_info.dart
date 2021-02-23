@@ -13,15 +13,15 @@ class MethodChannelDeviceInfo extends DeviceInfoPlatform {
 
   // Method channel for Android devices
   Future<AndroidDeviceInfo> androidInfo() async {
-    return AndroidDeviceInfo.fromMap(
-      (await channel.invokeMapMethod<String, dynamic>('getAndroidDeviceInfo')) ?? <String, dynamic>{}
-    );
+    return AndroidDeviceInfo.fromMap((await channel
+            .invokeMapMethod<String, dynamic>('getAndroidDeviceInfo')) ??
+        <String, dynamic>{});
   }
 
   // Method channel for iOS devices
   Future<IosDeviceInfo> iosInfo() async {
     return IosDeviceInfo.fromMap(
-      (await channel.invokeMapMethod<String, dynamic>('getIosDeviceInfo')) ?? <String, dynamic>{}
-    );
+        (await channel.invokeMapMethod<String, dynamic>('getIosDeviceInfo')) ??
+            <String, dynamic>{});
   }
 }
