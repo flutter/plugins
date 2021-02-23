@@ -1,4 +1,4 @@
-## 2.0.0-nullsafety
+## 2.0.0
 
 * Migrated to null-safety.
 * BREAKING CHANGE: Removed deprecated APIs.
