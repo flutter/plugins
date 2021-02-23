@@ -166,6 +166,22 @@ void main() {
                 [43.354762, -5.850824],
               ],
             },
+            {
+              'polygonId': 'polygon-2-with-holes',
+              'points': [
+                [43.355114, -5.851333],
+                [43.354797, -5.851860],
+                [43.354469, -5.851318],
+                [43.354762, -5.850824],
+              ],
+              'holes': [
+                [
+                  [41.354797, -6.851860],
+                  [41.354469, -6.851318],
+                  [41.354762, -6.850824],
+                ]
+              ]
+            },
           ],
           'polylinesToAdd': [
             {
@@ -202,6 +218,9 @@ void main() {
         expect(capturedMarkers.first.infoWindow.snippet, 'snippet for test');
         expect(capturedMarkers.first.infoWindow.title, 'title for test');
         expect(capturedPolygons.first.polygonId.value, 'polygon-1');
+        expect(capturedPolygons.elementAt(1).polygonId.value,
+            'polygon-2-with-holes');
+        expect(capturedPolygons.elementAt(1).holes, isNot(null));
         expect(capturedPolylines.first.polylineId.value, 'polyline-1');
       });
 

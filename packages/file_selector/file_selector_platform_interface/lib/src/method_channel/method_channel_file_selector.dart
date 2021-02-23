@@ -19,57 +19,57 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
 
   /// Load a file from user's computer and return it as an XFile
   @override
-  Future<XFile> openFile({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String confirmButtonText,
+  Future<XFile?> openFile({
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? confirmButtonText,
   }) async {
-    final List<String> path = await _channel.invokeListMethod<String>(
+    final List<String>? path = await _channel.invokeListMethod<String>(
       'openFile',
       <String, dynamic>{
         'acceptedTypeGroups':
-            acceptedTypeGroups?.map((group) => group.toJSON())?.toList(),
+            acceptedTypeGroups?.map((group) => group.toJSON()).toList(),
         'initialDirectory': initialDirectory,
         'confirmButtonText': confirmButtonText,
         'multiple': false,
       },
     );
-    return path == null ? null : XFile(path?.first);
+    return path == null ? null : XFile(path.first);
   }
 
   /// Load multiple files from user's computer and return it as an XFile
   @override
   Future<List<XFile>> openFiles({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String confirmButtonText,
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? confirmButtonText,
   }) async {
-    final List<String> pathList = await _channel.invokeListMethod<String>(
+    final List<String>? pathList = await _channel.invokeListMethod<String>(
       'openFile',
       <String, dynamic>{
         'acceptedTypeGroups':
-            acceptedTypeGroups?.map((group) => group.toJSON())?.toList(),
+            acceptedTypeGroups?.map((group) => group.toJSON()).toList(),
         'initialDirectory': initialDirectory,
         'confirmButtonText': confirmButtonText,
         'multiple': true,
       },
     );
-    return pathList?.map((path) => XFile(path))?.toList() ?? [];
+    return pathList?.map((path) => XFile(path)).toList() ?? [];
   }
 
   /// Gets the path from a save dialog
   @override
-  Future<String> getSavePath({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String suggestedName,
-    String confirmButtonText,
+  Future<String?> getSavePath({
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? suggestedName,
+    String? confirmButtonText,
   }) async {
     return _channel.invokeMethod<String>(
       'getSavePath',
       <String, dynamic>{
         'acceptedTypeGroups':
-            acceptedTypeGroups?.map((group) => group.toJSON())?.toList(),
+            acceptedTypeGroups?.map((group) => group.toJSON()).toList(),
         'initialDirectory': initialDirectory,
         'suggestedName': suggestedName,
         'confirmButtonText': confirmButtonText,
@@ -79,9 +79,9 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
 
   /// Gets a directory path from a dialog
   @override
-  Future<String> getDirectoryPath({
-    String initialDirectory,
-    String confirmButtonText,
+  Future<String?> getDirectoryPath({
+    String? initialDirectory,
+    String? confirmButtonText,
   }) async {
     return _channel.invokeMethod<String>(
       'getDirectoryPath',

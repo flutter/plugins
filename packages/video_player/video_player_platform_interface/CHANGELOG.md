@@ -1,18 +1,15 @@
-## 3.0.0-nullsafety.3
+## 4.0.0
 
+* **Breaking Changes**:
+  * Migrate to null-safety
+  * Update to latest Pigeon. This includes a breaking change to how the test logic is exposed.
+* Add note about the `mixWithOthers` option being ignored on the web.
+* Make DataSource's `uri` parameter nullable.
 * `messages.dart` sets Dart `2.12`.
 
-## 3.0.0-nullsafety.2
+## 3.0.0
 
-* Bump Dart SDK to support null safety.
-
-## 3.0.0-nullsafety.1
-
-* Make DataSource's `uri` parameter nullable.
-
-## 3.0.0-nullsafety
-
-* Migrate to null safety.
+* Version 3 only was published as nullsafety "previews".
 
 ## 2.2.1
 

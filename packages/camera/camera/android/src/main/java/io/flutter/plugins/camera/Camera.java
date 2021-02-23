@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.camera;
 
-import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
 
 import android.annotation.SuppressLint;
@@ -37,14 +36,15 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.Range;
 import android.util.Rational;
 import android.util.Size;
-import android.view.OrientationEventListener;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.PictureCaptureRequest.State;
@@ -74,9 +74,12 @@ interface ErrorCallback {
 public class Camera {
   private static final String TAG = "Camera";
 
+  /** Timeout for the pre-capture sequence. */
+  private static final long PRECAPTURE_TIMEOUT_MS = 1000;
+
   private final SurfaceTextureEntry flutterTexture;
   private final CameraManager cameraManager;
-  private final OrientationEventListener orientationEventListener;
+  private final DeviceOrientationManager deviceOrientationListener;
   private final boolean isFrontFacing;
   private final int sensorOrientation;
   private final String cameraName;
@@ -97,7 +100,6 @@ public class Camera {
   private MediaRecorder mediaRecorder;
   private boolean recordingVideo;
   private File videoRecordingFile;
-  private int currentOrientation = ORIENTATION_UNKNOWN;
   private FlashMode flashMode;
   private ExposureMode exposureMode;
   private FocusMode focusMode;
@@ -106,6 +108,8 @@ public class Camera {
   private int exposureOffset;
   private boolean useAutoFocus = true;
   private Range<Integer> fpsRange;
+  private PlatformChannel.DeviceOrientation lockedCaptureOrientation;
+  private long preCaptureStartTime;
 
   private static final HashMap<String, Integer> supportedImageFormats;
   // Current supported outputs
@@ -136,18 +140,6 @@ public class Camera {
     this.exposureMode = ExposureMode.auto;
     this.focusMode = FocusMode.auto;
     this.exposureOffset = 0;
-    orientationEventListener =
-        new OrientationEventListener(activity.getApplicationContext()) {
-          @Override
-          public void onOrientationChanged(int i) {
-            if (i == ORIENTATION_UNKNOWN) {
-              return;
-            }
-            // Convert the raw deg angle to the nearest multiple of 90.
-            currentOrientation = (int) Math.round(i / 90.0) * 90;
-          }
-        };
-    orientationEventListener.enable();
 
     cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraName);
     initFps(cameraCharacteristics);
@@ -164,6 +156,10 @@ public class Camera {
         new CameraZoom(
             cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE),
             cameraCharacteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM));
+
+    deviceOrientationListener =
+        new DeviceOrientationManager(activity, dartMessenger, isFrontFacing, sensorOrientation);
+    deviceOrientationListener.start();
   }
 
   private void initFps(CameraCharacteristics cameraCharacteristics) {
@@ -195,7 +191,10 @@ public class Camera {
     mediaRecorder =
         new MediaRecorderBuilder(recordingProfile, outputFilePath)
             .setEnableAudio(enableAudio)
-            .setMediaOrientation(getMediaOrientation())
+            .setMediaOrientation(
+                lockedCaptureOrientation == null
+                    ? deviceOrientationListener.getMediaOrientation()
+                    : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation))
             .build();
   }
 
@@ -222,7 +221,6 @@ public class Camera {
           public void onOpened(@NonNull CameraDevice device) {
             cameraDevice = device;
             try {
-              cameraRegions = new CameraRegions(getRegionBoundaries());
               startPreview();
               dartMessenger.sendCameraInitializedEvent(
                   previewSize.getWidth(),
@@ -305,6 +303,8 @@ public class Camera {
         captureRequestBuilder.addTarget(surface);
       }
     }
+
+    cameraRegions = new CameraRegions(getRegionBoundaries());
 
     // Prepare the callback
     CameraCaptureSession.StateCallback callback =
@@ -464,17 +464,20 @@ public class Camera {
             return;
           }
           String reason;
+          boolean fatalFailure = false;
           switch (failure.getReason()) {
             case CaptureFailure.REASON_ERROR:
               reason = "An error happened in the framework";
               break;
             case CaptureFailure.REASON_FLUSHED:
               reason = "The capture has failed due to an abortCaptures() call";
+              fatalFailure = true;
               break;
             default:
               reason = "Unknown reason";
           }
-          pictureCaptureRequest.error("captureFailure", reason, null);
+          Log.w("Camera", "pictureCaptureCallback.onCaptureFailed(): " + reason);
+          if (fatalFailure) pictureCaptureRequest.error("captureFailure", reason, null);
         }
 
         private void processCapture(CaptureResult result) {
@@ -505,11 +508,16 @@ public class Camera {
                   || aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED
                   || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
                 pictureCaptureRequest.setState(State.waitingPreCaptureReady);
+                setPreCaptureStartTime();
               }
               break;
             case waitingPreCaptureReady:
               if (aeState == null || aeState != CaptureRequest.CONTROL_AE_STATE_PRECAPTURE) {
                 runPictureCapture();
+              } else {
+                if (hitPreCaptureTimeout()) {
+                  unlockAutoFocus();
+                }
               }
           }
         }
@@ -545,7 +553,15 @@ public class Camera {
       final CaptureRequest.Builder captureBuilder =
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
-      captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+      captureBuilder.set(
+          CaptureRequest.SCALER_CROP_REGION,
+          captureRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
+      captureBuilder.set(
+          CaptureRequest.JPEG_ORIENTATION,
+          lockedCaptureOrientation == null
+              ? deviceOrientationListener.getMediaOrientation()
+              : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation));
+
       switch (flashMode) {
         case off:
           captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
@@ -780,7 +796,7 @@ public class Camera {
     }
     // Set the metering rectangle
     if (x == null || y == null) cameraRegions.resetAutoExposureMeteringRectangle();
-    else cameraRegions.setAutoExposureMeteringRectangleFromPoint(x, y);
+    else cameraRegions.setAutoExposureMeteringRectangleFromPoint(y, 1 - x);
     // Apply it
     updateExposure(exposureMode);
     refreshPreviewCaptureSession(
@@ -832,7 +848,7 @@ public class Camera {
     if (x == null || y == null) {
       cameraRegions.resetAutoFocusMeteringRectangle();
     } else {
-      cameraRegions.setAutoFocusMeteringRectangleFromPoint(x, y);
+      cameraRegions.setAutoFocusMeteringRectangleFromPoint(y, 1 - x);
     }
 
     // Apply the new metering rectangle
@@ -966,6 +982,14 @@ public class Camera {
     }
 
     result.success(null);
+  }
+
+  public void lockCaptureOrientation(PlatformChannel.DeviceOrientation orientation) {
+    this.lockedCaptureOrientation = orientation;
+  }
+
+  public void unlockCaptureOrientation() {
+    this.lockedCaptureOrientation = null;
   }
 
   private void updateFpsRange() {
@@ -1128,6 +1152,20 @@ public class Camera {
     startPreview();
   }
 
+  /** Sets the time the pre-capture sequence started. */
+  private void setPreCaptureStartTime() {
+    preCaptureStartTime = SystemClock.elapsedRealtime();
+  }
+
+  /**
+   * Check if the timeout for the pre-capture sequence has been reached.
+   *
+   * @return true if the timeout is reached; otherwise false is returned.
+   */
+  private boolean hitPreCaptureTimeout() {
+    return (SystemClock.elapsedRealtime() - preCaptureStartTime) > PRECAPTURE_TIMEOUT_MS;
+  }
+
   private void closeCaptureSession() {
     if (cameraCaptureSession != null) {
       cameraCaptureSession.close();
@@ -1160,14 +1198,6 @@ public class Camera {
   public void dispose() {
     close();
     flutterTexture.release();
-    orientationEventListener.disable();
-  }
-
-  private int getMediaOrientation() {
-    final int sensorOrientationOffset =
-        (currentOrientation == ORIENTATION_UNKNOWN)
-            ? 0
-            : (isFrontFacing) ? -currentOrientation : currentOrientation;
-    return (sensorOrientationOffset + sensorOrientation + 360) % 360;
+    deviceOrientationListener.stop();
   }
 }
