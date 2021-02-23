@@ -12,7 +12,7 @@ void main() {
   group('dom_helper', () {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
     late DomHelper domHelper;
-    FileUploadInputElement? input;
+    late FileUploadInputElement input;
 
     FileList? createFileList(List<File> files) {
       final dataTransfer = DataTransfer();
@@ -21,8 +21,8 @@ void main() {
     }
 
     void setFilesAndTriggerChange(List<File> files) {
-      input!.files = createFileList(files);
-      input!.dispatchEvent(Event('change'));
+      input.files = createFileList(files);
+      input.dispatchEvent(Event('change'));
     }
 
     setUp(() {
@@ -85,7 +85,7 @@ void main() {
         bool wasClicked = false;
 
         //ignore: unawaited_futures
-        input!.onClick.first.then((_) => wasClicked = true);
+        input.onClick.first.then((_) => wasClicked = true);
 
         final futureFile = domHelper.getFiles(
           accept: accept,
@@ -93,9 +93,9 @@ void main() {
           input: input,
         );
 
-        expect(input!.matchesWithAncestors('body'), true);
-        expect(input!.accept, accept);
-        expect(input!.multiple, multiple);
+        expect(input.matchesWithAncestors('body'), true);
+        expect(input.accept, accept);
+        expect(input.multiple, multiple);
         expect(
           wasClicked,
           true,
@@ -107,7 +107,7 @@ void main() {
         await futureFile;
 
         // It should be already removed from the DOM after the file is resolved.
-        expect(input!.parent, isNull);
+        expect(input.parent, isNull);
       });
     });
   });
