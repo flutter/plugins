@@ -13,6 +13,13 @@ import 'enum_converters.dart';
 // rebuild and watch for further changes.
 part 'sku_details_wrapper.g.dart';
 
+/// The error message shown when the map represents billing result is invalid from method channel.
+///
+/// This usually indicates a series underlining code issue in the plugin.
+@visibleForTesting
+const kInvalidBillingResultErrorMessage =
+    'Invalid billing result map from method channel.';
+
 /// Dart wrapper around [`com.android.billingclient.api.SkuDetails`](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails).
 ///
 /// Contains the details of an available product in Google Play Billing.
@@ -22,22 +29,22 @@ class SkuDetailsWrapper {
   /// Creates a [SkuDetailsWrapper] with the given purchase details.
   @visibleForTesting
   SkuDetailsWrapper({
-    @required this.description,
-    @required this.freeTrialPeriod,
-    @required this.introductoryPrice,
-    @required this.introductoryPriceMicros,
-    @required this.introductoryPriceCycles,
-    @required this.introductoryPricePeriod,
-    @required this.price,
-    @required this.priceAmountMicros,
-    @required this.priceCurrencyCode,
-    @required this.sku,
-    @required this.subscriptionPeriod,
-    @required this.title,
-    @required this.type,
-    @required this.isRewarded,
-    @required this.originalPrice,
-    @required this.originalPriceAmountMicros,
+    required this.description,
+    required this.freeTrialPeriod,
+    required this.introductoryPrice,
+    required this.introductoryPriceMicros,
+    required this.introductoryPriceCycles,
+    required this.introductoryPricePeriod,
+    required this.price,
+    required this.priceAmountMicros,
+    required this.priceCurrencyCode,
+    required this.sku,
+    required this.subscriptionPeriod,
+    required this.title,
+    required this.type,
+    required this.isRewarded,
+    required this.originalPrice,
+    required this.originalPriceAmountMicros,
   });
 
   /// Constructs an instance of this from a key value map of data.
@@ -45,55 +52,70 @@ class SkuDetailsWrapper {
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class.
   @visibleForTesting
-  factory SkuDetailsWrapper.fromJson(Map map) =>
+  factory SkuDetailsWrapper.fromJson(Map<String, dynamic> map) =>
       _$SkuDetailsWrapperFromJson(map);
 
   /// Textual description of the product.
+  @JsonKey(defaultValue: '')
   final String description;
 
   /// Trial period in ISO 8601 format.
+  @JsonKey(defaultValue: '')
   final String freeTrialPeriod;
 
   /// Introductory price, only applies to [SkuType.subs]. Formatted ("$0.99").
+  @JsonKey(defaultValue: '')
   final String introductoryPrice;
 
   /// [introductoryPrice] in micro-units 990000
+  @JsonKey(defaultValue: '')
   final String introductoryPriceMicros;
 
   /// The number of billing perios that [introductoryPrice] is valid for ("2").
+  @JsonKey(defaultValue: '')
   final String introductoryPriceCycles;
 
   /// The billing period of [introductoryPrice], in ISO 8601 format.
+  @JsonKey(defaultValue: '')
   final String introductoryPricePeriod;
 
   /// Formatted with currency symbol ("$0.99").
+  @JsonKey(defaultValue: '')
   final String price;
 
   /// [price] in micro-units ("990000").
+  @JsonKey(defaultValue: 0)
   final int priceAmountMicros;
 
   /// [price] ISO 4217 currency code.
+  @JsonKey(defaultValue: '')
   final String priceCurrencyCode;
 
   /// The product ID in Google Play Console.
+  @JsonKey(defaultValue: '')
   final String sku;
 
   /// Applies to [SkuType.subs], formatted in ISO 8601.
+  @JsonKey(defaultValue: '')
   final String subscriptionPeriod;
 
   /// The product's title.
+  @JsonKey(defaultValue: '')
   final String title;
 
   /// The [SkuType] of the product.
   final SkuType type;
 
   /// False if the product is paid.
+  @JsonKey(defaultValue: false)
   final bool isRewarded;
 
   /// The original price that the user purchased this product for.
+  @JsonKey(defaultValue: '')
   final String originalPrice;
 
   /// [originalPrice] in micro-units ("990000").
+  @JsonKey(defaultValue: 0)
   final int originalPriceAmountMicros;
 
   @override
@@ -150,7 +172,7 @@ class SkuDetailsResponseWrapper {
   /// Creates a [SkuDetailsResponseWrapper] with the given purchase details.
   @visibleForTesting
   SkuDetailsResponseWrapper(
-      {@required this.billingResult, this.skuDetailsList});
+      {required this.billingResult, required this.skuDetailsList});
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -163,6 +185,7 @@ class SkuDetailsResponseWrapper {
   final BillingResultWrapper billingResult;
 
   /// A list of [SkuDetailsWrapper] matching the query to [BillingClient.querySkuDetails].
+  @JsonKey(defaultValue: <SkuDetailsWrapper>[])
   final List<SkuDetailsWrapper> skuDetailsList;
 
   @override
@@ -186,22 +209,29 @@ class SkuDetailsResponseWrapper {
 @BillingResponseConverter()
 class BillingResultWrapper {
   /// Constructs the object with [responseCode] and [debugMessage].
-  BillingResultWrapper({@required this.responseCode, this.debugMessage});
+  BillingResultWrapper({required this.responseCode, this.debugMessage});
 
   /// Constructs an instance of this from a key value map of data.
   ///
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class.
-  factory BillingResultWrapper.fromJson(Map map) =>
-      _$BillingResultWrapperFromJson(map);
+  factory BillingResultWrapper.fromJson(Map<String, dynamic>? map) {
+    if (map == null || map.isEmpty) {
+      return BillingResultWrapper(
+          responseCode: BillingResponse.error,
+          debugMessage: kInvalidBillingResultErrorMessage);
+    }
+    return _$BillingResultWrapperFromJson(map);
+  }
 
   /// Response code returned in the Play Billing API calls.
   final BillingResponse responseCode;
 
   /// Debug message returned in the Play Billing API calls.
   ///
+  /// Defaults to `null`.
   /// This message uses an en-US locale and should not be shown to users.
-  final String debugMessage;
+  final String? debugMessage;
 
   @override
   bool operator ==(dynamic other) {
