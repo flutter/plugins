@@ -19,27 +19,43 @@ class IosDeviceInfo {
   });
 
   /// Device name.
+  ///
+  /// The value is an empty String if it is not available.
   final String name;
 
   /// The name of the current operating system.
+  ///
+  /// The value is an empty String if it is not available.
   final String systemName;
 
   /// The current operating system version.
+  ///
+  /// The value is an empty String if it is not available.
   final String systemVersion;
 
   /// Device model.
+  ///
+  /// The value is an empty String if it is not available.
   final String model;
 
   /// Localized name of the device model.
+  ///
+  /// The value is an empty String if it is not available.
   final String localizedModel;
 
   /// Unique UUID value identifying the current device.
+  ///
+  /// The value is an empty String if it is not available.
   final String identifierForVendor;
 
-  /// `false` if the application is running in a simulator, `true` otherwise.
+  /// The value is `true` if the application is running on a physical device.
+  ///
+  /// The value is `false` when the application is running on a simulator, or the value is unavailable.
   final bool isPhysicalDevice;
 
   /// Operating system information derived from `sys/utsname.h`.
+  ///
+  /// The value is an empty String if it is not available.
   final IosUtsname utsname;
 
   /// Deserializes from the map message received from [_kChannel].
@@ -73,18 +89,28 @@ class IosUtsname {
   });
 
   /// Operating system name.
+  ///
+  /// The value is an empty String if it is not available.
   final String sysname;
 
   /// Network node name.
+  ///
+  /// The value is an empty String if it is not available.
   final String nodename;
 
   /// Release level.
+  ///
+  /// The value is an empty String if it is not available.
   final String release;
 
   /// Version level.
+  ///
+  /// The value is an empty String if it is not available.
   final String version;
 
   /// Hardware type (e.g. 'iPhone7,1' for iPhone 6 Plus).
+  ///
+  /// The value is an empty String if it is not available.
   final String machine;
 
   /// Deserializes from the map message received from [_kChannel].
