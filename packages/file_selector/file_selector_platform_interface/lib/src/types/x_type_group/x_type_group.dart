@@ -21,14 +21,15 @@ class XTypeGroup {
 
   void _verifyExtensions() {
     if (extensions == null) return;
-    for (var i = 0; i < extensions!.length; i++) {
-      if (!extensions![i].startsWith('.')) continue;
+    final exts = extensions!;
+    for (var i = 0; i < exts.length; i++) {
+      if (!exts[i].startsWith('.')) continue;
       if (kDebugMode) {
-        print('extensions[${i}] with value "${extensions![i]}" is invalid.'
-            ' We are mutating the extensions list to remove the leading dot.'
+        print('extensions[${i}] with value "${exts[i]}" is invalid.'
+            ' The leading dots are being removed from the extensions'
             ' Please fix it.');
       }
-      extensions![i] = extensions![i].substring(1);
+      exts[i] = exts[i].substring(1);
     }
   }
 
