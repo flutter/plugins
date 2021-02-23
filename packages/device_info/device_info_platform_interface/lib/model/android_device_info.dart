@@ -114,33 +114,38 @@ class AndroidDeviceInfo {
   static AndroidDeviceInfo fromMap(Map<String, dynamic> map) {
     return AndroidDeviceInfo(
       version:
-          AndroidBuildVersion._fromMap(map['version']!.cast<String, dynamic>()),
-      board: map['board']!,
-      bootloader: map['bootloader']!,
-      brand: map['brand']!,
-      device: map['device']!,
-      display: map['display']!,
-      fingerprint: map['fingerprint']!,
-      hardware: map['hardware']!,
-      host: map['host']!,
-      id: map['id']!,
-      manufacturer: map['manufacturer']!,
-      model: map['model']!,
-      product: map['product']!,
-      supported32BitAbis: _fromList(map['supported32BitAbis']!),
-      supported64BitAbis: _fromList(map['supported64BitAbis']!),
-      supportedAbis: _fromList(map['supportedAbis']!),
-      tags: map['tags']!,
-      type: map['type']!,
-      isPhysicalDevice: map['isPhysicalDevice']!,
-      androidId: map['androidId']!,
-      systemFeatures: _fromList(map['systemFeatures']!),
+          AndroidBuildVersion._fromMap(map['version'] != null ? map['version'].cast<String, dynamic>() : <String, dynamic>{}),
+      board: map['board'] ?? '',
+      bootloader: map['bootloader'] ?? '',
+      brand: map['brand'] ?? '',
+      device: map['device'] ?? '',
+      display: map['display'] ?? '',
+      fingerprint: map['fingerprint'] ?? '',
+      hardware: map['hardware'] ?? '',
+      host: map['host'] ?? '',
+      id: map['id'] ?? '',
+      manufacturer: map['manufacturer'] ?? '',
+      model: map['model'] ?? '',
+      product: map['product'] ?? '',
+      supported32BitAbis: _fromList(map['supported32BitAbis']),
+      supported64BitAbis: _fromList(map['supported64BitAbis']),
+      supportedAbis: _fromList(map['supportedAbis']),
+      tags: map['tags'] ?? '',
+      type: map['type'] ?? '',
+      isPhysicalDevice: map['isPhysicalDevice'] ?? false,
+      androidId: map['androidId'] ?? '',
+      systemFeatures: _fromList(map['systemFeatures']),
     );
   }
 
   /// Deserializes message as List<String>
   static List<String> _fromList(dynamic message) {
-    final List<dynamic> list = message;
+    if (message == null) {
+      return <String>[];
+    }
+    assert(message is List<dynamic>);
+    final List<dynamic> list = List<dynamic>.from(message)..removeWhere((value) => value == null);
+    print(list);
     return List<String>.from(list);
   }
 }
@@ -192,10 +197,10 @@ class AndroidBuildVersion {
       baseOS: map['baseOS'],
       previewSdkInt: map['previewSdkInt'],
       securityPatch: map['securityPatch'],
-      codename: map['codename']!,
-      incremental: map['incremental']!,
-      release: map['release']!,
-      sdkInt: map['sdkInt']!,
+      codename: map['codename'] ?? '',
+      incremental: map['incremental'] ?? '',
+      release: map['release'] ?? '',
+      sdkInt: map['sdkInt']  ?? -1,
     );
   }
 }

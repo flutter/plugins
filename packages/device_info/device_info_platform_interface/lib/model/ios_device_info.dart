@@ -45,14 +45,14 @@ class IosDeviceInfo {
   /// Deserializes from the map message received from [_kChannel].
   static IosDeviceInfo fromMap(Map<String, dynamic> map) {
     return IosDeviceInfo(
-      name: map['name']!,
-      systemName: map['systemName']!,
-      systemVersion: map['systemVersion']!,
-      model: map['model']!,
-      localizedModel: map['localizedModel']!,
-      identifierForVendor: map['identifierForVendor']!,
-      isPhysicalDevice: map['isPhysicalDevice'] == 'true',
-      utsname: IosUtsname._fromMap(map['utsname']!.cast<String, dynamic>()),
+      name: map['name'] ?? '',
+      systemName: map['systemName'] ?? '',
+      systemVersion: map['systemVersion'] ?? '',
+      model: map['model'] ?? '',
+      localizedModel: map['localizedModel'] ?? '',
+      identifierForVendor: map['identifierForVendor'] ?? '',
+      isPhysicalDevice: map['isPhysicalDevice'] != null ? map['isPhysicalDevice'] == 'true' : false,
+      utsname: IosUtsname._fromMap(map['utsname'] != null ? map['utsname'].cast<String, dynamic>() : <String, dynamic>{}),
     );
   }
 }
@@ -86,11 +86,11 @@ class IosUtsname {
   /// Deserializes from the map message received from [_kChannel].
   static IosUtsname _fromMap(Map<String, dynamic> map) {
     return IosUtsname._(
-      sysname: map['sysname']!,
-      nodename: map['nodename']!,
-      release: map['release']!,
-      version: map['version']!,
-      machine: map['machine']!,
+      sysname: map['sysname'] ?? '',
+      nodename: map['nodename'] ?? '',
+      release: map['release'] ?? '',
+      version: map['version'] ?? '',
+      machine: map['machine'] ?? '',
     );
   }
 }
