@@ -32,7 +32,7 @@ void main() {
 
     SharedPreferencesLinux preferences;
 
-    setUp(() async {
+    setUp(() {
       preferences = SharedPreferencesLinux();
     });
 

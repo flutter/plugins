@@ -8,7 +8,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
-import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 void main() {
   runApp(MyApp());
