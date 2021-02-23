@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import <os/log.h>
 
-const int kElementWaitingTime = 30;
+static const int kElementWaitingTime = 30;
 
 @interface RunnerUITests : XCTestCase
 
