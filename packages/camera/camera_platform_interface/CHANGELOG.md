@@ -1,6 +1,6 @@
-## 2.0.0-nullsafety
+## 2.0.0
 
-- Migrate to null safety.
+- Stable null safety release.
 
 ## 1.6.0
 
