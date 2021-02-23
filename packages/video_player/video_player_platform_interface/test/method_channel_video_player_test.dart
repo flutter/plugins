@@ -62,9 +62,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
     log.add('position');
     textureMessage = arg;
     return PositionMessage()
-      ..position = 234
-      // TODO(plugins): Only needed until flutter/flutter#76405 lands, and pigeons are regenerated.
-      ..textureId = arg.textureId;
+      ..position = 234;
   }
 
   @override
