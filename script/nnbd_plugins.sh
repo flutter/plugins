@@ -13,6 +13,7 @@ readonly NNBD_PLUGINS_LIST=(
   "connectivity"
   "cross_file"
   "device_info"
+  "espresso"
   "file_selector"
   "flutter_plugin_android_lifecycle"
   "flutter_webview"
