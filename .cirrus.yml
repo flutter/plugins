@@ -151,7 +151,7 @@ task:
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: big-sur-xcode-12.4
+    image: big-sur-xcode-12.3
   upgrade_script:
     - sudo gem install cocoapods
     - flutter channel stable
@@ -166,7 +166,7 @@ task:
     - git submodule update
   create_simulator_script:
     - xcrun simctl list
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-12 com.apple.CoreSimulator.SimRuntime.iOS-14-4 | xargs xcrun simctl boot
+    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
   matrix:
     - name: build_all_plugins_ipa
       env:
@@ -202,7 +202,7 @@ task:
         - flutter upgrade
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh drive-examples --ios
-        - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=14.4"
+        - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=14.3"
 
 # task:
 #   # Xcode 11 task
