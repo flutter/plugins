@@ -94,7 +94,6 @@ List<Directory>? _getDirectories(List<String>? paths) {
 /// provide the directory.
 Future<Directory> getTemporaryDirectory() async {
   final String? path = await _platform.getTemporaryPath();
-
   return _getDirectory(path, 'temporary');
 }
 
@@ -113,7 +112,6 @@ Future<Directory> getTemporaryDirectory() async {
 /// provide the directory.
 Future<Directory> getApplicationSupportDirectory() async {
   final String? path = await _platform.getApplicationSupportPath();
-
   return _getDirectory(path, 'application support');
 }
 
@@ -127,7 +125,6 @@ Future<Directory> getApplicationSupportDirectory() async {
 /// provide the directory on a supported platform.
 Future<Directory> getLibraryDirectory() async {
   final String? path = await _platform.getLibraryPath();
-
   return _getDirectory(path, 'library');
 }
 
@@ -186,7 +183,6 @@ Future<Directory?> getDownloadsDirectory() async {
 /// Context.getExternalCacheDir() on API levels below 19.
 Future<List<Directory>?> getExternalCacheDirectories() async {
   final List<String>? paths = await _platform.getExternalCachePaths();
-
   return _getDirectories(paths);
 }
 
