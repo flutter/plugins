@@ -17,36 +17,38 @@ const MethodChannel _kChannel =
 /// print("Version is: ${packageInfo.version}");
 /// ```
 class PackageInfo {
+  /// Constructs an instance with the given values for testing. [PackageInfo]
+  /// instances constructed this way won't actually reflect any real information
+  /// from the platform, just whatever was passed in at construction time.
+  ///
+  /// See [fromPlatform] for the right API to get a [PackageInfo] that's
+  /// actually populated with real data.
   PackageInfo({
-    this.appName,
-    this.packageName,
-    this.version,
-    this.buildNumber,
+    required this.appName,
+    required this.packageName,
+    required this.version,
+    required this.buildNumber,
   });
 
-  static Future<PackageInfo> _fromPlatform;
+  static PackageInfo? _fromPlatform;
 
   /// Retrieves package information from the platform.
   /// The result is cached.
   static Future<PackageInfo> fromPlatform() async {
-    if (_fromPlatform == null) {
-      final Completer<PackageInfo> completer = Completer<PackageInfo>();
+    PackageInfo? packageInfo = _fromPlatform;
+    if (packageInfo != null) return packageInfo;
 
-      _kChannel.invokeMapMethod<String, dynamic>('getAll').then(
-          (dynamic result) {
-        final Map<dynamic, dynamic> map = result;
+    final Map<String, dynamic> map =
+        (await _kChannel.invokeMapMethod<String, dynamic>('getAll'))!;
 
-        completer.complete(PackageInfo(
-          appName: map["appName"],
-          packageName: map["packageName"],
-          version: map["version"],
-          buildNumber: map["buildNumber"],
-        ));
-      }, onError: completer.completeError);
-
-      _fromPlatform = completer.future;
-    }
-    return _fromPlatform;
+    packageInfo = PackageInfo(
+      appName: map["appName"] ?? '',
+      packageName: map["packageName"] ?? '',
+      version: map["version"] ?? '',
+      buildNumber: map["buildNumber"] ?? '',
+    );
+    _fromPlatform = packageInfo;
+    return packageInfo;
   }
 
   /// The app name. `CFBundleDisplayName` on iOS, `application/label` on Android.

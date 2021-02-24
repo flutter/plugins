@@ -1,3 +1,116 @@
+## 2.0.0
+
+* Migrate to null safety.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Update README with the new documentation urls.
+
+## 0.6.5+5
+
+* Update Flutter SDK constraint.
+
+## 0.6.5+4
+
+* Fix iPad share window not showing when `origin` is null.
+
+## 0.6.5+3
+
+* Replace deprecated `Environment.getExternalStorageDirectory()` call on Android.
+* Upgrade to Android Gradle plugin 3.5.0 & target API level 29.
+
+## 0.6.5+2
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.6.5+1
+
+* Avoiding uses unchecked or unsafe Object Type Casting
+
+## 0.6.5
+
+* Added support for sharing files
+
+## 0.6.4+5
+
+* Update package:e2e -> package:integration_test
+
+## 0.6.4+4
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.6.4+3
+
+* Post-v2 Android embedding cleanup.
+
+## 0.6.4+2
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.6.4+1
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.6.4
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.6.3+8
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.6.3+7
+
+* Updated gradle version of example.
+
+## 0.6.3+6
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.6.3+5
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.6.3+4
+
+* Fix pedantic lints. This shouldn't affect existing functionality.
+
+## 0.6.3+3
+
+* README update.
+
+## 0.6.3+2
+
+* Remove AndroidX warnings.
+
+## 0.6.3+1
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.6.3
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+## 0.6.2+4
+
+* Define clang module for iOS.
+
+## 0.6.2+3
+
+* Fix iOS crash when setting subject to null.
+
+## 0.6.2+2
+
+* Update and migrate iOS example project.
+
 ## 0.6.2+1
 
 * Specify explicit type for `invokeMethod`.

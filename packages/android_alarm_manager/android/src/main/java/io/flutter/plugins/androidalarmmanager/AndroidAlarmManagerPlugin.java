@@ -5,14 +5,15 @@
 package io.flutter.plugins.androidalarmmanager;
 
 import android.content.Context;
+import android.util.Log;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.JSONMethodCodec;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.plugin.common.PluginRegistry.ViewDestroyListener;
-import io.flutter.view.FlutterNativeView;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -26,8 +27,8 @@ import org.json.JSONException;
  *   <li>The Dart side of this plugin sends the Android side a "AlarmService.start" message, along
  *       with a Dart callback handle for a Dart callback that should be immediately invoked by a
  *       background Dart isolate.
- *   <li>The Android side of this plugin spins up a background {@link FlutterNativeView}, which
- *       includes a background Dart isolate.
+ *   <li>The Android side of this plugin spins up a background {@link FlutterEngine}, which includes
+ *       a background Dart isolate.
  *   <li>The Android side of this plugin instructs the new background Dart isolate to execute the
  *       callback that was received in the "AlarmService.start" message.
  *   <li>The Dart side of this plugin, running within the new background isolate, executes the
@@ -38,62 +39,67 @@ import org.json.JSONException;
  *       Dart is ready to execute tasks.
  * </ol>
  */
-public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroyListener {
+public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandler {
+  private static AndroidAlarmManagerPlugin instance;
+  private final String TAG = "AndroidAlarmManagerPlugin";
+  private Context context;
+  private Object initializationLock = new Object();
+  private MethodChannel alarmManagerPluginChannel;
+
   /**
    * Registers this plugin with an associated Flutter execution context, represented by the given
-   * {@link Registrar}.
+   * {@link io.flutter.plugin.common.PluginRegistry.Registrar}.
    *
    * <p>Once this method is executed, an instance of {@code AndroidAlarmManagerPlugin} will be
    * connected to, and running against, the associated Flutter execution context.
    */
-  public static void registerWith(Registrar registrar) {
-    // alarmManagerPluginChannel is the channel responsible for receiving the following messages
-    // from the main Flutter app:
-    // - "AlarmService.start"
-    // - "Alarm.oneShotAt"
-    // - "Alarm.periodic"
-    // - "Alarm.cancel"
-    final MethodChannel alarmManagerPluginChannel =
-        new MethodChannel(
-            registrar.messenger(),
-            "plugins.flutter.io/android_alarm_manager",
-            JSONMethodCodec.INSTANCE);
-
-    // backgroundCallbackChannel is the channel responsible for receiving the following messages
-    // from the background isolate that was setup by this plugin:
-    // - "AlarmService.initialized"
-    //
-    // This channel is also responsible for sending requests from Android to Dart to execute Dart
-    // callbacks in the background isolate. Those messages are sent with an empty method name because
-    // they are the only messages that this channel sends to Dart.
-    final MethodChannel backgroundCallbackChannel =
-        new MethodChannel(
-            registrar.messenger(),
-            "plugins.flutter.io/android_alarm_manager_background",
-            JSONMethodCodec.INSTANCE);
-
-    // Instantiate a new AndroidAlarmManagerPlugin, connect the primary and background
-    // method channels for Android/Flutter communication, and listen for FlutterView
-    // destruction so that this plugin can move itself to background mode.
-    AndroidAlarmManagerPlugin plugin = new AndroidAlarmManagerPlugin(registrar.context());
-    alarmManagerPluginChannel.setMethodCallHandler(plugin);
-    backgroundCallbackChannel.setMethodCallHandler(plugin);
-    registrar.addViewDestroyListener(plugin);
-
-    // The AlarmService expects to hold a static reference to the plugin's background
-    // method channel.
-    // TODO(mattcarroll): this static reference implies that only one instance of this plugin
-    //                    can exist at a time. Moreover, calling registerWith() a 2nd time would
-    //                    seem to overwrite the previously registered background channel without
-    //                    notice.
-    AlarmService.setBackgroundChannel(backgroundCallbackChannel);
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+    if (instance == null) {
+      instance = new AndroidAlarmManagerPlugin();
+    }
+    instance.onAttachedToEngine(registrar.context(), registrar.messenger());
   }
 
-  private Context mContext;
-
-  private AndroidAlarmManagerPlugin(Context context) {
-    this.mContext = context;
+  @Override
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
   }
+
+  public void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
+    synchronized (initializationLock) {
+      if (alarmManagerPluginChannel != null) {
+        return;
+      }
+
+      Log.i(TAG, "onAttachedToEngine");
+      this.context = applicationContext;
+
+      // alarmManagerPluginChannel is the channel responsible for receiving the following messages
+      // from the main Flutter app:
+      // - "AlarmService.start"
+      // - "Alarm.oneShotAt"
+      // - "Alarm.periodic"
+      // - "Alarm.cancel"
+      alarmManagerPluginChannel =
+          new MethodChannel(
+              messenger, "plugins.flutter.io/android_alarm_manager", JSONMethodCodec.INSTANCE);
+
+      // Instantiate a new AndroidAlarmManagerPlugin and connect the primary method channel for
+      // Android/Flutter communication.
+      alarmManagerPluginChannel.setMethodCallHandler(this);
+    }
+  }
+
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    Log.i(TAG, "onDetachedFromEngine");
+    context = null;
+    alarmManagerPluginChannel.setMethodCallHandler(null);
+    alarmManagerPluginChannel = null;
+  }
+
+  public AndroidAlarmManagerPlugin() {}
 
   /** Invoked when the Flutter side of this plugin sends a message to the Android side. */
   @Override
@@ -101,65 +107,49 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     String method = call.method;
     Object arguments = call.arguments;
     try {
-      if (method.equals("AlarmService.start")) {
-        // This message is sent when the Dart side of this plugin is told to initialize.
-        long callbackHandle = ((JSONArray) arguments).getLong(0);
-        // In response, this (native) side of the plugin needs to spin up a background
-        // Dart isolate by using the given callbackHandle, and then setup a background
-        // method channel to communicate with the new background isolate. Once completed,
-        // this onMethodCall() method will receive messages from both the primary and background
-        // method channels.
-        AlarmService.setCallbackDispatcher(mContext, callbackHandle);
-        AlarmService.startBackgroundIsolate(mContext, callbackHandle);
-        result.success(true);
-      } else if (method.equals("AlarmService.initialized")) {
-        // This message is sent by the background method channel as soon as the background isolate
-        // is running. From this point forward, the Android side of this plugin can send
-        // callback handles through the background method channel, and the Dart side will execute
-        // the Dart methods corresponding to those callback handles.
-        AlarmService.onInitialized();
-        result.success(true);
-      } else if (method.equals("Alarm.periodic")) {
-        // This message indicates that the Flutter app would like to schedule a periodic
-        // task.
-        PeriodicRequest periodicRequest = PeriodicRequest.fromJson((JSONArray) arguments);
-        AlarmService.setPeriodic(mContext, periodicRequest);
-        result.success(true);
-      } else if (method.equals("Alarm.oneShotAt")) {
-        // This message indicates that the Flutter app would like to schedule a one-time
-        // task.
-        OneShotRequest oneShotRequest = OneShotRequest.fromJson((JSONArray) arguments);
-        AlarmService.setOneShot(mContext, oneShotRequest);
-        result.success(true);
-      } else if (method.equals("Alarm.cancel")) {
-        // This message indicates that the Flutter app would like to cancel a previously
-        // scheduled task.
-        int requestCode = ((JSONArray) arguments).getInt(0);
-        AlarmService.cancel(mContext, requestCode);
-        result.success(true);
-      } else {
-        result.notImplemented();
+      switch (method) {
+        case "AlarmService.start":
+          // This message is sent when the Dart side of this plugin is told to initialize.
+          long callbackHandle = ((JSONArray) arguments).getLong(0);
+          // In response, this (native) side of the plugin needs to spin up a background
+          // Dart isolate by using the given callbackHandle, and then setup a background
+          // method channel to communicate with the new background isolate. Once completed,
+          // this onMethodCall() method will receive messages from both the primary and background
+          // method channels.
+          AlarmService.setCallbackDispatcher(context, callbackHandle);
+          AlarmService.startBackgroundIsolate(context, callbackHandle);
+          result.success(true);
+          break;
+        case "Alarm.periodic":
+          // This message indicates that the Flutter app would like to schedule a periodic
+          // task.
+          PeriodicRequest periodicRequest = PeriodicRequest.fromJson((JSONArray) arguments);
+          AlarmService.setPeriodic(context, periodicRequest);
+          result.success(true);
+          break;
+        case "Alarm.oneShotAt":
+          // This message indicates that the Flutter app would like to schedule a one-time
+          // task.
+          OneShotRequest oneShotRequest = OneShotRequest.fromJson((JSONArray) arguments);
+          AlarmService.setOneShot(context, oneShotRequest);
+          result.success(true);
+          break;
+        case "Alarm.cancel":
+          // This message indicates that the Flutter app would like to cancel a previously
+          // scheduled task.
+          int requestCode = ((JSONArray) arguments).getInt(0);
+          AlarmService.cancel(context, requestCode);
+          result.success(true);
+          break;
+        default:
+          result.notImplemented();
+          break;
       }
     } catch (JSONException e) {
       result.error("error", "JSON error: " + e.getMessage(), null);
     } catch (PluginRegistrantException e) {
       result.error("error", "AlarmManager error: " + e.getMessage(), null);
     }
-  }
-
-  /**
-   * Transitions the Flutter execution context that owns this plugin from foreground execution to
-   * background execution.
-   *
-   * <p>Invoked when the {@link FlutterView} connected to the given {@link FlutterNativeView} is
-   * destroyed.
-   *
-   * <p>Returns true if the given {@code nativeView} was successfully stored by this plugin, or
-   * false if a different {@link FlutterNativeView} was already registered with this plugin.
-   */
-  @Override
-  public boolean onViewDestroy(FlutterNativeView nativeView) {
-    return AlarmService.setBackgroundFlutterView(nativeView);
   }
 
   /** A request to schedule a one-shot Dart task. */

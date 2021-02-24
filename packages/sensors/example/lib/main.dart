@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sensors/sensors.dart';
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -39,21 +41,21 @@ class _MyHomePageState extends State<MyHomePage> {
   static const int _snakeColumns = 20;
   static const double _snakeCellSize = 10.0;
 
-  List<double> _accelerometerValues;
-  List<double> _userAccelerometerValues;
-  List<double> _gyroscopeValues;
+  List<double>? _accelerometerValues;
+  List<double>? _userAccelerometerValues;
+  List<double>? _gyroscopeValues;
   List<StreamSubscription<dynamic>> _streamSubscriptions =
       <StreamSubscription<dynamic>>[];
 
   @override
   Widget build(BuildContext context) {
-    final List<String> accelerometer =
-        _accelerometerValues?.map((double v) => v.toStringAsFixed(1))?.toList();
-    final List<String> gyroscope =
-        _gyroscopeValues?.map((double v) => v.toStringAsFixed(1))?.toList();
-    final List<String> userAccelerometer = _userAccelerometerValues
+    final List<String>? accelerometer =
+        _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
+    final List<String>? gyroscope =
+        _gyroscopeValues?.map((double v) => v.toStringAsFixed(1)).toList();
+    final List<String>? userAccelerometer = _userAccelerometerValues
         ?.map((double v) => v.toStringAsFixed(1))
-        ?.toList();
+        .toList();
 
     return Scaffold(
       appBar: AppBar(

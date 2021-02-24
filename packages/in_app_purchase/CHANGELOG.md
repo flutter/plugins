@@ -1,3 +1,219 @@
+## 0.4.0
+
+* Migrate to nullsafety.
+* Deprecate `sandboxTesting`, introduce `simulatesAskToBuyInSandbox`.
+* **Breaking Change:**
+  * Removed `callbackChannel` in `channels.dart`, see https://github.com/flutter/flutter/issues/69225.
+
+## 0.3.5+2
+
+* Migrate deprecated references.
+
+## 0.3.5+1
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.3.5
+
+* [Android] Fixed: added support for the SERVICE_TIMEOUT (-3) response code.
+
+## 0.3.4+18
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.3.4+17
+
+* Update Flutter SDK constraint.
+
+## 0.3.4+16
+
+* Add Dartdocs to all public APIs.
+
+## 0.3.4+15
+
+* Update android compileSdkVersion to 29.
+
+## 0.3.4+14
+
+* Add test target to iOS example app Podfile
+
+## 0.3.4+13
+
+* Android Code Inspection and Clean up.
+
+## 0.3.4+12
+
+* [iOS] Fixed: finishing purchases upon payment dialog cancellation.
+
+## 0.3.4+11
+
+* [iOS] Fixed: crash when sending null for simulatesAskToBuyInSandbox parameter.
+
+## 0.3.4+10
+
+* Fixed typo 'verity' for 'verify'.
+
+## 0.3.4+9
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
+
+## 0.3.4+8
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
+
+## 0.3.4+7
+
+* iOS: Fix typo of the `simulatesAskToBuyInSandbox` key.
+
+## 0.3.4+6
+
+* iOS: Fix the bug that prevent restored subscription transactions from being completed
+
+## 0.3.4+5
+
+* Added necessary README docs for getting started with Android.
+
+## 0.3.4+4
+
+* Update package:e2e -> package:integration_test
+
+## 0.3.4+3
+
+* Fixed typo 'manuelly' for 'manually'.
+
+## 0.3.4+2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.3.4+1
+
+* iOS: Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
+* iOS: Fix the app crashes  if `InAppPurchaseConnection.instance` is called in the `main()`.
+
+## 0.3.4
+
+* Expose SKError code to client apps.
+
+## 0.3.3+2
+
+* Post-v2 Android embedding cleanups.
+
+## 0.3.3+1
+
+* Update documentations for `InAppPurchase.completePurchase` and update README.
+
+## 0.3.3
+
+* Introduce `SKPaymentQueueWrapper.transactions`.
+
+## 0.3.2+2
+
+* Fix CocoaPods podspec lint warnings.
+
+## 0.3.2+1
+
+* iOS: Fix only transactions with SKPaymentTransactionStatePurchased and SKPaymentTransactionStateFailed can be finished.
+* iOS: Only one pending transaction of a given product is allowed.
+
+## 0.3.2
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+
+## 0.3.1+2
+
+* Fix potential casting crash on Android v1 embedding when registering life cycle callbacks.
+* Remove hard-coded legacy xcode build setting.
+
+## 0.3.1+1
+
+* Add `pedantic` to dev_dependency.
+
+## 0.3.1
+
+* Android: Fix a bug where the `BillingClient` is disconnected when app goes to the background.
+* Android: Make sure the `BillingClient` object is disconnected before the activity is destroyed.
+* Android: Fix minor compiler warning.
+* Fix typo in CHANGELOG.
+
+## 0.3.0+3
+
+* Fix pendingCompletePurchase flag status to allow to complete purchases.
+
+## 0.3.0+2
+
+* Update te example app to avoid using deprecated api.
+
+## 0.3.0+1
+
+* Fixing usage example. No functional changes.
+
+## 0.3.0
+
+* Migrate the `Google Play Library` to 2.0.3.
+     * Introduce a new class `BillingResultWrapper` which contains a detailed result of a BillingClient operation.
+          * **[Breaking Change]:**  All the BillingClient methods that previously return a `BillingResponse` now return a `BillingResultWrapper`, including: `launchBillingFlow`, `startConnection` and `consumeAsync`.
+          * **[Breaking Change]:**  The `SkuDetailsResponseWrapper` now contains a `billingResult` field in place of `billingResponse` field.
+          * A `billingResult` field is added to the `PurchasesResultWrapper`.
+     * Other Updates to the "billing_client_wrappers":
+          * Updates to the `PurchaseWrapper`: Add `developerPayload`, `purchaseState` and `isAcknowledged` fields.
+          * Updates to the `SkuDetailsWrapper`: Add `originalPrice` and `originalPriceAmountMicros` fields.
+          * **[Breaking Change]:** The `BillingClient.queryPurchaseHistory` is updated to return a `PurchasesHistoryResult`, which contains a list of `PurchaseHistoryRecordWrapper` instead of `PurchaseWrapper`. A `PurchaseHistoryRecordWrapper` object has the same fields and values as A `PurchaseWrapper` object, except that a `PurchaseHistoryRecordWrapper` object does not contain `isAutoRenewing`, `orderId` and `packageName`.
+          * Add a new `BillingClient.acknowledgePurchase` API. Starting from this version, the developer has to acknowledge any purchase on Android using this API within 3 days of purchase, or the user will be refunded. Note that if a product is "consumed" via `BillingClient.consumeAsync`, it is implicitly acknowledged.
+          * **[Breaking Change]:**  Added `enablePendingPurchases` in `BillingClientWrapper`. The application has to call this method before calling `BillingClientWrapper.startConnection`. See [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases) for more information.
+     * Updates to the "InAppPurchaseConnection":
+          * **[Breaking Change]:** `InAppPurchaseConnection.completePurchase` now returns a `Future<BillingResultWrapper>` instead of `Future<void>`. A new optional parameter `{String developerPayload}` has also been added to the API. On Android, this API does not throw an exception anymore, it instead acknowledge the purchase. If a purchase is not completed within 3 days on Android, the user will be refunded.
+          * **[Breaking Change]:** `InAppPurchaseConnection.consumePurchase` now returns a `Future<BillingResultWrapper>` instead of `Future<BillingResponse>`. A new optional parameter `{String developerPayload}` has also been added to the API.
+          * A new boolean field `pendingCompletePurchase` has been added to the `PurchaseDetails` class. Which can be used as an indicator of whether to call `InAppPurchaseConnection.completePurchase` on the purchase.
+          * **[Breaking Change]:**  Added `enablePendingPurchases` in `InAppPurchaseConnection`. The application has to call this method when initializing the `InAppPurchaseConnection` on Android. See [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases) for more information.
+     * Misc: Some documentation updates reflecting the `BillingClient` migration and some documentation fixes.
+     * Refer to [Google Play Billing Library Release Note](https://developer.android.com/google/play/billing/billing_library_releases_notes#release-2_0) for a detailed information on the update.
+
+## 0.2.2+6
+
+* Correct a comment.
+
+## 0.2.2+5
+
+* Update version of json_annotation to ^3.0.0 and json_serializable to ^3.2.0. Resolve conflicts with other packages e.g. flutter_tools from sdk.
+
+## 0.2.2+4
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.2.2+3
+
+* Fix failing pedantic lints. None of these fixes should have any change in
+  functionality.
+
+## 0.2.2+2
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.2.2+1
+
+* Android: Use android.arch.lifecycle instead of androidx.lifecycle:lifecycle in `build.gradle` to support apps that has not been migrated to AndroidX.
+
+## 0.2.2
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+## 0.2.1+5
+
+* Define clang module for iOS.
+* Fix iOS build warning.
+
 ## 0.2.1+4
 
 * Update and migrate iOS example project.

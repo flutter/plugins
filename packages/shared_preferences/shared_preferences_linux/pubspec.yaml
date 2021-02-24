@@ -1,0 +1,29 @@
+name: shared_preferences_linux
+description: Linux implementation of the shared_preferences plugin
+version: 2.0.0
+homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences_linux
+
+flutter:
+  plugin:
+    platforms:
+      linux:
+        dartPluginClass: SharedPreferencesLinux
+        pluginClass: none
+
+environment:
+  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  file: ^6.0.0
+  meta: ^1.3.0
+  path: ^1.8.0
+  path_provider_linux: ^2.0.0
+  shared_preferences_platform_interface: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  pedantic: ^1.10.0

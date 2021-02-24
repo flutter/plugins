@@ -1,18 +1,6 @@
-def PLUGIN = "android_intent";
-def ANDROIDX_WARNING = "flutterPluginsAndroidXWarning";
-gradle.buildFinished { buildResult ->
-    if (buildResult.failure && !rootProject.ext.has(ANDROIDX_WARNING)) {
-        println '         *********************************************************'
-        println 'WARNING: This version of ' + PLUGIN + ' will break your Android build if it or its dependencies aren\'t compatible with AndroidX.'
-        println '         See https://goo.gl/CP92wY for more information on the problem and how to fix it.'
-        println '         This warning prints for all Android build failures. The real root cause of the error may be unrelated.'
-        println '         *********************************************************'
-        rootProject.ext.set(ANDROIDX_WARNING, true);
-    }
-}
-
 group 'io.flutter.plugins.androidintent'
 version '1.0-SNAPSHOT'
+def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
 
 buildscript {
     repositories {
@@ -32,10 +20,14 @@ rootProject.allprojects {
     }
 }
 
+project.getTasks().withType(JavaCompile){
+    options.compilerArgs.addAll(args)
+}
+
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 16
@@ -44,4 +36,15 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+}
+
+dependencies {
+    compileOnly 'androidx.annotation:annotation:1.0.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+    testImplementation 'androidx.test:core:1.0.0'
+    testImplementation 'org.robolectric:robolectric:4.3'
 }

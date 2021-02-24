@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -55,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _infoTile(String title, String subtitle) {
     return ListTile(
       title: Text(title),
-      subtitle: Text(subtitle ?? 'Not set'),
+      subtitle: Text(subtitle.isNotEmpty ? subtitle : 'Not set'),
     );
   }
 

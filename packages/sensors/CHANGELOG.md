@@ -1,3 +1,102 @@
+## 2.0.0
+
+* Migrate to null safety.
+
+## 0.4.2+8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.4.2+7
+
+* Update Flutter SDK constraint.
+
+## 0.4.2+6
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.2+5
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.4.2+4
+
+* Update package:e2e -> package:integration_test
+
+## 0.4.2+3
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.2+2
+
+* Post-v2 Android embedding cleanup.
+
+## 0.4.2+1
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.4.2
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.4.1+10
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.4.1+9
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.4.1+8
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.4.1+7
+
+* Fixed example userAccelerometerEvent in documentation
+
+## 0.4.1+6
+
+* Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater (current stable).
+
+## 0.4.1+5
+
+* Fix example `setState()` called after `dispose()` by canceling the timer.
+
+## 0.4.1+4
+
+* Remove the deprecated `author:` field from pubspec.yaml
+* Migrate the plugin to the pubspec platforms manifest.
+* Require Flutter SDK 1.10.0 or greater.
+
+## 0.4.1+3
+
+* Improve documentation and add unit test coverage.
+
+## 0.4.1+2
+
+* Remove AndroidX warnings.
+
+## 0.4.1+1
+
+* Include lifecycle dependency as a compileOnly one on Android to resolve
+  potential version conflicts with other transitive libraries.
+
+## 0.4.1
+
+* Support the v2 Android embedder.
+* Update to AndroidX.
+* Migrate to using the new e2e test binding.
+* Add a e2e test.
+
+## 0.4.0+3
+
+* Update and migrate iOS example project.
+* Define clang module for iOS.
+
 ## 0.4.0+2
 
 * Suppress deprecation warning for BinaryMessages. See: https://github.com/flutter/flutter/issues/33446

@@ -17,9 +17,13 @@ typedef void QuickActionHandler(String type);
 
 /// Home screen quick-action shortcut item.
 class ShortcutItem {
+  /// Constructs an instance with the given [type], [localizedTitle], and
+  /// [icon].
+  ///
+  /// Only [icon] should be nullable. It will remain `null` if unset.
   const ShortcutItem({
-    @required this.type,
-    @required this.localizedTitle,
+    required this.type,
+    required this.localizedTitle,
     this.icon,
   });
 
@@ -31,19 +35,26 @@ class ShortcutItem {
 
   /// Name of native resource (xcassets etc; NOT a Flutter asset) to be
   /// displayed as the icon for this item.
-  final String icon;
+  final String? icon;
 }
 
 /// Quick actions plugin.
 class QuickActions {
+  /// Gets an instance of the plugin with the default methodChannel.
+  ///
+  /// [initialize] should be called before using any other methods.
   factory QuickActions() => _instance;
 
+  /// This is a test-only constructor. Do not call this, it can break at any
+  /// time.
   @visibleForTesting
   QuickActions.withMethodChannel(this.channel);
 
   static final QuickActions _instance =
       QuickActions.withMethodChannel(_kChannel);
 
+  /// This is a test-only accessor. Do not call this, it can break at any time.
+  @visibleForTesting
   final MethodChannel channel;
 
   /// Initializes this plugin.
@@ -54,11 +65,8 @@ class QuickActions {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
-    runLaunchAction(handler);
-  }
-
-  void runLaunchAction(QuickActionHandler handler) async {
-    final String action = await channel.invokeMethod<String>('getLaunchAction');
+    final String? action =
+        await channel.invokeMethod<String?>('getLaunchAction');
     if (action != null) {
       handler(action);
     }
@@ -66,7 +74,7 @@ class QuickActions {
 
   /// Sets the [ShortcutItem]s to become the app's quick actions.
   Future<void> setShortcutItems(List<ShortcutItem> items) async {
-    final List<Map<String, String>> itemsList =
+    final List<Map<String, String?>> itemsList =
         items.map(_serializeItem).toList();
     await channel.invokeMethod<void>('setShortcutItems', itemsList);
   }
@@ -75,8 +83,8 @@ class QuickActions {
   Future<void> clearShortcutItems() =>
       channel.invokeMethod<void>('clearShortcutItems');
 
-  Map<String, String> _serializeItem(ShortcutItem item) {
-    return <String, String>{
+  Map<String, String?> _serializeItem(ShortcutItem item) {
+    return <String, String?>{
       'type': item.type,
       'localizedTitle': item.localizedTitle,
       'icon': item.icon,

@@ -22,6 +22,7 @@ final SKPaymentTransactionWrapper dummyOriginalTransaction =
   transactionIdentifier: '123123',
   error: dummyError,
 );
+
 final SKPaymentTransactionWrapper dummyTransaction =
     SKPaymentTransactionWrapper(
   transactionState: SKPaymentTransactionStateWrapper.purchased,
@@ -73,8 +74,11 @@ Map<String, dynamic> buildLocaleMap(SKPriceLocaleWrapper local) {
   };
 }
 
-Map<String, dynamic> buildSubscriptionPeriodMap(
-    SKProductSubscriptionPeriodWrapper sub) {
+Map<String, dynamic>? buildSubscriptionPeriodMap(
+    SKProductSubscriptionPeriodWrapper? sub) {
+  if (sub == null) {
+    return null;
+  }
   return {
     'numberOfUnits': sub.numberOfUnits,
     'unit': SKSubscriptionPeriodUnit.values.indexOf(sub.unit),
@@ -103,7 +107,7 @@ Map<String, dynamic> buildProductMap(SKProductWrapper product) {
     'price': product.price,
     'subscriptionPeriod':
         buildSubscriptionPeriodMap(product.subscriptionPeriod),
-    'introductoryPrice': buildDiscountMap(product.introductoryPrice),
+    'introductoryPrice': buildDiscountMap(product.introductoryPrice!),
   };
 }
 
@@ -128,17 +132,16 @@ Map<String, dynamic> buildErrorMap(SKError error) {
 
 Map<String, dynamic> buildTransactionMap(
     SKPaymentTransactionWrapper transaction) {
-  if (transaction == null) {
-    return null;
-  }
-  Map map = <String, dynamic>{
+  Map<String, dynamic> map = <String, dynamic>{
     'transactionState': SKPaymentTransactionStateWrapper.values
         .indexOf(SKPaymentTransactionStateWrapper.purchased),
     'payment': transaction.payment.toMap(),
-    'originalTransaction': buildTransactionMap(transaction.originalTransaction),
+    'originalTransaction': transaction.originalTransaction == null
+        ? null
+        : buildTransactionMap(transaction.originalTransaction!),
     'transactionTimeStamp': transaction.transactionTimeStamp,
     'transactionIdentifier': transaction.transactionIdentifier,
-    'error': buildErrorMap(transaction.error),
+    'error': buildErrorMap(transaction.error!),
   };
   return map;
 }

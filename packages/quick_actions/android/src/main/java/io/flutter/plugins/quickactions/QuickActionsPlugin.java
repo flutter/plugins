@@ -4,130 +4,71 @@
 
 package io.flutter.plugins.quickactions;
 
-import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.content.res.Resources;
-import android.graphics.drawable.Icon;
-import android.os.Build;
-import io.flutter.plugin.common.MethodCall;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /** QuickActionsPlugin */
-public class QuickActionsPlugin implements MethodCallHandler {
+public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
   private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions";
-  private static final String EXTRA_ACTION = "some unique action key";
 
-  private final Registrar registrar;
-
-  private QuickActionsPlugin(Registrar registrar) {
-    this.registrar = registrar;
-  }
+  private MethodChannel channel;
+  private MethodCallHandlerImpl handler;
 
   /**
    * Plugin registration.
    *
    * <p>Must be called when the application is created.
    */
-  public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_ID);
-    channel.setMethodCallHandler(new QuickActionsPlugin(registrar));
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+    final QuickActionsPlugin plugin = new QuickActionsPlugin();
+    plugin.setupChannel(registrar.messenger(), registrar.context(), registrar.activity());
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
-      // We already know that this functionality does not work for anything
-      // lower than API 25 so we chose not to return error. Instead we do nothing.
-      result.success(null);
-      return;
-    }
-    Context context = registrar.context();
-    ShortcutManager shortcutManager =
-        (ShortcutManager) context.getSystemService(Context.SHORTCUT_SERVICE);
-    switch (call.method) {
-      case "setShortcutItems":
-        List<Map<String, String>> serializedShortcuts = call.arguments();
-        List<ShortcutInfo> shortcuts = deserializeShortcuts(serializedShortcuts);
-        shortcutManager.setDynamicShortcuts(shortcuts);
-        break;
-      case "clearShortcutItems":
-        shortcutManager.removeAllDynamicShortcuts();
-        break;
-      case "getLaunchAction":
-        final Intent intent = registrar.activity().getIntent();
-        final String launchAction = intent.getStringExtra(EXTRA_ACTION);
-        if (launchAction != null && !launchAction.isEmpty()) {
-          shortcutManager.reportShortcutUsed(launchAction);
-          intent.removeExtra(EXTRA_ACTION);
-        }
-        result.success(launchAction);
-        return;
-      default:
-        result.notImplemented();
-        return;
-    }
-    result.success(null);
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    setupChannel(binding.getBinaryMessenger(), binding.getApplicationContext(), null);
   }
 
-  @TargetApi(Build.VERSION_CODES.N_MR1)
-  private List<ShortcutInfo> deserializeShortcuts(List<Map<String, String>> shortcuts) {
-    final List<ShortcutInfo> shortcutInfos = new ArrayList<>();
-    final Context context = registrar.context();
-
-    for (Map<String, String> shortcut : shortcuts) {
-      final String icon = shortcut.get("icon");
-      final String type = shortcut.get("type");
-      final String title = shortcut.get("localizedTitle");
-      final ShortcutInfo.Builder shortcutBuilder = new ShortcutInfo.Builder(context, type);
-
-      final int resourceId = loadResourceId(context, icon);
-      final Intent intent = getIntentToOpenMainActivity(type);
-
-      if (resourceId > 0) {
-        shortcutBuilder.setIcon(Icon.createWithResource(context, resourceId));
-      }
-
-      final ShortcutInfo shortcutInfo =
-          shortcutBuilder.setLongLabel(title).setShortLabel(title).setIntent(intent).build();
-      shortcutInfos.add(shortcutInfo);
-    }
-    return shortcutInfos;
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    teardownChannel();
   }
 
-  private int loadResourceId(Context context, String icon) {
-    if (icon == null) {
-      return 0;
-    }
-    final String packageName = context.getPackageName();
-    final Resources res = context.getResources();
-    final int resourceId = res.getIdentifier(icon, "drawable", packageName);
-
-    if (resourceId == 0) {
-      return res.getIdentifier(icon, "mipmap", packageName);
-    } else {
-      return resourceId;
-    }
+  @Override
+  public void onAttachedToActivity(ActivityPluginBinding binding) {
+    handler.setActivity(binding.getActivity());
   }
 
-  private Intent getIntentToOpenMainActivity(String type) {
-    final Context context = registrar.context();
-    final String packageName = context.getPackageName();
+  @Override
+  public void onDetachedFromActivity() {
+    handler.setActivity(null);
+  }
 
-    return context
-        .getPackageManager()
-        .getLaunchIntentForPackage(packageName)
-        .setAction(Intent.ACTION_RUN)
-        .putExtra(EXTRA_ACTION, type)
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+  @Override
+  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+    onAttachedToActivity(binding);
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    onDetachedFromActivity();
+  }
+
+  private void setupChannel(BinaryMessenger messenger, Context context, Activity activity) {
+    channel = new MethodChannel(messenger, CHANNEL_ID);
+    handler = new MethodCallHandlerImpl(context, activity);
+    channel.setMethodCallHandler(handler);
+  }
+
+  private void teardownChannel() {
+    channel.setMethodCallHandler(null);
+    channel = null;
+    handler = null;
   }
 }

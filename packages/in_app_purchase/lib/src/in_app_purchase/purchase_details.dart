@@ -2,15 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/purchase_wrapper.dart';
+import 'package:in_app_purchase/src/store_kit_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_payment_transaction_wrappers.dart';
 import './in_app_purchase_connection.dart';
 import './product_details.dart';
 
+/// [IAPError.code] code for failed purchases.
 final String kPurchaseErrorCode = 'purchase_error';
+
+/// [IAPError.code] code used when a query for previouys transaction has failed.
 final String kRestoredPurchaseErrorCode = 'restore_transactions_failed';
+
+/// [IAPError.code] code used when a consuming a purchased item fails.
 final String kConsumptionFailedErrorCode = 'consume_purchase_failed';
+
+final String _kPlatformIOS = 'ios';
+final String _kPlatformAndroid = 'android';
 
 /// Represents the data that is used to verify purchases.
 ///
@@ -47,12 +56,16 @@ class PurchaseVerificationData {
   /// Indicates the source of the purchase.
   final IAPSource source;
 
+  /// Creates a [PurchaseVerificationData] object with the provided information.
   PurchaseVerificationData(
-      {@required this.localVerificationData,
-      @required this.serverVerificationData,
-      @required this.source});
+      {required this.localVerificationData,
+      required this.serverVerificationData,
+      required this.source});
 }
 
+/// Status for a [PurchaseDetails].
+///
+/// This is the type for [PurchaseDetails.status].
 enum PurchaseStatus {
   /// The purchase process is pending.
   ///
@@ -72,10 +85,12 @@ enum PurchaseStatus {
 
 /// The parameter object for generating a purchase.
 class PurchaseParam {
+  /// Creates a new purchase parameter object with the given data.
   PurchaseParam(
-      {@required this.productDetails,
+      {required this.productDetails,
       this.applicationUserName,
-      this.sandboxTesting});
+      this.sandboxTesting = false,
+      this.simulatesAskToBuyInSandbox = false});
 
   /// The product to create payment for.
   ///
@@ -88,10 +103,20 @@ class PurchaseParam {
   /// Do not pass in a clear text, your developer ID, the user’s Apple ID, or the
   /// user's Google ID for this field.
   /// For example, you can use a one-way hash of the user’s account name on your server.
-  final String applicationUserName;
+  final String? applicationUserName;
 
-  /// The 'sandboxTesting' is only available on iOS, set it to `true` for testing in AppStore's sandbox environment. The default value is `false`.
+  /// @deprecated Use [simulatesAskToBuyInSandbox] instead.
+  ///
+  /// Only available on iOS, set it to `true` to produce an "ask to buy" flow for this payment in the sandbox.
+  ///
+  /// See also [SKPaymentWrapper.simulatesAskToBuyInSandbox].
+  @deprecated
   final bool sandboxTesting;
+
+  /// Only available on iOS, set it to `true` to produce an "ask to buy" flow for this payment in the sandbox.
+  ///
+  /// See also [SKPaymentWrapper.simulatesAskToBuyInSandbox].
+  final bool simulatesAskToBuyInSandbox;
 }
 
 /// Represents the transaction details of a purchase.
@@ -100,7 +125,9 @@ class PurchaseParam {
 /// This class for simple operations. If you would like to see the detailed representation of the product, instead,  use [PurchaseWrapper] on Android and [SKPaymentTransactionWrapper] on iOS.
 class PurchaseDetails {
   /// A unique identifier of the purchase.
-  final String purchaseID;
+  ///
+  /// The `value` is null on iOS if it is not a successful purchase.
+  final String? purchaseID;
 
   /// The product identifier of the purchase.
   final String productID;
@@ -111,39 +138,72 @@ class PurchaseDetails {
   /// details on how to verify purchase use this data. You should never use any
   /// purchase data until verified.
   ///
-  /// On iOS, this may be null. Call
-  /// [InAppPurchaseConnection.refreshPurchaseVerificationData] to get a new
+  /// On iOS, [InAppPurchaseConnection.refreshPurchaseVerificationData] can be used to get a new
   /// [PurchaseVerificationData] object for further validation.
   final PurchaseVerificationData verificationData;
 
   /// The timestamp of the transaction.
   ///
   /// Milliseconds since epoch.
-  final String transactionDate;
+  ///
+  /// The value is `null` if [status] is not [PurchaseStatus.purchased].
+  final String? transactionDate;
 
   /// The status that this [PurchaseDetails] is currently on.
-  PurchaseStatus status;
+  PurchaseStatus get status => _status;
+  set status(PurchaseStatus status) {
+    if (_platform == _kPlatformIOS) {
+      if (status == PurchaseStatus.purchased ||
+          status == PurchaseStatus.error) {
+        _pendingCompletePurchase = true;
+      }
+    }
+    if (_platform == _kPlatformAndroid) {
+      if (status == PurchaseStatus.purchased) {
+        _pendingCompletePurchase = true;
+      }
+    }
+    _status = status;
+  }
 
-  /// The error is only available when [status] is [PurchaseStatus.error].
-  IAPError error;
+  late PurchaseStatus _status;
+
+  /// The error details when the [status] is [PurchaseStatus.error].
+  ///
+  /// The value is `null` if [status] is not [PurchaseStatus.error].
+  IAPError? error;
 
   /// Points back to the `StoreKits`'s [SKPaymentTransactionWrapper] object that generated this [PurchaseDetails] object.
   ///
-  /// This is null on Android.
-  final SKPaymentTransactionWrapper skPaymentTransaction;
+  /// This is `null` on Android.
+  final SKPaymentTransactionWrapper? skPaymentTransaction;
 
   /// Points back to the `BillingClient`'s [PurchaseWrapper] object that generated this [PurchaseDetails] object.
   ///
-  /// This is null on Android.
-  final PurchaseWrapper billingClientPurchase;
+  /// This is `null` on iOS.
+  final PurchaseWrapper? billingClientPurchase;
 
+  /// The developer has to call [InAppPurchaseConnection.completePurchase] if the value is `true`
+  /// and the product has been delivered to the user.
+  ///
+  /// The initial value is `false`.
+  /// * See also [InAppPurchaseConnection.completePurchase] for more details on completing purchases.
+  bool get pendingCompletePurchase => _pendingCompletePurchase;
+  bool _pendingCompletePurchase = false;
+
+  // The platform that the object is created on.
+  //
+  // The value is either '_kPlatformIOS' or '_kPlatformAndroid'.
+  String? _platform;
+
+  /// Creates a new PurchaseDetails object with the provided data.
   PurchaseDetails({
-    @required this.purchaseID,
-    @required this.productID,
-    @required this.verificationData,
-    @required this.transactionDate,
-    this.skPaymentTransaction = null,
-    this.billingClientPurchase = null,
+    this.purchaseID,
+    required this.productID,
+    required this.verificationData,
+    required this.transactionDate,
+    this.skPaymentTransaction,
+    this.billingClientPurchase,
   });
 
   /// Generate a [PurchaseDetails] object based on an iOS [SKTransactionWrapper] object.
@@ -156,10 +216,22 @@ class PurchaseDetails {
             serverVerificationData: base64EncodedReceipt,
             source: IAPSource.AppStore),
         this.transactionDate = transaction.transactionTimeStamp != null
-            ? (transaction.transactionTimeStamp * 1000).toInt().toString()
+            ? (transaction.transactionTimeStamp! * 1000).toInt().toString()
             : null,
         this.skPaymentTransaction = transaction,
-        this.billingClientPurchase = null;
+        this.billingClientPurchase = null,
+        _platform = _kPlatformIOS {
+    status = SKTransactionStatusConverter()
+        .toPurchaseStatus(transaction.transactionState);
+    if (status == PurchaseStatus.error) {
+      error = IAPError(
+        source: IAPSource.AppStore,
+        code: kPurchaseErrorCode,
+        message: transaction.error?.domain ?? '',
+        details: transaction.error?.userInfo,
+      );
+    }
+  }
 
   /// Generate a [PurchaseDetails] object based on an Android [Purchase] object.
   PurchaseDetails.fromPurchase(PurchaseWrapper purchase)
@@ -171,14 +243,25 @@ class PurchaseDetails {
             source: IAPSource.GooglePlay),
         this.transactionDate = purchase.purchaseTime.toString(),
         this.skPaymentTransaction = null,
-        this.billingClientPurchase = purchase;
+        this.billingClientPurchase = purchase,
+        _platform = _kPlatformAndroid {
+    status = PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState);
+    if (status == PurchaseStatus.error) {
+      error = IAPError(
+        source: IAPSource.GooglePlay,
+        code: kPurchaseErrorCode,
+        message: '',
+      );
+    }
+  }
 }
 
 /// The response object for fetching the past purchases.
 ///
 /// An instance of this class is returned in [InAppPurchaseConnection.queryPastPurchases].
 class QueryPurchaseDetailsResponse {
-  QueryPurchaseDetailsResponse({@required this.pastPurchases, this.error});
+  /// Creates a new [QueryPurchaseDetailsResponse] object with the provider information.
+  QueryPurchaseDetailsResponse({required this.pastPurchases, this.error});
 
   /// A list of successfully fetched past purchases.
   ///
@@ -189,6 +272,6 @@ class QueryPurchaseDetailsResponse {
 
   /// The error when fetching past purchases.
   ///
-  /// If the fetch is successful, the value is null.
-  final IAPError error;
+  /// If the fetch is successful, the value is `null`.
+  final IAPError? error;
 }

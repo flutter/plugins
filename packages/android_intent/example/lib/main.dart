@@ -11,6 +11,7 @@ void main() {
   runApp(MyApp());
 }
 
+/// A sample app for launching intents.
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// Holds the different intent widgets.
 class MyHomePage extends StatelessWidget {
   void _createAlarm() {
     final AndroidIntent intent = const AndroidIntent(
@@ -57,12 +59,12 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            RaisedButton(
+            ElevatedButton(
               child: const Text(
                   'Tap here to set an alarm\non weekdays at 9:30pm.'),
               onPressed: _createAlarm,
             ),
-            RaisedButton(
+            ElevatedButton(
                 child: const Text('Tap here to test explicit intents.'),
                 onPressed: () => _openExplicitIntentsView(context)),
           ],
@@ -80,9 +82,11 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+/// Launches intents to specific Android activities.
 class ExplicitIntentsWidget extends StatelessWidget {
-  const ExplicitIntentsWidget();
+  const ExplicitIntentsWidget(); // ignore: public_member_api_docs
 
+  // ignore: public_member_api_docs
   static const String routeName = "/explicitIntents";
 
   void _openGoogleMapsStreetView() {
@@ -162,40 +166,40 @@ class ExplicitIntentsWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              RaisedButton(
+              ElevatedButton(
                 child: const Text(
                     'Tap here to display panorama\nimagery in Google Street View.'),
                 onPressed: _openGoogleMapsStreetView,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text('Tap here to display\na map in Google Maps.'),
                 onPressed: _displayMapInGoogleMaps,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text(
                     'Tap here to launch turn-by-turn\nnavigation in Google Maps.'),
                 onPressed: _launchTurnByTurnNavigationInGoogleMaps,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text('Tap here to open link in Google Chrome.'),
                 onPressed: _openLinkInGoogleChrome,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text('Tap here to start activity in new task.'),
                 onPressed: _startActivityInNewTask,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text(
                     'Tap here to test explicit intent fallback to implicit.'),
                 onPressed: _testExplicitIntentFallback,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text(
                   'Tap here to open Location Settings Configuration',
                 ),
                 onPressed: _openLocationSettingsConfiguration,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text(
                   'Tap here to open Application Details',
                 ),

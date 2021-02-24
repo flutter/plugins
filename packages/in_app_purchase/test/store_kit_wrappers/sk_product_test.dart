@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
+import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
 import 'package:in_app_purchase/src/in_app_purchase/in_app_purchase_connection.dart';
 import 'package:in_app_purchase/src/in_app_purchase/product_details.dart';
-import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
 
 void main() {
@@ -17,17 +17,17 @@ void main() {
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
           SKProductSubscriptionPeriodWrapper.fromJson(
-              buildSubscriptionPeriodMap(dummySubscription));
+              buildSubscriptionPeriodMap(dummySubscription)!);
       expect(wrapper, equals(dummySubscription));
     });
 
     test(
-        'SKProductSubscriptionPeriodWrapper should have properties to be null if map is empty',
+        'SKProductSubscriptionPeriodWrapper should have properties to be default values if map is empty',
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
           SKProductSubscriptionPeriodWrapper.fromJson(<String, dynamic>{});
-      expect(wrapper.numberOfUnits, null);
-      expect(wrapper.unit, null);
+      expect(wrapper.numberOfUnits, 0);
+      expect(wrapper.unit, SKSubscriptionPeriodUnit.day);
     });
 
     test(
@@ -39,15 +39,19 @@ void main() {
     });
 
     test(
-        'SKProductDiscountWrapper should have properties to be null if map is empty',
+        'SKProductDiscountWrapper should have properties to be default if map is empty',
         () {
       final SKProductDiscountWrapper wrapper =
           SKProductDiscountWrapper.fromJson(<String, dynamic>{});
-      expect(wrapper.price, null);
-      expect(wrapper.priceLocale, null);
-      expect(wrapper.numberOfPeriods, null);
-      expect(wrapper.paymentMode, null);
-      expect(wrapper.subscriptionPeriod, null);
+      expect(wrapper.price, '');
+      expect(wrapper.priceLocale,
+          SKPriceLocaleWrapper(currencyCode: '', currencySymbol: ''));
+      expect(wrapper.numberOfPeriods, 0);
+      expect(wrapper.paymentMode, SKProductDiscountPaymentMode.payAsYouGo);
+      expect(
+          wrapper.subscriptionPeriod,
+          SKProductSubscriptionPeriodWrapper(
+              numberOfUnits: 0, unit: SKSubscriptionPeriodUnit.day));
     });
 
     test('SKProductWrapper should have property values consistent with map',
@@ -57,16 +61,18 @@ void main() {
       expect(wrapper, equals(dummyProductWrapper));
     });
 
-    test('SKProductWrapper should have properties to be null if map is empty',
+    test(
+        'SKProductWrapper should have properties to be default if map is empty',
         () {
       final SKProductWrapper wrapper =
           SKProductWrapper.fromJson(<String, dynamic>{});
-      expect(wrapper.productIdentifier, null);
-      expect(wrapper.localizedTitle, null);
-      expect(wrapper.localizedDescription, null);
-      expect(wrapper.priceLocale, null);
+      expect(wrapper.productIdentifier, '');
+      expect(wrapper.localizedTitle, '');
+      expect(wrapper.localizedDescription, '');
+      expect(wrapper.priceLocale,
+          SKPriceLocaleWrapper(currencyCode: '', currencySymbol: ''));
       expect(wrapper.subscriptionGroupIdentifier, null);
-      expect(wrapper.price, null);
+      expect(wrapper.price, '');
       expect(wrapper.subscriptionPeriod, null);
     });
 
@@ -132,14 +138,39 @@ void main() {
           PurchaseDetails.fromSKTransaction(dummyTransaction, 'receipt data');
       expect(dummyTransaction.transactionIdentifier, details.purchaseID);
       expect(dummyTransaction.payment.productIdentifier, details.productID);
-      expect((dummyTransaction.transactionTimeStamp * 1000).toInt().toString(),
+      expect(dummyTransaction.transactionTimeStamp, isNotNull);
+      expect((dummyTransaction.transactionTimeStamp! * 1000).toInt().toString(),
           details.transactionDate);
       expect(details.verificationData.localVerificationData, 'receipt data');
       expect(details.verificationData.serverVerificationData, 'receipt data');
       expect(details.verificationData.source, IAPSource.AppStore);
       expect(details.skPaymentTransaction, dummyTransaction);
       expect(details.billingClientPurchase, null);
+      expect(details.pendingCompletePurchase, true);
     });
+
+    test('SKPaymentTransactionWrapper.toFinishMap set correct value', () {
+      final SKPaymentTransactionWrapper transactionWrapper =
+          SKPaymentTransactionWrapper(
+              payment: dummyPayment,
+              transactionState: SKPaymentTransactionStateWrapper.failed,
+              transactionIdentifier: 'abcd');
+      final Map<String, String?> finishMap = transactionWrapper.toFinishMap();
+      expect(finishMap['transactionIdentifier'], 'abcd');
+      expect(finishMap['productIdentifier'], dummyPayment.productIdentifier);
+    });
+
+    test(
+        'SKPaymentTransactionWrapper.toFinishMap should set transactionIdentifier to null when necessary',
+        () {
+      final SKPaymentTransactionWrapper transactionWrapper =
+          SKPaymentTransactionWrapper(
+              payment: dummyPayment,
+              transactionState: SKPaymentTransactionStateWrapper.failed);
+      final Map<String, String?> finishMap = transactionWrapper.toFinishMap();
+      expect(finishMap['transactionIdentifier'], null);
+    });
+
     test('Should generate correct map of the payment object', () {
       Map map = dummyPayment.toMap();
       expect(map['productIdentifier'], dummyPayment.productIdentifier);
