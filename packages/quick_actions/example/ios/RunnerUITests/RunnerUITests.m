@@ -23,41 +23,41 @@ static const int kElementWaitingTime = 30;
   [app launch];
   os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
   XCUIElement *actionsReady = app.otherElements[@"actions ready"];
-  if (![actionsReady waitForExistenceWithTimeout:1]) {
+  if (![actionsReady waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find the actionsReady in the app with %@ seconds",
             @(kElementWaitingTime));
   }
   os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
-//
-//  [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
-//
-//  XCUIApplication *springboard =
-//      [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
-//  XCUIElement *quickActionsAppIcon = springboard.icons[@"quick_actions_example"];
-//  if (![quickActionsAppIcon waitForExistenceWithTimeout:kElementWaitingTime]) {
-//    os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
-//    XCTFail(@"Failed due to not able to find the example app from springboard with %@ seconds",
-//            @(kElementWaitingTime));
-//  }
-//
-//  [quickActionsAppIcon pressForDuration:2];
-//  XCUIElement *actionOne = springboard.buttons[@"Action one"];
-//  if (![actionOne waitForExistenceWithTimeout:kElementWaitingTime]) {
-//    os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
-//    XCTFail(@"Failed due to not able to find the actionOne button from springboard with %@ seconds",
-//            @(kElementWaitingTime));
-//  }
-//
-//  [actionOne tap];
-//
-//  XCUIElement *actionOneConfirmation = app.otherElements[@"action_one"];
-//  if (![actionOneConfirmation waitForExistenceWithTimeout:kElementWaitingTime]) {
-//    os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
-//    XCTFail(@"Failed due to not able to find the actionOneConfirmation in the app with %@ seconds",
-//            @(kElementWaitingTime));
-//  }
-//  XCTAssertTrue(actionOneConfirmation.exists);
+
+  [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
+
+  XCUIApplication *springboard =
+      [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
+  XCUIElement *quickActionsAppIcon = springboard.icons[@"quick_actions_example"];
+  if (![quickActionsAppIcon waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
+    XCTFail(@"Failed due to not able to find the example app from springboard with %@ seconds",
+            @(kElementWaitingTime));
+  }
+
+  [quickActionsAppIcon pressForDuration:2];
+  XCUIElement *actionOne = springboard.buttons[@"Action one"];
+  if (![actionOne waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
+    XCTFail(@"Failed due to not able to find the actionOne button from springboard with %@ seconds",
+            @(kElementWaitingTime));
+  }
+
+  [actionOne tap];
+
+  XCUIElement *actionOneConfirmation = app.otherElements[@"action_one"];
+  if (![actionOneConfirmation waitForExistenceWithTimeout:kElementWaitingTime]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
+    XCTFail(@"Failed due to not able to find the actionOneConfirmation in the app with %@ seconds",
+            @(kElementWaitingTime));
+  }
+  XCTAssertTrue(actionOneConfirmation.exists);
 }
 
 @end
