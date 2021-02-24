@@ -391,13 +391,17 @@ abstract class GoogleUser {
   /// Returns true if the user granted the specified scopes.
   external bool hasGrantedScopes(String scopes);
 
-  /// Signs in the user. Use this method to request additional scopes for incremental
-  /// authorization or to sign in a user after the user has signed out.
-  /// When you use GoogleUser.signIn(), the sign-in flow skips the account chooser step.
-  /// See GoogleAuth.signIn().
-  // Function removed, but still in .d.ts
-  // external dynamic signIn(
-  //     [dynamic /*SigninOptions|SigninOptionsBuilder*/ options]);
+  // Has the API for grant and grantOfflineAccess changed?
+  /// Request additional scopes to the user.
+  ///
+  /// See GoogleAuth.signIn() for the list of parameters and the error code.
+  external dynamic grant(
+      [dynamic /*SigninOptions|SigninOptionsBuilder*/ options]);
+
+  /// Get permission from the user to access the specified scopes offline.
+  /// When you use GoogleUser.grantOfflineAccess(), the sign-in flow skips the account chooser step.
+  /// See GoogleUser.grantOfflineAccess().
+  external void grantOfflineAccess(String scopes);
 
   /// Revokes all of the scopes that the user granted.
   external void disconnect();
@@ -408,34 +412,12 @@ abstract class GoogleUser {
 abstract class _GoogleUser {
   /// Forces a refresh of the access token, and then returns a Promise for the new AuthResponse.
   external Promise<AuthResponse> reloadAuthResponse();
-
-  /// Request additional scopes to the user.
-  ///
-  /// See GoogleAuth.signIn() for the list of parameters and the error code.
-  external Promise<void> grant(
-      [dynamic? /*SigninOptions|SigninOptionsBuilder*/ options]);
-
-  /// Get permission from the user to access the specified scopes offline.
-  /// When you use GoogleUser.grantOfflineAccess(), the sign-in flow skips the account chooser step.
-  /// See GoogleUser.grantOfflineAccess().
-  external Promise<OfflineAccessResponse> grantOfflineAccess(String? scopes);
-
-
 }
 
 extension GoogleUserExtensions on GoogleUser {
   Future<AuthResponse> reloadAuthResponse() {
     final _GoogleUser tt = this as _GoogleUser;
     return promiseToFuture(tt.reloadAuthResponse());
-  }
-  Future<Object?> grant(
-      [dynamic? /*SigninOptions|SigninOptionsBuilder*/ options]) {
-    final _GoogleUser tt = this as _GoogleUser;
-    return promiseToFuture(tt.grant(options));
-  }
-  Future<OfflineAccessResponse> grantOfflineAccess(String? scopes) {
-    final _GoogleUser tt = this as _GoogleUser;
-    return promiseToFuture(tt.grantOfflineAccess(scopes));
   }
 }
 
