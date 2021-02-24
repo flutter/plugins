@@ -1,3 +1,7 @@
+## 6.0.1
+
+* Update result to `True` on iOS when the url was loaded successfully.
+
 ## 6.0.0
 
 * Migrate to null safety.
