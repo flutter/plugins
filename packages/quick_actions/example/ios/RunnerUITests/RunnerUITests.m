@@ -21,8 +21,16 @@ static const int kElementWaitingTime = 30;
   XCUIApplication *app = [[XCUIApplication alloc] init];
   [app launch];
 
+  XCUIElement *appTitle = app.otherElements[@"quick_actions_example"];
+  if (![appTitle waitForExistenceWithTimeout:0.01]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
+    XCTFail(@"Failed due to not able to find the appTitle in the app with %@ seconds",
+            @(kElementWaitingTime));
+  }
+  os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
+
   XCUIElement *actionsReady = app.otherElements[@"actions ready"];
-  if (![actionsReady waitForExistenceWithTimeout:kElementWaitingTime]) {
+  if (![actionsReady waitForExistenceWithTimeout:0.01]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find the actionsReady in the app with %@ seconds",
             @(kElementWaitingTime));
