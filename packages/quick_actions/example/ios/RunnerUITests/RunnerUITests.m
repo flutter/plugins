@@ -23,7 +23,7 @@ static const int kElementWaitingTime = 30;
   [app launch];
   os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
   XCUIElement *actionsReady = app.otherElements[@"actions ready"];
-  if (![actionsReady waitForExistenceWithTimeout:0.01]) {
+  if (![actionsReady waitForExistenceWithTimeout:1]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find the actionsReady in the app with %@ seconds",
             @(kElementWaitingTime));
