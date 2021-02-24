@@ -21,14 +21,12 @@ static const int kElementWaitingTime = 30;
 - (void)testQuickAction {
   XCUIApplication *app = [[XCUIApplication alloc] init];
   [app launch];
-  os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
   XCUIElement *actionsReady = app.otherElements[@"actions ready"];
   if (![actionsReady waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
     XCTFail(@"Failed due to not able to find the actionsReady in the app with %@ seconds",
             @(kElementWaitingTime));
   }
-  os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
 
   [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
 
