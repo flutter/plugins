@@ -230,6 +230,7 @@ class WebView extends StatefulWidget {
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.opaque = true,
     this.allowsInlineMediaPlayback = false,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
@@ -415,6 +416,9 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
+  /// If set to `false`, the webview background will be transparent.
+  final bool opaque;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -479,6 +483,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
     userAgent: widget.userAgent,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
+    opaque: widget.opaque,
   );
 }
 

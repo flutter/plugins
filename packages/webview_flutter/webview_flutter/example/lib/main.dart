@@ -18,6 +18,7 @@ const String kNavigationExamplePage = '''
 <body>
 <p>
 The navigation delegate is set to block navigation to the youtube website.
+The webview is transparent so you can see the green background of the scaffold.
 </p>
 <ul>
 <ul><a href="https://www.youtube.com/">https://www.youtube.com/</a></ul>
@@ -45,6 +46,7 @@ class _WebViewExampleState extends State<WebViewExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.green,
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
@@ -83,6 +85,7 @@ class _WebViewExampleState extends State<WebViewExample> {
             print('Page finished loading: $url');
           },
           gestureNavigationEnabled: true,
+          opaque: false,
         );
       }),
       floatingActionButton: favoriteButton(),
