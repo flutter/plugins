@@ -1,3 +1,7 @@
+## 2.0.1-nullsafety
+
+- Added freeze parameter to buildPreview.
+
 ## 2.0.0-nullsafety
 
 - Migrate to null safety.
