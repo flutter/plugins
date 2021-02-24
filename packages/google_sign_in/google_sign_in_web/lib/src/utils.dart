@@ -12,9 +12,11 @@ import 'generated/gapiauth2.dart' as auth2;
 /// Injects a bunch of libraries in the <head> and returns a
 /// Future that resolves when all load.
 Future<void> injectJSLibraries(List<String> libraries,
-    {html.HtmlElement target /*, Duration timeout */}) {
+    {html.HtmlElement? target,}) {
   final List<Future<void>> loading = <Future<void>>[];
   final List<html.HtmlElement> tags = <html.HtmlElement>[];
+
+  final html.Element targetElement = target ?? html.querySelector('head')!;
 
   libraries.forEach((String library) {
     final html.ScriptElement script = html.ScriptElement()
@@ -25,24 +27,26 @@ Future<void> injectJSLibraries(List<String> libraries,
     loading.add(script.onLoad.first);
     tags.add(script);
   });
-  (target ?? html.querySelector('head')).children.addAll(tags);
+
+  targetElement.children.addAll(tags);
   return Future.wait(loading);
 }
 
 /// Utility method that converts `currentUser` to the equivalent
 /// [GoogleSignInUserData].
 /// This method returns `null` when the [currentUser] is not signed in.
-GoogleSignInUserData gapiUserToPluginUserData(auth2.GoogleUser currentUser) {
+GoogleSignInUserData? gapiUserToPluginUserData(auth2.GoogleUser? currentUser) {
   final bool isSignedIn = currentUser?.isSignedIn() ?? false;
-  final auth2.BasicProfile profile = currentUser?.getBasicProfile();
+  final auth2.BasicProfile? profile = currentUser?.getBasicProfile();
   if (!isSignedIn || profile?.getId() == null) {
     return null;
   }
+
   return GoogleSignInUserData(
     displayName: profile?.getName(),
-    email: profile?.getEmail(),
-    id: profile?.getId(),
+    email: profile?.getEmail() ?? '',
+    id: profile?.getId() ?? '',
     photoUrl: profile?.getImageUrl(),
-    idToken: currentUser.getAuthResponse()?.id_token,
+    idToken: currentUser?.getAuthResponse().id_token,
   );
 }

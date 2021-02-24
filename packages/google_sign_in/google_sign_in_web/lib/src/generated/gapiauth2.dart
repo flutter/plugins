@@ -2,14 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: public_member_api_docs, unused_element
-
-@JS()
-library gapiauth2;
-
-import "package:js/js.dart";
-import "package:js/js_util.dart" show promiseToFuture;
-
 /// Type definitions for non-npm package Google Sign-In API 0.0
 /// Project: https://developers.google.com/identity/sign-in/web/
 /// Definitions by: Derek Lawless <https://github.com/flawless2011>
@@ -18,14 +10,24 @@ import "package:js/js_util.dart" show promiseToFuture;
 
 /// <reference types="gapi" />
 
+// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/gapi.auth2
+
+// ignore_for_file: public_member_api_docs, unused_element
+
+@JS()
+library gapiauth2;
+
+import "package:js/js.dart";
+import "package:js/js_util.dart" show promiseToFuture;
+
 @anonymous
 @JS()
 class GoogleAuthInitFailureError {
   external String get error;
-  external set error(String value);
+  external set error(String? value);
 
   external String get details;
-  external set details(String value);
+  external set details(String? value);
 }
 
 @anonymous
@@ -33,6 +35,13 @@ class GoogleAuthInitFailureError {
 class GoogleAuthSignInError {
   external String get error;
   external set error(String value);
+}
+
+@anonymous
+@JS()
+class OfflineAccessResponse {
+  external String? get code;
+  external set code(String? value);
 }
 
 // Module gapi.auth2
@@ -43,8 +52,8 @@ class GoogleAuthSignInError {
 class GoogleAuth {
   external IsSignedIn get isSignedIn;
   external set isSignedIn(IsSignedIn v);
-  external CurrentUser get currentUser;
-  external set currentUser(CurrentUser v);
+  external CurrentUser? get currentUser;
+  external set currentUser(CurrentUser? v);
 
   /// Calls the onInit function when the GoogleAuth object is fully initialized, or calls the onFailure function if
   /// initialization fails.
@@ -59,7 +68,7 @@ class GoogleAuth {
 
   /// Attaches the sign-in flow to the specified container's click handler.
   external dynamic attachClickHandler(
-      dynamic container,
+      dynamic? container,
       SigninOptions options,
       dynamic onsuccess(GoogleUser googleUser),
       dynamic onfailure(String reason));
@@ -70,22 +79,20 @@ class GoogleAuth {
 abstract class _GoogleAuth {
   external Promise<GoogleUser> signIn(
       [dynamic /*SigninOptions|SigninOptionsBuilder*/ options]);
-  external Promise<dynamic /*{code: string}*/ > grantOfflineAccess(
-      [OfflineAccessOptions options]);
+  external Promise<OfflineAccessResponse> grantOfflineAccess(
+      [OfflineAccessOptions? options]);
 }
 
 extension GoogleAuthExtensions on GoogleAuth {
   Future<GoogleUser> signIn(
       [dynamic /*SigninOptions|SigninOptionsBuilder*/ options]) {
-    final Object t = this;
-    final _GoogleAuth tt = t;
+    final _GoogleAuth tt = this as _GoogleAuth;
     return promiseToFuture(tt.signIn(options));
   }
 
-  Future<dynamic /*{code: string}*/ > grantOfflineAccess(
-      [OfflineAccessOptions options]) {
-    final Object t = this;
-    final _GoogleAuth tt = t;
+  Future<OfflineAccessResponse> grantOfflineAccess(
+      [OfflineAccessOptions? options]) {
+    final _GoogleAuth tt = this as _GoogleAuth;
     return promiseToFuture(tt.grantOfflineAccess(options));
   }
 }
@@ -118,42 +125,52 @@ abstract class SigninOptions {
   /// The package name of the Android app to install over the air.
   /// See Android app installs from your web site:
   /// https://developers.google.com/identity/sign-in/web/android-app-installs
-  external String get app_package_name;
-  external set app_package_name(String v);
+  external String? get app_package_name;
+  external set app_package_name(String? v);
 
   /// Fetch users' basic profile information when they sign in.
   /// Adds 'profile', 'email' and 'openid' to the requested scopes.
   /// True if unspecified.
-  external bool get fetch_basic_profile;
-  external set fetch_basic_profile(bool v);
+  external bool? get fetch_basic_profile;
+  external set fetch_basic_profile(bool? v);
 
   /// Specifies whether to prompt the user for re-authentication.
   /// See OpenID Connect Request Parameters:
   /// https://openid.net/specs/openid-connect-basic-1_0.html#RequestParameters
-  external String get prompt;
-  external set prompt(String v);
+  external String? get prompt;
+  external set prompt(String? v);
 
   /// The scopes to request, as a space-delimited string.
   /// Optional if fetch_basic_profile is not set to false.
-  external String get scope;
-  external set scope(String v);
+  external String? get scope;
+  external set scope(String? v);
 
   /// The UX mode to use for the sign-in flow.
   /// By default, it will open the consent flow in a popup.
-  external String /*'popup'|'redirect'*/ get ux_mode;
-  external set ux_mode(String /*'popup'|'redirect'*/ v);
+  external String? /*'popup'|'redirect'*/ get ux_mode;
+  external set ux_mode(String? /*'popup'|'redirect'*/ v);
 
   /// If using ux_mode='redirect', this parameter allows you to override the default redirect_uri that will be used at the end of the consent flow.
   /// The default redirect_uri is the current URL stripped of query parameters and hash fragment.
-  external String get redirect_uri;
-  external set redirect_uri(String v);
+  external String? get redirect_uri;
+  external set redirect_uri(String? v);
+
+  // When your app knows which user it is trying to authenticate, it can provide this parameter as a hint to the authentication server.
+  // Passing this hint suppresses the account chooser and either pre-fill the email box on the sign-in form, or select the proper session (if the user is using multiple sign-in),
+  // which can help you avoid problems that occur if your app logs in the wrong user account. The value can be either an email address or the sub string,
+  // which is equivalent to the user's Google ID.
+  // https://developers.google.com/identity/protocols/OpenIDConnect?hl=en#authenticationuriparameters
+  external String? get login_hint;
+  external set login_hint(String? v);
+
   external factory SigninOptions(
       {String app_package_name,
       bool fetch_basic_profile,
       String prompt,
       String scope,
       String /*'popup'|'redirect'*/ ux_mode,
-      String redirect_uri});
+      String redirect_uri,
+      String login_hint});
 }
 
 /// Definitions by: John <https://github.com/jhcao23>
@@ -162,12 +179,12 @@ abstract class SigninOptions {
 @anonymous
 @JS()
 abstract class OfflineAccessOptions {
-  external String get scope;
-  external set scope(String v);
-  external String /*'select_account'|'consent'*/ get prompt;
-  external set prompt(String /*'select_account'|'consent'*/ v);
-  external String get app_package_name;
-  external set app_package_name(String v);
+  external String? get scope;
+  external set scope(String? v);
+  external String? /*'select_account'|'consent'*/ get prompt;
+  external set prompt(String? /*'select_account'|'consent'*/ v);
+  external String? get app_package_name;
+  external set app_package_name(String? v);
   external factory OfflineAccessOptions(
       {String scope,
       String /*'select_account'|'consent'*/ prompt,
@@ -180,48 +197,48 @@ abstract class OfflineAccessOptions {
 @JS()
 abstract class ClientConfig {
   /// The app's client ID, found and created in the Google Developers Console.
-  external String get client_id;
-  external set client_id(String v);
+  external String? get client_id;
+  external set client_id(String? v);
 
   /// The domains for which to create sign-in cookies. Either a URI, single_host_origin, or none.
   /// Defaults to single_host_origin if unspecified.
-  external String get cookie_policy;
-  external set cookie_policy(String v);
+  external String? get cookie_policy;
+  external set cookie_policy(String? v);
 
   /// The scopes to request, as a space-delimited string. Optional if fetch_basic_profile is not set to false.
-  external String get scope;
-  external set scope(String v);
+  external String? get scope;
+  external set scope(String? v);
 
   /// Fetch users' basic profile information when they sign in. Adds 'profile' and 'email' to the requested scopes. True if unspecified.
-  external bool get fetch_basic_profile;
-  external set fetch_basic_profile(bool v);
+  external bool? get fetch_basic_profile;
+  external set fetch_basic_profile(bool? v);
 
   /// The Google Apps domain to which users must belong to sign in. This is susceptible to modification by clients,
   /// so be sure to verify the hosted domain property of the returned user. Use GoogleUser.getHostedDomain() on the client,
   /// and the hd claim in the ID Token on the server to verify the domain is what you expected.
-  external String get hosted_domain;
-  external set hosted_domain(String v);
+  external String? get hosted_domain;
+  external set hosted_domain(String? v);
 
   /// Used only for OpenID 2.0 client migration. Set to the value of the realm that you are currently using for OpenID 2.0,
   /// as described in <a href="https://developers.google.com/accounts/docs/OpenID#openid-connect">OpenID 2.0 (Migration)</a>.
-  external String get openid_realm;
-  external set openid_realm(String v);
+  external String? get openid_realm;
+  external set openid_realm(String? v);
 
   /// The UX mode to use for the sign-in flow.
   /// By default, it will open the consent flow in a popup.
-  external String /*'popup'|'redirect'*/ get ux_mode;
-  external set ux_mode(String /*'popup'|'redirect'*/ v);
+  external String? /*'popup'|'redirect'*/ get ux_mode;
+  external set ux_mode(String? /*'popup'|'redirect'*/ v);
 
   /// If using ux_mode='redirect', this parameter allows you to override the default redirect_uri that will be used at the end of the consent flow.
   /// The default redirect_uri is the current URL stripped of query parameters and hash fragment.
-  external String get redirect_uri;
-  external set redirect_uri(String v);
+  external String? get redirect_uri;
+  external set redirect_uri(String? v);
   external factory ClientConfig(
       {String client_id,
       String cookie_policy,
       String scope,
       bool fetch_basic_profile,
-      String hosted_domain,
+      String? hosted_domain,
       String openid_realm,
       String /*'popup'|'redirect'*/ ux_mode,
       String redirect_uri});
@@ -233,6 +250,7 @@ class SigninOptionsBuilder {
   external dynamic setFetchBasicProfile(bool fetch);
   external dynamic setPrompt(String prompt);
   external dynamic setScope(String scope);
+  external dynamic setLoginHint(String hint);
 }
 
 @anonymous
@@ -282,22 +300,22 @@ abstract class AuthorizeConfig {
   external set client_id(String v);
   external String get scope;
   external set scope(String v);
-  external String get response_type;
-  external set response_type(String v);
-  external String get prompt;
-  external set prompt(String v);
-  external String get cookie_policy;
-  external set cookie_policy(String v);
-  external String get hosted_domain;
-  external set hosted_domain(String v);
-  external String get login_hint;
-  external set login_hint(String v);
-  external String get app_package_name;
-  external set app_package_name(String v);
-  external String get openid_realm;
-  external set openid_realm(String v);
-  external bool get include_granted_scopes;
-  external set include_granted_scopes(bool v);
+  external String? get response_type;
+  external set response_type(String? v);
+  external String? get prompt;
+  external set prompt(String? v);
+  external String? get cookie_policy;
+  external set cookie_policy(String? v);
+  external String? get hosted_domain;
+  external set hosted_domain(String? v);
+  external String? get login_hint;
+  external set login_hint(String? v);
+  external String? get app_package_name;
+  external set app_package_name(String? v);
+  external String? get openid_realm;
+  external set openid_realm(String? v);
+  external bool? get include_granted_scopes;
+  external set include_granted_scopes(bool? v);
   external factory AuthorizeConfig(
       {String client_id,
       String scope,
@@ -356,15 +374,18 @@ abstract class GoogleUser {
   external bool isSignedIn();
 
   /// Get the user's Google Apps domain if the user signed in with a Google Apps account.
+  // TODO: Maybe null?
   external String getHostedDomain();
 
   /// Get the scopes that the user granted as a space-delimited string.
   external String getGrantedScopes();
 
   /// Get the user's basic profile information.
+  // TODO: Maybe null?
   external BasicProfile getBasicProfile();
 
   /// Get the response object from the user's auth session.
+  // TODO: Maybe null?
   external AuthResponse getAuthResponse([bool includeAuthorizationData]);
 
   /// Returns true if the user granted the specified scopes.
@@ -374,17 +395,9 @@ abstract class GoogleUser {
   /// authorization or to sign in a user after the user has signed out.
   /// When you use GoogleUser.signIn(), the sign-in flow skips the account chooser step.
   /// See GoogleAuth.signIn().
-  external dynamic signIn(
-      [dynamic /*SigninOptions|SigninOptionsBuilder*/ options]);
-
-  /// See GoogleUser.signIn()
-  external dynamic grant(
-      [dynamic /*SigninOptions|SigninOptionsBuilder*/ options]);
-
-  /// Get permission from the user to access the specified scopes offline.
-  /// When you use GoogleUser.grantOfflineAccess(), the sign-in flow skips the account chooser step.
-  /// See GoogleUser.grantOfflineAccess().
-  external void grantOfflineAccess(String scopes);
+  // Function removed, but still in .d.ts
+  // external dynamic signIn(
+  //     [dynamic /*SigninOptions|SigninOptionsBuilder*/ options]);
 
   /// Revokes all of the scopes that the user granted.
   external void disconnect();
@@ -393,14 +406,36 @@ abstract class GoogleUser {
 @anonymous
 @JS()
 abstract class _GoogleUser {
+  /// Forces a refresh of the access token, and then returns a Promise for the new AuthResponse.
   external Promise<AuthResponse> reloadAuthResponse();
+
+  /// Request additional scopes to the user.
+  ///
+  /// See GoogleAuth.signIn() for the list of parameters and the error code.
+  external Promise<void> grant(
+      [dynamic? /*SigninOptions|SigninOptionsBuilder*/ options]);
+
+  /// Get permission from the user to access the specified scopes offline.
+  /// When you use GoogleUser.grantOfflineAccess(), the sign-in flow skips the account chooser step.
+  /// See GoogleUser.grantOfflineAccess().
+  external Promise<OfflineAccessResponse> grantOfflineAccess(String? scopes);
+
+
 }
 
 extension GoogleUserExtensions on GoogleUser {
   Future<AuthResponse> reloadAuthResponse() {
-    final Object t = this;
-    final _GoogleUser tt = t;
+    final _GoogleUser tt = this as _GoogleUser;
     return promiseToFuture(tt.reloadAuthResponse());
+  }
+  Future<Object?> grant(
+      [dynamic? /*SigninOptions|SigninOptionsBuilder*/ options]) {
+    final _GoogleUser tt = this as _GoogleUser;
+    return promiseToFuture(tt.grant(options));
+  }
+  Future<OfflineAccessResponse> grantOfflineAccess(String? scopes) {
+    final _GoogleUser tt = this as _GoogleUser;
+    return promiseToFuture(tt.grantOfflineAccess(scopes));
   }
 }
 
@@ -411,7 +446,7 @@ external GoogleAuth init(ClientConfig params);
 
 /// Returns the GoogleAuth object. You must initialize the GoogleAuth object with gapi.auth2.init() before calling this method.
 @JS("gapi.auth2.getAuthInstance")
-external GoogleAuth getAuthInstance();
+external GoogleAuth? getAuthInstance();
 
 /// Performs a one time OAuth 2.0 authorization.
 /// Reference: https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2authorizeparams-callback

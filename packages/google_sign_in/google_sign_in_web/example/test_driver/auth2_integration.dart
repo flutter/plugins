@@ -10,6 +10,7 @@ import 'package:google_sign_in_platform_interface/google_sign_in_platform_interf
 import 'package:google_sign_in_web/google_sign_in_web.dart';
 import 'gapi_mocks/gapi_mocks.dart' as gapi_mocks;
 import 'src/test_utils.dart';
+import 'package:js/js_util.dart' as js_util;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +26,7 @@ void main() {
     idToken: expectedTokenData.idToken,
   );
 
-  GoogleSignInPlugin plugin;
+  late GoogleSignInPlugin plugin;
 
   group('plugin.init() throws a catchable exception', () {
     setUp(() {
@@ -54,7 +55,8 @@ void main() {
         );
         fail('plugin.init should have thrown an exception!');
       } catch (e) {
-        expect(e.code, 'idpiframe_initialization_failed');
+        final String code = js_util.getProperty(e, 'code') as String;
+        expect(code, 'idpiframe_initialization_failed');
       }
     });
   });
@@ -62,7 +64,7 @@ void main() {
   group('other methods also throw catchable exceptions on init fail', () {
     // This function ensures that init gets called, but for some reason, we
     // ignored that it has thrown stuff...
-    void _discardInit() async {
+    Future<void> _discardInit() async {
       try {
         await plugin.init(
           hostedDomain: 'foo',
@@ -135,13 +137,13 @@ void main() {
       });
 
       testWidgets('signInSilently', (WidgetTester tester) async {
-        GoogleSignInUserData actualUser = await plugin.signInSilently();
+        GoogleSignInUserData actualUser = (await plugin.signInSilently())!;
 
         expect(actualUser, expectedUserData);
       });
 
       testWidgets('signIn', (WidgetTester tester) async {
-        GoogleSignInUserData actualUser = await plugin.signIn();
+        GoogleSignInUserData actualUser = (await plugin.signIn())!;
 
         expect(actualUser, expectedUserData);
       });
@@ -185,7 +187,8 @@ void main() {
         await plugin.signIn();
         fail('plugin.signIn() should have thrown an exception!');
       } catch (e) {
-        expect(e.code, 'popup_closed_by_user');
+        final String code = js_util.getProperty(e, 'code') as String;
+        expect(code, 'popup_closed_by_user');
       }
     });
   });
