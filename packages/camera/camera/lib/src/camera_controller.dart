@@ -32,19 +32,19 @@ Future<List<CameraDescription>> availableCameras() async {
 class CameraValue {
   /// Creates a new camera controller state.
   const CameraValue({
-    this.isInitialized,
+    required this.isInitialized,
     this.errorDescription,
     this.previewSize,
-    this.isRecordingVideo,
-    this.isTakingPicture,
-    this.isStreamingImages,
-    bool isRecordingPaused,
-    this.flashMode,
-    this.exposureMode,
-    this.focusMode,
-    this.exposurePointSupported,
-    this.focusPointSupported,
-    this.deviceOrientation,
+    required this.isRecordingVideo,
+    required this.isTakingPicture,
+    required this.isStreamingImages,
+    required bool isRecordingPaused,
+    required this.flashMode,
+    required this.exposureMode,
+    required this.focusMode,
+    required this.exposurePointSupported,
+    required this.focusPointSupported,
+    required this.deviceOrientation,
     this.lockedCaptureOrientation,
     this.recordingOrientation,
   }) : _isRecordingPaused = isRecordingPaused;
@@ -58,7 +58,9 @@ class CameraValue {
           isStreamingImages: false,
           isRecordingPaused: false,
           flashMode: FlashMode.auto,
+          exposureMode: ExposureMode.auto,
           exposurePointSupported: false,
+          focusMode: FocusMode.auto,
           focusPointSupported: false,
           deviceOrientation: DeviceOrientation.portraitUp,
         );
@@ -84,17 +86,17 @@ class CameraValue {
   ///
   /// This is null while the controller is not in an error state.
   /// When [hasError] is true this contains the error description.
-  final String errorDescription;
+  final String? errorDescription;
 
   /// The size of the preview in pixels.
   ///
-  /// Is `null` until  [isInitialized] is `true`.
-  final Size previewSize;
+  /// Is `null` until [isInitialized] is `true`.
+  final Size? previewSize;
 
   /// Convenience getter for `previewSize.width / previewSize.height`.
   ///
   /// Can only be called when [initialize] is done.
-  double get aspectRatio => previewSize.width / previewSize.height;
+  double get aspectRatio => previewSize!.width / previewSize!.height;
 
   /// Whether the controller is in an error state.
   ///
@@ -120,34 +122,34 @@ class CameraValue {
   final DeviceOrientation deviceOrientation;
 
   /// The currently locked capture orientation.
-  final DeviceOrientation lockedCaptureOrientation;
+  final DeviceOrientation? lockedCaptureOrientation;
 
   /// Whether the capture orientation is currently locked.
   bool get isCaptureOrientationLocked => lockedCaptureOrientation != null;
 
   /// The orientation of the currently running video recording.
-  final DeviceOrientation recordingOrientation;
+  final DeviceOrientation? recordingOrientation;
 
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
   /// the same value of the current object.
   CameraValue copyWith({
-    bool isInitialized,
-    bool isRecordingVideo,
-    bool isTakingPicture,
-    bool isStreamingImages,
-    String errorDescription,
-    Size previewSize,
-    bool isRecordingPaused,
-    FlashMode flashMode,
-    ExposureMode exposureMode,
-    FocusMode focusMode,
-    bool exposurePointSupported,
-    bool focusPointSupported,
-    DeviceOrientation deviceOrientation,
-    Optional<DeviceOrientation> lockedCaptureOrientation,
-    Optional<DeviceOrientation> recordingOrientation,
+    bool? isInitialized,
+    bool? isRecordingVideo,
+    bool? isTakingPicture,
+    bool? isStreamingImages,
+    String? errorDescription,
+    Size? previewSize,
+    bool? isRecordingPaused,
+    FlashMode? flashMode,
+    ExposureMode? exposureMode,
+    FocusMode? focusMode,
+    bool? exposurePointSupported,
+    bool? focusPointSupported,
+    DeviceOrientation? deviceOrientation,
+    Optional<DeviceOrientation>? lockedCaptureOrientation,
+    Optional<DeviceOrientation>? recordingOrientation,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -225,13 +227,17 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The [ImageFormatGroup] describes the output of the raw image format.
   ///
   /// When null the imageFormat will fallback to the platforms default.
-  final ImageFormatGroup imageFormatGroup;
+  final ImageFormatGroup? imageFormatGroup;
 
-  int _cameraId;
+  /// The id of a camera that hasn't been initialized.
+  @visibleForTesting
+  static const int kUninitializedCameraId = -1;
+  int _cameraId = kUninitializedCameraId;
+
   bool _isDisposed = false;
-  StreamSubscription<dynamic> _imageStreamSubscription;
-  FutureOr<bool> _initCalled;
-  StreamSubscription _deviceOrientationSubscription;
+  StreamSubscription<dynamic>? _imageStreamSubscription;
+  FutureOr<bool>? _initCalled;
+  StreamSubscription? _deviceOrientationSubscription;
 
   /// Checks whether [CameraController.dispose] has completed successfully.
   ///
@@ -278,7 +284,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
       await CameraPlatform.instance.initializeCamera(
         _cameraId,
-        imageFormatGroup: imageFormatGroup,
+        imageFormatGroup: imageFormatGroup ?? ImageFormatGroup.unknown,
       );
 
       value = value.copyWith(
@@ -422,7 +428,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       throw CameraException(e.code, e.message);
     }
 
-    await _imageStreamSubscription.cancel();
+    await _imageStreamSubscription?.cancel();
     _imageStreamSubscription = null;
   }
 
@@ -583,12 +589,16 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   /// Sets the exposure point for automatically determining the exposure value.
-  Future<void> setExposurePoint(Offset point) async {
+  ///
+  /// Supplying a `null` value will reset the exposure point to it's default
+  /// value.
+  Future<void> setExposurePoint(Offset? point) async {
     if (point != null &&
         (point.dx < 0 || point.dx > 1 || point.dy < 0 || point.dy > 1)) {
       throw ArgumentError(
           'The values of point should be anywhere between (0,0) and (1,1).');
     }
+
     try {
       await CameraPlatform.instance.setExposurePoint(
         _cameraId,
@@ -682,7 +692,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Locks the capture orientation.
   ///
   /// If [orientation] is omitted, the current device orientation is used.
-  Future<void> lockCaptureOrientation([DeviceOrientation orientation]) async {
+  Future<void> lockCaptureOrientation([DeviceOrientation? orientation]) async {
     try {
       await CameraPlatform.instance.lockCaptureOrientation(
           _cameraId, orientation ?? value.deviceOrientation);
@@ -715,7 +725,10 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   /// Sets the focus point for automatically determining the focus value.
-  Future<void> setFocusPoint(Offset point) async {
+  ///
+  /// Supplying a `null` value will reset the focus point to it's default
+  /// value.
+  Future<void> setFocusPoint(Offset? point) async {
     if (point != null &&
         (point.dx < 0 || point.dx > 1 || point.dy < 0 || point.dy > 1)) {
       throw ArgumentError(

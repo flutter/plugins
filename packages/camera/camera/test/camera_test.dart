@@ -426,10 +426,10 @@ void main() {
 
       await cameraController.initialize();
       when(CameraPlatform.instance.getMaxZoomLevel(mockInitializeCamera))
-          .thenThrow(PlatformException(
-              code: 'TEST_ERROR',
-              message: 'This is a test error messge',
-              details: null));
+          .thenThrow(CameraException(
+        'TEST_ERROR',
+        'This is a test error messge',
+      ));
 
       expect(
           cameraController.getMaxZoomLevel,
@@ -526,10 +526,10 @@ void main() {
 
       await cameraController.initialize();
       when(CameraPlatform.instance.getMinZoomLevel(mockInitializeCamera))
-          .thenThrow(PlatformException(
-              code: 'TEST_ERROR',
-              message: 'This is a test error messge',
-              details: null));
+          .thenThrow(CameraException(
+        'TEST_ERROR',
+        'This is a test error messge',
+      ));
 
       expect(
           cameraController.getMinZoomLevel,
@@ -625,10 +625,10 @@ void main() {
 
       await cameraController.initialize();
       when(CameraPlatform.instance.setZoomLevel(mockInitializeCamera, 42.0))
-          .thenThrow(PlatformException(
-              code: 'TEST_ERROR',
-              message: 'This is a test error messge',
-              details: null));
+          .thenThrow(CameraException(
+        'TEST_ERROR',
+        'This is a test error messge',
+      ));
 
       expect(
           () => cameraController.setZoomLevel(42),
@@ -804,6 +804,10 @@ void main() {
           ResolutionPreset.max);
       await cameraController.initialize();
 
+      when(CameraPlatform.instance
+              .getMinExposureOffset(cameraController.cameraId))
+          .thenAnswer((_) => Future.value(0.0));
+
       await cameraController.getMinExposureOffset();
 
       verify(CameraPlatform.instance
@@ -824,10 +828,9 @@ void main() {
       when(CameraPlatform.instance
               .getMinExposureOffset(cameraController.cameraId))
           .thenThrow(
-        PlatformException(
-          code: 'TEST_ERROR',
-          message: 'This is a test error message',
-          details: null,
+        CameraException(
+          'TEST_ERROR',
+          'This is a test error message',
         ),
       );
 
@@ -849,6 +852,10 @@ void main() {
           ResolutionPreset.max);
       await cameraController.initialize();
 
+      when(CameraPlatform.instance
+              .getMaxExposureOffset(cameraController.cameraId))
+          .thenAnswer((_) => Future.value(1.0));
+
       await cameraController.getMaxExposureOffset();
 
       verify(CameraPlatform.instance
@@ -869,10 +876,9 @@ void main() {
       when(CameraPlatform.instance
               .getMaxExposureOffset(cameraController.cameraId))
           .thenThrow(
-        PlatformException(
-          code: 'TEST_ERROR',
-          message: 'This is a test error message',
-          details: null,
+        CameraException(
+          'TEST_ERROR',
+          'This is a test error message',
         ),
       );
 
@@ -894,10 +900,14 @@ void main() {
           ResolutionPreset.max);
       await cameraController.initialize();
 
+      when(CameraPlatform.instance
+              .getExposureOffsetStepSize(cameraController.cameraId))
+          .thenAnswer((_) => Future.value(0.0));
+
       await cameraController.getExposureOffsetStepSize();
 
       verify(CameraPlatform.instance
-              .getMinExposureOffset(cameraController.cameraId))
+              .getExposureOffsetStepSize(cameraController.cameraId))
           .called(1);
     });
 
@@ -915,10 +925,9 @@ void main() {
       when(CameraPlatform.instance
               .getExposureOffsetStepSize(cameraController.cameraId))
           .thenThrow(
-        PlatformException(
-          code: 'TEST_ERROR',
-          message: 'This is a test error message',
-          details: null,
+        CameraException(
+          'TEST_ERROR',
+          'This is a test error message',
         ),
       );
 
@@ -947,6 +956,9 @@ void main() {
           .thenAnswer((_) async => 2.0);
       when(CameraPlatform.instance
               .getExposureOffsetStepSize(cameraController.cameraId))
+          .thenAnswer((_) async => 1.0);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 1.0))
           .thenAnswer((_) async => 1.0);
 
       await cameraController.setExposureOffset(1.0);
@@ -977,10 +989,9 @@ void main() {
       when(CameraPlatform.instance
               .setExposureOffset(cameraController.cameraId, 1.0))
           .thenThrow(
-        PlatformException(
-          code: 'TEST_ERROR',
-          message: 'This is a test error message',
-          details: null,
+        CameraException(
+          'TEST_ERROR',
+          'This is a test error message',
         ),
       );
 
@@ -1012,6 +1023,15 @@ void main() {
       when(CameraPlatform.instance
               .getExposureOffsetStepSize(cameraController.cameraId))
           .thenAnswer((_) async => 1.0);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 0.0))
+          .thenAnswer((_) async => 0.0);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, -1.0))
+          .thenAnswer((_) async => 0.0);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 2.0))
+          .thenAnswer((_) async => 0.0);
 
       expect(
           cameraController.setExposureOffset(3.0),
@@ -1028,17 +1048,18 @@ void main() {
             'The provided exposure offset was outside the supported range for this device.',
           )));
 
-      await cameraController.setExposureOffset(2.0);
+      await cameraController.setExposureOffset(0.0);
       await cameraController.setExposureOffset(-1.0);
-      await cameraController.setExposureOffset(-0.0);
+      await cameraController.setExposureOffset(2.0);
+
       verify(CameraPlatform.instance
-              .setExposureOffset(cameraController.cameraId, 2.0))
+              .setExposureOffset(cameraController.cameraId, 0.0))
           .called(1);
       verify(CameraPlatform.instance
               .setExposureOffset(cameraController.cameraId, -1.0))
           .called(1);
       verify(CameraPlatform.instance
-              .setExposureOffset(cameraController.cameraId, 0.0))
+              .setExposureOffset(cameraController.cameraId, 2.0))
           .called(1);
     });
 
@@ -1052,19 +1073,38 @@ void main() {
       await cameraController.initialize();
       when(CameraPlatform.instance
               .getMinExposureOffset(cameraController.cameraId))
-          .thenAnswer((_) async => -1.0);
+          .thenAnswer((_) async => -1.2);
       when(CameraPlatform.instance
               .getMaxExposureOffset(cameraController.cameraId))
-          .thenAnswer((_) async => 1.0);
+          .thenAnswer((_) async => 1.2);
       when(CameraPlatform.instance
               .getExposureOffsetStepSize(cameraController.cameraId))
           .thenAnswer((_) async => 0.4);
-      when(CameraPlatform.instance
-              .setExposureOffset(cameraController.cameraId, 1.0))
-          .thenAnswer((_) async => 1.0);
 
-      await cameraController.setExposureOffset(1.0);
-      await cameraController.setExposureOffset(-1.0);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, -1.2))
+          .thenAnswer((_) async => -1.2);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, -0.8))
+          .thenAnswer((_) async => -0.8);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, -0.4))
+          .thenAnswer((_) async => -0.4);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 0.0))
+          .thenAnswer((_) async => 0.0);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 0.4))
+          .thenAnswer((_) async => 0.4);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 0.8))
+          .thenAnswer((_) async => 0.8);
+      when(CameraPlatform.instance
+              .setExposureOffset(cameraController.cameraId, 1.2))
+          .thenAnswer((_) async => 1.2);
+
+      await cameraController.setExposureOffset(1.2);
+      await cameraController.setExposureOffset(-1.2);
       await cameraController.setExposureOffset(0.1);
       await cameraController.setExposureOffset(0.2);
       await cameraController.setExposureOffset(0.3);
@@ -1082,10 +1122,10 @@ void main() {
 
       verify(CameraPlatform.instance
               .setExposureOffset(cameraController.cameraId, 0.8))
-          .called(3);
+          .called(2);
       verify(CameraPlatform.instance
               .setExposureOffset(cameraController.cameraId, -0.8))
-          .called(3);
+          .called(2);
       verify(CameraPlatform.instance
               .setExposureOffset(cameraController.cameraId, 0.0))
           .called(2);
@@ -1203,8 +1243,22 @@ class MockCameraPlatform extends Mock
     with MockPlatformInterfaceMixin
     implements CameraPlatform {
   @override
-  Future<void> initializeCamera(int cameraId,
-      {ImageFormatGroup imageFormatGroup});
+  Future<void> initializeCamera(
+    int? cameraId, {
+    ImageFormatGroup? imageFormatGroup = ImageFormatGroup.unknown,
+  }) async =>
+      super.noSuchMethod(Invocation.method(
+        #initializeCamera,
+        [cameraId],
+        {
+          #imageFormatGroup: imageFormatGroup,
+        },
+      ));
+
+  @override
+  Future<void> dispose(int? cameraId) async {
+    return super.noSuchMethod(Invocation.method(#dispose, [cameraId]));
+  }
 
   @override
   Future<List<CameraDescription>> availableCameras() =>
@@ -1213,8 +1267,8 @@ class MockCameraPlatform extends Mock
   @override
   Future<int> createCamera(
     CameraDescription description,
-    ResolutionPreset resolutionPreset, {
-    bool enableAudio,
+    ResolutionPreset? resolutionPreset, {
+    bool enableAudio = false,
   }) =>
       mockPlatformException
           ? throw PlatformException(code: 'foo', message: 'bar')
@@ -1242,12 +1296,91 @@ class MockCameraPlatform extends Mock
       : Future.value(mockTakePicture);
 
   @override
+  Future<void> prepareForVideoRecording() async =>
+      super.noSuchMethod(Invocation.method(#prepareForVideoRecording, null));
+
+  @override
   Future<XFile> startVideoRecording(int cameraId,
-          {Duration maxVideoDuration}) =>
+          {Duration? maxVideoDuration}) =>
       Future.value(mockVideoRecordingXFile);
+
+  @override
+  Future<void> lockCaptureOrientation(
+          int? cameraId, DeviceOrientation? orientation) async =>
+      super.noSuchMethod(
+          Invocation.method(#lockCaptureOrientation, [cameraId, orientation]));
+
+  @override
+  Future<void> unlockCaptureOrientation(int? cameraId) async => super
+      .noSuchMethod(Invocation.method(#unlockCaptureOrientation, [cameraId]));
+
+  @override
+  Future<double> getMaxZoomLevel(int? cameraId) async => super.noSuchMethod(
+        Invocation.method(#getMaxZoomLevel, [cameraId]),
+        returnValue: 1.0,
+      );
+
+  @override
+  Future<double> getMinZoomLevel(int? cameraId) async => super.noSuchMethod(
+        Invocation.method(#getMinZoomLevel, [cameraId]),
+        returnValue: 0.0,
+      );
+
+  @override
+  Future<void> setZoomLevel(int? cameraId, double? zoom) async =>
+      super.noSuchMethod(Invocation.method(#setZoomLevel, [cameraId, zoom]));
+
+  @override
+  Future<void> setFlashMode(int? cameraId, FlashMode? mode) async =>
+      super.noSuchMethod(Invocation.method(#setFlashMode, [cameraId, mode]));
+
+  @override
+  Future<void> setExposureMode(int? cameraId, ExposureMode? mode) async =>
+      super.noSuchMethod(Invocation.method(#setExposureMode, [cameraId, mode]));
+
+  @override
+  Future<void> setExposurePoint(int? cameraId, Point<double>? point) async =>
+      super.noSuchMethod(
+          Invocation.method(#setExposurePoint, [cameraId, point]));
+
+  @override
+  Future<double> getMinExposureOffset(int? cameraId) async =>
+      super.noSuchMethod(
+        Invocation.method(#getMinExposureOffset, [cameraId]),
+        returnValue: 0.0,
+      );
+
+  @override
+  Future<double> getMaxExposureOffset(int? cameraId) async =>
+      super.noSuchMethod(
+        Invocation.method(#getMaxExposureOffset, [cameraId]),
+        returnValue: 1.0,
+      );
+
+  @override
+  Future<double> getExposureOffsetStepSize(int? cameraId) async =>
+      super.noSuchMethod(
+        Invocation.method(#getExposureOffsetStepSize, [cameraId]),
+        returnValue: 1.0,
+      );
+
+  @override
+  Future<double> setExposureOffset(int? cameraId, double? offset) async =>
+      super.noSuchMethod(
+        Invocation.method(#setExposureOffset, [cameraId, offset]),
+        returnValue: 1.0,
+      );
 }
 
 class MockCameraDescription extends CameraDescription {
+  /// Creates a new camera description with the given properties.
+  MockCameraDescription()
+      : super(
+          name: 'Test',
+          lensDirection: CameraLensDirection.back,
+          sensorOrientation: 0,
+        );
+
   @override
   CameraLensDirection get lensDirection => CameraLensDirection.back;
 

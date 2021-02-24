@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart = 2.9
 import 'dart:io';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Connectivity test driver', () {
-    Connectivity _connectivity;
+    ConnectivityPlatform _connectivity;
 
     setUpAll(() async {
-      _connectivity = Connectivity();
+      _connectivity = ConnectivityPlatform.instance;
     });
 
     testWidgets('test connectivity result', (WidgetTester tester) async {

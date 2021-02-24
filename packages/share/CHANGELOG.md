@@ -1,18 +1,9 @@
-## 2.0.0-nullsafety.3
-
-* Update README with the new documentation urls.
-
-## 2.0.0-nullsafety.2
-
-* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
-
-## 2.0.0-nullsafety.1
-
-* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
-
-## 2.0.0-nullsafety
+## 2.0.0
 
 * Migrate to null safety.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Update README with the new documentation urls.
 
 ## 0.6.5+5
 
