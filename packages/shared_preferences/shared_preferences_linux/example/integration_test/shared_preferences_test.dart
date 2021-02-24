@@ -36,8 +36,8 @@ void main() {
       preferences = SharedPreferencesLinux();
     });
 
-    tearDown(() {
-      preferences.clear();
+    tearDown(() async {
+      await preferences.clear();
     });
 
     testWidgets('reading', (WidgetTester _) async {

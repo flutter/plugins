@@ -9,10 +9,21 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:path_provider_linux/path_provider_linux.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  test('path provider instance on Windows', () {
+    expect(PathProviderPlatform.instance, isA<PathProviderWindows>());
+  }, skip: !Platform.isWindows);
+
+  test('path provider instance on Linux', () {
+    expect(PathProviderPlatform.instance, isA<PathProviderLinux>());
+  }, skip: !Platform.isLinux);
 
   testWidgets('getTemporaryDirectory', (WidgetTester tester) async {
     final Directory result = await getTemporaryDirectory();

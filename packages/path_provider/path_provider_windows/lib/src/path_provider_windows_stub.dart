@@ -12,6 +12,11 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 /// path_provider will also depend on path_provider_windows, not just at the
 /// pubspec level but the code level.
 class PathProviderWindows extends PathProviderPlatform {
+  /// Registers the Windows implementation.
+  static void registerWith() {
+    PathProviderPlatform.instance = PathProviderWindows();
+  }
+
   /// Errors on attempted instantiation of the stub. It exists only to satisfy
   /// compile-time dependencies, and should never actually be created.
   PathProviderWindows() {

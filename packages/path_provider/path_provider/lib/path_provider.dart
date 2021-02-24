@@ -3,13 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Directory, Platform;
+import 'dart:io' show Directory;
 
-import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
-import 'package:path_provider_linux/path_provider_linux.dart';
-import 'package:path_provider_windows/path_provider_windows.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
-import 'package:path_provider_platform_interface/src/method_channel_path_provider.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
@@ -76,7 +73,8 @@ Future<Directory> getTemporaryDirectory() async {
 /// Throws a `MissingPlatformDirectoryException` if the system is unable to
 /// provide the directory.
 Future<Directory> getApplicationSupportDirectory() async {
-  final String? path = await PathProviderPlatform.instance.getApplicationSupportPath();
+  final String? path =
+      await PathProviderPlatform.instance.getApplicationSupportPath();
   if (path == null) {
     throw MissingPlatformDirectoryException(
         'Unable to get application support directory');
@@ -114,7 +112,8 @@ Future<Directory> getLibraryDirectory() async {
 /// Throws a `MissingPlatformDirectoryException` if the system is unable to
 /// provide the directory.
 Future<Directory> getApplicationDocumentsDirectory() async {
-  final String? path = await PathProviderPlatform.instance.getApplicationDocumentsPath();
+  final String? path =
+      await PathProviderPlatform.instance.getApplicationDocumentsPath();
   if (path == null) {
     throw MissingPlatformDirectoryException(
         'Unable to get application documents directory');
@@ -131,7 +130,8 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 ///
 /// On Android this uses the `getExternalFilesDir(null)`.
 Future<Directory?> getExternalStorageDirectory() async {
-  final String? path = await PathProviderPlatform.instance.getExternalStoragePath();
+  final String? path =
+      await PathProviderPlatform.instance.getExternalStoragePath();
   if (path == null) {
     return null;
   }
@@ -152,7 +152,8 @@ Future<Directory?> getExternalStorageDirectory() async {
 /// On Android this returns Context.getExternalCacheDirs() or
 /// Context.getExternalCacheDir() on API levels below 19.
 Future<List<Directory>?> getExternalCacheDirectories() async {
-  final List<String>? paths = await PathProviderPlatform.instance.getExternalCachePaths();
+  final List<String>? paths =
+      await PathProviderPlatform.instance.getExternalCachePaths();
   if (paths == null) {
     return null;
   }

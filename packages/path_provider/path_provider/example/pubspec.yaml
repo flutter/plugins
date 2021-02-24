@@ -12,6 +12,15 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
 
+# TODO(egarciad): Remove the overrides once the packages are published.
+dependency_overrides:
+  path_provider_macos:
+    path: ../../path_provider_macos
+  path_provider_linux:
+    path: ../../path_provider_linux
+  path_provider_windows:
+    path: ../../path_provider_windows
+
 dev_dependencies:
   integration_test:
     path: ../../../integration_test

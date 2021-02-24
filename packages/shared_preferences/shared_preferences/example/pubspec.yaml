@@ -19,6 +19,15 @@ dev_dependencies:
     path: ../../../integration_test
   pedantic: ^1.10.0
 
+# TODO(egarciad): Bump dependencies above and remove the overrides.
+dependency_overrides:
+  shared_preferences_linux:
+    path: ../../shared_preferences_linux
+  shared_preferences_macos:
+    path: ../../shared_preferences_macos
+  shared_preferences_windows:
+    path: ../../shared_preferences_windows
+
 flutter:
   uses-material-design: true
 

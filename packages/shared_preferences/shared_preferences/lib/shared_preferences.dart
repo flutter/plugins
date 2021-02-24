@@ -3,14 +3,9 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:meta/meta.dart';
-import 'package:shared_preferences_linux/shared_preferences_linux.dart';
-import 'package:shared_preferences_platform_interface/method_channel_shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
-import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
@@ -21,7 +16,6 @@ class SharedPreferences {
 
   static const String _prefix = 'flutter.';
   static Completer<SharedPreferences>? _completer;
-  static bool _manualDartRegistrationNeeded = true;
 
   /// Loads and parses the [SharedPreferences] for this app from disk.
   ///
@@ -130,7 +124,8 @@ class SharedPreferences {
     } else {
       _preferenceCache[key] = value;
     }
-    return SharedPreferencesStorePlatform.instance.setValue(valueType, prefixedKey, value);
+    return SharedPreferencesStorePlatform.instance
+        .setValue(valueType, prefixedKey, value);
   }
 
   /// Always returns true.
