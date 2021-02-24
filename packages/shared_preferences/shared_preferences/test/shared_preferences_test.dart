@@ -39,6 +39,7 @@ void main() {
 
     tearDown(() async {
       await preferences.clear();
+      await store.clear();
     });
 
     test('reading', () async {
@@ -154,6 +155,15 @@ void main() {
       final Future<SharedPreferences> first = SharedPreferences.getInstance();
       final Future<SharedPreferences> second = SharedPreferences.getInstance();
       expect(await first, await second);
+    });
+
+    test('string list type is dynamic (usually from method channel)', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'dynamic_list': <dynamic>['1', '2']
+      });
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final List<String>? value = prefs.getStringList('dynamic_list');
+      expect(value, <String>['1', '2']);
     });
 
     group('mocking', () {

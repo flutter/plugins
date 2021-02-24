@@ -20,6 +20,27 @@ set disablePathProviderPlatformOverride(bool override) {}
 
 bool _manualDartRegistrationNeeded = true;
 
+/// An exception thrown when a directory that should always be available on
+/// the current platform cannot be obtained.
+class MissingPlatformDirectoryException implements Exception {
+  /// Creates a new exception
+  MissingPlatformDirectoryException(this.message, {this.details});
+
+  /// The explanation of the exception.
+  final String message;
+
+  /// Added details, if any.
+  ///
+  /// E.g., an error object from the platform implementation.
+  final Object? details;
+
+  @override
+  String toString() {
+    String detailsAddition = details == null ? '' : ': $details';
+    return 'MissingPlatformDirectoryException($message)$detailsAddition';
+  }
+}
+
 PathProviderPlatform get _platform {
   // This is to manually endorse Dart implementations until automatic
   // registration of Dart plugins is implemented. For details see
@@ -41,8 +62,13 @@ PathProviderPlatform get _platform {
 }
 
 /// Get a [Directory] from [path] string.
-Directory? _getDirectory(String? path) {
-  return path == null ? null : Directory(path);
+Directory? _getDirectory(String? path, String directory) {
+  if (path == null) {
+    throw MissingPlatformDirectoryException(
+        'Unable to get $directory directory');
+  }
+
+  return Directory(path);
 }
 
 /// Get list of [Directory] from [paths] strings.
@@ -63,9 +89,13 @@ List<Directory>? _getDirectories(List<String>? paths) {
 /// On iOS, this uses the `NSCachesDirectory` API.
 ///
 /// On Android, this uses the `getCacheDir` API on the context.
-Future<Directory?> getTemporaryDirectory() async {
+///
+/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// provide the directory.
+Future<Directory> getTemporaryDirectory() async {
   final String? path = await _platform.getTemporaryPath();
-  return _getDirectory(path);
+
+  return _getDirectory(path, 'temporary');
 }
 
 /// Path to a directory where the application may place application support
@@ -78,9 +108,13 @@ Future<Directory?> getTemporaryDirectory() async {
 /// If this directory does not exist, it is created automatically.
 ///
 /// On Android, this function uses the `getFilesDir` API on the context.
-Future<Directory?> getApplicationSupportDirectory() async {
+///
+/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// provide the directory.
+Future<Directory> getApplicationSupportDirectory() async {
   final String? path = await _platform.getApplicationSupportPath();
-  return _getDirectory(path);
+
+  return _getDirectory(path, 'application support');
 }
 
 /// Path to the directory where application can store files that are persistent,
@@ -88,9 +122,13 @@ Future<Directory?> getApplicationSupportDirectory() async {
 ///
 /// On Android, this function throws an [UnsupportedError] as no equivalent
 /// path exists.
-Future<Directory?> getLibraryDirectory() async {
+///
+/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// provide the directory on a supported platform.
+Future<Directory> getLibraryDirectory() async {
   final String? path = await _platform.getLibraryPath();
-  return _getDirectory(path);
+
+  return _getDirectory(path, 'library');
 }
 
 /// Path to a directory where the application may place data that is
@@ -102,9 +140,12 @@ Future<Directory?> getLibraryDirectory() async {
 /// On Android, this uses the `getDataDirectory` API on the context. Consider
 /// using [getExternalStorageDirectory] instead if data is intended to be visible
 /// to the user.
-Future<Directory?> getApplicationDocumentsDirectory() async {
+///
+/// Throws a `MissingPlatformDirectoryException` if the system is unable to
+/// provide the directory.
+Future<Directory> getApplicationDocumentsDirectory() async {
   final String? path = await _platform.getApplicationDocumentsPath();
-  return _getDirectory(path);
+  return _getDirectory(path, 'application documents');
 }
 
 /// Path to a directory where the application may access top level storage.
@@ -117,7 +158,17 @@ Future<Directory?> getApplicationDocumentsDirectory() async {
 /// On Android this uses the `getExternalFilesDir(null)`.
 Future<Directory?> getExternalStorageDirectory() async {
   final String? path = await _platform.getExternalStoragePath();
-  return _getDirectory(path);
+  return _getDirectory(path, 'external storage');
+}
+
+/// Path to the directory where downloaded files can be stored.
+/// This is typically only relevant on desktop operating systems.
+///
+/// On Android and on iOS, this function throws an [UnsupportedError] as no equivalent
+/// path exists.
+Future<Directory?> getDownloadsDirectory() async {
+  final String? path = await _platform.getDownloadsPath();
+  return _getDirectory(path, 'downloads');
 }
 
 /// Paths to directories where application specific external cache data can be
@@ -135,6 +186,7 @@ Future<Directory?> getExternalStorageDirectory() async {
 /// Context.getExternalCacheDir() on API levels below 19.
 Future<List<Directory>?> getExternalCacheDirectories() async {
   final List<String>? paths = await _platform.getExternalCachePaths();
+
   return _getDirectories(paths);
 }
 
@@ -158,14 +210,4 @@ Future<List<Directory>?> getExternalStorageDirectories({
   final List<String>? paths =
       await _platform.getExternalStoragePaths(type: type);
   return _getDirectories(paths);
-}
-
-/// Path to the directory where downloaded files can be stored.
-/// This is typically only relevant on desktop operating systems.
-///
-/// On Android and on iOS, this function throws an [UnsupportedError] as no equivalent
-/// path exists.
-Future<Directory?> getDownloadsDirectory() async {
-  final String? path = await _platform.getDownloadsPath();
-  return _getDirectory(path);
 }
