@@ -9,10 +9,6 @@ task:
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
   upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel beta
-    - flutter upgrade
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
@@ -35,8 +31,6 @@ task:
       env:
         matrix:
           CHANNEL: "master"
-          CHANNEL: "beta"
-          CHANNEL: "stable"
       test_script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
@@ -47,15 +41,11 @@ task:
       env:
         matrix:
           CHANNEL: "master"
-          CHANNEL: "beta"
-          CHANNEL: "stable"
       script: ./script/incremental_build.sh analyze
     - name: build_all_plugins_apk
       env:
         matrix:
           CHANNEL: "master"
-          CHANNEL: "beta"
-          CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
@@ -84,8 +74,6 @@ task:
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
-          CHANNEL: "beta"
-          CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
       script:
@@ -124,11 +112,6 @@ task:
     memory: 16G
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
-  upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel beta
-    - flutter upgrade
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
@@ -154,10 +137,6 @@ task:
     image: big-sur-xcode-12.3
   upgrade_script:
     - sudo gem install cocoapods
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel beta
-    - flutter upgrade
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
@@ -172,8 +151,6 @@ task:
       env:
         matrix:
           CHANNEL: "master"
-          CHANNEL: "beta"
-          CHANNEL: "stable"
       script:
         # TODO(jackson): Allow web plugins once supported on stable
         # https://github.com/flutter/flutter/issues/42864
@@ -191,8 +168,6 @@ task:
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
-          CHANNEL: "beta"
-          CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       build_script:
         # TODO(jackson): Allow web plugins once supported on stable
@@ -217,8 +192,6 @@ task:
     image: catalina-xcode-11.3.1-flutter
   upgrade_script:
     - sudo gem install cocoapods
-    - flutter channel stable
-    - flutter upgrade
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
