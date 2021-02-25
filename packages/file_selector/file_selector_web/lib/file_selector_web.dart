@@ -45,6 +45,9 @@ class FileSelectorWeb extends FileSelectorPlatform {
     return _openFiles(acceptedTypeGroups: acceptedTypeGroups, multiple: true);
   }
 
+  // This is intended to be passed to XFile, which ignores the path, but 'null'
+  // indicates a canceled save on other platforms, so provide a non-null dummy
+  // value.
   @override
   Future<String?> getSavePath({
     List<XTypeGroup>? acceptedTypeGroups,
@@ -52,7 +55,7 @@ class FileSelectorWeb extends FileSelectorPlatform {
     String? suggestedName,
     String? confirmButtonText,
   }) async =>
-      null;
+      '';
 
   @override
   Future<String?> getDirectoryPath({
