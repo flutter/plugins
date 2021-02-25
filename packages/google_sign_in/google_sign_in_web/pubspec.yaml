@@ -12,7 +12,7 @@ flutter:
         fileName: google_sign_in_web.dart
 
 dependencies:
-  google_sign_in_platform_interface: ^2.0.0-0 # TODO: Migrate to stable
+  google_sign_in_platform_interface: ^2.0.0
   flutter:
     sdk: flutter
   flutter_web_plugins:
