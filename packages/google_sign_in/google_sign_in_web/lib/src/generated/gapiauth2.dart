@@ -268,28 +268,28 @@ abstract class BasicProfile {
 @anonymous
 @JS()
 abstract class AuthResponse {
-  external String get access_token;
-  external set access_token(String v);
-  external String get id_token;
-  external set id_token(String v);
-  external String get login_hint;
-  external set login_hint(String v);
-  external String get scope;
-  external set scope(String v);
-  external num get expires_in;
-  external set expires_in(num v);
-  external num get first_issued_at;
-  external set first_issued_at(num v);
-  external num get expires_at;
-  external set expires_at(num v);
+  external String? get access_token;
+  external set access_token(String? v);
+  external String? get id_token;
+  external set id_token(String? v);
+  external String? get login_hint;
+  external set login_hint(String? v);
+  external String? get scope;
+  external set scope(String? v);
+  external num? get expires_in;
+  external set expires_in(num? v);
+  external num? get first_issued_at;
+  external set first_issued_at(num? v);
+  external num? get expires_at;
+  external set expires_at(num? v);
   external factory AuthResponse(
-      {String access_token,
-      String id_token,
-      String login_hint,
-      String scope,
-      num expires_in,
-      num first_issued_at,
-      num expires_at});
+      {String? access_token,
+      String? id_token,
+      String? login_hint,
+      String? scope,
+      num? expires_in,
+      num? first_issued_at,
+      num? expires_at});
 }
 
 /// Reference: https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2authorizeconfig
@@ -368,23 +368,22 @@ abstract class AuthorizeResponse {
 @JS()
 abstract class GoogleUser {
   /// Get the user's unique ID string.
-  external String getId();
+  external String? getId();
 
   /// Returns true if the user is signed in.
   external bool isSignedIn();
 
   /// Get the user's Google Apps domain if the user signed in with a Google Apps account.
-  // TODO: Maybe null?
-  external String getHostedDomain();
+  external String? getHostedDomain();
 
   /// Get the scopes that the user granted as a space-delimited string.
-  external String getGrantedScopes();
+  external String? getGrantedScopes();
 
   /// Get the user's basic profile information.
   external BasicProfile? getBasicProfile();
 
   /// Get the response object from the user's auth session.
-  // TODO: Maybe null?
+  // This returns an empty JS object when the user hasn't attempted to sign in.
   external AuthResponse getAuthResponse([bool includeAuthorizationData]);
 
   /// Returns true if the user granted the specified scopes.

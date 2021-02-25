@@ -201,7 +201,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
     if (currentUser == null) return false;
 
-    final grantedScopes = currentUser.getGrantedScopes();
+    final grantedScopes = currentUser.getGrantedScopes() ?? '';
     final missingScopes =
         scopes.where((scope) => !grantedScopes.contains(scope));
 
