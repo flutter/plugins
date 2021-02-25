@@ -1,4 +1,10 @@
-# Running browser_tests
+# Testing
+
+This package utilizes the `integration_test` package to run its tests in a web browser.
+
+See [flutter.dev > Integration testing](https://flutter.dev/docs/testing/integration-tests) for more info.
+
+## Running the tests
 
 Make sure you have updated to the latest Flutter master.
 
@@ -9,9 +15,7 @@ Make sure you have updated to the latest Flutter master.
 
 3. Start the driver using `chromedriver --port=4444`
 
-4. Change into the `test` directory of your clone.
+4. Run tests: `flutter drive -d web-server --browser-name=chrome --driver=test_driver/integration_driver.dart --target=integration_test/TEST_NAME.dart`, or (in Linux):
 
-5. Run tests: `flutter drive -d web-server --browser-name=chrome --target=test_driver/TEST_NAME_integration.dart`, or (in Linux):
-
-    * Single: `./run_test test_driver/TEST_NAME_integration.dart`
-    * All: `./run_test`
+    * Single: `./run_test.sh integration_test/TEST_NAME.dart`
+    * All: `./run_test.sh`
