@@ -259,7 +259,7 @@ class FakeFileSelector extends Fake
     with MockPlatformInterfaceMixin
     implements FileSelectorPlatform {
   // Expectations.
-  List<XTypeGroup>? acceptedTypeGroups;
+  List<XTypeGroup>? acceptedTypeGroups = const <XTypeGroup>[];
   String? initialDirectory;
   String? confirmButtonText;
   String? suggestedName;
@@ -268,7 +268,7 @@ class FakeFileSelector extends Fake
   String? path;
 
   void setExpectations({
-    List<XTypeGroup>? acceptedTypeGroups,
+    List<XTypeGroup> acceptedTypeGroups = const <XTypeGroup>[],
     String? initialDirectory,
     String? suggestedName,
     String? confirmButtonText,

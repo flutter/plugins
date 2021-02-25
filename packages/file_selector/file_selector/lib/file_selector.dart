@@ -11,7 +11,7 @@ export 'package:file_selector_platform_interface/file_selector_platform_interfac
 
 /// Open file dialog for loading files and return a file path
 Future<XFile?> openFile({
-  List<XTypeGroup>? acceptedTypeGroups,
+  List<XTypeGroup> acceptedTypeGroups = const <XTypeGroup>[],
   String? initialDirectory,
   String? confirmButtonText,
 }) {
@@ -23,7 +23,7 @@ Future<XFile?> openFile({
 
 /// Open file dialog for loading files and return a list of file paths
 Future<List<XFile>> openFiles({
-  List<XTypeGroup>? acceptedTypeGroups,
+  List<XTypeGroup> acceptedTypeGroups = const <XTypeGroup>[],
   String? initialDirectory,
   String? confirmButtonText,
 }) {
@@ -35,7 +35,7 @@ Future<List<XFile>> openFiles({
 
 /// Saves File to user's file system
 Future<String?> getSavePath({
-  List<XTypeGroup>? acceptedTypeGroups,
+  List<XTypeGroup> acceptedTypeGroups = const <XTypeGroup>[],
   String? initialDirectory,
   String? suggestedName,
   String? confirmButtonText,
