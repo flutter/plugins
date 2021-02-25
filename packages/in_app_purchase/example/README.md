@@ -30,7 +30,8 @@ below.
 
    - `consumable`: A managed product.
    - `upgrade`: A managed product.
-   - `subscription`: A subscription.
+   - `subscription_silver`: A lower level subscription.
+   - `subscription_gold`: A higher level subscription.
 
    Make sure that all of the products are set to `ACTIVE`.
 
