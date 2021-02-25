@@ -1,6 +1,7 @@
 ## 0.5.0
 
 * Migrate to null safety.
+* Fixes quick actions not working on iOS.
 
 ## 0.4.0+12
 
