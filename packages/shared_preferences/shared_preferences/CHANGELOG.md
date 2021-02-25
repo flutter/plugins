@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Don't create additional thread pools when method channel is called.
+
 ## 2.0.1
 
 * Removed deprecated [AsyncTask](https://developer.android.com/reference/android/os/AsyncTask) was deprecated in API level 30 ([#3481](https://github.com/flutter/plugins/pull/3481))
