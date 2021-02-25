@@ -279,7 +279,7 @@ void main() {
       });
     });
 
-    test("androidInfo hanels null", () async {
+    test("androidInfo handles null", () async {
       final AndroidDeviceInfo result =
           await methodChannelDeviceInfo.androidInfo();
 
