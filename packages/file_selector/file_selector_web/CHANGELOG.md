@@ -1,7 +1,7 @@
 # 0.8.1
 
 - Return a non-null value from `getSavePath` for consistency with
-  API expectations that null indications canceling.
+  API expectations that null indicates canceling.
 
 # 0.8.0
 
