@@ -400,8 +400,8 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Widget buildPreview(int cameraId) {
-    return Texture(textureId: cameraId);
+  Widget buildPreview(int cameraId, {bool freeze = false}) {
+    return Texture(textureId: cameraId, freeze: freeze);
   }
 
   /// Returns the flash mode as a String.
