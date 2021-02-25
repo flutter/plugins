@@ -1,4 +1,4 @@
-## 0.3.1
+## 0.4.0
 
 * Fix nullability of `XFileBase`'s `path` and `name` to match the
   implementations to avoid potential analyzer issues.
