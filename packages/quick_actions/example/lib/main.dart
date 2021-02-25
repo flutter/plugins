@@ -41,7 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final QuickActions quickActions = QuickActions();
     quickActions.initialize((String shortcutType) {
       setState(() {
-        if (shortcutType != null) shortcut = shortcutType;
+        if (shortcutType != null) {
+          shortcut = shortcutType;
+        }
       });
     });
 
@@ -59,7 +61,11 @@ class _MyHomePageState extends State<MyHomePage> {
           type: 'action_two',
           localizedTitle: 'Action two',
           icon: 'ic_launcher'),
-    ]);
+    ]).then((value) {
+      setState(() {
+        shortcut = "actions ready";
+      });
+    });
   }
 
   @override
