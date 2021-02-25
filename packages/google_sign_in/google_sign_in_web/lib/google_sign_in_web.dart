@@ -6,8 +6,8 @@ import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:flutter/services.dart';
-import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:js/js.dart';
 import 'package:meta/meta.dart';
 
@@ -208,7 +208,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     if (missingScopes.isEmpty) return true;
 
     final response = await currentUser
-        .grant(auth2.SigninOptions(scope: missingScopes.join(" ")));
+        .grant(auth2.SigninOptions(scope: missingScopes.join(' ')));
 
     return response != null;
   }

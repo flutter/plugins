@@ -17,8 +17,8 @@
 @JS()
 library gapiauth2;
 
-import "package:js/js.dart";
-import "package:js/js_util.dart" show promiseToFuture;
+import 'package:js/js.dart';
+import 'package:js/js_util.dart' show promiseToFuture;
 
 @anonymous
 @JS()
@@ -48,7 +48,7 @@ class OfflineAccessResponse {
 /// GoogleAuth is a singleton class that provides methods to allow the user to sign in with a Google account,
 /// get the user's current sign-in status, get specific data from the user's Google profile,
 /// request additional scopes, and sign out from the current account.
-@JS("gapi.auth2.GoogleAuth")
+@JS('gapi.auth2.GoogleAuth')
 class GoogleAuth {
   external IsSignedIn get isSignedIn;
   external set isSignedIn(IsSignedIn v);
@@ -244,7 +244,7 @@ abstract class ClientConfig {
       String redirect_uri});
 }
 
-@JS("gapi.auth2.SigninOptionsBuilder")
+@JS('gapi.auth2.SigninOptionsBuilder')
 class SigninOptionsBuilder {
   external dynamic setAppPackageName(String name);
   external dynamic setFetchBasicProfile(bool fetch);
@@ -421,22 +421,22 @@ extension GoogleUserExtensions on GoogleUser {
 
 /// Initializes the GoogleAuth object.
 /// Reference: https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2initparams
-@JS("gapi.auth2.init")
+@JS('gapi.auth2.init')
 external GoogleAuth init(ClientConfig params);
 
 /// Returns the GoogleAuth object. You must initialize the GoogleAuth object with gapi.auth2.init() before calling this method.
-@JS("gapi.auth2.getAuthInstance")
+@JS('gapi.auth2.getAuthInstance')
 external GoogleAuth? getAuthInstance();
 
 /// Performs a one time OAuth 2.0 authorization.
 /// Reference: https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2authorizeparams-callback
-@JS("gapi.auth2.authorize")
+@JS('gapi.auth2.authorize')
 external void authorize(
     AuthorizeConfig params, void callback(AuthorizeResponse response));
 // End module gapi.auth2
 
 // Module gapi.signin2
-@JS("gapi.signin2.render")
+@JS('gapi.signin2.render')
 external void render(
     dynamic id,
     dynamic

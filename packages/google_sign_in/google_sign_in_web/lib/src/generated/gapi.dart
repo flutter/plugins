@@ -15,7 +15,7 @@
 @JS()
 library gapi;
 
-import "package:js/js.dart";
+import 'package:js/js.dart';
 
 // Module gapi
 typedef void LoadCallback(
@@ -46,7 +46,7 @@ abstract class LoadConfig {
 /*type CallbackOrConfig = LoadConfig | LoadCallback;*/
 /// Pragmatically initialize gapi class member.
 /// Reference: https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiloadlibraries-callbackorconfig
-@JS("gapi.load")
+@JS('gapi.load')
 external void load(
     String apiName, dynamic /*LoadConfig|LoadCallback*/ callback);
 // End module gapi

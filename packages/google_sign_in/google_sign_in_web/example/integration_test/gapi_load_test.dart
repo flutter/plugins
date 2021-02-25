@@ -4,11 +4,11 @@
 
 import 'dart:html' as html;
 
-import 'package:integration_test/integration_test.dart';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:google_sign_in_web/google_sign_in_web.dart';
+import 'package:integration_test/integration_test.dart';
+
 import 'gapi_mocks/gapi_mocks.dart' as gapi_mocks;
 import 'src/test_utils.dart';
 
