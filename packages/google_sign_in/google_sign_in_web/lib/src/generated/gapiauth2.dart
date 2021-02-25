@@ -256,12 +256,12 @@ class SigninOptionsBuilder {
 @anonymous
 @JS()
 abstract class BasicProfile {
-  external String getId();
-  external String getName();
-  external String getGivenName();
-  external String getFamilyName();
-  external String getImageUrl();
-  external String getEmail();
+  external String? getId();
+  external String? getName();
+  external String? getGivenName();
+  external String? getFamilyName();
+  external String? getImageUrl();
+  external String? getEmail();
 }
 
 /// Reference: https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2authresponse
@@ -381,8 +381,7 @@ abstract class GoogleUser {
   external String getGrantedScopes();
 
   /// Get the user's basic profile information.
-  // TODO: Maybe null?
-  external BasicProfile getBasicProfile();
+  external BasicProfile? getBasicProfile();
 
   /// Get the response object from the user's auth session.
   // TODO: Maybe null?
