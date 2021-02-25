@@ -51,6 +51,10 @@ Common schemes supported by both iOS and Android:
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
 
+**Note**: URL schemes are only supported if there are apps installed on the device that can
+support them. For example, iOS simulators don't have a default email or phone
+apps installed, so can't open `tel:` or `mailto:` links.
+
 ### Encoding URLs
 
 URLs must be properly encoded, especially when including spaces or other special characters. This can be done using the [`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html):
