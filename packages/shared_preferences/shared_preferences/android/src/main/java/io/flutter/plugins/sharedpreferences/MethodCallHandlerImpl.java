@@ -43,12 +43,16 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private final android.content.SharedPreferences preferences;
 
+  private final ExecutorService executor;
+
   /**
    * Constructs a {@link MethodCallHandlerImpl} instance. Creates a {@link
    * android.content.SharedPreferences} based on the {@code context}.
    */
   MethodCallHandlerImpl(Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    executor =
+        new ThreadPoolExecutor(0, 1, 30L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
   }
 
   @Override
@@ -123,8 +127,6 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private void commitAsync(
       final SharedPreferences.Editor editor, final MethodChannel.Result result) {
-    final ExecutorService executor =
-        new ThreadPoolExecutor(0, 1, 30L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
     final Handler handler = new Handler(Looper.getMainLooper());
 
     executor.execute(
