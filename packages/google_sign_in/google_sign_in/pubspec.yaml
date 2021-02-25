@@ -12,11 +12,12 @@ flutter:
         pluginClass: GoogleSignInPlugin
       ios:
         pluginClass: FLTGoogleSignInPlugin
-      #web:
-      #  default_package: google_sign_in_web
+      web:
+        default_package: google_sign_in_web
 
 dependencies:
   google_sign_in_platform_interface: ^2.0.0
+  google_sign_in_web: ^0.10.0
   flutter:
     sdk: flutter
   meta: ^1.3.0
