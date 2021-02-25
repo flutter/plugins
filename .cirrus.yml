@@ -111,7 +111,6 @@ task:
     cpu: 8
     memory: 16G
   env:
-    INTEGRATION_TEST_PATH: "./packages/integration_test"
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
