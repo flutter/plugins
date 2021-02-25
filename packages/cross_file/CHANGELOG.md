@@ -1,3 +1,8 @@
+## 0.3.1
+
+* Fix nullability of `XFileBase`'s `path` and `name` to match the
+  implementations to avoid potential analyzer issues.
+
 ## 0.3.0
 
 * Migrated package to null-safety.
