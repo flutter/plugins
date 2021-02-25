@@ -73,6 +73,14 @@ void main() {
         expect(await files[1].lastModified(), isNotNull);
       });
     });
+
+    group('getSavePath', () {
+      testWidgets('returns non-null', (WidgetTester _) async {
+        final plugin = FileSelectorWeb();
+        final savePath = plugin.getSavePath();
+        expect(await savePath, isNotNull);
+      });
+    });
   });
 }
 
