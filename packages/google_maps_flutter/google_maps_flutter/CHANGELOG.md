@@ -1,4 +1,4 @@
-## 2.0.0-nullsafety
+## 2.0.0
 
 * Migrate to null-safety
 * BREAKING CHANGE: Passing an unknown map object ID (e.g., MarkerId) to a
