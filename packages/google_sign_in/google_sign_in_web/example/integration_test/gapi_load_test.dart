@@ -15,10 +15,8 @@ import 'src/test_utils.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  gapiUrl = toBase64Url(gapi_mocks.auth2InitSuccess(GoogleSignInUserData(
-    email: 'test@test.com',
-    id: '1234'
-  )));
+  gapiUrl = toBase64Url(gapi_mocks.auth2InitSuccess(
+      GoogleSignInUserData(email: 'test@test.com', id: '1234')));
 
   testWidgets('Plugin is initialized after GAPI fully loads and init is called',
       (WidgetTester tester) async {

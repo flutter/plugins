@@ -66,14 +66,12 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   }
 
   @override
-  Future<void> init(
-      {
-      List<String> scopes = const <String>[],
-      SignInOption signInOption = SignInOption.standard,
-      String? hostedDomain,
-      String? clientId,
-      }) async {
-
+  Future<void> init({
+    List<String> scopes = const <String>[],
+    SignInOption signInOption = SignInOption.standard,
+    String? hostedDomain,
+    String? clientId,
+  }) async {
     final String? appClientId = clientId ?? _autoDetectedClientId;
     assert(
         appClientId != null,
@@ -209,7 +207,8 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
     if (missingScopes.isEmpty) return true;
 
-    final response = await currentUser.grant(auth2.SigninOptions(scope: missingScopes.join(" ")));
+    final response = await currentUser
+        .grant(auth2.SigninOptions(scope: missingScopes.join(" ")));
 
     return response != null;
   }

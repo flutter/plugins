@@ -11,8 +11,10 @@ import 'generated/gapiauth2.dart' as auth2;
 
 /// Injects a bunch of libraries in the <head> and returns a
 /// Future that resolves when all load.
-Future<void> injectJSLibraries(List<String> libraries,
-    {html.HtmlElement? target,}) {
+Future<void> injectJSLibraries(
+  List<String> libraries, {
+  html.HtmlElement? target,
+}) {
   final List<Future<void>> loading = <Future<void>>[];
   final List<html.HtmlElement> tags = <html.HtmlElement>[];
 
