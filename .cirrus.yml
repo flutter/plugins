@@ -110,7 +110,7 @@ task:
     dockerfile: .ci/Dockerfile-LinuxDesktop
     cpu: 8
     memory: 16G
-  env:
+  upgrade_script:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
