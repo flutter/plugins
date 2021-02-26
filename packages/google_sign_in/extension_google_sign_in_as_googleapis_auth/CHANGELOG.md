@@ -1,3 +1,8 @@
+## 2.0.0
+
+* Migrate to null safety.
+* Fixes the requested scopes to use the `GoogleSignIn` instance's `scopes`.
+
 ## 1.0.4
 
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
