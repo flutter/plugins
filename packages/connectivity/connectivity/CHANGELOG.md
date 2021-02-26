@@ -1,3 +1,7 @@
+## 3.0.1
+
+* Migrate tests to null safety.
+
 ## 3.0.0
 
 * Migrate to null safety.
