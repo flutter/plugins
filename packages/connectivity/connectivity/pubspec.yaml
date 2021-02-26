@@ -32,9 +32,9 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  test: ^1.16.3
   integration_test:
-    path: ../../integration_test
+    sdk: flutter
+  test: ^1.16.3
   plugin_platform_interface: ">=1.0.0 <3.0.0"
   pedantic: ^1.10.0
 
