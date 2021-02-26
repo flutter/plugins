@@ -13,8 +13,6 @@ dependencies:
   wifi_info_flutter_platform_interface: ^2.0.0
 
 dev_dependencies:
-  integration_test:
-    path: ../../integration_test
   flutter_test:
     sdk: flutter
 
