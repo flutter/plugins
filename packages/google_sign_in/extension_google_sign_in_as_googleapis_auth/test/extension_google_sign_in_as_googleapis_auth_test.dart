@@ -13,7 +13,6 @@ import 'package:test/fake.dart';
 const SOME_FAKE_ACCESS_TOKEN = 'this-is-something-not-null';
 const SOME_FAKE_SCOPES = ['some-scope', 'another-scope'];
 
-// Mocks so I don't have to prepare all the GoogleSignIn environment.
 class FakeGoogleSignIn extends Fake implements GoogleSignIn {
   final List<String> scopes = <String>[];
 }
