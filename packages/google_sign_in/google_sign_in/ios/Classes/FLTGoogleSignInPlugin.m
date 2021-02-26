@@ -77,7 +77,7 @@ static FlutterError *getFlutterError(NSError *error) {
                                                        ofType:@"plist"];
       if (path) {
         NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-        [GIDSignIn sharedInstance].clientID = [call.arguments objectForKey:@"clientId"] ?? plist[kClientIdKey];
+        [GIDSignIn sharedInstance].clientID = [call.arguments objectForKey:@"clientId"] ?: plist[kClientIdKey];
         [GIDSignIn sharedInstance].serverClientID = plist[kServerClientIdKey];
         [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
         [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
