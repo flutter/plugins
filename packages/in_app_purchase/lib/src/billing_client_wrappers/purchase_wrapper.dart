@@ -121,7 +121,7 @@ class PurchaseWrapper {
   ///
   /// The value is `null` if it wasn't specified when the purchase was acknowledged or consumed.
   /// The `developerPayload` is removed from [BillingClientWrapper.acknowledgePurchase], [BillingClientWrapper.consumeAsync], [InAppPurchaseConnection.completePurchase], [InAppPurchaseConnection.consumePurchase]
-  /// after plugin version `0.5.0`. As a result, this will be `null` for new purchases happened after `0.5.0`.
+  /// after plugin version `0.5.0`. As a result, this will be `null` for new purchases that happen after updating to `0.5.0`.
   final String? developerPayload;
 
   /// Whether the purchase has been acknowledged.

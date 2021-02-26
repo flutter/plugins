@@ -212,6 +212,40 @@ void main() {
     });
 
     test(
+        'Change subscription throws assertion error `oldSku` and `purchaseToken` has different nullability',
+        () async {
+      const String debugMessage = 'dummy message';
+      final BillingResponse responseCode = BillingResponse.ok;
+      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+          responseCode: responseCode, debugMessage: debugMessage);
+      stubPlatform.addResponse(
+        name: launchMethodName,
+        value: buildBillingResultMap(expectedBillingResult),
+      );
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = 'hashedAccountId';
+      final String profileId = 'hashedProfileId';
+
+      expect(
+          billingClient.launchBillingFlow(
+              sku: skuDetails.sku,
+              accountId: accountId,
+              obfuscatedProfileId: profileId,
+              oldSku: dummyOldPurchase.sku,
+              purchaseToken: null),
+          throwsAssertionError);
+
+      expect(
+          billingClient.launchBillingFlow(
+              sku: skuDetails.sku,
+              accountId: accountId,
+              obfuscatedProfileId: profileId,
+              oldSku: null,
+              purchaseToken: dummyOldPurchase.purchaseToken),
+          throwsAssertionError);
+    });
+
+    test(
         'serializes and deserializes data on change subscription without proration',
         () async {
       const String debugMessage = 'dummy message';
@@ -225,7 +259,6 @@ void main() {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
       final String accountId = 'hashedAccountId';
       final String profileId = 'hashedProfileId';
-      final String purchaseToken = 'aPurchaseToken';
 
       expect(
           await billingClient.launchBillingFlow(
@@ -233,14 +266,15 @@ void main() {
               accountId: accountId,
               obfuscatedProfileId: profileId,
               oldSku: dummyOldPurchase.sku,
-              purchaseToken: purchaseToken),
+              purchaseToken: dummyOldPurchase.purchaseToken),
           equals(expectedBillingResult));
       Map<dynamic, dynamic> arguments =
           stubPlatform.previousCallMatching(launchMethodName).arguments;
       expect(arguments['sku'], equals(skuDetails.sku));
       expect(arguments['accountId'], equals(accountId));
       expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
-      expect(arguments['purchaseToken'], equals(purchaseToken));
+      expect(
+          arguments['purchaseToken'], equals(dummyOldPurchase.purchaseToken));
       expect(arguments['obfuscatedProfileId'], equals(profileId));
     });
 
@@ -258,7 +292,6 @@ void main() {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
       final String accountId = 'hashedAccountId';
       final String profileId = 'hashedProfileId';
-      final String purchaseToken = 'aPurchaseToken';
       final prorationMode = ProrationMode.immediateAndChargeProratedPrice;
 
       expect(
@@ -268,7 +301,7 @@ void main() {
               obfuscatedProfileId: profileId,
               oldSku: dummyOldPurchase.sku,
               prorationMode: prorationMode,
-              purchaseToken: purchaseToken),
+              purchaseToken: dummyOldPurchase.purchaseToken),
           equals(expectedBillingResult));
       Map<dynamic, dynamic> arguments =
           stubPlatform.previousCallMatching(launchMethodName).arguments;
@@ -276,7 +309,8 @@ void main() {
       expect(arguments['accountId'], equals(accountId));
       expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
       expect(arguments['obfuscatedProfileId'], equals(profileId));
-      expect(arguments['purchaseToken'], equals(purchaseToken));
+      expect(
+          arguments['purchaseToken'], equals(dummyOldPurchase.purchaseToken));
       expect(arguments['prorationMode'],
           ProrationModeConverter().toJson(prorationMode));
     });

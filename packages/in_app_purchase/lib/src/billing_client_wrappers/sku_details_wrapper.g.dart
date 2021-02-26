@@ -12,7 +12,7 @@ SkuDetailsWrapper _$SkuDetailsWrapperFromJson(Map json) {
     freeTrialPeriod: json['freeTrialPeriod'] as String? ?? '',
     introductoryPrice: json['introductoryPrice'] as String? ?? '',
     introductoryPriceMicros: json['introductoryPriceMicros'] as String? ?? '',
-    introductoryPriceCycles: json['introductoryPriceCycles'] as int? ?? -1,
+    introductoryPriceCycles: json['introductoryPriceCycles'] as int? ?? 0,
     introductoryPricePeriod: json['introductoryPricePeriod'] as String? ?? '',
     price: json['price'] as String? ?? '',
     priceAmountMicros: json['priceAmountMicros'] as int? ?? 0,

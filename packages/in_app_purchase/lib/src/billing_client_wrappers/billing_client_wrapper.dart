@@ -155,11 +155,11 @@ class BillingClient {
   /// The [skuDetails] needs to have already been fetched in a [querySkuDetails]
   /// call. The [accountId] is an optional hashed string associated with the user
   /// that's unique to your app. It's used by Google to detect unusual behavior.
-  /// Do not pass in a cleartext [accountId], Do not use this field to store any Personally Identifiable Information (PII)
+  /// Do not pass in a cleartext [accountId], and do not use this field to store any Personally Identifiable Information (PII)
   /// such as emails in cleartext. Attempting to store PII in this field will result in purchases being blocked.
   /// Google Play recommends that you use either encryption or a one-way hash to generate an obfuscated identifier to send to Google Play.
   ///
-  /// Specifies an optional [obfuscatedProfileId]  that is uniquely associated with the user's profile in your app.
+  /// Specifies an optional [obfuscatedProfileId] that is uniquely associated with the user's profile in your app.
   /// Some applications allow users to have multiple profiles within a single account. Use this method to send the user's profile identifier to Google.
   /// Setting this field requests the user's obfuscated account id.
   ///
@@ -174,10 +174,8 @@ class BillingClient {
   /// [`BillingClient#launchBillingFlow`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#launchbillingflow).
   /// It constructs a
   /// [`BillingFlowParams`](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams)
-  /// instance by [setting the given
-  /// skuDetails](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setskudetails)
-  /// , [the given
-  /// accountId](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder#setObfuscatedAccountId(java.lang.String))
+  /// instance by [setting the given skuDetails](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder.html#setskudetails),
+  /// [the given accountId](https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder#setObfuscatedAccountId(java.lang.String))
   /// and the [obfuscatedProfileId] (https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.Builder#setobfuscatedprofileid).
   ///
   /// When this method is called to purchase a subscription, an optional `oldSku`
@@ -195,6 +193,8 @@ class BillingClient {
       String? purchaseToken,
       ProrationMode? prorationMode}) async {
     assert(sku != null);
+    assert((oldSku == null) == (purchaseToken == null),
+        'oldSku and purchaseToken should have the same nullability');
     final Map<String, dynamic> arguments = <String, dynamic>{
       'sku': sku,
       'accountId': accountId,

@@ -263,8 +263,11 @@ public class MethodCallHandlerTest {
     verify(result, never()).success(any());
   }
 
+  // Test launchBillingFlow not crash if `accountId` is `null`
+  // Ideally, we should check if the `accountId` is null in the parameter; however,
+  // since PBL 3.0, the `accountId` variable is not public.
   @Test
-  public void launchBillingFlow_ok_null_AccountId() {
+  public void launchBillingFlow_null_AccountId_do_not_crash() {
     // Fetch the sku details first and then prepare the launch billing flow call
     String skuId = "foo";
     queryForSkus(singletonList(skuId));
