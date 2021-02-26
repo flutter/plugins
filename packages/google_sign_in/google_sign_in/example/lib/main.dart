@@ -34,7 +34,7 @@ class SignInDemo extends StatefulWidget {
 
 class SignInDemoState extends State<SignInDemo> {
   GoogleSignInAccount? _currentUser;
-  String? _contactText;
+  String _contactText = '';
 
   @override
   void initState() {
@@ -120,7 +120,7 @@ class SignInDemoState extends State<SignInDemo> {
             subtitle: Text(user.email),
           ),
           const Text("Signed in successfully."),
-          Text(_contactText ?? ''),
+          Text(_contactText),
           ElevatedButton(
             child: const Text('SIGN OUT'),
             onPressed: _handleSignOut,
