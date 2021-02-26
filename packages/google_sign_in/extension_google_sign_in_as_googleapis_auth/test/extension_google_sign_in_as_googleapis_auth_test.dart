@@ -11,10 +11,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:test/fake.dart';
 
 const SOME_FAKE_ACCESS_TOKEN = 'this-is-something-not-null';
-const SOME_FAKE_SCOPES = ['some-scope', 'another-scope'];
+const DEBUG_FAKE_SCOPES = <String>['some-scope', 'another-scope'];
+const SIGN_IN_FAKE_SCOPES = <String>['some-scope', 'another-scope'];
 
 class FakeGoogleSignIn extends Fake implements GoogleSignIn {
-  final List<String> scopes = <String>[];
+  final List<String> scopes = SIGN_IN_FAKE_SCOPES;
 }
 
 class FakeGoogleSignInAuthentication extends Fake
@@ -33,13 +34,21 @@ void main() {
     expect(client, isA<auth.AuthClient>());
   });
 
+  test('authenticatedClient uses GoogleSignIn scopes by default', () async {
+    final client = (await signIn.authenticatedClient(
+      debugAuthentication: authMock,
+    ))!;
+    expect(client.credentials.accessToken.data, equals(SOME_FAKE_ACCESS_TOKEN));
+    expect(client.credentials.scopes, equals(SIGN_IN_FAKE_SCOPES));
+  });
+
   test('authenticatedClient returned client contains the passed-in credentials',
       () async {
     final client = (await signIn.authenticatedClient(
       debugAuthentication: authMock,
-      debugScopes: SOME_FAKE_SCOPES,
+      debugScopes: DEBUG_FAKE_SCOPES,
     ))!;
     expect(client.credentials.accessToken.data, equals(SOME_FAKE_ACCESS_TOKEN));
-    expect(client.credentials.scopes, equals(SOME_FAKE_SCOPES));
+    expect(client.credentials.scopes, equals(DEBUG_FAKE_SCOPES));
   });
 }
