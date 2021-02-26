@@ -11,7 +11,9 @@ _SerializedEnums _$_SerializedEnumsFromJson(Map json) {
     ..response = _$enumDecode(_$BillingResponseEnumMap, json['response'])
     ..type = _$enumDecode(_$SkuTypeEnumMap, json['type'])
     ..purchaseState =
-        _$enumDecode(_$PurchaseStateWrapperEnumMap, json['purchaseState']);
+        _$enumDecode(_$PurchaseStateWrapperEnumMap, json['purchaseState'])
+    ..prorationMode =
+        _$enumDecode(_$ProrationModeEnumMap, json['prorationMode']);
 }
 
 Map<String, dynamic> _$_SerializedEnumsToJson(_SerializedEnums instance) =>
@@ -19,6 +21,7 @@ Map<String, dynamic> _$_SerializedEnumsToJson(_SerializedEnums instance) =>
       'response': _$BillingResponseEnumMap[instance.response],
       'type': _$SkuTypeEnumMap[instance.type],
       'purchaseState': _$PurchaseStateWrapperEnumMap[instance.purchaseState],
+      'prorationMode': _$ProrationModeEnumMap[instance.prorationMode],
     };
 
 K _$enumDecode<K, V>(
@@ -71,4 +74,12 @@ const _$PurchaseStateWrapperEnumMap = {
   PurchaseStateWrapper.unspecified_state: 0,
   PurchaseStateWrapper.purchased: 1,
   PurchaseStateWrapper.pending: 2,
+};
+
+const _$ProrationModeEnumMap = {
+  ProrationMode.unknownSubscriptionUpgradeDowngradePolicy: 0,
+  ProrationMode.immediateWithTimeProration: 1,
+  ProrationMode.immediateAndChargeProratedPrice: 2,
+  ProrationMode.immediateWithoutProration: 3,
+  ProrationMode.deferred: 4,
 };

@@ -13,7 +13,7 @@ import 'package:file_selector_web/src/utils.dart';
 ///
 /// This class implements the `package:file_selector` functionality for the web.
 class FileSelectorWeb extends FileSelectorPlatform {
-  final _domHelper;
+  final DomHelper _domHelper;
 
   /// Registers this class as the default instance of [FileSelectorPlatform].
   static void registerWith(Registrar registrar) {
@@ -23,14 +23,14 @@ class FileSelectorWeb extends FileSelectorPlatform {
   /// Default constructor, initializes _domHelper that we can use
   /// to interact with the DOM.
   /// overrides parameter allows for testing to override functions
-  FileSelectorWeb({@visibleForTesting DomHelper domHelper})
+  FileSelectorWeb({@visibleForTesting DomHelper? domHelper})
       : _domHelper = domHelper ?? DomHelper();
 
   @override
   Future<XFile> openFile({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String confirmButtonText,
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? confirmButtonText,
   }) async {
     final files = await _openFiles(acceptedTypeGroups: acceptedTypeGroups);
     return files.first;
@@ -38,31 +38,34 @@ class FileSelectorWeb extends FileSelectorPlatform {
 
   @override
   Future<List<XFile>> openFiles({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String confirmButtonText,
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? confirmButtonText,
   }) async {
     return _openFiles(acceptedTypeGroups: acceptedTypeGroups, multiple: true);
   }
 
+  // This is intended to be passed to XFile, which ignores the path, but 'null'
+  // indicates a canceled save on other platforms, so provide a non-null dummy
+  // value.
   @override
-  Future<String> getSavePath({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String suggestedName,
-    String confirmButtonText,
+  Future<String?> getSavePath({
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? suggestedName,
+    String? confirmButtonText,
   }) async =>
-      null;
+      '';
 
   @override
-  Future<String> getDirectoryPath({
-    String initialDirectory,
-    String confirmButtonText,
+  Future<String?> getDirectoryPath({
+    String? initialDirectory,
+    String? confirmButtonText,
   }) async =>
       null;
 
   Future<List<XFile>> _openFiles({
-    List<XTypeGroup> acceptedTypeGroups,
+    List<XTypeGroup>? acceptedTypeGroups,
     bool multiple = false,
   }) async {
     final accept = acceptedTypesToString(acceptedTypeGroups);

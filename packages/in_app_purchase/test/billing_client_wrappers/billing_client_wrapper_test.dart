@@ -207,6 +207,64 @@ void main() {
       expect(arguments['accountId'], equals(accountId));
     });
 
+    test(
+        'serializes and deserializes data on change subscription without proration',
+        () async {
+      const String debugMessage = 'dummy message';
+      final BillingResponse responseCode = BillingResponse.ok;
+      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+          responseCode: responseCode, debugMessage: debugMessage);
+      stubPlatform.addResponse(
+        name: launchMethodName,
+        value: buildBillingResultMap(expectedBillingResult),
+      );
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+
+      expect(
+          await billingClient.launchBillingFlow(
+              sku: skuDetails.sku,
+              accountId: accountId,
+              oldSku: dummyOldPurchase.sku),
+          equals(expectedBillingResult));
+      Map<dynamic, dynamic> arguments =
+          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], equals(accountId));
+      expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
+    });
+
+    test(
+        'serializes and deserializes data on change subscription with proration',
+        () async {
+      const String debugMessage = 'dummy message';
+      final BillingResponse responseCode = BillingResponse.ok;
+      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+          responseCode: responseCode, debugMessage: debugMessage);
+      stubPlatform.addResponse(
+        name: launchMethodName,
+        value: buildBillingResultMap(expectedBillingResult),
+      );
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+      final prorationMode = ProrationMode.immediateAndChargeProratedPrice;
+
+      expect(
+          await billingClient.launchBillingFlow(
+              sku: skuDetails.sku,
+              accountId: accountId,
+              oldSku: dummyOldPurchase.sku,
+              prorationMode: prorationMode),
+          equals(expectedBillingResult));
+      Map<dynamic, dynamic> arguments =
+          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], equals(accountId));
+      expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
+      expect(arguments['prorationMode'],
+          ProrationModeConverter().toJson(prorationMode));
+    });
+
     test('handles null accountId', () async {
       const String debugMessage = 'dummy message';
       final BillingResponse responseCode = BillingResponse.ok;
