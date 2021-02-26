@@ -411,7 +411,7 @@ public class MethodCallHandlerTest {
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
-    //    verify(result, times(1)).success(fromBillingResult(billingResult));
+    verify(result, times(1)).success(fromBillingResult(billingResult));
   }
 
   @Test
