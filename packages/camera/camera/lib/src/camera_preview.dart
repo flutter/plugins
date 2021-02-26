@@ -28,11 +28,11 @@ class CameraPreview extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                RotatedBox(
-                  quarterTurns: _getQuarterTurns(),
-                  child:
-                      CameraPlatform.instance.buildPreview(controller.cameraId),
-                ),
+                //RotatedBox(
+                //  quarterTurns: _getQuarterTurns(),
+                //  child:
+                CameraPlatform.instance.buildPreview(controller.cameraId),
+                //),
                 child ?? Container(),
               ],
             ),
