@@ -11,10 +11,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../lib/camera.dart';
-import '../../lib/camera.dart';
-import '../../lib/camera.dart';
-
 class CameraExampleHome extends StatefulWidget {
   @override
   _CameraExampleHomeState createState() {
@@ -485,7 +481,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Widget _captureControlRowWidget() {
     VoidCallback? takePictureButton;
     VoidCallback? recordButtonPressed;
-    VoidCallback? pauseOrResumeButtonPressed ;
+    VoidCallback? pauseOrResumeButtonPressed;
     VoidCallback? stopButtonPressed;
 
     if (controller != null) {
