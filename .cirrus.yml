@@ -22,6 +22,7 @@ task:
   matrix:
     - name: publishable
       script:
+        - flutter channel master
         - ./script/check_publish.sh
     - name: format
       install_script:
@@ -140,6 +141,7 @@ task:
         - flutter config --enable-linux-desktop
       build_script:
         # TODO(stuartmorgan): Include stable once Linux is supported on stable.
+        - flutter channel master
         - ./script/incremental_build.sh build-examples --linux
         - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
@@ -249,6 +251,7 @@ task:
     - flutter config --enable-macos-desktop
   upgrade_script:
     - sudo gem install cocoapods
+    - flutter channel master
     - flutter upgrade
     - git fetch origin master
   submodules_script:
@@ -257,10 +260,12 @@ task:
   matrix:
     - name: build_all_plugins_app
       script:
+        - flutter channel master
         - ./script/build_all_plugins_app.sh macos
     - name: build-apps+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
       build_script:
+        - flutter channel master
         - ./script/incremental_build.sh build-examples --macos --no-ipa
         - ./script/incremental_build.sh drive-examples --macos
