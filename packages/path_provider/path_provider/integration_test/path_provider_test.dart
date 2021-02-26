@@ -10,7 +10,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('Can get temporary directory', (WidgetTester tester) async {
-    final String? tempPath = (await getTemporaryDirectory())?.path;
+    final String? tempPath = (await getTemporaryDirectory()).path;
     expect(tempPath, isNotEmpty);
   });
 }
