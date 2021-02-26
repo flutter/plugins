@@ -56,7 +56,8 @@ class SignInDemoState extends State<SignInDemo> {
       _contactText = 'Loading contact info...';
     });
 
-    final peopleApi = PeopleApi(await _googleSignIn.authenticatedClient());
+    final peopleApi =
+        PeopleServiceApi(await _googleSignIn.authenticatedClient());
     final response = await peopleApi.people.connections.list(
       'people/me',
       personFields: 'names',
