@@ -66,7 +66,8 @@ class GooglePlayConnection
             accountId: purchaseParam.applicationUserName,
             oldSku: purchaseParam
                 .changeSubscriptionParam?.oldPurchaseDetails.productID,
-            purchaseToken: purchaseParam.changeSubscriptionParam?.oldPurchaseDetails.verificationData.serverVerificationData,
+            purchaseToken: purchaseParam.changeSubscriptionParam
+                ?.oldPurchaseDetails.verificationData.serverVerificationData,
             prorationMode:
                 purchaseParam.changeSubscriptionParam?.prorationMode);
     return billingResultWrapper.responseCode == BillingResponse.ok;

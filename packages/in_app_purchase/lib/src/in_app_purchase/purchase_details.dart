@@ -150,7 +150,6 @@ class ChangeSubscriptionParam {
   /// This is an optional parameter that indicates how to handle the existing
   /// subscription when the new subscription comes into effect.
   final ProrationMode? prorationMode;
-
 }
 
 /// Represents the transaction details of a purchase.
