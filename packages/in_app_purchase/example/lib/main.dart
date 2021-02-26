@@ -25,8 +25,8 @@ const String _kGoldSubscriptionId = 'subscription_gold';
 const List<String> _kProductIds = <String>[
   _kConsumableId,
   _kUpgradeId,
-  // _kSilverSubscriptionId,
-  // _kGoldSubscriptionId,
+  _kSilverSubscriptionId,
+  _kGoldSubscriptionId,
 ];
 
 class _MyApp extends StatefulWidget {

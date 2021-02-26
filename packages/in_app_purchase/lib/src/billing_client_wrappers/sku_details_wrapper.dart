@@ -70,9 +70,11 @@ class SkuDetailsWrapper {
   @JsonKey(defaultValue: '')
   final String introductoryPriceMicros;
 
-  /// The number of billing perios that [introductoryPrice] is valid for ("2").
-  @JsonKey(defaultValue: '')
-  final String introductoryPriceCycles;
+  /// The number of subscription billing periods for which the user will be given the introductory price, such as 3.
+  /// Returns 0 if the SKU is not a subscription or doesn't have an introductory period.
+  /// Returns -1 if the value is not available.
+  @JsonKey(defaultValue: -1)
+  final int introductoryPriceCycles;
 
   /// The billing period of [introductoryPrice], in ISO 8601 format.
   @JsonKey(defaultValue: '')

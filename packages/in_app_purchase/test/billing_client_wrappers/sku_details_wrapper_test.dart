@@ -12,7 +12,7 @@ final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   freeTrialPeriod: 'freeTrialPeriod',
   introductoryPrice: 'introductoryPrice',
   introductoryPriceMicros: 'introductoryPriceMicros',
-  introductoryPriceCycles: 'introductoryPriceCycles',
+  introductoryPriceCycles: 1,
   introductoryPricePeriod: 'introductoryPricePeriod',
   price: 'price',
   priceAmountMicros: 1000,

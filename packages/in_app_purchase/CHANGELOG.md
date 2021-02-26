@@ -4,7 +4,8 @@
   * Add `obfuscatedProfileId`, `purchaseToken` in [BillingClientWrapper.launchBillingFlow].
   * Removed `developerPayload` in [BillingClientWrapper.acknowledgePurchase], [BillingClientWrapper.consumeAsync], [InAppPurchaseConnection.completePurchase], [InAppPurchaseConnection.consumePurchase].
   * **Breaking Change**
-    * Removed `isRewarded` from [SkuDetailsWrapper]
+    * Removed `isRewarded` from [SkuDetailsWrapper].
+    * [SkuDetailsWrapper.introductoryPriceCycles] now returns `int` instead of `String`.
 
 ## 0.4.1
 
