@@ -42,11 +42,10 @@ void main() {
       expect(jsonMap['webWildCards'], null);
     });
 
-    test('Validates extensions have not leading dots', () {
+    test('Leading dots are removed from extensions', () {
       final extensions = ['.txt', '.jpg'];
       final group = XTypeGroup(extensions: extensions);
 
-      expect(group.extensions, extensions);
       expect(group.extensions, ['txt', 'jpg']);
     });
   });

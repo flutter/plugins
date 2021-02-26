@@ -1,7 +1,6 @@
 // Copyright 2020 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'package:flutter/foundation.dart';
 
 /// A set of allowed XTypes
 class XTypeGroup {
@@ -11,27 +10,11 @@ class XTypeGroup {
   /// allowed.
   XTypeGroup({
     this.label,
-    this.extensions,
+    List<String>? extensions,
     this.mimeTypes,
     this.macUTIs,
     this.webWildCards,
-  }) {
-    _verifyExtensions();
-  }
-
-  void _verifyExtensions() {
-    if (extensions == null) return;
-    final exts = extensions!;
-    for (var i = 0; i < exts.length; i++) {
-      if (!exts[i].startsWith('.')) continue;
-      if (kDebugMode) {
-        print('extensions[${i}] with value "${exts[i]}" is invalid.'
-            ' The leading dots are being removed from the extensions'
-            ' Please fix it.');
-      }
-      exts[i] = exts[i].substring(1);
-    }
-  }
+  }) : this.extensions = _removeLeadingDots(extensions);
 
   /// The 'name' or reference to this group of types
   final String? label;
@@ -58,4 +41,7 @@ class XTypeGroup {
       'webWildCards': webWildCards,
     };
   }
+
+  static List<String>? _removeLeadingDots(List<String>? exts) =>
+      exts?.map((ext) => ext.startsWith('.') ? ext.substring(1) : ext).toList();
 }
