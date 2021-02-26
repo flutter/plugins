@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Don't create additional handler when method channel is called.
+
 ## 2.0.2
 
 * Don't create additional thread pools when method channel is called.
