@@ -5,19 +5,19 @@
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 
 /// Convert list of XTypeGroups to a comma-separated string
-String acceptedTypesToString(List<XTypeGroup> acceptedTypes) {
+String acceptedTypesToString(List<XTypeGroup>? acceptedTypes) {
   if (acceptedTypes == null) return '';
   final List<String> allTypes = [];
   for (final group in acceptedTypes) {
     _assertTypeGroupIsValid(group);
     if (group.extensions != null) {
-      allTypes.addAll(group.extensions.map(_normalizeExtension));
+      allTypes.addAll(group.extensions!.map(_normalizeExtension));
     }
     if (group.mimeTypes != null) {
-      allTypes.addAll(group.mimeTypes);
+      allTypes.addAll(group.mimeTypes!);
     }
     if (group.webWildCards != null) {
-      allTypes.addAll(group.webWildCards);
+      allTypes.addAll(group.webWildCards!);
     }
   }
   return allTypes.join(',');
@@ -26,9 +26,9 @@ String acceptedTypesToString(List<XTypeGroup> acceptedTypes) {
 /// Make sure that at least one of its fields is populated.
 void _assertTypeGroupIsValid(XTypeGroup group) {
   assert(
-      !((group.extensions == null || group.extensions.isEmpty) &&
-          (group.mimeTypes == null || group.mimeTypes.isEmpty) &&
-          (group.webWildCards == null || group.webWildCards.isEmpty)),
+      !((group.extensions == null || group.extensions!.isEmpty) &&
+          (group.mimeTypes == null || group.mimeTypes!.isEmpty) &&
+          (group.webWildCards == null || group.webWildCards!.isEmpty)),
       'At least one of extensions / mimeTypes / webWildCards is required for web.');
 }
 

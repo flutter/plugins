@@ -42,10 +42,10 @@ class PackageInfo {
         (await _kChannel.invokeMapMethod<String, dynamic>('getAll'))!;
 
     packageInfo = PackageInfo(
-      appName: map["appName"],
-      packageName: map["packageName"],
-      version: map["version"],
-      buildNumber: map["buildNumber"],
+      appName: map["appName"] ?? '',
+      packageName: map["packageName"] ?? '',
+      version: map["version"] ?? '',
+      buildNumber: map["buildNumber"] ?? '',
     );
     _fromPlatform = packageInfo;
     return packageInfo;

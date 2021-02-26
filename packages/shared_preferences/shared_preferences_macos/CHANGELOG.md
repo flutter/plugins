@@ -1,6 +1,6 @@
-## 0.0.2-nullsafety
+## 2.0.0
 
-* Update Dart SDK constraint for null safety.
+* Migrate to null safety.
 
 ## 0.0.1+12
 

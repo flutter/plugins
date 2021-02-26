@@ -5,7 +5,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' show listEquals, VoidCallback;
 import 'package:flutter/material.dart' show Color, Colors;
-import 'package:meta/meta.dart' show immutable, required;
+import 'package:meta/meta.dart' show immutable;
 
 import 'types.dart';
 
@@ -13,36 +13,17 @@ import 'types.dart';
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
-class PolygonId {
+class PolygonId extends MapsObjectId<Polygon> {
   /// Creates an immutable identifier for a [Polygon].
-  PolygonId(this.value) : assert(value != null);
-
-  /// value of the [PolygonId].
-  final String value;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final PolygonId typedOther = other;
-    return value == typedOther.value;
-  }
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'PolygonId{value: $value}';
-  }
+  PolygonId(String value) : super(value);
 }
 
 /// Draws a polygon through geographical locations on the map.
 @immutable
-class Polygon {
+class Polygon implements MapsObject {
   /// Creates an immutable representation of a polygon through geographical locations on the map.
   const Polygon({
-    @required this.polygonId,
+    required this.polygonId,
     this.consumeTapEvents = false,
     this.fillColor = Colors.black,
     this.geodesic = false,
@@ -57,6 +38,9 @@ class Polygon {
 
   /// Uniquely identifies a [Polygon].
   final PolygonId polygonId;
+
+  @override
+  PolygonId get mapsId => polygonId;
 
   /// True if the [Polygon] consumes tap events.
   ///
@@ -107,21 +91,21 @@ class Polygon {
   final int zIndex;
 
   /// Callbacks to receive tap events for polygon placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Creates a new [Polygon] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Polygon copyWith({
-    bool consumeTapEventsParam,
-    Color fillColorParam,
-    bool geodesicParam,
-    List<LatLng> pointsParam,
-    List<List<LatLng>> holesParam,
-    Color strokeColorParam,
-    int strokeWidthParam,
-    bool visibleParam,
-    int zIndexParam,
-    VoidCallback onTapParam,
+    bool? consumeTapEventsParam,
+    Color? fillColorParam,
+    bool? geodesicParam,
+    List<LatLng>? pointsParam,
+    List<List<LatLng>>? holesParam,
+    Color? strokeColorParam,
+    int? strokeWidthParam,
+    bool? visibleParam,
+    int? zIndexParam,
+    VoidCallback? onTapParam,
   }) {
     return Polygon(
       polygonId: polygonId,
@@ -144,10 +128,10 @@ class Polygon {
   }
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
+  Object toJson() {
+    final Map<String, Object> json = <String, Object>{};
 
-    void addIfPresent(String fieldName, dynamic value) {
+    void addIfPresent(String fieldName, Object? value) {
       if (value != null) {
         json[fieldName] = value;
       }
@@ -177,7 +161,7 @@ class Polygon {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final Polygon typedOther = other;
+    final Polygon typedOther = other as Polygon;
     return polygonId == typedOther.polygonId &&
         consumeTapEvents == typedOther.consumeTapEvents &&
         fillColor == typedOther.fillColor &&
@@ -193,18 +177,18 @@ class Polygon {
   @override
   int get hashCode => polygonId.hashCode;
 
-  dynamic _pointsToJson() {
-    final List<dynamic> result = <dynamic>[];
+  Object _pointsToJson() {
+    final List<Object> result = <Object>[];
     for (final LatLng point in points) {
       result.add(point.toJson());
     }
     return result;
   }
 
-  List<List<dynamic>> _holesToJson() {
-    final List<List<dynamic>> result = <List<dynamic>>[];
+  List<List<Object>> _holesToJson() {
+    final List<List<Object>> result = <List<Object>>[];
     for (final List<LatLng> hole in holes) {
-      final List<dynamic> jsonHole = <dynamic>[];
+      final List<Object> jsonHole = <Object>[];
       for (final LatLng point in hole) {
         jsonHole.add(point.toJson());
       }

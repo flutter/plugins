@@ -27,7 +27,7 @@ class MarkerIconsBody extends StatefulWidget {
 const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
 
 class MarkerIconsBodyState extends State<MarkerIconsBody> {
-  GoogleMapController controller;
+  GoogleMapController? controller;
 
   EdgeInsets _padding = const EdgeInsets.all(0);
 
@@ -152,10 +152,10 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
             onPressed: () {
               setState(() {
                 _padding = EdgeInsets.fromLTRB(
-                    double.tryParse(_leftController.value?.text) ?? 0,
-                    double.tryParse(_topController.value?.text) ?? 0,
-                    double.tryParse(_rightController.value?.text) ?? 0,
-                    double.tryParse(_bottomController.value?.text) ?? 0);
+                    double.tryParse(_leftController.value.text) ?? 0,
+                    double.tryParse(_topController.value.text) ?? 0,
+                    double.tryParse(_rightController.value.text) ?? 0,
+                    double.tryParse(_bottomController.value.text) ?? 0);
               });
             },
           ),

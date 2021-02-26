@@ -1,3 +1,7 @@
+## 2.0.0
+
+* Migrate to null-safety.
+
 ## 0.0.2+3
 
 * Remove 'ffi' dependency.

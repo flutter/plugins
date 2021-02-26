@@ -6,7 +6,8 @@ package io.flutter.plugins.sharedpreferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -21,6 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin. It is also
@@ -38,12 +43,16 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private final android.content.SharedPreferences preferences;
 
+  private final ExecutorService executor;
+
   /**
    * Constructs a {@link MethodCallHandlerImpl} instance. Creates a {@link
    * android.content.SharedPreferences} based on the {@code context}.
    */
   MethodCallHandlerImpl(Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    executor =
+        new ThreadPoolExecutor(0, 1, 30L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
   }
 
   @Override
@@ -118,17 +127,22 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private void commitAsync(
       final SharedPreferences.Editor editor, final MethodChannel.Result result) {
-    new AsyncTask<Void, Void, Boolean>() {
-      @Override
-      protected Boolean doInBackground(Void... voids) {
-        return editor.commit();
-      }
+    final Handler handler = new Handler(Looper.getMainLooper());
 
-      @Override
-      protected void onPostExecute(Boolean value) {
-        result.success(value);
-      }
-    }.execute();
+    executor.execute(
+        new Runnable() {
+          @Override
+          public void run() {
+            final boolean response = editor.commit();
+            handler.post(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    result.success(response);
+                  }
+                });
+          }
+        });
   }
 
   private List<String> decodeList(String encodedList) throws IOException {

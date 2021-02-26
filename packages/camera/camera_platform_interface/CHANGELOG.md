@@ -1,3 +1,7 @@
+## 2.0.0
+
+- Stable null safety release.
+
 ## 1.6.0
 
 - Added VideoRecordedEvent to support ending a video recording in the native implementation. 

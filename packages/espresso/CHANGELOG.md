@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Update SDK requirement for null-safety compatibility.
+
 ## 0.0.1+9
 
 * Update Flutter SDK constraint.

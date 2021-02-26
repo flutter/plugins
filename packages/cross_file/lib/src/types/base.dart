@@ -31,14 +31,14 @@ abstract class XFileBase {
   /// Accessing the data contained in the picked file by its path
   /// is platform-dependant (and won't work on web), so use the
   /// byte getters in the CrossFile instance instead.
-  String? get path {
+  String get path {
     throw UnimplementedError('.path has not been implemented.');
   }
 
   /// The name of the file as it was selected by the user in their device.
   ///
   /// Use only for cosmetic reasons, do not try to use this as a path.
-  String? get name {
+  String get name {
     throw UnimplementedError('.name has not been implemented.');
   }
 

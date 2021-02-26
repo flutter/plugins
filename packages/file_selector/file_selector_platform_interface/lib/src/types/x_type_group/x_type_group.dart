@@ -17,19 +17,19 @@ class XTypeGroup {
   });
 
   /// The 'name' or reference to this group of types
-  final String label;
+  final String? label;
 
   /// The extensions for this group
-  final List<String> extensions;
+  final List<String>? extensions;
 
   /// The MIME types for this group
-  final List<String> mimeTypes;
+  final List<String>? mimeTypes;
 
   /// The UTIs for this group
-  final List<String> macUTIs;
+  final List<String>? macUTIs;
 
   /// The web wild cards for this group (ex: image/*, video/*)
-  final List<String> webWildCards;
+  final List<String>? webWildCards;
 
   /// Converts this object into a JSON formatted object
   Map<String, dynamic> toJSON() {

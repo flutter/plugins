@@ -1,3 +1,8 @@
+## 0.5.0
+
+* Migrate to null safety.
+* Fixes quick actions not working on iOS.
+
 ## 0.4.0+12
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
