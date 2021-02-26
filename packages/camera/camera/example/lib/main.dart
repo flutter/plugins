@@ -75,7 +75,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       vsync: this,
     );
     _flashModeControlRowAnimation = CurvedAnimation(
-      parent: _flashModeControlRowAnimationController!,
+      parent: _flashModeControlRowAnimationController,
       curve: Curves.easeInCubic,
     );
     _exposureModeControlRowAnimationController = AnimationController(
@@ -83,7 +83,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       vsync: this,
     );
     _exposureModeControlRowAnimation = CurvedAnimation(
-      parent: _exposureModeControlRowAnimationController!,
+      parent: _exposureModeControlRowAnimationController,
       curve: Curves.easeInCubic,
     );
     _focusModeControlRowAnimationController = AnimationController(
@@ -91,7 +91,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       vsync: this,
     );
     _focusModeControlRowAnimation = CurvedAnimation(
-      parent: _focusModeControlRowAnimationController!,
+      parent: _focusModeControlRowAnimationController,
       curve: Curves.easeInCubic,
     );
   }
@@ -99,8 +99,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
-    _flashModeControlRowAnimationController?.dispose();
-    _exposureModeControlRowAnimationController?.dispose();
+    _flashModeControlRowAnimationController.dispose();
+    _exposureModeControlRowAnimationController.dispose();
     super.dispose();
   }
 
