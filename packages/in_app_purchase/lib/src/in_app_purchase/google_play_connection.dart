@@ -81,7 +81,8 @@ class GooglePlayConnection
   }
 
   @override
-  Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase) async {
+  Future<BillingResultWrapper> completePurchase(
+      PurchaseDetails purchase) async {
     if (purchase.billingClientPurchase!.isAcknowledged) {
       return BillingResultWrapper(responseCode: BillingResponse.ok);
     }
@@ -89,8 +90,8 @@ class GooglePlayConnection
       throw ArgumentError(
           'completePurchase unsuccessful. The `purchase.verificationData` is not valid');
     }
-    return await billingClient.acknowledgePurchase(
-        purchase.verificationData.serverVerificationData);
+    return await billingClient
+        .acknowledgePurchase(purchase.verificationData.serverVerificationData);
   }
 
   @override
@@ -99,8 +100,8 @@ class GooglePlayConnection
       throw ArgumentError(
           'consumePurchase unsuccessful. The `purchase.verificationData` is not valid');
     }
-    return billingClient.consumeAsync(
-        purchase.verificationData.serverVerificationData);
+    return billingClient
+        .consumeAsync(purchase.verificationData.serverVerificationData);
   }
 
   @override

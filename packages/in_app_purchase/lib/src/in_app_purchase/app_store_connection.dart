@@ -84,7 +84,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
   }
 
   @override
-  Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase) async {
+  Future<BillingResultWrapper> completePurchase(
+      PurchaseDetails purchase) async {
     if (purchase.skPaymentTransaction == null) {
       throw ArgumentError(
           'completePurchase unsuccessful. The `purchase.skPaymentTransaction` is not valid');

@@ -664,10 +664,7 @@ public class MethodCallHandlerTest {
 
     methodChannelHandler.onMethodCall(new MethodCall(CONSUME_PURCHASE_ASYNC, arguments), result);
 
-    ConsumeParams params =
-        ConsumeParams.newBuilder()
-            .setPurchaseToken("mockToken")
-            .build();
+    ConsumeParams params = ConsumeParams.newBuilder().setPurchaseToken("mockToken").build();
 
     // Verify we pass the data to result
     verify(mockBillingClient).consumeAsync(refEq(params), listenerCaptor.capture());
@@ -698,9 +695,7 @@ public class MethodCallHandlerTest {
     methodChannelHandler.onMethodCall(new MethodCall(ACKNOWLEDGE_PURCHASE, arguments), result);
 
     AcknowledgePurchaseParams params =
-        AcknowledgePurchaseParams.newBuilder()
-            .setPurchaseToken("mockToken")
-            .build();
+        AcknowledgePurchaseParams.newBuilder().setPurchaseToken("mockToken").build();
 
     // Verify we pass the data to result
     verify(mockBillingClient).acknowledgePurchase(refEq(params), listenerCaptor.capture());

@@ -125,9 +125,9 @@ class MethodCallHandlerImpl
         launchBillingFlow(
             (String) call.argument("sku"),
             (String) call.argument("accountId"),
-                (String) call.argument("obfuscatedProfileId"),
+            (String) call.argument("obfuscatedProfileId"),
             (String) call.argument("oldSku"),
-                (String) call.argument("purchaseToken"),
+            (String) call.argument("purchaseToken"),
             call.hasArgument("prorationMode")
                 ? (int) call.argument("prorationMode")
                 : ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY,
@@ -140,14 +140,10 @@ class MethodCallHandlerImpl
         queryPurchaseHistoryAsync((String) call.argument("skuType"), result);
         break;
       case InAppPurchasePlugin.MethodNames.CONSUME_PURCHASE_ASYNC:
-        consumeAsync(
-            (String) call.argument("purchaseToken"),
-            result);
+        consumeAsync((String) call.argument("purchaseToken"), result);
         break;
       case InAppPurchasePlugin.MethodNames.ACKNOWLEDGE_PURCHASE:
-        acknowledgePurchase(
-            (String) call.argument("purchaseToken"),
-            result);
+        acknowledgePurchase((String) call.argument("purchaseToken"), result);
         break;
       default:
         result.notImplemented();
@@ -252,7 +248,7 @@ class MethodCallHandlerImpl
     if (accountId != null && !accountId.isEmpty()) {
       paramsBuilder.setObfuscatedAccountId(accountId);
     }
-    if (obfuscatedProfileId != null && !obfuscatedProfileId.isEmpty()){
+    if (obfuscatedProfileId != null && !obfuscatedProfileId.isEmpty()) {
       paramsBuilder.setObfuscatedProfileId(obfuscatedProfileId);
     }
     if (oldSku != null && !oldSku.isEmpty()) {
@@ -266,8 +262,7 @@ class MethodCallHandlerImpl
             billingClient.launchBillingFlow(activity, paramsBuilder.build())));
   }
 
-  private void consumeAsync(
-      String purchaseToken, final MethodChannel.Result result) {
+  private void consumeAsync(String purchaseToken, final MethodChannel.Result result) {
     if (billingClientError(result)) {
       return;
     }
@@ -350,15 +345,12 @@ class MethodCallHandlerImpl
         });
   }
 
-  private void acknowledgePurchase(
-      String purchaseToken, final MethodChannel.Result result) {
+  private void acknowledgePurchase(String purchaseToken, final MethodChannel.Result result) {
     if (billingClientError(result)) {
       return;
     }
     AcknowledgePurchaseParams params =
-        AcknowledgePurchaseParams.newBuilder()
-            .setPurchaseToken(purchaseToken)
-            .build();
+        AcknowledgePurchaseParams.newBuilder().setPurchaseToken(purchaseToken).build();
     billingClient.acknowledgePurchase(
         params,
         new AcknowledgePurchaseResponseListener() {

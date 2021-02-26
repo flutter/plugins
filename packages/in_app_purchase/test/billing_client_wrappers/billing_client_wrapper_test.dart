@@ -200,7 +200,9 @@ void main() {
 
       expect(
           await billingClient.launchBillingFlow(
-              sku: skuDetails.sku, accountId: accountId, obfuscatedProfileId: profileId),
+              sku: skuDetails.sku,
+              accountId: accountId,
+              obfuscatedProfileId: profileId),
           equals(expectedBillingResult));
       Map<dynamic, dynamic> arguments =
           stubPlatform.previousCallMatching(launchMethodName).arguments;
@@ -454,8 +456,8 @@ void main() {
           name: consumeMethodName,
           value: buildBillingResultMap(expectedBillingResult));
 
-      final BillingResultWrapper billingResult = await billingClient
-          .consumeAsync('dummy token');
+      final BillingResultWrapper billingResult =
+          await billingClient.consumeAsync('dummy token');
 
       expect(billingResult, equals(expectedBillingResult));
     });
@@ -465,8 +467,8 @@ void main() {
         name: consumeMethodName,
         value: null,
       );
-      final BillingResultWrapper billingResult = await billingClient
-          .consumeAsync('dummy token');
+      final BillingResultWrapper billingResult =
+          await billingClient.consumeAsync('dummy token');
 
       expect(
           billingResult,
