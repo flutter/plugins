@@ -1,11 +1,6 @@
-## 5.0.0-nullsafety.1
+## 5.0.0
 
-* Document that the web plugin is not endorsed in the `nullsafety` prerelease for now.
-
-## 5.0.0-nullsafety
-
-* Migrate to nnbd.
-* **Breaking change**: web plugins aren't endorsed in null-safe plugins yet.
+* Migrate to null safety.
 
 ## 4.5.9
 
