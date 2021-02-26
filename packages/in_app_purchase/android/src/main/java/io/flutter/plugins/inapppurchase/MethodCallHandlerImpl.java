@@ -125,7 +125,9 @@ class MethodCallHandlerImpl
         launchBillingFlow(
             (String) call.argument("sku"),
             (String) call.argument("accountId"),
+                (String) call.argument("obfuscatedProfileId"),
             (String) call.argument("oldSku"),
+                (String) call.argument("purchaseToken"),
             call.hasArgument("prorationMode")
                 ? (int) call.argument("prorationMode")
                 : ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY,
@@ -140,13 +142,11 @@ class MethodCallHandlerImpl
       case InAppPurchasePlugin.MethodNames.CONSUME_PURCHASE_ASYNC:
         consumeAsync(
             (String) call.argument("purchaseToken"),
-            (String) call.argument("developerPayload"),
             result);
         break;
       case InAppPurchasePlugin.MethodNames.ACKNOWLEDGE_PURCHASE:
         acknowledgePurchase(
             (String) call.argument("purchaseToken"),
-            (String) call.argument("developerPayload"),
             result);
         break;
       default:
@@ -200,7 +200,9 @@ class MethodCallHandlerImpl
   private void launchBillingFlow(
       String sku,
       @Nullable String accountId,
+      @Nullable String obfuscatedProfileId,
       @Nullable String oldSku,
+      @Nullable String purchaseToken,
       int prorationMode,
       MethodChannel.Result result) {
     if (billingClientError(result)) {
@@ -248,10 +250,13 @@ class MethodCallHandlerImpl
     BillingFlowParams.Builder paramsBuilder =
         BillingFlowParams.newBuilder().setSkuDetails(skuDetails);
     if (accountId != null && !accountId.isEmpty()) {
-      paramsBuilder.setAccountId(accountId);
+      paramsBuilder.setObfuscatedAccountId(accountId);
+    }
+    if (obfuscatedProfileId != null && !obfuscatedProfileId.isEmpty()){
+      paramsBuilder.setObfuscatedProfileId(obfuscatedProfileId);
     }
     if (oldSku != null && !oldSku.isEmpty()) {
-      paramsBuilder.setOldSku(oldSku);
+      paramsBuilder.setOldSku(oldSku, purchaseToken);
     }
     // The proration mode value has to match one of the following declared in
     // https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
@@ -262,7 +267,7 @@ class MethodCallHandlerImpl
   }
 
   private void consumeAsync(
-      String purchaseToken, String developerPayload, final MethodChannel.Result result) {
+      String purchaseToken, final MethodChannel.Result result) {
     if (billingClientError(result)) {
       return;
     }
@@ -277,9 +282,6 @@ class MethodCallHandlerImpl
     ConsumeParams.Builder paramsBuilder =
         ConsumeParams.newBuilder().setPurchaseToken(purchaseToken);
 
-    if (developerPayload != null) {
-      paramsBuilder.setDeveloperPayload(developerPayload);
-    }
     ConsumeParams params = paramsBuilder.build();
 
     billingClient.consumeAsync(params, listener);
@@ -349,13 +351,12 @@ class MethodCallHandlerImpl
   }
 
   private void acknowledgePurchase(
-      String purchaseToken, @Nullable String developerPayload, final MethodChannel.Result result) {
+      String purchaseToken, final MethodChannel.Result result) {
     if (billingClientError(result)) {
       return;
     }
     AcknowledgePurchaseParams params =
         AcknowledgePurchaseParams.newBuilder()
-            .setDeveloperPayload(developerPayload)
             .setPurchaseToken(purchaseToken)
             .build();
     billingClient.acknowledgePurchase(

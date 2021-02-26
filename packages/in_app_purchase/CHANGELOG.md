@@ -1,3 +1,11 @@
+## 0.5.0
+
+* Migrate to Google Billing Library 3.0
+  * Add `obfuscatedProfileId`, `purchaseToken` in [BillingClientWrapper.launchBillingFlow].
+  * Removed `developerPayload` in [BillingClientWrapper.acknowledgePurchase], [BillingClientWrapper.consumeAsync], [InAppPurchaseConnection.completePurchase], [InAppPurchaseConnection.consumePurchase].
+  * **Breaking Change**
+    * Removed `isRewarded` from [SkuDetailsWrapper]
+
 ## 0.4.1
 
 * Support InApp subscription upgrade/downgrade.

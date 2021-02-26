@@ -269,6 +269,7 @@ public class MethodCallHandlerTest {
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("sku", skuId);
     arguments.put("accountId", null);
+    arguments.put("obfuscatedProfileId", null);
     MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
 
     // Launch the billing flow
@@ -286,7 +287,6 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
     assertEquals(params.getSku(), skuId);
-    assertNull(params.getAccountId());
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -320,7 +320,6 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
     assertEquals(params.getSku(), skuId);
-    assertEquals(params.getAccountId(), accountId);
     assertNull(params.getOldSku());
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -374,7 +373,6 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
     assertEquals(params.getSku(), skuId);
-    assertEquals(params.getAccountId(), accountId);
     assertEquals(params.getOldSku(), oldSkuId);
 
     // Verify we pass the response code to result
@@ -408,7 +406,6 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
     assertEquals(params.getSku(), skuId);
-    assertEquals(params.getAccountId(), accountId);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
@@ -445,7 +442,6 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
     assertEquals(params.getSku(), skuId);
-    assertEquals(params.getAccountId(), accountId);
     assertEquals(params.getOldSku(), oldSkuId);
     assertEquals(params.getReplaceSkusProrationMode(), prorationMode);
 
@@ -670,7 +666,6 @@ public class MethodCallHandlerTest {
 
     ConsumeParams params =
         ConsumeParams.newBuilder()
-            .setDeveloperPayload("mockPayload")
             .setPurchaseToken("mockToken")
             .build();
 
@@ -704,7 +699,6 @@ public class MethodCallHandlerTest {
 
     AcknowledgePurchaseParams params =
         AcknowledgePurchaseParams.newBuilder()
-            .setDeveloperPayload("mockPayload")
             .setPurchaseToken("mockToken")
             .build();
 

@@ -196,15 +196,17 @@ void main() {
       );
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
       final String accountId = "hashedAccountId";
+      final String profileId = "hashedProfileId";
 
       expect(
           await billingClient.launchBillingFlow(
-              sku: skuDetails.sku, accountId: accountId),
+              sku: skuDetails.sku, accountId: accountId, obfuscatedProfileId: profileId),
           equals(expectedBillingResult));
       Map<dynamic, dynamic> arguments =
           stubPlatform.previousCallMatching(launchMethodName).arguments;
       expect(arguments['sku'], equals(skuDetails.sku));
       expect(arguments['accountId'], equals(accountId));
+      expect(arguments['obfuscatedProfileId'], equals(profileId));
     });
 
     test(
@@ -219,19 +221,25 @@ void main() {
         value: buildBillingResultMap(expectedBillingResult),
       );
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
-      final String accountId = "hashedAccountId";
+      final String accountId = 'hashedAccountId';
+      final String profileId = 'hashedProfileId';
+      final String purchaseToken = 'aPurchaseToken';
 
       expect(
           await billingClient.launchBillingFlow(
               sku: skuDetails.sku,
               accountId: accountId,
-              oldSku: dummyOldPurchase.sku),
+              obfuscatedProfileId: profileId,
+              oldSku: dummyOldPurchase.sku,
+              purchaseToken: purchaseToken),
           equals(expectedBillingResult));
       Map<dynamic, dynamic> arguments =
           stubPlatform.previousCallMatching(launchMethodName).arguments;
       expect(arguments['sku'], equals(skuDetails.sku));
       expect(arguments['accountId'], equals(accountId));
       expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
+      expect(arguments['purchaseToken'], equals(purchaseToken));
+      expect(arguments['obfuscatedProfileId'], equals(profileId));
     });
 
     test(
@@ -246,21 +254,27 @@ void main() {
         value: buildBillingResultMap(expectedBillingResult),
       );
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
-      final String accountId = "hashedAccountId";
+      final String accountId = 'hashedAccountId';
+      final String profileId = 'hashedProfileId';
+      final String purchaseToken = 'aPurchaseToken';
       final prorationMode = ProrationMode.immediateAndChargeProratedPrice;
 
       expect(
           await billingClient.launchBillingFlow(
               sku: skuDetails.sku,
               accountId: accountId,
+              obfuscatedProfileId: profileId,
               oldSku: dummyOldPurchase.sku,
-              prorationMode: prorationMode),
+              prorationMode: prorationMode,
+              purchaseToken: purchaseToken),
           equals(expectedBillingResult));
       Map<dynamic, dynamic> arguments =
           stubPlatform.previousCallMatching(launchMethodName).arguments;
       expect(arguments['sku'], equals(skuDetails.sku));
       expect(arguments['accountId'], equals(accountId));
       expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
+      expect(arguments['obfuscatedProfileId'], equals(profileId));
+      expect(arguments['purchaseToken'], equals(purchaseToken));
       expect(arguments['prorationMode'],
           ProrationModeConverter().toJson(prorationMode));
     });
@@ -441,7 +455,7 @@ void main() {
           value: buildBillingResultMap(expectedBillingResult));
 
       final BillingResultWrapper billingResult = await billingClient
-          .consumeAsync('dummy token', developerPayload: 'dummy payload');
+          .consumeAsync('dummy token');
 
       expect(billingResult, equals(expectedBillingResult));
     });
@@ -452,7 +466,7 @@ void main() {
         value: null,
       );
       final BillingResultWrapper billingResult = await billingClient
-          .consumeAsync('dummy token', developerPayload: 'dummy payload');
+          .consumeAsync('dummy token');
 
       expect(
           billingResult,
@@ -475,8 +489,7 @@ void main() {
           value: buildBillingResultMap(expectedBillingResult));
 
       final BillingResultWrapper billingResult =
-          await billingClient.acknowledgePurchase('dummy token',
-              developerPayload: 'dummy payload');
+          await billingClient.acknowledgePurchase('dummy token');
 
       expect(billingResult, equals(expectedBillingResult));
     });
@@ -486,8 +499,7 @@ void main() {
         value: null,
       );
       final BillingResultWrapper billingResult =
-          await billingClient.acknowledgePurchase('dummy token',
-              developerPayload: 'dummy payload');
+          await billingClient.acknowledgePurchase('dummy token');
 
       expect(
           billingResult,

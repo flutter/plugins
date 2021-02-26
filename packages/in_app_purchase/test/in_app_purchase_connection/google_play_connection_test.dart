@@ -633,8 +633,7 @@ void main() {
       if (purchaseDetails.pendingCompletePurchase) {
         final BillingResultWrapper billingResultWrapper =
             await GooglePlayConnection.instance.completePurchase(
-                purchaseDetails,
-                developerPayload: 'dummy payload');
+                purchaseDetails);
         expect(billingResultWrapper, equals(expectedBillingResult));
         completer.complete(billingResultWrapper);
       }
