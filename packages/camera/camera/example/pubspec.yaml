@@ -13,14 +13,14 @@ dependencies:
   flutter:
     sdk: flutter
   video_player: ^2.0.0
-  integration_test:
-    path: ../../../integration_test
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_driver:
     sdk: flutter
+  integration_test:
+    path: ../../../integration_test
   pedantic: ^1.10.0
 
 flutter:
