@@ -87,6 +87,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         String mimeType,
         String encoding,
         String historyUrl,
+        Map<String, String> headers,
       }) {
     assert(data != null);
     return _channel.invokeMethod<void>('loadDataWithBaseURL', <String, dynamic>{
@@ -95,6 +96,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'mimeType': mimeType,
       'encoding': encoding,
       'historyUrl': historyUrl,
+      'headers': headers,
     });
   }
 

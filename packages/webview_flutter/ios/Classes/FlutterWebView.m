@@ -128,6 +128,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  }else if ([[call method] isEqualToString:@"loadDataWithBaseURL"]) {
+      [self loadDataWithBaseURL:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -181,6 +183,45 @@
   } else {
     result(nil);
   }
+}
+
+- (void)loadDataWithBaseURL:(FlutterMethodCall*)call result:(FlutterResult)result {
+    if (![self loadRequestWithData:[call arguments]]) {
+        result([FlutterError
+                errorWithCode:@"loadUrl_failed"
+                message:@"Failed parsing the URL"
+                details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
+    } else {
+        result(nil);
+    }
+}
+
+- (bool)loadRequestWithData:(NSDictionary<NSString*, id>*)request {
+    if (!request) {
+        return false;
+    }
+    NSString* url = request[@"baseUrl"];
+    if ([url isKindOfClass:[NSString class]]) {
+        NSURL* nsUrl = [NSURL URLWithString:url];
+        if (!nsUrl) {
+            return false;
+        }
+        else {
+            id data = request[@"data"];
+            if ([data isKindOfClass:[NSString class]]) {
+                if (@available(iOS 11.0, *)) {
+                    [_webView loadHTMLString:data baseURL:nsUrl];
+                    return true;
+                } else {
+                    return true;
+                }
+                
+            } else {
+                return false;
+            }
+        }
+    }
+    return false;
 }
 
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
