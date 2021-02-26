@@ -1,6 +1,6 @@
 ## 2.0.3
 
-* Don't create additional handler when method channel is called.
+* Android: don't create additional Handler when method channel is called.
 
 ## 2.0.2
 
