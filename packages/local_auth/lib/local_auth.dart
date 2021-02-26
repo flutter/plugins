@@ -34,7 +34,7 @@ class LocalAuthentication {
   /// Use `authenticate` with `biometricOnly: true` instead
   @Deprecated("Use `authenticate` with `biometricOnly: true` instead")
   Future<bool> authenticateWithBiometrics({
-    required String localizedReason,
+    @required String localizedReason,
     bool useErrorDialogs = true,
     bool stickyAuth = false,
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
@@ -92,7 +92,7 @@ class LocalAuthentication {
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
   /// simulator.
   Future<bool> authenticate({
-    required String localizedReason,
+    @required String localizedReason,
     bool useErrorDialogs = true,
     bool stickyAuth = false,
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
@@ -139,7 +139,7 @@ class LocalAuthentication {
   ///
   /// Returns a [Future] bool true or false:
   Future<bool> get canCheckBiometrics async =>
-      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))!
+      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))
           .isNotEmpty;
 
   /// Returns true if device is capable of checking biometrics or is able to

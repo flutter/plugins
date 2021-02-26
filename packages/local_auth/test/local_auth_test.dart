@@ -19,7 +19,7 @@ void main() {
     );
 
     final List<MethodCall> log = <MethodCall>[];
-    late LocalAuthentication localAuthentication;
+    LocalAuthentication localAuthentication;
 
     setUp(() {
       channel.setMockMethodCallHandler((MethodCall methodCall) {
