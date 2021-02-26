@@ -5,23 +5,16 @@
 import 'package:google_maps_flutter_platform_interface/src/types/ground_overlay.dart';
 
 import '../types.dart';
-
+import 'maps_object.dart';
 
 /// Converts an [Iterable] of GroundOverlays in a Map of GroundOverlayId -> GroundOverlay.
 Map<GroundOverlayId, GroundOverlay> keyByGroundOverlayId(
     Iterable<GroundOverlay> groundOverlays) {
-  if (groundOverlays == null) {
-    return <GroundOverlayId, GroundOverlay>{};
-  }
-  return Map<GroundOverlayId, GroundOverlay>.fromEntries(groundOverlays.map(
-          (GroundOverlay polygon) => MapEntry<GroundOverlayId, GroundOverlay>(
-          polygon.groundOverlayId, polygon.clone())));
+  return keyByMapsObjectId<GroundOverlay>(groundOverlays)
+      .cast<GroundOverlayId, GroundOverlay>();
 }
 
 /// Converts a Set of GroundOverlays into something serializable in JSON.
-List<Map<String, dynamic>> serializeGroundOverlaySet(Set<GroundOverlay> groundOverlays) {
-  if (groundOverlays == null) {
-    return null;
-  }
-  return groundOverlays.map<Map<String, dynamic>>((GroundOverlay p) => p.toJson()).toList();
+Object serializeGroundOverlaySet(Set<GroundOverlay> groundOverlays) {
+  return serializeMapsObjectSet(groundOverlays);
 }

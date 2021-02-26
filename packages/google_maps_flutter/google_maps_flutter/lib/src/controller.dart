@@ -187,8 +187,8 @@ class GoogleMapController {
   Future<void> _updateGroundOverlays(
       GroundOverlayUpdates groundOverlayUpdates) {
     assert(groundOverlayUpdates != null);
-    return _googleMapsFlutterPlatform.updateGroundOverlays(groundOverlayUpdates,
-        mapId: mapId);
+    return GoogleMapsFlutterPlatform.instance
+        .updateGroundOverlays(groundOverlayUpdates, mapId: mapId);
   }
 
   /// Starts an animated change of the map camera position.

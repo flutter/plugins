@@ -150,7 +150,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> updateGroundOverlays(
     GroundOverlayUpdates groundOverlayUpdates, {
-    @required int mapId,
+    required int mapId,
   }) {
     throw UnimplementedError(
         'updateGroundOverlays() has not been implemented.');
@@ -338,7 +338,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   }
 
   /// A [GroundOverlay] has been tapped.
-  Stream<GroundOverlayTapEvent> onGroundOverlayTap({@required int mapId}) {
+  Stream<GroundOverlayTapEvent> onGroundOverlayTap({required int mapId}) {
     throw UnimplementedError('onGroundOverlayTap() has not been implemented.');
   }
 
@@ -367,6 +367,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<GroundOverlay> groundOverlays = const <GroundOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
         const <Factory<OneSequenceGestureRecognizer>>{},
     // TODO: Replace with a structured type that's part of the interface.

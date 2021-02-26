@@ -71,7 +71,7 @@ class GoogleMap extends StatefulWidget {
     this.polygons = const <Polygon>{},
     this.polylines = const <Polyline>{},
     this.circles = const <Circle>{},
-    this.groundOverlays,
+    this.groundOverlays = const <GroundOverlay>{},
     this.onCameraMoveStarted,
     this.tileOverlays = const <TileOverlay>{},
     this.onCameraMove,
@@ -264,7 +264,7 @@ class _GoogleMapState extends State<GoogleMap> {
       polygons: widget.polygons,
       polylines: widget.polylines,
       circles: widget.circles,
-      groundOverlays.groundOverlays,
+      groundOverlays: widget.groundOverlays,
       gestureRecognizers: widget.gestureRecognizers,
       mapOptions: _googleMapOptions.toMap(),
     );
@@ -434,8 +434,13 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void onGroundOverlayTap(GroundOverlayId groundOverlayId) {
     assert(groundOverlayId != null);
-    if (_groundOverlays[groundOverlayId]?.onTap != null) {
-      _groundOverlays[groundOverlayId].onTap();
+    final GroundOverlay? groundOverlay = _groundOverlays[groundOverlayId];
+    if (groundOverlay == null) {
+      throw UnknownMapObjectIdError('groundOverlay', groundOverlayId, 'onTap');
+    }
+    final VoidCallback? onTap = groundOverlay.onTap;
+    if (onTap != null) {
+      onTap();
     }
   }
 

@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart' show VoidCallback;
-import 'package:meta/meta.dart' show immutable, required;
+import 'package:meta/meta.dart' show immutable;
 
 import 'types.dart';
 
@@ -9,40 +9,21 @@ import 'types.dart';
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
-class GroundOverlayId {
+class GroundOverlayId extends MapsObjectId<GroundOverlay> {
   /// Creates an immutable identifier for a [GroundOverlay].
-  GroundOverlayId(this.value) : assert(value != null);
-
-  /// value of the [GroundOverlayId].
-  final String value;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
-    final GroundOverlayId typedOther = other;
-    return value == typedOther.value;
-  }
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'GroundOverlayId{value: $value}';
-  }
+  GroundOverlayId(String value) : super(value);
 }
 
 /// Draws a ground overlay on the map.
 @immutable
-class GroundOverlay {
+class GroundOverlay implements MapsObject<GroundOverlay> {
   /// Creates an immutable representation of a [GroundOverlay] to draw on [GoogleMap].
   /// The following ground overlay positioning is allowed by the Google Maps Api
   /// 1. Using [height], [width] and [LatLng]
   /// 2. Using [width], [width]
   /// 3. Using [LatLngBounds]
   const GroundOverlay({
-    @required this.groundOverlayId,
+    required this.groundOverlayId,
     this.consumeTapEvents = false,
     this.location,
     this.zIndex = 0,
@@ -52,10 +33,10 @@ class GroundOverlay {
     this.bounds,
     this.width,
     this.height,
-    this.bearing,
-    this.anchor,
+    this.bearing = 0.0,
+    this.anchor = Offset.zero,
     this.opacity = 1.0,
-  }) : assert(
+  })  : assert(
             (height != null &&
                     width != null &&
                     location != null &&
@@ -73,15 +54,15 @@ class GroundOverlay {
                     location == null &&
                     bounds == null),
             "Only one of the three types of positioning is allowed, please refer "
-            "to the https://developers.google.com/maps/documentation/android-sdk/groundoverlay#add_an_overlay"),assert(opacity == null ||
-      (0.0 <= opacity && opacity <= 1.0));
+            "to the https://developers.google.com/maps/documentation/android-sdk/groundoverlay#add_an_overlay"),
+        assert(0.0 <= opacity && opacity <= 1.0);
 
   /// Creates an immutable representation of a [GroundOverlay] to draw on [GoogleMap]
   /// using [LatLngBounds]
   const GroundOverlay.fromBounds(
     this.bounds, {
-    @required this.groundOverlayId,
-    this.anchor,
+    required this.groundOverlayId,
+    this.anchor = Offset.zero,
     this.bearing = 0.0,
     this.bitmap,
     this.consumeTapEvents = false,
@@ -98,13 +79,16 @@ class GroundOverlay {
   /// Uniquely identifies a [GroundOverlay].
   final GroundOverlayId groundOverlayId;
 
+  @override
+  GroundOverlayId get mapsId => groundOverlayId;
+
   /// True if the [GroundOverlay] consumes tap events.
   ///
   /// If this is false, [onTap] callback will not be triggered.
   final bool consumeTapEvents;
 
   /// Geographical location of the center of the ground overlay.
-  final LatLng location;
+  final LatLng? location;
 
   /// True if the ground overlay is visible.
   final bool visible;
@@ -117,16 +101,16 @@ class GroundOverlay {
   final int zIndex;
 
   /// Callbacks to receive tap events for ground overlay placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// A description of the bitmap used to draw the ground overlay image.
-  final BitmapDescriptor bitmap;
+  final BitmapDescriptor? bitmap;
 
   /// Width of the ground overlay in meters
-  final double width;
+  final double? width;
 
   /// Height of the ground overlay in meters
-  final double height;
+  final double? height;
 
   /// The amount that the image should be rotated in a clockwise direction.
   /// The center of the rotation will be the image's anchor.
@@ -141,23 +125,23 @@ class GroundOverlay {
   final double opacity;
 
   /// A latitude/longitude alignment of the ground overlay.
-  final LatLngBounds bounds;
+  final LatLngBounds? bounds;
 
   /// Creates a new [GroundOverlay] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   GroundOverlay copyWith({
-    BitmapDescriptor bitmapParam,
-    Offset anchorParam,
-    int zIndexParam,
-    bool visibleParam,
-    bool consumeTapEventsParam,
-    double widthParam,
-    double heightParam,
-    double bearingParam,
-    LatLng locationParam,
-    LatLngBounds boundsParam,
-    VoidCallback onTapParam,
-    double opacityParam,
+    BitmapDescriptor? bitmapParam,
+    Offset? anchorParam,
+    int? zIndexParam,
+    bool? visibleParam,
+    bool? consumeTapEventsParam,
+    double? widthParam,
+    double? heightParam,
+    double? bearingParam,
+    LatLng? locationParam,
+    LatLngBounds? boundsParam,
+    VoidCallback? onTapParam,
+    double? opacityParam,
   }) {
     return GroundOverlay(
         groundOverlayId: groundOverlayId,
@@ -179,7 +163,7 @@ class GroundOverlay {
   GroundOverlay clone() => copyWith();
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
+  Object toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
     void addIfPresent(String fieldName, dynamic value) {
@@ -209,7 +193,7 @@ class GroundOverlay {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final GroundOverlay typedOther = other;
+    final GroundOverlay typedOther = other as GroundOverlay;
     return groundOverlayId == typedOther.groundOverlayId &&
         bitmap == typedOther.bitmap &&
         consumeTapEvents == typedOther.consumeTapEvents &&
@@ -228,7 +212,7 @@ class GroundOverlay {
   @override
   int get hashCode => groundOverlayId.hashCode;
 
-  dynamic _locationToJson() => location.toJson();
+  dynamic _locationToJson() => location?.toJson();
 
   dynamic _offsetToJson(Offset offset) {
     if (offset == null) {

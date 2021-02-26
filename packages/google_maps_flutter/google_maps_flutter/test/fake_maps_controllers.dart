@@ -91,11 +91,11 @@ class FakePlatformGoogleMap {
 
   Set<TileOverlay> tileOverlaysToChange = <TileOverlay>{};
 
-  Set<GroundOverlayId> groundOverlayIdsToRemove;
+  Set<GroundOverlayId> groundOverlayIdsToRemove = <GroundOverlayId>{};
 
-  Set<GroundOverlay> groundOverlaysToAdd;
+  Set<GroundOverlay> groundOverlaysToAdd = <GroundOverlay>{};
 
-  Set<GroundOverlay> groundOverlaysToChange;
+  Set<GroundOverlay> groundOverlaysToChange = <GroundOverlay>{};
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {

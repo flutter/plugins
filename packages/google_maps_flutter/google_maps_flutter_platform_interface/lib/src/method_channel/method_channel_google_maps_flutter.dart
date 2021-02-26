@@ -137,7 +137,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }
 
   @override
-  Stream<GroundOverlayTapEvent> onGroundOverlayTap({@required int mapId}) {
+  Stream<GroundOverlayTapEvent> onGroundOverlayTap({required int mapId}) {
     return _events(mapId).whereType<GroundOverlayTapEvent>();
   }
 
@@ -336,7 +336,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   @override
   Future<void> updateGroundOverlays(
     GroundOverlayUpdates groundOverlayUpdates, {
-    int mapId,
+    required int mapId,
   }) {
     assert(groundOverlayUpdates != null);
     return channel(mapId).invokeMethod<void>(
@@ -468,6 +468,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<GroundOverlay> groundOverlays = const <GroundOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {

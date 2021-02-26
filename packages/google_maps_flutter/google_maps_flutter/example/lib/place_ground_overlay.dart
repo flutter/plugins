@@ -28,12 +28,12 @@ class PlaceGroundOverlayBody extends StatefulWidget {
 class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
   PlaceGroundOverlayBodyState();
 
-  BitmapDescriptor _bitMapDesc;
-  GoogleMapController controller;
+  BitmapDescriptor? _bitMapDesc;
+  GoogleMapController? controller;
   Map<GroundOverlayId, GroundOverlay> groundOverlays =
       <GroundOverlayId, GroundOverlay>{};
   int _groundOverlayIdCounter = 0;
-  GroundOverlayId selectedGroundOverlay;
+  GroundOverlayId? selectedGroundOverlay;
 
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
@@ -67,12 +67,14 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
     });
   }
 
-  void _remove() {
+  void _remove(GroundOverlayId groundOverlayId) {
     setState(() {
-      if (groundOverlays.containsKey(selectedGroundOverlay)) {
-        groundOverlays.remove(selectedGroundOverlay);
+      if (groundOverlays.containsKey(groundOverlayId)) {
+        groundOverlays.remove(groundOverlayId);
       }
-      selectedGroundOverlay = null;
+      if (groundOverlayId == selectedGroundOverlay) {
+        selectedGroundOverlay = null;
+      }
     });
   }
 
@@ -108,30 +110,30 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
     });
   }
 
-  Future<void> _changeTransparency() async {
-    final GroundOverlay groundOverlay = groundOverlays[selectedGroundOverlay];
+  void _changeTransparency(GroundOverlayId groundOverlayId) {
+    final GroundOverlay groundOverlay = groundOverlays[groundOverlayId]!;
     final double current = groundOverlay.opacity;
     setState(() {
-      groundOverlays[selectedGroundOverlay] = groundOverlay.copyWith(
+      groundOverlays[groundOverlayId] = groundOverlay.copyWith(
         opacityParam: current < 0.1 ? 1.0 : current * 0.75,
       );
     });
   }
 
-  Future<void> _changeBearing() async {
-    final GroundOverlay groundOverlay = groundOverlays[selectedGroundOverlay];
-    final double current = groundOverlay.bearing ?? 0.0;
+  void _changeBearing(GroundOverlayId groundOverlayId) {
+    final GroundOverlay groundOverlay = groundOverlays[groundOverlayId]!;
+    final double current = groundOverlay.bearing;
     setState(() {
-      groundOverlays[selectedGroundOverlay] = groundOverlay.copyWith(
+      groundOverlays[groundOverlayId] = groundOverlay.copyWith(
         bearingParam: current == 330.0 ? 0.0 : current + 30.0,
       );
     });
   }
 
-  void _toggleVisible() {
-    final GroundOverlay groundOverlay = groundOverlays[selectedGroundOverlay];
+  void _toggleVisible(GroundOverlayId groundOverlayId) {
+    final GroundOverlay groundOverlay = groundOverlays[groundOverlayId]!;
     setState(() {
-      groundOverlays[selectedGroundOverlay] = groundOverlay.copyWith(
+      groundOverlays[groundOverlayId] = groundOverlay.copyWith(
         visibleParam: !groundOverlay.visible,
       );
     });
@@ -140,6 +142,7 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
   @override
   Widget build(BuildContext context) {
     _createGroundOverlayImageFromAsset(context);
+    final GroundOverlayId? selectedId = selectedGroundOverlay;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -173,26 +176,27 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
                         ),
                         TextButton(
                           child: const Text('remove'),
-                          onPressed:
-                              (selectedGroundOverlay == null) ? null : _remove,
+                          onPressed: (selectedId == null)
+                              ? null
+                              : () => _remove(selectedId),
                         ),
                         TextButton(
                           child: const Text('change transparency'),
-                          onPressed: (selectedGroundOverlay == null)
+                          onPressed: (selectedId == null)
                               ? null
-                              : _changeTransparency,
+                              : () => _changeTransparency(selectedId),
                         ),
                         TextButton(
                           child: const Text('change bearing'),
-                          onPressed: (selectedGroundOverlay == null)
+                          onPressed: (selectedId == null)
                               ? null
-                              : _changeBearing,
+                              : () => _changeBearing(selectedId),
                         ),
                         TextButton(
                           child: const Text('toggle visible'),
-                          onPressed: (selectedGroundOverlay == null)
+                          onPressed: (selectedId == null)
                               ? null
-                              : _toggleVisible,
+                              : () => _toggleVisible(selectedId),
                         ),
                       ],
                     ),

@@ -5,21 +5,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'fake_maps_controllers.dart';
 
-Set<GroundOverlay> _toSet(
-    {GroundOverlay g1, GroundOverlay g2, GroundOverlay g3}) {
-  final Set<GroundOverlay> res = Set<GroundOverlay>.identity();
-  if (g1 != null) {
-    res.add(g1);
-  }
-  if (g2 != null) {
-    res.add(g2);
-  }
-  if (g3 != null) {
-    res.add(g3);
-  }
-  return res;
-}
-
 Widget _mapWithGroundOverlays(Set<GroundOverlay> groundOverlays) {
   return Directionality(
     textDirection: TextDirection.ltr,
@@ -34,7 +19,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final FakePlatformViewsController fakePlatformViewsController =
-  FakePlatformViewsController();
+      FakePlatformViewsController();
 
   setUpAll(() {
     SystemChannels.platform_views.setMockMethodCallHandler(
@@ -47,11 +32,11 @@ void main() {
 
   testWidgets('Initializing a ground overlay', (WidgetTester tester) async {
     final GroundOverlay g1 =
-    GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_1"));
-    await tester.pumpWidget(_mapWithGroundOverlays(_toSet(g1: g1)));
+        GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_1"));
+    await tester.pumpWidget(_mapWithGroundOverlays(<GroundOverlay>{g1}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.groundOverlaysToAdd.length, 1);
 
     final GroundOverlay initializedMarker =
@@ -67,11 +52,11 @@ void main() {
     final GroundOverlay g2 =
     GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_2"));
 
-    await tester.pumpWidget(_mapWithGroundOverlays(_toSet(g1: g1)));
-    await tester.pumpWidget(_mapWithGroundOverlays(_toSet(g1: g1, g2: g2)));
+    await tester.pumpWidget(_mapWithGroundOverlays(<GroundOverlay>{g1}));
+    await tester.pumpWidget(_mapWithGroundOverlays(<GroundOverlay>{g1, g2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.groundOverlaysToAdd.length, 1);
 
     final GroundOverlay addedGroundOverlay =
@@ -89,11 +74,11 @@ void main() {
     final GroundOverlay g1 =
     GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_1"));
 
-    await tester.pumpWidget(_mapWithGroundOverlays(_toSet(g1: g1)));
-    await tester.pumpWidget(_mapWithGroundOverlays(null));
+    await tester.pumpWidget(_mapWithGroundOverlays(<GroundOverlay>{g1}));
+    await tester.pumpWidget(_mapWithGroundOverlays(<GroundOverlay>{}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.groundOverlayIdsToRemove.length, 1);
     expect(platformGoogleMap.groundOverlayIdsToRemove.first,
         equals(g1.groundOverlayId));
@@ -108,11 +93,11 @@ void main() {
     final GroundOverlay g2 = GroundOverlay(
         groundOverlayId: GroundOverlayId("g_overlay_1"), opacity: 0.5);
 
-    await tester.pumpWidget(_mapWithGroundOverlays(_toSet(g1: g1)));
-    await tester.pumpWidget(_mapWithGroundOverlays(_toSet(g1: g2)));
+    await tester.pumpWidget(_mapWithGroundOverlays(<GroundOverlay>{g1}));
+    await tester.pumpWidget(_mapWithGroundOverlays(<GroundOverlay>{g2}));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
     expect(platformGoogleMap.groundOverlaysToChange.length, 1);
     expect(platformGoogleMap.groundOverlaysToChange.first, equals(g2));
 
@@ -123,16 +108,16 @@ void main() {
   testWidgets("Multi Update", (WidgetTester tester) async {
     GroundOverlay g1 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_1"));
     GroundOverlay g2 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_2"));
-    final Set<GroundOverlay> prev = _toSet(g1: g1, g2: g2);
+    final Set<GroundOverlay> prev = <GroundOverlay>{g1, g2};
     g1 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_1"), visible: false);
     g2 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_2"), opacity: 0.5);
-    final Set<GroundOverlay> cur = _toSet(g1: g1, g2: g2);
+    final Set<GroundOverlay> cur = <GroundOverlay>{g1, g2};
 
     await tester.pumpWidget(_mapWithGroundOverlays(prev));
     await tester.pumpWidget(_mapWithGroundOverlays(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.groundOverlaysToChange, cur);
     expect(platformGoogleMap.groundOverlayIdsToRemove.isEmpty, true);
@@ -142,18 +127,18 @@ void main() {
   testWidgets("Multi Update", (WidgetTester tester) async {
     GroundOverlay g2 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_2"));
     final GroundOverlay g3 = GroundOverlay(groundOverlayId: GroundOverlayId("marker_3"));
-    final Set<GroundOverlay> prev = _toSet(g2: g2, g3: g3);
+    final Set<GroundOverlay> prev = <GroundOverlay>{g2, g3};
 
     // m1 is added, m2 is updated, m3 is removed.
     final GroundOverlay g1 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_1"));
     g2 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_2"), visible: false);
-    final Set<GroundOverlay> cur = _toSet(g1: g1, g2: g2);
+    final Set<GroundOverlay> cur = <GroundOverlay>{g1, g2};
 
     await tester.pumpWidget(_mapWithGroundOverlays(prev));
     await tester.pumpWidget(_mapWithGroundOverlays(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.groundOverlaysToChange.length, 1);
     expect(platformGoogleMap.groundOverlaysToAdd.length, 1);
@@ -168,17 +153,17 @@ void main() {
     final GroundOverlay g1 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_1"));
     final GroundOverlay g2 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_2"));
     GroundOverlay g3 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_3"));
-    final Set<GroundOverlay> prev = _toSet(g1: g1, g2: g2, g3: g3);
+    final Set<GroundOverlay> prev = <GroundOverlay>{g1, g2, g3};
     g3 = GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_3"), visible: false);
-    final Set<GroundOverlay> cur = _toSet(g1: g1, g2: g2, g3: g3);
+    final Set<GroundOverlay> cur = <GroundOverlay>{g1, g2, g3};
 
     await tester.pumpWidget(_mapWithGroundOverlays(prev));
     await tester.pumpWidget(_mapWithGroundOverlays(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
-    expect(platformGoogleMap.groundOverlaysToChange, _toSet(g3: g3));
+    expect(platformGoogleMap.groundOverlaysToChange, <GroundOverlay>{g3});
     expect(platformGoogleMap.groundOverlayIdsToRemove.isEmpty, true);
     expect(platformGoogleMap.groundOverlaysToAdd.isEmpty, true);
   });
@@ -186,18 +171,18 @@ void main() {
   testWidgets("Update non platform related attr", (WidgetTester tester) async {
     GroundOverlay g1 =
     GroundOverlay(groundOverlayId: GroundOverlayId("g_overlay_1"));
-    final Set<GroundOverlay> prev = _toSet(g1: g1);
+    final Set<GroundOverlay> prev = <GroundOverlay>{g1};
     g1 = GroundOverlay(
       groundOverlayId: GroundOverlayId("g_overlay_1"),
       onTap: () => print("hello"),
     );
-    final Set<GroundOverlay> cur = _toSet(g1: g1);
+    final Set<GroundOverlay> cur = <GroundOverlay>{g1};
 
     await tester.pumpWidget(_mapWithGroundOverlays(prev));
     await tester.pumpWidget(_mapWithGroundOverlays(cur));
 
     final FakePlatformGoogleMap platformGoogleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformGoogleMap.groundOverlaysToChange.isEmpty, true);
     expect(platformGoogleMap.groundOverlayIdsToRemove.isEmpty, true);
