@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
 
 @FunctionalInterface
 interface ErrorCallback {
@@ -136,7 +137,7 @@ public class Camera {
     this.dartMessenger = dartMessenger;
     this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     this.applicationContext = activity.getApplicationContext();
-    this.flashMode = FlashMode.auto;
+    this.flashMode = FlashMode.off;
     this.exposureMode = ExposureMode.auto;
     this.focusMode = FocusMode.auto;
     this.exposureOffset = 0;
@@ -431,10 +432,24 @@ public class Camera {
         null);
 
     if (useAutoFocus) {
-      runPictureAutoFocus();
+      lockFocus();
     } else {
-      runPicturePreCapture();
+      runPictureCapture();
     }
+  }
+
+  private ArrayList<Integer> getAvailableAeModes() {
+    ArrayList<Integer> vals = new ArrayList<Integer>();
+    try {
+      int[] result = cameraManager
+              .getCameraCharacteristics(cameraDevice.getId()).get(CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES);
+      for (int val : result) {
+        vals.add(val);
+      }
+    } catch (CameraAccessException e) {
+      //
+    }
+    return vals;
   }
 
   private final CameraCaptureSession.CaptureCallback pictureCaptureCallback =
@@ -452,6 +467,7 @@ public class Camera {
             @NonNull CameraCaptureSession session,
             @NonNull CaptureRequest request,
             @NonNull CaptureResult partialResult) {
+          Log.d("flutter", "onCaptureProgressed");
           processCapture(partialResult);
         }
 
@@ -460,6 +476,8 @@ public class Camera {
             @NonNull CameraCaptureSession session,
             @NonNull CaptureRequest request,
             @NonNull CaptureFailure failure) {
+          Log.d("flutter", "onCaptureFailed");
+
           if (pictureCaptureRequest == null || pictureCaptureRequest.isFinished()) {
             return;
           }
@@ -480,26 +498,53 @@ public class Camera {
           if (fatalFailure) pictureCaptureRequest.error("captureFailure", reason, null);
         }
 
+
+
         private void processCapture(CaptureResult result) {
           if (pictureCaptureRequest == null) {
             return;
           }
 
+
+
           Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
           Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+          if (pictureCaptureRequest.getState() != State.finished) {
+            Log.i("flutter", "state: " + pictureCaptureRequest.getState() + " | afState: " + afState + " | aeState: " + aeState);
+          }
+
           switch (pictureCaptureRequest.getState()) {
+
+
             case focusing:
-              if (afState == null) {
+              if(afState == null) {
                 return;
-              } else if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED
-                  || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
-                // Some devices might return null here, in which case we will also continue.
+              }
+
+              /// Time to start the capture
+              if (
+                // We have passive focus lock (some devices use passive)
+                      afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED ||
+
+                              // We have active focus lock
+                              afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
+
+//                              // Passive focus is inactive but AE says we are ready to capture
+//                              (afState == CaptureResult.CONTROL_AF_STATE_INACTIVE && aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) ||
+
+                              // Focus failed, take the picture anyways
+                              afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+
+                // CONTROL_AE_STATE can be null on some devices
                 if (aeState == null || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
+                  Log.i("flutter", "AE state is converged, taking piture");
                   runPictureCapture();
                 } else {
-                  runPicturePreCapture();
+                  Log.i("flutter", "Moving to precapture state");
+                  pictureCaptureRequest.setState(State.preCapture);
                 }
               }
+
               break;
             case preCapture:
               // Some devices might return null here, in which case we will also continue.
@@ -507,6 +552,7 @@ public class Camera {
                   || aeState == CaptureRequest.CONTROL_AE_STATE_PRECAPTURE
                   || aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED
                   || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
+
                 pictureCaptureRequest.setState(State.waitingPreCaptureReady);
                 setPreCaptureStartTime();
               }
@@ -523,77 +569,125 @@ public class Camera {
         }
       };
 
-  private void runPictureAutoFocus() {
-    assert (pictureCaptureRequest != null);
-
-    pictureCaptureRequest.setState(PictureCaptureRequest.State.focusing);
-    lockAutoFocus(pictureCaptureCallback);
+  private void initPreviewRequest() {
+    if(captureRequestBuilder == null) {
+      return;
+    }
+    captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, lockedCaptureOrientation == null
+            ? deviceOrientationListener.getMediaOrientation()
+            : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation));
+    switch (flashMode) {
+      case auto:
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, getAvailableAeModes().contains(CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH) ? CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH : CaptureRequest.CONTROL_AE_MODE_ON);
+        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+        break;
+      case torch:
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+        break;
+      case off:
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+        break;
+      case always:
+      default:
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, getAvailableAeModes().contains(CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH) ? CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH : CaptureRequest.CONTROL_AE_MODE_ON);
+        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+        break;
+    }
+    captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+    captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, useAutoFocus ? CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE : CaptureRequest.CONTROL_AF_MODE_OFF);
   }
 
-  private void runPicturePreCapture() {
-    assert (pictureCaptureRequest != null);
-    pictureCaptureRequest.setState(PictureCaptureRequest.State.preCapture);
+  public void lockFocus() {
+    pictureCaptureRequest.setState(State.focusing);
+    captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
+    refreshConfiguration();
+  }
 
-    captureRequestBuilder.set(
-        CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-        CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+  public void unlockFocus() {
+    captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+    pictureCaptureRequest.setState(null);
+    initPreviewRequest();
+    try {
+      cameraCaptureSession.capture(captureRequestBuilder.build(), pictureCaptureCallback , null);
+    } catch (CameraAccessException ignored) { }
+    captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
+    refreshConfiguration();
+  }
 
+  private void refreshConfiguration() {
+//    if(cameraCaptureSession == null) {
+//      return;
+//    }
+//    try {
+//      cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), mCaptureFocusedCallback, null);
+//    } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
+//      Log.e(TAG, "refreshConfiguration", e);
+//    }
+    if(cameraCaptureSession == null) {
+      return;
+    }
     refreshPreviewCaptureSession(
-        () ->
-            captureRequestBuilder.set(
-                CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-                CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE),
-        (code, message) -> pictureCaptureRequest.error(code, message, null));
+            null, (code, message) -> pictureCaptureRequest.error(code, message, null));
   }
 
   private void runPictureCapture() {
+    Log.i("flutter", "runPictureCapture");
+
     assert (pictureCaptureRequest != null);
     pictureCaptureRequest.setState(PictureCaptureRequest.State.capturing);
     try {
       final CaptureRequest.Builder captureBuilder =
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
-      captureBuilder.set(
-          CaptureRequest.SCALER_CROP_REGION,
-          captureRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
-      captureBuilder.set(
-          CaptureRequest.JPEG_ORIENTATION,
-          lockedCaptureOrientation == null
-              ? deviceOrientationListener.getMediaOrientation()
-              : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation));
+
 
       switch (flashMode) {
-        case off:
-          captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
-          captureBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-          break;
         case auto:
-          captureBuilder.set(
-              CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+          captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, getAvailableAeModes().contains(CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH) ? CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH : CaptureRequest.CONTROL_AE_MODE_ON);
+          captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+          break;
+        case torch:
+          captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+          captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+          break;
+        case off:
+          captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+          captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
           break;
         case always:
         default:
-          captureBuilder.set(
-              CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
+          captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, getAvailableAeModes().contains(CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH) ? CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH : CaptureRequest.CONTROL_AE_MODE_ON);
+          captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
           break;
       }
+      captureBuilder.set(
+              CaptureRequest.SCALER_CROP_REGION,
+              captureRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
+      captureBuilder.set(
+              CaptureRequest.JPEG_ORIENTATION,
+              lockedCaptureOrientation == null
+                      ? deviceOrientationListener.getMediaOrientation()
+                      : deviceOrientationListener.getMediaOrientation(lockedCaptureOrientation));
+
       cameraCaptureSession.stopRepeating();
-      cameraCaptureSession.capture(
-          captureBuilder.build(),
-          new CameraCaptureSession.CaptureCallback() {
-            @Override
-            public void onCaptureCompleted(
-                @NonNull CameraCaptureSession session,
-                @NonNull CaptureRequest request,
-                @NonNull TotalCaptureResult result) {
-              unlockAutoFocus();
-            }
-          },
-          null);
+      cameraCaptureSession.capture(captureBuilder.build(), mCaptureCallback, null);
     } catch (CameraAccessException e) {
       pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
     }
   }
+
+  private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
+    @Override
+    public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
+      if(pictureCaptureRequest.getState() != null && pictureCaptureRequest.getState().equals(State.focusing)) {
+        unlockFocus();
+      } else {
+        refreshConfiguration();
+      }
+    }
+  };
 
   private void lockAutoFocus(CaptureCallback callback) {
     captureRequestBuilder.set(
@@ -1064,26 +1158,22 @@ public class Camera {
 
     // Applying flash modes
     switch (flashMode) {
-      case off:
-        captureRequestBuilder.set(
-            CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
-        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-        break;
       case auto:
-        captureRequestBuilder.set(
-            CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-        break;
-      case always:
-        captureRequestBuilder.set(
-            CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, getAvailableAeModes().contains(CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH) ? CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH : CaptureRequest.CONTROL_AE_MODE_ON);
         captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
         break;
       case torch:
-      default:
-        captureRequestBuilder.set(
-            CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
         captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+        break;
+      case off:
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+        break;
+      case always:
+      default:
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, getAvailableAeModes().contains(CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH) ? CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH : CaptureRequest.CONTROL_AE_MODE_ON);
+        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
         break;
     }
   }
