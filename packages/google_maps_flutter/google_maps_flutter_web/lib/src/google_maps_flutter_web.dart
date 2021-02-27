@@ -86,6 +86,14 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     _map(mapId).updateCircles(circleUpdates);
   }
 
+  @override
+  Future<void> updateTileOverlays({
+    @required Set<TileOverlay> newTileOverlays,
+    @required int mapId,
+  }) async {
+    // Empty implementation to avoid Exception
+  }
+
   /// Applies the given `cameraUpdate` to the current viewport (with animation).
   @override
   Future<void> animateCamera(
