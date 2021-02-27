@@ -3,7 +3,7 @@ import 'package:connectivity_platform_interface/connectivity_platform_interface.
 
 /// Converts an incoming NetworkInformation object into the correct ConnectivityResult.
 ConnectivityResult networkInformationToConnectivityResult(
-  html.NetworkInformation info,
+  html.NetworkInformation? info,
 ) {
   if (info == null) {
     return ConnectivityResult.none;
