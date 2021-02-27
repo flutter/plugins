@@ -20,11 +20,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_driver:
-    sdk: flutter
-  integration_test:
-    sdk: flutter
-  mockito: ^5.0.0-0
 
 environment:
   sdk: ">=2.12.0-259.9.beta <3.0.0"
