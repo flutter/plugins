@@ -467,7 +467,7 @@ public class Camera {
             @NonNull CameraCaptureSession session,
             @NonNull CaptureRequest request,
             @NonNull CaptureResult partialResult) {
-          Log.d("flutter", "onCaptureProgressed");
+//          Log.d("flutter", "onCaptureProgressed");
           processCapture(partialResult);
         }
 
@@ -476,7 +476,7 @@ public class Camera {
             @NonNull CameraCaptureSession session,
             @NonNull CaptureRequest request,
             @NonNull CaptureFailure failure) {
-          Log.d("flutter", "onCaptureFailed");
+//          Log.d("flutter", "onCaptureFailed");
 
           if (pictureCaptureRequest == null || pictureCaptureRequest.isFinished()) {
             return;
@@ -510,7 +510,7 @@ public class Camera {
           Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
           Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
           if (pictureCaptureRequest.getState() != State.finished) {
-            Log.i("flutter", "state: " + pictureCaptureRequest.getState() + " | afState: " + afState + " | aeState: " + aeState);
+//            Log.i("flutter", "state: " + pictureCaptureRequest.getState() + " | afState: " + afState + " | aeState: " + aeState);
           }
 
           switch (pictureCaptureRequest.getState()) {
@@ -537,10 +537,10 @@ public class Camera {
 
                 // CONTROL_AE_STATE can be null on some devices
                 if (aeState == null || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
-                  Log.i("flutter", "AE state is converged, taking piture");
+//                  Log.i("flutter", "AE state is converged, taking piture");
                   runPictureCapture();
                 } else {
-                  Log.i("flutter", "Moving to precapture state");
+//                  Log.i("flutter", "Moving to precapture state");
                   pictureCaptureRequest.setState(State.preCapture);
                 }
               }
@@ -633,7 +633,7 @@ public class Camera {
   }
 
   private void runPictureCapture() {
-    Log.i("flutter", "runPictureCapture");
+//    Log.i("flutter", "runPictureCapture");
 
     assert (pictureCaptureRequest != null);
     pictureCaptureRequest.setState(PictureCaptureRequest.State.capturing);
