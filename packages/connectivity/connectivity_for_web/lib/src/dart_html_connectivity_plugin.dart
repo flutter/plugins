@@ -9,12 +9,12 @@ class DartHtmlConnectivityPlugin extends ConnectivityPlugin {
   /// Checks the connection status of the device.
   @override
   Future<ConnectivityResult> checkConnectivity() async {
-    return html.window.navigator.onLine
+    return html.window.navigator.onLine ?? false
         ? ConnectivityResult.wifi
         : ConnectivityResult.none;
   }
 
-  StreamController<ConnectivityResult> _connectivityResult;
+  late StreamController<ConnectivityResult> _connectivityResult;
 
   /// Returns a Stream of ConnectivityResults changes.
   @override

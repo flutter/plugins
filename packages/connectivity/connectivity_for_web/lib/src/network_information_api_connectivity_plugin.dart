@@ -18,7 +18,7 @@ class NetworkInformationApiConnectivityPlugin extends ConnectivityPlugin {
 
   /// The constructor of the plugin.
   NetworkInformationApiConnectivityPlugin()
-      : this.withConnection(html.window.navigator.connection);
+      : this.withConnection(html.window.navigator.connection!);
 
   /// Creates the plugin, with an override of the NetworkInformation object.
   @visibleForTesting
@@ -32,8 +32,8 @@ class NetworkInformationApiConnectivityPlugin extends ConnectivityPlugin {
     return networkInformationToConnectivityResult(_networkInformation);
   }
 
-  StreamController<ConnectivityResult> _connectivityResultStreamController;
-  Stream<ConnectivityResult> _connectivityResultStream;
+  late StreamController<ConnectivityResult> _connectivityResultStreamController;
+  late Stream<ConnectivityResult> _connectivityResultStream;
 
   /// Returns a Stream of ConnectivityResults changes.
   @override

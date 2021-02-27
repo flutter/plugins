@@ -12,10 +12,10 @@ ConnectivityResult networkInformationToConnectivityResult(
     return ConnectivityResult.none;
   }
   if (info.effectiveType != null) {
-    return _effectiveTypeToConnectivityResult(info.effectiveType);
+    return _effectiveTypeToConnectivityResult(info.effectiveType!);
   }
   if (info.type != null) {
-    return _typeToConnectivityResult(info.type);
+    return _typeToConnectivityResult(info.type!);
   }
   return ConnectivityResult.none;
 }
