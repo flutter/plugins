@@ -6,20 +6,15 @@ package io.flutter.plugins.camera;
 
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.annotation.Nullable;
+
+import java.io.File;
+
+import io.flutter.Log;
 import io.flutter.plugin.common.MethodChannel;
 
 class PictureCaptureRequest {
-
-  enum State {
-    idle,
-    focusing,
-    preCapture,
-    waitingPreCaptureReady,
-    capturing,
-    finished,
-    error,
-  }
 
   private final Runnable timeoutCallback =
       new Runnable() {
@@ -31,7 +26,12 @@ class PictureCaptureRequest {
 
   private final MethodChannel.Result result;
   private final TimeoutHandler timeoutHandler;
-  private State state;
+  private CaptureSessionState state = CaptureSessionState.IDLE;
+
+  /**
+   * This is the output file for our picture.
+   */
+  File mFile;
 
   public PictureCaptureRequest(MethodChannel.Result result) {
     this(result, new TimeoutHandler());
@@ -39,33 +39,33 @@ class PictureCaptureRequest {
 
   public PictureCaptureRequest(MethodChannel.Result result, TimeoutHandler timeoutHandler) {
     this.result = result;
-    this.state = State.idle;
     this.timeoutHandler = timeoutHandler;
   }
 
-  public void setState(State state) {
+  public void setState(CaptureSessionState state) {
     if (isFinished()) throw new IllegalStateException("Request has already been finished");
     this.state = state;
-    if (state != State.idle && state != State.finished && state != State.error) {
+    if (state != CaptureSessionState.IDLE && state != CaptureSessionState.FINISHED && state != CaptureSessionState.ERROR) {
       this.timeoutHandler.resetTimeout(timeoutCallback);
     } else {
       this.timeoutHandler.clearTimeout(timeoutCallback);
     }
   }
 
-  public State getState() {
+  public CaptureSessionState getState() {
     return state;
   }
 
   public boolean isFinished() {
-    return state == State.finished || state == State.error;
+    return state == CaptureSessionState.FINISHED || state == CaptureSessionState.ERROR;
   }
 
   public void finish(String absolutePath) {
     if (isFinished()) throw new IllegalStateException("Request has already been finished");
+    Log.i("Camera", "PictureCaptureRequest finish");
     this.timeoutHandler.clearTimeout(timeoutCallback);
     result.success(absolutePath);
-    state = State.finished;
+    setState(CaptureSessionState.FINISHED);
   }
 
   public void error(
@@ -73,7 +73,7 @@ class PictureCaptureRequest {
     if (isFinished()) throw new IllegalStateException("Request has already been finished");
     this.timeoutHandler.clearTimeout(timeoutCallback);
     result.error(errorCode, errorMessage, errorDetails);
-    state = State.error;
+    setState(CaptureSessionState.ERROR);
   }
 
   static class TimeoutHandler {
