@@ -9,7 +9,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  camera_platform_interface: ^2.0.0-nullsafety
+  # camera_platform_interface: ^2.0.0-nullsafety
+  camera_platform_interface:
+    path: ../camera_platform_interface
 
   pedantic: ^1.10.0
   quiver: ^3.0.0-nullsafety.3

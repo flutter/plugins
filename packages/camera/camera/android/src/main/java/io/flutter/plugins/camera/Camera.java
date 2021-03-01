@@ -91,8 +91,9 @@ public class Camera {
     // Current supported outputs
     static {
         supportedImageFormats = new HashMap<>();
-        supportedImageFormats.put("yuv420", 35);
-        supportedImageFormats.put("jpeg", 256);
+        supportedImageFormats.put("yuv420", ImageFormat.YUV_420_888);
+        supportedImageFormats.put("jpeg", ImageFormat.JPEG);
+        supportedImageFormats.put("nv21", ImageFormat.NV21);
     }
 
     private final SurfaceTextureEntry flutterTexture;
