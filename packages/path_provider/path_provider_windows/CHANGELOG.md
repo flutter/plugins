@@ -1,8 +1,4 @@
-## 0.1.0-nullsafety.1
-
-* Bump win32 dependency to latest version.
-
-## 0.1.0-nullsafety
+## 2.0.0
 
 * Migrate to null safety
 

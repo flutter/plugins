@@ -31,9 +31,9 @@ class _MapClickBody extends StatefulWidget {
 class _MapClickBodyState extends State<_MapClickBody> {
   _MapClickBodyState();
 
-  GoogleMapController mapController;
-  LatLng _lastTap;
-  LatLng _lastLongPress;
+  GoogleMapController? mapController;
+  LatLng? _lastTap;
+  LatLng? _lastLongPress;
 
   @override
   Widget build(BuildContext context) {

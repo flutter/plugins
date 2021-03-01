@@ -16,7 +16,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
-  BillingClient billingClient;
+  late BillingClient billingClient;
 
   setUpAll(() =>
       channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler));
@@ -96,6 +96,20 @@ void main() {
           equals(
               <dynamic, dynamic>{'handle': 0, 'enablePendingPurchases': true}));
     });
+
+    test('handles method channel returning null', () async {
+      stubPlatform.addResponse(
+        name: methodName,
+        value: null,
+      );
+
+      expect(
+          await billingClient.startConnection(
+              onBillingServiceDisconnected: () {}),
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
+    });
   });
 
   test('endConnection', () async {
@@ -151,6 +165,20 @@ void main() {
       expect(response.billingResult, equals(billingResult));
       expect(response.skuDetailsList, contains(dummySkuDetails));
     });
+
+    test('handles null method channel response', () async {
+      stubPlatform.addResponse(name: queryMethodName, value: null);
+
+      final SkuDetailsResponseWrapper response = await billingClient
+          .querySkuDetails(
+              skuType: SkuType.inapp, skusList: <String>['invalid']);
+
+      BillingResultWrapper billingResult = BillingResultWrapper(
+          responseCode: BillingResponse.error,
+          debugMessage: kInvalidBillingResultErrorMessage);
+      expect(response.billingResult, equals(billingResult));
+      expect(response.skuDetailsList, isEmpty);
+    });
   });
 
   group('launchBillingFlow', () {
@@ -179,6 +207,64 @@ void main() {
       expect(arguments['accountId'], equals(accountId));
     });
 
+    test(
+        'serializes and deserializes data on change subscription without proration',
+        () async {
+      const String debugMessage = 'dummy message';
+      final BillingResponse responseCode = BillingResponse.ok;
+      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+          responseCode: responseCode, debugMessage: debugMessage);
+      stubPlatform.addResponse(
+        name: launchMethodName,
+        value: buildBillingResultMap(expectedBillingResult),
+      );
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+
+      expect(
+          await billingClient.launchBillingFlow(
+              sku: skuDetails.sku,
+              accountId: accountId,
+              oldSku: dummyOldPurchase.sku),
+          equals(expectedBillingResult));
+      Map<dynamic, dynamic> arguments =
+          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], equals(accountId));
+      expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
+    });
+
+    test(
+        'serializes and deserializes data on change subscription with proration',
+        () async {
+      const String debugMessage = 'dummy message';
+      final BillingResponse responseCode = BillingResponse.ok;
+      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
+          responseCode: responseCode, debugMessage: debugMessage);
+      stubPlatform.addResponse(
+        name: launchMethodName,
+        value: buildBillingResultMap(expectedBillingResult),
+      );
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      final String accountId = "hashedAccountId";
+      final prorationMode = ProrationMode.immediateAndChargeProratedPrice;
+
+      expect(
+          await billingClient.launchBillingFlow(
+              sku: skuDetails.sku,
+              accountId: accountId,
+              oldSku: dummyOldPurchase.sku,
+              prorationMode: prorationMode),
+          equals(expectedBillingResult));
+      Map<dynamic, dynamic> arguments =
+          stubPlatform.previousCallMatching(launchMethodName).arguments;
+      expect(arguments['sku'], equals(skuDetails.sku));
+      expect(arguments['accountId'], equals(accountId));
+      expect(arguments['oldSku'], equals(dummyOldPurchase.sku));
+      expect(arguments['prorationMode'],
+          ProrationModeConverter().toJson(prorationMode));
+    });
+
     test('handles null accountId', () async {
       const String debugMessage = 'dummy message';
       final BillingResponse responseCode = BillingResponse.ok;
@@ -196,6 +282,19 @@ void main() {
           stubPlatform.previousCallMatching(launchMethodName).arguments;
       expect(arguments['sku'], equals(skuDetails.sku));
       expect(arguments['accountId'], isNull);
+    });
+
+    test('handles method channel returning null', () async {
+      stubPlatform.addResponse(
+        name: launchMethodName,
+        value: null,
+      );
+      final SkuDetailsWrapper skuDetails = dummySkuDetails;
+      expect(
+          await billingClient.launchBillingFlow(sku: skuDetails.sku),
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
     });
   });
 
@@ -228,10 +327,6 @@ void main() {
       expect(response.purchasesList, equals(expectedList));
     });
 
-    test('checks for null params', () async {
-      expect(() => billingClient.queryPurchases(null), throwsAssertionError);
-    });
-
     test('handles empty purchases', () async {
       final BillingResponse expectedCode = BillingResponse.userCanceled;
       const String debugMessage = 'dummy message';
@@ -249,6 +344,23 @@ void main() {
 
       expect(response.billingResult, equals(expectedBillingResult));
       expect(response.responseCode, equals(expectedCode));
+      expect(response.purchasesList, isEmpty);
+    });
+
+    test('handles method channel returning null', () async {
+      stubPlatform.addResponse(
+        name: queryPurchasesMethodName,
+        value: null,
+      );
+      final PurchasesResultWrapper response =
+          await billingClient.queryPurchases(SkuType.inapp);
+
+      expect(
+          response.billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(response.responseCode, BillingResponse.error);
       expect(response.purchasesList, isEmpty);
     });
   });
@@ -282,11 +394,6 @@ void main() {
       expect(response.purchaseHistoryRecordList, equals(expectedList));
     });
 
-    test('checks for null params', () async {
-      expect(
-          () => billingClient.queryPurchaseHistory(null), throwsAssertionError);
-    });
-
     test('handles empty purchases', () async {
       final BillingResponse expectedCode = BillingResponse.userCanceled;
       const String debugMessage = 'dummy message';
@@ -301,6 +408,22 @@ void main() {
           await billingClient.queryPurchaseHistory(SkuType.inapp);
 
       expect(response.billingResult, equals(expectedBillingResult));
+      expect(response.purchaseHistoryRecordList, isEmpty);
+    });
+
+    test('handles method channel returning null', () async {
+      stubPlatform.addResponse(
+        name: queryPurchaseHistoryMethodName,
+        value: null,
+      );
+      final PurchasesHistoryResult response =
+          await billingClient.queryPurchaseHistory(SkuType.inapp);
+
+      expect(
+          response.billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
       expect(response.purchaseHistoryRecordList, isEmpty);
     });
   });
@@ -322,6 +445,21 @@ void main() {
 
       expect(billingResult, equals(expectedBillingResult));
     });
+
+    test('handles method channel returning null', () async {
+      stubPlatform.addResponse(
+        name: consumeMethodName,
+        value: null,
+      );
+      final BillingResultWrapper billingResult = await billingClient
+          .consumeAsync('dummy token', developerPayload: 'dummy payload');
+
+      expect(
+          billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
+    });
   });
 
   group('acknowledge purchases', () {
@@ -341,6 +479,21 @@ void main() {
               developerPayload: 'dummy payload');
 
       expect(billingResult, equals(expectedBillingResult));
+    });
+    test('handles method channel returning null', () async {
+      stubPlatform.addResponse(
+        name: acknowledgeMethodName,
+        value: null,
+      );
+      final BillingResultWrapper billingResult =
+          await billingClient.acknowledgePurchase('dummy token',
+              developerPayload: 'dummy payload');
+
+      expect(
+          billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
     });
   });
 }

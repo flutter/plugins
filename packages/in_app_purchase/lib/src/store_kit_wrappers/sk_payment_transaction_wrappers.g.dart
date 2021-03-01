@@ -8,19 +8,19 @@ part of 'sk_payment_transaction_wrappers.dart';
 
 SKPaymentTransactionWrapper _$SKPaymentTransactionWrapperFromJson(Map json) {
   return SKPaymentTransactionWrapper(
-    payment: json['payment'] == null
-        ? null
-        : SKPaymentWrapper.fromJson(json['payment'] as Map),
+    payment: SKPaymentWrapper.fromJson(
+        Map<String, dynamic>.from(json['payment'] as Map)),
     transactionState: const SKTransactionStatusConverter()
-        .fromJson(json['transactionState'] as int),
+        .fromJson(json['transactionState'] as int?),
     originalTransaction: json['originalTransaction'] == null
         ? null
         : SKPaymentTransactionWrapper.fromJson(
-            json['originalTransaction'] as Map),
-    transactionTimeStamp: (json['transactionTimeStamp'] as num)?.toDouble(),
-    transactionIdentifier: json['transactionIdentifier'] as String,
-    error:
-        json['error'] == null ? null : SKError.fromJson(json['error'] as Map),
+            Map<String, dynamic>.from(json['originalTransaction'] as Map)),
+    transactionTimeStamp: (json['transactionTimeStamp'] as num?)?.toDouble(),
+    transactionIdentifier: json['transactionIdentifier'] as String?,
+    error: json['error'] == null
+        ? null
+        : SKError.fromJson(Map<String, dynamic>.from(json['error'] as Map)),
   );
 }
 

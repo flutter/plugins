@@ -1,3 +1,7 @@
+## 2.0.0
+
+* Update Dart SDK constraint for null safety compatibility.
+
 ## 0.0.4+9
 
 * Remove placeholder Dart file.

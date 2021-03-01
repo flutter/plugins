@@ -1,3 +1,11 @@
+## 2.0.0
+
+* Migrate to null safety.
+* BREAKING CHANGE: Path accessors that return non-nullable results will throw
+  a `MissingPlatformDirectoryException` if the platform implementation is unable
+  to get the corresponding directory (except on platforms where the method is
+  explicitly unsupported, where they will continue to throw `UnsupportedError`).
+
 ## 1.6.28
 
 * Drop unused UUID dependency for tests.

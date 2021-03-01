@@ -1,3 +1,32 @@
+## 0.8.0-nullsafety.3
+
+* Updates the example code listed in the [README.md](README.md), so it runs without errors when you simply copy/ paste it into a Flutter App.
+
+## 0.8.0-nullsafety.2
+
+* Solved delay when using the zoom feature on iOS.
+
+## 0.8.0-nullsafety.1
+
+* Added a timeout to the pre-capture sequence on Android to prevent crashes when the camera cannot get a focus.
+
+## 0.8.0-nullsafety
+
+* Migrated to null safety.
+
+## 0.7.0+4
+
+* Fix crash when taking picture with orientation lock
+
+## 0.7.0+3
+
+* Clockwise rotation of focus point in android 
+
+## 0.7.0+2
+
+* Fix example reference in README.
+* Revert compileSdkVersion back to 29 (from 30) as this is causing problems with add-to-app configurations.
+
 ## 0.7.0+1
 
 * Ensure communication from JAVA to Dart is done on the main UI thread.

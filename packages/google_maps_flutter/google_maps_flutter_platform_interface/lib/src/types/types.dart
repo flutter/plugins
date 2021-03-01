@@ -11,6 +11,8 @@ export 'circle_updates.dart';
 export 'circle.dart';
 export 'joint_type.dart';
 export 'location.dart';
+export 'maps_object_updates.dart';
+export 'maps_object.dart';
 export 'marker_updates.dart';
 export 'marker.dart';
 export 'pattern_item.dart';
