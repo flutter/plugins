@@ -1432,6 +1432,7 @@ public class Camera {
     public void close() {
         Log.i(TAG, "close");
 
+        stopBackgroundThread();;
         closeCaptureSession();
 
         if (cameraDevice != null) {
