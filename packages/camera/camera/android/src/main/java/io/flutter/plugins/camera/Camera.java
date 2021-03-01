@@ -32,6 +32,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.util.Log;
 import android.util.Range;
 import android.util.Rational;
@@ -760,10 +761,13 @@ public class Camera {
      * TODO: call when activity paused
      */
     private void stopBackgroundThread() {
-        mBackgroundThread.quitSafely();
         try {
-            mBackgroundThread.join();
-            mBackgroundThread = null;
+            if (mBackgroundThread != null) {
+                mBackgroundThread.quitSafely();
+                mBackgroundThread.join();
+                mBackgroundThread = null;
+            }
+
             mBackgroundHandler = null;
         } catch (InterruptedException e) {
             pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
@@ -1405,20 +1409,13 @@ public class Camera {
                     imageBuffer.put("format", img.getFormat());
                     imageBuffer.put("planes", planes);
 
-                    imageStreamSink.success(imageBuffer);
+                    final Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(() -> imageStreamSink.success(imageBuffer));
                     img.close();
                 },
                 mBackgroundHandler
         );
     }
-
-    public void stopImageStream() throws CameraAccessException {
-        if (imageStreamReader != null) {
-            imageStreamReader.setOnImageAvailableListener(null, mBackgroundHandler);
-        }
-        startPreview();
-    }
-
 
     private void closeCaptureSession() {
         if (captureSession != null) {
@@ -1431,8 +1428,6 @@ public class Camera {
 
     public void close() {
         Log.i(TAG, "close");
-
-        stopBackgroundThread();;
         closeCaptureSession();
 
         if (cameraDevice != null) {
@@ -1452,6 +1447,8 @@ public class Camera {
             mediaRecorder.release();
             mediaRecorder = null;
         }
+
+        stopBackgroundThread();
     }
 
     public void dispose() {
