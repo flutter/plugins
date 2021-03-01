@@ -56,6 +56,7 @@ class PictureCaptureRequest {
      * The state of this picture capture request.
      */
     private PictureCaptureRequestState state = PictureCaptureRequestState.STATE_IDLE;
+
     private final Runnable timeoutCallback =
             () -> error("captureTimeout", "Picture capture request timed out", state.toString());
 
@@ -128,6 +129,7 @@ class PictureCaptureRequest {
      * @return true if the timeout is reached; otherwise false is returned.
      */
     public boolean hitPreCaptureTimeout() {
+        Log.i("Camera", "hitPreCaptureTimeout | Time elapsed: " + (SystemClock.elapsedRealtime() - preCaptureStartTime));
         return (SystemClock.elapsedRealtime() - preCaptureStartTime) > PRECAPTURE_TIMEOUT_MS;
     }
 

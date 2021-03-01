@@ -168,7 +168,7 @@ public class Camera {
      * Exposure mode setting of the current camera. Initialize to auto
      * because all cameras support autoexposure by default.
      */
-    private ExposureMode exposureMode;
+    private ExposureMode currentExposureMode;
     /**
      * Focus mode setting of the current camera. Initialize to locked because
      * we don't know if the current camera supports autofocus yet.
@@ -290,7 +290,7 @@ public class Camera {
         this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
         this.applicationContext = activity.getApplicationContext();
         this.currentFlashMode = FlashMode.off;
-        this.exposureMode = ExposureMode.auto;
+        this.currentExposureMode = ExposureMode.auto;
         this.currentFocusMode = FocusMode.auto;
         this.exposureOffset = 0;
 
@@ -434,7 +434,7 @@ public class Camera {
                             dartMessenger.sendCameraInitializedEvent(
                                     previewSize.getWidth(),
                                     previewSize.getHeight(),
-                                    exposureMode,
+                                    currentExposureMode,
                                     currentFocusMode,
                                     isExposurePointSupported(),
                                     isFocusPointSupported());
@@ -778,11 +778,11 @@ public class Camera {
 
         // Applying auto exposure
         MeteringRectangle aeRect = cameraRegions.getAEMeteringRectangle();
-        mPreviewRequestBuilder.set(
+        requestBuilder.set(
                 CaptureRequest.CONTROL_AE_REGIONS,
                 aeRect == null ? null : new MeteringRectangle[]{cameraRegions.getAEMeteringRectangle()});
 
-        switch (exposureMode) {
+        switch (currentExposureMode) {
             case locked:
                 requestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
                 break;
@@ -1089,11 +1089,14 @@ public class Camera {
      */
     public void setExposureMode(@NonNull final Result result, ExposureMode newMode)
             throws CameraAccessException {
-        exposureMode = newMode;
+        currentExposureMode = newMode;
+        updateExposureMode(mPreviewRequestBuilder);
 
         refreshPreviewCaptureSession(
-                () -> result.success(null),
+                null,
                 (code, message) -> result.error("setExposureModeFailed", "Could not set exposure mode.", null));
+
+        result.success(null);
     }
 
     public void setExposurePoint(@NonNull final Result result, Double x, Double y)
