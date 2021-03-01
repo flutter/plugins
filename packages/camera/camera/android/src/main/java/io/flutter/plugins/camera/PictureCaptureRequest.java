@@ -104,7 +104,7 @@ class PictureCaptureRequest {
      * @param newState
      */
     public void setState(PictureCaptureRequestState newState) {
-        Log.i("Camera", "====> PictureCaptureRequest setState: " + newState);
+        // Log.i("Camera", "====> PictureCaptureRequest setState: " + newState);
 
         // Once a request is finished, that's it for its lifecycle.
         if (state == PictureCaptureRequestState.STATE_FINISHED) {
@@ -134,7 +134,7 @@ class PictureCaptureRequest {
 
         if (isFinished()) throw new IllegalStateException("Request has already been finished");
         setState(PictureCaptureRequestState.STATE_FINISHED);
-        Log.i("Camera", "PictureCaptureRequest finish");
+        // Log.i("Camera", "PictureCaptureRequest finish");
         result.success(absolutePath);
     }
 
@@ -156,7 +156,7 @@ class PictureCaptureRequest {
      * @return true if the timeout is reached; otherwise false is returned.
      */
     public boolean hitPreCaptureTimeout() {
-        Log.i("Camera", "hitPreCaptureTimeout | Time elapsed: " + (SystemClock.elapsedRealtime() - preCaptureStartTime));
+        // Log.i("Camera", "hitPreCaptureTimeout | Time elapsed: " + (SystemClock.elapsedRealtime() - preCaptureStartTime));
         return (SystemClock.elapsedRealtime() - preCaptureStartTime) > PRECAPTURE_TIMEOUT_MS;
     }
 
@@ -204,7 +204,7 @@ class PictureCaptureRequest {
         }
 
         public void resetTimeout(Runnable runnable) {
-            Log.i("Camear", "PictureCaptureRequest | resetting timeout");
+            // Log.i("Camear", "PictureCaptureRequest | resetting timeout");
             clearTimeout(runnable);
             handler.postDelayed(runnable, REQUEST_TIMEOUT);
         }

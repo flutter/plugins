@@ -136,7 +136,7 @@ public class Camera {
 
         @Override
         public void onImageAvailable(ImageReader reader) {
-            Log.i(TAG, "onImageAvailable");
+            // Log.i(TAG, "onImageAvailable");
             mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), pictureCaptureRequest.mFile, pictureCaptureRequest));
             cameraState = CameraState.STATE_PREVIEW;
         }
@@ -197,7 +197,7 @@ public class Camera {
             Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
             if (cameraState != CameraState.STATE_PREVIEW) {
-                Log.i(TAG, "mCaptureCallback | state: " + cameraState + " | afState: " + afState + " | aeState: " + aeState);
+                // Log.i(TAG, "mCaptureCallback | state: " + cameraState + " | afState: " + afState + " | aeState: " + aeState);
             }
 
             switch (cameraState) {
@@ -243,7 +243,7 @@ public class Camera {
                         takePictureAfterPrecapture();
                     } else {
                         if (pictureCaptureRequest.hitPreCaptureTimeout()) {
-                            Log.i(TAG, "===> Hit precapture timeout");
+                            // Log.i(TAG, "===> Hit precapture timeout");
                             unlockAutoFocus();
                         }
                     }
@@ -277,7 +277,7 @@ public class Camera {
             final String resolutionPreset,
             final boolean enableAudio)
             throws CameraAccessException {
-        Log.i(TAG, "Camear constructor");
+        // Log.i(TAG, "Camear constructor");
 
         if (activity == null) {
             throw new IllegalStateException("No activity available!");
@@ -331,9 +331,9 @@ public class Camera {
      */
     private void checkAutoFocusSupported() {
         int[] modes = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
-        Log.i(TAG, "checkAutoFocusSupported | modes:");
+        // Log.i(TAG, "checkAutoFocusSupported | modes:");
         for (int mode : modes) {
-            Log.i(TAG, "checkAutoFocusSupported | ==> " + mode);
+            // Log.i(TAG, "checkAutoFocusSupported | ==> " + mode);
         }
 
         // Check if fixed focal length lens. If LENS_INFO_MINIMUM_FOCUS_DISTANCE=0, then this is fixed.
@@ -341,12 +341,12 @@ public class Camera {
         float minFocus = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
         float maxFocus = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
         final boolean isFixedLength = minFocus == 0;
-        Log.i(TAG, "checkAutoFocusSupported | minFocus " + minFocus + " | maxFocus: " + maxFocus);
+        // Log.i(TAG, "checkAutoFocusSupported | minFocus " + minFocus + " | maxFocus: " + maxFocus);
 
 
         mAutoFocusSupported = !(modes == null || modes.length == 0 ||
                 (modes.length == 1 && modes[0] == CameraCharacteristics.CONTROL_AF_MODE_OFF));
-        Log.i(TAG, "checkAutoFocusSupported: " + mAutoFocusSupported);
+        // Log.i(TAG, "checkAutoFocusSupported: " + mAutoFocusSupported);
     }
 
     /**
@@ -363,7 +363,7 @@ public class Camera {
      * @param cameraCharacteristics
      */
     private void getAvailableFpsRange(CameraCharacteristics cameraCharacteristics) {
-        Log.i(TAG, "getAvailableFpsRange");
+        // Log.i(TAG, "getAvailableFpsRange");
 
         try {
             Range<Integer>[] ranges =
@@ -371,7 +371,7 @@ public class Camera {
             if (ranges != null) {
                 for (Range<Integer> range : ranges) {
                     int upper = range.getUpper();
-                    Log.i("Camera", "[FPS Range Available] is:" + range);
+                    // Log.i("Camera", "[FPS Range Available] is:" + range);
                     if (upper >= 10) {
                         if (fpsRange == null || upper > fpsRange.getUpper()) {
                             fpsRange = range;
@@ -382,11 +382,11 @@ public class Camera {
         } catch (Exception e) {
             pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
         }
-        Log.i("Camera", "[FPS Range] is:" + fpsRange);
+        // Log.i("Camera", "[FPS Range] is:" + fpsRange);
     }
 
     private void prepareMediaRecorder(String outputFilePath) throws IOException {
-        Log.i(TAG, "prepareMediaRecorder");
+        // Log.i(TAG, "prepareMediaRecorder");
 
         if (mediaRecorder != null) {
             mediaRecorder.release();
@@ -425,7 +425,7 @@ public class Camera {
                 new CameraDevice.StateCallback() {
                     @Override
                     public void onOpened(@NonNull CameraDevice device) {
-                        Log.i(TAG, "open | onOpened");
+                        // Log.i(TAG, "open | onOpened");
 
 
                         cameraDevice = device;
@@ -446,7 +446,7 @@ public class Camera {
 
                     @Override
                     public void onClosed(@NonNull CameraDevice camera) {
-                        Log.i(TAG, "open | onClosed");
+                        // Log.i(TAG, "open | onClosed");
 
                         dartMessenger.sendCameraClosingEvent();
                         super.onClosed(camera);
@@ -454,7 +454,7 @@ public class Camera {
 
                     @Override
                     public void onDisconnected(@NonNull CameraDevice cameraDevice) {
-                        Log.i(TAG, "open | onDisconnected");
+                        // Log.i(TAG, "open | onDisconnected");
 
                         close();
                         dartMessenger.sendCameraErrorEvent("The camera was disconnected.");
@@ -462,7 +462,7 @@ public class Camera {
 
                     @Override
                     public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
-                        Log.i(TAG, "open | onError");
+                        // Log.i(TAG, "open | onError");
 
                         close();
                         String errorDescription;
@@ -500,7 +500,7 @@ public class Camera {
     private void createCaptureSession(
             int templateType, Runnable onSuccessCallback, Surface... surfaces)
             throws CameraAccessException {
-        Log.i(TAG, "createCaptureSession");
+        // Log.i(TAG, "createCaptureSession");
 
         // Close any existing capture session.
         closeCaptureSession();
@@ -592,9 +592,9 @@ public class Camera {
     // Send a repeating request to refresh our capture session.
     private void refreshPreviewCaptureSession(
             @Nullable Runnable onSuccessCallback, @NonNull ErrorCallback onErrorCallback) {
-        Log.i(TAG, "refreshPreviewCaptureSession");
+        // Log.i(TAG, "refreshPreviewCaptureSession");
         if (captureSession == null) {
-            Log.i(TAG, "[refreshPreviewCaptureSession] mPreviewSession null, returning");
+            // Log.i(TAG, "[refreshPreviewCaptureSession] mPreviewSession null, returning");
             return;
         }
 
@@ -615,7 +615,7 @@ public class Camera {
     }
 
     public void takePicture(@NonNull final Result result) {
-        Log.i(TAG, "takePicture | useAutoFocus: " + useAutoFocus);
+        // Log.i(TAG, "takePicture | useAutoFocus: " + useAutoFocus);
 
         // Only take one 1 picture at a time.
         if (pictureCaptureRequest != null && !pictureCaptureRequest.isFinished()) {
@@ -650,7 +650,7 @@ public class Camera {
      * we get a response in {@link #mCaptureCallback} from lockFocus().
      */
     private void runPrecaptureSequence() {
-        Log.i(TAG, "runPrecaptureSequence");
+        // Log.i(TAG, "runPrecaptureSequence");
         try {
             // First set precapture state to idle or else it can hang in STATE_WAITING_PRECAPTURE
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
@@ -683,7 +683,7 @@ public class Camera {
      * {@link #mCaptureCallback} from both lockFocus().
      */
     private void takePictureAfterPrecapture() {
-        Log.i(TAG, "captureStillPicture");
+        // Log.i(TAG, "captureStillPicture");
         cameraState = CameraState.STATE_CAPTURING;
         pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_CAPTURING);
 
@@ -719,28 +719,28 @@ public class Camera {
                                              @NonNull CaptureRequest request,
                                              long timestamp,
                                              long frameNumber) {
-                    Log.i(TAG, "onCaptureStarted");
+                    // Log.i(TAG, "onCaptureStarted");
                 }
 
                 @Override
                 public void onCaptureProgressed(@NonNull CameraCaptureSession session,
                                                 @NonNull CaptureRequest request,
                                                 @NonNull CaptureResult partialResult) {
-                    Log.i(TAG, "onCaptureProgressed");
+                    // Log.i(TAG, "onCaptureProgressed");
                 }
 
                 @Override
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session,
                                                @NonNull CaptureRequest request,
                                                @NonNull TotalCaptureResult result) {
-                    Log.i(TAG, "onCaptureCompleted");
+                    // Log.i(TAG, "onCaptureCompleted");
                     unlockAutoFocus();
                 }
             };
 
             captureSession.stopRepeating();
             captureSession.abortCaptures();
-            Log.i(TAG, "sending capture request");
+            // Log.i(TAG, "sending capture request");
             captureSession.capture(stillBuilder.build(), CaptureCallback, mBackgroundHandler);
         } catch (CameraAccessException e) {
             pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
@@ -779,7 +779,7 @@ public class Camera {
      * Sync the requestBuilder exposure mode setting ot the current exposure mode setting of the camera.
      */
     void updateExposureMode(CaptureRequest.Builder requestBuilder) {
-        Log.i(TAG, "updateExposureMode");
+        // Log.i(TAG, "updateExposureMode");
 
         // Applying auto exposure
         MeteringRectangle aeRect = cameraRegions.getAEMeteringRectangle();
@@ -805,7 +805,7 @@ public class Camera {
      * Sync the requestBuilder flash setting to the current flash mode setting of the camera.
      */
     void updateFlash(CaptureRequest.Builder requestBuilder) {
-        Log.i(TAG, "updateFlash");
+        // Log.i(TAG, "updateFlash");
 
         if (!mFlashSupported) {
             return;
@@ -868,7 +868,7 @@ public class Camera {
      * Start capturing a picture, doing autofocus first.
      */
     private void runPictureAutoFocus() {
-        Log.i(TAG, "runPictureAutoFocus");
+        // Log.i(TAG, "runPictureAutoFocus");
         assert (pictureCaptureRequest != null);
 
         cameraState = CameraState.STATE_WAITING_FOCUS;
@@ -880,7 +880,7 @@ public class Camera {
      * Start the autofocus routine on the current capture request.
      */
     private void lockAutoFocus() {
-        Log.i(TAG, "lockAutoFocus");
+        // Log.i(TAG, "lockAutoFocus");
         pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_START);
 
         mPreviewRequestBuilder.set(
@@ -894,7 +894,7 @@ public class Camera {
      * Cancel and reset auto focus state and refresh the preview session.
      */
     private void unlockAutoFocus() {
-        Log.i(TAG, "unlockAutoFocus");
+        // Log.i(TAG, "unlockAutoFocus");
         try {
             // Cancel existing AF state
             mPreviewRequestBuilder.set(
@@ -912,7 +912,7 @@ public class Camera {
 
             captureSession.capture(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
         } catch (CameraAccessException e) {
-            Log.i(TAG, "Error unlocking focus: " + e.getMessage());
+            // Log.i(TAG, "Error unlocking focus: " + e.getMessage());
             dartMessenger.sendCameraErrorEvent(e.getMessage());
             return;
         }
@@ -1081,7 +1081,7 @@ public class Camera {
      */
     public void setFocusMode(@NonNull final Result result, FocusMode newMode)
             throws CameraAccessException {
-        Log.i(TAG, "setFocusMode: " + newMode);
+        // Log.i(TAG, "setFocusMode: " + newMode);
 
         // Set new focus mode
         currentFocusMode = newMode;
@@ -1093,7 +1093,7 @@ public class Camera {
         // or we want to trigger a one-time focus and then set AF to idle (locked mode).
         switch (newMode) {
             case auto:
-                Log.i(TAG, "Triggering AF start with mode " + currentFocusMode);
+                // Log.i(TAG, "Triggering AF start with mode " + currentFocusMode);
                 // Reset state of autofocus so it goes back to passive scanning.
                 mPreviewRequestBuilder.set(
                         CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
@@ -1117,7 +1117,7 @@ public class Camera {
                                 public void onCaptureCompleted(@NonNull CameraCaptureSession session,
                                                                @NonNull CaptureRequest request,
                                                                @NonNull TotalCaptureResult _result) {
-                                    Log.i(TAG, "Success after triggering AF start for locked focus");
+                                    // Log.i(TAG, "Success after triggering AF start for locked focus");
 
                                     mPreviewRequestBuilder.set(
                                             CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
@@ -1320,7 +1320,7 @@ public class Camera {
      * @param requestBuilder
      */
     private void updateFocusMode(CaptureRequest.Builder requestBuilder) {
-        Log.i(TAG, "updateFocusMode currentFocusMode: " + currentFocusMode);
+        // Log.i(TAG, "updateFocusMode currentFocusMode: " + currentFocusMode);
 
         if (!mAutoFocusSupported) {
             useAutoFocus = false;
@@ -1361,7 +1361,7 @@ public class Camera {
 
     public void startPreview() throws CameraAccessException {
         if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
-        Log.i(TAG, "startPreview");
+        // Log.i(TAG, "startPreview");
 
         createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
     }
@@ -1369,7 +1369,7 @@ public class Camera {
     public void startPreviewWithImageStream(EventChannel imageStreamChannel)
             throws CameraAccessException {
         createCaptureSession(CameraDevice.TEMPLATE_RECORD, imageStreamReader.getSurface());
-        Log.i(TAG, "startPreviewWithImageStream");
+        // Log.i(TAG, "startPreviewWithImageStream");
 
         imageStreamChannel.setStreamHandler(
                 new EventChannel.StreamHandler() {
@@ -1422,7 +1422,7 @@ public class Camera {
 
     private void closeCaptureSession() {
         if (captureSession != null) {
-            Log.i(TAG, "closeCaptureSession");
+            // Log.i(TAG, "closeCaptureSession");
 
             captureSession.close();
             captureSession = null;
@@ -1430,7 +1430,7 @@ public class Camera {
     }
 
     public void close() {
-        Log.i(TAG, "close");
+        // Log.i(TAG, "close");
         closeCaptureSession();
 
         if (cameraDevice != null) {
@@ -1455,7 +1455,7 @@ public class Camera {
     }
 
     public void dispose() {
-        Log.i(TAG, "dispose");
+        // Log.i(TAG, "dispose");
 
         close();
         flutterTexture.release();
