@@ -56,6 +56,15 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
   @override
   Future<bool> buyNonConsumable({required PurchaseParam purchaseParam}) async {
+    assert(
+        purchaseParam.changeSubscriptionParam == null,
+        "`purchaseParam.changeSubscriptionParam` must be null. It is not supported on iOS "
+        "as Apple provides a subscription grouping mechanism. "
+        "Each subscription you offer must be assigned to a subscription group. "
+        "So the developers can group related subscriptions together to prevents users "
+        "from accidentally purchasing multiple subscriptions. "
+        "Please refer to the 'Creating a Subscription Group' sections of "
+        "Apple's subscription guide (https://developer.apple.com/app-store/subscriptions/)");
     await _skPaymentQueueWrapper.addPayment(SKPaymentWrapper(
         productIdentifier: purchaseParam.productDetails.id,
         quantity: 1,

@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Support InApp subscription upgrade/downgrade.
+
 ## 0.4.0
 
 * Migrate to nullsafety.
