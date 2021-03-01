@@ -25,6 +25,12 @@ public class ImageSaver implements Runnable {
     private final File mFile;
 
     /**
+     * For running background tasks
+     */
+    private Handler mBackgroundHandler;
+
+
+    /**
      *
      * Used to finish the picture capture request
      */
@@ -34,6 +40,7 @@ public class ImageSaver implements Runnable {
         mImage = image;
         mFile = file;
         mPictureCaptureRequest = pictureCaptureRequest;
+        mBackgroundHandler = mBackgroundHandler;
     }
 
     @Override
