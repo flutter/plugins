@@ -68,7 +68,6 @@ class PictureCaptureRequest {
      * @param mFile
      */
     public PictureCaptureRequest(MethodChannel.Result result, File mFile) {
-       Log.i("Camera", "PictureCaptureRequest constructor");
         this.result = result;
         this.timeoutHandler = new TimeoutHandler();
         this.mFile = mFile;
@@ -155,14 +154,9 @@ class PictureCaptureRequest {
                 break;
 
             case STATE_FINISHED:
-                timeoutHandler.clearTimeout(timeoutCallback);
-                break;
-
             case STATE_ERROR:
                 timeoutHandler.clearTimeout(timeoutCallback);
-                setState(PictureCaptureRequestState.STATE_FINISHED);
                 break;
-
         }
     }
 

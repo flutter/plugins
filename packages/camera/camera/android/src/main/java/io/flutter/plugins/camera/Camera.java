@@ -206,8 +206,7 @@ public class Camera {
 
                 case STATE_WAITING_FOCUS: {
                     if (afState == null) {
-                        cameraState = CameraState.STATE_CAPTURING;
-                        takePictureAfterPrecapture();
+                        return;
                     } else if (
                             afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN ||
                                     afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED ||
@@ -216,7 +215,6 @@ public class Camera {
 
                         if (aeState == null ||
                                 aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
-                            cameraState = CameraState.STATE_CAPTURING;
                             takePictureAfterPrecapture();
                         } else {
                             runPrecaptureSequence();
@@ -240,7 +238,6 @@ public class Camera {
                 case STATE_WAITING_PRECAPTURE_DONE: {
                     // CONTROL_AE_STATE can be null on some devices
                     if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
-                        cameraState = CameraState.STATE_CAPTURING;
                         takePictureAfterPrecapture();
                     } else {
                         if (pictureCaptureRequest.hitPreCaptureTimeout()) {
@@ -680,6 +677,9 @@ public class Camera {
      */
     private void takePictureAfterPrecapture() {
         Log.i(TAG, "captureStillPicture");
+
+        cameraState = CameraState.STATE_CAPTURING;
+
         try {
             if (null == cameraDevice) {
                 return;
@@ -730,12 +730,8 @@ public class Camera {
                 }
             };
 
-            Log.i(TAG, "stopRepeating");
             captureSession.stopRepeating();
-
-            Log.i(TAG, "abortCaptures");
             captureSession.abortCaptures();
-
             Log.i(TAG, "sending capture request");
             captureSession.capture(stillBuilder.build(), CaptureCallback, mBackgroundHandler);
 //            captureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
@@ -880,11 +876,6 @@ public class Camera {
 
         refreshPreviewCaptureSession(
                 null, (code, message) -> pictureCaptureRequest.error(code, message, null));
-//        try {
-//            captureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-//                    mBackgroundHandler);
-//        } catch (CameraAccessException e) {
-//        }
     }
 
     /**
