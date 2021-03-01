@@ -1,3 +1,7 @@
+## 0.7.1
+
+* Update platform_plugin_interface version requirement.
+
 ## 0.7.0
 
 * Migrate to nullsafety
