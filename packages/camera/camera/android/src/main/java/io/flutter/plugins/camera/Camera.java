@@ -127,14 +127,7 @@ public class Camera {
      * A {@link Handler} for running tasks in the background.
      */
     private Handler mBackgroundHandler;
-
-  /**
-   * The preview surface which will be provided to still capture requests to keep the
-   * preview going during capture.
-   */
-  private Surface previewSurface;
-
-  /**
+    /**
      * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
      * still image is ready to be saved.
      */
@@ -149,6 +142,11 @@ public class Camera {
         }
 
     };
+    /**
+     * The preview surface which will be provided to still capture requests to keep the
+     * preview going during capture.
+     */
+    private Surface previewSurface;
     /**
      * An additional thread for running tasks that shouldn't block the UI.
      */
@@ -380,7 +378,9 @@ public class Camera {
     public void open(String imageFormatGroup) throws CameraAccessException {
         pictureImageReader =
                 ImageReader.newInstance(
-                        captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+                        captureSize.getWidth(),
+                        captureSize.getHeight(),
+                        ImageFormat.JPEG, 2);
 
         Integer imageFormat = supportedImageFormats.get(imageFormatGroup);
         if (imageFormat == null) {
@@ -488,7 +488,7 @@ public class Camera {
 
         // Save surface if it's preview
         if (templateType == CameraDevice.TEMPLATE_PREVIEW) {
-          previewSurface =flutterSurface;
+            previewSurface = flutterSurface;
         }
 
         List<Surface> remainingSurfaces = Arrays.asList(surfaces);
@@ -662,8 +662,8 @@ public class Camera {
                     cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             stillBuilder.addTarget(pictureImageReader.getSurface());
 
-            // Add the preview surface to reduce delay when capturing
-            stillBuilder.addTarget(previewSurface);
+            // Add the preview surface to show image after it's captured
+//            stillBuilder.addTarget(previewSurface);
 
             // Zoom
             stillBuilder.set(
@@ -715,6 +715,7 @@ public class Camera {
             Log.i(TAG, "sending capture request");
             captureSession.capture(stillBuilder.build(), CaptureCallback, mBackgroundHandler);
 //            captureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+//          pictureCaptureRequest.finish("a");
         } catch (CameraAccessException e) {
             pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
         }
