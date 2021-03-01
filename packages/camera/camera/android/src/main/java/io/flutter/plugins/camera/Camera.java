@@ -209,7 +209,7 @@ public class Camera {
                     if (afState == null) {
                         return;
                     } else if (
-//                            afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN ||
+                            afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN ||
                                     afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED ||
                                     afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                         // CONTROL_AE_STATE can be null on some devices
@@ -242,6 +242,7 @@ public class Camera {
                         takePictureAfterPrecapture();
                     } else {
                         if (pictureCaptureRequest.hitPreCaptureTimeout()) {
+                            Log.i(TAG, "===> Hit precapture timeout");
                             unlockAutoFocus();
                         }
                     }
@@ -627,7 +628,7 @@ public class Camera {
             final File file = File.createTempFile("CAP", ".jpg", outputDir);
 
             // Start a new capture
-            pictureCaptureRequest = new PictureCaptureRequest(result, file);
+            pictureCaptureRequest = new PictureCaptureRequest(result, file, dartMessenger);
         } catch (IOException | SecurityException e) {
             pictureCaptureRequest.error("cannotCreateFile", e.getMessage(), null);
             return;
@@ -904,14 +905,13 @@ public class Camera {
 
             // Set AF state to idle again
             mPreviewRequestBuilder.set(
-                    CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-
-            updateFocusMode(mPreviewRequestBuilder);
-            updateFlash(mPreviewRequestBuilder);
-            updateExposureMode(mPreviewRequestBuilder);
+                    CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
 
             captureSession.capture(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
-        } catch (CameraAccessException ignored) {
+        } catch (CameraAccessException e) {
+            Log.i(TAG, "Error unlocking focus: " + e.getMessage());
+            dartMessenger.sendCameraErrorEvent(e.getMessage());
+            return;
         }
 
         refreshPreviewCaptureSession(

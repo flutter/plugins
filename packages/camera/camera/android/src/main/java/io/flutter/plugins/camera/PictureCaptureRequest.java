@@ -53,6 +53,11 @@ class PictureCaptureRequest {
     private long preCaptureStartTime;
 
     /**
+     * To send errors back to dart
+     */
+    private final DartMessenger dartMessenger;
+
+    /**
      * The state of this picture capture request.
      */
     private PictureCaptureRequestState state = PictureCaptureRequestState.STATE_IDLE;
@@ -67,10 +72,11 @@ class PictureCaptureRequest {
      * @param result
      * @param mFile
      */
-    public PictureCaptureRequest(MethodChannel.Result result, File mFile) {
+    public PictureCaptureRequest(MethodChannel.Result result, File mFile, DartMessenger dartMessenger) {
         this.result = result;
         this.timeoutHandler = new TimeoutHandler();
         this.mFile = mFile;
+        this.dartMessenger = dartMessenger;
     }
 
     /**
@@ -92,7 +98,8 @@ class PictureCaptureRequest {
 
       // Once a request is finished, that's it for its lifecycle.
         if (state == PictureCaptureRequestState.STATE_FINISHED) {
-            throw new IllegalStateException("Request has already been finished");
+            dartMessenger.sendCameraErrorEvent("Request has already been finished");
+            return;
         }
 
         final PictureCaptureRequestState oldState = state;
