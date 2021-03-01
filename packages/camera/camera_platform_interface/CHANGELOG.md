@@ -1,4 +1,4 @@
-## 2.0.1
+## 2.0.2
 - Added support for NV21 image stream format in Android.
 
 ## 2.0.0
