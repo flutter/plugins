@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 
-import io.flutter.Log;
 import io.flutter.plugin.common.MethodChannel;
 
 /**

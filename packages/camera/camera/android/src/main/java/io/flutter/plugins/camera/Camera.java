@@ -133,14 +133,12 @@ public class Camera {
      */
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
-
         @Override
         public void onImageAvailable(ImageReader reader) {
             // Log.i(TAG, "onImageAvailable");
             mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), pictureCaptureRequest.mFile, pictureCaptureRequest));
             cameraState = CameraState.STATE_PREVIEW;
         }
-
     };
 
     /**
