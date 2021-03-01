@@ -21,7 +21,7 @@ task:
       script:
         - cd script/tool
         - pub get
-        - pub run test
+        - CIRRUS_BUILD_ID=null pub run test
     - name: publishable
       script:
         - flutter channel master
