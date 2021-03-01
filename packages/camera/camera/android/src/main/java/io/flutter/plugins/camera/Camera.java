@@ -195,7 +195,7 @@ public class Camera {
             Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
             if (cameraState != CameraState.STATE_PREVIEW) {
-            Log.i(TAG, "mCaptureCallback | state: " + cameraState + " | afState: " + afState + " | aeState: " + aeState);
+                Log.i(TAG, "mCaptureCallback | state: " + cameraState + " | afState: " + afState + " | aeState: " + aeState);
             }
 
             switch (cameraState) {
@@ -208,7 +208,7 @@ public class Camera {
                     if (afState == null) {
                         return;
                     } else if (
-                            afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN ||
+//                            afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN ||
                                     afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED ||
                                     afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                         // CONTROL_AE_STATE can be null on some devices
@@ -601,6 +601,10 @@ public class Camera {
                     mCaptureCallback,
                     mBackgroundHandler);
 
+            if (onSuccessCallback != null) {
+                onSuccessCallback.run();
+            }
+
 
         } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
             onErrorCallback.onError("cameraAccess", e.getMessage());
@@ -867,7 +871,7 @@ public class Camera {
     }
 
     /**
-     * Start the autofocus routine.
+     * Start the autofocus routine on the current capture request.
      */
     private void lockAutoFocus() {
         Log.i(TAG, "lockAutoFocus");
@@ -1010,65 +1014,14 @@ public class Camera {
      * @throws CameraAccessException
      */
     public void setFlashMode(@NonNull final Result result, FlashMode newMode) {
-        if (currentFlashMode == newMode) {
-            return;
-        }
-
         // Save the new flash mode setting
         final FlashMode oldFlashMode = currentFlashMode;
         currentFlashMode = newMode;
         updateFlash(mPreviewRequestBuilder);
 
         refreshPreviewCaptureSession(
-                () -> result.success(null),
+                () ->  result.success(null),
                 (code, message) -> result.error("setFlashModeFailed", "Could not set flash mode.", null));
-
-//        // If switching directly from torch to auto or on, make sure we turn off the torch.
-//        if (oldFlashMode == FlashMode.torch && newMode != FlashMode.torch && newMode != FlashMode.off) {
-//            // TODO: why cant we just call refresh preview here?
-//            captureSession.setRepeatingRequest(
-//                    mPreviewRequestBuilder.build(),
-//                    new CaptureCallback() {
-//                        private boolean isFinished = false;
-//
-//                        @Override
-//                        public void onCaptureCompleted(
-//                                @NonNull CameraCaptureSession session,
-//                                @NonNull CaptureRequest request,
-//                                @NonNull TotalCaptureResult captureResult) {
-//                            if (isFinished) {
-//                                return;
-//                            }
-//
-//                            updateFlash(mPreviewRequestBuilder);
-//                            refreshPreviewCaptureSession(
-//                                    () -> {
-//                                        result.success(null);
-//                                        isFinished = true;
-//                                    },
-//                                    (code, message) ->
-//                                            result.error("setFlashModeFailed", "Could not set flash mode.", null));
-//                        }
-//
-//                        @Override
-//                        public void onCaptureFailed(
-//                                @NonNull CameraCaptureSession session,
-//                                @NonNull CaptureRequest request,
-//                                @NonNull CaptureFailure failure) {
-//                            if (isFinished) {
-//                                return;
-//                            }
-//
-//                            result.error("setFlashModeFailed", "Could not set flash mode.", null);
-//                            isFinished = true;
-//                        }
-//                    },
-//                    null);
-//        } else {
-//            refreshPreviewCaptureSession(
-//                    () -> result.success(null),
-//                    (code, message) -> result.error("setFlashModeFailed", "Could not set flash mode.", null));
-//        }
     }
 
     /**
@@ -1140,7 +1093,7 @@ public class Camera {
 
                 // Refresh preview session using repeating request as it will be in CONTROL_AF_MODE_CONTINUOUS_PICTURE
                 refreshPreviewCaptureSession(
-                        null, (code, message) -> result.error("setFocusMode", message, null));
+                        () -> result.success(null), (code, message) -> result.error("setFocusMode", message, null));
                 break;
 
             case locked:
@@ -1166,13 +1119,15 @@ public class Camera {
                                 }
                             },
                             mBackgroundHandler);
+
+                    result.success(null);
                 } catch (CameraAccessException e) {
                     result.error("setFocusMode", e.getMessage(), null);
                 }
                 break;
         }
 
-        result.success(null);
+
     }
 
 
@@ -1294,9 +1249,10 @@ public class Camera {
         exposureOffset = (int) (offset / stepSize);
         // Apply it
         updateExposureMode(mPreviewRequestBuilder);
-        // TODO: refresh preview session?
-        this.captureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
-        result.success(offset);
+
+        // Refresh capture session
+        refreshPreviewCaptureSession(() -> result.success(null),
+                (code, message) -> result.error("setExposureModeFailed", "Could not set flash mode.", null));
     }
 
     public float getMaxZoomLevel() {
