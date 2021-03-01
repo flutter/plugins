@@ -92,13 +92,15 @@
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
 
-    
-    NSString *maxCachedTabs = args[@"maxCachedTabs"];
     WebViewManager *webViewManager = [WebViewManager sharedManager];
-    [webViewManager updateMaxCachedTabs:maxCachedTabs];
+
+    if ([args[@"maxCachedTabs"] isKindOfClass:[NSNumber class]]) {
+        NSNumber *maxCachedTabs = args[@"maxCachedTabs"];
+        [webViewManager updateMaxCachedTabs:maxCachedTabs];
+    }
       
-    NSString *tabId = args[@"tabId"];
-    if (tabId) {
+    if ([args[@"tabId"] isKindOfClass:[NSString class]]) {
+        NSString *tabId = args[@"tabId"];
         _webView = [webViewManager webViewForId:tabId];
     }
     
@@ -107,7 +109,8 @@
         _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
         shouldLoad = YES;
 
-        if (tabId) {
+        if ([args[@"tabId"] isKindOfClass:[NSString class]]) {
+            NSString *tabId = args[@"tabId"];
             [webViewManager cacheWebView:_webView forId:tabId];
         }
     }
