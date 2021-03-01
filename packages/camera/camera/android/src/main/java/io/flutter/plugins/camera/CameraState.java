@@ -20,12 +20,12 @@ public enum CameraState {
     /**
      * Start performing autoexposure.
      */
-    STATE_WAITING_PRECAPTURE,
+    STATE_WAITING_PRECAPTURE_START,
 
     /**
      * waiting for autoexposure to complete.
      */
-    STATE_WAITING_PRECAPTURE_READY,
+    STATE_WAITING_PRECAPTURE_DONE,
 
     /**
      * Capturing an image.
