@@ -1,4 +1,8 @@
-## 2.0.0-nullsafety.0
+## 2.0.1
+
+* Replace extensions with leading dots.
+
+## 2.0.0
 
 * Migration to null-safety
 

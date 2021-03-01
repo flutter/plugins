@@ -1,6 +1,6 @@
-## 2.0.0-nullsafety
+## 2.0.0
 
-* Migration to nnbd.
+* Migrate to null-safety.
 
 ## 1.1.3
 

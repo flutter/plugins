@@ -11,7 +11,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  path_provider_platform_interface: 2.0.0-nullsafety
+  path_provider_platform_interface: ^2.0.0
 
 dev_dependencies:
   integration_test:
@@ -24,5 +24,5 @@ flutter:
   uses-material-design: true
 
 environment:
-  sdk: ">=2.12.0-0 <3.0.0"
-  flutter: ">=1.10.0"
+  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  flutter: ">=1.20.0"
