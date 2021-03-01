@@ -45,25 +45,25 @@ class PictureCaptureRequest {
      * Timeout handler.
      */
     private final TimeoutHandler timeoutHandler;
-
+    /**
+     * To send errors back to dart
+     */
+    private final DartMessenger dartMessenger;
     /**
      * The time that the most recent capture started at. Used to check if
      * the current capture request has timed out.
      */
     private long preCaptureStartTime;
-
-    /**
-     * To send errors back to dart
-     */
-    private final DartMessenger dartMessenger;
-
     /**
      * The state of this picture capture request.
      */
     private PictureCaptureRequestState state = PictureCaptureRequestState.STATE_IDLE;
 
     private final Runnable timeoutCallback =
-            () -> error("captureTimeout", "Picture capture request timed out", state.toString());
+            () -> {
+                error("captureTimeout", "Picture capture request timed out", state.toString());
+                setState(PictureCaptureRequestState.STATE_ERROR);
+            };
 
 
     /**
@@ -75,6 +75,16 @@ class PictureCaptureRequest {
     public PictureCaptureRequest(MethodChannel.Result result, File mFile, DartMessenger dartMessenger) {
         this.result = result;
         this.timeoutHandler = new TimeoutHandler();
+        this.mFile = mFile;
+        this.dartMessenger = dartMessenger;
+    }
+
+    /**
+     * Constructor for unit tests where we can mock the timeout handler
+     */
+    public PictureCaptureRequest(MethodChannel.Result result, File mFile, DartMessenger dartMessenger, TimeoutHandler timeoutHandler) {
+        this.result = result;
+        this.timeoutHandler = timeoutHandler;
         this.mFile = mFile;
         this.dartMessenger = dartMessenger;
     }
@@ -94,9 +104,9 @@ class PictureCaptureRequest {
      * @param newState
      */
     public void setState(PictureCaptureRequestState newState) {
-      Log.i("Camera", "PictureCaptureRequest setState: " + newState);
+        Log.i("Camera", "====> PictureCaptureRequest setState: " + newState);
 
-      // Once a request is finished, that's it for its lifecycle.
+        // Once a request is finished, that's it for its lifecycle.
         if (state == PictureCaptureRequestState.STATE_FINISHED) {
             dartMessenger.sendCameraErrorEvent("Request has already been finished");
             return;
@@ -108,7 +118,8 @@ class PictureCaptureRequest {
     }
 
     public boolean isFinished() {
-        return state == PictureCaptureRequestState.STATE_FINISHED;
+        return state == PictureCaptureRequestState.STATE_FINISHED ||
+                state == PictureCaptureRequestState.STATE_ERROR;
     }
 
     /**
@@ -117,6 +128,11 @@ class PictureCaptureRequest {
      * @param absolutePath
      */
     public void finish(String absolutePath) {
+        if (state == PictureCaptureRequestState.STATE_ERROR) {
+            return;
+        }
+
+        if (isFinished()) throw new IllegalStateException("Request has already been finished");
         setState(PictureCaptureRequestState.STATE_FINISHED);
         Log.i("Camera", "PictureCaptureRequest finish");
         result.success(absolutePath);
@@ -125,6 +141,11 @@ class PictureCaptureRequest {
     public void error(
             String errorCode, @Nullable String errorMessage,
             @Nullable Object errorDetails) {
+        if (state == PictureCaptureRequestState.STATE_ERROR) {
+            return;
+        }
+
+        if (isFinished()) throw new IllegalStateException("Request has already been finished");
         setState(PictureCaptureRequestState.STATE_ERROR);
         result.error(errorCode, errorMessage, errorDetails);
     }
@@ -151,15 +172,18 @@ class PictureCaptureRequest {
      */
     private void onStateChange(PictureCaptureRequestState oldState) {
         switch (state) {
-            case STATE_IDLE:
-                // Nothing to do in idle state.
-                break;
-
             case STATE_CAPTURING:
-                // Started an image capture.
+            case STATE_WAITING_FOCUS:
+            case STATE_WAITING_PRECAPTURE_START:
                 timeoutHandler.resetTimeout(timeoutCallback);
                 break;
 
+            case STATE_WAITING_PRECAPTURE_DONE:
+                setPreCaptureStartTime();
+                timeoutHandler.resetTimeout(timeoutCallback);
+                break;
+
+            case STATE_IDLE:
             case STATE_FINISHED:
             case STATE_ERROR:
                 timeoutHandler.clearTimeout(timeoutCallback);
@@ -180,6 +204,7 @@ class PictureCaptureRequest {
         }
 
         public void resetTimeout(Runnable runnable) {
+            Log.i("Camear", "PictureCaptureRequest | resetting timeout");
             clearTimeout(runnable);
             handler.postDelayed(runnable, REQUEST_TIMEOUT);
         }
