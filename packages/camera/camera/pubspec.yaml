@@ -9,7 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  camera_platform_interface: ^2.0.1
+  camera_platform_interface: ^2.0.2
   pedantic: ^1.10.0
   quiver: ^3.0.0
 
