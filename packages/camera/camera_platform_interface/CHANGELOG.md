@@ -1,5 +1,10 @@
 ## 2.0.2
+
 - Added support for NV21 image stream format in Android.
+
+## 2.0.1
+
+- Update platform_plugin_interface version requirement.
 
 ## 2.0.0
 
@@ -7,7 +12,7 @@
 
 ## 1.6.0
 
-- Added VideoRecordedEvent to support ending a video recording in the native implementation. 
+- Added VideoRecordedEvent to support ending a video recording in the native implementation.
 
 ## 1.5.0
 
