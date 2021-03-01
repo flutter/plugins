@@ -1,6 +1,6 @@
 name: wifi_info_flutter_platform_interface
 description: A common platform interface for the wifi_info_flutter plugin.
-version: 2.0.0
+version: 2.0.1
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
 homepage: https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter_platform_interface
@@ -10,7 +10,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  plugin_platform_interface: ">=1.0.0 <3.0.0"
+  plugin_platform_interface: ^2.0.0
   flutter:
     sdk: flutter
 
