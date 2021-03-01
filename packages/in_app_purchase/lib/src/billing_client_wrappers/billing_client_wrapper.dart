@@ -194,7 +194,7 @@ class BillingClient {
       ProrationMode? prorationMode}) async {
     assert(sku != null);
     assert((oldSku == null) == (purchaseToken == null),
-        'oldSku and purchaseToken should have the same nullability');
+        'oldSku and purchaseToken must both be set, or both be null.');
     final Map<String, dynamic> arguments = <String, dynamic>{
       'sku': sku,
       'accountId': accountId,
