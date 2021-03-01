@@ -17,6 +17,21 @@ public enum PictureCaptureRequestState {
     STATE_IDLE,
 
     /**
+     * Starting and waiting for autofocus to complete.
+     */
+    STATE_WAITING_FOCUS,
+
+    /**
+     * Start performing autoexposure.
+     */
+    STATE_WAITING_PRECAPTURE_START,
+
+    /**
+     * waiting for autoexposure to complete.
+     */
+    STATE_WAITING_PRECAPTURE_DONE,
+
+    /**
      * Picture is being captured.
      */
     STATE_CAPTURING,

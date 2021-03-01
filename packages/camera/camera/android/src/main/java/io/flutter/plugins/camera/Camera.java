@@ -232,7 +232,7 @@ public class Camera {
                             aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE ||
                             aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED) {
                         cameraState = CameraState.STATE_WAITING_PRECAPTURE_DONE;
-                        pictureCaptureRequest.setPreCaptureStartTime();
+                        pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_DONE);
                     }
                     break;
                 }
@@ -684,8 +684,9 @@ public class Camera {
      */
     private void takePictureAfterPrecapture() {
         Log.i(TAG, "captureStillPicture");
-
         cameraState = CameraState.STATE_CAPTURING;
+        pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_CAPTURING);
+
 
         try {
             if (null == cameraDevice) {
@@ -741,8 +742,6 @@ public class Camera {
             captureSession.abortCaptures();
             Log.i(TAG, "sending capture request");
             captureSession.capture(stillBuilder.build(), CaptureCallback, mBackgroundHandler);
-//            captureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
-//          pictureCaptureRequest.finish("a");
         } catch (CameraAccessException e) {
             pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
         }
@@ -873,6 +872,7 @@ public class Camera {
         assert (pictureCaptureRequest != null);
 
         cameraState = CameraState.STATE_WAITING_FOCUS;
+        pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_WAITING_FOCUS);
         lockAutoFocus();
     }
 
@@ -881,6 +881,8 @@ public class Camera {
      */
     private void lockAutoFocus() {
         Log.i(TAG, "lockAutoFocus");
+        pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_START);
+
         mPreviewRequestBuilder.set(
                 CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
 
@@ -1025,7 +1027,7 @@ public class Camera {
         updateFlash(mPreviewRequestBuilder);
 
         refreshPreviewCaptureSession(
-                () ->  result.success(null),
+                () -> result.success(null),
                 (code, message) -> result.error("setFlashModeFailed", "Could not set flash mode.", null));
     }
 
