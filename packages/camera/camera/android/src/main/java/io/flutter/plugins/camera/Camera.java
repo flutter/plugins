@@ -47,6 +47,7 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,10 +77,7 @@ interface ErrorCallback {
 public class Camera {
   private static final String TAG = "Camera";
 
-  /**
-   * Timeout for the pre-capture sequence.
-   */
-  private static final long PRECAPTURE_TIMEOUT_MS = 1000;
+
   /**
    * Conversion from screen rotation to JPEG orientation.
    */
@@ -116,18 +114,21 @@ public class Camera {
   private final CameraCharacteristics cameraCharacteristics;
   private final Activity activity;
 
-  /**
-   * Whether the current camera device supports Flash or not.
-   */
-  private final boolean mFlashSupported;
+/**
+ * The state of the camera. By default we are in the preview state.
+ */
+  private CameraState cameraState = CameraState.STATE_PREVIEW;
+
   /**
    * A {@link Handler} for running tasks in the background.
    */
   private Handler mBackgroundHandler;
+
   /**
    * An additional thread for running tasks that shouldn't block the UI.
    */
   private HandlerThread mBackgroundThread;
+
   private CameraDevice cameraDevice;
   private CameraCaptureSession mPreviewSession;
   private ImageReader pictureImageReader;
@@ -143,35 +144,48 @@ public class Camera {
    */
   private CaptureRequest mPreviewRequest;
 
-  /**
-   * The current camera auto focus mode
-   */
-  private boolean mAutoFocus = true;
-
-  /**
-   * Whether the current camera device supports auto focus or not.
-   */
-  private boolean mAutoFocusSupported = true;
-
   private MediaRecorder mediaRecorder;
   private boolean recordingVideo;
   private File videoRecordingFile;
 
   /**
-   * Flash mode setting of the current camera
+   * Flash mode setting of the current camera. Initialize to off because
+   * we don't know if the current camera supports flash yet.
    */
-  private FlashMode currentFlashMode;
+  private FlashMode currentFlashMode = FlashMode.off;
 
   /**
-   * Exposure mode setting of the current camera.
+   * Exposure mode setting of the current camera. Initialize to auto
+   * because all cameras support autoexposure by default.
    */
-  private ExposureMode exposureMode;
+  private ExposureMode exposureMode = ExposureMode.auto;
 
   /**
-   * Focus mode setting of the current camera.
+   * Focus mode setting of the current camera. Initialize to locked because
+   * we don't know if the current camera supports autofocus yet.
    */
-  private FocusMode currentFocusMode;
-  private PictureCaptureRequest pictureCaptureRequest;
+  private FocusMode currentFocusMode = FocusMode.locked;
+
+  /**
+   * Whether the current camera device supports auto focus or not.
+   */
+  private boolean mAutoFocusSupported = false;
+
+  /**
+   * Whether or not to use autofocus.
+   */
+  private boolean useAutoFocus = false;
+
+  /**
+   * Whether the current camera device supports Flash or not.
+   */
+  private boolean mFlashSupported = false;
+
+  /**
+   * This manages the state of the camera and the current capture request.
+   */
+  PictureCaptureRequest pictureCaptureRequest;
+
   /**
    * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
    * still image is ready to be saved.
@@ -188,10 +202,10 @@ public class Camera {
   };
   private CameraRegions cameraRegions;
   private int exposureOffset;
-  private boolean useAutoFocus = true;
+
   private Range<Integer> fpsRange;
   private PlatformChannel.DeviceOrientation lockedCaptureOrientation;
-  private long preCaptureStartTime;
+
 
 
   public Camera(
@@ -202,6 +216,8 @@ public class Camera {
           final String resolutionPreset,
           final boolean enableAudio)
           throws CameraAccessException {
+    Log.i(TAG, "Camear constructor");
+
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
     }
@@ -248,6 +264,8 @@ public class Camera {
    * @param cameraCharacteristics
    */
   private void getAvailableFpsRange(CameraCharacteristics cameraCharacteristics) {
+    Log.i(TAG, "getAvailableFpsRange");
+
     try {
       Range<Integer>[] ranges =
               cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
@@ -269,6 +287,8 @@ public class Camera {
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
+    Log.i(TAG, "prepareMediaRecorder");
+
     if (mediaRecorder != null) {
       mediaRecorder.release();
     }
@@ -304,6 +324,9 @@ public class Camera {
             new CameraDevice.StateCallback() {
               @Override
               public void onOpened(@NonNull CameraDevice device) {
+                Log.i(TAG, "open | onOpened");
+
+
                 cameraDevice = device;
                 try {
                   startPreview();
@@ -322,18 +345,24 @@ public class Camera {
 
               @Override
               public void onClosed(@NonNull CameraDevice camera) {
+                Log.i(TAG, "open | onClosed");
+
                 dartMessenger.sendCameraClosingEvent();
                 super.onClosed(camera);
               }
 
               @Override
               public void onDisconnected(@NonNull CameraDevice cameraDevice) {
+                Log.i(TAG, "open | onDisconnected");
+
                 close();
                 dartMessenger.sendCameraErrorEvent("The camera was disconnected.");
               }
 
               @Override
               public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
+                Log.i(TAG, "open | onError");
+
                 close();
                 String errorDescription;
                 switch (errorCode) {
@@ -369,6 +398,8 @@ public class Camera {
   private void createCaptureSession(
           int templateType, Runnable onSuccessCallback, Surface... surfaces)
           throws CameraAccessException {
+    Log.i(TAG, "createCaptureSession");
+
     // Close any existing capture session.
     closeCaptureSession();
 
@@ -469,6 +500,9 @@ public class Camera {
       mPreviewSession.setRepeatingRequest(mPreviewRequest,
               mCaptureCallback, mBackgroundHandler);
 
+      // Put camera back to preview mode
+      cameraState = CameraState.STATE_PREVIEW;
+
       if (onSuccessCallback != null) {
         onSuccessCallback.run();
       }
@@ -480,18 +514,19 @@ public class Camera {
   public void takePicture(@NonNull final Result result) {
     Log.i(TAG, "takePicture | useAutoFocus: " + useAutoFocus);
 
-    // Only take 1 picture at a time
+    // Only take one 1 picture at a time.
     if (pictureCaptureRequest != null && !pictureCaptureRequest.isFinished()) {
       result.error("captureAlreadyActive", "Picture is currently already being captured", null);
       return;
     }
-    // Store the result
-    pictureCaptureRequest = new PictureCaptureRequest(result);
 
     // Create temporary file
     final File outputDir = applicationContext.getCacheDir();
     try {
-      pictureCaptureRequest.mFile = File.createTempFile("CAP", ".jpg", outputDir);
+      final File file = File.createTempFile("CAP", ".jpg", outputDir);
+
+      // Start a new capture
+      pictureCaptureRequest = new PictureCaptureRequest(result, file);
     } catch (IOException | SecurityException e) {
       pictureCaptureRequest.error("cannotCreateFile", e.getMessage(), null);
       return;
@@ -518,7 +553,7 @@ public class Camera {
       mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
               CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
       // Tell #mCaptureCallback to wait for the precapture sequence to be set.
-      pictureCaptureRequest.setState(CaptureSessionState.STATE_WAITING_PRECAPTURE);
+      cameraState = CameraState.STATE_WAITING_PRECAPTURE;
       mPreviewSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
               mBackgroundHandler);
     } catch (CameraAccessException e) {
@@ -675,17 +710,19 @@ public class Camera {
       Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
       Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
-      if (pictureCaptureRequest.getState() != CaptureSessionState.IDLE) {
-        Log.i(TAG, "mCaptureCallback | state: " + pictureCaptureRequest.getState() + " | afState: " + afState + " | aeState: " + aeState);
+      if (cameraState != CameraState.STATE_PREVIEW) {
+        Log.i(TAG, "mCaptureCallback | state: " + cameraState + " | afState: " + afState + " | aeState: " + aeState);
       }
 
-      switch (pictureCaptureRequest.getState()) {
-        case IDLE: {
+      switch (cameraState) {
+        case STATE_PREVIEW: {
           // We have nothing to do when the camera preview is working normally.
           break;
         }
-        case FOCUSING: {
+
+        case STATE_WAITING_FOCUS: {
           if (afState == null) {
+            cameraState = CameraState.STATE_CAPTURING;
             captureStillPicture();
           } else if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
                   afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
@@ -693,8 +730,7 @@ public class Camera {
 
             if (aeState == null ||
                     aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
-              pictureCaptureRequest.setState(CaptureSessionState.CAPTURING);
-
+              cameraState = CameraState.STATE_CAPTURING;
               captureStillPicture();
             } else {
               runPrecaptureSequence();
@@ -702,23 +738,26 @@ public class Camera {
           }
           break;
         }
+
         case STATE_WAITING_PRECAPTURE: {
           // CONTROL_AE_STATE can be null on some devices
           if (aeState == null ||
+                  aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED ||
                   aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE ||
-                  aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED) {
-            pictureCaptureRequest.setState(CaptureSessionState.STATE_WAITING_NON_PRECAPTURE);
-            setPreCaptureStartTime();
+                  aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED) {
+            cameraState = CameraState.STATE_WAITING_PRECAPTURE_READY;
+            pictureCaptureRequest.setPreCaptureStartTime();
           }
           break;
         }
-        case STATE_WAITING_NON_PRECAPTURE: {
+
+        case STATE_WAITING_PRECAPTURE_READY: {
           // CONTROL_AE_STATE can be null on some devices
           if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
-            pictureCaptureRequest.setState(CaptureSessionState.CAPTURING);
+            cameraState = CameraState.STATE_CAPTURING;
             captureStillPicture();
           } else {
-            if (hitPreCaptureTimeout()) {
+            if (pictureCaptureRequest.hitPreCaptureTimeout()) {
               unlockAutoFocus();
             }
           }
@@ -765,7 +804,7 @@ public class Camera {
     Log.i(TAG, "runPictureAutoFocus");
     assert (pictureCaptureRequest != null);
 
-    pictureCaptureRequest.setState(CaptureSessionState.FOCUSING);
+    cameraState = CameraState.STATE_WAITING_FOCUS;
     lockAutoFocus();
   }
 
@@ -1253,6 +1292,7 @@ public class Camera {
 
   public void startPreview() throws CameraAccessException {
     if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
+    Log.i(TAG, "startPreview");
 
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
@@ -1260,6 +1300,7 @@ public class Camera {
   public void startPreviewWithImageStream(EventChannel imageStreamChannel)
           throws CameraAccessException {
     createCaptureSession(CameraDevice.TEMPLATE_RECORD, imageStreamReader.getSurface());
+    Log.i(TAG, "startPreviewWithImageStream");
 
     imageStreamChannel.setStreamHandler(
             new EventChannel.StreamHandler() {
@@ -1315,30 +1356,22 @@ public class Camera {
     startPreview();
   }
 
-  /**
-   * Sets the time the pre-capture sequence started.
-   */
-  private void setPreCaptureStartTime() {
-    preCaptureStartTime = SystemClock.elapsedRealtime();
-  }
 
-  /**
-   * Check if the timeout for the pre-capture sequence has been reached.
-   *
-   * @return true if the timeout is reached; otherwise false is returned.
-   */
-  private boolean hitPreCaptureTimeout() {
-    return (SystemClock.elapsedRealtime() - preCaptureStartTime) > PRECAPTURE_TIMEOUT_MS;
-  }
+
+
 
   private void closeCaptureSession() {
     if (mPreviewSession != null) {
+      Log.i(TAG, "closeCaptureSession");
+
       mPreviewSession.close();
       mPreviewSession = null;
     }
   }
 
   public void close() {
+    Log.i(TAG, "close");
+
     closeCaptureSession();
 
     if (cameraDevice != null) {
@@ -1361,6 +1394,8 @@ public class Camera {
   }
 
   public void dispose() {
+    Log.i(TAG, "dispose");
+
     close();
     flutterTexture.release();
     deviceOrientationListener.stop();
