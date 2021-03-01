@@ -195,7 +195,7 @@ public class Camera {
             Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
             if (cameraState != CameraState.STATE_PREVIEW) {
-                Log.i(TAG, "mCaptureCallback | state: " + cameraState + " | afState: " + afState + " | aeState: " + aeState);
+            Log.i(TAG, "mCaptureCallback | state: " + cameraState + " | afState: " + afState + " | aeState: " + aeState);
             }
 
             switch (cameraState) {
@@ -599,17 +599,10 @@ public class Camera {
         }
 
         try {
-            captureSession.setRepeatingRequest(mPreviewRequestBuilder.build(),
-                    new CameraCaptureSession.CaptureCallback() {
-                        @Override
-                        public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                                                       @NonNull CaptureRequest request,
-                                                       @NonNull TotalCaptureResult result) {
-                            if (onSuccessCallback != null) {
-                                onSuccessCallback.run();
-                            }
-                        }
-                    }, mBackgroundHandler);
+            captureSession.setRepeatingRequest(
+                    mPreviewRequestBuilder.build(),
+                    mCaptureCallback,
+                    mBackgroundHandler);
 
 
         } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
@@ -655,24 +648,29 @@ public class Camera {
     private void runPrecaptureSequence() {
         Log.i(TAG, "runPrecaptureSequence");
         try {
+            // First set precapture state to idle or else it can hang in STATE_WAITING_PRECAPTURE
+            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+                    CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
+            captureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
+                    mBackgroundHandler);
 
-//      // First set precapture state to idle or else it can hang in STATE_WAITING_PRECAPTURE
-//      mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-//              CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
-//      mPreviewSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-//              mBackgroundHandler);
-//      refreshPreviewCaptureSession(
-//              null, (code, message) -> pictureCaptureRequest.error(code, message, null));
+            // Repeating request to refresh preview session
+            refreshPreviewCaptureSession(
+                    null,
+                    (code, message) -> pictureCaptureRequest.error("cameraAccess", message, null));
 
             // Start precapture now
             cameraState = CameraState.STATE_WAITING_PRECAPTURE_START;
 
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
                     CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+
+            // Trigger one capture to start AE sequence
             captureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
                     mBackgroundHandler);
+
         } catch (CameraAccessException e) {
-            pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
+            e.printStackTrace();
         }
     }
 
@@ -869,22 +867,24 @@ public class Camera {
         assert (pictureCaptureRequest != null);
 
         cameraState = CameraState.STATE_WAITING_FOCUS;
-        lockAutoFocus(null);
+        lockAutoFocus();
     }
 
     /**
      * Start the autofocus routine.
      */
-    private void lockAutoFocus(Runnable callback) {
+    private void lockAutoFocus() {
         Log.i(TAG, "lockAutoFocus");
         mPreviewRequestBuilder.set(
                 CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
 
-        try {
-            captureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
-        } catch (CameraAccessException e) {
-        }
+        refreshPreviewCaptureSession(
+                null, (code, message) -> pictureCaptureRequest.error(code, message, null));
+//        try {
+//            captureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
+//                    mBackgroundHandler);
+//        } catch (CameraAccessException e) {
+//        }
     }
 
     /**
@@ -1127,10 +1127,6 @@ public class Camera {
      */
     public void setFocusMode(@NonNull final Result result, FocusMode newMode)
             throws CameraAccessException {
-        if (currentFocusMode == newMode) {
-            return;
-        }
-
         Log.i(TAG, "setFocusMode: " + newMode);
 
         // Set new focus mode
@@ -1367,7 +1363,8 @@ public class Camera {
      * @param requestBuilder
      */
     private void updateFocusMode(CaptureRequest.Builder requestBuilder) {
-        Log.i(TAG, "updateFocusMode");
+        Log.i(TAG, "updateFocusMode currentFocusMode: " + currentFocusMode);
+
         if (!mAutoFocusSupported) {
             useAutoFocus = false;
             requestBuilder.set(
