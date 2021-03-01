@@ -1173,6 +1173,7 @@ class MyWebViewPlatformController extends WebViewPlatformController {
         String mimeType,
         String encoding,
         String historyUrl,
+        Map<String, String> headers
       }) {
     equals(1, 1);
     lastUrlLoaded = baseUrl;

@@ -625,6 +625,7 @@ class WebViewController {
     String mimeType,
     String encoding,
     String historyUrl,
+    Map<String, String> headers,
   }) async {
     assert(data != null);
     if (baseUrl != null && baseUrl.isNotEmpty) _validateUrlString(baseUrl);
@@ -633,7 +634,8 @@ class WebViewController {
         baseUrl: baseUrl,
         mimeType: mimeType,
         encoding: encoding,
-        historyUrl: historyUrl);
+        historyUrl: historyUrl,
+        headers: headers);
   }
 
   /// Accessor to the current URL that the WebView is displaying.

@@ -194,6 +194,7 @@ abstract class WebViewPlatformController {
         String mimeType,
         String encoding,
         String historyUrl,
+        Map<String, String> headers,
       }) {
     throw UnimplementedError(
         "WebView loadUrl is not implemented on the current platform");
