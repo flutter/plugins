@@ -67,6 +67,7 @@ class PictureCaptureRequest {
      * @param mFile
      */
     public PictureCaptureRequest(MethodChannel.Result result, File mFile) {
+       Log.i("Camera", "PictureCaptureRequest constructor");
         this.result = result;
         this.timeoutHandler = new TimeoutHandler();
         this.mFile = mFile;
