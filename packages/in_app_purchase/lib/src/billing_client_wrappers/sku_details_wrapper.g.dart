@@ -12,7 +12,7 @@ SkuDetailsWrapper _$SkuDetailsWrapperFromJson(Map json) {
     freeTrialPeriod: json['freeTrialPeriod'] as String? ?? '',
     introductoryPrice: json['introductoryPrice'] as String? ?? '',
     introductoryPriceMicros: json['introductoryPriceMicros'] as String? ?? '',
-    introductoryPriceCycles: json['introductoryPriceCycles'] as String? ?? '',
+    introductoryPriceCycles: json['introductoryPriceCycles'] as int? ?? 0,
     introductoryPricePeriod: json['introductoryPricePeriod'] as String? ?? '',
     price: json['price'] as String? ?? '',
     priceAmountMicros: json['priceAmountMicros'] as int? ?? 0,
@@ -21,7 +21,6 @@ SkuDetailsWrapper _$SkuDetailsWrapperFromJson(Map json) {
     subscriptionPeriod: json['subscriptionPeriod'] as String? ?? '',
     title: json['title'] as String? ?? '',
     type: const SkuTypeConverter().fromJson(json['type'] as String?),
-    isRewarded: json['isRewarded'] as bool? ?? false,
     originalPrice: json['originalPrice'] as String? ?? '',
     originalPriceAmountMicros: json['originalPriceAmountMicros'] as int? ?? 0,
   );
@@ -42,7 +41,6 @@ Map<String, dynamic> _$SkuDetailsWrapperToJson(SkuDetailsWrapper instance) =>
       'subscriptionPeriod': instance.subscriptionPeriod,
       'title': instance.title,
       'type': const SkuTypeConverter().toJson(instance.type),
-      'isRewarded': instance.isRewarded,
       'originalPrice': instance.originalPrice,
       'originalPriceAmountMicros': instance.originalPriceAmountMicros,
     };
