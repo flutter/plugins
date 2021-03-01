@@ -7,7 +7,6 @@ import 'dart:io';
 import 'app_store_connection.dart';
 import 'google_play_connection.dart';
 import 'product_details.dart';
-import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import './purchase_details.dart';
 
@@ -40,11 +39,11 @@ abstract class InAppPurchaseConnection {
   /// events after they start to listen.
   Stream<List<PurchaseDetails>> get purchaseUpdatedStream => _getStream();
 
-  Stream<List<PurchaseDetails>> _purchaseUpdatedStream;
+  Stream<List<PurchaseDetails>>? _purchaseUpdatedStream;
 
   Stream<List<PurchaseDetails>> _getStream() {
     if (_purchaseUpdatedStream != null) {
-      return _purchaseUpdatedStream;
+      return _purchaseUpdatedStream!;
     }
 
     if (Platform.isAndroid) {
@@ -57,7 +56,7 @@ abstract class InAppPurchaseConnection {
       throw UnsupportedError(
           'InAppPurchase plugin only works on Android and iOS.');
     }
-    return _purchaseUpdatedStream;
+    return _purchaseUpdatedStream!;
   }
 
   /// Whether pending purchase is enabled.
@@ -133,7 +132,7 @@ abstract class InAppPurchaseConnection {
   ///  * [queryPastPurchases], for restoring non consumable products.
   ///
   /// Calling this method for consumable items will cause unwanted behaviors!
-  Future<bool> buyNonConsumable({@required PurchaseParam purchaseParam});
+  Future<bool> buyNonConsumable({required PurchaseParam purchaseParam});
 
   /// Buy a consumable product.
   ///
@@ -186,7 +185,7 @@ abstract class InAppPurchaseConnection {
   /// Calling this method for non consumable items will cause unwanted
   /// behaviors!
   Future<bool> buyConsumable(
-      {@required PurchaseParam purchaseParam, bool autoConsume = true});
+      {required PurchaseParam purchaseParam, bool autoConsume = true});
 
   /// Mark that purchased content has been delivered to the
   /// user.
@@ -206,9 +205,9 @@ abstract class InAppPurchaseConnection {
   /// Warning! Failure to call this method and get a successful response within 3 days of the purchase will result a refund on Android.
   /// The [consumePurchase] acts as an implicit [completePurchase] on Android.
   ///
-  /// The optional parameter `developerPayload` only works on Android.
+  /// The optional parameter `developerPayload`  (defaults to `null`) only works on Android.
   Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
-      {String developerPayload});
+      {String? developerPayload});
 
   /// (Play only) Mark that the user has consumed a product.
   ///
@@ -216,16 +215,17 @@ abstract class InAppPurchaseConnection {
   /// delivered. The user won't be able to buy the same product again until the
   /// purchase of the product is consumed.
   ///
-  /// The `developerPayload` can be specified to be associated with this consumption.
+  /// The `developerPayload` (defaults to `null`) can be specified to be associated with this consumption.
   ///
   /// This throws an [UnsupportedError] on iOS.
   Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase,
-      {String developerPayload});
+      {String? developerPayload});
 
   /// Query all previous purchases.
   ///
   /// The `applicationUserName` should match whatever was sent in the initial
-  /// `PurchaseParam`, if anything.
+  /// `PurchaseParam`, if anything. If no `applicationUserName` was specified in the initial
+  /// `PurchaseParam`, use `null`.
   ///
   /// This does not return consumed products. If you want to restore unused
   /// consumable products, you need to persist consumable product information
@@ -236,12 +236,14 @@ abstract class InAppPurchaseConnection {
   ///  * [refreshPurchaseVerificationData], for reloading failed
   ///    [PurchaseDetails.verificationData].
   Future<QueryPurchaseDetailsResponse> queryPastPurchases(
-      {String applicationUserName});
+      {String? applicationUserName});
 
   /// (App Store only) retry loading purchase data after an initial failure.
   ///
+  /// If no results, a `null` value is returned.
+  ///
   /// Throws an [UnsupportedError] on Android.
-  Future<PurchaseVerificationData> refreshPurchaseVerificationData();
+  Future<PurchaseVerificationData?> refreshPurchaseVerificationData();
 
   /// (App Store only) present Code Redemption Sheet.
   /// Available on devices running iOS 14 and iPadOS 14 and later.
@@ -254,11 +256,11 @@ abstract class InAppPurchaseConnection {
   /// Throws an [UnsupportedError] when accessed on a platform other than
   /// Android or iOS.
   static InAppPurchaseConnection get instance => _getOrCreateInstance();
-  static InAppPurchaseConnection _instance;
+  static InAppPurchaseConnection? _instance;
 
   static InAppPurchaseConnection _getOrCreateInstance() {
     if (_instance != null) {
-      return _instance;
+      return _instance!;
     }
 
     if (Platform.isAndroid) {
@@ -270,7 +272,7 @@ abstract class InAppPurchaseConnection {
           'InAppPurchase plugin only works on Android and iOS.');
     }
 
-    return _instance;
+    return _instance!;
   }
 }
 
@@ -293,9 +295,9 @@ enum IAPSource {
 class IAPError {
   /// Creates a new IAP error object with the given error details.
   IAPError(
-      {@required this.source,
-      @required this.code,
-      @required this.message,
+      {required this.source,
+      required this.code,
+      required this.message,
       this.details});
 
   /// Which source is the error on.
@@ -304,9 +306,9 @@ class IAPError {
   /// The error code.
   final String code;
 
-  /// A human-readable error message, possibly null.
+  /// A human-readable error message.
   final String message;
 
   /// Error details, possibly null.
-  final dynamic details;
+  final dynamic? details;
 }

@@ -1,3 +1,10 @@
+## 0.7.0
+
+* Migrate to nullsafety
+* Breaking Changes:
+    * Removed the deprecated methods: `ImagePicker.pickImage`, `ImagePicker.pickVideo`,
+`ImagePicker.retrieveLostData`
+
 ## 0.6.7+22
 
 * iOS: update XCUITests to separate each test session.

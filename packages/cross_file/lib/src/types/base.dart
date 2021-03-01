@@ -15,7 +15,7 @@ import 'dart:typed_data';
 /// the methods should seem familiar.
 abstract class XFileBase {
   /// Construct a CrossFile
-  XFileBase(String path);
+  XFileBase(String? path);
 
   /// Save the CrossFile at the indicated file path.
   Future<void> saveTo(String path) {
@@ -43,7 +43,7 @@ abstract class XFileBase {
   }
 
   /// For web, it may be necessary for a file to know its MIME type.
-  String get mimeType {
+  String? get mimeType {
     throw UnimplementedError('.mimeType has not been implemented.');
   }
 
@@ -75,7 +75,7 @@ abstract class XFileBase {
   /// If `end` is present, only up to byte-index `end` will be read. Otherwise, until end of file.
   ///
   /// In order to make sure that system resources are freed, the stream must be read to completion or the subscription on the stream must be cancelled.
-  Stream<Uint8List> openRead([int start, int end]) {
+  Stream<Uint8List> openRead([int? start, int? end]) {
     throw UnimplementedError('openRead() has not been implemented.');
   }
 

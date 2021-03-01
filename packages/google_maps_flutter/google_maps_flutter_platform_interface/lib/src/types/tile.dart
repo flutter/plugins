@@ -21,13 +21,13 @@ class Tile {
   ///
   /// The image data format must be natively supported for decoding by the platform.
   /// e.g on Android it can only be one of the [supported image formats for decoding](https://developer.android.com/guide/topics/media/media-formats#image-formats).
-  final Uint8List data;
+  final Uint8List? data;
 
   /// Converts this object to JSON.
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
+  Object toJson() {
+    final Map<String, Object> json = <String, Object>{};
 
-    void addIfPresent(String fieldName, dynamic value) {
+    void addIfPresent(String fieldName, Object? value) {
       if (value != null) {
         json[fieldName] = value;
       }

@@ -1,3 +1,7 @@
+## 0.2.0
+
+* Migrate to null safety.
+
 ## 0.1.2+4
 
 * Update Flutter SDK constraint.

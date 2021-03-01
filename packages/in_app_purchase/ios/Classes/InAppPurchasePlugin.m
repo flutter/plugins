@@ -75,7 +75,7 @@
       }];
   [_paymentQueueHandler startObservingPaymentQueue];
   _callbackChannel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_callback"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase"
                                   binaryMessenger:[registrar messenger]];
   return self;
 }
@@ -298,7 +298,7 @@
   }];
 }
 
-#pragma mark - delegates
+#pragma mark - delegates:
 
 - (void)handleTransactionsUpdated:(NSArray<SKPaymentTransaction *> *)transactions {
   NSMutableArray *maps = [NSMutableArray new];

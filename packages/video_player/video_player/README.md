@@ -48,6 +48,8 @@ This plugin compiles for the web platform since version `0.10.5`, in recent enou
 
 Different web browsers may have different video-playback capabilities (supported formats, autoplay...). Check [package:video_player_web](https://pub.dev/packages/video_player_web) for more web-specific information.
 
+The `VideoPlayerOptions.mixWithOthers` option can't be implemented in web, at least at the moment. If you use this option in web it will be silently ignored.
+
 ## Supported Formats
 
 - On iOS, the backing player is [AVPlayer](https://developer.apple.com/documentation/avfoundation/avplayer).
@@ -77,7 +79,7 @@ class _VideoAppState extends State<VideoApp> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-        'http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4')
+        'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4')
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
