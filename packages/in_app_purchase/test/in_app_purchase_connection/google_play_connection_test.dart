@@ -632,9 +632,8 @@ void main() {
       purchaseDetails.status = PurchaseStatus.purchased;
       if (purchaseDetails.pendingCompletePurchase) {
         final BillingResultWrapper billingResultWrapper =
-            await GooglePlayConnection.instance.completePurchase(
-                purchaseDetails,
-                developerPayload: 'dummy payload');
+            await GooglePlayConnection.instance
+                .completePurchase(purchaseDetails);
         expect(billingResultWrapper, equals(expectedBillingResult));
         completer.complete(billingResultWrapper);
       }
