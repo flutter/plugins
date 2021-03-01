@@ -34,7 +34,8 @@ import java.io.ByteArrayOutputStream;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
-  private final InputAwareWebView webView;
+  private InputAwareWebView webView = null;
+  private boolean shouldLoad = false;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
@@ -93,17 +94,43 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     DisplayManager displayManager =
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
-    webView = new InputAwareWebView(context, containerView);
+
+    WebViewManager webViewManager = WebViewManager.getInstance();
+
+    if (params.containsKey("maxCachedTabs")) {
+      Integer maxCachedTabs = (Integer) params.get("maxCachedTabs");
+      webViewManager.updateMaxCachedTabs(maxCachedTabs);
+    }
+
+    if (params.containsKey("tabId")) {
+      String tabId = (String) params.get("tabId");
+      webView = webViewManager.webViewForId(tabId);
+    }
+
+    if (webView == null) {
+      webView = new InputAwareWebView(context, containerView);
+
+      shouldLoad = true;
+
+      if (params.containsKey("tabId")) {
+        String tabId = (String) params.get("tabId");
+        webViewManager.cacheWebView(webView, tabId);
+      }
+    }
+
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
     platformThreadHandler = new Handler(context.getMainLooper());
-    // Allow local storage.
-    webView.getSettings().setDomStorageEnabled(true);
-    webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
-    // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
-    webView.getSettings().setSupportMultipleWindows(true);
-    webView.setWebChromeClient(new FlutterWebChromeClient());
+    if (shouldLoad) {
+      // Allow local storage.
+      webView.getSettings().setDomStorageEnabled(true);
+      webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+
+      // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
+      webView.getSettings().setSupportMultipleWindows(true);
+      webView.setWebChromeClient(new FlutterWebChromeClient());
+    }
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
@@ -127,7 +154,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String userAgent = (String) params.get("userAgent");
       updateUserAgent(userAgent);
     }
-    if (params.containsKey("initialUrl")) {
+    if (params.containsKey("initialUrl") && shouldLoad) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
@@ -401,12 +428,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           if (mode != null) updateJsMode(mode);
           break;
         case "hasNavigationDelegate":
-          final boolean hasNavigationDelegate = (boolean) settings.get(key);
+          if (shouldLoad) {
+            final boolean hasNavigationDelegate = (boolean) settings.get(key);
 
-          final WebViewClient webViewClient =
-              flutterWebViewClient.createWebViewClient(hasNavigationDelegate, hostsToBlock);
+            final WebViewClient webViewClient =
+                    flutterWebViewClient.createWebViewClient(hasNavigationDelegate, hostsToBlock);
 
-          webView.setWebViewClient(webViewClient);
+            webView.setWebViewClient(webViewClient);
+          }
           break;
         case "debuggingEnabled":
           final boolean debuggingEnabled = (boolean) settings.get(key);
@@ -462,7 +491,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @Override
   public void dispose() {
     methodChannel.setMethodCallHandler(null);
-    webView.dispose();
-    webView.destroy();
+    webView = null;
   }
 }
