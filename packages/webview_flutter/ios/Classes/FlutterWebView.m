@@ -213,9 +213,24 @@
                     [_webView loadHTMLString:data baseURL:nsUrl];
                     return true;
                 } else {
+                    // Fallback on earlier versions
+                    NSDictionary * hearders = request[@"headers"];
+                    NSMutableURLRequest * mutableRequest = [NSMutableURLRequest requestWithURL:nsUrl];
+                                        
+                    NSDictionary * properties = @{
+                        NSHTTPCookieDomain: hearders[@"domain"],//@".dev.247software.com",
+                        NSHTTPCookiePath: @"/",
+                        NSHTTPCookieName: @"jwt_token",
+                        NSHTTPCookieValue: hearders[@"jwt_token"],
+                        NSHTTPCookieSecure: @"true",
+                        NSHTTPCookieExpires: [[NSDate date] dateByAddingTimeInterval:2629743]
+                    };
+                    NSHTTPCookie * cookie = [NSHTTPCookie cookieWithProperties:properties];
+                    [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+                    [mutableRequest addValue:[NSString stringWithFormat:@"%@",cookie] forHTTPHeaderField:@"Cookie"];
+                    [_webView loadRequest:mutableRequest];
                     return true;
-                }
-                
+                }                
             } else {
                 return false;
             }
