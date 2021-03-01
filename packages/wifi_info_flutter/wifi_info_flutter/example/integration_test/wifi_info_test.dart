@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'dart:io';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +11,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('$WifiInfo test driver', () {
-    WifiInfo _wifiInfo;
+    late WifiInfo _wifiInfo;
 
     setUpAll(() async {
       _wifiInfo = WifiInfo();
