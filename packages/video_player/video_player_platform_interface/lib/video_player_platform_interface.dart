@@ -151,6 +151,7 @@ class DataSource {
     this.formatHint,
     this.asset,
     this.package,
+    this.httpHeaders,
   });
 
   /// The way in which the video was originally loaded.
@@ -168,6 +169,10 @@ class DataSource {
   /// **Android only**. Will override the platform's generic file format
   /// detection with whatever is set here.
   final VideoFormat? formatHint;
+
+  /// HTTP headers used for the request to the [uri].
+  /// Only for [DataSourceType.network] videos.
+  Map<String, String>? httpHeaders;
 
   /// The name of the asset. Only set for [DataSourceType.asset] videos.
   final String? asset;
