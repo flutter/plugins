@@ -86,6 +86,10 @@ static NSDictionary<NSString *, id> *wrapResult(NSDictionary *result, FlutterErr
   if ((NSNull *)result.formatHint == [NSNull null]) {
     result.formatHint = nil;
   }
+  result.httpHeaders = dict[@"httpHeaders"];
+  if ((NSNull *)result.httpHeaders == [NSNull null]) {
+    result.httpHeaders = nil;
+  }
   return result;
 }
 - (NSDictionary *)toMap {
@@ -95,7 +99,9 @@ static NSDictionary<NSString *, id> *wrapResult(NSDictionary *result, FlutterErr
                                    (self.packageName ? self.packageName : [NSNull null]),
                                    @"packageName",
                                    (self.formatHint ? self.formatHint : [NSNull null]),
-                                   @"formatHint", nil];
+                                   @"formatHint",
+                                   (self.httpHeaders ? self.httpHeaders : [NSNull null]),
+                                   @"httpHeaders", nil];
 }
 @end
 

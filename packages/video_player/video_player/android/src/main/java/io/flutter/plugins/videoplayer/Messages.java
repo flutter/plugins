@@ -83,12 +83,23 @@ public class Messages {
       this.formatHint = setterArg;
     }
 
+    private HashMap httpHeaders;
+
+    public HashMap getHttpHeaders() {
+      return httpHeaders;
+    }
+
+    public void setHttpHeaders(HashMap setterArg) {
+      this.httpHeaders = setterArg;
+    }
+
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("asset", asset);
       toMapResult.put("uri", uri);
       toMapResult.put("packageName", packageName);
       toMapResult.put("formatHint", formatHint);
+      toMapResult.put("httpHeaders", httpHeaders);
       return toMapResult;
     }
 
@@ -102,6 +113,8 @@ public class Messages {
       fromMapResult.packageName = (String) packageName;
       Object formatHint = map.get("formatHint");
       fromMapResult.formatHint = (String) formatHint;
+      Object httpHeaders = map.get("httpHeaders");
+      fromMapResult.httpHeaders = (HashMap) httpHeaders;
       return fromMapResult;
     }
   }
