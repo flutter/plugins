@@ -106,12 +106,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cameraController = controller;
+
     // App state changed before we got the chance to initialize.
-    if ((controller?.value.isInitialized ?? false)) {
+    if (cameraController == null || !cameraController.value.isInitialized) {
       return;
     }
-
-    final CameraController cameraController = controller!;
 
     if (state == AppLifecycleState.inactive) {
       cameraController.dispose();
@@ -170,7 +170,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
-    if (!(controller?.value.isInitialized ?? false)) {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
       return const Text(
         'Tap a camera',
         style: TextStyle(
@@ -217,25 +219,28 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Display the thumbnail of the captured image or video.
   Widget _thumbnailWidget() {
+    final VideoPlayerController? localVideoController = videoController;
+
     return Expanded(
       child: Align(
         alignment: Alignment.centerRight,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            videoController == null && imageFile == null
+            localVideoController == null && imageFile == null
                 ? Container()
                 : SizedBox(
-                    child: (videoController == null)
+                    child: (localVideoController == null)
                         ? Image.file(File(imageFile!.path))
                         : Container(
                             child: Center(
                               child: AspectRatio(
                                   aspectRatio:
-                                      videoController!.value.size != null
-                                          ? videoController!.value.aspectRatio
+                                      localVideoController.value.size != null
+                                          ? localVideoController
+                                              .value.aspectRatio
                                           : 1.0,
-                                  child: VideoPlayer(videoController!)),
+                                  child: VideoPlayer(localVideoController)),
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(color: Colors.pink)),
@@ -479,26 +484,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Display the control bar with buttons to take pictures and record videos.
   Widget _captureControlRowWidget() {
-    VoidCallback? takePictureButton;
-    VoidCallback? recordButtonPressed;
-    VoidCallback? pauseOrResumeButtonPressed;
-    VoidCallback? stopButtonPressed;
-
-    if (controller != null) {
-      final CameraController cameraController = controller!;
-
-      if (cameraController.value.isInitialized) {
-        if (cameraController.value.isRecordingVideo) {
-          takePictureButton = onTakePictureButtonPressed;
-          recordButtonPressed = onVideoRecordButtonPressed;
-        } else {
-          stopButtonPressed = onStopButtonPressed;
-          pauseOrResumeButtonPressed = cameraController.value.isRecordingPaused
-              ? onResumeButtonPressed
-              : onPauseButtonPressed;
-        }
-      }
-    }
+    final CameraController? cameraController = controller;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -507,24 +493,43 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         IconButton(
           icon: const Icon(Icons.camera_alt),
           color: Colors.blue,
-          onPressed: takePictureButton,
+          onPressed: cameraController != null &&
+                  cameraController.value.isInitialized &&
+                  !cameraController.value.isRecordingVideo
+              ? onTakePictureButtonPressed
+              : null,
         ),
         IconButton(
           icon: const Icon(Icons.videocam),
           color: Colors.blue,
-          onPressed: recordButtonPressed,
+          onPressed: cameraController != null &&
+                  cameraController.value.isInitialized &&
+                  !cameraController.value.isRecordingVideo
+              ? onVideoRecordButtonPressed
+              : null,
         ),
         IconButton(
-          icon: controller != null && controller!.value.isRecordingPaused
+          icon: cameraController != null &&
+                  cameraController.value.isRecordingPaused
               ? Icon(Icons.play_arrow)
               : Icon(Icons.pause),
           color: Colors.blue,
-          onPressed: pauseOrResumeButtonPressed,
+          onPressed: cameraController != null &&
+                  cameraController.value.isInitialized &&
+                  cameraController.value.isRecordingVideo
+              ? (cameraController.value.isRecordingPaused)
+                  ? onResumeButtonPressed
+                  : onPauseButtonPressed
+              : null,
         ),
         IconButton(
           icon: const Icon(Icons.stop),
           color: Colors.red,
-          onPressed: stopButtonPressed,
+          onPressed: cameraController != null &&
+                  cameraController.value.isInitialized &&
+                  cameraController.value.isRecordingVideo
+              ? onStopButtonPressed
+              : null,
         )
       ],
     );
@@ -751,12 +756,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<void> startVideoRecording() async {
-    if (!(controller?.value.isRecordingVideo ?? false)) {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
       return;
     }
-
-    final CameraController cameraController = controller!;
 
     if (cameraController.value.isRecordingVideo) {
       // A recording is already started, do nothing.
@@ -772,12 +777,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<XFile?> stopVideoRecording() async {
-    if (!(controller?.value.isRecordingVideo ?? false)) {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isRecordingVideo) {
       return null;
     }
 
     try {
-      return controller!.stopVideoRecording();
+      return cameraController.stopVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
@@ -785,12 +792,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<void> pauseVideoRecording() async {
-    if (!(controller?.value.isRecordingVideo ?? false)) {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isRecordingVideo) {
       return null;
     }
 
     try {
-      await controller!.pauseVideoRecording();
+      await cameraController.pauseVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
       rethrow;
@@ -798,12 +807,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<void> resumeVideoRecording() async {
-    if (!(controller?.value.isRecordingVideo ?? false)) {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isRecordingVideo) {
       return null;
     }
 
     try {
-      await controller!.resumeVideoRecording();
+      await cameraController.resumeVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
       rethrow;
@@ -893,12 +904,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<XFile?> takePicture() async {
-    if (!(controller?.value.isInitialized ?? false)) {
+    final CameraController? cameraController = controller;
+    if (cameraController == null || !cameraController.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
       return null;
     }
-
-    final CameraController cameraController = controller!;
 
     if (cameraController.value.isTakingPicture) {
       // A capture is already pending, do nothing.
