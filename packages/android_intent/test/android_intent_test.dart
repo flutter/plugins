@@ -20,9 +20,9 @@ void main() {
   setUp(() {
     mockChannel = MockMethodChannel();
     when(mockChannel.invokeMethod<bool>('canResolveActivity', any))
-      .thenAnswer((realInvocation) async => true);
+        .thenAnswer((realInvocation) async => true);
     when(mockChannel.invokeMethod<void>('launch', any))
-      .thenAnswer((realInvocation) async => {});
+        .thenAnswer((realInvocation) async => {});
   });
 
   group('AndroidIntent', () {
