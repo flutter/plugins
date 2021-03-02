@@ -123,9 +123,11 @@ public class Camera {
         @Override
         public void onImageAvailable(ImageReader reader) {
           // Log.i(TAG, "onImageAvailable");
+
+          // Use acquireNextImage since our image reader is only for 1 image.
           mBackgroundHandler.post(
               new ImageSaver(
-                  reader.acquireLatestImage(), pictureCaptureRequest.mFile, pictureCaptureRequest));
+                  reader.acquireNextImage(), pictureCaptureRequest.mFile, pictureCaptureRequest));
           cameraState = CameraState.STATE_PREVIEW;
         }
       };
@@ -345,7 +347,7 @@ public class Camera {
             && !(modes == null
                 || modes.length == 0
                 || (modes.length == 1 && modes[0] == CameraCharacteristics.CONTROL_AF_MODE_OFF));
-    Log.i(TAG, "checkAutoFocusSupported: " + mAutoFocusSupported);
+    // Log.i(TAG, "checkAutoFocusSupported: " + mAutoFocusSupported);
   }
 
   /** Check if the flash is supported. */
@@ -401,20 +403,21 @@ public class Camera {
 
   @SuppressLint("MissingPermission")
   public void open(String imageFormatGroup) throws CameraAccessException {
+    // We always capture using JPEG format.
     pictureImageReader =
         ImageReader.newInstance(
-            captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+            captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 1);
 
+    // For image streaming, we use the provided image format or fall back to YUV420.
     Integer imageFormat = supportedImageFormats.get(imageFormatGroup);
     if (imageFormat == null) {
       Log.w(TAG, "The selected imageFormatGroup is not supported by Android. Defaulting to yuv420");
       imageFormat = ImageFormat.YUV_420_888;
     }
-
-    // Used to steam image byte data to dart side.
     imageStreamReader =
-        ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), imageFormat, 2);
+        ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), imageFormat, 1);
 
+    // Open the camera now
     cameraManager.openCamera(
         cameraName,
         new CameraDevice.StateCallback() {
@@ -1359,7 +1362,8 @@ public class Camera {
   private void setImageStreamImageAvailableListener(final EventChannel.EventSink imageStreamSink) {
     imageStreamReader.setOnImageAvailableListener(
         reader -> {
-          Image img = reader.acquireLatestImage();
+          // Use acquireNextImage since our image reader is only for 1 image.
+          Image img = reader.acquireNextImage();
           if (img == null) return;
 
           List<Map<String, Object>> planes = new ArrayList<>();
