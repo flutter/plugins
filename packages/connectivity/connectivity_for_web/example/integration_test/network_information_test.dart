@@ -60,8 +60,8 @@ void main() {
           NetworkInformationApiConnectivityPlugin.withConnection(connection);
 
       // The onConnectivityChanged stream is infinite, so we only .take(2) so the test completes.
-      // We need to do .toList() now, because otherwise the Stream won't be listened to, and 
-      // we'll miss the calls to mockChangeValue below.
+      // We need to do .toList() now, because otherwise the Stream won't be actually listened to,
+      // and we'll miss the calls to mockChangeValue below.
       final results = plugin.onConnectivityChanged.take(2).toList();
 
       // Fake a disconnect-reconnect
@@ -71,8 +71,9 @@ void main() {
 
       // Expect to see the disconnect-reconnect in the resulting stream.
       expect(
-          results,
-          completion([ConnectivityResult.none, ConnectivityResult.wifi]));
+        results,
+        completion([ConnectivityResult.none, ConnectivityResult.wifi]),
+      );
     });
   });
 }

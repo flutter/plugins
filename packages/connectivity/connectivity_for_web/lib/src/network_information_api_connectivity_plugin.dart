@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:html' as html show window, NetworkInformation;
+import 'dart:js' show allowInterop;
+import 'dart:js_util' show setProperty;
 
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 import 'package:connectivity_for_web/connectivity_for_web.dart';
@@ -30,19 +32,32 @@ class NetworkInformationApiConnectivityPlugin extends ConnectivityPlugin {
     return networkInformationToConnectivityResult(_networkInformation);
   }
 
-  Stream<ConnectivityResult>? _connectivityResultStream;
+  StreamController<ConnectivityResult>? _connectivityResultStreamController;
+  late Stream<ConnectivityResult> _connectivityResultStream;
 
   /// Returns a Stream of ConnectivityResults changes.
   @override
   Stream<ConnectivityResult> get onConnectivityChanged {
-    if (_connectivityResultStream == null) {
-      _connectivityResultStream = _networkInformation.onChange.map<ConnectivityResult>((_) {
-        // The incoming event doesn't contain any network information. Instead,
-        // the values of window.navigator.connection will mutate.
-        return networkInformationToConnectivityResult(_networkInformation);
-      });
-    }
+    if (_connectivityResultStreamController == null) {
+      _connectivityResultStreamController =
+          StreamController<ConnectivityResult>();
 
-    return _connectivityResultStream!;
+      // Directly write the 'onchange' function on the networkInformation object.
+      setProperty(_networkInformation, 'onchange', allowInterop((_) {
+        _connectivityResultStreamController!
+            .add(networkInformationToConnectivityResult(_networkInformation));
+      }));
+      // TODO: Implement the above with _networkInformation.onChange:
+      // _networkInformation.onChange.listen((_) {
+      //   _connectivityResult
+      //       .add(networkInformationToConnectivityResult(_networkInformation));
+      // });
+      // Once we can detect when to *cancel* a subscription to the _networkInformation
+      // onChange Stream upon hot restart.
+      // https://github.com/dart-lang/sdk/issues/42679
+      _connectivityResultStream =
+          _connectivityResultStreamController!.stream.asBroadcastStream();
+    }
+    return _connectivityResultStream;
   }
 }

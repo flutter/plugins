@@ -1,22 +1,19 @@
 import 'dart:async';
 import 'dart:html';
+import 'dart:js_util' show getProperty;
 
 import 'package:flutter_test/flutter_test.dart';
 
 /// A Fake implementation of the NetworkInformation API that allows
 /// for external modification of its values.
-/// 
+///
 /// Note that the DOM API works by internally mutating and broadcasting
 /// 'change' events.
 class FakeNetworkInformation extends Fake implements NetworkInformation {
-  final StreamController<Event> _onChangeController = StreamController<Event>.broadcast();
   String? _type;
   String? _effectiveType;
   num? _downlink;
   int? _rtt;
-
-  @override
-  Stream<Event> get onChange => _onChangeController.stream;
 
   @override
   String? get type => _type;
@@ -35,7 +32,10 @@ class FakeNetworkInformation extends Fake implements NetworkInformation {
     String? effectiveType,
     num? downlink,
     int? rtt,
-  }): this._type = type, this._effectiveType = effectiveType, this._downlink = downlink, this._rtt = rtt;
+  })  : this._type = type,
+        this._effectiveType = effectiveType,
+        this._downlink = downlink,
+        this._rtt = rtt;
 
   /// Changes the desired values, and triggers the change event listener.
   Future<void> mockChangeValue({
@@ -49,6 +49,8 @@ class FakeNetworkInformation extends Fake implements NetworkInformation {
     this._downlink = downlink;
     this._rtt = rtt;
 
-    _onChangeController.add(Event('change'));
+    // This is set by the onConnectivityChanged getter...
+    final Function onchange = getProperty(this, 'onchange') as Function;
+    onchange(Event('change'));
   }
 }
