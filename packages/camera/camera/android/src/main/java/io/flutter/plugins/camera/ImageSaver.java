@@ -3,8 +3,6 @@ package io.flutter.plugins.camera;
 import android.media.Image;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
-import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
