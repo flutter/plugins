@@ -2,7 +2,6 @@
 * Complete rewrite of Android plugin to fix all capture, focus, flash, and exposure issues.
 * Fixed crash when opening front-facing cameras on some legacy android devices like Sony XZ.
 * Android Flash mode works with full precapture sequence.
-* Added support for NV21 image stream format on Android.
 
 ## 0.8.0-nullsafety.3
 
