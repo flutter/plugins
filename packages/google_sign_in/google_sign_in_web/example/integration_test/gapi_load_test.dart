@@ -4,18 +4,19 @@
 
 import 'dart:html' as html;
 
-import 'package:integration_test/integration_test.dart';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:google_sign_in_web/google_sign_in_web.dart';
+import 'package:integration_test/integration_test.dart';
+
 import 'gapi_mocks/gapi_mocks.dart' as gapi_mocks;
 import 'src/test_utils.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  gapiUrl = toBase64Url(gapi_mocks.auth2InitSuccess(GoogleSignInUserData()));
+  gapiUrl = toBase64Url(gapi_mocks.auth2InitSuccess(
+      GoogleSignInUserData(email: 'test@test.com', id: '1234')));
 
   testWidgets('Plugin is initialized after GAPI fully loads and init is called',
       (WidgetTester tester) async {
