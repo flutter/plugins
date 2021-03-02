@@ -282,7 +282,7 @@ public class Camera {
     // Get camera characteristics and check for supported features
     cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraName);
     getAvailableFpsRange(cameraCharacteristics);
-    checkAutoFocusSupported();
+    mAutoFocusSupported = checkAutoFocusSupported(cameraCharacteristics);
     checkFlashSupported();
 
     // Setup orientation
@@ -314,11 +314,18 @@ public class Camera {
   }
 
   /**
+   * Get the current camera state (use for testing).
+   */
+  public CameraState getState() {
+    return this.cameraState;
+  }
+
+  /**
    * Check if the auto focus is supported by the current camera. We look at the available AF modes
    * and the available lens focusing distance to determine if its' a fixed length lens or not as
    * well.
    */
-  private void checkAutoFocusSupported() {
+  public static boolean checkAutoFocusSupported(CameraCharacteristics cameraCharacteristics) {
     int[] modes = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
     // Log.i(TAG, "checkAutoFocusSupported | modes:");
     for (int mode : modes) {
@@ -341,7 +348,7 @@ public class Camera {
     }
     // Log.i(TAG, "checkAutoFocusSupported | minFocus " + minFocus + " | maxFocus: " + maxFocus);
 
-    mAutoFocusSupported =
+    return
         !isFixedLength
             && !(modes == null
                 || modes.length == 0
