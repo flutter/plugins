@@ -1,4 +1,4 @@
-## 0.5.0
+## 0.4.2
 
 * [iOS] Introduce `SKPaymentQueueWrapper.presentCodeRedemptionSheet` 
 
