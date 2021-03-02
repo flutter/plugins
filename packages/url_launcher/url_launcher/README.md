@@ -11,7 +11,7 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 ## Installation
 
 ### iOS 
-Add any URL scheme passed to canLaunch in your Info.plist file.
+Add any URL schemes passed to `canLaunch` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
 
 Example:  
 ```
@@ -22,7 +22,7 @@ Example:
 </array>
 ```
 
-See [canOpenURL](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) for more details.
+See [`-[UIApplication canOpenURL:]`](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) for more details.
 
 ### Example
 
