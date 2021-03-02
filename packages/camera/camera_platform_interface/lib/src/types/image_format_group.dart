@@ -14,32 +14,7 @@ enum ImageFormatGroup {
   ///
   /// On iOS, this is `kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange`. See
   /// https://developer.apple.com/documentation/corevideo/1563591-pixel_format_identifiers/kcvpixelformattype_420ypcbcr8biplanarvideorange?language=objc
-  ///
-  /// Note: if you are using YUV420 with Firebase ML Vision you need to concatenate the planes
-  /// using the following function:
-  /// ```dart
-  /// Uint8List concatenatePlanes(List<Plane> planes) {
-  ///   var totalBytes = 0;
-  ///   for (var i = 0; i < planes.length; ++i) {
-  ///     totalBytes += planes[i].bytes.length;
-  ///   }
-  ///
-  ///   final bytes = Uint8List(totalBytes);
-  ///
-  ///   var byteOffset = 0;
-  ///   for (var i = 0; i < planes.length; ++i) {
-  ///     final length = planes[i].bytes.length;
-  ///     bytes.setRange(byteOffset, byteOffset += length, planes[i].bytes);
-  ///   }
-  ///   return bytes;
-  /// }
-  /// ```
   yuv420,
-
-  /// NV21 is only valid in Android and should be used when feeding images to Firebase ML Vision. If you
-  /// don't use this format then you need to concatenate the planes from YUV420 which is costly both in
-  /// memory and CPU. It's most efficient to just feed it NV21.
-  nv21,
 
   /// 32-bit BGRA.
   ///
