@@ -204,10 +204,7 @@ abstract class InAppPurchaseConnection {
   ///
   /// Warning! Failure to call this method and get a successful response within 3 days of the purchase will result a refund on Android.
   /// The [consumePurchase] acts as an implicit [completePurchase] on Android.
-  ///
-  /// The optional parameter `developerPayload`  (defaults to `null`) only works on Android.
-  Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
-      {String? developerPayload});
+  Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase);
 
   /// (Play only) Mark that the user has consumed a product.
   ///
@@ -215,11 +212,8 @@ abstract class InAppPurchaseConnection {
   /// delivered. The user won't be able to buy the same product again until the
   /// purchase of the product is consumed.
   ///
-  /// The `developerPayload` (defaults to `null`) can be specified to be associated with this consumption.
-  ///
   /// This throws an [UnsupportedError] on iOS.
-  Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase,
-      {String? developerPayload});
+  Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase);
 
   /// Query all previous purchases.
   ///
