@@ -65,6 +65,8 @@ extension ImageFormatGroupName on ImageFormatGroup {
         return 'bgra8888';
       case ImageFormatGroup.yuv420:
         return 'yuv420';
+      case ImageFormatGroup.nv21:
+        return 'nv21';
       case ImageFormatGroup.jpeg:
         return 'jpeg';
       case ImageFormatGroup.unknown:
