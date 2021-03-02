@@ -4,6 +4,9 @@
 
 package io.flutter.plugins.camera.types;
 
+
+
+
 // Mirrors flash_mode.dart
 public enum FlashMode {
   off("off"),

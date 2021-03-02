@@ -6,9 +6,7 @@ package io.flutter.plugins.camera.media;
 
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-
 import androidx.annotation.NonNull;
-
 import java.io.IOException;
 
 public class MediaRecorderBuilder {

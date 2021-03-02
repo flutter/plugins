@@ -14,7 +14,8 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.util.Size;
-
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
+import io.flutter.plugins.camera.types.ResolutionPreset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,9 +23,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.flutter.embedding.engine.systemchannels.PlatformChannel;
-import io.flutter.plugins.camera.types.ResolutionPreset;
 
 /** Provides various utilities for camera. */
 public final class CameraUtils {

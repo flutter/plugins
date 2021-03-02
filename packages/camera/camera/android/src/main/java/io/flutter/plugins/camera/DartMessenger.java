@@ -7,17 +7,14 @@ package io.flutter.plugins.camera;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-
 import androidx.annotation.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.types.ExposureMode;
 import io.flutter.plugins.camera.types.FocusMode;
+import java.util.HashMap;
+import java.util.Map;
 
 class DartMessenger {
   @Nullable private MethodChannel cameraChannel;
