@@ -1,7 +1,7 @@
 name: file_selector
 description: Flutter plugin for opening and saving files.
 homepage: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector
-version: 0.8.1
+version: 0.8.2
 
 flutter:
   plugin:
@@ -19,7 +19,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   test: ^1.16.3
-  plugin_platform_interface: ">=1.0.0 <3.0.0"
+  plugin_platform_interface: ^2.0.0
   pedantic: ^1.10.0
 
 environment:
