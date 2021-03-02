@@ -1,6 +1,6 @@
 ## 0.1.2
 
-* Update min Flutter SDK to 1.20.0
+* Update min Flutter SDK to 1.20.0.
 
 ## 0.1.1
 
