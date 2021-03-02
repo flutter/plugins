@@ -1,7 +1,6 @@
 package io.flutter.plugins.camera;
 
 import android.media.Image;
-import android.media.ImageReader;
 import android.os.Handler;
 import android.os.Looper;
 
