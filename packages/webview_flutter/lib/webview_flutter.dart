@@ -109,6 +109,7 @@ class SurfaceAndroidWebView extends AndroidWebView {
           layoutDirection: TextDirection.rtl,
           creationParams: MethodChannelWebViewPlatform.creationParamsToMap(
             creationParams,
+            usesHybridComposition: true,
           ),
           creationParamsCodec: const StandardMessageCodec(),
         )
