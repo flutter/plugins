@@ -179,7 +179,7 @@ task:
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
-        PLUGINS_TO_SKIP_XCTESTS: "battery/battery,camera/camera,connectivity/connectivity,device_info/device_info,espresso,google_maps_flutter/google_maps_flutter,google_sign_in/google_sign_in,in_app_purchase,integration_test,ios_platform_images,local_auth,package_info,path_provider/path_provider,sensors,shared_preferences/shared_preferences,url_launcher/url_launcher,video_player/video_player,wifi_info_flutter/wifi_info_flutter"
+        PLUGINS_TO_SKIP_XCTESTS: "integration_test"
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
@@ -197,7 +197,7 @@ task:
         - flutter channel $CHANNEL
         - flutter upgrade
         - ./script/incremental_build.sh build-examples --ipa
-        - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=14.3"
+        - ./script/incremental_build.sh xctest --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
         # So we run `drive-examples` after `xctest`, changing the order will result ci failure.
