@@ -997,7 +997,6 @@ public class Camera {
    */
   public void setFlashMode(@NonNull final Result result, FlashMode newMode) {
     // Save the new flash mode setting
-    final FlashMode oldFlashMode = currentFlashMode;
     currentFlashMode = newMode;
     updateFlash(mPreviewRequestBuilder);
 
