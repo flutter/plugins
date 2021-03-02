@@ -325,7 +325,8 @@ public class Camera {
     }
 
     /**
-     * Check if the auto focus is supported.
+     * Check if the auto focus is supported by the current camera. We look at the available AF modes
+     * and the available lens focusing distance to determine if its' a fixed length lens or not as well.
      */
     private void checkAutoFocusSupported() {
         int[] modes = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
@@ -336,15 +337,22 @@ public class Camera {
 
         // Check if fixed focal length lens. If LENS_INFO_MINIMUM_FOCUS_DISTANCE=0, then this is fixed.
         // Can be null on some devices.
-        float minFocus = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
-        float maxFocus = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
-        final boolean isFixedLength = minFocus == 0;
+        final Float minFocus = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
+        // final Float maxFocus = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
+
+        // Value can be null on some devices:
+        // https://developer.android.com/reference/android/hardware/camera2/CameraCharacteristics#LENS_INFO_MINIMUM_FOCUS_DISTANCE
+        boolean isFixedLength;
+        if (minFocus == null) {
+            isFixedLength = true;
+        } else {
+            isFixedLength = minFocus == 0;
+        }
         // Log.i(TAG, "checkAutoFocusSupported | minFocus " + minFocus + " | maxFocus: " + maxFocus);
 
-
-        mAutoFocusSupported = !(modes == null || modes.length == 0 ||
+        mAutoFocusSupported = !isFixedLength && !(modes == null || modes.length == 0 ||
                 (modes.length == 1 && modes[0] == CameraCharacteristics.CONTROL_AF_MODE_OFF));
-        // Log.i(TAG, "checkAutoFocusSupported: " + mAutoFocusSupported);
+         Log.i(TAG, "checkAutoFocusSupported: " + mAutoFocusSupported);
     }
 
     /**
