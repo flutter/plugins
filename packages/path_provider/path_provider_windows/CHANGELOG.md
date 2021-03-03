@@ -1,6 +1,6 @@
-## 2.0.0
+## 0.0.5
 
-* Migrate to null safety
+* Add compatibility with Dart 2.12.
 
 ## 0.0.4+4
 

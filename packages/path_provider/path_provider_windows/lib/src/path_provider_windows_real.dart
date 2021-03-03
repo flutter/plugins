@@ -22,7 +22,7 @@ import 'folders.dart';
 class VersionInfoQuerier {
   /// Returns the value for [key] in [versionInfo]s English strings section, or
   /// null if there is no such entry, or if versionInfo is null.
-  getStringValue(Pointer<Uint8>? versionInfo, key) {
+  getStringValue(Pointer<Uint8> versionInfo, key) {
     if (versionInfo == null) {
       return null;
     }
@@ -53,7 +53,7 @@ class PathProviderWindows extends PathProviderPlatform {
 
   /// This is typically the same as the TMP environment variable.
   @override
-  Future<String?> getTemporaryPath() async {
+  Future<String> getTemporaryPath() async {
     final buffer = calloc<Uint16>(MAX_PATH + 1).cast<Utf16>();
     String path;
 
@@ -87,7 +87,7 @@ class PathProviderWindows extends PathProviderPlatform {
   }
 
   @override
-  Future<String?> getApplicationSupportPath() async {
+  Future<String> getApplicationSupportPath() async {
     final appDataRoot = await getPath(WindowsKnownFolder.RoamingAppData);
     final directory = Directory(
         path.join(appDataRoot, _getApplicationSpecificSubdirectory()));
@@ -104,11 +104,11 @@ class PathProviderWindows extends PathProviderPlatform {
   }
 
   @override
-  Future<String?> getApplicationDocumentsPath() =>
+  Future<String> getApplicationDocumentsPath() =>
       getPath(WindowsKnownFolder.Documents);
 
   @override
-  Future<String?> getDownloadsPath() => getPath(WindowsKnownFolder.Downloads);
+  Future<String> getDownloadsPath() => getPath(WindowsKnownFolder.Downloads);
 
   /// Retrieve any known folder from Windows.
   ///
@@ -151,13 +151,13 @@ class PathProviderWindows extends PathProviderPlatform {
   /// - If the product name isn't there, it will use the exe's filename (without
   ///   extension).
   String _getApplicationSpecificSubdirectory() {
-    String? companyName;
-    String? productName;
+    String companyName;
+    String productName;
 
     final Pointer<Utf16> moduleNameBuffer =
         calloc<Uint16>(MAX_PATH + 1).cast<Utf16>();
     final Pointer<Uint32> unused = calloc<Uint32>();
-    Pointer<Uint8>? infoBuffer;
+    Pointer<Uint8> infoBuffer;
     try {
       // Get the module name.
       final moduleNameLength = GetModuleFileName(0, moduleNameBuffer, MAX_PATH);
@@ -203,7 +203,7 @@ class PathProviderWindows extends PathProviderPlatform {
   /// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
   ///
   /// If after sanitizing the string is empty, returns null.
-  String? _sanitizedDirectoryName(String? rawString) {
+  String _sanitizedDirectoryName(String rawString) {
     if (rawString == null) {
       return null;
     }
