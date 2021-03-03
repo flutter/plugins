@@ -81,6 +81,7 @@ void main() {
                 'lib',
                 'lint',
                 p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
+                '--configuration=Debug',
                 '--use-libraries'
               ],
               mockPackagesDir.path),
@@ -90,6 +91,7 @@ void main() {
                 'lib',
                 'lint',
                 p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
+                '--configuration=Debug',
               ],
               mockPackagesDir.path),
         ]),
@@ -138,6 +140,7 @@ void main() {
                 'lib',
                 'lint',
                 p.join(plugin1Dir.path, 'plugin1.podspec'),
+                '--configuration=Debug',
                 '--allow-warnings',
                 '--use-libraries'
               ],
@@ -148,6 +151,7 @@ void main() {
                 'lib',
                 'lint',
                 p.join(plugin1Dir.path, 'plugin1.podspec'),
+                '--configuration=Debug',
                 '--allow-warnings',
               ],
               mockPackagesDir.path),
