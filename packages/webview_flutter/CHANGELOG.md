@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Run CocoaPods iOS tests in RunnerUITests target
+
 ## 2.0.0
 
 * Migration to null-safety.
