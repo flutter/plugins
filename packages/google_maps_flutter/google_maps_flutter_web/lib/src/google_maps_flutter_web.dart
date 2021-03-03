@@ -300,6 +300,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
         StreamController<MapEvent>.broadcast();
 
     final mapController = GoogleMapController(
+      initialCameraPosition: initialCameraPosition,
       mapId: creationId,
       streamController: controller,
       markers: markers,
