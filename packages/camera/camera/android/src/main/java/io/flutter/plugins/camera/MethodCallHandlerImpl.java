@@ -18,6 +18,7 @@ import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.plugins.camera.types.ExposureMode;
 import io.flutter.plugins.camera.types.FlashMode;
 import io.flutter.plugins.camera.types.FocusMode;
+import io.flutter.plugins.camera.types.ResolutionPreset;
 import io.flutter.view.TextureRegistry;
 import java.util.HashMap;
 import java.util.Map;
@@ -349,17 +350,22 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private void instantiateCamera(MethodCall call, Result result) throws CameraAccessException {
     String cameraName = call.argument("cameraName");
-    String resolutionPreset = call.argument("resolutionPreset");
+    String preset = call.argument("resolutionPreset");
     boolean enableAudio = call.argument("enableAudio");
+
     TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture =
         textureRegistry.createSurfaceTexture();
     DartMessenger dartMessenger = new DartMessenger(messenger, flutterSurfaceTexture.id());
+    CameraProperties cameraProperties =
+        new CameraPropertiesImpl(cameraName, CameraUtils.getCameraManager(activity));
+    ResolutionPreset resolutionPreset = ResolutionPreset.valueOf(preset);
+
     camera =
         new Camera(
             activity,
             flutterSurfaceTexture,
             dartMessenger,
-            cameraName,
+            cameraProperties,
             resolutionPreset,
             enableAudio);
 

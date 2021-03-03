@@ -29,6 +29,10 @@ public final class CameraUtils {
 
   private CameraUtils() {}
 
+  static CameraManager getCameraManager(Context context) {
+    return (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+  }
+
   static PlatformChannel.DeviceOrientation getDeviceOrientationFromDegrees(int degrees) {
     // Round to the nearest 90 degrees.
     degrees = (int) (Math.round(degrees / 90.0) * 90) % 360;
