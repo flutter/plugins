@@ -15,7 +15,10 @@ import static org.mockito.Mockito.verify;
 
 import io.flutter.plugin.common.MethodChannel;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+@RunWith(RobolectricTestRunner.class)
 public class PictureCaptureRequestTest {
 
   @Test
@@ -43,6 +46,21 @@ public class PictureCaptureRequestTest {
     req.setState(PictureCaptureRequestState.STATE_CAPTURING);
     assertEquals(
         "State is awaitingPreCapture", req.getState(), PictureCaptureRequestState.STATE_CAPTURING);
+  }
+
+  @Test
+  public void setState_sends_camera_error_event_When_already_finished() {
+    DartMessenger mockMessenger = mock(DartMessenger.class);
+    PictureCaptureRequest req = new PictureCaptureRequest(null, null, mockMessenger);
+
+    // Make sure state is set to finished
+    req.setState(PictureCaptureRequestState.STATE_FINISHED);
+
+    // Try to update state
+    req.setState(PictureCaptureRequestState.STATE_CAPTURING);
+
+    verify(mockMessenger, times(1)).sendCameraErrorEvent("Request has already been finished");
+    assertEquals("State is finished", req.getState(), PictureCaptureRequestState.STATE_FINISHED);
   }
 
   @Test
@@ -114,6 +132,20 @@ public class PictureCaptureRequestTest {
     assertTrue(req.isFinished());
   }
 
+  @Test
+  public void finish_returns_When_in_error_state() {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    PictureCaptureRequest req = new PictureCaptureRequest(mockResult, null, null);
+
+    // Make sure state is set to error
+    req.setState(PictureCaptureRequestState.STATE_ERROR);
+
+    req.finish("/test/path");
+
+    assertEquals("State is error", req.getState(), PictureCaptureRequestState.STATE_ERROR);
+    verify(mockResult, never()).success(any());
+  }
+
   @Test(expected = IllegalStateException.class)
   public void finish_throws_When_already_finished() {
     // Setup
@@ -145,6 +177,20 @@ public class PictureCaptureRequestTest {
     req.error("ERROR_CODE", "Error Message", null);
     verify(mockTimeoutHandler, never()).resetTimeout(any());
     verify(mockTimeoutHandler).clearTimeout(any());
+  }
+
+  @Test
+  public void error_returns_When_in_error_state() {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    PictureCaptureRequest req = new PictureCaptureRequest(mockResult, null, null);
+
+    // Make sure state is set to error
+    req.setState(PictureCaptureRequestState.STATE_ERROR);
+
+    req.error("ERROR_CODE", "Error Message", null);
+
+    assertEquals("State is error", req.getState(), PictureCaptureRequestState.STATE_ERROR);
+    verify(mockResult, never()).error(any(), any(), any());
   }
 
   @Test(expected = IllegalStateException.class)

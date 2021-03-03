@@ -19,7 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+@RunWith(RobolectricTestRunner.class)
 public class DartMessengerTest {
   /** A {@link BinaryMessenger} implementation that does nothing but save its messages. */
   private static class FakeBinaryMessenger implements BinaryMessenger {
