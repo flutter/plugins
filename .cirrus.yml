@@ -1,7 +1,7 @@
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   container:
     dockerfile: .ci/Dockerfile
     cpu: 8
@@ -119,7 +119,7 @@ task:
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   container:
     dockerfile: .ci/Dockerfile-LinuxDesktop
     cpu: 8
