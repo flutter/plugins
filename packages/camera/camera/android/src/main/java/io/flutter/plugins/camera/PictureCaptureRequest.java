@@ -27,7 +27,7 @@ class PictureCaptureRequest {
    * This is the output file for the curent capture. The file is created in Camera and passed here
    * as reference to it.
    */
-  final File mFile;
+  final File file;
 
   /** Dart method chanel result. */
   private final MethodChannel.Result result;
@@ -54,25 +54,29 @@ class PictureCaptureRequest {
    * Constructor to create a picture capture request.
    *
    * @param result
-   * @param mFile
+   * @param file
    */
   public PictureCaptureRequest(
-      MethodChannel.Result result, File mFile, DartMessenger dartMessenger) {
-    this.result = result;
-    this.timeoutHandler = new TimeoutHandler();
-    this.mFile = mFile;
-    this.dartMessenger = dartMessenger;
+      MethodChannel.Result result,
+      File file,
+      DartMessenger dartMessenger) {
+    this(
+        result,
+        file,
+        dartMessenger,
+        new TimeoutHandler()
+    );
   }
 
   /** Constructor for unit tests where we can mock the timeout handler */
   public PictureCaptureRequest(
       MethodChannel.Result result,
-      File mFile,
+      File file,
       DartMessenger dartMessenger,
       TimeoutHandler timeoutHandler) {
     this.result = result;
     this.timeoutHandler = timeoutHandler;
-    this.mFile = mFile;
+    this.file = file;
     this.dartMessenger = dartMessenger;
   }
 
@@ -99,9 +103,8 @@ class PictureCaptureRequest {
       return;
     }
 
-    final PictureCaptureRequestState oldState = state;
     state = newState;
-    onStateChange(oldState);
+    onStateChange(newState);
   }
 
   public boolean isFinished() {
@@ -152,8 +155,8 @@ class PictureCaptureRequest {
   }
 
   /** Handle new state changes. */
-  private void onStateChange(PictureCaptureRequestState oldState) {
-    switch (state) {
+  private void onStateChange(PictureCaptureRequestState newState) {
+    switch (newState) {
       case STATE_CAPTURING:
       case STATE_WAITING_FOCUS:
       case STATE_WAITING_PRECAPTURE_START:
