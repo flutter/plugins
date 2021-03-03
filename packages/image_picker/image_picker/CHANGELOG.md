@@ -1,4 +1,9 @@
-## 0.7.0-nullsafety
+## 0.7.1
+
+* Update platform_plugin_interface version requirement.
+
+## 0.7.0
+
 * Migrate to nullsafety
 * Breaking Changes:
     * Removed the deprecated methods: `ImagePicker.pickImage`, `ImagePicker.pickVideo`,

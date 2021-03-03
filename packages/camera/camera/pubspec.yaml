@@ -2,26 +2,31 @@ name: camera
 description: A Flutter plugin for getting information about and controlling the
   camera on Android and iOS. Supports previewing the camera feed, capturing images, capturing video,
   and streaming image buffers to dart.
-version: 0.8.0-nullsafety.1
+version: 0.8.0
 homepage: https://github.com/flutter/plugins/tree/master/packages/camera/camera
 
 dependencies:
   flutter:
     sdk: flutter
 
-  camera_platform_interface: ^2.0.0-nullsafety
+  camera_platform_interface: ^2.0.0
 
   pedantic: ^1.10.0
-  quiver: ^3.0.0-nullsafety.3
+  quiver: ^3.0.0
 
 dev_dependencies:
-  video_player: ^2.0.0-nullsafety.7
+  video_player: ^2.0.0
   flutter_test:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  mockito: ^5.0.0-nullsafety.5
-  plugin_platform_interface: ^1.1.0-nullsafety.2
+
+  # TODO(mvanbeusekom): Update to stable 5.0.0 release when dependency conflict
+  # with flutter_driver has been resolved:
+  # Because mockito >=5.0.0 depends on analyzer ^1.0.0 which depends on crypto ^3.0.0 
+  # every version of flutter_driver from sdk depends on crypto 2.1.5.
+  mockito: ^5.0.0-nullsafety.7
+  plugin_platform_interface: ^2.0.0
 
 flutter:
   plugin:
@@ -33,5 +38,5 @@ flutter:
         pluginClass: CameraPlugin
 
 environment:
-  sdk: '>=2.12.0-0 <3.0.0'
+  sdk: ">=2.12.0-259.9.beta <3.0.0"
   flutter: ">=1.22.0"

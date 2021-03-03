@@ -16,10 +16,12 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
-  submodules_script:
-    - git submodule init
-    - git submodule update
   matrix:
+    - name: plugin_tools_tests
+      script:
+        - cd script/tool
+        - pub get
+        - CIRRUS_BUILD_ID=null pub run test
     - name: publishable
       script:
         - flutter channel master
@@ -105,11 +107,11 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/incremental_build.sh build-examples --apk
         - ./script/incremental_build.sh java-test  # must come after apk build
-        - if [[ $GCLOUD_FIREBASE_TESTLAB_KEY == ENCRYPTED* ]]; then
-        -   echo "This user does not have permission to run Firebase Test Lab tests."
-        - else
+        - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
         -   ./script/incremental_build.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26
+        - else
+        -   echo "This user does not have permission to run Firebase Test Lab tests."
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
@@ -132,9 +134,6 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
-  submodules_script:
-    - git submodule init
-    - git submodule update
   matrix:
     - name: build-linux+drive-examples
       install_script:
@@ -161,9 +160,6 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
-  submodules_script:
-    - git submodule init
-    - git submodule update
   create_simulator_script:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
@@ -183,7 +179,7 @@ task:
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
-        PLUGINS_TO_SKIP_XCTESTS: "battery/battery,camera/camera,connectivity/connectivity,device_info/device_info,espresso,google_maps_flutter/google_maps_flutter,google_sign_in/google_sign_in,in_app_purchase,integration_test,ios_platform_images,local_auth,package_info,path_provider/path_provider,quick_actions,sensors,shared_preferences/shared_preferences,url_launcher/url_launcher,video_player/video_player,webview_flutter,wifi_info_flutter/wifi_info_flutter"
+        PLUGINS_TO_SKIP_XCTESTS: "battery/battery,camera/camera,connectivity/connectivity,device_info/device_info,espresso,google_maps_flutter/google_maps_flutter,google_sign_in/google_sign_in,in_app_purchase,integration_test,ios_platform_images,local_auth,package_info,path_provider/path_provider,sensors,shared_preferences/shared_preferences,url_launcher/url_launcher,video_player/video_player,webview_flutter,wifi_info_flutter/wifi_info_flutter"
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
@@ -201,8 +197,11 @@ task:
         - flutter channel $CHANNEL
         - flutter upgrade
         - ./script/incremental_build.sh build-examples --ipa
-        - ./script/incremental_build.sh drive-examples --ios
         - ./script/incremental_build.sh xctest --target RunnerUITests --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=14.3"
+        # `drive-examples` contains integration tests, which changes the UI of the application.
+        # This UI change sometimes affects `xctest`.
+        # So we run `drive-examples` after `xctest`, changing the order will result ci failure.
+        - ./script/incremental_build.sh drive-examples --ios
 
 task:
   # Xcode 11 task
@@ -219,9 +218,6 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
-  submodules_script:
-    - git submodule init
-    - git submodule update
   create_simulator_script:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-X com.apple.CoreSimulator.SimRuntime.iOS-13-3 | xargs xcrun simctl boot
@@ -251,9 +247,6 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
-  submodules_script:
-    - git submodule init
-    - git submodule update
   matrix:
     - name: build_all_plugins_app
       script:

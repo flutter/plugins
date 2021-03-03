@@ -1,3 +1,15 @@
+## 2.0.1
+
+* Update platform_plugin_interface version requirement.
+
+## 2.0.0
+
+* Migrate to null-safety
+* BREAKING CHANGE: Passing an unknown map object ID (e.g., MarkerId) to a
+  method, it will throw an `UnknownMapObjectIDError`. Previously it would
+  either silently do nothing, or throw an error trying to call a function on
+  `null`, depneding on the method.
+
 ## 1.2.0
 
 * Support custom tiles.
