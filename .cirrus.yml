@@ -13,6 +13,7 @@ task:
     - flutter upgrade
     - flutter channel master
     - flutter upgrade
+    - flutter config --enable-linux-desktop
     - git fetch origin master
   matrix:
     ### Platform-agnostic tasks ###
@@ -92,6 +93,23 @@ task:
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
     ### Web tasks ###
+    - name: build_all_plugins_web
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      script:
+        - flutter channel $CHANNEL
+        - ./script/build_all_plugins_app.sh web
+    - name: build-web-examples
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      build_script:
+        - flutter channel $CHANNEL
+        - ./script/incremental_build.sh build-examples --web
+        # TODO: Add driving examples.
     - name: integration_web_smoke_test
       env:
         matrix:
@@ -101,7 +119,6 @@ task:
       only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
       install_script:
         - flutter channel $CHANNEL
-        - flutter config --enable-web
         - git clone https://github.com/flutter/web_installers.git
         - cd web_installers/packages/web_drivers/
         - pub get
@@ -124,9 +141,6 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      install_script:
-        - flutter channel $CHANNEL
-        - flutter config --enable-linux-desktop
       build_script:
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --linux
@@ -145,6 +159,7 @@ task:
     - flutter upgrade
     - flutter channel master
     - flutter upgrade
+    - flutter config --enable-macos-desktop
     - git fetch origin master
   create_simulator_script:
     - xcrun simctl list
