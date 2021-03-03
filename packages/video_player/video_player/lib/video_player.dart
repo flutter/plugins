@@ -102,8 +102,10 @@ class VideoPlayerValue {
 
   /// Returns [size.width] / [size.height].
   ///
-  /// Will return `1.0.` if [isInitialized] is `false`, or aspect ratio would be
-  /// less than or equal to `0.0`.
+  /// Will return `1.0` if:
+  /// * [isInitialized] is `false`
+  /// * either `size.width`, or `size.height` is equal to `0.0`
+  /// * aspect ratio would be less than or equal to `0.0`
   double get aspectRatio {
     if (!isInitialized || size.width == 0 || size.height == 0) {
       return 1.0;
