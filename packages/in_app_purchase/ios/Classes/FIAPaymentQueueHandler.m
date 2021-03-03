@@ -67,10 +67,11 @@
 }
 
 - (void)presentCodeRedemptionSheet {
-  if (@available(iOS 14, *) && [self.queue respondsToSelector:@selector(presentCodeRedemptionSheet)]) {
+  if (@available(iOS 14, *) &&
+      [self.queue respondsToSelector:@selector(presentCodeRedemptionSheet)]) {
     [self.queue presentCodeRedemptionSheet];
   } else {
-      NSLog(@"presentCodeRedemptionSheet is only available on iOS 14 and Xcode 12 or newer");
+    NSLog(@"presentCodeRedemptionSheet is only available on iOS 14 and Xcode 12 or newer");
   }
 }
 
