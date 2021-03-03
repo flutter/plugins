@@ -50,11 +50,21 @@ void main() {
     StreamController<MapEvent> stream;
 
     // Creates a controller with the default mapId and stream controller, and any `options` needed.
-    GoogleMapController _createController({Map<String, dynamic> options}) {
+    GoogleMapController _createController({
+    CameraPosition initialCameraPosition = const CameraPosition(target: LatLng(0,0)),
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},Map<String, dynamic> options,}) {
       return GoogleMapController(
           mapId: mapId,
           streamController: stream,
-          rawOptions: options ?? <String, dynamic>{});
+          initialCameraPosition: initialCameraPosition,
+          markers: markers,
+          polygons: polygons,
+polylines: polylines,
+circles: circles,
+          mapOptions: options ?? <String, dynamic>{});
     }
 
     setUp(() {
@@ -143,19 +153,11 @@ void main() {
       });
 
       testWidgets('renders initial geometry', (WidgetTester tester) async {
-        controller = _createController(options: {
-          'circlesToAdd': [
-            {'circleId': 'circle-1'}
-          ],
-          'markersToAdd': [
-            {
-              'markerId': 'marker-1',
-              'infoWindow': {
-                'title': 'title for test',
-                'snippet': 'snippet for test',
-              },
-            },
-          ],
+        controller = _createController(
+          circles: <Circle>{Circle(circleId:CircleId('circle-1'))},
+          markers: <Marker>{Marker(markerId:MarkerId('marker-1'), infoWindow: InfoWindow(title:'title for test',snippet: 'snippet for test'))},
+
+          options: {
           'polygonsToAdd': [
             {
               'polygonId': 'polygon-1',
@@ -226,7 +228,7 @@ void main() {
 
       testWidgets('empty infoWindow does not create InfoWindow instance.',
           (WidgetTester tester) async {
-        controller = _createController(options: {
+        controller = _createController(options: {XXX
           'markersToAdd': [
             {
               'markerId': 'marker-1',
@@ -253,10 +255,8 @@ void main() {
         });
         testWidgets('translates initial options', (WidgetTester tester) async {
           controller = _createController(options: {
-            'options': {
               'mapType': 2,
               'zoomControlsEnabled': true,
-            }
           });
           controller.debugSetOverrides(createMap: (_, options) {
             capturedOptions = options;
@@ -276,9 +276,7 @@ void main() {
         testWidgets('disables gestureHandling with scrollGesturesEnabled false',
             (WidgetTester tester) async {
           controller = _createController(options: {
-            'options': {
               'scrollGesturesEnabled': false,
-            }
           });
           controller.debugSetOverrides(createMap: (_, options) {
             capturedOptions = options;
@@ -296,9 +294,7 @@ void main() {
         testWidgets('disables gestureHandling with zoomGesturesEnabled false',
             (WidgetTester tester) async {
           controller = _createController(options: {
-            'options': {
               'zoomGesturesEnabled': false,
-            }
           });
           controller.debugSetOverrides(createMap: (_, options) {
             capturedOptions = options;
@@ -331,7 +327,7 @@ void main() {
         testWidgets('sets initial position when passed',
             (WidgetTester tester) async {
           controller = _createController(options: {
-            'initialCameraPosition': {
+            'initialCameraPosition': {XXX
               'target': [43.308, -5.6910],
               'zoom': 12,
               'bearing': 0,
@@ -361,9 +357,7 @@ void main() {
         testWidgets('initializes with traffic layer',
             (WidgetTester tester) async {
           controller = _createController(options: {
-            'options': {
               'trafficEnabled': true,
-            }
           });
           controller.debugSetOverrides(createMap: (_, __) => map);
           controller.init();

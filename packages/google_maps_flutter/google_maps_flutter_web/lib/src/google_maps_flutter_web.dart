@@ -260,31 +260,42 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
   @override
   Widget buildView(
-      Map<String, dynamic> creationParams,
-      Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
-      PlatformViewCreatedCallback onPlatformViewCreated) {
-    int mapId = creationParams.remove('_webOnlyMapCreationId');
-
-    assert(mapId != null,
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    @required CameraPosition initialCameraPosition,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers =
+        const <Factory<OneSequenceGestureRecognizer>>{},
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  }) {
+    assert(creationId != null,
         'buildView needs a `_webOnlyMapCreationId` in its creationParams to prevent widget reloads in web.');
 
-    // Bail fast if we've already rendered this mapId...
-    if (_mapById[mapId]?.widget != null) {
-      return _mapById[mapId].widget;
+    // Bail fast if we've already rendered this map ID...
+    if (_mapById[creationId]?.widget != null) {
+      return _mapById[creationId].widget;
     }
 
     final StreamController<MapEvent> controller =
         StreamController<MapEvent>.broadcast();
 
     final mapController = GoogleMapController(
-      mapId: mapId,
+      mapId: creationId,
       streamController: controller,
-      rawOptions: creationParams,
+      markers: markers,
+      polygons: polygons,
+      polylines: polylines,
+      circles: circles,
+      mapOptions: mapOptions,
     );
 
-    _mapById[mapId] = mapController;
+    _mapById[creationId] = mapController;
 
-    onPlatformViewCreated.call(mapId);
+    onPlatformViewCreated.call(creationId);
 
     return mapController.widget;
   }

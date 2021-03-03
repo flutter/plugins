@@ -16,18 +16,18 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   meta: ^1.1.7
-  google_maps_flutter_platform_interface: ^1.1.0
+  google_maps_flutter_platform_interface: ^2.0.1
   google_maps: ^3.4.5
-  stream_transform: ^1.2.0
-  sanitize_html: ^1.4.1
+  stream_transform: ^2.0.0
+  sanitize_html: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  http: ^0.12.2
-  url_launcher: ^5.2.5
+  http: ^0.13.0
+  url_launcher: ^6.0.2
   pedantic: ^1.8.0
-  mockito: ^4.1.1
+  mockito: ^5.0.0
   integration_test:
     path: ../../integration_test
 
