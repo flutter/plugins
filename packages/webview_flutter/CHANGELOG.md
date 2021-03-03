@@ -1,6 +1,10 @@
-## 2.0.1
+## 2.0.2
 
 * Enable native double-tap to zoom, and pinch to zoom functionality on Android
+
+## 2.0.1
+
+* Run CocoaPods iOS tests in RunnerUITests target
 
 ## 2.0.0
 

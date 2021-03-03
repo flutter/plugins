@@ -19,7 +19,7 @@ dev_dependencies:
     sdk: flutter
   pedantic: ^1.10.0
   mockito: ^5.0.0-nullsafety.7
-  plugin_platform_interface: ">=1.0.0 <3.0.0"
+  plugin_platform_interface: ^2.0.0
 
 flutter:
   uses-material-design: true
