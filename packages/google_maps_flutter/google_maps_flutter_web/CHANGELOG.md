@@ -1,6 +1,6 @@
 ## 0.1.2
 
-* Add support for Custom Tiles.
+* Update min Flutter SDK to 1.20.0.
 
 ## 0.1.1
 
