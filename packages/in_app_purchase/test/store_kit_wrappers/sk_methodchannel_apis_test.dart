@@ -136,8 +136,10 @@ void main() {
 
   group('Code Redemption Sheet', () {
     test('presentCodeRedemptionSheet should not throw', () async {
+      expect(fakeIOSPlatform.presentCodeRedemption, false);
       await SKPaymentQueueWrapper().presentCodeRedemptionSheet();
       expect(fakeIOSPlatform.presentCodeRedemption, true);
+      fakeIOSPlatform.presentCodeRedemption = false;
     });
   });
 }
