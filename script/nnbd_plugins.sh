@@ -34,7 +34,6 @@ readonly NNBD_PLUGINS_LIST=(
   "webview_flutter"
   "wifi_info_flutter"
   "in_app_purchase"
-  "extension_google_sign_in_as_googleapis_auth"
   "google_maps_flutter_web" # Not yet migrated, but compatible with others
 )
 
@@ -43,6 +42,7 @@ readonly NNBD_PLUGINS_LIST=(
 # building the all plugins app. This list should be kept empty.
 
 readonly NON_NNBD_PLUGINS_LIST=(
+  "extension_google_sign_in_as_googleapis_auth" # Some deps are still clashing
 )
 
 export EXCLUDED_PLUGINS_FROM_STABLE=$(IFS=, ; echo "${NNBD_PLUGINS_LIST[*]}")
