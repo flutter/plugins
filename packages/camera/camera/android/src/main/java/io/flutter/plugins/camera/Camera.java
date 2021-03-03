@@ -91,11 +91,9 @@ public class Camera {
   }
 
   private final SurfaceTextureEntry flutterTexture;
-  private final CameraManager cameraManager;
   private final DeviceOrientationManager deviceOrientationListener;
   private final boolean isFrontFacing;
   private final int sensorOrientation;
-  private final String cameraName;
   private final Size captureSize;
   private final Size previewSize;
   private final boolean enableAudio;
@@ -103,7 +101,7 @@ public class Camera {
   private final CamcorderProfile recordingProfile;
   private final DartMessenger dartMessenger;
   private final CameraZoom cameraZoom;
-  private final CameraCharacteristics cameraCharacteristics;
+  private final CameraProperties cameraProperties;
   private final Activity activity;
   /** This manages the state of the camera and the current capture request. */
   PictureCaptureRequest pictureCaptureRequest;
@@ -258,64 +256,81 @@ public class Camera {
       final Activity activity,
       final SurfaceTextureEntry flutterTexture,
       final DartMessenger dartMessenger,
-      final String cameraName,
-      final String resolutionPreset,
-      final boolean enableAudio)
-      throws CameraAccessException {
-    // Log.i(TAG, "Camear constructor");
+      final CameraProperties cameraProperties,
+      final ResolutionPreset resolutionPreset,
+      final boolean enableAudio) {
+    this(
+        activity,
+        flutterTexture,
+        dartMessenger,
+        cameraProperties,
+        resolutionPreset,
+        enableAudio,
+        null);
+  }
+
+  public Camera(
+      final Activity activity,
+      final SurfaceTextureEntry flutterTexture,
+      final DartMessenger dartMessenger,
+      final CameraProperties cameraProperties,
+      final ResolutionPreset resolutionPreset,
+      final boolean enableAudio,
+      @Nullable final DeviceOrientationManager deviceOrientationManager) {
 
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
     }
+
     this.activity = activity;
-    this.cameraName = cameraName;
     this.enableAudio = enableAudio;
     this.flutterTexture = flutterTexture;
     this.dartMessenger = dartMessenger;
-    this.cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     this.applicationContext = activity.getApplicationContext();
+    this.cameraProperties = cameraProperties;
     this.currentFlashMode = FlashMode.off;
     this.currentExposureMode = ExposureMode.auto;
     this.currentFocusMode = FocusMode.auto;
     this.exposureOffset = 0;
 
     // Get camera characteristics and check for supported features
-    cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraName);
-    getAvailableFpsRange(cameraCharacteristics);
-    mAutoFocusSupported = checkAutoFocusSupported(cameraCharacteristics);
+    getAvailableFpsRange(cameraProperties);
+    mAutoFocusSupported = checkAutoFocusSupported(cameraProperties);
     checkFlashSupported();
 
     // Setup orientation
-    sensorOrientation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-    isFrontFacing =
-        cameraCharacteristics.get(CameraCharacteristics.LENS_FACING)
-            == CameraMetadata.LENS_FACING_FRONT;
+    sensorOrientation = cameraProperties.getSensorOrientation();
+    isFrontFacing = cameraProperties.getLensFacing() == CameraMetadata.LENS_FACING_FRONT;
+
     deviceOrientationListener =
-        new DeviceOrientationManager(activity, dartMessenger, isFrontFacing, sensorOrientation);
+        deviceOrientationManager != null
+            ? deviceOrientationManager
+            : new DeviceOrientationManager(
+                activity, dartMessenger, isFrontFacing, sensorOrientation);
     deviceOrientationListener.start();
 
+    String cameraName = cameraProperties.getCameraName();
+
     // Resolution configuration
-    ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
     recordingProfile =
-        CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
+        CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(
+            cameraName, resolutionPreset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     // Log.i(TAG, "captureSize: " + captureSize);
 
-    previewSize = computeBestPreviewSize(cameraName, preset);
+    previewSize = computeBestPreviewSize(cameraName, resolutionPreset);
 
     // Zoom setup
     cameraZoom =
         new CameraZoom(
-            cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE),
-            cameraCharacteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM));
+            cameraProperties.getSensorInfoActiveArraySize(),
+            cameraProperties.getScalerAvailableMaxDigitalZoom());
 
     // Start background thread.
     startBackgroundThread();
   }
 
-  /**
-   * Get the current camera state (use for testing).
-   */
+  /** Get the current camera state (use for testing). */
   public CameraState getState() {
     return this.cameraState;
   }
@@ -325,8 +340,8 @@ public class Camera {
    * and the available lens focusing distance to determine if its' a fixed length lens or not as
    * well.
    */
-  public static boolean checkAutoFocusSupported(CameraCharacteristics cameraCharacteristics) {
-    int[] modes = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
+  public static boolean checkAutoFocusSupported(CameraProperties cameraProperties) {
+    int[] modes = cameraProperties.getControlAutoFocusAvailableModes();
     // Log.i(TAG, "checkAutoFocusSupported | modes:");
     for (int mode : modes) {
       // Log.i(TAG, "checkAutoFocusSupported | ==> " + mode);
@@ -334,8 +349,7 @@ public class Camera {
 
     // Check if fixed focal length lens. If LENS_INFO_MINIMUM_FOCUS_DISTANCE=0, then this is fixed.
     // Can be null on some devices.
-    final Float minFocus =
-        cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
+    final Float minFocus = cameraProperties.getLensInfoMinimumFocusDistance();
     // final Float maxFocus = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
 
     // Value can be null on some devices:
@@ -348,31 +362,30 @@ public class Camera {
     }
     // Log.i(TAG, "checkAutoFocusSupported | minFocus " + minFocus + " | maxFocus: " + maxFocus);
 
-    return
-        !isFixedLength
-            && !(modes == null
-                || modes.length == 0
-                || (modes.length == 1 && modes[0] == CameraCharacteristics.CONTROL_AF_MODE_OFF));
+    return !isFixedLength
+        && !(modes == null
+            || modes.length == 0
+            || (modes.length == 1 && modes[0] == CameraCharacteristics.CONTROL_AF_MODE_OFF));
     // Log.i(TAG, "checkAutoFocusSupported: " + mAutoFocusSupported);
   }
 
   /** Check if the flash is supported. */
   private void checkFlashSupported() {
-    Boolean available = cameraCharacteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-    mFlashSupported = available == null ? false : available;
+    Boolean available = cameraProperties.getFlashInfoAvailable();
+    mFlashSupported = available != null && available;
   }
 
   /**
    * Load available FPS range for the current camera and update the available fps range with it.
    *
-   * @param cameraCharacteristics
+   * @param cameraProperties
    */
-  private void getAvailableFpsRange(CameraCharacteristics cameraCharacteristics) {
+  private void getAvailableFpsRange(CameraProperties cameraProperties) {
     // Log.i(TAG, "getAvailableFpsRange");
 
     try {
-      Range<Integer>[] ranges =
-          cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+      Range<Integer>[] ranges = cameraProperties.getControlAutoExposureAvailableTargetFpsRanges();
+
       if (ranges != null) {
         for (Range<Integer> range : ranges) {
           int upper = range.getUpper();
@@ -424,8 +437,9 @@ public class Camera {
         ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), imageFormat, 1);
 
     // Open the camera now
+    CameraManager cameraManager = CameraUtils.getCameraManager(activity);
     cameraManager.openCamera(
-        cameraName,
+        cameraProperties.getCameraName(),
         new CameraDevice.StateCallback() {
           @Override
           public void onOpened(@NonNull CameraDevice device) {
@@ -1146,11 +1160,9 @@ public class Camera {
   }
 
   @TargetApi(VERSION_CODES.P)
-  private boolean supportsDistortionCorrection() throws CameraAccessException {
+  private boolean supportsDistortionCorrection() {
     int[] availableDistortionCorrectionModes =
-        cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
-            .get(CameraCharacteristics.DISTORTION_CORRECTION_AVAILABLE_MODES);
+        cameraProperties.getDistortionCorrectionAvailableModes();
     if (availableDistortionCorrectionModes == null) availableDistortionCorrectionModes = new int[0];
     long nonOffModesSupported =
         Arrays.stream(availableDistortionCorrectionModes)
@@ -1159,12 +1171,10 @@ public class Camera {
     return nonOffModesSupported > 0;
   }
 
-  private Size getRegionBoundaries() throws CameraAccessException {
+  private Size getRegionBoundaries() {
     // No distortion correction support
     if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.P || !supportsDistortionCorrection()) {
-      return cameraManager
-          .getCameraCharacteristics(cameraDevice.getId())
-          .get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
+      return cameraProperties.getSensorInfoPixelArraySize();
     }
     // Get the current distortion correction mode
     Integer distortionCorrectionMode =
@@ -1173,65 +1183,43 @@ public class Camera {
     android.graphics.Rect rect;
     if (distortionCorrectionMode == null
         || distortionCorrectionMode == CaptureRequest.DISTORTION_CORRECTION_MODE_OFF) {
-      rect =
-          cameraManager
-              .getCameraCharacteristics(cameraDevice.getId())
-              .get(CameraCharacteristics.SENSOR_INFO_PRE_CORRECTION_ACTIVE_ARRAY_SIZE);
+      rect = cameraProperties.getSensorInfoPreCorrectionActiveArraySize();
     } else {
-      rect =
-          cameraManager
-              .getCameraCharacteristics(cameraDevice.getId())
-              .get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+      rect = cameraProperties.getSensorInfoActiveArraySize();
     }
     return rect == null ? null : new Size(rect.width(), rect.height());
   }
 
-  private boolean isExposurePointSupported() throws CameraAccessException {
-    Integer supportedRegions =
-        cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
-            .get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE);
+  private boolean isExposurePointSupported() {
+    Integer supportedRegions = cameraProperties.getControlMaxRegionsAutoExposure();
     return supportedRegions != null && supportedRegions > 0;
   }
 
-  private boolean isFocusPointSupported() throws CameraAccessException {
-    Integer supportedRegions =
-        cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
-            .get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF);
+  private boolean isFocusPointSupported() {
+    Integer supportedRegions = cameraProperties.getControlMaxRegionsAutoFocus();
     return supportedRegions != null && supportedRegions > 0;
   }
 
-  public double getMinExposureOffset() throws CameraAccessException {
-    Range<Integer> range =
-        cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
-            .get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
+  public double getMinExposureOffset() {
+    Range<Integer> range = cameraProperties.getControlAutoExposureCompensationRange();
     double minStepped = range == null ? 0 : range.getLower();
     double stepSize = getExposureOffsetStepSize();
     return minStepped * stepSize;
   }
 
-  public double getMaxExposureOffset() throws CameraAccessException {
-    Range<Integer> range =
-        cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
-            .get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
+  public double getMaxExposureOffset() {
+    Range<Integer> range = cameraProperties.getControlAutoExposureCompensationRange();
     double maxStepped = range == null ? 0 : range.getUpper();
     double stepSize = getExposureOffsetStepSize();
     return maxStepped * stepSize;
   }
 
-  public double getExposureOffsetStepSize() throws CameraAccessException {
-    Rational stepSize =
-        cameraManager
-            .getCameraCharacteristics(cameraDevice.getId())
-            .get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
+  public double getExposureOffsetStepSize() {
+    Rational stepSize = cameraProperties.getControlAutoExposureCompensationStep();
     return stepSize == null ? 0.0 : stepSize.doubleValue();
   }
 
-  public void setExposureOffset(@NonNull final Result result, double offset)
-      throws CameraAccessException {
+  public void setExposureOffset(@NonNull final Result result, double offset) {
     // Set the exposure offset
     double stepSize = getExposureOffsetStepSize();
     exposureOffset = (int) (offset / stepSize);

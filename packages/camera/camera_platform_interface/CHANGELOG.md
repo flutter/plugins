@@ -1,6 +1,6 @@
 ## 2.0.1
 
-* Update platform_plugin_interface version requirement.
+- Update platform_plugin_interface version requirement.
 
 ## 2.0.0
 
