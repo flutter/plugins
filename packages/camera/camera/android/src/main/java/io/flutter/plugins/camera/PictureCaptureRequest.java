@@ -99,9 +99,8 @@ class PictureCaptureRequest {
       return;
     }
 
-    final PictureCaptureRequestState oldState = state;
     state = newState;
-    onStateChange(oldState);
+    onStateChange(newState);
   }
 
   public boolean isFinished() {
@@ -152,8 +151,8 @@ class PictureCaptureRequest {
   }
 
   /** Handle new state changes. */
-  private void onStateChange(PictureCaptureRequestState oldState) {
-    switch (state) {
+  private void onStateChange(PictureCaptureRequestState newState) {
+    switch (newState) {
       case STATE_CAPTURING:
       case STATE_WAITING_FOCUS:
       case STATE_WAITING_PRECAPTURE_START:
