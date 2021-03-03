@@ -14,6 +14,15 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
 
+# For development / testing purpose only.
+# When using video_player in a real application
+# you won't directly depend on video_player_platform_interface at all.
+# The example app is bundled with the plugin so we use a path dependency on
+# the parent directory to use the current plugin's version.
+dependency_overrides:
+  video_player_platform_interface:
+    path: ../../video_player_platform_interface
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
