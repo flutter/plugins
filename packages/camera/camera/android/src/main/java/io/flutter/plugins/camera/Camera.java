@@ -1228,7 +1228,7 @@ public class Camera {
 
     // Refresh capture session
     refreshPreviewCaptureSession(
-        () -> result.success(null),
+        () -> result.success(offset),
         (code, message) ->
             result.error("setExposureModeFailed", "Could not set flash mode.", null));
   }
