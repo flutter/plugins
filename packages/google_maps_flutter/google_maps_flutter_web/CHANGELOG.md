@@ -1,6 +1,7 @@
 ## 0.2.0
 
 * Make this plugin compatible with the rest of null-safe plugins.
+* Noop tile overlays methods, so they don't crash on web.
 
 **NOTE**: This plugin is **not** null-safe yet!
 

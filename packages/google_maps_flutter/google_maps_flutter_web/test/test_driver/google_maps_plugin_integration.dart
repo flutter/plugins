@@ -168,6 +168,22 @@ void main() {
       });
     });
 
+    group('Noop methods:', () {
+      int mapId = 0;
+      setUp(() {
+        plugin.debugSetMapById({mapId: controller});
+      });
+      // Options
+      testWidgets('updateTileOverlays', (WidgetTester tester) async {
+        final update = plugin.updateTileOverlays(mapId: mapId, newTileOverlays: {});
+        expect(update, completion(null));
+      });
+      testWidgets('updateTileOverlays', (WidgetTester tester) async {
+        final update = plugin.clearTileCache(TileOverlayId('any'), mapId: mapId);
+        expect(update, completion(null));
+      });
+    });
+
     // These methods only pass-through values from the plugin to the controller
     // so we verify them all together here...
     group('Pass-through methods:', () {
