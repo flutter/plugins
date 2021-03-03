@@ -48,7 +48,7 @@ task:
           CHANNEL: "stable"
       script:
         - flutter channel $CHANNEL
-        - /script/incremental_build.sh analyze
+        - ./script/incremental_build.sh analyze
     ### Android tasks ###
     - name: build_all_plugins_apk
       env:
