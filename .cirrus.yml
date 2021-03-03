@@ -15,6 +15,7 @@ task:
     - flutter upgrade
     - git fetch origin master
   matrix:
+    ### Platform-agnostic tasks ###
     - name: plugin_tools_tests
       script:
         - cd script/tool
@@ -44,7 +45,10 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script: ./script/incremental_build.sh analyze
+      script:
+        - flutter channel $CHANNEL
+        - /script/incremental_build.sh analyze
+    ### Android tasks ###
     - name: build_all_plugins_apk
       env:
         matrix:
@@ -53,19 +57,6 @@ task:
       script:
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh apk
-    - name: integration_web_smoke_test
-      # Tests integration example test in web.
-      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
-      install_script:
-        - flutter config --enable-web
-        - git clone https://github.com/flutter/web_installers.git
-        - cd web_installers/packages/web_drivers/
-        - pub get
-        - dart lib/web_driver_installer.dart chromedriver --install-only
-        - ./chromedriver/chromedriver --port=4444 &
-      test_script:
-        - cd $INTEGRATION_TEST_PATH/example/
-        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
@@ -100,27 +91,33 @@ task:
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
-
-task:
-  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-  only_if: $CIRRUS_TAG == ''
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
-  container:
-    dockerfile: .ci/Dockerfile-LinuxDesktop
-    cpu: 8
-    memory: 16G
-  env:
-    INTEGRATION_TEST_PATH: "./packages/integration_test"
-  upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - git fetch origin master
-  matrix:
+    ### Web tasks ###
+    - name: integration_web_smoke_test
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      # Tests integration example test in web.
+      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
+      install_script:
+        - flutter channel $CHANNEL
+        - flutter config --enable-web
+        - git clone https://github.com/flutter/web_installers.git
+        - cd web_installers/packages/web_drivers/
+        - pub get
+        - dart lib/web_driver_installer.dart chromedriver --install-only
+        - ./chromedriver/chromedriver --port=4444 &
+      test_script:
+        - cd $INTEGRATION_TEST_PATH/example/
+        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
+    ### Linux desktop tasks ###
     - name: build_all_plugins_linux
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script:
-        - flutter channel master
+        - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh linux
     - name: build-linux+drive-examples
       env:
@@ -128,6 +125,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       install_script:
+        - flutter channel $CHANNEL
         - flutter config --enable-linux-desktop
       build_script:
         - flutter channel $CHANNEL
@@ -152,6 +150,19 @@ task:
     - xcrun simctl list
     - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
   matrix:
+    ### Platform-agnostic tasks ###
+    - name: lint_darwin_plugins
+      env:
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+      script:
+        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
+        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
+        # Skip the dummy podspecs used to placate the tool.
+        - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
+        - ./script/incremental_build.sh podspecs
+    ### iOS tasks ###
     - name: build_all_plugins_ipa
       env:
         matrix:
@@ -181,25 +192,22 @@ task:
         # This UI change sometimes affects `xctest`.
         # So we run `drive-examples` after `xctest`, changing the order will result ci failure.
         - ./script/incremental_build.sh drive-examples --ios
+    ### macOS desktop tasks ###
     - name: build_all_plugins_macos
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
       script:
-        - flutter channel master
+        - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh macos
     - name: build-macos+drive-examples
       env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
         PATH: $PATH:/usr/local/bin
       build_script:
-        - flutter channel master
+        - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --macos --no-ipa
         - ./script/incremental_build.sh drive-examples --macos
-    - name: lint_darwin_plugins
-      env:
-        matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
-      script:
-        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
-        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
-        # Skip the dummy podspecs used to placate the tool.
-        - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
-        - ./script/incremental_build.sh podspecs
