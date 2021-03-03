@@ -106,8 +106,8 @@ gmaps.MapOptions _applyInitialPosition(
   // Adjust the initial position, if passed...
   if (initialPosition != null) {
     options.zoom = initialPosition.zoom;
-    options.center =
-        gmaps.LatLng(initialPosition.target.latitude, initialPosition.target.longitude);
+    options.center = gmaps.LatLng(
+        initialPosition.target.latitude, initialPosition.target.longitude);
   }
   return options;
 }

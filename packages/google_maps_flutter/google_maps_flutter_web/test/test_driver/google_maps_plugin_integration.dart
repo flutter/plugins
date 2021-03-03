@@ -175,11 +175,13 @@ void main() {
       });
       // Options
       testWidgets('updateTileOverlays', (WidgetTester tester) async {
-        final update = plugin.updateTileOverlays(mapId: mapId, newTileOverlays: {});
+        final update =
+            plugin.updateTileOverlays(mapId: mapId, newTileOverlays: {});
         expect(update, completion(null));
       });
       testWidgets('updateTileOverlays', (WidgetTester tester) async {
-        final update = plugin.clearTileCache(TileOverlayId('any'), mapId: mapId);
+        final update =
+            plugin.clearTileCache(TileOverlayId('any'), mapId: mapId);
         expect(update, completion(null));
       });
     });
