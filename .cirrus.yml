@@ -13,7 +13,6 @@ task:
     - flutter upgrade
     - flutter channel master
     - flutter upgrade
-    - flutter config --enable-linux-desktop
     - git fetch origin master
   matrix:
     ### Platform-agnostic tasks ###
@@ -127,6 +126,25 @@ task:
       test_script:
         - cd $INTEGRATION_TEST_PATH/example/
         - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
+
+task:
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  container:
+    dockerfile: .ci/Dockerfile-LinuxDesktop
+    cpu: 8
+    memory: 16G
+  env:
+    INTEGRATION_TEST_PATH: "./packages/integration_test"
+  upgrade_script:
+    - flutter channel stable
+    - flutter upgrade
+    - flutter channel master
+    - flutter upgrade
+    - flutter config --enable-linux-desktop
+    - git fetch origin master
+  matrix:
     ### Linux desktop tasks ###
     - name: build_all_plugins_linux
       env:
