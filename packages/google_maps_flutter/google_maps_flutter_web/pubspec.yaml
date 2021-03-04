@@ -1,7 +1,7 @@
 name: google_maps_flutter_web
 description: Web platform implementation of google_maps_flutter
 homepage: https://github.com/flutter/plugins/tree/master/packages/google_maps_flutter
-version: 0.2.0
+version: 0.2.1
 
 flutter:
   plugin:
@@ -24,12 +24,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  http: ^0.13.0
-  url_launcher: ^6.0.2
-  pedantic: ^1.8.0
-  mockito: ^5.0.0
-  integration_test:
-    path: ../../integration_test
+  pedantic: ^1.10.0
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
