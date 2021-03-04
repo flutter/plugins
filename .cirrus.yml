@@ -32,7 +32,7 @@ task:
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
         - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main"
         - sudo apt-get update
-        - sudo apt-get install -y --allow-unauthenticated clang-format-8
+        - sudo apt-get install -y --allow-unauthenticated clang-format-8 libllvm8
       format_script: ./script/incremental_build.sh format --fail-on-change --clang-format=clang-format-8
     - name: test
       env:
