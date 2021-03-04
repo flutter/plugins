@@ -37,6 +37,8 @@ Directory createFakePlugin(
   bool isLinuxPlugin = false,
   bool isMacOsPlugin = false,
   bool isWindowsPlugin = false,
+  bool includeChangeLog = false,
+  bool includeVersion = false,
   String parentDirectoryName = '',
 }) {
   assert(!(withSingleExample && withExamples.isNotEmpty),
@@ -57,13 +59,14 @@ Directory createFakePlugin(
     isLinuxPlugin: isLinuxPlugin,
     isMacOsPlugin: isMacOsPlugin,
     isWindowsPlugin: isWindowsPlugin,
+    includeVersion: includeVersion,
   );
-  createFakeCHANGELOG(pluginDirectory, '''
-
+  if (includeChangeLog) {
+    createFakeCHANGELOG(pluginDirectory, '''
 ## 0.0.1
-
-* Some changes.
-''');
+  * Some changes.
+  ''');
+  }
 
   if (withSingleExample) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')

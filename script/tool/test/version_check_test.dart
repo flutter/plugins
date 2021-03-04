@@ -7,6 +7,7 @@ import 'package:mockito/mockito.dart';
 import "package:test/test.dart";
 import "package:flutter_plugin_tools/src/version_check_command.dart";
 import 'package:pub_semver/pub_semver.dart';
+import '../lib/src/common.dart';
 import 'util.dart';
 
 void testAllowedVersion(
@@ -74,7 +75,7 @@ void main() {
     });
 
     test('allows valid version', () async {
-      createFakePlugin('plugin');
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
       gitDiffResponse = "packages/plugin/pubspec.yaml";
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
@@ -85,7 +86,7 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
+        containsAllInOrder(<String>[
           'No version check errors found!',
         ]),
       );
@@ -99,7 +100,7 @@ void main() {
     });
 
     test('denies invalid version', () async {
-      createFakePlugin('plugin');
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
       gitDiffResponse = "packages/plugin/pubspec.yaml";
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 0.0.1',
@@ -122,7 +123,7 @@ void main() {
     });
 
     test('gracefully handles missing pubspec.yaml', () async {
-      createFakePlugin('plugin');
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
       gitDiffResponse = "packages/plugin/pubspec.yaml";
       mockFileSystem.currentDirectory
           .childDirectory('packages')
@@ -144,7 +145,7 @@ void main() {
     });
 
     test('allows minor changes to platform interfaces', () async {
-      createFakePlugin('plugin_platform_interface');
+      createFakePlugin('plugin_platform_interface', includeChangeLog: true, includeVersion: true);
       gitDiffResponse = "packages/plugin_platform_interface/pubspec.yaml";
       gitShowResponses = <String, String>{
         'master:packages/plugin_platform_interface/pubspec.yaml':
@@ -156,7 +157,7 @@ void main() {
           runner, <String>['version-check', '--base_sha=master']);
       expect(
         output,
-        orderedEquals(<String>[
+        containsAllInOrder(<String>[
           'No version check errors found!',
         ]),
       );
@@ -172,7 +173,7 @@ void main() {
     });
 
     test('disallows breaking changes to platform interfaces', () async {
-      createFakePlugin('plugin_platform_interface');
+      createFakePlugin('plugin_platform_interface', includeChangeLog: true, includeVersion: true);
       gitDiffResponse = "packages/plugin_platform_interface/pubspec.yaml";
       gitShowResponses = <String, String>{
         'master:packages/plugin_platform_interface/pubspec.yaml':
@@ -198,7 +199,7 @@ void main() {
     });
 
      test('Throws if first line in change log is empty', () async{
-      createFakePlugin('plugin');
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
 
       final Directory pluginDirectory =
           mockPackagesDir.childDirectory('plugin');
@@ -215,7 +216,52 @@ void main() {
           runner, <String>['version-check', '--base_sha=master']);
       await expectLater(
         output,
+        throwsA(const TypeMatcher<FormatException>()),
+      );
+    });
+
+    test('Throws if versions in changelog and pubspec do not match', () async{
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+
+      final Directory pluginDirectory =
+          mockPackagesDir.childDirectory('plugin');
+
+      createFakePubspec(pluginDirectory, isFlutter: true, includeVersion: true, version: '1.0.1');
+      String changelog = '''
+## 1.0.2
+
+* Some changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      final Future<List<String>> output = runCapturingPrint(
+          runner, <String>['version-check', '--base_sha=master']);
+      await expectLater(
+        output,
         throwsA(const TypeMatcher<Error>()),
+      );
+    });
+
+    test('Success if CHANGELOG and pubspec versions match', () async{
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+
+      final Directory pluginDirectory =
+          mockPackagesDir.childDirectory('plugin');
+
+      createFakePubspec(pluginDirectory, isFlutter: true, includeVersion: true, version: '1.0.1');
+      String changelog = '''
+## 1.0.1
+
+* Some changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base_sha=master']);
+      await expect(
+        output,
+        containsAllInOrder([
+          'Checking that plugin has matching version in CHANGELOG and pubspec',
+          'No version check errors found!'
+        ]),
       );
     });
   });

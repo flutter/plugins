@@ -177,9 +177,6 @@ class VersionCheckCommand extends PluginCommand {
           continue;
         }
         final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
-        if (pubspec.publishTo == 'none') {
-          continue;
-        }
 
         final Version masterVersion =
             await gitVersionFinder.getPackageVersion(pubspecPath, baseSha);
@@ -230,17 +227,15 @@ class VersionCheckCommand extends PluginCommand {
     print('Checking that $packageName has matching version in CHANGELOG and pubspec');
 
     final Pubspec pubspec = _tryParsePubspec(plugin);
-    if (pubspec.publishTo == 'none') {
-      print('Package $packageName is marked as unpublishable. Skipping.');
-      return;
-    }
     final Version fromPubspec = pubspec.version;
 
     // get version from CHANGELOG
     final File changelog = plugin.childFile('CHANGELOG.md');
     final List<String> lines = changelog.readAsLinesSync();
     final String firstLine = lines.first;
-    Version fromChangeLog = Version.parse(firstLine);
+    // Remove all leading mark down syntax from the version line.
+    final String versionString = firstLine.split(' ').last;
+    Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
       print(
         'Can not find version on the first line of CHANGELOG.md',
