@@ -94,6 +94,8 @@ task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
     dockerfile: .ci/Dockerfile-LegacyChrome
+    cpu: 8
+    memory: 16G
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
   upgrade_script:
