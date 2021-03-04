@@ -1007,7 +1007,7 @@ void main() {
             isTrue);
       }
     });
-  }, skip: !Platform.isAndroid);
+  }, skip: defaultTargetPlatform != TargetPlatform.android);
 
   group('NavigationDelegate', () {
     final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
@@ -1261,7 +1261,7 @@ void main() {
       await controller.goBack();
       expect(controller.currentUrl(), completion('https://www.flutter.dev'));
     },
-    skip: !Platform.isAndroid,
+    skip: defaultTargetPlatform != TargetPlatform.android,
   );
 
   testWidgets(
@@ -1329,7 +1329,7 @@ void main() {
         completion('null'),
       );
     },
-    skip: !Platform.isAndroid,
+    skip: defaultTargetPlatform != TargetPlatform.android,
   );
 }
 
