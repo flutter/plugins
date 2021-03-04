@@ -10,6 +10,6 @@ source "$SCRIPT_DIR/common.sh"
 # Sets CHANGED_PACKAGE_LIST and CHANGED_PACKAGES
 check_changed_packages
 
-if [[ "${#CHANGED_PACKAGE_LIST[@]}" != 0 ]]; then
-  plugin_tools version-check --base_sha="$(get_branch_base_sha)" --plugins="${CHANGED_PACKAGES}"
-fi
+plugin_tools version-check --base_sha="$(get_branch_base_sha)"
+# if [[ "${#CHANGED_PACKAGE_LIST[@]}" != 0 ]]; then
+# fi
