@@ -95,7 +95,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
 
-    WebViewManager webViewManager = WebViewManager.getInstance();
+    WebViewManager webViewManager = WebViewManager.INSTANCE.getInstance();
 
     if (params.containsKey("maxCachedTabs")) {
       Integer maxCachedTabs = (Integer) params.get("maxCachedTabs");
