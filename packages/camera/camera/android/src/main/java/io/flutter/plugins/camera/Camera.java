@@ -124,7 +124,7 @@ public class Camera {
           // Use acquireNextImage since our image reader is only for 1 image.
           mBackgroundHandler.post(
               new ImageSaver(
-                  reader.acquireNextImage(), pictureCaptureRequest.mFile, pictureCaptureRequest));
+                  reader.acquireNextImage(), pictureCaptureRequest.file, pictureCaptureRequest));
           cameraState = CameraState.STATE_PREVIEW;
         }
       };
