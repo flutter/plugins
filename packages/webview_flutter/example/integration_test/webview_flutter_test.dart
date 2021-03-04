@@ -960,54 +960,51 @@ void main() {
 
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
-
-      final String viewportRectJSON = await controller.evaluateJavascript(
-          'JSON.stringify(viewport.getBoundingClientRect())');
+      final String viewportRectJSON = await _evaluateJavascript(
+          controller, 'JSON.stringify(viewport.getBoundingClientRect())');
       final Map<String, dynamic> viewportRectRelativeToViewport =
-          jsonDecode(jsonDecode(viewportRectJSON));
+          jsonDecode(viewportRectJSON);
 
       // Check that the input is originally outside of the viewport.
-      {
-        final String inputClientRectJSON = await controller.evaluateJavascript(
-            'JSON.stringify(inputEl.getBoundingClientRect())');
-        final Map<String, dynamic> inputClientRectRelativeToViewport =
-            jsonDecode(jsonDecode(inputClientRectJSON));
 
-        expect(
-            inputClientRectRelativeToViewport['bottom'] <=
-                viewportRectRelativeToViewport['bottom'],
-            isFalse);
-      }
+      final String initialInputClientRectJSON = await _evaluateJavascript(
+          controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
+      final Map<String, dynamic> initialInputClientRectRelativeToViewport =
+          jsonDecode(initialInputClientRectJSON);
+
+      expect(
+          initialInputClientRectRelativeToViewport['bottom'] <=
+              viewportRectRelativeToViewport['bottom'],
+          isFalse);
 
       await controller.evaluateJavascript('inputEl.focus()');
 
       // Check that focusing the input brought it into view.
-      {
-        final String inputClientRectJSON = await controller.evaluateJavascript(
-            'JSON.stringify(inputEl.getBoundingClientRect())');
-        final Map<String, dynamic> inputClientRectRelativeToViewport =
-            jsonDecode(jsonDecode(inputClientRectJSON));
 
-        expect(
-            inputClientRectRelativeToViewport['top'] >=
-                viewportRectRelativeToViewport['top'],
-            isTrue);
-        expect(
-            inputClientRectRelativeToViewport['bottom'] <=
-                viewportRectRelativeToViewport['bottom'],
-            isTrue);
+      final String lastInputClientRectJSON = await _evaluateJavascript(
+          controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
+      final Map<String, dynamic> lastInputClientRectRelativeToViewport =
+          jsonDecode(lastInputClientRectJSON);
 
-        expect(
-            inputClientRectRelativeToViewport['left'] >=
-                viewportRectRelativeToViewport['left'],
-            isTrue);
-        expect(
-            inputClientRectRelativeToViewport['right'] <=
-                viewportRectRelativeToViewport['right'],
-            isTrue);
-      }
+      expect(
+          lastInputClientRectRelativeToViewport['top'] >=
+              viewportRectRelativeToViewport['top'],
+          isTrue);
+      expect(
+          lastInputClientRectRelativeToViewport['bottom'] <=
+              viewportRectRelativeToViewport['bottom'],
+          isTrue);
+
+      expect(
+          lastInputClientRectRelativeToViewport['left'] >=
+              viewportRectRelativeToViewport['left'],
+          isTrue);
+      expect(
+          lastInputClientRectRelativeToViewport['right'] <=
+              viewportRectRelativeToViewport['right'],
+          isTrue);
     });
-  }, skip: defaultTargetPlatform != TargetPlatform.android);
+  }, skip: !Platform.isAndroid);
 
   group('NavigationDelegate', () {
     final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
@@ -1074,7 +1071,8 @@ void main() {
         expect(error.failingUrl, isNull);
       } else if (Platform.isAndroid) {
         expect(error.errorType, isNotNull);
-        expect(error.failingUrl, 'https://www.notawebsite..com');
+        expect(error.failingUrl.startsWith('https://www.notawebsite..com'),
+            isTrue);
       }
     });
 
@@ -1261,7 +1259,7 @@ void main() {
       await controller.goBack();
       expect(controller.currentUrl(), completion('https://www.flutter.dev'));
     },
-    skip: defaultTargetPlatform != TargetPlatform.android,
+    skip: !Platform.isAndroid,
   );
 
   testWidgets(
@@ -1329,7 +1327,7 @@ void main() {
         completion('null'),
       );
     },
-    skip: defaultTargetPlatform != TargetPlatform.android,
+    skip: !Platform.isAndroid,
   );
 }
 
@@ -1344,9 +1342,13 @@ String _webviewBool(bool value) {
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
 Future<String> _getUserAgent(WebViewController controller) async {
+  return _evaluateJavascript(controller, 'navigator.userAgent;');
+}
+
+Future<String> _evaluateJavascript(
+    WebViewController controller, String js) async {
   if (defaultTargetPlatform == TargetPlatform.iOS) {
-    return await controller.evaluateJavascript('navigator.userAgent;');
+    return await controller.evaluateJavascript(js);
   }
-  return jsonDecode(
-      await controller.evaluateJavascript('navigator.userAgent;'));
+  return jsonDecode(await controller.evaluateJavascript(js));
 }
