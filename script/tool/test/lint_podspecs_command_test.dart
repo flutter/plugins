@@ -81,7 +81,7 @@ void main() {
                 'lib',
                 'lint',
                 p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
-                '--analyze',
+                '--configuration=Debug',
                 '--use-libraries'
               ],
               mockPackagesDir.path),
@@ -91,14 +91,14 @@ void main() {
                 'lib',
                 'lint',
                 p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
-                '--analyze',
+                '--configuration=Debug',
               ],
               mockPackagesDir.path),
         ]),
       );
 
       expect(
-          printedMessages, contains('Linting and analyzing plugin1.podspec'));
+          printedMessages, contains('Linting plugin1.podspec'));
       expect(printedMessages, contains('Foo'));
       expect(printedMessages, contains('Bar'));
     });
@@ -122,41 +122,6 @@ void main() {
       );
     });
 
-    test('skips analyzer for podspecs with known warnings', () async {
-      Directory plugin1Dir =
-          createFakePlugin('plugin1', withExtraFiles: <List<String>>[
-        <String>['plugin1.podspec'],
-      ]);
-
-      await runner.run(<String>['podspecs', '--no-analyze=plugin1']);
-
-      expect(
-        processRunner.recordedCalls,
-        orderedEquals(<ProcessCall>[
-          ProcessCall('which', <String>['pod'], mockPackagesDir.path),
-          ProcessCall(
-              'pod',
-              <String>[
-                'lib',
-                'lint',
-                p.join(plugin1Dir.path, 'plugin1.podspec'),
-                '--use-libraries'
-              ],
-              mockPackagesDir.path),
-          ProcessCall(
-              'pod',
-              <String>[
-                'lib',
-                'lint',
-                p.join(plugin1Dir.path, 'plugin1.podspec'),
-              ],
-              mockPackagesDir.path),
-        ]),
-      );
-
-      expect(printedMessages, contains('Linting plugin1.podspec'));
-    });
-
     test('allow warnings for podspecs with known warnings', () async {
       Directory plugin1Dir =
           createFakePlugin('plugin1', withExtraFiles: <List<String>>[
@@ -175,8 +140,8 @@ void main() {
                 'lib',
                 'lint',
                 p.join(plugin1Dir.path, 'plugin1.podspec'),
+                '--configuration=Debug',
                 '--allow-warnings',
-                '--analyze',
                 '--use-libraries'
               ],
               mockPackagesDir.path),
@@ -186,15 +151,15 @@ void main() {
                 'lib',
                 'lint',
                 p.join(plugin1Dir.path, 'plugin1.podspec'),
+                '--configuration=Debug',
                 '--allow-warnings',
-                '--analyze',
               ],
               mockPackagesDir.path),
         ]),
       );
 
       expect(
-          printedMessages, contains('Linting and analyzing plugin1.podspec'));
+          printedMessages, contains('Linting plugin1.podspec'));
     });
   });
 }

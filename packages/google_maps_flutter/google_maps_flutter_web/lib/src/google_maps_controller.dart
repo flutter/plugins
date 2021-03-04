@@ -14,11 +14,14 @@ class GoogleMapController {
   // The internal ID of the map. Used to broadcast events, DOM IDs and everything where a unique ID is needed.
   final int _mapId;
 
+  final CameraPosition _initialCameraPosition;
+  final Set<Marker> _markers;
+  final Set<Polygon> _polygons;
+  final Set<Polyline> _polylines;
+  final Set<Circle> _circles;
   // The raw options passed by the user, before converting to gmaps.
   // Caching this allows us to re-create the map faithfully when needed.
-  Map<String, dynamic> _rawOptions = {
-    'options': {},
-  };
+  Map<String, dynamic> _rawMapOptions = <String, dynamic>{};
 
   // Creates the 'viewType' for the _widget
   String _getViewType(int mapId) => 'plugins.flutter.io/google_maps_$mapId';
@@ -68,10 +71,23 @@ class GoogleMapController {
   GoogleMapController({
     @required int mapId,
     @required StreamController<MapEvent> streamController,
-    @required Map<String, dynamic> rawOptions,
-  })  : this._mapId = mapId,
-        this._streamController = streamController,
-        this._rawOptions = rawOptions {
+    @required CameraPosition initialCameraPosition,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers =
+        const <Factory<OneSequenceGestureRecognizer>>{},
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  })  : _mapId = mapId,
+        _streamController = streamController,
+        _initialCameraPosition = initialCameraPosition,
+        _markers = markers,
+        _polygons = polygons,
+        _polylines = polylines,
+        _circles = circles,
+        _rawMapOptions = mapOptions {
     _circlesController = CirclesController(stream: this._streamController);
     _polygonsController = PolygonsController(stream: this._streamController);
     _polylinesController = PolylinesController(stream: this._streamController);
@@ -121,9 +137,9 @@ class GoogleMapController {
   /// Failure to call this method would result in the GMap not rendering at all,
   /// and most of the public methods on this class no-op'ing.
   void init() {
-    var options = _rawOptionsToGmapsOptions(_rawOptions);
+    var options = _rawOptionsToGmapsOptions(_rawMapOptions);
     // Initial position can only to be set here!
-    options = _applyInitialPosition(_rawOptions, options);
+    options = _applyInitialPosition(_initialCameraPosition, options);
 
     // Create the map...
     _googleMap = _createMap(_div, options);
@@ -132,13 +148,13 @@ class GoogleMapController {
     _attachGeometryControllers(_googleMap);
 
     _renderInitialGeometry(
-      markers: _rawOptionsToInitialMarkers(_rawOptions),
-      circles: _rawOptionsToInitialCircles(_rawOptions),
-      polygons: _rawOptionsToInitialPolygons(_rawOptions),
-      polylines: _rawOptionsToInitialPolylines(_rawOptions),
+      markers: _markers,
+      circles: _circles,
+      polygons: _polygons,
+      polylines: _polylines,
     );
 
-    _setTrafficLayer(_googleMap, _isTrafficLayerEnabled(_rawOptions));
+    _setTrafficLayer(_googleMap, _isTrafficLayerEnabled(_rawMapOptions));
   }
 
   // Funnels map gmap events into the plugin's stream controller.
@@ -196,20 +212,15 @@ class GoogleMapController {
     _polylinesController.addPolylines(polylines);
   }
 
-  // Merges new options coming from the plugin into the `key` entry of the _rawOptions map.
+  // Merges new options coming from the plugin into the _rawMapOptions map.
   //
-  // By default: `key` is 'options'.
-  //
-  // Returns the updated _rawOptions object.
-  Map<String, dynamic> _mergeRawOptions(
-    Map<String, dynamic> newOptions, {
-    String key = 'options',
-  }) {
-    _rawOptions[key] = <String, dynamic>{
-      ...(_rawOptions[key] ?? {}),
+  // Returns the updated _rawMapOptions object.
+  Map<String, dynamic> _mergeRawOptions(Map<String, dynamic> newOptions) {
+    _rawMapOptions = <String, dynamic>{
+      ..._rawMapOptions,
       ...newOptions,
     };
-    return _rawOptions;
+    return _rawMapOptions;
   }
 
   /// Updates the map options from a `Map<String, dynamic>`.
