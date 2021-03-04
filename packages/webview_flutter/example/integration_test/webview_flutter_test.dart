@@ -899,6 +899,114 @@ void main() {
       expect(X_SCROLL * 2, scrollPosX);
       expect(Y_SCROLL * 2, scrollPosY);
     });
+
+    testWidgets('inputs are scrolled into view when focused',
+        (WidgetTester tester) async {
+      final String scrollTestPage = '''
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              input {
+                margin: 10000px 0;
+              }
+              #viewport {
+                position: fixed;
+                top:0;
+                bottom:0;
+                left:0;
+                right:0;
+              }
+            </style>
+          </head>
+          <body>
+            <div id="viewport"></div>
+            <input type="text" id="inputEl">
+          </body>
+        </html>
+      ''';
+
+      final String scrollTestPageBase64 =
+          base64Encode(const Utf8Encoder().convert(scrollTestPage));
+
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+
+      await tester.runAsync(() async {
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: SizedBox(
+              width: 200,
+              height: 200,
+              child: WebView(
+                initialUrl:
+                    'data:text/html;charset=utf-8;base64,$scrollTestPageBase64',
+                onWebViewCreated: (WebViewController controller) {
+                  controllerCompleter.complete(controller);
+                },
+                onPageFinished: (String url) {
+                  pageLoaded.complete(null);
+                },
+                javascriptMode: JavascriptMode.unrestricted,
+              ),
+            ),
+          ),
+        );
+        await Future.delayed(Duration(milliseconds: 20));
+        await tester.pump();
+      });
+
+      final WebViewController controller = await controllerCompleter.future;
+      await pageLoaded.future;
+
+      final String viewportRectJSON = await controller.evaluateJavascript(
+          'JSON.stringify(viewport.getBoundingClientRect())');
+      final Map<String, dynamic> viewportRectRelativeToViewport =
+          jsonDecode(jsonDecode(viewportRectJSON));
+
+      // Check that the input is originally outside of the viewport.
+      {
+        final String inputClientRectJSON = await controller.evaluateJavascript(
+            'JSON.stringify(inputEl.getBoundingClientRect())');
+        final Map<String, dynamic> inputClientRectRelativeToViewport =
+            jsonDecode(jsonDecode(inputClientRectJSON));
+
+        expect(
+            inputClientRectRelativeToViewport['bottom'] <=
+                viewportRectRelativeToViewport['bottom'],
+            isFalse);
+      }
+
+      await controller.evaluateJavascript('inputEl.focus()');
+
+      // Check that focusing the input brought it into view.
+      {
+        final String inputClientRectJSON = await controller.evaluateJavascript(
+            'JSON.stringify(inputEl.getBoundingClientRect())');
+        final Map<String, dynamic> inputClientRectRelativeToViewport =
+            jsonDecode(jsonDecode(inputClientRectJSON));
+
+        expect(
+            inputClientRectRelativeToViewport['top'] >=
+                viewportRectRelativeToViewport['top'],
+            isTrue);
+        expect(
+            inputClientRectRelativeToViewport['bottom'] <=
+                viewportRectRelativeToViewport['bottom'],
+            isTrue);
+
+        expect(
+            inputClientRectRelativeToViewport['left'] >=
+                viewportRectRelativeToViewport['left'],
+            isTrue);
+        expect(
+            inputClientRectRelativeToViewport['right'] <=
+                viewportRectRelativeToViewport['right'],
+            isTrue);
+      }
+    });
   }, skip: !Platform.isAndroid);
 
   group('NavigationDelegate', () {
