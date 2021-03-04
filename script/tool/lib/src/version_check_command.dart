@@ -248,6 +248,7 @@ class VersionCheckCommand extends PluginCommand {
       );
       throw ToolExit(1);
     }
+    print('${plugin.basename} passed version check');
   }
 
   Pubspec _tryParsePubspec(Directory package) {
