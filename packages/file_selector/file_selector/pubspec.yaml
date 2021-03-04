@@ -12,7 +12,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  file_selector_platform_interface: ^2.0.0
+  file_selector_platform_interface: ^2.0.2
   file_selector_web: ^0.8.1
 
 dev_dependencies:
