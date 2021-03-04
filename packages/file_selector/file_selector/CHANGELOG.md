@@ -1,3 +1,7 @@
+## 0.8.3
+
+* Update file_selector_platform_interface to remove from XTypeGroup extensions with leading dots.
+
 ## 0.8.2
 
 * Update platform_plugin_interface version requirement.
