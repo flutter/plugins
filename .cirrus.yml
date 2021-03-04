@@ -1,11 +1,12 @@
+# Light-workload tasks.
+# These use default machines, with fewer CPUs, to reduce pressure on the
+# concurrency limits.
 task:
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
     dockerfile: .ci/Dockerfile
-    cpu: 8
-    memory: 16G
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
   upgrade_script:
@@ -58,6 +59,71 @@ task:
       script:
         - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh apk
+    ### Web tasks ###
+    - name: build_all_plugins_web
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      script:
+        - flutter channel $CHANNEL
+        - ./script/build_all_plugins_app.sh web
+    - name: build-web-examples
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      build_script:
+        - flutter channel $CHANNEL
+        - ./script/incremental_build.sh build-examples --web
+        # TODO: Add driving examples (and move to heavy-workload group).
+    - name: integration_web_smoke_test
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      # Tests integration example test in web.
+      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
+      install_script:
+        - flutter channel $CHANNEL
+        - git clone https://github.com/flutter/web_installers.git
+        - cd web_installers/packages/web_drivers/
+        - pub get
+        - dart lib/web_driver_installer.dart chromedriver --install-only
+        - ./chromedriver/chromedriver --port=4444 &
+      test_script:
+        - cd $INTEGRATION_TEST_PATH/example/
+        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
+    ### Linux desktop tasks ###
+    - name: build_all_plugins_linux
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      script:
+        - flutter channel $CHANNEL
+        - ./script/build_all_plugins_app.sh linux
+
+# Heavy-workload tasks.
+# These use machines with more CPUs and memory, so will reduce parallelization
+# for non-credit runs.
+task:
+  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
+  only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  container:
+    dockerfile: .ci/Dockerfile
+  env:
+    INTEGRATION_TEST_PATH: "./packages/integration_test"
+  upgrade_script:
+    - flutter channel stable
+    - flutter upgrade
+    - flutter channel master
+    - flutter upgrade
+    - flutter config --enable-linux-desktop
+    - git fetch origin master
+  matrix:
+    ### Android tasks ###
     - name: build-apks+java-test+firebase-test-lab
       env:
         matrix:
@@ -92,50 +158,7 @@ task:
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
-    ### Web tasks ###
-    - name: build_all_plugins_web
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      script:
-        - flutter channel $CHANNEL
-        - ./script/build_all_plugins_app.sh web
-    - name: build-web-examples
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      build_script:
-        - flutter channel $CHANNEL
-        - ./script/incremental_build.sh build-examples --web
-        # TODO: Add driving examples.
-    - name: integration_web_smoke_test
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      # Tests integration example test in web.
-      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
-      install_script:
-        - flutter channel $CHANNEL
-        - git clone https://github.com/flutter/web_installers.git
-        - cd web_installers/packages/web_drivers/
-        - pub get
-        - dart lib/web_driver_installer.dart chromedriver --install-only
-        - ./chromedriver/chromedriver --port=4444 &
-      test_script:
-        - cd $INTEGRATION_TEST_PATH/example/
-        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
     ### Linux desktop tasks ###
-    - name: build_all_plugins_linux
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      script:
-        - flutter channel $CHANNEL
-        - ./script/build_all_plugins_app.sh linux
     - name: build-linux+drive-examples
       env:
         matrix:
