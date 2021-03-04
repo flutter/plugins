@@ -44,7 +44,14 @@ function error() {
 
 failures=0
 
-for version in "debug" "release"; do
+BUILD_MODES=("debug" "release")
+# Web doesn't support --debug for builds.
+if [[ "$1" == "web" ]]; then
+  BUILD_MODES=("release")
+fi
+
+for version in "${BUILD_MODES[@]}"; do
+  echo "Building $version..."
   (cd $REPO_DIR/all_plugins && flutter build $@ --$version)
 
   if [ $? -eq 0 ]; then
