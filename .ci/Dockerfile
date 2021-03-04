@@ -23,6 +23,9 @@ RUN yes | sdkmanager \
 
 RUN yes | sdkmanager --licenses
 
+# Install formatter.
+RUN sudo apt-get install -y clang-format
+
 # Install xvfb to allow running headless
 RUN sudo apt-get install -y xvfb libegl1-mesa
 # Install Linux desktop build tool requirements.
