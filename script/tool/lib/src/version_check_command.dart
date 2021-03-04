@@ -14,7 +14,6 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 import 'common.dart';
-import 'common.dart';
 
 const String _kBaseSha = 'base_sha';
 

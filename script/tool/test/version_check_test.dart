@@ -7,7 +7,6 @@ import 'package:mockito/mockito.dart';
 import "package:test/test.dart";
 import "package:flutter_plugin_tools/src/version_check_command.dart";
 import 'package:pub_semver/pub_semver.dart';
-import '../lib/src/common.dart';
 import 'util.dart';
 
 void testAllowedVersion(
