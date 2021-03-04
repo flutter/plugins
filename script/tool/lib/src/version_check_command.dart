@@ -223,6 +223,7 @@ class VersionCheckCommand extends PluginCommand {
   Future<void> _checkVersionsMatch(Directory plugin) async {
     // get version from pubspec
     final String packageName = plugin.basename;
+    print('================================================================');
     print('Checking that $packageName has matching version in CHANGELOG and pubspec');
 
     final Pubspec pubspec = _tryParsePubspec(plugin);
@@ -236,16 +237,16 @@ class VersionCheckCommand extends PluginCommand {
     final String versionString = firstLine.split(' ').last;
     Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
-      print(
-        'Can not find version on the first line of CHANGELOG.md',
-      );
+      final String error = 'Can not find version on the first line of CHANGELOG.md';
+      final Colorize redError = Colorize(error)..red();
+      print(redError);
       throw ToolExit(1);
     }
 
     if (fromPubspec != fromChangeLog) {
-       print(
-        'versions for $packageName in CHANGELOG.md and pubspec.yaml do not match.',
-      );
+      final String error = 'versions for $packageName in CHANGELOG.md and pubspec.yaml do not match.';
+      final Colorize redError = Colorize(error)..red();
+      print(redError);
       throw ToolExit(1);
     }
     print('${plugin.basename} passed version check');
@@ -257,16 +258,16 @@ class VersionCheckCommand extends PluginCommand {
     try {
       Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
       if (pubspec == null) {
-        print(
-          'Failed to parse `pubspec.yaml` at ${pubspecFile.path}',
-        );
+        final String error = 'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';
+        final Colorize redError = Colorize(error)..red();
+        print(redError);
         throw ToolExit(1);
       }
       return pubspec;
     } on Exception catch (exception) {
-      print(
-        'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}',
-      );
+      final String error = 'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}';
+      final Colorize redError = Colorize(error)..red();
+      print(redError);
       throw ToolExit(1);
     }
   }
