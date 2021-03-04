@@ -1,3 +1,8 @@
+## 0.2.1
+
+* Move integration tests to `example`.
+* Tweak pubspec dependencies for main package.
+
 ## 0.2.0
 
 * Make this plugin compatible with the rest of null-safe plugins.
