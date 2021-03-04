@@ -22,10 +22,14 @@ task:
         - cd script/tool
         - pub get
         - CIRRUS_BUILD_ID=null pub run test
-    - name: publishable
+    # - name: publishable
+    #   script:
+    #     - flutter channel master
+    #     - ./script/check_publish.sh
+    - name: version
       script:
         - flutter channel master
-        - ./script/check_publish.sh
+        - ./script/check_version.sh
     - name: format
       install_script:
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
