@@ -1,3 +1,7 @@
+## 5.0.1
+
+* Update platforms `init` function to prioritize `clientId` property when available.
+
 ## 5.0.0
 
 * Migrate to null safety.
