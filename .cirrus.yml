@@ -77,23 +77,6 @@ task:
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --web
         # TODO: Add driving examples (and move to heavy-workload group).
-    - name: integration_web_smoke_test
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      # Tests integration example test in web.
-      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
-      install_script:
-        - flutter channel $CHANNEL
-        - git clone https://github.com/flutter/web_installers.git
-        - cd web_installers/packages/web_drivers/
-        - pub get
-        - dart lib/web_driver_installer.dart chromedriver --install-only
-        - ./chromedriver/chromedriver --port=4444 &
-      test_script:
-        - cd $INTEGRATION_TEST_PATH/example/
-        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
     ### Linux desktop tasks ###
     - name: build_all_plugins_linux
       env:
@@ -158,6 +141,24 @@ task:
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
+    ### Web tasks ###
+    - name: integration_web_smoke_test
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      # Tests integration example test in web.
+      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
+      install_script:
+        - flutter channel $CHANNEL
+        - git clone https://github.com/flutter/web_installers.git
+        - cd web_installers/packages/web_drivers/
+        - pub get
+        - dart lib/web_driver_installer.dart chromedriver --install-only
+        - ./chromedriver/chromedriver --port=4444 &
+      test_script:
+        - cd $INTEGRATION_TEST_PATH/example/
+        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
     ### Linux desktop tasks ###
     - name: build-linux+drive-examples
       env:
