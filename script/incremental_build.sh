@@ -52,6 +52,7 @@ else
     echo "No changes detected in packages."
     echo "Running for all packages"
     (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
+    (cd "$REPO_DIR" && plugin_tools version-check --base_sha="$(get_branch_base_sha)")
   else
     echo running "${ACTIONS[@]}"
     (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
