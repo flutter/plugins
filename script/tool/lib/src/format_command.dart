@@ -22,10 +22,10 @@ class FormatCommand extends PluginCommand {
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, fileSystem, processRunner: processRunner) {
-    argParser.addFlag('travis', hide: true);
+    argParser.addFlag('fail-on-change', hide: true);
     argParser.addOption('clang-format',
         defaultsTo: 'clang-format',
-        help: 'Path to executable of clang-format v5.');
+        help: 'Path to executable of clang-format.');
   }
 
   @override
@@ -46,7 +46,7 @@ class FormatCommand extends PluginCommand {
     await _formatJava(googleFormatterPath);
     await _formatCppAndObjectiveC();
 
-    if (argResults['travis']) {
+    if (argResults['fail-on-change']) {
       final bool modified = await _didModifyAnything();
       if (modified) {
         throw ToolExit(1);

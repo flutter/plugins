@@ -13,6 +13,7 @@ task:
     - flutter upgrade
     - flutter channel master
     - flutter upgrade
+    - flutter config --enable-linux-desktop
     - git fetch origin master
   matrix:
     ### Platform-agnostic tasks ###
@@ -28,10 +29,10 @@ task:
     - name: format
       install_script:
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-        - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main"
+        - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main"
         - sudo apt-get update
-        - sudo apt-get install -y --allow-unauthenticated clang-format-7
-      format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-7
+        - sudo apt-get install -y --allow-unauthenticated clang-format-8
+      format_script: ./script/incremental_build.sh format --fail-on-change --clang-format=clang-format-8
     - name: test
       env:
         matrix:
@@ -126,25 +127,6 @@ task:
       test_script:
         - cd $INTEGRATION_TEST_PATH/example/
         - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
-
-task:
-  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-  only_if: $CIRRUS_TAG == ''
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
-  container:
-    dockerfile: .ci/Dockerfile-LinuxDesktop
-    cpu: 8
-    memory: 16G
-  env:
-    INTEGRATION_TEST_PATH: "./packages/integration_test"
-  upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - flutter config --enable-linux-desktop
-    - git fetch origin master
-  matrix:
     ### Linux desktop tasks ###
     - name: build_all_plugins_linux
       env:
