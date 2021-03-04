@@ -196,6 +196,28 @@ void main() {
       expect(gitDirCommands[2].join(' '),
           equals('show HEAD:packages/plugin_platform_interface/pubspec.yaml'));
     });
+
+     test('Throws if first line in change log is empty', () async{
+      createFakePlugin('plugin');
+
+      final Directory pluginDirectory =
+          mockPackagesDir.childDirectory('plugin');
+
+      createFakePubspec(pluginDirectory, isFlutter: true, includeVersion: true, version: '1.0.1');
+      String changelog = '''
+
+## 1.0.1
+
+* Some changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      final Future<List<String>> output = runCapturingPrint(
+          runner, <String>['version-check', '--base_sha=master']);
+      await expectLater(
+        output,
+        throwsA(const TypeMatcher<Error>()),
+      );
+    });
   });
 
   group("Pre 1.0", () {

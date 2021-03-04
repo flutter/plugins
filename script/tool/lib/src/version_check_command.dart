@@ -14,6 +14,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 import 'common.dart';
+import 'common.dart';
 
 const String _kBaseSha = 'base_sha';
 
@@ -143,7 +144,8 @@ class VersionCheckCommand extends PluginCommand {
 
   @override
   final String description =
-      'Checks if the versions of the plugins have been incremented per pub specification.\n\n'
+      'Checks if the versions of the plugins have been incremented per pub specification.\n'
+      'Also checks if the version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
 
   @override
@@ -215,6 +217,62 @@ class VersionCheckCommand extends PluginCommand {
       }
     }
 
+    await for (Directory plugin in getPlugins()) {
+      await _checkVersionsMatch(plugin);
+    }
+
     print('No version check errors found!');
+  }
+
+  Future<void> _checkVersionsMatch(Directory plugin) async {
+    // get version from pubspec
+    final String packageName = plugin.basename;
+    print('Checking that $packageName has matching version in CHANGELOG and pubspec');
+
+    final Pubspec pubspec = _tryParsePubspec(plugin);
+    if (pubspec.publishTo == 'none') {
+      print('Package $packageName is marked as unpublishable. Skipping.');
+      return;
+    }
+    final Version fromPubspec = pubspec.version;
+
+    // get version from CHANGELOG
+    final File changelog = plugin.childFile('CHANGELOG.md');
+    final List<String> lines = changelog.readAsLinesSync();
+    final String firstLine = lines.first;
+    Version fromChangeLog = Version.parse(firstLine);
+    if (fromChangeLog == null) {
+      print(
+        'Can not find version on the first line of CHANGELOG.md',
+      );
+      throw ToolExit(1);
+    }
+
+    if (fromPubspec != fromChangeLog) {
+       print(
+        'versions for $packageName in CHANGELOG.md and pubspec.yaml do not match.',
+      );
+      throw ToolExit(1);
+    }
+  }
+
+  Pubspec _tryParsePubspec(Directory package) {
+    final File pubspecFile = package.childFile('pubspec.yaml');
+
+    try {
+      Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+      if (pubspec == null) {
+        print(
+          'Failed to parse `pubspec.yaml` at ${pubspecFile.path}',
+        );
+        throw ToolExit(1);
+      }
+      return pubspec;
+    } on Exception catch (exception) {
+      print(
+        'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}',
+      );
+      throw ToolExit(1);
+    }
   }
 }
