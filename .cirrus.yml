@@ -44,22 +44,15 @@ task:
       script:
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh analyze
-<<<<<<< HEAD
     ## TODO(cyanglaz):
     ## Combing stable and master analyze jobs when integration test null safety is ready on flutter stable.
-=======
->>>>>>> 131b5cb0e6b93f18af44cca40564630b259c339c
     - name: analyze_stable
       env:
         matrix:
           CHANNEL: "stable"
       script:
         - flutter channel $CHANNEL
-<<<<<<< HEAD
-        - ./script/incremental_build.sh analyze  --exclude "google_sign_in_web"
-=======
         - ./script/incremental_build.sh analyze --exclude "google_sign_in_web"
->>>>>>> 131b5cb0e6b93f18af44cca40564630b259c339c
     ### Android tasks ###
     - name: build_all_plugins_apk
       env:
