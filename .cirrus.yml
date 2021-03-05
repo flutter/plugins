@@ -37,10 +37,16 @@ task:
       test_script:
         - flutter channel $CHANNEL
         - ./script/incremental_build.sh test
-    - name: analyze
+    - name: analyze_master
       env:
         matrix:
           CHANNEL: "master"
+      script:
+        - flutter channel $CHANNEL
+        - ./script/incremental_build.sh analyze --exclude "google_sign_in_web"
+    - name: analyze_stable
+      env:
+        matrix:
           CHANNEL: "stable"
       script:
         - flutter channel $CHANNEL
