@@ -43,14 +43,14 @@ task:
           CHANNEL: "master"
       script:
         - flutter channel $CHANNEL
-        - ./script/incremental_build.sh analyze --exclude "google_sign_in_web"
+        - ./script/incremental_build.sh analyze
     - name: analyze_stable
       env:
         matrix:
           CHANNEL: "stable"
       script:
         - flutter channel $CHANNEL
-        - ./script/incremental_build.sh analyze
+        - ./script/incremental_build.sh analyze --exclude "google_sign_in_web"
     ### Android tasks ###
     - name: build_all_plugins_apk
       env:
