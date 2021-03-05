@@ -62,7 +62,7 @@ public class FileUtilTest {
   public void FileUtil_getImageExtension() throws IOException {
     Uri uri = Uri.parse("content://dummy/dummy.png");
     shadowContentResolver.registerInputStream(
-            uri, new ByteArrayInputStream("imageStream".getBytes(UTF_8)));
+          uri, new ByteArrayInputStream("imageStream".getBytes(UTF_8)));
     String path = fileUtils.getPathFromUri(context, uri);
     assert(path.endsWith(".jpg"));
   }
