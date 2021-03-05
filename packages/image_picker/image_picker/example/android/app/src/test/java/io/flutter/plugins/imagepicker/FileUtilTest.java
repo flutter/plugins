@@ -16,6 +16,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,5 +56,14 @@ public class FileUtilTest {
     assertTrue(bytes.length > 0);
     String imageStream = new String(bytes, UTF_8);
     assertTrue(imageStream.equals("imageStream"));
+  }
+
+  @Test
+  public void FileUtil_getImageExtension() throws IOException {
+    Uri uri = Uri.parse("content://dummy/dummy.png");
+    shadowContentResolver.registerInputStream(
+            uri, new ByteArrayInputStream("imageStream".getBytes(UTF_8)));
+    String path = fileUtils.getPathFromUri(context, uri);
+    assert(path.endsWith(".jpg"));
   }
 }
