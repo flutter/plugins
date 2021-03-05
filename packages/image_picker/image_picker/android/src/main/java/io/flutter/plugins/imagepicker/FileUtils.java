@@ -79,9 +79,9 @@ class FileUtils {
         final MimeTypeMap mime = MimeTypeMap.getSingleton();
         extension = mime.getExtensionFromMimeType(context.getContentResolver().getType(uriImage));
       } else {
-        extension =
-                MimeTypeMap.getFileExtensionFromUrl(
-                        Uri.fromFile(new File(uriImage.getPath())).toString());
+        extension = 
+            MimeTypeMap.getFileExtensionFromUrl(
+                Uri.fromFile(new File(uriImage.getPath())).toString());
       }
     } catch (Exception e) {
       extension = null;
