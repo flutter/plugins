@@ -238,6 +238,13 @@ void main() {
     });
   });
 
+  group('present code redemption sheet', () {
+    test('should throw on android', () {
+      expect(GooglePlayConnection.instance.presentCodeRedemptionSheet(),
+          throwsUnsupportedError);
+    });
+  });
+
   group('make payment', () {
     final String launchMethodName =
         'BillingClient#launchBillingFlow(Activity, BillingFlowParams)';

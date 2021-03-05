@@ -300,6 +300,13 @@ void main() {
           throwsUnsupportedError);
     });
   });
+
+  group('present code redemption sheet', () {
+    test('null', () async {
+      expect(
+          await AppStoreConnection.instance.presentCodeRedemptionSheet(), null);
+    });
+  });
 }
 
 class FakeIOSPlatform {

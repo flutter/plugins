@@ -201,6 +201,11 @@ class AppStoreConnection implements InAppPurchaseConnection {
     );
     return productDetailsResponse;
   }
+
+  @override
+  Future presentCodeRedemptionSheet() {
+    return _skPaymentQueueWrapper.presentCodeRedemptionSheet();
+  }
 }
 
 class _TransactionObserver implements SKTransactionObserverWrapper {
