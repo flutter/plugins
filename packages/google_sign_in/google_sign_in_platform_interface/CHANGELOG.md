@@ -1,3 +1,6 @@
+## 2.0.1
+* Updates `init` function in `MethodChannelGoogleSignIn` to parametrize `clientId` property.
+
 ## 2.0.0
 
 * Migrate to null-safety.
