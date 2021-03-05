@@ -14,7 +14,7 @@ dependencies:
 dev_dependencies:
   google_maps: ^3.4.4
   http: ^0.13.0
-  mockito: ^5.0.0
+  mockito: ^4.1.4 # Update to ^5.0.0 as soon as this migrates to null-safety
   flutter_driver:
     sdk: flutter
   flutter_test:
