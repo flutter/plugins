@@ -52,8 +52,7 @@ task:
           CHANNEL: "stable"
       script:
         - flutter channel $CHANNEL
-        - find . -type d -wholename '*_web/example' -exec rm -rf {} \; # Remove web example dirs
-        - ./script/incremental_build.sh analyze
+        - ./script/incremental_build.sh analyze --exclude "google_sign_in_web, connectivity_for_web, file_selector_web, google_maps_flutter_web, url_launcher_web"
     ### Android tasks ###
     - name: build_all_plugins_apk
       env:
