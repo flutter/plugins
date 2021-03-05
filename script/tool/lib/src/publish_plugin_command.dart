@@ -4,12 +4,14 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
+import 'package:pub_semver/pub_semver.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 import 'common.dart';
@@ -32,10 +34,12 @@ class PublishPluginCommand extends PluginCommand {
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
     Print print = print,
-    Stdin stdinput,
+    io.Stdin stdinput,
+    GitDir gitDir,
   })  : _print = print,
-        _stdin = stdinput ?? stdin,
-        super(packagesDir, fileSystem, processRunner: processRunner) {
+        _stdin = stdinput ?? io.stdin,
+        super(packagesDir, fileSystem,
+            processRunner: processRunner, gitDir: gitDir) {
     argParser.addOption(
       _packageOption,
       help: 'The package to publish.'
@@ -64,6 +68,22 @@ class PublishPluginCommand extends PluginCommand {
       // Flutter convention is to use "upstream" for the single source of truth, and "origin" for personal forks.
       defaultsTo: 'upstream',
     );
+    argParser.addFlag(
+      _allFlag,
+      help:
+          'Release all plugins that contains pubspec changes at the current commit compares to the base-sha.\n'
+          'The $_packageOption option is ignored if this is on.',
+      defaultsTo: false,
+    );
+    argParser.addFlag(
+      _dryRunFlag,
+      help:
+          'Skips the real `pub publish` and `git tag` commands and assumes both commands are successful.\n'
+          'This does not run `pub publish --dry-run`.\n'
+          'If you want to run the command with `pub publish --dry-run`, use `pub-publish-flags=--dry-run`',
+      defaultsTo: false,
+      negatable: true,
+    );
   }
 
   static const String _packageOption = 'package';
@@ -71,6 +91,8 @@ class PublishPluginCommand extends PluginCommand {
   static const String _pushTagsOption = 'push-tags';
   static const String _pubFlagsOption = 'pub-publish-flags';
   static const String _remoteOption = 'remote';
+  static const String _allFlag = 'all';
+  static const String _dryRunFlag = 'dry-run';
 
   // Version tags should follow <package-name>-v<semantic-version>. For example,
   // `flutter_plugin_tools-v0.0.24`.
@@ -84,14 +106,15 @@ class PublishPluginCommand extends PluginCommand {
       'Attempts to publish the given plugin and tag its release on GitHub.';
 
   final Print _print;
-  final Stdin _stdin;
-  // The directory of the actual package that we are publishing.
+  final io.Stdin _stdin;
   StreamSubscription<String> _stdinSubscription;
+  bool _startedListenToStdStream = false;
 
   @override
   Future<void> run() async {
     final String package = argResults[_packageOption] as String;
-    if (package == null) {
+    final bool all = argResults[_allFlag] as bool;
+    if (package == null && !all) {
       _print(
           'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
       throw ToolExit(1);
@@ -102,6 +125,8 @@ class PublishPluginCommand extends PluginCommand {
       _print('$packagesDir is not a valid Git repository.');
       throw ToolExit(1);
     }
+    final GitDir baseGitDir =
+        await GitDir.fromExisting(packagesDir.path, allowSubdirectory: true);
 
     final bool shouldPushTag = argResults[_pushTagsOption] == true;
     final String remote = argResults[_remoteOption] as String;
@@ -111,7 +136,74 @@ class PublishPluginCommand extends PluginCommand {
     }
     _print('Local repo is ready!');
 
-    final Directory packageDir = _getPackageDir(package);
+    if (all) {
+      await _publishAllPackages(
+          remote: remote,
+          remoteUrl: remoteUrl,
+          shouldPushTag: shouldPushTag,
+          baseGitDir: baseGitDir);
+    } else {
+      await _publishAndReleasePackage(
+          packageDir: _getPackageDir(package),
+          remote: remote,
+          remoteUrl: remoteUrl,
+          shouldPushTag: shouldPushTag);
+    }
+    await _finishSuccesfully();
+  }
+
+  Future<void> _publishAllPackages(
+      {String remote,
+      String remoteUrl,
+      bool shouldPushTag,
+      GitDir baseGitDir}) async {
+    final List<String> packagesReleased = <String>[];
+    final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+    final List<String> changedPubspecs =
+        await gitVersionFinder.getChangedPubSpecs();
+    if (changedPubspecs.isEmpty) {
+      _print('No version updates in this commit, exiting...');
+      return;
+    }
+    _print('Getting existing tags...');
+    final io.ProcessResult existingTagsResult =
+        await baseGitDir.runCommand(<String>['tag', '--sort=-committerdate']);
+    final List<String> existingTags = (existingTagsResult.stdout as String)
+        .split('\n')
+          ..removeWhere((element) => element == '');
+    for (final String pubspecPath in changedPubspecs) {
+      final File pubspecFile =
+          fileSystem.directory(baseGitDir.path).childFile(pubspecPath);
+      if (!pubspecFile.existsSync()) {
+        printErrorAndExit(
+            errorMessage:
+                'Fatal: The pubspec file at ${pubspecFile.path} does not exist.');
+      }
+      final bool needsRelease = await _checkNeedsRelease(
+          pubspecPath: pubspecPath,
+          pubspecFile: pubspecFile,
+          gitVersionFinder: gitVersionFinder,
+          existingTags: existingTags);
+      if (!needsRelease) {
+        continue;
+      }
+      _print('\n');
+      await _publishAndReleasePackage(
+          packageDir: pubspecFile.parent,
+          remote: remote,
+          remoteUrl: remoteUrl,
+          shouldPushTag: shouldPushTag);
+      packagesReleased.add(pubspecFile.parent.basename);
+      _print('\n');
+    }
+    _print('Packages released: ${packagesReleased.join(', ')}');
+  }
+
+  Future<void> _publishAndReleasePackage(
+      {@required Directory packageDir,
+      @required String remote,
+      @required String remoteUrl,
+      @required bool shouldPushTag}) async {
     await _publishPlugin(packageDir: packageDir);
     if (argResults[_tagReleaseOption] as bool) {
       await _tagRelease(
@@ -120,7 +212,48 @@ class PublishPluginCommand extends PluginCommand {
           remoteUrl: remoteUrl,
           shouldPushTag: shouldPushTag);
     }
-    await _finishSuccesfully();
+    _print('Release ${packageDir.basename} successful.');
+  }
+
+  // Returns `true` if needs to release the version, `false` if needs to skip
+  Future<bool> _checkNeedsRelease({
+    @required String pubspecPath,
+    @required File pubspecFile,
+    @required GitVersionFinder gitVersionFinder,
+    @required List<String> existingTags,
+  }) async {
+    final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+    if (pubspec.publishTo == 'none') {
+      return false;
+    }
+
+    final Version headVersion =
+        await gitVersionFinder.getPackageVersion(pubspecPath, gitRef: 'HEAD');
+    if (headVersion == null) {
+      printErrorAndExit(
+          errorMessage: 'No version found. A package that '
+              'intentionally has no version should be marked '
+              '"publish_to: none".');
+    }
+
+    if (pubspec.name == null) {
+      printErrorAndExit(errorMessage: 'Fatal: Package name is null.');
+    }
+    // Get latest tagged version and compare with the current version.
+    final String latestTag = existingTags.isNotEmpty
+        ? existingTags
+            .firstWhere((String tag) => tag.split('-v').first == pubspec.name)
+        : '';
+    if (latestTag.isNotEmpty) {
+      final String latestTaggedVersion = latestTag.split('-v').last;
+      final Version latestVersion = Version.parse(latestTaggedVersion);
+      if (pubspec.version < latestVersion) {
+        _print(
+            'The new version (${pubspec.version}) is lower than the current version ($latestVersion) for ${pubspec.name}.\nThis git commit is a revert, no release is tagged.');
+        return false;
+      }
+    }
+    return true;
   }
 
   Future<void> _publishPlugin({@required Directory packageDir}) async {
@@ -135,6 +268,14 @@ class PublishPluginCommand extends PluginCommand {
       @required String remoteUrl,
       @required bool shouldPushTag}) async {
     final String tag = _getTag(packageDir);
+    if (argResults[_dryRunFlag] as bool) {
+      _print('DRY RUN: Tagging release $tag...');
+      if (!shouldPushTag) {
+        return;
+      }
+      _print('DRY RUN: Pushing tag to $remote...');
+      return;
+    }
     _print('Tagging release $tag...');
     await processRunner.runAndExitOnError('git', <String>['tag', tag],
         workingDir: packageDir);
@@ -147,7 +288,9 @@ class PublishPluginCommand extends PluginCommand {
   }
 
   Future<void> _finishSuccesfully() async {
-    await _stdinSubscription.cancel();
+    if (_stdinSubscription != null) {
+      await _stdinSubscription.cancel();
+    }
     _print('Done!');
   }
 
@@ -163,7 +306,7 @@ class PublishPluginCommand extends PluginCommand {
   }
 
   Future<void> _checkGitStatus(Directory packageDir) async {
-    final ProcessResult statusResult = await processRunner.runAndExitOnError(
+    final io.ProcessResult statusResult = await processRunner.runAndExitOnError(
         'git',
         <String>[
           'status',
@@ -184,7 +327,7 @@ class PublishPluginCommand extends PluginCommand {
   }
 
   Future<String> _verifyRemote(String remote) async {
-    final ProcessResult remoteInfo = await processRunner.runAndExitOnError(
+    final io.ProcessResult remoteInfo = await processRunner.runAndExitOnError(
         'git', <String>['remote', 'get-url', remote],
         workingDir: packagesDir);
     return remoteInfo.stdout as String;
@@ -193,20 +336,31 @@ class PublishPluginCommand extends PluginCommand {
   Future<void> _publish(Directory packageDir) async {
     final List<String> publishFlags =
         argResults[_pubFlagsOption] as List<String>;
+    if (argResults[_dryRunFlag] as bool) {
+      _print(
+          'DRY RUN: Running `pub publish ${publishFlags.join(' ')}` in ${packageDir.absolute.path}...\n');
+      return;
+    }
+
     _print(
         'Running `pub publish ${publishFlags.join(' ')}` in ${packageDir.absolute.path}...\n');
-    final Process publish = await processRunner.start(
+    final io.Process publish = await processRunner.start(
         'flutter', <String>['pub', 'publish'] + publishFlags,
         workingDirectory: packageDir);
-    publish.stdout
-        .transform(utf8.decoder)
-        .listen((String data) => _print(data));
-    publish.stderr
-        .transform(utf8.decoder)
-        .listen((String data) => _print(data));
-    _stdinSubscription = _stdin
-        .transform(utf8.decoder)
-        .listen((String data) => publish.stdin.writeln(data));
+
+    if (!_startedListenToStdStream) {
+      publish.stdout
+          .transform(utf8.decoder)
+          .listen((String data) => _print(data));
+      publish.stderr
+          .transform(utf8.decoder)
+          .listen((String data) => _print(data));
+      _stdinSubscription = _stdin
+          .transform(utf8.decoder)
+          .listen((String data) => publish.stdin.writeln(data));
+
+      _startedListenToStdStream = true;
+    }
     final int result = await publish.exitCode;
     if (result != 0) {
       _print('Publish failed. Exiting.');

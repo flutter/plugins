@@ -53,7 +53,8 @@ void main() {
           mockPackagesDir, mockPackagesDir.fileSystem,
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin));
+          stdinput: mockStdin,
+          gitDir: await GitDir.fromExisting(mockPackagesDir.path)));
   });
 
   tearDown(() {
@@ -212,6 +213,27 @@ void main() {
 
       expect(printedMessages, contains('Publish failed. Exiting.'));
     });
+
+    test('publish, dry run', () async {
+      // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
+      processRunner.mockPublishProcess.exitCodeCompleter.complete(1);
+      await commandRunner.run(<String>[
+        'publish-plugin',
+        '--package',
+        testPluginName,
+        '--dry-run',
+        '--no-push-tags',
+        '--no-tag-release',
+      ]);
+
+      expect(processRunner.pushTagsArgs, isEmpty);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'DRY RUN: Running `pub publish ` in ${pluginDir.path}...\n',
+            'Done!'
+          ]));
+    });
   });
 
   group('Tags release', () {
@@ -286,6 +308,25 @@ void main() {
       expect(printedMessages.last, 'Done!');
     });
 
+    test('to upstream by default, dry run', () async {
+      await gitDir.runCommand(<String>['tag', 'garbage']);
+      // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
+      processRunner.mockPublishProcess.exitCodeCompleter.complete(1);
+      mockStdin.readLineOutput = 'y';
+      await commandRunner.run(
+          <String>['publish-plugin', '--package', testPluginName, '--dry-run']);
+
+      expect(processRunner.pushTagsArgs, isEmpty);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'DRY RUN: Running `pub publish ` in ${pluginDir.path}...\n',
+            'DRY RUN: Tagging release fake_package-v0.0.1...',
+            'DRY RUN: Pushing tag to upstream...',
+            'Done!'
+          ]));
+    });
+
     test('to different remotes based on a flag', () async {
       await gitDir.runCommand(
           <String>['remote', 'add', 'origin', 'http://localhost:8001']);
@@ -316,6 +357,326 @@ void main() {
 
       expect(processRunner.pushTagsArgs.isEmpty, isTrue);
       expect(printedMessages.last, 'Done!');
+    });
+  });
+
+  group('Auto release (all flag)', () {
+    setUp(() async {
+      io.Process.runSync('git', <String>['init'],
+          workingDirectory: mockPackagesDir.path);
+      gitDir = await GitDir.fromExisting(mockPackagesDir.path);
+      await gitDir.runCommand(
+          <String>['remote', 'add', 'upstream', 'http://localhost:8000']);
+    });
+
+    test('can release newly created plugins', () async {
+      // Non-federated
+      final Directory pluginDir1 = createFakePlugin('plugin1',
+          withSingleExample: true, packagesDirectory: mockPackagesDir);
+      // federated
+      final Directory pluginDir2 = createFakePlugin('plugin2',
+          withSingleExample: true,
+          parentDirectoryName: 'plugin2',
+          packagesDirectory: mockPackagesDir);
+      createFakePubspec(pluginDir1,
+          name: 'plugin1',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      createFakePubspec(pluginDir2,
+          name: 'plugin2',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      // Immediately return 0 when running `pub publish`.
+      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      mockStdin.readLineOutput = 'y';
+      await commandRunner
+          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'Getting existing tags...',
+            'Running `pub publish ` in ${pluginDir1.path}...\n',
+            'Running `pub publish ` in ${pluginDir2.path}...\n',
+            'Packages released: plugin1, plugin2',
+            'Done!'
+          ]));
+      expect(processRunner.pushTagsArgs, isNotEmpty);
+      expect(processRunner.pushTagsArgs[0], 'push');
+      expect(processRunner.pushTagsArgs[1], 'upstream');
+      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.1');
+      expect(processRunner.pushTagsArgs[3], 'push');
+      expect(processRunner.pushTagsArgs[4], 'upstream');
+      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.1');
+    });
+
+    test('can release newly created plugins, dry run', () async {
+      // Non-federated
+      final Directory pluginDir1 = createFakePlugin('plugin1',
+          withSingleExample: true, packagesDirectory: mockPackagesDir);
+      // federated
+      final Directory pluginDir2 = createFakePlugin('plugin2',
+          withSingleExample: true,
+          parentDirectoryName: 'plugin2',
+          packagesDirectory: mockPackagesDir);
+      createFakePubspec(pluginDir1,
+          name: 'plugin1',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      createFakePubspec(pluginDir2,
+          name: 'plugin2',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
+      processRunner.mockPublishProcess.exitCodeCompleter.complete(1);
+      mockStdin.readLineOutput = 'y';
+      await commandRunner.run(
+          <String>['publish-plugin', '--all', '--base-sha=HEAD~', '--dry-run']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'Getting existing tags...',
+            'DRY RUN: Running `pub publish ` in ${pluginDir1.path}...\n',
+            'DRY RUN: Tagging release plugin1-v0.0.1...',
+            'DRY RUN: Pushing tag to upstream...',
+            'DRY RUN: Running `pub publish ` in ${pluginDir2.path}...\n',
+            'DRY RUN: Tagging release plugin2-v0.0.1...',
+            'DRY RUN: Pushing tag to upstream...',
+            'Packages released: plugin1, plugin2',
+            'Done!'
+          ]));
+      expect(processRunner.pushTagsArgs, isEmpty);
+    });
+
+    test('version change triggers releases.', () async {
+      // Non-federated
+      final Directory pluginDir1 = createFakePlugin('plugin1',
+          withSingleExample: true, packagesDirectory: mockPackagesDir);
+      // federated
+      final Directory pluginDir2 = createFakePlugin('plugin2',
+          withSingleExample: true,
+          parentDirectoryName: 'plugin2',
+          packagesDirectory: mockPackagesDir);
+      createFakePubspec(pluginDir1,
+          name: 'plugin1',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      createFakePubspec(pluginDir2,
+          name: 'plugin2',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      // Immediately return 0 when running `pub publish`.
+      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      mockStdin.readLineOutput = 'y';
+      await commandRunner
+          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'Getting existing tags...',
+            'Running `pub publish ` in ${pluginDir1.path}...\n',
+            'Running `pub publish ` in ${pluginDir2.path}...\n',
+            'Packages released: plugin1, plugin2',
+            'Done!'
+          ]));
+      expect(processRunner.pushTagsArgs, isNotEmpty);
+      expect(processRunner.pushTagsArgs[0], 'push');
+      expect(processRunner.pushTagsArgs[1], 'upstream');
+      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.1');
+      expect(processRunner.pushTagsArgs[3], 'push');
+      expect(processRunner.pushTagsArgs[4], 'upstream');
+      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.1');
+
+      processRunner.pushTagsArgs.clear();
+      printedMessages.clear();
+
+      final List<String> plugin1Pubspec =
+          pluginDir1.childFile('pubspec.yaml').readAsLinesSync();
+      plugin1Pubspec[plugin1Pubspec.indexWhere(
+          (element) => element.contains('version:'))] = 'version: 0.0.2';
+      pluginDir1
+          .childFile('pubspec.yaml')
+          .writeAsStringSync(plugin1Pubspec.join('\n'));
+      final List<String> plugin2Pubspec =
+          pluginDir2.childFile('pubspec.yaml').readAsLinesSync();
+      plugin2Pubspec[plugin2Pubspec.indexWhere(
+          (element) => element.contains('version:'))] = 'version: 0.0.2';
+      pluginDir2
+          .childFile('pubspec.yaml')
+          .writeAsStringSync(plugin2Pubspec.join('\n'));
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir
+          .runCommand(<String>['commit', '-m', 'Update versions to 0.0.2']);
+
+      await commandRunner
+          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'Getting existing tags...',
+            'Running `pub publish ` in ${pluginDir1.path}...\n',
+            'Running `pub publish ` in ${pluginDir2.path}...\n',
+            'Packages released: plugin1, plugin2',
+            'Done!'
+          ]));
+
+      expect(processRunner.pushTagsArgs, isNotEmpty);
+      expect(processRunner.pushTagsArgs[0], 'push');
+      expect(processRunner.pushTagsArgs[1], 'upstream');
+      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.2');
+      expect(processRunner.pushTagsArgs[3], 'push');
+      expect(processRunner.pushTagsArgs[4], 'upstream');
+      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.2');
+    });
+
+    test(
+        'versions revert do not trigger releases. Also prints out warning message.',
+        () async {
+      // Non-federated
+      final Directory pluginDir1 = createFakePlugin('plugin1',
+          withSingleExample: true, packagesDirectory: mockPackagesDir);
+      // federated
+      final Directory pluginDir2 = createFakePlugin('plugin2',
+          withSingleExample: true,
+          parentDirectoryName: 'plugin2',
+          packagesDirectory: mockPackagesDir);
+      createFakePubspec(pluginDir1,
+          name: 'plugin1',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.2');
+      createFakePubspec(pluginDir2,
+          name: 'plugin2',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.2');
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      // Immediately return 0 when running `pub publish`.
+      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      mockStdin.readLineOutput = 'y';
+      await commandRunner
+          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'Getting existing tags...',
+            'Running `pub publish ` in ${pluginDir1.path}...\n',
+            'Running `pub publish ` in ${pluginDir2.path}...\n',
+            'Packages released: plugin1, plugin2',
+            'Done!'
+          ]));
+      expect(processRunner.pushTagsArgs, isNotEmpty);
+      expect(processRunner.pushTagsArgs[0], 'push');
+      expect(processRunner.pushTagsArgs[1], 'upstream');
+      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.2');
+      expect(processRunner.pushTagsArgs[3], 'push');
+      expect(processRunner.pushTagsArgs[4], 'upstream');
+      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.2');
+
+      processRunner.pushTagsArgs.clear();
+      printedMessages.clear();
+
+      final List<String> plugin1Pubspec =
+          pluginDir1.childFile('pubspec.yaml').readAsLinesSync();
+      plugin1Pubspec[plugin1Pubspec.indexWhere(
+          (element) => element.contains('version:'))] = 'version: 0.0.1';
+      pluginDir1
+          .childFile('pubspec.yaml')
+          .writeAsStringSync(plugin1Pubspec.join('\n'));
+      final List<String> plugin2Pubspec =
+          pluginDir2.childFile('pubspec.yaml').readAsLinesSync();
+      plugin2Pubspec[plugin2Pubspec.indexWhere(
+          (element) => element.contains('version:'))] = 'version: 0.0.1';
+      pluginDir2
+          .childFile('pubspec.yaml')
+          .writeAsStringSync(plugin2Pubspec.join('\n'));
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir
+          .runCommand(<String>['commit', '-m', 'Update versions to 0.0.1']);
+
+      await commandRunner
+          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'Getting existing tags...',
+            'The new version (0.0.1) is lower than the current version (0.0.2) for plugin1.\nThis git commit is a revert, no release is tagged.',
+            'The new version (0.0.1) is lower than the current version (0.0.2) for plugin2.\nThis git commit is a revert, no release is tagged.',
+            'Done!'
+          ]));
+
+      expect(processRunner.pushTagsArgs, isEmpty);
+    });
+
+    test('No version change does not release any plugins', () async {
+      // Non-federated
+      final Directory pluginDir1 = createFakePlugin('plugin1',
+          withSingleExample: true, packagesDirectory: mockPackagesDir);
+      // federated
+      final Directory pluginDir2 = createFakePlugin('plugin2',
+          withSingleExample: true,
+          parentDirectoryName: 'plugin2',
+          packagesDirectory: mockPackagesDir);
+      createFakePubspec(pluginDir1,
+          name: 'plugin1',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      createFakePubspec(pluginDir2,
+          name: 'plugin2',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+
+      io.Process.runSync('git', <String>['init'],
+          workingDirectory: mockPackagesDir.path);
+      gitDir = await GitDir.fromExisting(mockPackagesDir.path);
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+
+      pluginDir1.childFile('plugin1.dart').createSync();
+      pluginDir2.childFile('plugin2.dart').createSync();
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add dart files']);
+
+      // Immediately return 0 when running `pub publish`.
+      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      mockStdin.readLineOutput = 'y';
+      await commandRunner
+          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'No version updates in this commit, exiting...',
+            'Done!'
+          ]));
+      expect(processRunner.pushTagsArgs, isEmpty);
     });
   });
 }

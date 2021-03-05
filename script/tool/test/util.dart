@@ -49,6 +49,7 @@ Directory createFakePlugin(
   bool isWindowsPlugin = false,
   bool includeChangeLog = false,
   bool includeVersion = false,
+  String version = '0.0.1',
   String parentDirectoryName = '',
   Directory packagesDirectory,
 }) {
@@ -73,6 +74,7 @@ Directory createFakePlugin(
     isMacOsPlugin: isMacOsPlugin,
     isWindowsPlugin: isWindowsPlugin,
     includeVersion: includeVersion,
+    version: version
   );
   if (includeChangeLog) {
     createFakeCHANGELOG(pluginDirectory, '''
@@ -85,14 +87,14 @@ Directory createFakePlugin(
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
     createFakePubspec(exampleDir,
-        name: '${name}_example', isFlutter: isFlutter);
+        name: '${name}_example', isFlutter: isFlutter, includeVersion: false, publish_to: 'none');
   } else if (withExamples.isNotEmpty) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
     for (final String example in withExamples) {
       final Directory currentExample = exampleDir.childDirectory(example)
         ..createSync();
-      createFakePubspec(currentExample, name: example, isFlutter: isFlutter);
+      createFakePubspec(currentExample, name: example, isFlutter: isFlutter, includeVersion: false, publish_to: 'none');
     }
   }
 
@@ -123,6 +125,7 @@ void createFakePubspec(
   bool isLinuxPlugin = false,
   bool isMacOsPlugin = false,
   bool isWindowsPlugin = false,
+  String publish_to = 'http://no_pub_server.com',
   String version = '0.0.1',
 }) {
   parent.childFile('pubspec.yaml').createSync();
@@ -180,7 +183,11 @@ dependencies:
   if (includeVersion) {
     yaml += '''
 version: $version
-publish_to: http://no_pub_server.com # Hardcoded safeguard to prevent this from somehow being published by a broken test.
+''';
+  }
+  if (publish_to.isNotEmpty) {
+     yaml += '''
+publish_to: $publish_to # Hardcoded safeguard to prevent this from somehow being published by a broken test.
 ''';
   }
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
