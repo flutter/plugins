@@ -133,6 +133,15 @@ void main() {
       expect(fakeIOSPlatform.applicationNameHasTransactionRestored, 'aUserID');
     });
   });
+
+  group('Code Redemption Sheet', () {
+    test('presentCodeRedemptionSheet should not throw', () async {
+      expect(fakeIOSPlatform.presentCodeRedemption, false);
+      await SKPaymentQueueWrapper().presentCodeRedemptionSheet();
+      expect(fakeIOSPlatform.presentCodeRedemption, true);
+      fakeIOSPlatform.presentCodeRedemption = false;
+    });
+  });
 }
 
 class FakeIOSPlatform {
@@ -152,6 +161,9 @@ class FakeIOSPlatform {
   List<SKPaymentWrapper> payments = [];
   List<Map<String, String>> transactionsFinished = [];
   String applicationNameHasTransactionRestored = '';
+
+  // present Code Redemption
+  bool presentCodeRedemption = false;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -192,6 +204,9 @@ class FakeIOSPlatform {
         return Future<void>.sync(() {});
       case '-[InAppPurchasePlugin restoreTransactions:result:]':
         applicationNameHasTransactionRestored = call.arguments;
+        return Future<void>.sync(() {});
+      case '-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]':
+        presentCodeRedemption = true;
         return Future<void>.sync(() {});
     }
     return Future<void>.sync(() {});
