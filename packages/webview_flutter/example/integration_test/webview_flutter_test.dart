@@ -898,12 +898,10 @@ void main() {
       scrollPosY = await controller.getScrollY();
       expect(X_SCROLL * 2, scrollPosX);
       expect(Y_SCROLL * 2, scrollPosY);
-    });
+    }, skip: !Platform.isAndroid);
 
     testWidgets('inputs are scrolled into view when focused',
         (WidgetTester tester) async {
-      expect(Platform.isAndroid, isTrue);
-
       final String scrollTestPage = '''
         <!DOCTYPE html>
         <html>
@@ -1005,8 +1003,8 @@ void main() {
           lastInputClientRectRelativeToViewport['right'] <=
               viewportRectRelativeToViewport['right'],
           isTrue);
-    });
-  }, skip: Platform.isAndroid ? false : 'Platform isn\'t Android');
+    }, skip: !Platform.isAndroid);
+  });
 
   group('NavigationDelegate', () {
     final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
