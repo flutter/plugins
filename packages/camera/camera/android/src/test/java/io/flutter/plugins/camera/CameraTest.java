@@ -47,20 +47,29 @@ public class CameraTest {
 
       mockCamcorderProfile.videoFrameHeight = 480;
       mockCamcorderProfile.videoFrameWidth = 640;
+      when(mockCameraProperties.getLensFacing()).thenReturn(0);
+      when(mockCameraProperties.getSensorOrientation()).thenReturn(0);
       when(mockCameraProperties.getCameraName()).thenReturn(cameraName);
       when(mockCameraProperties.getControlAutoFocusAvailableModes())
           .thenReturn(new int[] {0, 1, 2});
       when(mockCameraProperties.getControlAutoExposureAvailableTargetFpsRanges()).thenReturn(null);
 
-      final Camera camera =
-          new Camera(
-              mockActivity,
-              flutterTextureMock,
-              dartMessengerMock,
-              mockCameraProperties,
-              resolutionPreset,
-              enableAudio,
-              mockDeviceOrientationManager);
+      Camera camera = null;
+      try (MockedStatic<DeviceOrientationManager> mockOrientationManagerFactory = mockStatic(DeviceOrientationManager.class)) {
+        mockOrientationManagerFactory.when(() -> DeviceOrientationManager.create(
+            mockActivity,
+            dartMessengerMock,
+            true,
+            0)).thenReturn(mockDeviceOrientationManager);
+
+        camera = new Camera(
+            mockActivity,
+            flutterTextureMock,
+            dartMessengerMock,
+            mockCameraProperties,
+            resolutionPreset,
+            enableAudio);
+      }
 
       assertNotNull("should create a camera", camera);
       assertEquals(

@@ -31,7 +31,19 @@ class DeviceOrientationManager {
   private OrientationEventListener orientationEventListener;
   private BroadcastReceiver broadcastReceiver;
 
-  public DeviceOrientationManager(
+  /**
+  * Factory method to create a device orientation manager.
+  */
+  public static DeviceOrientationManager create(
+      Activity activity,
+      DartMessenger messenger,
+      boolean isFrontFacing,
+      int sensorOrientation
+  ) {
+    return new DeviceOrientationManager(activity, messenger, isFrontFacing, sensorOrientation);
+  }
+
+  private DeviceOrientationManager(
       Activity activity, DartMessenger messenger, boolean isFrontFacing, int sensorOrientation) {
     this.activity = activity;
     this.messenger = messenger;

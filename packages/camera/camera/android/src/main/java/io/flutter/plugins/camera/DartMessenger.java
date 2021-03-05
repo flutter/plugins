@@ -41,7 +41,7 @@ class DartMessenger {
     }
   }
 
-  DartMessenger(BinaryMessenger messenger, long cameraId) {
+  public DartMessenger(BinaryMessenger messenger, long cameraId) {
     cameraChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/camera" + cameraId);
     deviceChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/device");
   }

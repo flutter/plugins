@@ -68,7 +68,7 @@ interface ErrorCallback {
   void onError(String errorCode, String errorMessage);
 }
 
-public class Camera {
+class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private static final String TAG = "Camera";
 
   /** Conversion from screen rotation to JPEG orientation. */
@@ -92,7 +92,6 @@ public class Camera {
 
   private final SurfaceTextureEntry flutterTexture;
   private final DeviceOrientationManager deviceOrientationListener;
-  private final boolean isFrontFacing;
   private final int sensorOrientation;
   private final Size captureSize;
   private final Size previewSize;
@@ -166,88 +165,7 @@ public class Camera {
   private CameraRegions cameraRegions;
   private int exposureOffset;
   /** A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture. */
-  private final CameraCaptureSession.CaptureCallback mCaptureCallback =
-      new CameraCaptureSession.CaptureCallback() {
-
-        private void process(CaptureResult result) {
-          Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-          Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
-
-          if (cameraState != CameraState.STATE_PREVIEW) {
-            // Log.i(TAG, "mCaptureCallback | state: " + cameraState + " | afState: " + afState + " | aeState: " + aeState);
-          }
-
-          switch (cameraState) {
-            case STATE_PREVIEW:
-              {
-                // We have nothing to do when the camera preview is working normally.
-                break;
-              }
-
-            case STATE_WAITING_FOCUS:
-              {
-                if (afState == null) {
-                  return;
-                } else if (afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN
-                    || afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED
-                    || afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
-                  // CONTROL_AE_STATE can be null on some devices
-
-                  if (aeState == null || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
-                    takePictureAfterPrecapture();
-                  } else {
-                    runPrecaptureSequence();
-                  }
-                }
-                break;
-              }
-
-            case STATE_WAITING_PRECAPTURE_START:
-              {
-                // CONTROL_AE_STATE can be null on some devices
-                if (aeState == null
-                    || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED
-                    || aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE
-                    || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED) {
-                  cameraState = CameraState.STATE_WAITING_PRECAPTURE_DONE;
-                  pictureCaptureRequest.setState(
-                      PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_DONE);
-                }
-                break;
-              }
-
-            case STATE_WAITING_PRECAPTURE_DONE:
-              {
-                // CONTROL_AE_STATE can be null on some devices
-                if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
-                  takePictureAfterPrecapture();
-                } else {
-                  if (pictureCaptureRequest.hitPreCaptureTimeout()) {
-                    // Log.i(TAG, "===> Hit precapture timeout");
-                    unlockAutoFocus();
-                  }
-                }
-                break;
-              }
-          }
-        }
-
-        @Override
-        public void onCaptureProgressed(
-            @NonNull CameraCaptureSession session,
-            @NonNull CaptureRequest request,
-            @NonNull CaptureResult partialResult) {
-          process(partialResult);
-        }
-
-        @Override
-        public void onCaptureCompleted(
-            @NonNull CameraCaptureSession session,
-            @NonNull CaptureRequest request,
-            @NonNull TotalCaptureResult result) {
-          process(result);
-        }
-      };
+  private final CameraCaptureCallback mCaptureCallback;
 
   private Range<Integer> fpsRange;
   private PlatformChannel.DeviceOrientation lockedCaptureOrientation;
@@ -259,24 +177,6 @@ public class Camera {
       final CameraProperties cameraProperties,
       final ResolutionPreset resolutionPreset,
       final boolean enableAudio) {
-    this(
-        activity,
-        flutterTexture,
-        dartMessenger,
-        cameraProperties,
-        resolutionPreset,
-        enableAudio,
-        null);
-  }
-
-  public Camera(
-      final Activity activity,
-      final SurfaceTextureEntry flutterTexture,
-      final DartMessenger dartMessenger,
-      final CameraProperties cameraProperties,
-      final ResolutionPreset resolutionPreset,
-      final boolean enableAudio,
-      @Nullable final DeviceOrientationManager deviceOrientationManager) {
 
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
@@ -293,6 +193,8 @@ public class Camera {
     this.currentFocusMode = FocusMode.auto;
     this.exposureOffset = 0;
 
+    mCaptureCallback = CameraCaptureCallback.create(this);
+
     // Get camera characteristics and check for supported features
     getAvailableFpsRange(cameraProperties);
     mAutoFocusSupported = checkAutoFocusSupported(cameraProperties);
@@ -300,12 +202,9 @@ public class Camera {
 
     // Setup orientation
     sensorOrientation = cameraProperties.getSensorOrientation();
-    isFrontFacing = cameraProperties.getLensFacing() == CameraMetadata.LENS_FACING_FRONT;
+    boolean isFrontFacing = cameraProperties.getLensFacing() == CameraMetadata.LENS_FACING_FRONT;
 
-    deviceOrientationListener =
-        deviceOrientationManager != null
-            ? deviceOrientationManager
-            : new DeviceOrientationManager(
+    deviceOrientationListener = DeviceOrientationManager.create(
                 activity, dartMessenger, isFrontFacing, sensorOrientation);
     deviceOrientationListener.start();
 
@@ -328,6 +227,21 @@ public class Camera {
 
     // Start background thread.
     startBackgroundThread();
+  }
+
+  @Override
+  public void onConverged() {
+    takePictureAfterPrecapture();
+  }
+
+  @Override
+  public void onPrecapture() {
+    runPrecaptureSequence();
+  }
+
+  @Override
+  public void onPrecaptureTimeout() {
+    unlockAutoFocus();
   }
 
   /** Get the current camera state (use for testing). */
@@ -642,7 +556,8 @@ public class Camera {
       final File file = File.createTempFile("CAP", ".jpg", outputDir);
 
       // Start a new capture
-      pictureCaptureRequest = new PictureCaptureRequest(result, file, dartMessenger);
+      pictureCaptureRequest = PictureCaptureRequest.create(result, file, dartMessenger);
+      mCaptureCallback.setPictureCaptureRequest(pictureCaptureRequest);
     } catch (IOException | SecurityException e) {
       pictureCaptureRequest.error("cannotCreateFile", e.getMessage(), null);
       return;
