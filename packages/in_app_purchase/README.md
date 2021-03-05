@@ -201,6 +201,9 @@ PurchaseParam purchaseParam = PurchaseParam(
 InAppPurchaseConnection.instance
     .buyNonConsumable(purchaseParam: purchaseParam);
 ```
+**Note**
+
+To test your In App functionality against the In App Purchase sandbox, connect your device to your development workstation then choose iPhone Device as the Active SDK—the StoreKit APIs are not available in the iPhone simulator.
 
 ## Development
 
