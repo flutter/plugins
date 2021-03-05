@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Bump min Flutter version to 2.0.0.
+
 ## 2.0.0
 
 * Migrate to null safety.
