@@ -823,7 +823,7 @@ void main() {
     });
   });
 
-  group('$SurfaceAndroidWebView', () {
+  group('SurfaceAndroidWebView', () {
     setUpAll(() {
       WebView.platform = SurfaceAndroidWebView();
     });
@@ -902,6 +902,8 @@ void main() {
 
     testWidgets('inputs are scrolled into view when focused',
         (WidgetTester tester) async {
+      expect(Platform.isAndroid, isTrue);
+
       final String scrollTestPage = '''
         <!DOCTYPE html>
         <html>
@@ -1004,7 +1006,7 @@ void main() {
               viewportRectRelativeToViewport['right'],
           isTrue);
     });
-  }, skip: !Platform.isAndroid);
+  }, skip: Platform.isAndroid ? false : 'Platform isn\'t Android');
 
   group('NavigationDelegate', () {
     final String blankPage = "<!DOCTYPE html><head></head><body></body></html>";
