@@ -7,7 +7,9 @@ import 'dart:io' as io;
 import 'dart:math';
 
 import 'package:args/command_runner.dart';
+import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
@@ -138,6 +140,13 @@ bool isMacOsPlugin(FileSystemEntity entity, FileSystem fileSystem) {
 /// Returns whether the given directory contains a Flutter linux plugin.
 bool isLinuxPlugin(FileSystemEntity entity, FileSystem fileSystem) {
   return pluginSupportsPlatform(kLinux, entity, fileSystem);
+}
+
+/// Throws a [ToolExit] with `exitCode` and log the `errorMessage` in red.
+void ThrowsToolExit({@required String errorMessage, int exitCode = 1}) {
+  final Colorize redError = Colorize(errorMessage)..red();
+  print(redError);
+  throw ToolExit(exitCode);
 }
 
 /// Error thrown when a command needs to exit with a non-zero exit code.

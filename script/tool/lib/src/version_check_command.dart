@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:meta/meta.dart';
-import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -192,9 +191,7 @@ class VersionCheckCommand extends PluginCommand {
           final String error = '$pubspecPath incorrectly updated version.\n'
               'HEAD: $headVersion, master: $masterVersion.\n'
               'Allowed versions: $allowedNextVersions';
-          final Colorize redError = Colorize(error)..red();
-          print(redError);
-          throw ToolExit(1);
+          ThrowsToolExit(errorMessage: error);
         }
 
         bool isPlatformInterface = pubspec.name.endsWith("_platform_interface");
@@ -203,9 +200,7 @@ class VersionCheckCommand extends PluginCommand {
                 NextVersionType.BREAKING_MAJOR) {
           final String error = '$pubspecPath breaking change detected.\n'
               'Breaking changes to platform interfaces are strongly discouraged.\n';
-          final Colorize redError = Colorize(error)..red();
-          print(redError);
-          throw ToolExit(1);
+          ThrowsToolExit(errorMessage: error);
         }
       } on io.ProcessException {
         print('Unable to find pubspec in master for $pubspecPath.'
@@ -238,20 +233,17 @@ class VersionCheckCommand extends PluginCommand {
     Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
       final String error = 'Can not find version on the first line of CHANGELOG.md';
-      final Colorize redError = Colorize(error)..red();
-      print(redError);
-      throw ToolExit(1);
+      ThrowsToolExit(errorMessage: error);
     }
 
     if (fromPubspec != fromChangeLog) {
       final String error = 'versions for $packageName in CHANGELOG.md and pubspec.yaml do not match.';
-      final Colorize redError = Colorize(error)..red();
-      print(redError);
-      throw ToolExit(1);
+      ThrowsToolExit(errorMessage: error);
     }
     print('${plugin.basename} passed version check');
   }
 
+  // ignore: missing_return
   Pubspec _tryParsePubspec(Directory package) {
     final File pubspecFile = package.childFile('pubspec.yaml');
 
@@ -259,16 +251,12 @@ class VersionCheckCommand extends PluginCommand {
       Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
       if (pubspec == null) {
         final String error = 'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';
-        final Colorize redError = Colorize(error)..red();
-        print(redError);
-        throw ToolExit(1);
+        ThrowsToolExit(errorMessage: error);
       }
       return pubspec;
     } on Exception catch (exception) {
       final String error = 'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}';
-      final Colorize redError = Colorize(error)..red();
-      print(redError);
-      throw ToolExit(1);
+      ThrowsToolExit(errorMessage: error);
     }
   }
 }
