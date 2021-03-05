@@ -1,4 +1,4 @@
-## 2.0.1
+## 2.1.0
 * Updates `init` function in `MethodChannelGoogleSignIn` to parametrize `clientId` property.
 
 ## 2.0.0
