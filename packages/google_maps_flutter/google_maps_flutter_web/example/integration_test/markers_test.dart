@@ -164,7 +164,7 @@ void main() {
           startsWith('blob:'));
 
       final blobUrl = controller.markers[MarkerId('1')].marker.icon.url;
-      final response = await http.get(blobUrl);
+      final response = await http.get(Uri.parse(blobUrl));
 
       expect(response.bodyBytes, bytes,
           reason:

@@ -201,7 +201,7 @@ void main() {
         output,
         orderedEquals(<String>[
           '\nBUILDING macOS for $packageName',
-          '\macOS is not supported by this plugin',
+          'macOS is not supported by this plugin',
           '\n\n',
           'All builds successful!',
         ]),
@@ -213,6 +213,7 @@ void main() {
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       cleanupPackages();
     });
+
     test('building for macos', () async {
       createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
@@ -244,9 +245,76 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, <String>['pub', 'get'],
-                pluginExampleDirectory.path),
             ProcessCall(flutterCommand, <String>['build', 'macos'],
+                pluginExampleDirectory.path),
+          ]));
+      cleanupPackages();
+    });
+
+    test('building for web with no implementation results in no-op', () async {
+      createFakePlugin('plugin', withExtraFiles: <List<String>>[
+        <String>['example', 'test'],
+      ]);
+
+      final Directory pluginExampleDirectory =
+          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+
+      createFakePubspec(pluginExampleDirectory, isFlutter: true);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--no-ipa', '--web']);
+      final String packageName =
+          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+
+      expect(
+        output,
+        orderedEquals(<String>[
+          '\nBUILDING web for $packageName',
+          'Web is not supported by this plugin',
+          '\n\n',
+          'All builds successful!',
+        ]),
+      );
+
+      print(processRunner.recordedCalls);
+      // Output should be empty since running build-examples --macos with no macos
+      // implementation is a no-op.
+      expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+      cleanupPackages();
+    });
+
+    test('building for web', () async {
+      createFakePlugin('plugin',
+          withExtraFiles: <List<String>>[
+            <String>['example', 'test'],
+            <String>['example', 'web', 'index.html'],
+          ],
+          isWebPlugin: true);
+
+      final Directory pluginExampleDirectory =
+          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+
+      createFakePubspec(pluginExampleDirectory, isFlutter: true);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--no-ipa', '--web']);
+      final String packageName =
+          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+
+      expect(
+        output,
+        orderedEquals(<String>[
+          '\nBUILDING web for $packageName',
+          '\n\n',
+          'All builds successful!',
+        ]),
+      );
+
+      print(processRunner.recordedCalls);
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(flutterCommand, <String>['build', 'web'],
                 pluginExampleDirectory.path),
           ]));
       cleanupPackages();
