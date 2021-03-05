@@ -27,7 +27,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -79,7 +78,7 @@ class FileUtils {
         final MimeTypeMap mime = MimeTypeMap.getSingleton();
         extension = mime.getExtensionFromMimeType(context.getContentResolver().getType(uriImage));
       } else {
-        extension = 
+        extension =
             MimeTypeMap.getFileExtensionFromUrl(
                 Uri.fromFile(new File(uriImage.getPath())).toString());
       }
