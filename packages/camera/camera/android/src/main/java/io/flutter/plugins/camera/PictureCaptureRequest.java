@@ -51,33 +51,33 @@ class PictureCaptureRequest {
       };
 
   /**
-   * Constructor to create a picture capture request.
+   * Factory method to create a picture capture request.
    *
    * @param result
    * @param file
    */
-  public PictureCaptureRequest(
+  static PictureCaptureRequest create(
       MethodChannel.Result result,
       File file,
       DartMessenger dartMessenger) {
-    this(
-        result,
-        file,
-        dartMessenger,
-        new TimeoutHandler()
-    );
+    return new PictureCaptureRequest(result, file, dartMessenger);
   }
 
-  /** Constructor for unit tests where we can mock the timeout handler */
-  public PictureCaptureRequest(
+  /**
+   * Private constructor to create a picture capture request.
+   *
+   * @param result
+   * @param file
+   */
+  private PictureCaptureRequest(
       MethodChannel.Result result,
       File file,
-      DartMessenger dartMessenger,
-      TimeoutHandler timeoutHandler) {
+      DartMessenger dartMessenger) {
+
     this.result = result;
-    this.timeoutHandler = timeoutHandler;
     this.file = file;
     this.dartMessenger = dartMessenger;
+    this.timeoutHandler = TimeoutHandler.create();
   }
 
   /**
@@ -184,7 +184,11 @@ class PictureCaptureRequest {
     private static final int REQUEST_TIMEOUT = 5000;
     private final Handler handler;
 
-    TimeoutHandler() {
+    public static TimeoutHandler create() {
+      return new TimeoutHandler();
+    }
+
+    private TimeoutHandler() {
       this.handler = new Handler(Looper.getMainLooper());
     }
 
