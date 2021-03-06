@@ -16,7 +16,7 @@ import io.flutter.plugins.camera.types.FlashMode;
  */
 public class ExposureLock implements CameraFeature<ExposureMode> {
     private boolean isSupported;
-    private ExposureMode currentSetting;
+    private ExposureMode currentSetting = ExposureMode.auto;
     private CameraRegions cameraRegions;
 
     public ExposureLock(CameraRegions cameraRegions) {
@@ -35,7 +35,7 @@ public class ExposureLock implements CameraFeature<ExposureMode> {
 
     // Available on all devices.
     @Override
-    public boolean isSupported(CameraProperties cameraProperties, CameraCharacteristics cameraCharacteristics) {
+    public boolean isSupported(CameraProperties cameraProperties) {
         return true;
     }
 

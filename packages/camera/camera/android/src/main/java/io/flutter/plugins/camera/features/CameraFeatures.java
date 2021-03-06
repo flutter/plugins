@@ -10,7 +10,9 @@ public enum CameraFeatures {
     exposureLock("exposureLock"),
     exposureOffset("exposureOffset"),
     flash("flash"),
+    focusPoint("focusPoint"),
     fpsRange("fpsRange"),
+    exposurePoint("exposurePoint"),
     noiseReduction("noiseReduction");
 
     private final String strValue;

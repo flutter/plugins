@@ -23,7 +23,7 @@ public interface CameraFeature<T> {
      * given camera properties.
      * @return
      */
-    public boolean isSupported(CameraProperties cameraProperties, CameraCharacteristics cameraCharacteristics);
+    public boolean isSupported(CameraProperties cameraProperties);
 
     /**
      * Update the setting in a provided request builder.

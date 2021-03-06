@@ -48,7 +48,7 @@ public class FpsRange implements CameraFeature<Range<Integer>> {
 
     // Always supported
     @Override
-    public boolean isSupported(CameraProperties cameraProperties, CameraCharacteristics cameraCharacteristics) {
+    public boolean isSupported(CameraProperties cameraProperties) {
        return true;
     }
 

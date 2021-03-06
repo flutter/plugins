@@ -9,7 +9,7 @@ import io.flutter.plugins.camera.types.FlashMode;
 
 public class Flash implements CameraFeature<FlashMode> {
     private boolean isSupported;
-    private FlashMode currentSetting;
+    private FlashMode currentSetting = FlashMode.auto;
 
     @Override
     public FlashMode getValue() {
@@ -22,7 +22,7 @@ public class Flash implements CameraFeature<FlashMode> {
     }
 
     @Override
-    public boolean isSupported(CameraProperties cameraProperties, CameraCharacteristics cameraCharacteristics) {
+    public boolean isSupported(CameraProperties cameraProperties) {
         Boolean available = cameraProperties.getFlashInfoAvailable();
         final boolean supported = available != null && available;
         isSupported = supported;

@@ -27,7 +27,7 @@ public class NoiseReduction implements CameraFeature<NoiseReductionMode> {
     }
 
     @Override
-    public boolean isSupported(CameraProperties cameraProperties, CameraCharacteristics cameraCharacteristics) {
+    public boolean isSupported(CameraProperties cameraProperties) {
         /**
          * Available settings:
          *     public static final int NOISE_REDUCTION_MODE_FAST = 1;
@@ -42,7 +42,7 @@ public class NoiseReduction implements CameraFeature<NoiseReductionMode> {
          */
 
         // Can be null on some devices.
-        int[] modes = cameraCharacteristics.get(CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
+        int[] modes = cameraProperties.getAvailableNoiseReductionModes();
 
         /// If there's at least one mode available then we are supported.
         return modes != null && modes.length > 0;

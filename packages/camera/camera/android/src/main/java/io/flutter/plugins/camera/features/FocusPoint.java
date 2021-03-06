@@ -1,0 +1,60 @@
+package io.flutter.plugins.camera.features;
+
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.params.MeteringRectangle;
+import android.util.Log;
+
+import java.util.concurrent.Callable;
+
+import io.flutter.plugins.camera.CameraProperties;
+import io.flutter.plugins.camera.CameraRegions;
+
+/**
+ * Focus point controls where in the frame focus will come from.
+ */
+public class FocusPoint implements CameraFeature<Point> {
+    // Used later to always get the correct camera regions instance.
+    private final Callable<CameraRegions> getCameraRegions;
+    private boolean isSupported;
+    private Point currentSetting = new Point(0.0, 0.0);
+
+    public FocusPoint(Callable<CameraRegions> getCameraRegions) {
+        this.getCameraRegions = getCameraRegions;
+    }
+
+    @Override
+    public Point getValue() {
+        return currentSetting;
+    }
+
+    @Override
+    public void setValue(Point value) {
+        this.currentSetting = value;
+
+        try {
+            if (value.x == null || value.y == null) {
+                getCameraRegions.call().resetAutoFocusMeteringRectangle();
+            } else {
+                getCameraRegions.call().setAutoFocusMeteringRectangleFromPoint(value.x, value.y);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Whether or not this camera can set the exposure point.
+    @Override
+    public boolean isSupported(CameraProperties cameraProperties) {
+        Integer supportedRegions = cameraProperties.getControlMaxRegionsAutoFocus();
+        final boolean supported = supportedRegions != null && supportedRegions > 0;
+        isSupported = supported;
+        return supported;
+    }
+
+    @Override
+    public void updateBuilder(CaptureRequest.Builder requestBuilder) {
+// Not used
+    }
+}
+
