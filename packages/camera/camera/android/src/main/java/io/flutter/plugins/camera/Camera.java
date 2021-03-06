@@ -4,8 +4,6 @@
 
 package io.flutter.plugins.camera;
 
-import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -15,7 +13,6 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
@@ -41,17 +38,10 @@ import android.util.Rational;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import io.flutter.embedding.engine.systemchannels.PlatformChannel;
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugins.camera.media.MediaRecorderBuilder;
-import io.flutter.plugins.camera.types.ExposureMode;
-import io.flutter.plugins.camera.types.FlashMode;
-import io.flutter.plugins.camera.types.FocusMode;
-import io.flutter.plugins.camera.types.ResolutionPreset;
-import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -63,10 +53,45 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
+import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugins.camera.features.AutoFocus;
+import io.flutter.plugins.camera.features.CameraFeature;
+import io.flutter.plugins.camera.features.CameraFeatures;
+import io.flutter.plugins.camera.features.ExposureLock;
+import io.flutter.plugins.camera.features.ExposureOffset;
+import io.flutter.plugins.camera.features.Flash;
+import io.flutter.plugins.camera.features.FpsRange;
+import io.flutter.plugins.camera.features.NoiseReduction;
+import io.flutter.plugins.camera.media.MediaRecorderBuilder;
+import io.flutter.plugins.camera.types.ExposureMode;
+import io.flutter.plugins.camera.types.FlashMode;
+import io.flutter.plugins.camera.types.FocusMode;
+import io.flutter.plugins.camera.types.ResolutionPreset;
+import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
+
+import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
+
 @FunctionalInterface
 interface ErrorCallback {
   void onError(String errorCode, String errorMessage);
 }
+
+/**
+ * Note: at this time we do not implement zero shutter lag (ZSL) capture. This is a potentail
+ * improvement we can use in the future. The idea is in a TEMPLATE_ZERO_SHUTTER_LAG capture
+ * session, the system maintains a ring buffer of images from the preview. It must be in full
+ * auto moved (flash, ae, focus, etc). When you capture an image, it simply picks one out of
+ * the ring buffer, thus capturing an image with zero shutter lag.
+ *
+ * This is a potential improvement for the future. A good example is the AOSP camera here:
+ * https://android.googlesource.com/platform/packages/apps/Camera2/+/9c94ab3/src/com/android/camera/one/v2/OneCameraZslImpl.java
+ *
+ * But one note- they mention sometimes ZSL captures can be very low quality so it might not
+ * be preferred on some devices. If we do add support for this in the future, we should allow
+ * it to be enabled from dart.
+ */
 
 class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private static final String TAG = "Camera";
@@ -89,6 +114,12 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     supportedImageFormats.put("yuv420", ImageFormat.YUV_420_888);
     supportedImageFormats.put("jpeg", ImageFormat.JPEG);
   }
+
+  /**
+   * Holds all of the camera features/settings and will be used to
+   * update the request builder when one changes.
+   */
+  private final Map<CameraFeatures, CameraFeature> cameraFeatures;
 
   private final SurfaceTextureEntry flutterTexture;
   private final DeviceOrientationManager deviceOrientationListener;
@@ -118,7 +149,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
-          // Log.i(TAG, "onImageAvailable");
+          Log.i(TAG, "onImageAvailable");
 
           // Use acquireNextImage since our image reader is only for 1 image.
           mBackgroundHandler.post(
@@ -142,11 +173,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   private boolean recordingVideo;
   private File videoRecordingFile;
-  /**
-   * Flash mode setting of the current camera. Initialize to off because we don't know if the
-   * current camera supports flash yet.
-   */
-  private FlashMode currentFlashMode;
+
   /**
    * Exposure mode setting of the current camera. Initialize to auto because all cameras support
    * autoexposure by default.
@@ -181,7 +208,6 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
     }
-
     this.activity = activity;
     this.enableAudio = enableAudio;
     this.flutterTexture = flutterTexture;
@@ -193,12 +219,19 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     this.currentFocusMode = FocusMode.auto;
     this.exposureOffset = 0;
 
-    mCaptureCallback = CameraCaptureCallback.create(this);
+    // Setup camera features
+    this.cameraFeatures = new HashMap<CameraFeatures, CameraFeature>() {{
+      put(CameraFeatures.autoFocus, new AutoFocus());
+      put(CameraFeatures.flash, new Flash());
+      put(CameraFeatures.noiseReduction, new NoiseReduction());
+      put(CameraFeatures.fpsRange, new FpsRange(cameraProperties));
+      put(CameraFeatures.exposureOffset, new ExposureOffset());
 
-    // Get camera characteristics and check for supported features
-    getAvailableFpsRange(cameraProperties);
-    mAutoFocusSupported = checkAutoFocusSupported(cameraProperties);
-    checkFlashSupported();
+      // TODO: cameraRegions is going to be null here
+      put(CameraFeatures.exposureLock, new ExposureLock(cameraRegions));
+    }};
+
+    mCaptureCallback = CameraCaptureCallback.create(this);
 
     // Setup orientation
     sensorOrientation = cameraProperties.getSensorOrientation();
@@ -215,7 +248,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(
             cameraName, resolutionPreset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
-    // Log.i(TAG, "captureSize: " + captureSize);
+    Log.i(TAG, "captureSize: " + captureSize);
 
     previewSize = computeBestPreviewSize(cameraName, resolutionPreset);
 
@@ -250,75 +283,17 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   }
 
   /**
-   * Check if the auto focus is supported by the current camera. We look at the available AF modes
-   * and the available lens focusing distance to determine if its' a fixed length lens or not as
-   * well.
+   * Update the builder settings with all of our available features.
+   * @param requestBuilder
    */
-  public static boolean checkAutoFocusSupported(CameraProperties cameraProperties) {
-    int[] modes = cameraProperties.getControlAutoFocusAvailableModes();
-    // Log.i(TAG, "checkAutoFocusSupported | modes:");
-    for (int mode : modes) {
-      // Log.i(TAG, "checkAutoFocusSupported | ==> " + mode);
+  private void updateBuilderSettings(CaptureRequest.Builder requestBuilder) {
+    for (Map.Entry<CameraFeatures, CameraFeature> feature : cameraFeatures.entrySet()) {
+      feature.getValue().updateBuilder(requestBuilder);
     }
-
-    // Check if fixed focal length lens. If LENS_INFO_MINIMUM_FOCUS_DISTANCE=0, then this is fixed.
-    // Can be null on some devices.
-    final Float minFocus = cameraProperties.getLensInfoMinimumFocusDistance();
-    // final Float maxFocus = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
-
-    // Value can be null on some devices:
-    // https://developer.android.com/reference/android/hardware/camera2/CameraCharacteristics#LENS_INFO_MINIMUM_FOCUS_DISTANCE
-    boolean isFixedLength;
-    if (minFocus == null) {
-      isFixedLength = true;
-    } else {
-      isFixedLength = minFocus == 0;
-    }
-    // Log.i(TAG, "checkAutoFocusSupported | minFocus " + minFocus + " | maxFocus: " + maxFocus);
-
-    return !isFixedLength
-        && !(modes == null
-            || modes.length == 0
-            || (modes.length == 1 && modes[0] == CameraCharacteristics.CONTROL_AF_MODE_OFF));
-    // Log.i(TAG, "checkAutoFocusSupported: " + mAutoFocusSupported);
-  }
-
-  /** Check if the flash is supported. */
-  private void checkFlashSupported() {
-    Boolean available = cameraProperties.getFlashInfoAvailable();
-    mFlashSupported = available != null && available;
-  }
-
-  /**
-   * Load available FPS range for the current camera and update the available fps range with it.
-   *
-   * @param cameraProperties
-   */
-  private void getAvailableFpsRange(CameraProperties cameraProperties) {
-    // Log.i(TAG, "getAvailableFpsRange");
-
-    try {
-      Range<Integer>[] ranges = cameraProperties.getControlAutoExposureAvailableTargetFpsRanges();
-
-      if (ranges != null) {
-        for (Range<Integer> range : ranges) {
-          int upper = range.getUpper();
-          // Log.i("Camera", "[FPS Range Available] is:" + range);
-          if (upper >= 10) {
-            if (fpsRange == null || upper > fpsRange.getUpper()) {
-              fpsRange = range;
-            }
-          }
-        }
-      }
-    } catch (Exception e) {
-      pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
-    }
-    // Log.i("Camera", "[FPS Range] is:" + fpsRange);
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
-    // Log.i(TAG, "prepareMediaRecorder");
+    Log.i(TAG, "prepareMediaRecorder");
 
     if (mediaRecorder != null) {
       mediaRecorder.release();
@@ -357,7 +332,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         new CameraDevice.StateCallback() {
           @Override
           public void onOpened(@NonNull CameraDevice device) {
-            // Log.i(TAG, "open | onOpened");
+            Log.i(TAG, "open | onOpened");
 
             cameraDevice = device;
             try {
@@ -377,7 +352,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
           @Override
           public void onClosed(@NonNull CameraDevice camera) {
-            // Log.i(TAG, "open | onClosed");
+            Log.i(TAG, "open | onClosed");
 
             dartMessenger.sendCameraClosingEvent();
             super.onClosed(camera);
@@ -385,7 +360,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
           @Override
           public void onDisconnected(@NonNull CameraDevice cameraDevice) {
-            // Log.i(TAG, "open | onDisconnected");
+            Log.i(TAG, "open | onDisconnected");
 
             close();
             dartMessenger.sendCameraErrorEvent("The camera was disconnected.");
@@ -393,7 +368,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
           @Override
           public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
-            // Log.i(TAG, "open | onError");
+            Log.i(TAG, "open | onError");
 
             close();
             String errorDescription;
@@ -430,7 +405,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private void createCaptureSession(
       int templateType, Runnable onSuccessCallback, Surface... surfaces)
       throws CameraAccessException {
-    // Log.i(TAG, "createCaptureSession");
+    Log.i(TAG, "createCaptureSession");
 
     // Close any existing capture session.
     closeCaptureSession();
@@ -466,10 +441,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
             }
             captureSession = session;
 
-            updateFpsRange();
-            updateFocusMode(mPreviewRequestBuilder);
-            updateFlash(mPreviewRequestBuilder);
-            updateExposureMode(mPreviewRequestBuilder);
+            updateBuilderSettings(mPreviewRequestBuilder);
 
             refreshPreviewCaptureSession(
                 onSuccessCallback, (code, message) -> dartMessenger.sendCameraErrorEvent(message));
@@ -522,9 +494,9 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   // Send a repeating request to refresh our capture session.
   private void refreshPreviewCaptureSession(
       @Nullable Runnable onSuccessCallback, @NonNull ErrorCallback onErrorCallback) {
-    // Log.i(TAG, "refreshPreviewCaptureSession");
+    Log.i(TAG, "refreshPreviewCaptureSession");
     if (captureSession == null) {
-      // Log.i(TAG, "[refreshPreviewCaptureSession] mPreviewSession null, returning");
+      Log.i(TAG, "[refreshPreviewCaptureSession] mPreviewSession null, returning");
       return;
     }
 
@@ -542,7 +514,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   }
 
   public void takePicture(@NonNull final Result result) {
-    // Log.i(TAG, "takePicture | useAutoFocus: " + useAutoFocus);
+    Log.i(TAG, "takePicture | useAutoFocus: " + useAutoFocus);
 
     // Only take one 1 picture at a time.
     if (pictureCaptureRequest != null && !pictureCaptureRequest.isFinished()) {
@@ -578,7 +550,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    * get a response in {@link #mCaptureCallback} from lockFocus().
    */
   private void runPrecaptureSequence() {
-    // Log.i(TAG, "runPrecaptureSequence");
+    Log.i(TAG, "runPrecaptureSequence");
     try {
       // First set precapture state to idle or else it can hang in STATE_WAITING_PRECAPTURE
       mPreviewRequestBuilder.set(
@@ -610,7 +582,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    * #mCaptureCallback} from both lockFocus().
    */
   private void takePictureAfterPrecapture() {
-    // Log.i(TAG, "captureStillPicture");
+    Log.i(TAG, "captureStillPicture");
     cameraState = CameraState.STATE_CAPTURING;
     pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_CAPTURING);
 
@@ -628,10 +600,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
           CaptureRequest.SCALER_CROP_REGION,
           mPreviewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
 
-      // Set focus / flash from preview mode
-      updateFlash(stillBuilder);
-      updateFocusMode(stillBuilder);
-      updateExposureMode(stillBuilder);
+      // Update builder settings
+      updateBuilderSettings(stillBuilder);
 
       // Orientation
       int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -646,7 +616,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
                 @NonNull CaptureRequest request,
                 long timestamp,
                 long frameNumber) {
-              // Log.i(TAG, "onCaptureStarted");
+              Log.i(TAG, "onCaptureStarted");
             }
 
             @Override
@@ -654,7 +624,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
                 @NonNull CameraCaptureSession session,
                 @NonNull CaptureRequest request,
                 @NonNull CaptureResult partialResult) {
-              // Log.i(TAG, "onCaptureProgressed");
+              Log.i(TAG, "onCaptureProgressed");
             }
 
             @Override
@@ -662,14 +632,14 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
                 @NonNull CameraCaptureSession session,
                 @NonNull CaptureRequest request,
                 @NonNull TotalCaptureResult result) {
-              // Log.i(TAG, "onCaptureCompleted");
+              Log.i(TAG, "onCaptureCompleted");
               unlockAutoFocus();
             }
           };
 
       captureSession.stopRepeating();
       captureSession.abortCaptures();
-      // Log.i(TAG, "sending capture request");
+      Log.i(TAG, "sending capture request");
       captureSession.capture(stillBuilder.build(), captureCallback, mBackgroundHandler);
     } catch (CameraAccessException e) {
       pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
@@ -699,74 +669,6 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   }
 
   /**
-   * Sync the requestBuilder exposure mode setting ot the current exposure mode setting of the
-   * camera.
-   */
-  void updateExposureMode(CaptureRequest.Builder requestBuilder) {
-    // Log.i(TAG, "updateExposureMode");
-
-    // Applying auto exposure
-    MeteringRectangle aeRect = cameraRegions.getAEMeteringRectangle();
-    requestBuilder.set(
-        CaptureRequest.CONTROL_AE_REGIONS,
-        aeRect == null ? null : new MeteringRectangle[] {cameraRegions.getAEMeteringRectangle()});
-
-    switch (currentExposureMode) {
-      case locked:
-        requestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
-        break;
-      case auto:
-      default:
-        requestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, false);
-        break;
-    }
-
-    // TODO: move this to its own setting (exposure offset)
-    requestBuilder.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, exposureOffset);
-  }
-
-  /** Sync the requestBuilder flash setting to the current flash mode setting of the camera. */
-  void updateFlash(CaptureRequest.Builder requestBuilder) {
-    // Log.i(TAG, "updateFlash");
-
-    if (!mFlashSupported) {
-      return;
-    }
-
-    switch (currentFlashMode) {
-      case off:
-        requestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
-        requestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-        break;
-
-      case always:
-        requestBuilder.set(
-            CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
-        requestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-        break;
-
-      case torch:
-        requestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
-        requestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
-        break;
-
-      case auto:
-        requestBuilder.set(
-            CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-        requestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-        break;
-
-        // TODO: to be implemented someday. Need to add it to dart/iOS as another flash mode setting.
-        //      case autoRedEye:
-        //        requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-        //                CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH_REDEYE);
-        //        requestBuilder.set(CaptureRequest.FLASH_MODE,
-        //                CaptureRequest.FLASH_MODE_OFF);
-        //        break;
-    }
-  }
-
-  /**
    * Retrieves the JPEG orientation from the specified screen rotation.
    *
    * @param rotation The screen rotation.
@@ -782,7 +684,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   /** Start capturing a picture, doing autofocus first. */
   private void runPictureAutoFocus() {
-    // Log.i(TAG, "runPictureAutoFocus");
+    Log.i(TAG, "runPictureAutoFocus");
     assert (pictureCaptureRequest != null);
 
     cameraState = CameraState.STATE_WAITING_FOCUS;
@@ -792,7 +694,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   /** Start the autofocus routine on the current capture request. */
   private void lockAutoFocus() {
-    // Log.i(TAG, "lockAutoFocus");
+    Log.i(TAG, "lockAutoFocus");
     pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_START);
 
     mPreviewRequestBuilder.set(
@@ -804,7 +706,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   /** Cancel and reset auto focus state and refresh the preview session. */
   private void unlockAutoFocus() {
-    // Log.i(TAG, "unlockAutoFocus");
+    Log.i(TAG, "unlockAutoFocus");
     try {
       // Cancel existing AF state
       mPreviewRequestBuilder.set(
@@ -822,7 +724,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
       captureSession.capture(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
     } catch (CameraAccessException e) {
-      // Log.i(TAG, "Error unlocking focus: " + e.getMessage());
+      Log.i(TAG, "Error unlocking focus: " + e.getMessage());
       dartMessenger.sendCameraErrorEvent(e.getMessage());
       return;
     }
@@ -932,8 +834,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    */
   public void setFlashMode(@NonNull final Result result, FlashMode newMode) {
     // Save the new flash mode setting
-    currentFlashMode = newMode;
-    updateFlash(mPreviewRequestBuilder);
+    cameraFeatures.get(CameraFeatures.flash).setValue(newMode);
+    cameraFeatures.get(CameraFeatures.flash).updateBuilder(mPreviewRequestBuilder);
 
     refreshPreviewCaptureSession(
         () -> result.success(null),
@@ -991,7 +893,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    */
   public void setFocusMode(@NonNull final Result result, FocusMode newMode)
       throws CameraAccessException {
-    // Log.i(TAG, "setFocusMode: " + newMode);
+    Log.i(TAG, "setFocusMode: " + newMode);
 
     // Set new focus mode
     currentFocusMode = newMode;
@@ -1003,7 +905,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     // or we want to trigger a one-time focus and then set AF to idle (locked mode).
     switch (newMode) {
       case auto:
-        // Log.i(TAG, "Triggering AF start with mode " + currentFocusMode);
+        Log.i(TAG, "Triggering AF start with mode " + currentFocusMode);
         // Reset state of autofocus so it goes back to passive scanning.
         mPreviewRequestBuilder.set(
             CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
@@ -1031,7 +933,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
                     @NonNull CameraCaptureSession session,
                     @NonNull CaptureRequest request,
                     @NonNull TotalCaptureResult _result) {
-                  // Log.i(TAG, "Success after triggering AF start for locked focus");
+                  Log.i(TAG, "Success after triggering AF start for locked focus");
 
                   mPreviewRequestBuilder.set(
                       CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
@@ -1200,11 +1102,11 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   /**
    * Sync the focus mode setting to the provided capture request builder.
-   *
+   *updateFps
    * @param requestBuilder
    */
   private void updateFocusMode(CaptureRequest.Builder requestBuilder) {
-    // Log.i(TAG, "updateFocusMode currentFocusMode: " + currentFocusMode);
+    Log.i(TAG, "updateFocusMode currentFocusMode: " + currentFocusMode);
 
     if (!mAutoFocusSupported) {
       useAutoFocus = false;
@@ -1243,7 +1145,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   public void startPreview() throws CameraAccessException {
     if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
-    // Log.i(TAG, "startPreview");
+    Log.i(TAG, "startPreview");
 
     createCaptureSession(CameraDevice.TEMPLATE_PREVIEW, pictureImageReader.getSurface());
   }
@@ -1251,7 +1153,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   public void startPreviewWithImageStream(EventChannel imageStreamChannel)
       throws CameraAccessException {
     createCaptureSession(CameraDevice.TEMPLATE_RECORD, imageStreamReader.getSurface());
-    // Log.i(TAG, "startPreviewWithImageStream");
+    Log.i(TAG, "startPreviewWithImageStream");
 
     imageStreamChannel.setStreamHandler(
         new EventChannel.StreamHandler() {
@@ -1304,7 +1206,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   private void closeCaptureSession() {
     if (captureSession != null) {
-      // Log.i(TAG, "closeCaptureSession");
+      Log.i(TAG, "closeCaptureSession");
 
       captureSession.close();
       captureSession = null;
@@ -1312,7 +1214,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   }
 
   public void close() {
-    // Log.i(TAG, "close");
+    Log.i(TAG, "close");
     closeCaptureSession();
 
     if (cameraDevice != null) {
@@ -1337,7 +1239,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   }
 
   public void dispose() {
-    // Log.i(TAG, "dispose");
+    Log.i(TAG, "dispose");
 
     close();
     flutterTexture.release();

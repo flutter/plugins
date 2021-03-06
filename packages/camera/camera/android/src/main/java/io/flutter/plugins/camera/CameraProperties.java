@@ -42,6 +42,8 @@ public interface CameraProperties {
   Rect getSensorInfoPreCorrectionActiveArraySize();
 
   int getSensorOrientation();
+
+  int getHardwareLevel();
 }
 
 class CameraPropertiesImpl implements CameraProperties {
@@ -135,5 +137,14 @@ class CameraPropertiesImpl implements CameraProperties {
   @Override
   public int getSensorOrientation() {
     return cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+  }
+
+  /**
+   * Returns the hardware level of the camera.
+   * @return
+   */
+  @Override
+  public int getHardwareLevel() {
+    return cameraCharacteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
   }
 }
