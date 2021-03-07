@@ -508,7 +508,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     // Listen for picture being taken
     pictureImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 
-    if (cameraFeatures.get(CameraFeatures.autoFocus).getValue() == FocusMode.auto) {
+    final AutoFocus autoFocusFeature = (AutoFocus) cameraFeatures.get(CameraFeatures.autoFocus);
+    if (autoFocusFeature.getIsSupported() && autoFocusFeature.getValue() == FocusMode.auto) {
       runPictureAutoFocus();
     } else {
       runPrecaptureSequence();

@@ -47,7 +47,9 @@ class CameraCaptureCallback extends CaptureCallback {
     Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
-    Log.i("Camera", "CameraCaptureCallback | state: " + cameraState);
+    if (cameraState != CameraState.STATE_PREVIEW) {
+      Log.i("Camera", "CameraCaptureCallback | state: " + cameraState + " | afState: " + afState + " | aeState: " + aeState);
+    }
 
     switch (cameraState) {
       case STATE_PREVIEW:
@@ -59,8 +61,7 @@ class CameraCaptureCallback extends CaptureCallback {
         {
           if (afState == null) {
             return;
-          } else if (afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN
-              || afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED
+          } else if (afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED
               || afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
             // CONTROL_AE_STATE can be null on some devices
 
