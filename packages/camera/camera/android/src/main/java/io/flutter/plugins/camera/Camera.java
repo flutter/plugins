@@ -130,8 +130,6 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private final Activity activity;
   /** This manages the state of the camera and the current capture request. */
   PictureCaptureRequest pictureCaptureRequest;
-  /** The state of the camera. By default we are in the preview state. */
-  private CameraState cameraState = CameraState.STATE_PREVIEW;
   /** A {@link Handler} for running tasks in the background. */
   private Handler mBackgroundHandler;
   /**
@@ -148,7 +146,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
           mBackgroundHandler.post(
               new ImageSaver(
                   reader.acquireNextImage(), pictureCaptureRequest.file, pictureCaptureRequest));
-          cameraState = CameraState.STATE_PREVIEW;
+          mCaptureCallback.setCameraState(CameraState.STATE_PREVIEW);
         }
       };
 
@@ -170,8 +168,6 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private File videoRecordingFile;
   /** A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture. */
   private final CameraCaptureCallback mCaptureCallback;
-
-  private PlatformChannel.DeviceOrientation lockedCaptureOrientation;
 
   public Camera(
       final Activity activity,
@@ -242,11 +238,6 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     unlockAutoFocus();
   }
 
-  /** Get the current camera state (use for testing). */
-  public CameraState getState() {
-    return this.cameraState;
-  }
-
   /**
    * Update the builder settings with all of our available features.
    *
@@ -266,13 +257,17 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       mediaRecorder.release();
     }
 
+    final PlatformChannel.DeviceOrientation lockedOrientation =
+        ((SensorOrientation) cameraFeatures.get(CameraFeatures.sensorOrientation))
+            .getLockedCaptureOrientation();
+
     mediaRecorder =
         new MediaRecorderBuilder(getRecordingProfile(), outputFilePath)
             .setEnableAudio(enableAudio)
             .setMediaOrientation(
-                lockedCaptureOrientation == null
+                lockedOrientation == null
                     ? getDeviceOrientationManager().getMediaOrientation()
-                    : getDeviceOrientationManager().getMediaOrientation(lockedCaptureOrientation))
+                    : getDeviceOrientationManager().getMediaOrientation(lockedOrientation))
             .build();
   }
 
@@ -492,7 +487,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         "takePicture | useAutoFocus: " + cameraFeatures.get(CameraFeatures.autoFocus).getValue());
 
     // Only take one 1 picture at a time.
-    if (pictureCaptureRequest != null && !pictureCaptureRequest.isFinished()) {
+    if (mCaptureCallback.getCameraState() != CameraState.STATE_PREVIEW) {
       result.error("captureAlreadyActive", "Picture is currently already being captured", null);
       return;
     }
@@ -527,7 +522,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private void runPrecaptureSequence() {
     Log.i(TAG, "runPrecaptureSequence");
     try {
-      // First set precapture state to idle or else it can hang in STATE_WAITING_PRECAPTURE
+      // First set precapture state to idle or else it can hang in STATE_stPRECAPTURE
       mPreviewRequestBuilder.set(
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
@@ -538,7 +533,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
           null, (code, message) -> pictureCaptureRequest.error("cameraAccess", message, null));
 
       // Start precapture now
-      cameraState = CameraState.STATE_WAITING_PRECAPTURE_START;
+      mCaptureCallback.setCameraState(CameraState.STATE_WAITING_PRECAPTURE_START);
 
       mPreviewRequestBuilder.set(
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
@@ -558,8 +553,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    */
   private void takePictureAfterPrecapture() {
     Log.i(TAG, "captureStillPicture");
-    cameraState = CameraState.STATE_CAPTURING;
-    pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_CAPTURING);
+    mCaptureCallback.setCameraState(CameraState.STATE_CAPTURING);
 
     try {
       if (null == cameraDevice) {
@@ -664,15 +658,13 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     Log.i(TAG, "runPictureAutoFocus");
     assert (pictureCaptureRequest != null);
 
-    cameraState = CameraState.STATE_WAITING_FOCUS;
-    pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_WAITING_FOCUS);
+    mCaptureCallback.setCameraState(CameraState.STATE_WAITING_FOCUS);
     lockAutoFocus();
   }
 
   /** Start the autofocus routine on the current capture request. */
   private void lockAutoFocus() {
     Log.i(TAG, "lockAutoFocus");
-    pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_START);
 
     mPreviewRequestBuilder.set(
         CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
@@ -998,12 +990,20 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         (code, message) -> result.error("setZoomLevelFailed", "Could not set zoom level.", null));
   }
 
+  /**
+   * Lock capture orientation from dart.
+   *
+   * @param orientation new orientation.
+   */
   public void lockCaptureOrientation(PlatformChannel.DeviceOrientation orientation) {
-    this.lockedCaptureOrientation = orientation;
+    ((SensorOrientation) cameraFeatures.get(CameraFeatures.sensorOrientation))
+        .lockCaptureOrientation(orientation);
   }
 
+  /** Unlock capture orientation from dart. */
   public void unlockCaptureOrientation() {
-    this.lockedCaptureOrientation = null;
+    ((SensorOrientation) cameraFeatures.get(CameraFeatures.sensorOrientation))
+        .unlockCaptureOrientation();
   }
 
   public void startPreview() throws CameraAccessException {

@@ -41,13 +41,10 @@ class PictureCaptureRequest {
    * has timed out.
    */
   private long preCaptureStartTime;
-  /** The state of this picture capture request. */
-  private PictureCaptureRequestState state = PictureCaptureRequestState.STATE_IDLE;
 
   private final Runnable timeoutCallback =
       () -> {
-        error("captureTimeout", "Picture capture request timed out", state.toString());
-        setState(PictureCaptureRequestState.STATE_ERROR);
+        error("captureTimeout", "Picture capture request timed out", null);
       };
 
   /**
@@ -77,61 +74,16 @@ class PictureCaptureRequest {
   }
 
   /**
-   * Return the current state of this picture capture request.
-   *
-   * @return
-   */
-  public PictureCaptureRequestState getState() {
-    return state;
-  }
-
-  /**
-   * Set the picture capture request to a new state.
-   *
-   * @param newState
-   */
-  public void setState(PictureCaptureRequestState newState) {
-    // Log.i("Camera", "====> PictureCaptureRequest setState: " + newState);
-
-    // Once a request is finished, that's it for its lifecycle.
-    if (state == PictureCaptureRequestState.STATE_FINISHED) {
-      dartMessenger.sendCameraErrorEvent("Request has already been finished");
-      return;
-    }
-
-    state = newState;
-    onStateChange(newState);
-  }
-
-  public boolean isFinished() {
-    return state == PictureCaptureRequestState.STATE_FINISHED
-        || state == PictureCaptureRequestState.STATE_ERROR;
-  }
-
-  /**
    * Send the picture result back to Flutter. Returns the image path.
    *
    * @param absolutePath
    */
   public void finish(String absolutePath) {
-    if (state == PictureCaptureRequestState.STATE_ERROR) {
-      return;
-    }
-
-    if (isFinished()) throw new IllegalStateException("Request has already been finished");
-    setState(PictureCaptureRequestState.STATE_FINISHED);
-    // Log.i("Camera", "PictureCaptureRequest finish");
     result.success(absolutePath);
   }
 
   public void error(
       String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
-    if (state == PictureCaptureRequestState.STATE_ERROR) {
-      return;
-    }
-
-    if (isFinished()) throw new IllegalStateException("Request has already been finished");
-    setState(PictureCaptureRequestState.STATE_ERROR);
     result.error(errorCode, errorMessage, errorDetails);
   }
 
@@ -148,28 +100,6 @@ class PictureCaptureRequest {
   /** Sets the time the pre-capture sequence started. */
   public void setPreCaptureStartTime() {
     preCaptureStartTime = SystemClock.elapsedRealtime();
-  }
-
-  /** Handle new state changes. */
-  private void onStateChange(PictureCaptureRequestState newState) {
-    switch (newState) {
-      case STATE_CAPTURING:
-      case STATE_WAITING_FOCUS:
-      case STATE_WAITING_PRECAPTURE_START:
-        timeoutHandler.resetTimeout(timeoutCallback);
-        break;
-
-      case STATE_WAITING_PRECAPTURE_DONE:
-        setPreCaptureStartTime();
-        timeoutHandler.resetTimeout(timeoutCallback);
-        break;
-
-      case STATE_IDLE:
-      case STATE_FINISHED:
-      case STATE_ERROR:
-        timeoutHandler.clearTimeout(timeoutCallback);
-        break;
-    }
   }
 
   /**
@@ -189,7 +119,7 @@ class PictureCaptureRequest {
     }
 
     public void resetTimeout(Runnable runnable) {
-      // Log.i("Camear", "PictureCaptureRequest | resetting timeout");
+      // Log.i("Camera", "PictureCaptureRequest | resetting timeout");
       clearTimeout(runnable);
       handler.postDelayed(runnable, REQUEST_TIMEOUT);
     }

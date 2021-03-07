@@ -5,6 +5,7 @@ import android.hardware.camera2.CameraCaptureSession.CaptureCallback;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
+import android.util.Log;
 import androidx.annotation.NonNull;
 
 class CameraCaptureCallback extends CaptureCallback {
@@ -17,7 +18,6 @@ class CameraCaptureCallback extends CaptureCallback {
   }
 
   private final CameraCaptureStateListener cameraStateListener;
-
   private CameraState cameraState;
   private PictureCaptureRequest pictureCaptureRequest;
 
@@ -29,7 +29,6 @@ class CameraCaptureCallback extends CaptureCallback {
   private CameraCaptureCallback(@NonNull CameraCaptureStateListener cameraStateListener) {
     cameraState = CameraState.STATE_PREVIEW;
     this.cameraStateListener = cameraStateListener;
-    this.pictureCaptureRequest = pictureCaptureRequest;
   }
 
   public CameraState getCameraState() {
@@ -38,10 +37,6 @@ class CameraCaptureCallback extends CaptureCallback {
 
   public void setCameraState(@NonNull CameraState state) {
     cameraState = state;
-
-    if (pictureCaptureRequest != null && state == CameraState.STATE_WAITING_PRECAPTURE_DONE) {
-      pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_DONE);
-    }
   }
 
   public void setPictureCaptureRequest(@NonNull PictureCaptureRequest pictureCaptureRequest) {
@@ -51,6 +46,8 @@ class CameraCaptureCallback extends CaptureCallback {
   private void process(CaptureResult result) {
     Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+
+    Log.i("Camera", "CameraCaptureCallback | state: " + cameraState);
 
     switch (cameraState) {
       case STATE_PREVIEW:
