@@ -68,14 +68,13 @@ public class PictureCaptureRequestTest {
 
   @Test
   public void setState_resets_timeout() {
-    try(MockedStatic<TimeoutHandler> mockTimeoutFactory = mockStatic(TimeoutHandler.class)) {
+    try (MockedStatic<TimeoutHandler> mockTimeoutFactory = mockStatic(TimeoutHandler.class)) {
       PictureCaptureRequest.TimeoutHandler mockTimeoutHandler =
           mock(PictureCaptureRequest.TimeoutHandler.class);
 
       mockTimeoutFactory.when(TimeoutHandler::create).thenReturn(mockTimeoutHandler);
 
-      PictureCaptureRequest req = PictureCaptureRequest
-          .create(null, null, null);
+      PictureCaptureRequest req = PictureCaptureRequest.create(null, null, null);
       req.setState(PictureCaptureRequestState.STATE_WAITING_FOCUS);
       req.setState(PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_START);
       req.setState(PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_DONE);
@@ -87,7 +86,7 @@ public class PictureCaptureRequestTest {
 
   @Test
   public void setState_clears_timeout() {
-    try(MockedStatic<TimeoutHandler> mockTimeoutFactory = mockStatic(TimeoutHandler.class)) {
+    try (MockedStatic<TimeoutHandler> mockTimeoutFactory = mockStatic(TimeoutHandler.class)) {
       PictureCaptureRequest.TimeoutHandler mockTimeoutHandler =
           mock(PictureCaptureRequest.TimeoutHandler.class);
 
@@ -117,15 +116,14 @@ public class PictureCaptureRequestTest {
 
   @Test
   public void finish_clears_timeout() {
-    try(MockedStatic<TimeoutHandler> mockTimeoutFactory = mockStatic(TimeoutHandler.class)) {
+    try (MockedStatic<TimeoutHandler> mockTimeoutFactory = mockStatic(TimeoutHandler.class)) {
       PictureCaptureRequest.TimeoutHandler mockTimeoutHandler =
           mock(PictureCaptureRequest.TimeoutHandler.class);
 
       mockTimeoutFactory.when(TimeoutHandler::create).thenReturn(mockTimeoutHandler);
 
       MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
-      PictureCaptureRequest req =
-          PictureCaptureRequest.create(mockResult, null, null);
+      PictureCaptureRequest req = PictureCaptureRequest.create(mockResult, null, null);
       req.finish("/test/path");
       verify(mockTimeoutHandler, never()).resetTimeout(any());
       verify(mockTimeoutHandler).clearTimeout(any());
@@ -188,15 +186,14 @@ public class PictureCaptureRequestTest {
 
   @Test
   public void error_clears_timeout() {
-    try(MockedStatic<TimeoutHandler> mockTimeoutFactory = mockStatic(TimeoutHandler.class)) {
+    try (MockedStatic<TimeoutHandler> mockTimeoutFactory = mockStatic(TimeoutHandler.class)) {
       PictureCaptureRequest.TimeoutHandler mockTimeoutHandler =
           mock(PictureCaptureRequest.TimeoutHandler.class);
 
       mockTimeoutFactory.when(TimeoutHandler::create).thenReturn(mockTimeoutHandler);
 
       MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
-      PictureCaptureRequest req = PictureCaptureRequest
-          .create(mockResult, null, null);
+      PictureCaptureRequest req = PictureCaptureRequest.create(mockResult, null, null);
       req.error("ERROR_CODE", "Error Message", null);
       verify(mockTimeoutHandler, never()).resetTimeout(any());
       verify(mockTimeoutHandler).clearTimeout(any());

@@ -57,9 +57,7 @@ class PictureCaptureRequest {
    * @param file
    */
   static PictureCaptureRequest create(
-      MethodChannel.Result result,
-      File file,
-      DartMessenger dartMessenger) {
+      MethodChannel.Result result, File file, DartMessenger dartMessenger) {
     return new PictureCaptureRequest(result, file, dartMessenger);
   }
 
@@ -70,9 +68,7 @@ class PictureCaptureRequest {
    * @param file
    */
   private PictureCaptureRequest(
-      MethodChannel.Result result,
-      File file,
-      DartMessenger dartMessenger) {
+      MethodChannel.Result result, File file, DartMessenger dartMessenger) {
 
     this.result = result;
     this.file = file;

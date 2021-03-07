@@ -12,10 +12,8 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.CamcorderProfile;
 import android.util.Size;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
-import io.flutter.plugins.camera.types.ResolutionPreset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -86,16 +84,6 @@ public final class CameraUtils {
     }
   }
 
-  static Size computeBestPreviewSize(String cameraName, ResolutionPreset preset) {
-    if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
-      preset = ResolutionPreset.high;
-    }
-
-    CamcorderProfile profile =
-        getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
-    return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
-  }
-
   static Size computeBestCaptureSize(StreamConfigurationMap streamConfigurationMap) {
     // For still image captures, we use the largest available size.
     return Collections.max(
@@ -130,45 +118,6 @@ public final class CameraUtils {
       cameras.add(details);
     }
     return cameras;
-  }
-
-  static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
-      String cameraName, ResolutionPreset preset) {
-    int cameraId = Integer.parseInt(cameraName);
-    switch (preset) {
-        // All of these cases deliberately fall through to get the best available profile.
-      case max:
-        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_HIGH)) {
-          return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_HIGH);
-        }
-      case ultraHigh:
-        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_2160P)) {
-          return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_2160P);
-        }
-      case veryHigh:
-        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_1080P)) {
-          return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_1080P);
-        }
-      case high:
-        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_720P)) {
-          return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_720P);
-        }
-      case medium:
-        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_480P)) {
-          return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_480P);
-        }
-      case low:
-        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_QVGA)) {
-          return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_QVGA);
-        }
-      default:
-        if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_LOW)) {
-          return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_LOW);
-        } else {
-          throw new IllegalArgumentException(
-              "No capture session available for current capture session.");
-        }
-    }
   }
 
   private static class CompareSizesByArea implements Comparator<Size> {

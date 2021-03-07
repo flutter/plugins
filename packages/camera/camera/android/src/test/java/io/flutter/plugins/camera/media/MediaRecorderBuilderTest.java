@@ -32,10 +32,10 @@ public class MediaRecorderBuilderTest {
     int mediaOrientation = 1;
     MediaRecorder recorder = null;
 
-    try (MockedStatic<MediaRecorderFactory> mockMediaRecorderFactory = mockStatic(MediaRecorderFactory.class)) {
+    try (MockedStatic<MediaRecorderFactory> mockMediaRecorderFactory =
+        mockStatic(MediaRecorderFactory.class)) {
       MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
-      mockMediaRecorderFactory.when(MediaRecorderFactory::create)
-          .thenReturn(mockMediaRecorder);
+      mockMediaRecorderFactory.when(MediaRecorderFactory::create).thenReturn(mockMediaRecorder);
 
       MediaRecorderBuilder builder =
           new MediaRecorderBuilder(recorderProfile, outputFilePath)
@@ -44,18 +44,18 @@ public class MediaRecorderBuilderTest {
       recorder = builder.build();
     }
 
-      InOrder inOrder = inOrder(recorder);
-      inOrder.verify(recorder).setVideoSource(MediaRecorder.VideoSource.SURFACE);
-      inOrder.verify(recorder).setOutputFormat(recorderProfile.fileFormat);
-      inOrder.verify(recorder).setVideoEncoder(recorderProfile.videoCodec);
-      inOrder.verify(recorder).setVideoEncodingBitRate(recorderProfile.videoBitRate);
-      inOrder.verify(recorder).setVideoFrameRate(recorderProfile.videoFrameRate);
-      inOrder
-          .verify(recorder)
-          .setVideoSize(recorderProfile.videoFrameWidth, recorderProfile.videoFrameHeight);
-      inOrder.verify(recorder).setOutputFile(outputFilePath);
-      inOrder.verify(recorder).setOrientationHint(mediaOrientation);
-      inOrder.verify(recorder).prepare();
+    InOrder inOrder = inOrder(recorder);
+    inOrder.verify(recorder).setVideoSource(MediaRecorder.VideoSource.SURFACE);
+    inOrder.verify(recorder).setOutputFormat(recorderProfile.fileFormat);
+    inOrder.verify(recorder).setVideoEncoder(recorderProfile.videoCodec);
+    inOrder.verify(recorder).setVideoEncodingBitRate(recorderProfile.videoBitRate);
+    inOrder.verify(recorder).setVideoFrameRate(recorderProfile.videoFrameRate);
+    inOrder
+        .verify(recorder)
+        .setVideoSize(recorderProfile.videoFrameWidth, recorderProfile.videoFrameHeight);
+    inOrder.verify(recorder).setOutputFile(outputFilePath);
+    inOrder.verify(recorder).setOrientationHint(mediaOrientation);
+    inOrder.verify(recorder).prepare();
   }
 
   @Test
@@ -67,10 +67,10 @@ public class MediaRecorderBuilderTest {
     String outputFilePath = "mock_video_file_path";
     int mediaOrientation = 1;
 
-    try (MockedStatic<MediaRecorderFactory> mockMediaRecorderFactory = mockStatic(MediaRecorderFactory.class)) {
+    try (MockedStatic<MediaRecorderFactory> mockMediaRecorderFactory =
+        mockStatic(MediaRecorderFactory.class)) {
       MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
-      mockMediaRecorderFactory.when(MediaRecorderFactory::create)
-          .thenReturn(mockMediaRecorder);
+      mockMediaRecorderFactory.when(MediaRecorderFactory::create).thenReturn(mockMediaRecorder);
 
       MediaRecorderBuilder builder =
           new MediaRecorderBuilder(recorderProfile, outputFilePath)

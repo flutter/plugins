@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 class CameraCaptureCallback extends CaptureCallback {
   interface CameraCaptureStateListener {
     void onConverged();
+
     void onPrecapture();
+
     void onPrecaptureTimeout();
   }
 
@@ -24,8 +26,7 @@ class CameraCaptureCallback extends CaptureCallback {
     return new CameraCaptureCallback(cameraStateListener);
   }
 
-  private CameraCaptureCallback(
-      @NonNull CameraCaptureStateListener cameraStateListener) {
+  private CameraCaptureCallback(@NonNull CameraCaptureStateListener cameraStateListener) {
     cameraState = CameraState.STATE_PREVIEW;
     this.cameraStateListener = cameraStateListener;
     this.pictureCaptureRequest = pictureCaptureRequest;
@@ -39,8 +40,7 @@ class CameraCaptureCallback extends CaptureCallback {
     cameraState = state;
 
     if (pictureCaptureRequest != null && state == CameraState.STATE_WAITING_PRECAPTURE_DONE) {
-      pictureCaptureRequest.setState(
-          PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_DONE);
+      pictureCaptureRequest.setState(PictureCaptureRequestState.STATE_WAITING_PRECAPTURE_DONE);
     }
   }
 
@@ -54,51 +54,52 @@ class CameraCaptureCallback extends CaptureCallback {
 
     switch (cameraState) {
       case STATE_PREVIEW:
-      {
-        // We have nothing to do when the camera preview is working normally.
-        break;
-      }
-      case STATE_WAITING_FOCUS:
-      {
-        if (afState == null) {
-          return;
-        } else if (afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN
-            || afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED
-            || afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
-          // CONTROL_AE_STATE can be null on some devices
-
-          if (aeState == null || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
-            cameraStateListener.onConverged();
-          } else {
-            cameraStateListener.onPrecapture();
-          }
+        {
+          // We have nothing to do when the camera preview is working normally.
+          break;
         }
-        break;
-      }
+      case STATE_WAITING_FOCUS:
+        {
+          if (afState == null) {
+            return;
+          } else if (afState == CaptureRequest.CONTROL_AF_STATE_PASSIVE_SCAN
+              || afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED
+              || afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+            // CONTROL_AE_STATE can be null on some devices
+
+            if (aeState == null || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
+              cameraStateListener.onConverged();
+            } else {
+              cameraStateListener.onPrecapture();
+            }
+          }
+          break;
+        }
 
       case STATE_WAITING_PRECAPTURE_START:
-      {
-        // CONTROL_AE_STATE can be null on some devices
-        if (aeState == null
-            || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED
-            || aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE
-            || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED) {
-          setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
+        {
+          // CONTROL_AE_STATE can be null on some devices
+          if (aeState == null
+              || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED
+              || aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE
+              || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED) {
+            setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
+          }
+          break;
         }
-        break;
-      }
 
       case STATE_WAITING_PRECAPTURE_DONE:
-      {
-        // CONTROL_AE_STATE can be null on some devices
-        if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
-          cameraStateListener.onConverged();
-        } else if (pictureCaptureRequest != null && pictureCaptureRequest.hitPreCaptureTimeout()) {
-          // Log.i(TAG, "===> Hit precapture timeout");
-          cameraStateListener.onPrecaptureTimeout();
+        {
+          // CONTROL_AE_STATE can be null on some devices
+          if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
+            cameraStateListener.onConverged();
+          } else if (pictureCaptureRequest != null
+              && pictureCaptureRequest.hitPreCaptureTimeout()) {
+            // Log.i(TAG, "===> Hit precapture timeout");
+            cameraStateListener.onPrecaptureTimeout();
+          }
+          break;
         }
-        break;
-      }
     }
   }
 

@@ -143,6 +143,7 @@ class CameraPropertiesImpl implements CameraProperties {
 
   /**
    * Returns the hardware level of the camera.
+   *
    * @return
    */
   @Override
@@ -152,6 +153,7 @@ class CameraPropertiesImpl implements CameraProperties {
 
   @Override
   public int[] getAvailableNoiseReductionModes() {
-    return cameraCharacteristics.get(CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
+    return cameraCharacteristics.get(
+        CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
   }
 }

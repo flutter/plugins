@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera.types;
+package io.flutter.plugins.camera.features.autofocus;
 
-// Mirrors flash_mode.dart
-public enum FlashMode {
-  off("off"),
+// Mirrors focus_mode.dart
+public enum FocusMode {
   auto("auto"),
-  always("always"),
-  torch("torch");
+  locked("locked");
 
   private final String strValue;
 
-  FlashMode(String strValue) {
+  FocusMode(String strValue) {
     this.strValue = strValue;
   }
 
-  public static FlashMode getValueForString(String modeStr) {
-    for (FlashMode value : values()) {
+  public static FocusMode getValueForString(String modeStr) {
+    for (FocusMode value : values()) {
       if (value.strValue.equals(modeStr)) return value;
     }
     return null;
