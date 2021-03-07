@@ -199,7 +199,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
             put(
                 CameraFeatures.resolution,
                 new Resolution(resolutionPreset, cameraProperties.getCameraName()));
-            put(CameraFeatures.autoFocus, new AutoFocus());
+            put(CameraFeatures.autoFocus, new AutoFocus(false));
             put(
                 CameraFeatures.sensorOrientation,
                 new SensorOrientation(cameraProperties, activity, dartMessenger));
@@ -716,7 +716,11 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
     try {
       prepareMediaRecorder(videoRecordingFile.getAbsolutePath());
+
+      // Re-create autofocus feature so it's using video focus mode now
+      cameraFeatures.put(CameraFeatures.autoFocus, new AutoFocus(true));
       recordingVideo = true;
+
       createCaptureSession(
           CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
       result.success(null);
@@ -734,6 +738,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     }
 
     try {
+      // Re-create autofocus feature so it's using continuous capture focus mode now
+      cameraFeatures.put(CameraFeatures.autoFocus, new AutoFocus(false));
       recordingVideo = false;
 
       try {

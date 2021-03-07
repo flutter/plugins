@@ -5,16 +5,19 @@ import android.hardware.camera2.CaptureRequest;
 import android.util.Log;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
-import io.flutter.plugins.camera.types.FocusMode;
 
 public class AutoFocus implements CameraFeature<FocusMode> {
   //    private final boolean recordingVideo;
   private boolean isSupported;
   private FocusMode currentSetting = FocusMode.auto;
 
-  //    public AutoFocus(boolean recordingVideo) {
-  //        this.recordingVideo = recordingVideo;
-  //    }
+  // When we switch recording modes we re-create this feature with
+  // the appropriate setting here.
+  private final boolean recordingVideo;
+
+  public AutoFocus(boolean recordingVideo) {
+    this.recordingVideo = recordingVideo;
+  }
 
   @Override
   public FocusMode getValue() {
@@ -74,10 +77,9 @@ public class AutoFocus implements CameraFeature<FocusMode> {
       case auto:
         requestBuilder.set(
             CaptureRequest.CONTROL_AF_MODE,
-            //                        recordingVideo
-            //                                ? CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO
-            //                                :
-            CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            recordingVideo
+                ? CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO
+                : CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
       default:
         break;
     }

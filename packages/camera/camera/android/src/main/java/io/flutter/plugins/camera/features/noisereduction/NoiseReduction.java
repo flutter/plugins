@@ -4,7 +4,6 @@ import android.hardware.camera2.CaptureRequest;
 import android.util.Log;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
-import io.flutter.plugins.camera.types.NoiseReductionMode;
 
 /**
  * This can either be enabled or disabled. Only full capability devices can set this to off. Legacy

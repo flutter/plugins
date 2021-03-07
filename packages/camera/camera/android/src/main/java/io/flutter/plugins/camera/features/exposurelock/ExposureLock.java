@@ -4,7 +4,6 @@ import android.hardware.camera2.CaptureRequest;
 import android.util.Log;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
-import io.flutter.plugins.camera.types.ExposureMode;
 
 /**
  * Exposure lock controls whether or not exposure mode is currenty locked or automatically metering.
