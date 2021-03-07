@@ -12,6 +12,15 @@ public class ExposureLock implements CameraFeature<ExposureMode> {
   private boolean isSupported;
   private ExposureMode currentSetting = ExposureMode.auto;
 
+  public ExposureLock(CameraProperties cameraProperties) {
+    this.isSupported = checkIsSupported(cameraProperties);
+  }
+
+  @Override
+  public String getDebugName() {
+    return "ExposureLock";
+  }
+
   @Override
   public ExposureMode getValue() {
     return currentSetting;
@@ -24,7 +33,7 @@ public class ExposureLock implements CameraFeature<ExposureMode> {
 
   // Available on all devices.
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     return true;
   }
 
@@ -45,5 +54,9 @@ public class ExposureLock implements CameraFeature<ExposureMode> {
         requestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, false);
         break;
     }
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }

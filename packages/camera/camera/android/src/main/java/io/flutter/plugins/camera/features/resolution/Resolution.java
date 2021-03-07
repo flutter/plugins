@@ -15,7 +15,8 @@ public class Resolution implements CameraFeature<ResolutionPreset> {
   private boolean isSupported;
   private ResolutionPreset currentSetting;
 
-  public Resolution(ResolutionPreset initialSetting, String cameraName) {
+  public Resolution(
+      CameraProperties cameraProperties, ResolutionPreset initialSetting, String cameraName) {
     setValue(initialSetting);
 
     // Resolution configuration
@@ -25,6 +26,7 @@ public class Resolution implements CameraFeature<ResolutionPreset> {
     Log.i("Camera", "captureSize: " + captureSize);
 
     previewSize = computeBestPreviewSize(cameraName, initialSetting);
+    this.isSupported = checkIsSupported(cameraProperties);
   }
 
   static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
@@ -77,6 +79,11 @@ public class Resolution implements CameraFeature<ResolutionPreset> {
   }
 
   @Override
+  public String getDebugName() {
+    return "Resolution";
+  }
+
+  @Override
   public ResolutionPreset getValue() {
     return currentSetting;
   }
@@ -88,7 +95,7 @@ public class Resolution implements CameraFeature<ResolutionPreset> {
 
   // Always supported
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     return true;
   }
 
@@ -109,5 +116,9 @@ public class Resolution implements CameraFeature<ResolutionPreset> {
 
   public Size getCaptureSize() {
     return this.captureSize;
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }

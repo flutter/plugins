@@ -14,6 +14,15 @@ public class NoiseReduction implements CameraFeature<NoiseReductionMode> {
   private boolean isSupported;
   private NoiseReductionMode currentSetting;
 
+  public NoiseReduction(CameraProperties cameraProperties) {
+    this.isSupported = checkIsSupported(cameraProperties);
+  }
+
+  @Override
+  public String getDebugName() {
+    return "NoiseReduction";
+  }
+
   @Override
   public NoiseReductionMode getValue() {
     return currentSetting;
@@ -25,7 +34,7 @@ public class NoiseReduction implements CameraFeature<NoiseReductionMode> {
   }
 
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     /**
      * Available settings: public static final int NOISE_REDUCTION_MODE_FAST = 1; public static
      * final int NOISE_REDUCTION_MODE_HIGH_QUALITY = 2; public static final int
@@ -55,5 +64,9 @@ public class NoiseReduction implements CameraFeature<NoiseReductionMode> {
     // Always use fast mode.
     requestBuilder.set(
         CaptureRequest.NOISE_REDUCTION_MODE, CaptureRequest.NOISE_REDUCTION_MODE_FAST);
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }

@@ -7,7 +7,6 @@ import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
 public class AutoFocus implements CameraFeature<FocusMode> {
-  //    private final boolean recordingVideo;
   private boolean isSupported;
   private FocusMode currentSetting = FocusMode.auto;
 
@@ -15,8 +14,14 @@ public class AutoFocus implements CameraFeature<FocusMode> {
   // the appropriate setting here.
   private final boolean recordingVideo;
 
-  public AutoFocus(boolean recordingVideo) {
+  public AutoFocus(CameraProperties cameraProperties, boolean recordingVideo) {
     this.recordingVideo = recordingVideo;
+    this.isSupported = checkIsSupported(cameraProperties);
+  }
+
+  @Override
+  public String getDebugName() {
+    return "AutoFocus";
   }
 
   @Override
@@ -30,7 +35,7 @@ public class AutoFocus implements CameraFeature<FocusMode> {
   }
 
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     int[] modes = cameraProperties.getControlAutoFocusAvailableModes();
     Log.i("Camera", "checkAutoFocusSupported | modes:");
     for (int mode : modes) {
@@ -57,7 +62,6 @@ public class AutoFocus implements CameraFeature<FocusMode> {
             && !(modes == null
                 || modes.length == 0
                 || (modes.length == 1 && modes[0] == CameraCharacteristics.CONTROL_AF_MODE_OFF));
-    isSupported = supported;
     return supported;
   }
 
@@ -83,5 +87,9 @@ public class AutoFocus implements CameraFeature<FocusMode> {
       default:
         break;
     }
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }

@@ -9,7 +9,7 @@ import io.flutter.plugins.camera.features.CameraFeature;
 /** Exposure offset makes the image brighter or darker. */
 public class ZoomLevel implements CameraFeature<Float> {
   private boolean isSupported;
-  private Float currentSetting;
+  private Float currentSetting = CameraZoom.DEFAULT_ZOOM_FACTOR;
   private CameraProperties cameraProperties;
   private CameraZoom cameraZoom;
 
@@ -19,6 +19,12 @@ public class ZoomLevel implements CameraFeature<Float> {
         new CameraZoom(
             cameraProperties.getSensorInfoActiveArraySize(),
             cameraProperties.getScalerAvailableMaxDigitalZoom());
+    this.isSupported = checkIsSupported(cameraProperties);
+  }
+
+  @Override
+  public String getDebugName() {
+    return "ZoomLevel";
   }
 
   @Override
@@ -33,7 +39,7 @@ public class ZoomLevel implements CameraFeature<Float> {
 
   // Available on all devices.
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     return true;
   }
 
@@ -51,5 +57,9 @@ public class ZoomLevel implements CameraFeature<Float> {
 
   public CameraZoom getCameraZoom() {
     return this.cameraZoom;
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }

@@ -20,6 +20,13 @@ public class SensorOrientation implements CameraFeature<Integer> {
     deviceOrientationListener =
         DeviceOrientationManager.create(activity, dartMessenger, isFrontFacing, currentSetting);
     deviceOrientationListener.start();
+
+    this.isSupported = checkIsSupported(cameraProperties);
+  }
+
+  @Override
+  public String getDebugName() {
+    return "SensorOrientation";
   }
 
   @Override
@@ -33,8 +40,7 @@ public class SensorOrientation implements CameraFeature<Integer> {
   }
 
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
-    // Always supported
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     return true;
   }
 
@@ -47,5 +53,9 @@ public class SensorOrientation implements CameraFeature<Integer> {
 
   public DeviceOrientationManager getDeviceOrientationManager() {
     return this.deviceOrientationListener;
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }

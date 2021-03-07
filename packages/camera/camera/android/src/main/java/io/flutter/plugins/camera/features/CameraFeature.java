@@ -12,6 +12,9 @@ import io.flutter.plugins.camera.CameraProperties;
  * @param <T>
  */
 public interface CameraFeature<T> {
+  /** Debug name for this feature. */
+  public String getDebugName();
+
   /**
    * Get the current value of this feature's setting.
    *
@@ -31,7 +34,7 @@ public interface CameraFeature<T> {
    *
    * @return
    */
-  public boolean isSupported(CameraProperties cameraProperties);
+  public boolean checkIsSupported(CameraProperties cameraProperties);
 
   /**
    * Update the setting in a provided request builder.

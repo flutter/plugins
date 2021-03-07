@@ -22,6 +22,12 @@ public class ExposureOffset implements CameraFeature<ExposureOffsetValue> {
 
     // Initial offset of 0
     this.currentSetting = new ExposureOffsetValue(this.min, this.max, 0);
+    this.isSupported = checkIsSupported(cameraProperties);
+  }
+
+  @Override
+  public String getDebugName() {
+    return "ExposureOffset";
   }
 
   @Override
@@ -37,7 +43,7 @@ public class ExposureOffset implements CameraFeature<ExposureOffsetValue> {
 
   // Available on all devices.
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     return true;
   }
 
@@ -91,5 +97,9 @@ public class ExposureOffset implements CameraFeature<ExposureOffsetValue> {
   public double getExposureOffsetStepSize(CameraProperties cameraProperties) {
     Rational stepSize = cameraProperties.getControlAutoExposureCompensationStep();
     return stepSize == null ? 0.0 : stepSize.doubleValue();
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }

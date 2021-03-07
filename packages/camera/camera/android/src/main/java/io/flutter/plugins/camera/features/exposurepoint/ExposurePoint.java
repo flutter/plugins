@@ -16,8 +16,15 @@ public class ExposurePoint implements CameraFeature<Point> {
   private boolean isSupported;
   private Point currentSetting = new Point(0.0, 0.0);
 
-  public ExposurePoint(Callable<CameraRegions> getCameraRegions) {
+  public ExposurePoint(
+      CameraProperties cameraProperties, Callable<CameraRegions> getCameraRegions) {
     this.getCameraRegions = getCameraRegions;
+    this.isSupported = checkIsSupported(cameraProperties);
+  }
+
+  @Override
+  public String getDebugName() {
+    return "ExposurePoint";
   }
 
   @Override
@@ -42,10 +49,9 @@ public class ExposurePoint implements CameraFeature<Point> {
 
   // Whether or not this camera can set the exposure point.
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     Integer supportedRegions = cameraProperties.getControlMaxRegionsAutoExposure();
     final boolean supported = supportedRegions != null && supportedRegions > 0;
-    isSupported = supported;
     return supported;
   }
 
@@ -68,5 +74,9 @@ public class ExposurePoint implements CameraFeature<Point> {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }

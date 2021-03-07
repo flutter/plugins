@@ -32,6 +32,13 @@ public class FpsRange implements CameraFeature<Range<Integer>> {
       //            pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
     }
     Log.i("Camera", "[FPS Range] is:" + currentSetting);
+
+    this.isSupported = checkIsSupported(cameraProperties);
+  }
+
+  @Override
+  public String getDebugName() {
+    return "FpsRange";
   }
 
   @Override
@@ -46,7 +53,7 @@ public class FpsRange implements CameraFeature<Range<Integer>> {
 
   // Always supported
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     return true;
   }
 
@@ -59,5 +66,9 @@ public class FpsRange implements CameraFeature<Range<Integer>> {
     Log.i("Camera", "updateFpsRange | currentSetting: " + currentSetting);
 
     requestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, currentSetting);
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }

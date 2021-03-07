@@ -197,22 +197,26 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
           {
             put(
                 CameraFeatures.resolution,
-                new Resolution(resolutionPreset, cameraProperties.getCameraName()));
-            put(CameraFeatures.autoFocus, new AutoFocus(false));
+                new Resolution(
+                    cameraProperties, resolutionPreset, cameraProperties.getCameraName()));
+            put(CameraFeatures.autoFocus, new AutoFocus(cameraProperties, false));
             put(
                 CameraFeatures.sensorOrientation,
                 new SensorOrientation(cameraProperties, activity, dartMessenger));
-            put(CameraFeatures.exposureLock, new ExposureLock());
+            put(CameraFeatures.exposureLock, new ExposureLock(cameraProperties));
             put(CameraFeatures.exposureOffset, new ExposureOffset(cameraProperties));
-            put(CameraFeatures.exposurePoint, new ExposurePoint(() -> getCameraRegions()));
-            put(CameraFeatures.focusPoint, new FocusPoint(() -> getCameraRegions()));
-            put(CameraFeatures.flash, new Flash());
-            put(CameraFeatures.fpsRange, new FpsRange(cameraProperties));
-            put(CameraFeatures.noiseReduction, new NoiseReduction());
-            put(CameraFeatures.zoomLevel, new ZoomLevel(cameraProperties));
             put(
-                CameraFeatures.regionBoundaries,
-                new RegionBoundaries(cameraProperties, mPreviewRequestBuilder));
+                CameraFeatures.exposurePoint,
+                new ExposurePoint(cameraProperties, () -> getCameraRegions()));
+            put(
+                CameraFeatures.focusPoint,
+                new FocusPoint(cameraProperties, () -> getCameraRegions()));
+            put(CameraFeatures.flash, new Flash(cameraProperties));
+            put(CameraFeatures.fpsRange, new FpsRange(cameraProperties));
+            put(CameraFeatures.noiseReduction, new NoiseReduction(cameraProperties));
+            put(CameraFeatures.zoomLevel, new ZoomLevel(cameraProperties));
+
+            // Note: CameraFeatures.regionBoundaries will be created in CreateCaptureSession.
           }
         };
 
@@ -250,6 +254,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    */
   private void updateBuilderSettings(CaptureRequest.Builder requestBuilder) {
     for (Map.Entry<CameraFeatures, CameraFeature> feature : cameraFeatures.entrySet()) {
+      Log.i(TAG, "Updating builder with feature: " + feature.getValue().getDebugName());
       feature.getValue().updateBuilder(requestBuilder);
     }
   }
@@ -305,8 +310,9 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
                   getPreviewSize().getHeight(),
                   (ExposureMode) cameraFeatures.get(CameraFeatures.exposureLock).getValue(),
                   (FocusMode) cameraFeatures.get(CameraFeatures.autoFocus).getValue(),
-                  cameraFeatures.get(CameraFeatures.exposurePoint).isSupported(cameraProperties),
-                  cameraFeatures.get(CameraFeatures.focusPoint).isSupported(cameraProperties));
+                  ((ExposurePoint) cameraFeatures.get(CameraFeatures.exposurePoint))
+                      .getIsSupported(),
+                  ((FocusPoint) cameraFeatures.get(CameraFeatures.focusPoint)).getIsSupported());
             } catch (CameraAccessException e) {
               dartMessenger.sendCameraErrorEvent(e.getMessage());
               close();
@@ -407,6 +413,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
             }
             captureSession = session;
 
+            Log.i(TAG, "Updating builder settings");
             updateBuilderSettings(mPreviewRequestBuilder);
 
             refreshPreviewCaptureSession(
@@ -717,7 +724,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       prepareMediaRecorder(videoRecordingFile.getAbsolutePath());
 
       // Re-create autofocus feature so it's using video focus mode now
-      cameraFeatures.put(CameraFeatures.autoFocus, new AutoFocus(true));
+      cameraFeatures.put(CameraFeatures.autoFocus, new AutoFocus(cameraProperties, true));
       recordingVideo = true;
 
       createCaptureSession(
@@ -738,7 +745,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
     try {
       // Re-create autofocus feature so it's using continuous capture focus mode now
-      cameraFeatures.put(CameraFeatures.autoFocus, new AutoFocus(false));
+      cameraFeatures.put(CameraFeatures.autoFocus, new AutoFocus(cameraProperties, false));
       recordingVideo = false;
 
       try {

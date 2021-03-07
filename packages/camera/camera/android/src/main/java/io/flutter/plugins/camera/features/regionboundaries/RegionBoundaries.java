@@ -47,6 +47,13 @@ public class RegionBoundaries implements CameraFeature<Size> {
 
     // Create new camera regions using new size
     cameraRegions = new CameraRegions(currentSetting);
+
+    this.isSupported = checkIsSupported(cameraProperties);
+  }
+
+  @Override
+  public String getDebugName() {
+    return "RegionBoundaries";
   }
 
   @Override
@@ -61,7 +68,7 @@ public class RegionBoundaries implements CameraFeature<Size> {
 
   // Available on all devices.
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     return true;
   }
 
@@ -86,5 +93,9 @@ public class RegionBoundaries implements CameraFeature<Size> {
 
   public CameraRegions getCameraRegions() {
     return this.cameraRegions;
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }

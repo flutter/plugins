@@ -9,6 +9,15 @@ public class Flash implements CameraFeature<FlashMode> {
   private boolean isSupported;
   private FlashMode currentSetting = FlashMode.auto;
 
+  public Flash(CameraProperties cameraProperties) {
+    this.isSupported = checkIsSupported(cameraProperties);
+  }
+
+  @Override
+  public String getDebugName() {
+    return "Flash";
+  }
+
   @Override
   public FlashMode getValue() {
     return currentSetting;
@@ -20,10 +29,9 @@ public class Flash implements CameraFeature<FlashMode> {
   }
 
   @Override
-  public boolean isSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported(CameraProperties cameraProperties) {
     Boolean available = cameraProperties.getFlashInfoAvailable();
     final boolean supported = available != null && available;
-    isSupported = supported;
     return supported;
   }
 
@@ -66,5 +74,9 @@ public class Flash implements CameraFeature<FlashMode> {
         //                CaptureRequest.FLASH_MODE_OFF);
         //        break;
     }
+  }
+
+  public boolean getIsSupported() {
+    return this.isSupported;
   }
 }
