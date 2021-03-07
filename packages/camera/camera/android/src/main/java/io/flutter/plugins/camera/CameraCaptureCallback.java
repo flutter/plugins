@@ -48,7 +48,14 @@ class CameraCaptureCallback extends CaptureCallback {
     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
     if (cameraState != CameraState.STATE_PREVIEW) {
-      Log.i("Camera", "CameraCaptureCallback | state: " + cameraState + " | afState: " + afState + " | aeState: " + aeState);
+      Log.i(
+          "Camera",
+          "CameraCaptureCallback | state: "
+              + cameraState
+              + " | afState: "
+              + afState
+              + " | aeState: "
+              + aeState);
     }
 
     switch (cameraState) {

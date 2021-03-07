@@ -32,6 +32,25 @@ public class AutoFocus implements CameraFeature<FocusMode> {
   @Override
   public void setValue(FocusMode value) {
     this.currentSetting = value;
+
+    //    /**
+    //     * If we are locking AF, we should perform a one-time
+    //     */
+    //    switch (currentSetting) {
+    //      case locked:
+    //        requestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+    //        unlockAutoFocus.run();
+    //        break;
+    //
+    //      case auto:
+    //        requestBuilder.set(
+    //                CaptureRequest.CONTROL_AF_MODE,
+    //                recordingVideo
+    //                        ? CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO
+    //                        : CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+    //      default:
+    //        break;
+    //    }
   }
 
   @Override
@@ -75,6 +94,7 @@ public class AutoFocus implements CameraFeature<FocusMode> {
 
     switch (currentSetting) {
       case locked:
+        /** If we're locking AF we should do a one-time focus, then set the AF to idle */
         requestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
         break;
 
