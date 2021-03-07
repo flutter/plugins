@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera;
+package io.flutter.plugins.camera.features.regionboundaries;
 
 import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Size;

@@ -11,12 +11,12 @@ import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugins.camera.types.ExposureMode;
-import io.flutter.plugins.camera.types.FocusMode;
+import io.flutter.plugins.camera.features.autofocus.FocusMode;
+import io.flutter.plugins.camera.features.exposurelock.ExposureMode;
 import java.util.HashMap;
 import java.util.Map;
 
-class DartMessenger {
+public class DartMessenger {
   @Nullable private MethodChannel cameraChannel;
   @Nullable private MethodChannel deviceChannel;
 
@@ -46,7 +46,7 @@ class DartMessenger {
     deviceChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/device");
   }
 
-  void sendDeviceOrientationChangeEvent(PlatformChannel.DeviceOrientation orientation) {
+  public void sendDeviceOrientationChangeEvent(PlatformChannel.DeviceOrientation orientation) {
     assert (orientation != null);
     this.send(
         DeviceEventType.ORIENTATION_CHANGED,
