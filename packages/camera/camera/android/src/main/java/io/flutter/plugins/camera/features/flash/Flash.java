@@ -29,13 +29,11 @@ public class Flash implements CameraFeature<FlashMode> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    Log.i("Camera", "updateFlash");
-
-    // Don't try to set flash enabled if the current camera doesn't
-    // support it.
     if (!isSupported) {
       return;
     }
+
+    Log.i("Camera", "updateFlash | currentSetting: " + currentSetting);
 
     switch (currentSetting) {
       case off:

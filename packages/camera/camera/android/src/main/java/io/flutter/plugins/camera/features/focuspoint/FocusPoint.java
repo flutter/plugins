@@ -49,6 +49,8 @@ public class FocusPoint implements CameraFeature<Point> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    // Not used
+    if (!isSupported) {
+      return;
+    }
   }
 }

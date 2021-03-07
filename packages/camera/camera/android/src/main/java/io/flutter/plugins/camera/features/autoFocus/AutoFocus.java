@@ -63,11 +63,11 @@ public class AutoFocus implements CameraFeature<FocusMode> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    Log.i("Camera", "updateFocusMode currentFocusMode: " + currentSetting);
-
     if (!isSupported) {
       return;
     }
+
+    Log.i("Camera", "updateFocusMode | currentSetting: " + currentSetting);
 
     switch (currentSetting) {
       case locked:

@@ -40,7 +40,9 @@ public class SensorOrientation implements CameraFeature<Integer> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    // Not used
+    if (!isSupported) {
+      return;
+    }
   }
 
   public DeviceOrientationManager getDeviceOrientationManager() {

@@ -14,4 +14,8 @@ public class ExposureOffsetValue {
     this.max = max;
     this.value = value;
   }
+
+  public ExposureOffsetValue(double value) {
+    this(0, 0, value);
+  }
 }

@@ -52,9 +52,11 @@ public class FpsRange implements CameraFeature<Range<Integer>> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (currentSetting == null) {
+    if (!isSupported) {
       return;
     }
+
+    Log.i("Camera", "updateFpsRange | currentSetting: " + currentSetting);
 
     requestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, currentSetting);
   }

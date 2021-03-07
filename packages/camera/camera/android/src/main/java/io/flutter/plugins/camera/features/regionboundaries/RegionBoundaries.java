@@ -67,7 +67,9 @@ public class RegionBoundaries implements CameraFeature<Size> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    // Not used
+    if (!isSupported) {
+      return;
+    }
   }
 
   @TargetApi(Build.VERSION_CODES.P)

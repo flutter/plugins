@@ -94,7 +94,9 @@ public class Resolution implements CameraFeature<ResolutionPreset> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    // Not used
+    if (!isSupported) {
+      return;
+    }
   }
 
   public CamcorderProfile getRecordingProfile() {

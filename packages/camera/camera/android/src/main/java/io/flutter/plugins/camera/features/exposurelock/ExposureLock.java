@@ -30,12 +30,11 @@ public class ExposureLock implements CameraFeature<ExposureMode> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    Log.i("Camera", "updateExposureMode");
-
-    // Don't try to set if the current camera doesn't support it.
     if (!isSupported) {
       return;
     }
+
+    Log.i("Camera", "updateExposureLock | currentSetting: " + currentSetting);
 
     switch (currentSetting) {
       case locked:

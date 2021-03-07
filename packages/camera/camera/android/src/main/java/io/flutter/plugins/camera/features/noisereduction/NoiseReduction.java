@@ -46,12 +46,11 @@ public class NoiseReduction implements CameraFeature<NoiseReductionMode> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    Log.i("Camera", "updateFlash");
-
-    // Don't try to set if the current camera doesn't support it.
     if (!isSupported) {
       return;
     }
+
+    Log.i("Camera", "updateNoiseReduction | currentSetting: " + currentSetting);
 
     // Always use fast mode.
     requestBuilder.set(
