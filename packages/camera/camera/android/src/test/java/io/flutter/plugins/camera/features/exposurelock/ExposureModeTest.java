@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera.types;
+package io.flutter.plugins.camera.features.exposurelock;
 
 import static org.junit.Assert.assertEquals;
 
-import io.flutter.plugins.camera.features.exposurelock.ExposureMode;
 import org.junit.Test;
 
 public class ExposureModeTest {
