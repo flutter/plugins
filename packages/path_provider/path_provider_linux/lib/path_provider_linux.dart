@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:xdg_directories/xdg_directories.dart' as xdg;
 import 'package:path/path.dart' as path;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:package_info/package_info.dart';
 
 /// The linux implementation of [PathProviderPlatform]
 ///
@@ -35,9 +36,7 @@ class PathProviderLinux extends PathProviderPlatform {
   }
 
   @override
-  Future<String?> getApplicationDocumentsPath() {
-    return Future.value(xdg.getUserDirectory('DOCUMENTS')?.path);
-  }
+  Future<String?> getApplicationDocumentsPath() => getApplicationSupportPath();
 
   @override
   Future<String?> getDownloadsPath() {
