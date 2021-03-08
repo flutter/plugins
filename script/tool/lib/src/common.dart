@@ -482,8 +482,7 @@ class ProcessRunner {
 class GitVersionFinder {
 
   /// Constructor
-  GitVersionFinder(this.baseGitDir, this.baseSha) {
-  }
+  GitVersionFinder(this.baseGitDir, this.baseSha);
 
   /// The top level directory of the git repo.
   ///
@@ -499,7 +498,7 @@ class GitVersionFinder {
 
   /// Get a list of all the pubspec.yaml file that is changed.
   Future<List<String>> getChangedPubSpecs() async {
-    return (await getChangedFiles()).where(_isPubspec);
+    return (await getChangedFiles()).where(_isPubspec).toList();
   }
 
   /// Get a list of all the changed files.
