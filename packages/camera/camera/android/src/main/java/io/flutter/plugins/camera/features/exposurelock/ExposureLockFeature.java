@@ -21,7 +21,7 @@ public class ExposureLockFeature extends CameraFeature<ExposureMode> {
 
   @Override
   public String getDebugName() {
-    return "ExposureLock";
+    return "ExposureLockFeature";
   }
 
   @Override
