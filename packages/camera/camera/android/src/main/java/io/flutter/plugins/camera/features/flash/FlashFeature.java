@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features.flash;
 
 import android.hardware.camera2.CaptureRequest;
@@ -5,12 +9,11 @@ import android.util.Log;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
-public class Flash implements CameraFeature<FlashMode> {
-  private boolean isSupported;
+public class FlashFeature extends CameraFeature<FlashMode> {
   private FlashMode currentSetting = FlashMode.auto;
 
-  public Flash(CameraProperties cameraProperties) {
-    this.isSupported = checkIsSupported(cameraProperties);
+  public FlashFeature(CameraProperties cameraProperties) {
+    super(cameraProperties);
   }
 
   @Override
@@ -29,7 +32,7 @@ public class Flash implements CameraFeature<FlashMode> {
   }
 
   @Override
-  public boolean checkIsSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported() {
     Boolean available = cameraProperties.getFlashInfoAvailable();
     final boolean supported = available != null && available;
     return supported;
@@ -37,7 +40,7 @@ public class Flash implements CameraFeature<FlashMode> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (!isSupported) {
+    if (!checkIsSupported()) {
       return;
     }
 
@@ -74,9 +77,5 @@ public class Flash implements CameraFeature<FlashMode> {
         //                CaptureRequest.FLASH_MODE_OFF);
         //        break;
     }
-  }
-
-  public boolean getIsSupported() {
-    return this.isSupported;
   }
 }

@@ -1,6 +1,11 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features;
 
 import android.hardware.camera2.CaptureRequest;
+import androidx.annotation.NonNull;
 import io.flutter.plugins.camera.CameraProperties;
 
 /**
@@ -11,35 +16,42 @@ import io.flutter.plugins.camera.CameraProperties;
  *
  * @param <T>
  */
-public interface CameraFeature<T> {
+public abstract class CameraFeature<T> {
+  protected final CameraProperties cameraProperties;
+
+
+  protected CameraFeature(@NonNull CameraProperties cameraProperties) {
+    this.cameraProperties = cameraProperties;
+  }
+
   /** Debug name for this feature. */
-  public String getDebugName();
+  public abstract String getDebugName();
 
   /**
    * Get the current value of this feature's setting.
    *
    * @return
    */
-  public T getValue();
+  public abstract T getValue();
 
   /**
    * Set a new value for this feature's setting.
    *
    * @param value
    */
-  public void setValue(T value);
+  public abstract void setValue(T value);
 
   /**
-   * Returns whether or not this feature is supported on the given camera properties.
+   * Returns whether or not this feature is supported.
    *
    * @return
    */
-  public boolean checkIsSupported(CameraProperties cameraProperties);
+  public abstract boolean checkIsSupported();
 
   /**
    * Update the setting in a provided request builder.
    *
    * @param requestBuilder
    */
-  public void updateBuilder(CaptureRequest.Builder requestBuilder);
+  public abstract void updateBuilder(CaptureRequest.Builder requestBuilder);
 }

@@ -16,6 +16,7 @@ import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.WindowManager;
+import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.DartMessenger;
 
@@ -34,12 +35,18 @@ public class DeviceOrientationManager {
 
   /** Factory method to create a device orientation manager. */
   public static DeviceOrientationManager create(
-      Activity activity, DartMessenger messenger, boolean isFrontFacing, int sensorOrientation) {
+      @NonNull Activity activity,
+      @NonNull DartMessenger messenger,
+      boolean isFrontFacing,
+      int sensorOrientation) {
     return new DeviceOrientationManager(activity, messenger, isFrontFacing, sensorOrientation);
   }
 
   private DeviceOrientationManager(
-      Activity activity, DartMessenger messenger, boolean isFrontFacing, int sensorOrientation) {
+      @NonNull Activity activity,
+      @NonNull DartMessenger messenger,
+      boolean isFrontFacing,
+      int sensorOrientation) {
     this.activity = activity;
     this.messenger = messenger;
     this.isFrontFacing = isFrontFacing;

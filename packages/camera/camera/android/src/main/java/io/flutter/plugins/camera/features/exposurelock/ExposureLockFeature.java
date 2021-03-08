@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features.exposurelock;
 
 import android.hardware.camera2.CaptureRequest;
@@ -8,12 +12,11 @@ import io.flutter.plugins.camera.features.CameraFeature;
 /**
  * Exposure lock controls whether or not exposure mode is currenty locked or automatically metering.
  */
-public class ExposureLock implements CameraFeature<ExposureMode> {
-  private boolean isSupported;
+public class ExposureLockFeature extends CameraFeature<ExposureMode> {
   private ExposureMode currentSetting = ExposureMode.auto;
 
-  public ExposureLock(CameraProperties cameraProperties) {
-    this.isSupported = checkIsSupported(cameraProperties);
+  public ExposureLockFeature(CameraProperties cameraProperties) {
+    super(cameraProperties);
   }
 
   @Override
@@ -33,13 +36,13 @@ public class ExposureLock implements CameraFeature<ExposureMode> {
 
   // Available on all devices.
   @Override
-  public boolean checkIsSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported() {
     return true;
   }
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (!isSupported) {
+    if (!checkIsSupported()) {
       return;
     }
 
@@ -54,9 +57,5 @@ public class ExposureLock implements CameraFeature<ExposureMode> {
         requestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, false);
         break;
     }
-  }
-
-  public boolean getIsSupported() {
-    return this.isSupported;
   }
 }
