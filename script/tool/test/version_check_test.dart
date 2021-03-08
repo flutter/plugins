@@ -145,7 +145,8 @@ void main() {
     });
 
     test('allows minor changes to platform interfaces', () async {
-      createFakePlugin('plugin_platform_interface', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin_platform_interface',
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = "packages/plugin_platform_interface/pubspec.yaml";
       gitShowResponses = <String, String>{
         'master:packages/plugin_platform_interface/pubspec.yaml':
@@ -173,7 +174,8 @@ void main() {
     });
 
     test('disallows breaking changes to platform interfaces', () async {
-      createFakePlugin('plugin_platform_interface', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin_platform_interface',
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = "packages/plugin_platform_interface/pubspec.yaml";
       gitShowResponses = <String, String>{
         'master:packages/plugin_platform_interface/pubspec.yaml':
@@ -198,13 +200,14 @@ void main() {
           equals('show HEAD:packages/plugin_platform_interface/pubspec.yaml'));
     });
 
-     test('Throws if first line in change log is empty', () async{
+    test('Throws if first line in change log is empty', () async {
       createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
 
       final Directory pluginDirectory =
           mockPackagesDir.childDirectory('plugin');
 
-      createFakePubspec(pluginDirectory, isFlutter: true, includeVersion: true, version: '1.0.1');
+      createFakePubspec(pluginDirectory,
+          isFlutter: true, includeVersion: true, version: '1.0.1');
       String changelog = '''
 
 ## 1.0.1
@@ -220,13 +223,14 @@ void main() {
       );
     });
 
-    test('Throws if versions in changelog and pubspec do not match', () async{
+    test('Throws if versions in changelog and pubspec do not match', () async {
       createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
 
       final Directory pluginDirectory =
           mockPackagesDir.childDirectory('plugin');
 
-      createFakePubspec(pluginDirectory, isFlutter: true, includeVersion: true, version: '1.0.1');
+      createFakePubspec(pluginDirectory,
+          isFlutter: true, includeVersion: true, version: '1.0.1');
       String changelog = '''
 ## 1.0.2
 
@@ -254,13 +258,14 @@ void main() {
       } on ToolExit catch (_) {}
     });
 
-    test('Success if CHANGELOG and pubspec versions match', () async{
+    test('Success if CHANGELOG and pubspec versions match', () async {
       createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
 
       final Directory pluginDirectory =
           mockPackagesDir.childDirectory('plugin');
 
-      createFakePubspec(pluginDirectory, isFlutter: true, includeVersion: true, version: '1.0.1');
+      createFakePubspec(pluginDirectory,
+          isFlutter: true, includeVersion: true, version: '1.0.1');
       String changelog = '''
 ## 1.0.1
 
@@ -279,13 +284,16 @@ void main() {
       );
     });
 
-    test('Fail if pubspec version only matches an older version listed in CHANGELOG', () async{
+    test(
+        'Fail if pubspec version only matches an older version listed in CHANGELOG',
+        () async {
       createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
 
       final Directory pluginDirectory =
           mockPackagesDir.childDirectory('plugin');
 
-      createFakePubspec(pluginDirectory, isFlutter: true, includeVersion: true, version: '1.0.0');
+      createFakePubspec(pluginDirectory,
+          isFlutter: true, includeVersion: true, version: '1.0.0');
       String changelog = '''
 ## 1.0.1
 

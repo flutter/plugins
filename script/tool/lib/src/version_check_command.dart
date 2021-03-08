@@ -222,7 +222,8 @@ class VersionCheckCommand extends PluginCommand {
     // get version from pubspec
     final String packageName = plugin.basename;
     print('-----------------------------------------');
-    print('Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for $packageName.');
+    print(
+        'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for $packageName.');
 
     final Pubspec pubspec = _tryParsePubspec(plugin);
     if (pubspec == null) {
@@ -239,7 +240,8 @@ class VersionCheckCommand extends PluginCommand {
     final String versionString = firstLine.split(' ').last;
     Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
-      final String error = 'Cannot find version on the first line of CHANGELOG.md';
+      final String error =
+          'Cannot find version on the first line of CHANGELOG.md';
       PrintErrorAndExit(errorMessage: error);
     }
 
@@ -260,12 +262,14 @@ The first version listed in CHANGELOG.md is $fromChangeLog.
     try {
       Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
       if (pubspec == null) {
-        final String error = 'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';
+        final String error =
+            'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';
         PrintErrorAndExit(errorMessage: error);
       }
       return pubspec;
     } on Exception catch (exception) {
-      final String error = 'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}';
+      final String error =
+          'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}';
       PrintErrorAndExit(errorMessage: error);
     }
     return null;
