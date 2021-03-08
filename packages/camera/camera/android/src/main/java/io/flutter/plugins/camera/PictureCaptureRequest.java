@@ -42,11 +42,6 @@ class PictureCaptureRequest {
    */
   private long preCaptureStartTime;
 
-  private final Runnable timeoutCallback =
-      () -> {
-        error("captureTimeout", "Picture capture request timed out", null);
-      };
-
   /**
    * Factory method to create a picture capture request.
    *

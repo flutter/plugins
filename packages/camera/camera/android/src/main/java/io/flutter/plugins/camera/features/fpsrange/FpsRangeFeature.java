@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features.fpsrange;
 
 import android.hardware.camera2.CaptureRequest;
@@ -6,11 +10,12 @@ import android.util.Range;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
-public class FpsRange implements CameraFeature<Range<Integer>> {
-  private boolean isSupported;
+public class FpsRangeFeature extends CameraFeature<Range<Integer>> {
   private Range<Integer> currentSetting;
 
-  public FpsRange(CameraProperties cameraProperties) {
+  public FpsRangeFeature(CameraProperties cameraProperties) {
+    super(cameraProperties);
+
     Log.i("Camera", "getAvailableFpsRange");
 
     try {
@@ -32,8 +37,6 @@ public class FpsRange implements CameraFeature<Range<Integer>> {
       //            pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
     }
     Log.i("Camera", "[FPS Range] is:" + currentSetting);
-
-    this.isSupported = checkIsSupported(cameraProperties);
   }
 
   @Override
@@ -53,22 +56,18 @@ public class FpsRange implements CameraFeature<Range<Integer>> {
 
   // Always supported
   @Override
-  public boolean checkIsSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported() {
     return true;
   }
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (!isSupported) {
+    if (!checkIsSupported()) {
       return;
     }
 
     Log.i("Camera", "updateFpsRange | currentSetting: " + currentSetting);
 
     requestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, currentSetting);
-  }
-
-  public boolean getIsSupported() {
-    return this.isSupported;
   }
 }

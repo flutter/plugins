@@ -30,7 +30,7 @@ public class MediaRecorderBuilderTest {
     CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
     String outputFilePath = "mock_video_file_path";
     int mediaOrientation = 1;
-    MediaRecorder recorder = null;
+    MediaRecorder recorder;
 
     try (MockedStatic<MediaRecorderFactory> mockMediaRecorderFactory =
         mockStatic(MediaRecorderFactory.class)) {
@@ -60,10 +60,8 @@ public class MediaRecorderBuilderTest {
 
   @Test
   public void build_Should_set_values_in_correct_order_When_audio_is_enabled() throws IOException {
-    MediaRecorder recorder = null;
+    MediaRecorder recorder;
     CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
-    MediaRecorderBuilder.MediaRecorderFactory mockFactory =
-        mock(MediaRecorderBuilder.MediaRecorderFactory.class);
     String outputFilePath = "mock_video_file_path";
     int mediaOrientation = 1;
 

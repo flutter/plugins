@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features.regionboundaries;
 
 import android.annotation.TargetApi;
@@ -12,15 +16,15 @@ import java.util.Arrays;
  * Holds the current region boundaries. When this is created, you must provide a
  * CaptureRequestBuilder for which we can read the distortion correction settings from.
  */
-public class RegionBoundaries implements CameraFeature<Size> {
-  private boolean isSupported;
+public class RegionBoundariesFeature extends CameraFeature<Size> {
   private Size currentSetting;
-  private CameraProperties cameraProperties;
   private CameraRegions cameraRegions;
 
-  public RegionBoundaries(
-      CameraProperties cameraProperties, CaptureRequest.Builder requestBuilder) {
-    this.cameraProperties = cameraProperties;
+  public RegionBoundariesFeature(
+      CameraProperties cameraProperties,
+      CaptureRequest.Builder requestBuilder) {
+    super(cameraProperties);
+
     // No distortion correction support
     if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.P
         || !supportsDistortionCorrection()) {
@@ -47,8 +51,6 @@ public class RegionBoundaries implements CameraFeature<Size> {
 
     // Create new camera regions using new size
     cameraRegions = new CameraRegions(currentSetting);
-
-    this.isSupported = checkIsSupported(cameraProperties);
   }
 
   @Override
@@ -68,15 +70,13 @@ public class RegionBoundaries implements CameraFeature<Size> {
 
   // Available on all devices.
   @Override
-  public boolean checkIsSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported() {
     return true;
   }
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (!isSupported) {
-      return;
-    }
+    // Noop: when setting a region boundaries there is no need to update the request builder.
   }
 
   @TargetApi(Build.VERSION_CODES.P)
@@ -93,9 +93,5 @@ public class RegionBoundaries implements CameraFeature<Size> {
 
   public CameraRegions getCameraRegions() {
     return this.cameraRegions;
-  }
-
-  public boolean getIsSupported() {
-    return this.isSupported;
   }
 }

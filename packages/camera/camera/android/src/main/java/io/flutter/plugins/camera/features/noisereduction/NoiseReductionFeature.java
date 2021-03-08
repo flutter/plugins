@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features.noisereduction;
 
 import android.hardware.camera2.CaptureRequest;
@@ -10,12 +14,11 @@ import io.flutter.plugins.camera.features.CameraFeature;
  * and full support the fast mode.
  * https://developer.android.com/reference/android/hardware/camera2/CameraCharacteristics#NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES
  */
-public class NoiseReduction implements CameraFeature<NoiseReductionMode> {
-  private boolean isSupported;
+public class NoiseReductionFeature extends CameraFeature<NoiseReductionMode> {
   private NoiseReductionMode currentSetting;
 
-  public NoiseReduction(CameraProperties cameraProperties) {
-    this.isSupported = checkIsSupported(cameraProperties);
+  public NoiseReductionFeature(CameraProperties cameraProperties) {
+    super(cameraProperties);
   }
 
   @Override
@@ -34,8 +37,8 @@ public class NoiseReduction implements CameraFeature<NoiseReductionMode> {
   }
 
   @Override
-  public boolean checkIsSupported(CameraProperties cameraProperties) {
-    /**
+  public boolean checkIsSupported() {
+    /*
      * Available settings: public static final int NOISE_REDUCTION_MODE_FAST = 1; public static
      * final int NOISE_REDUCTION_MODE_HIGH_QUALITY = 2; public static final int
      * NOISE_REDUCTION_MODE_MINIMAL = 3; public static final int NOISE_REDUCTION_MODE_OFF = 0;
@@ -55,7 +58,7 @@ public class NoiseReduction implements CameraFeature<NoiseReductionMode> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (!isSupported) {
+    if (!checkIsSupported()) {
       return;
     }
 
@@ -64,9 +67,5 @@ public class NoiseReduction implements CameraFeature<NoiseReductionMode> {
     // Always use fast mode.
     requestBuilder.set(
         CaptureRequest.NOISE_REDUCTION_MODE, CaptureRequest.NOISE_REDUCTION_MODE_FAST);
-  }
-
-  public boolean getIsSupported() {
-    return this.isSupported;
   }
 }

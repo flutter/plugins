@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features.autofocus;
 
 import android.hardware.camera2.CameraCharacteristics;
@@ -6,17 +10,16 @@ import android.util.Log;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
-public class AutoFocus implements CameraFeature<FocusMode> {
-  private boolean isSupported;
+public class AutoFocusFeature extends CameraFeature<FocusMode> {
   private FocusMode currentSetting = FocusMode.auto;
 
   // When we switch recording modes we re-create this feature with
   // the appropriate setting here.
   private final boolean recordingVideo;
 
-  public AutoFocus(CameraProperties cameraProperties, boolean recordingVideo) {
+  public AutoFocusFeature(CameraProperties cameraProperties, boolean recordingVideo) {
+    super(cameraProperties);
     this.recordingVideo = recordingVideo;
-    this.isSupported = checkIsSupported(cameraProperties);
   }
 
   @Override
@@ -33,7 +36,7 @@ public class AutoFocus implements CameraFeature<FocusMode> {
   public void setValue(FocusMode value) {
     this.currentSetting = value;
 
-    //    /**
+    //    /*
     //     * If we are locking AF, we should perform a one-time
     //     */
     //    switch (currentSetting) {
@@ -54,7 +57,7 @@ public class AutoFocus implements CameraFeature<FocusMode> {
   }
 
   @Override
-  public boolean checkIsSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported() {
     int[] modes = cameraProperties.getControlAutoFocusAvailableModes();
     Log.i("Camera", "checkAutoFocusSupported | modes:");
     for (int mode : modes) {
@@ -78,15 +81,15 @@ public class AutoFocus implements CameraFeature<FocusMode> {
 
     final boolean supported =
         !isFixedLength
-            && !(modes == null
-                || modes.length == 0
+            && !(modes.length == 0
                 || (modes.length == 1 && modes[0] == CameraCharacteristics.CONTROL_AF_MODE_OFF));
+
     return supported;
   }
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (!isSupported) {
+    if (!checkIsSupported()) {
       return;
     }
 
@@ -107,9 +110,5 @@ public class AutoFocus implements CameraFeature<FocusMode> {
       default:
         break;
     }
-  }
-
-  public boolean getIsSupported() {
-    return this.isSupported;
   }
 }

@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features.exposurepoint;
 
 import android.hardware.camera2.CaptureRequest;
@@ -10,16 +14,14 @@ import io.flutter.plugins.camera.features.regionboundaries.CameraRegions;
 import java.util.concurrent.Callable;
 
 /** Exposure point controls where in the frame exposure metering will come from. */
-public class ExposurePoint implements CameraFeature<Point> {
+public class ExposurePointFeature extends CameraFeature<Point> {
   // Used later to always get the correct camera regions instance.
   private final Callable<CameraRegions> getCameraRegions;
-  private boolean isSupported;
   private Point currentSetting = new Point(0.0, 0.0);
 
-  public ExposurePoint(
-      CameraProperties cameraProperties, Callable<CameraRegions> getCameraRegions) {
+  public ExposurePointFeature(CameraProperties cameraProperties, Callable<CameraRegions> getCameraRegions) {
+    super(cameraProperties);
     this.getCameraRegions = getCameraRegions;
-    this.isSupported = checkIsSupported(cameraProperties);
   }
 
   @Override
@@ -49,7 +51,7 @@ public class ExposurePoint implements CameraFeature<Point> {
 
   // Whether or not this camera can set the exposure point.
   @Override
-  public boolean checkIsSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported() {
     Integer supportedRegions = cameraProperties.getControlMaxRegionsAutoExposure();
     final boolean supported = supportedRegions != null && supportedRegions > 0;
     return supported;
@@ -57,7 +59,7 @@ public class ExposurePoint implements CameraFeature<Point> {
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (!isSupported) {
+    if (!checkIsSupported()) {
       return;
     }
 
@@ -74,9 +76,5 @@ public class ExposurePoint implements CameraFeature<Point> {
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
-
-  public boolean getIsSupported() {
-    return this.isSupported;
   }
 }

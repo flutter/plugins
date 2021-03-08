@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features;
 
 /**
@@ -22,13 +26,6 @@ public enum CameraFeatures {
 
   CameraFeatures(String strValue) {
     this.strValue = strValue;
-  }
-
-  public static CameraFeatures getValueForString(String modeStr) {
-    for (CameraFeatures value : values()) {
-      if (value.strValue.equals(modeStr)) return value;
-    }
-    return null;
   }
 
   @Override

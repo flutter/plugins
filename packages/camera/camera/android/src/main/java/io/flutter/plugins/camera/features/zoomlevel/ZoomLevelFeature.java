@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features.zoomlevel;
 
 import android.graphics.Rect;
@@ -7,19 +11,16 @@ import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
 /** Exposure offset makes the image brighter or darker. */
-public class ZoomLevel implements CameraFeature<Float> {
-  private boolean isSupported;
+public class ZoomLevelFeature extends CameraFeature<Float> {
   private Float currentSetting = CameraZoom.DEFAULT_ZOOM_FACTOR;
-  private CameraProperties cameraProperties;
   private CameraZoom cameraZoom;
 
-  public ZoomLevel(CameraProperties cameraProperties) {
-    this.cameraProperties = cameraProperties;
+  public ZoomLevelFeature(CameraProperties cameraProperties) {
+    super(cameraProperties);
     this.cameraZoom =
         new CameraZoom(
             cameraProperties.getSensorInfoActiveArraySize(),
             cameraProperties.getScalerAvailableMaxDigitalZoom());
-    this.isSupported = checkIsSupported(cameraProperties);
   }
 
   @Override
@@ -39,13 +40,13 @@ public class ZoomLevel implements CameraFeature<Float> {
 
   // Available on all devices.
   @Override
-  public boolean checkIsSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported() {
     return true;
   }
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (!isSupported) {
+    if (!checkIsSupported()) {
       return;
     }
 
@@ -57,9 +58,5 @@ public class ZoomLevel implements CameraFeature<Float> {
 
   public CameraZoom getCameraZoom() {
     return this.cameraZoom;
-  }
-
-  public boolean getIsSupported() {
-    return this.isSupported;
   }
 }

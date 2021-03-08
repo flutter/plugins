@@ -8,9 +8,10 @@ import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Size;
 
 public final class CameraRegions {
+  private final Size maxBoundaries;
+
   private MeteringRectangle aeMeteringRectangle;
   private MeteringRectangle afMeteringRectangle;
-  private Size maxBoundaries;
 
   public CameraRegions(Size maxBoundaries) {
     assert (maxBoundaries == null || maxBoundaries.getWidth() > 0);

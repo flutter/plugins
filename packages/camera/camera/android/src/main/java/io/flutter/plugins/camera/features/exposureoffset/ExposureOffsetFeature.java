@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features.exposureoffset;
 
 import android.hardware.camera2.CaptureRequest;
@@ -8,21 +12,19 @@ import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
 /** Exposure offset makes the image brighter or darker. */
-public class ExposureOffset implements CameraFeature<ExposureOffsetValue> {
-  private boolean isSupported;
+public class ExposureOffsetFeature extends CameraFeature<ExposureOffsetValue> {
   private ExposureOffsetValue currentSetting;
-  private CameraProperties cameraProperties;
   private final double min;
   private final double max;
 
-  public ExposureOffset(CameraProperties cameraProperties) {
-    this.cameraProperties = cameraProperties;
-    this.min = getMinExposureOffset(cameraProperties);
-    this.max = getMaxExposureOffset(cameraProperties);
+  public ExposureOffsetFeature(CameraProperties cameraProperties) {
+    super(cameraProperties);
+
+    this.min = getMinExposureOffset();
+    this.max = getMaxExposureOffset();
 
     // Initial offset of 0
     this.currentSetting = new ExposureOffsetValue(this.min, this.max, 0);
-    this.isSupported = checkIsSupported(cameraProperties);
   }
 
   @Override
@@ -37,19 +39,19 @@ public class ExposureOffset implements CameraFeature<ExposureOffsetValue> {
 
   @Override
   public void setValue(ExposureOffsetValue value) {
-    double stepSize = getExposureOffsetStepSize(cameraProperties);
+    double stepSize = getExposureOffsetStepSize();
     this.currentSetting = new ExposureOffsetValue(min, max, (value.value / stepSize));
   }
 
   // Available on all devices.
   @Override
-  public boolean checkIsSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported() {
     return true;
   }
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (!isSupported) {
+    if (!checkIsSupported()) {
       return;
     }
 
@@ -61,26 +63,24 @@ public class ExposureOffset implements CameraFeature<ExposureOffsetValue> {
   /**
    * Return the minimum exposure offset double value.
    *
-   * @param cameraProperties
    * @return
    */
-  private double getMinExposureOffset(CameraProperties cameraProperties) {
+  private double getMinExposureOffset() {
     Range<Integer> range = cameraProperties.getControlAutoExposureCompensationRange();
     double minStepped = range == null ? 0 : range.getLower();
-    double stepSize = getExposureOffsetStepSize(cameraProperties);
+    double stepSize = getExposureOffsetStepSize();
     return minStepped * stepSize;
   }
 
   /**
    * Return the max exposure offset double value.
    *
-   * @param cameraProperties
    * @return
    */
-  private double getMaxExposureOffset(CameraProperties cameraProperties) {
+  private double getMaxExposureOffset() {
     Range<Integer> range = cameraProperties.getControlAutoExposureCompensationRange();
     double maxStepped = range == null ? 0 : range.getUpper();
-    double stepSize = getExposureOffsetStepSize(cameraProperties);
+    double stepSize = getExposureOffsetStepSize();
     return maxStepped * stepSize;
   }
 
@@ -91,15 +91,10 @@ public class ExposureOffset implements CameraFeature<ExposureOffsetValue> {
    * <p>Example: if this has a value of 0.5, then an aeExposureCompensation setting of -2 means that
    * the actual AE offset is -1.
    *
-   * @param cameraProperties
    * @return
    */
-  public double getExposureOffsetStepSize(CameraProperties cameraProperties) {
+  public double getExposureOffsetStepSize() {
     Rational stepSize = cameraProperties.getControlAutoExposureCompensationStep();
     return stepSize == null ? 0.0 : stepSize.doubleValue();
-  }
-
-  public boolean getIsSupported() {
-    return this.isSupported;
   }
 }

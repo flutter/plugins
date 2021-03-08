@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.features.resolution;
 
 import android.hardware.camera2.CaptureRequest;
@@ -7,16 +11,15 @@ import android.util.Size;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
-public class Resolution implements CameraFeature<ResolutionPreset> {
+public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   private final Size captureSize;
   private final Size previewSize;
   private final CamcorderProfile recordingProfile;
-  //    private final boolean recordingVideo;
-  private boolean isSupported;
   private ResolutionPreset currentSetting;
 
-  public Resolution(
+  public ResolutionFeature(
       CameraProperties cameraProperties, ResolutionPreset initialSetting, String cameraName) {
+    super(cameraProperties);
     setValue(initialSetting);
 
     // Resolution configuration
@@ -26,10 +29,9 @@ public class Resolution implements CameraFeature<ResolutionPreset> {
     Log.i("Camera", "captureSize: " + captureSize);
 
     previewSize = computeBestPreviewSize(cameraName, initialSetting);
-    this.isSupported = checkIsSupported(cameraProperties);
   }
 
-  static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
+  public static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
       String cameraName, ResolutionPreset preset) {
     int cameraId = Integer.parseInt(cameraName);
     switch (preset) {
@@ -95,15 +97,13 @@ public class Resolution implements CameraFeature<ResolutionPreset> {
 
   // Always supported
   @Override
-  public boolean checkIsSupported(CameraProperties cameraProperties) {
+  public boolean checkIsSupported() {
     return true;
   }
 
   @Override
   public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    if (!isSupported) {
-      return;
-    }
+    // Noop: when setting a resolution there is no need to update the request builder.
   }
 
   public CamcorderProfile getRecordingProfile() {
@@ -116,9 +116,5 @@ public class Resolution implements CameraFeature<ResolutionPreset> {
 
   public Size getCaptureSize() {
     return this.captureSize;
-  }
-
-  public boolean getIsSupported() {
-    return this.isSupported;
   }
 }
