@@ -1,7 +1,7 @@
 ## 5.0.1
 
 * Update platforms `init` function to prioritize `clientId` property when available;
-* Updates `google_sign_in_platform_interface` to match the newest version were `clientId` is being send as parameter.
+* Updates `google_sign_in_platform_interface` version.
 
 ## 5.0.0
 
