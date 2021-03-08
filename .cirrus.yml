@@ -25,7 +25,12 @@ task:
     - name: publishable
       script:
         - flutter channel master
-        - ./script/check_version.sh
+        - if [[$BRANCH != "master"]];then
+        -   CHANGED_PLUGINS=$(dart run ./script/tool/lib/src/main.dart get-changed-packages)
+        -   dart run ./script/tool/lib/src/main.dart check-version --plugins=$CHANGED_PLUGINS
+        - else
+        -   dart run ./script/tool/lib/src/main.dart check-version
+        - fi
         - ./script/check_publish.sh
     - name: format
       install_script:
