@@ -9,8 +9,10 @@ import 'dart:math';
 import 'package:args/command_runner.dart';
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
+import 'package:git/git.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
 typedef void Print(Object object);
@@ -473,5 +475,62 @@ class ProcessRunner {
       {Directory workingDir}) {
     final String workdir = workingDir == null ? '' : ' in ${workingDir.path}';
     return 'ERROR: Unable to execute "$executable ${args.join(' ')}"$workdir.';
+  }
+}
+
+/// Finding diffs based on `baseGitDir` and `baseSha`.
+class GitVersionFinder {
+
+  /// Constructor
+  GitVersionFinder(this.baseGitDir, this.baseSha) {
+  }
+
+  /// The top level directory of the git repo.
+  ///
+  /// That is where the .git/ folder exists.
+  final GitDir baseGitDir;
+
+  /// The base sha used to get diff.
+  final String baseSha;
+
+  static bool _isPubspec(String file) {
+    return file.trim().endsWith('pubspec.yaml');
+  }
+
+  /// Get a list of all the pubspec.yaml file that is changed.
+  Future<List<String>> getChangedPubSpecs() async {
+    return (await getChangedFiles()).where(_isPubspec);
+  }
+
+  /// Get a list of all the changed files.
+  Future<List<String>> getChangedFiles() async {
+    final io.ProcessResult changedFilesCommand = await baseGitDir
+        .runCommand(<String>['diff', '--name-only', '${await _getBaseSha()}', 'HEAD']);
+    final List<String> changedFiles =
+        changedFilesCommand.stdout.toString().split('\n');
+    return changedFiles.toList();
+  }
+
+  /// Get the package version specified in the pubspec file in `pubspecPath` and at the revision of `gitRef`.
+  Future<Version> getPackageVersion(String pubspecPath, String gitRef) async {
+    final io.ProcessResult gitShow =
+        await baseGitDir.runCommand(<String>['show', '$gitRef:$pubspecPath']);
+    final String fileContent = gitShow.stdout;
+    final String versionString = loadYaml(fileContent)['version'];
+    return versionString == null ? null : Version.parse(versionString);
+  }
+
+  Future<String> _getBaseSha() async {
+    if (baseSha != null && baseSha.isNotEmpty) {
+      return baseSha;
+    }
+
+    io.ProcessResult baseShaFromMergeBase =
+        await baseGitDir.runCommand(<String>['merge-base', '--fork-point', 'FETCH_HEAD', 'HEAD'], throwOnError: false);
+    if (baseShaFromMergeBase == null || baseShaFromMergeBase.stderr != null || baseShaFromMergeBase.stdout == null) {
+       baseShaFromMergeBase =
+        await baseGitDir.runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);
+    }
+    return (baseShaFromMergeBase.stdout as String).replaceAll('\n', '');
   }
 }

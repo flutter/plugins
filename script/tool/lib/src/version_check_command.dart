@@ -10,38 +10,10 @@ import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
-import 'package:yaml/yaml.dart';
 
 import 'common.dart';
 
 const String _kBaseSha = 'base_sha';
-
-class GitVersionFinder {
-  GitVersionFinder(this.baseGitDir, this.baseSha);
-
-  final GitDir baseGitDir;
-  final String baseSha;
-
-  static bool isPubspec(String file) {
-    return file.trim().endsWith('pubspec.yaml');
-  }
-
-  Future<List<String>> getChangedPubSpecs() async {
-    final io.ProcessResult changedFilesCommand = await baseGitDir
-        .runCommand(<String>['diff', '--name-only', '$baseSha', 'HEAD']);
-    final List<String> changedFiles =
-        changedFilesCommand.stdout.toString().split('\n');
-    return changedFiles.where(isPubspec).toList();
-  }
-
-  Future<Version> getPackageVersion(String pubspecPath, String gitRef) async {
-    final io.ProcessResult gitShow =
-        await baseGitDir.runCommand(<String>['show', '$gitRef:$pubspecPath']);
-    final String fileContent = gitShow.stdout;
-    final String versionString = loadYaml(fileContent)['version'];
-    return versionString == null ? null : Version.parse(versionString);
-  }
-}
 
 enum NextVersionType {
   BREAKING_MAJOR,
