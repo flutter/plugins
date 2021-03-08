@@ -168,7 +168,7 @@ dependencies:
   if (includeVersion) {
     yaml += '''
 version: $version
-publish_to: none # Hardcoded safeguard to prevent this from somehow being published by a broken test.
+publish_to: http://no_pub_server.com # Hardcoded safeguard to prevent this from somehow being published by a broken test.
 ''';
   }
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);

@@ -175,6 +175,9 @@ class VersionCheckCommand extends PluginCommand {
           continue;
         }
         final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+        if (pubspec.publishTo == 'none') {
+          continue;
+        }
 
         final Version masterVersion =
             await gitVersionFinder.getPackageVersion(pubspecPath, baseSha);
@@ -191,7 +194,7 @@ class VersionCheckCommand extends PluginCommand {
           final String error = '$pubspecPath incorrectly updated version.\n'
               'HEAD: $headVersion, master: $masterVersion.\n'
               'Allowed versions: $allowedNextVersions';
-          ThrowsToolExit(errorMessage: error);
+          PrintErrorAndExit(errorMessage: error);
         }
 
         bool isPlatformInterface = pubspec.name.endsWith("_platform_interface");
@@ -200,7 +203,7 @@ class VersionCheckCommand extends PluginCommand {
                 NextVersionType.BREAKING_MAJOR) {
           final String error = '$pubspecPath breaking change detected.\n'
               'Breaking changes to platform interfaces are strongly discouraged.\n';
-          ThrowsToolExit(errorMessage: error);
+          PrintErrorAndExit(errorMessage: error);
         }
       } on io.ProcessException {
         print('Unable to find pubspec in master for $pubspecPath.'
@@ -218,13 +221,17 @@ class VersionCheckCommand extends PluginCommand {
   Future<void> _checkVersionsMatch(Directory plugin) async {
     // get version from pubspec
     final String packageName = plugin.basename;
-    print('================================================================');
-    print('Checking that $packageName has matching version in CHANGELOG and pubspec');
+    print('-----------------------------------------');
+    print('Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for $packageName.');
 
     final Pubspec pubspec = _tryParsePubspec(plugin);
+    if (pubspec == null) {
+      final String error = 'Cannot parse version from pubspec.yaml';
+      PrintErrorAndExit(errorMessage: error);
+    }
     final Version fromPubspec = pubspec.version;
 
-    // get version from CHANGELOG
+    // get first version from CHANGELOG
     final File changelog = plugin.childFile('CHANGELOG.md');
     final List<String> lines = changelog.readAsLinesSync();
     final String firstLine = lines.first;
@@ -232,18 +239,21 @@ class VersionCheckCommand extends PluginCommand {
     final String versionString = firstLine.split(' ').last;
     Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
-      final String error = 'Can not find version on the first line of CHANGELOG.md';
-      ThrowsToolExit(errorMessage: error);
+      final String error = 'Cannot find version on the first line of CHANGELOG.md';
+      PrintErrorAndExit(errorMessage: error);
     }
 
     if (fromPubspec != fromChangeLog) {
-      final String error = 'versions for $packageName in CHANGELOG.md and pubspec.yaml do not match.';
-      ThrowsToolExit(errorMessage: error);
+      final String error = '''
+versions for $packageName in CHANGELOG.md and pubspec.yaml do not match.
+The version in pubspec.yaml is $fromPubspec.
+The first version listed in CHANGELOG.md is $fromChangeLog.
+''';
+      PrintErrorAndExit(errorMessage: error);
     }
-    print('${plugin.basename} passed version check');
+    print('${packageName} passed version check');
   }
 
-  // ignore: missing_return
   Pubspec _tryParsePubspec(Directory package) {
     final File pubspecFile = package.childFile('pubspec.yaml');
 
@@ -251,12 +261,13 @@ class VersionCheckCommand extends PluginCommand {
       Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
       if (pubspec == null) {
         final String error = 'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';
-        ThrowsToolExit(errorMessage: error);
+        PrintErrorAndExit(errorMessage: error);
       }
       return pubspec;
     } on Exception catch (exception) {
       final String error = 'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}';
-      ThrowsToolExit(errorMessage: error);
+      PrintErrorAndExit(errorMessage: error);
     }
+    return null;
   }
 }

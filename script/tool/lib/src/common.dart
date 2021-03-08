@@ -143,7 +143,7 @@ bool isLinuxPlugin(FileSystemEntity entity, FileSystem fileSystem) {
 }
 
 /// Throws a [ToolExit] with `exitCode` and log the `errorMessage` in red.
-void ThrowsToolExit({@required String errorMessage, int exitCode = 1}) {
+void PrintErrorAndExit({@required String errorMessage, int exitCode = 1}) {
   final Colorize redError = Colorize(errorMessage)..red();
   print(redError);
   throw ToolExit(exitCode);

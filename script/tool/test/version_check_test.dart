@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:git/git.dart';
 import 'package:mockito/mockito.dart';
 import "package:test/test.dart";
@@ -238,6 +239,19 @@ void main() {
         output,
         throwsA(const TypeMatcher<Error>()),
       );
+      try {
+        List<String> outputValue = await output;
+        await expectLater(
+          outputValue,
+          containsAllInOrder([
+            '''
+  versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
+  The version in pubspec.yaml is 1.0.1.
+  The first version listed in CHANGELOG.md is 1.0.2.
+  ''',
+          ]),
+        );
+      } on ToolExit catch (_) {}
     });
 
     test('Success if CHANGELOG and pubspec versions match', () async{
@@ -258,10 +272,49 @@ void main() {
       await expect(
         output,
         containsAllInOrder([
-          'Checking that plugin has matching version in CHANGELOG and pubspec',
+          'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for plugin.',
+          'plugin passed version check',
           'No version check errors found!'
         ]),
       );
+    });
+
+    test('Fail if pubspec version only matches an older version listed in CHANGELOG', () async{
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+
+      final Directory pluginDirectory =
+          mockPackagesDir.childDirectory('plugin');
+
+      createFakePubspec(pluginDirectory, isFlutter: true, includeVersion: true, version: '1.0.0');
+      String changelog = '''
+## 1.0.1
+
+* Some changes.
+
+## 1.0.0
+
+* Some other changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      Future<List<String>> output = runCapturingPrint(
+          runner, <String>['version-check', '--base_sha=master']);
+      await expectLater(
+        output,
+        throwsA(const TypeMatcher<Error>()),
+      );
+      try {
+        List<String> outputValue = await output;
+        await expectLater(
+          outputValue,
+          containsAllInOrder([
+            '''
+  versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
+  The version in pubspec.yaml is 1.0.0.
+  The first version listed in CHANGELOG.md is 1.0.1.
+  ''',
+          ]),
+        );
+      } on ToolExit catch (_) {}
     });
   });
 

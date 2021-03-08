@@ -25,11 +25,8 @@ task:
     - name: publishable
       script:
         - flutter channel master
-        - ./script/check_publish.sh
-    - name: version
-      script:
-        - flutter channel master
         - ./script/check_version.sh
+        - ./script/check_publish.sh
     - name: format
       install_script:
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
