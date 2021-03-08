@@ -6,7 +6,7 @@
 
 import 'package:meta/meta.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:googleapis_auth/auth.dart' as googleapis_auth;
+import 'package:googleapis_auth/googleapis_auth.dart' as googleapis_auth;
 import 'package:http/http.dart' as http;
 
 /// Extension on [GoogleSignIn] that adds an `authenticatedClient` method.
