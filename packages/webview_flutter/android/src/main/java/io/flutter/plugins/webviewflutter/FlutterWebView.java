@@ -352,10 +352,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void applySettings(Map<String, Object> settings) {
     for (String key : settings.keySet()) {
+      if (settings.get(key) == null) {
+        continue;
+      }
       switch (key) {
         case "jsMode":
-          Integer mode = (Integer) settings.get(key);
-          if (mode != null) updateJsMode(mode);
+          updateJsMode((Integer) settings.get(key));
           break;
         case "hasNavigationDelegate":
           final boolean hasNavigationDelegate = (boolean) settings.get(key);

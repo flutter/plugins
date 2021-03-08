@@ -234,6 +234,11 @@ class WebView extends StatefulWidget {
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
   })  : assert(javascriptMode != null),
+        assert(zoomEnabled != null),
+        assert(builtInZoomControlsEnabled != null),
+        assert(displayZoomControls != null),
+        assert(useWideViewPort != null),
+        assert(loadWithOverviewMode != null),
         assert(initialMediaPlaybackPolicy != null),
         assert(allowsInlineMediaPlayback != null),
         super(key: key);
