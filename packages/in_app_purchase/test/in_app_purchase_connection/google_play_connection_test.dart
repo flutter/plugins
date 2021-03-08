@@ -5,9 +5,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
-import 'package:test/test.dart';
 
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:in_app_purchase/billing_client_wrappers.dart';
@@ -24,7 +23,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
-  GooglePlayConnection connection;
+  late GooglePlayConnection connection;
   const String startConnectionCall =
       'BillingClient#startConnection(BillingClientStateListener)';
   const String endConnectionCall = 'BillingClient#endConnection()';
@@ -149,10 +148,11 @@ void main() {
           await connection.queryProductDetails(<String>['invalid'].toSet());
       expect(response.notFoundIDs, ['invalid']);
       expect(response.productDetails, isEmpty);
-      expect(response.error.source, IAPSource.GooglePlay);
-      expect(response.error.code, 'error_code');
-      expect(response.error.message, 'error_message');
-      expect(response.error.details, {'info': 'error_info'});
+      expect(response.error, isNotNull);
+      expect(response.error!.source, IAPSource.GooglePlay);
+      expect(response.error!.code, 'error_code');
+      expect(response.error!.message, 'error_message');
+      expect(response.error!.details, {'info': 'error_info'});
     });
   });
 
@@ -172,8 +172,10 @@ void main() {
       final QueryPurchaseDetailsResponse response =
           await connection.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
-      expect(response.error.message, BillingResponse.developerError.toString());
-      expect(response.error.source, IAPSource.GooglePlay);
+      expect(response.error, isNotNull);
+      expect(
+          response.error!.message, BillingResponse.developerError.toString());
+      expect(response.error!.source, IAPSource.GooglePlay);
     });
 
     test('returns SkuDetailsResponseWrapper', () async {
@@ -221,15 +223,23 @@ void main() {
       final QueryPurchaseDetailsResponse response =
           await connection.queryPastPurchases();
       expect(response.pastPurchases, isEmpty);
-      expect(response.error.code, 'error_code');
-      expect(response.error.message, 'error_message');
-      expect(response.error.details, {'info': 'error_info'});
+      expect(response.error, isNotNull);
+      expect(response.error!.code, 'error_code');
+      expect(response.error!.message, 'error_message');
+      expect(response.error!.details, {'info': 'error_info'});
     });
   });
 
   group('refresh receipt data', () {
     test('should throw on android', () {
       expect(GooglePlayConnection.instance.refreshPurchaseVerificationData(),
+          throwsUnsupportedError);
+    });
+  });
+
+  group('present code redemption sheet', () {
+    test('should throw on android', () {
+      expect(GooglePlayConnection.instance.presentCodeRedemptionSheet(),
           throwsUnsupportedError);
     });
   });
@@ -277,7 +287,7 @@ void main() {
       PurchaseDetails purchaseDetails;
       Stream purchaseStream =
           GooglePlayConnection.instance.purchaseUpdatedStream;
-      StreamSubscription subscription;
+      late StreamSubscription subscription;
       subscription = purchaseStream.listen((_) {
         purchaseDetails = _.first;
         completer.complete(purchaseDetails);
@@ -320,7 +330,7 @@ void main() {
       PurchaseDetails purchaseDetails;
       Stream purchaseStream =
           GooglePlayConnection.instance.purchaseUpdatedStream;
-      StreamSubscription subscription;
+      late StreamSubscription subscription;
       subscription = purchaseStream.listen((_) {
         purchaseDetails = _.first;
         completer.complete(purchaseDetails);
@@ -334,9 +344,9 @@ void main() {
       PurchaseDetails result = await completer.future;
 
       expect(result.error, isNotNull);
-      expect(result.error.source, IAPSource.GooglePlay);
+      expect(result.error!.source, IAPSource.GooglePlay);
       expect(result.status, PurchaseStatus.error);
-      expect(result.purchaseID, isNull);
+      expect(result.purchaseID, isEmpty);
     });
 
     test('buy consumable with auto consume, serializes and deserializes data',
@@ -392,7 +402,7 @@ void main() {
       PurchaseDetails purchaseDetails;
       Stream purchaseStream =
           GooglePlayConnection.instance.purchaseUpdatedStream;
-      StreamSubscription subscription;
+      late StreamSubscription subscription;
       subscription = purchaseStream.listen((_) {
         purchaseDetails = _.first;
         completer.complete(purchaseDetails);
@@ -407,7 +417,8 @@ void main() {
       // Verify that the result has succeeded
       PurchaseDetails result = await completer.future;
       expect(launchResult, isTrue);
-      expect(result.billingClientPurchase.purchaseToken,
+      expect(result.billingClientPurchase, isNotNull);
+      expect(result.billingClientPurchase!.purchaseToken,
           await consumeCompleter.future);
       expect(result.status, PurchaseStatus.purchased);
       expect(result.error, isNull);
@@ -501,7 +512,7 @@ void main() {
       PurchaseDetails purchaseDetails;
       Stream purchaseStream =
           GooglePlayConnection.instance.purchaseUpdatedStream;
-      StreamSubscription subscription;
+      late StreamSubscription subscription;
       subscription = purchaseStream.listen((_) {
         purchaseDetails = _.first;
         completer.complete(purchaseDetails);
@@ -515,11 +526,12 @@ void main() {
 
       // Verify that the result has an error for the failed consumption
       PurchaseDetails result = await completer.future;
-      expect(result.billingClientPurchase.purchaseToken,
+      expect(result.billingClientPurchase, isNotNull);
+      expect(result.billingClientPurchase!.purchaseToken,
           await consumeCompleter.future);
       expect(result.status, PurchaseStatus.error);
       expect(result.error, isNotNull);
-      expect(result.error.code, kConsumptionFailedErrorCode);
+      expect(result.error!.code, kConsumptionFailedErrorCode);
     });
 
     test(
@@ -574,7 +586,7 @@ void main() {
 
       Stream purchaseStream =
           GooglePlayConnection.instance.purchaseUpdatedStream;
-      StreamSubscription subscription;
+      late StreamSubscription subscription;
       subscription = purchaseStream.listen((_) {
         consumeCompleter.complete(null);
         subscription.cancel();
@@ -626,13 +638,8 @@ void main() {
       purchaseDetails.status = PurchaseStatus.purchased;
       if (purchaseDetails.pendingCompletePurchase) {
         final BillingResultWrapper billingResultWrapper =
-            await GooglePlayConnection.instance.completePurchase(
-                purchaseDetails,
-                developerPayload: 'dummy payload');
-        print('pending ${billingResultWrapper.responseCode}');
-        print('expectedBillingResult ${expectedBillingResult.responseCode}');
-        print('pending ${billingResultWrapper.debugMessage}');
-        print('expectedBillingResult ${expectedBillingResult.debugMessage}');
+            await GooglePlayConnection.instance
+                .completePurchase(purchaseDetails);
         expect(billingResultWrapper, equals(expectedBillingResult));
         completer.complete(billingResultWrapper);
       }

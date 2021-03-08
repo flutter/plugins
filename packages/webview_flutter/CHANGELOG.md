@@ -1,26 +1,21 @@
-## 2.0.0-nullsafety.5
+## 2.0.2
 
-* Add section to the wiki explaining how to use Material components.
+* Fixes bug where text fields are hidden behind the keyboard
+when hybrid composition is used [flutter/issues/75667](https://github.com/flutter/flutter/issues/75667).
 
-## 2.0.0-nullsafety.4
+## 2.0.1
 
-* Update integration test to workaround an iOS 14 issue with `evaluateJavascript`.
+* Run CocoaPods iOS tests in RunnerUITests target
 
-## 2.0.0-nullsafety.3
-
-* Fix `onWebResourceError` on iOS.
-
-## 2.0.0-nullsafety.2
-
-* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
-
-## 2.0.0-nullsafety.1
-
-* Added `allowsInlineMediaPlayback` property.
-
-## 2.0.0-nullsafety
+## 2.0.0
 
 * Migration to null-safety.
+* Added support for progress tracking.
+* Add section to the wiki explaining how to use Material components.
+* Update integration test to workaround an iOS 14 issue with `evaluateJavascript`.
+* Fix `onWebResourceError` on iOS.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Added `allowsInlineMediaPlayback` property.
 
 ## 1.0.8
 

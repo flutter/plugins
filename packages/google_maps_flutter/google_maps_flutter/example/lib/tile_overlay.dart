@@ -31,8 +31,8 @@ class TileOverlayBody extends StatefulWidget {
 class TileOverlayBodyState extends State<TileOverlayBody> {
   TileOverlayBodyState();
 
-  GoogleMapController controller;
-  TileOverlay _tileOverlay;
+  GoogleMapController? controller;
+  TileOverlay? _tileOverlay;
 
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
@@ -61,12 +61,15 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
 
   void _clearTileCache() {
     if (_tileOverlay != null && controller != null) {
-      controller.clearTileCache(_tileOverlay.tileOverlayId);
+      controller!.clearTileCache(_tileOverlay!.tileOverlayId);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    Set<TileOverlay?> overlays = <TileOverlay?>{
+      if (_tileOverlay != null) _tileOverlay,
+    };
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -81,8 +84,7 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
                 target: LatLng(59.935460, 30.325177),
                 zoom: 7.0,
               ),
-              tileOverlays:
-                  _tileOverlay != null ? <TileOverlay>{_tileOverlay} : null,
+              tileOverlays: overlays as Set<TileOverlay>,
               onMapCreated: _onMapCreated,
             ),
           ),
@@ -121,7 +123,7 @@ class _DebugTileProvider implements TileProvider {
   );
 
   @override
-  Future<Tile> getTile(int x, int y, int zoom) async {
+  Future<Tile> getTile(int x, int y, int? zoom) async {
     final ui.PictureRecorder recorder = ui.PictureRecorder();
     final Canvas canvas = Canvas(recorder);
     final TextSpan textSpan = TextSpan(
@@ -145,7 +147,7 @@ class _DebugTileProvider implements TileProvider {
         .toImage(width, height)
         .then((ui.Image image) =>
             image.toByteData(format: ui.ImageByteFormat.png))
-        .then((ByteData byteData) => byteData.buffer.asUint8List());
+        .then((ByteData? byteData) => byteData!.buffer.asUint8List());
     return Tile(width, height, byteData);
   }
 }

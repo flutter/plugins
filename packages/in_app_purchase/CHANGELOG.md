@@ -1,3 +1,31 @@
+## 0.5.1
+
+* [iOS] Introduce `SKPaymentQueueWrapper.presentCodeRedemptionSheet` 
+
+## 0.5.0
+
+* Migrate to Google Billing Library 3.0
+  * Add `obfuscatedProfileId`, `purchaseToken` in [BillingClientWrapper.launchBillingFlow].
+  * **Breaking Change**
+    * Removed `developerPayload` in [BillingClientWrapper.acknowledgePurchase], [BillingClientWrapper.consumeAsync], [InAppPurchaseConnection.completePurchase], [InAppPurchaseConnection.consumePurchase].
+    * Removed `isRewarded` from [SkuDetailsWrapper].
+    * [SkuDetailsWrapper.introductoryPriceCycles] now returns `int` instead of `String`.
+    * Above breaking changes are inline with the breaking changes introduced in [Google Play Billing 3.0 release](https://developer.android.com/google/play/billing/release-notes#3-0).
+    * Additional information on some the changes:
+      * [Dropping reward SKU support](https://support.google.com/googleplay/android-developer/answer/9155268?hl=en)
+      * [Developer payload](https://developer.android.com/google/play/billing/developer-payload)
+
+## 0.4.1
+
+* Support InApp subscription upgrade/downgrade.
+
+## 0.4.0
+
+* Migrate to nullsafety.
+* Deprecate `sandboxTesting`, introduce `simulatesAskToBuyInSandbox`.
+* **Breaking Change:**
+  * Removed `callbackChannel` in `channels.dart`, see https://github.com/flutter/flutter/issues/69225.
+
 ## 0.3.5+2
 
 * Migrate deprecated references.

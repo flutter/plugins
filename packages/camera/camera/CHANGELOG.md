@@ -1,6 +1,9 @@
-## 0.8.0-nullsafety
+## 0.8.0
 
-* Migrated to null safety.
+* Stable null safety release.
+* Solved delay when using the zoom feature on iOS.
+* Added a timeout to the pre-capture sequence on Android to prevent crashes when the camera cannot get a focus.
+* Updates the example code listed in the [README.md](README.md), so it runs without errors when you simply copy/ paste it into a Flutter App.
 
 ## 0.7.0+4
 

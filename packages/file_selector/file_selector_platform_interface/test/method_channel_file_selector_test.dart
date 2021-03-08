@@ -29,14 +29,14 @@ void main() {
       test('passes the accepted type groups correctly', () async {
         final group = XTypeGroup(
           label: 'text',
-          extensions: ['.txt'],
+          extensions: ['txt'],
           mimeTypes: ['text/plain'],
           macUTIs: ['public.text'],
         );
 
         final groupTwo = XTypeGroup(
             label: 'image',
-            extensions: ['.jpg'],
+            extensions: ['jpg'],
             mimeTypes: ['image/jpg'],
             macUTIs: ['public.image'],
             webWildCards: ['image/*']);
@@ -90,14 +90,14 @@ void main() {
       test('passes the accepted type groups correctly', () async {
         final group = XTypeGroup(
           label: 'text',
-          extensions: ['.txt'],
+          extensions: ['txt'],
           mimeTypes: ['text/plain'],
           macUTIs: ['public.text'],
         );
 
         final groupTwo = XTypeGroup(
             label: 'image',
-            extensions: ['.jpg'],
+            extensions: ['jpg'],
             mimeTypes: ['image/jpg'],
             macUTIs: ['public.image'],
             webWildCards: ['image/*']);
@@ -152,14 +152,14 @@ void main() {
       test('passes the accepted type groups correctly', () async {
         final group = XTypeGroup(
           label: 'text',
-          extensions: ['.txt'],
+          extensions: ['txt'],
           mimeTypes: ['text/plain'],
           macUTIs: ['public.text'],
         );
 
         final groupTwo = XTypeGroup(
             label: 'image',
-            extensions: ['.jpg'],
+            extensions: ['jpg'],
             mimeTypes: ['image/jpg'],
             macUTIs: ['public.image'],
             webWildCards: ['image/*']);
