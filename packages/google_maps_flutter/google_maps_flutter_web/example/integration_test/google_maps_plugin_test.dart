@@ -70,11 +70,16 @@ void main() {
 
     group('buildView', () {
       final testMapId = 33930;
+      final initialCameraPosition = CameraPosition(target: LatLng(0, 0));
 
       testWidgets('throws without _webOnlyMapCreationId',
           (WidgetTester tester) async {
         expect(
-          () => plugin.buildView({}, null, onPlatformViewCreated),
+          () => plugin.buildView(
+            null,
+            onPlatformViewCreated,
+            initialCameraPosition: initialCameraPosition,
+          ),
           throwsAssertionError,
           reason:
               '_webOnlyMapCreationId is mandatory to prevent unnecessary reloads in web.',
@@ -87,9 +92,11 @@ void main() {
         final Map<int, GoogleMapController> cache = {};
         plugin.debugSetMapById(cache);
 
-        final HtmlElementView widget = plugin.buildView({
-          '_webOnlyMapCreationId': testMapId,
-        }, null, onPlatformViewCreated);
+        final HtmlElementView widget = plugin.buildView(
+          testMapId,
+          onPlatformViewCreated,
+          initialCameraPosition: initialCameraPosition,
+        );
 
         expect(
           widget.viewType,
@@ -116,9 +123,11 @@ void main() {
         when(controller.widget).thenReturn(expected);
         plugin.debugSetMapById({testMapId: controller});
 
-        final widget = plugin.buildView({
-          '_webOnlyMapCreationId': testMapId,
-        }, null, onPlatformViewCreated);
+        final widget = plugin.buildView(
+          testMapId,
+          onPlatformViewCreated,
+          initialCameraPosition: initialCameraPosition,
+        );
 
         expect(widget, equals(expected));
         expect(
@@ -159,6 +168,24 @@ void main() {
       });
     });
 
+    group('Noop methods:', () {
+      int mapId = 0;
+      setUp(() {
+        plugin.debugSetMapById({mapId: controller});
+      });
+      // Options
+      testWidgets('updateTileOverlays', (WidgetTester tester) async {
+        final update =
+            plugin.updateTileOverlays(mapId: mapId, newTileOverlays: {});
+        expect(update, completion(null));
+      });
+      testWidgets('updateTileOverlays', (WidgetTester tester) async {
+        final update =
+            plugin.clearTileCache(TileOverlayId('any'), mapId: mapId);
+        expect(update, completion(null));
+      });
+    });
+
     // These methods only pass-through values from the plugin to the controller
     // so we verify them all together here...
     group('Pass-through methods:', () {
@@ -176,28 +203,28 @@ void main() {
       });
       // Geometry
       testWidgets('updateMarkers', (WidgetTester tester) async {
-        final expectedUpdates = MarkerUpdates.from(null, null);
+        final expectedUpdates = MarkerUpdates.from({}, {});
 
         await plugin.updateMarkers(expectedUpdates, mapId: mapId);
 
         verify(controller.updateMarkers(expectedUpdates));
       });
       testWidgets('updatePolygons', (WidgetTester tester) async {
-        final expectedUpdates = PolygonUpdates.from(null, null);
+        final expectedUpdates = PolygonUpdates.from({}, {});
 
         await plugin.updatePolygons(expectedUpdates, mapId: mapId);
 
         verify(controller.updatePolygons(expectedUpdates));
       });
       testWidgets('updatePolylines', (WidgetTester tester) async {
-        final expectedUpdates = PolylineUpdates.from(null, null);
+        final expectedUpdates = PolylineUpdates.from({}, {});
 
         await plugin.updatePolylines(expectedUpdates, mapId: mapId);
 
         verify(controller.updatePolylines(expectedUpdates));
       });
       testWidgets('updateCircles', (WidgetTester tester) async {
-        final expectedUpdates = CircleUpdates.from(null, null);
+        final expectedUpdates = CircleUpdates.from({}, {});
 
         await plugin.updateCircles(expectedUpdates, mapId: mapId);
 

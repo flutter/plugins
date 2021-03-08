@@ -179,6 +179,12 @@ class GooglePlayConnection
         'The method <refreshPurchaseVerificationData> only works on iOS.');
   }
 
+  @override
+  Future presentCodeRedemptionSheet() async {
+    throw UnsupportedError(
+        'The method <presentCodeRedemptionSheet> only works on iOS.');
+  }
+
   /// Resets the connection instance.
   ///
   /// The next call to [instance] will create a new instance. Should only be

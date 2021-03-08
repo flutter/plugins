@@ -50,11 +50,24 @@ void main() {
     StreamController<MapEvent> stream;
 
     // Creates a controller with the default mapId and stream controller, and any `options` needed.
-    GoogleMapController _createController({Map<String, dynamic> options}) {
+    GoogleMapController _createController({
+      CameraPosition initialCameraPosition =
+          const CameraPosition(target: LatLng(0, 0)),
+      Set<Marker> markers = const <Marker>{},
+      Set<Polygon> polygons = const <Polygon>{},
+      Set<Polyline> polylines = const <Polyline>{},
+      Set<Circle> circles = const <Circle>{},
+      Map<String, dynamic> options,
+    }) {
       return GoogleMapController(
           mapId: mapId,
           streamController: stream,
-          rawOptions: options ?? <String, dynamic>{});
+          initialCameraPosition: initialCameraPosition,
+          markers: markers,
+          polygons: polygons,
+          polylines: polylines,
+          circles: circles,
+          mapOptions: options ?? <String, dynamic>{});
     }
 
     setUp(() {
@@ -143,58 +156,45 @@ void main() {
       });
 
       testWidgets('renders initial geometry', (WidgetTester tester) async {
-        controller = _createController(options: {
-          'circlesToAdd': [
-            {'circleId': 'circle-1'}
-          ],
-          'markersToAdd': [
-            {
-              'markerId': 'marker-1',
-              'infoWindow': {
-                'title': 'title for test',
-                'snippet': 'snippet for test',
-              },
-            },
-          ],
-          'polygonsToAdd': [
-            {
-              'polygonId': 'polygon-1',
-              'points': [
-                [43.355114, -5.851333],
-                [43.354797, -5.851860],
-                [43.354469, -5.851318],
-                [43.354762, -5.850824],
-              ],
-            },
-            {
-              'polygonId': 'polygon-2-with-holes',
-              'points': [
-                [43.355114, -5.851333],
-                [43.354797, -5.851860],
-                [43.354469, -5.851318],
-                [43.354762, -5.850824],
-              ],
-              'holes': [
-                [
-                  [41.354797, -6.851860],
-                  [41.354469, -6.851318],
-                  [41.354762, -6.850824],
-                ]
+        controller = _createController(circles: <Circle>{
+          Circle(circleId: CircleId('circle-1'))
+        }, markers: <Marker>{
+          Marker(
+              markerId: MarkerId('marker-1'),
+              infoWindow: InfoWindow(
+                  title: 'title for test', snippet: 'snippet for test'))
+        }, polygons: {
+          Polygon(polygonId: PolygonId('polygon-1'), points: [
+            LatLng(43.355114, -5.851333),
+            LatLng(43.354797, -5.851860),
+            LatLng(43.354469, -5.851318),
+            LatLng(43.354762, -5.850824),
+          ]),
+          Polygon(
+            polygonId: PolygonId('polygon-2-with-holes'),
+            points: [
+              LatLng(43.355114, -5.851333),
+              LatLng(43.354797, -5.851860),
+              LatLng(43.354469, -5.851318),
+              LatLng(43.354762, -5.850824),
+            ],
+            holes: [
+              [
+                LatLng(41.354797, -6.851860),
+                LatLng(41.354469, -6.851318),
+                LatLng(41.354762, -6.850824),
               ]
-            },
-          ],
-          'polylinesToAdd': [
-            {
-              'polylineId': 'polyline-1',
-              'points': [
-                [43.355114, -5.851333],
-                [43.354797, -5.851860],
-                [43.354469, -5.851318],
-                [43.354762, -5.850824],
-              ],
-            },
-          ],
+            ],
+          ),
+        }, polylines: {
+          Polyline(polylineId: PolylineId('polyline-1'), points: [
+            LatLng(43.355114, -5.851333),
+            LatLng(43.354797, -5.851860),
+            LatLng(43.354469, -5.851318),
+            LatLng(43.354762, -5.850824),
+          ])
         });
+
         controller.debugSetOverrides(
           circles: circles,
           markers: markers,
@@ -226,14 +226,10 @@ void main() {
 
       testWidgets('empty infoWindow does not create InfoWindow instance.',
           (WidgetTester tester) async {
-        controller = _createController(options: {
-          'markersToAdd': [
-            {
-              'markerId': 'marker-1',
-              'infoWindow': {},
-            },
-          ],
+        controller = _createController(markers: {
+          Marker(markerId: MarkerId('marker-1'), infoWindow: null),
         });
+
         controller.debugSetOverrides(
           markers: markers,
         );
@@ -253,10 +249,8 @@ void main() {
         });
         testWidgets('translates initial options', (WidgetTester tester) async {
           controller = _createController(options: {
-            'options': {
-              'mapType': 2,
-              'zoomControlsEnabled': true,
-            }
+            'mapType': 2,
+            'zoomControlsEnabled': true,
           });
           controller.debugSetOverrides(createMap: (_, options) {
             capturedOptions = options;
@@ -276,9 +270,7 @@ void main() {
         testWidgets('disables gestureHandling with scrollGesturesEnabled false',
             (WidgetTester tester) async {
           controller = _createController(options: {
-            'options': {
-              'scrollGesturesEnabled': false,
-            }
+            'scrollGesturesEnabled': false,
           });
           controller.debugSetOverrides(createMap: (_, options) {
             capturedOptions = options;
@@ -296,9 +288,7 @@ void main() {
         testWidgets('disables gestureHandling with zoomGesturesEnabled false',
             (WidgetTester tester) async {
           controller = _createController(options: {
-            'options': {
-              'zoomGesturesEnabled': false,
-            }
+            'zoomGesturesEnabled': false,
           });
           controller.debugSetOverrides(createMap: (_, options) {
             capturedOptions = options;
@@ -315,7 +305,10 @@ void main() {
 
         testWidgets('does not set initial position if absent',
             (WidgetTester tester) async {
-          controller = _createController();
+          controller = _createController(
+            initialCameraPosition: null,
+          );
+
           controller.debugSetOverrides(createMap: (_, options) {
             capturedOptions = options;
             return map;
@@ -330,14 +323,15 @@ void main() {
 
         testWidgets('sets initial position when passed',
             (WidgetTester tester) async {
-          controller = _createController(options: {
-            'initialCameraPosition': {
-              'target': [43.308, -5.6910],
-              'zoom': 12,
-              'bearing': 0,
-              'tilt': 0,
-            }
-          });
+          controller = _createController(
+            initialCameraPosition: CameraPosition(
+              target: LatLng(43.308, -5.6910),
+              zoom: 12,
+              bearing: 0,
+              tilt: 0,
+            ),
+          );
+
           controller.debugSetOverrides(createMap: (_, options) {
             capturedOptions = options;
             return map;
@@ -361,9 +355,7 @@ void main() {
         testWidgets('initializes with traffic layer',
             (WidgetTester tester) async {
           controller = _createController(options: {
-            'options': {
-              'trafficEnabled': true,
-            }
+            'trafficEnabled': true,
           });
           controller.debugSetOverrides(createMap: (_, __) => map);
           controller.init();
