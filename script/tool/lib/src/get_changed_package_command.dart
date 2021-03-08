@@ -65,7 +65,7 @@ class GetChangedPackageCommand extends PluginCommand {
     final Set<String> plugins = <String>{};
     allChangedFiles.forEach((String path) {
       final List<String> pathComponents = path.split('/');
-      final int packagesIndex = pathComponents.indexWhere((String element) => element == 'package');
+      final int packagesIndex = pathComponents.indexWhere((String element) => element == 'packages');
       if (packagesIndex != -1) {
         plugins.add(pathComponents[packagesIndex+1]);
       }
