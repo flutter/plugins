@@ -27,8 +27,10 @@ task:
         - flutter channel master
         - if [[$BRANCH != "master"]];then
         -   CHANGED_PLUGINS=$(dart run ./script/tool/lib/src/main.dart get-changed-packages)
+        -   echo "Running check-version on changed pacakges $CHANGED_PLUGINS"
         -   dart run ./script/tool/lib/src/main.dart check-version --plugins=$CHANGED_PLUGINS
         - else
+        -   echo "Running check-version on all packages"
         -   dart run ./script/tool/lib/src/main.dart check-version
         - fi
         - ./script/check_publish.sh
