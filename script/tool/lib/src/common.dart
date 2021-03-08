@@ -480,7 +480,6 @@ class ProcessRunner {
 
 /// Finding diffs based on `baseGitDir` and `baseSha`.
 class GitVersionFinder {
-
   /// Constructor
   GitVersionFinder(this.baseGitDir, this.baseSha);
 
@@ -503,10 +502,16 @@ class GitVersionFinder {
 
   /// Get a list of all the changed files.
   Future<List<String>> getChangedFiles() async {
-    final io.ProcessResult changedFilesCommand = await baseGitDir
-        .runCommand(<String>['diff', '--name-only', '${await _getBaseSha()}', 'HEAD']);
-    final List<String> changedFiles =
-        changedFilesCommand.stdout.toString().split('\n');
+    final io.ProcessResult changedFilesCommand = await baseGitDir.runCommand(
+        <String>['diff', '--name-only', '${await _getBaseSha()}', 'HEAD']);
+    if (changedFilesCommand.stdout.toString() == null ||
+        changedFilesCommand.stdout.toString().isEmpty) {
+      return <String>[];
+    }
+    final List<String> changedFiles = changedFilesCommand.stdout
+        .toString()
+        .split('\n')
+          ..removeWhere((element) => element.isEmpty);
     return changedFiles.toList();
   }
 
@@ -524,11 +529,14 @@ class GitVersionFinder {
       return baseSha;
     }
 
-    io.ProcessResult baseShaFromMergeBase =
-        await baseGitDir.runCommand(<String>['merge-base', '--fork-point', 'FETCH_HEAD', 'HEAD'], throwOnError: false);
-    if (baseShaFromMergeBase == null || baseShaFromMergeBase.stderr != null || baseShaFromMergeBase.stdout == null) {
-       baseShaFromMergeBase =
-        await baseGitDir.runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);
+    io.ProcessResult baseShaFromMergeBase = await baseGitDir.runCommand(
+        <String>['merge-base', '--fork-point', 'FETCH_HEAD', 'HEAD'],
+        throwOnError: false);
+    if (baseShaFromMergeBase == null ||
+        baseShaFromMergeBase.stderr != null ||
+        baseShaFromMergeBase.stdout == null) {
+      baseShaFromMergeBase = await baseGitDir
+          .runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);
     }
     return (baseShaFromMergeBase.stdout as String).replaceAll('\n', '');
   }

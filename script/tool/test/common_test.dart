@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
+import 'package:git/git.dart';
+import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 import 'util.dart';
@@ -73,6 +77,88 @@ void main() {
     ]);
     expect(plugins, unorderedEquals(<String>[plugin2.path]));
   });
+
+  group('$GitVersionFinder', () {
+    List<List<String>> gitDirCommands;
+    String gitDiffResponse;
+    String mergeBaseResponse;
+    MockGitDir gitDir;
+
+    setUp(() {
+      gitDirCommands = <List<String>>[];
+      gitDiffResponse = '';
+      gitDir = MockGitDir();
+      when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
+        gitDirCommands.add(invocation.positionalArguments[0]);
+        final MockProcessResult mockProcessResult = MockProcessResult();
+        if (invocation.positionalArguments[0][0] == 'diff') {
+          when<String>(mockProcessResult.stdout).thenReturn(gitDiffResponse);
+        } else if (invocation.positionalArguments[0][0] == 'merge-base') {
+          when<String>(mockProcessResult.stdout).thenReturn(mergeBaseResponse);
+        }
+        return Future<ProcessResult>.value(mockProcessResult);
+      });
+      initializeFakePackages();
+      processRunner = RecordingProcessRunner();
+    });
+
+    tearDown(() {
+      cleanupPackages();
+    });
+
+    test('No git diff should result no files changed', () async {
+      final GitVersionFinder finder = GitVersionFinder(gitDir, 'some base sha');
+      List<String> changedFiles = await finder.getChangedFiles();
+
+      expect(changedFiles, isEmpty);
+    });
+
+    test('get correct files changed based on git diff', () async {
+      gitDiffResponse = '''
+file1/file1.cc
+file2/file2.cc
+''';
+      final GitVersionFinder finder = GitVersionFinder(gitDir, 'some base sha');
+      List<String> changedFiles = await finder.getChangedFiles();
+
+      expect(
+          changedFiles, equals(<String>['file1/file1.cc', 'file2/file2.cc']));
+    });
+
+    test('get correct pubspec change based on git diff', () async {
+      gitDiffResponse = '''
+file1/pubspec.yaml
+file2/file2.cc
+''';
+      final GitVersionFinder finder = GitVersionFinder(gitDir, 'some base sha');
+      List<String> changedFiles = await finder.getChangedPubSpecs();
+
+      expect(changedFiles, equals(<String>['file1/pubspec.yaml']));
+    });
+
+    test('use correct base sha if not specified', () async {
+      mergeBaseResponse = 'shaqwiueroaaidf12312jnadf123nd';
+      gitDiffResponse = '''
+file1/pubspec.yaml
+file2/file2.cc
+''';
+      final GitVersionFinder finder = GitVersionFinder(gitDir, null);
+      await finder.getChangedFiles();
+      verify(gitDir
+          .runCommand(['diff', '--name-only', mergeBaseResponse, 'HEAD']));
+    });
+
+    test('use correct base sha if specified', () async {
+      final String customBaseSha = 'aklsjdcaskf12312';
+      gitDiffResponse = '''
+file1/pubspec.yaml
+file2/file2.cc
+''';
+      final GitVersionFinder finder = GitVersionFinder(gitDir, customBaseSha);
+      await finder.getChangedFiles();
+      verify(gitDir.runCommand(['diff', '--name-only', customBaseSha, 'HEAD']));
+    });
+  });
 }
 
 class SamplePluginCommand extends PluginCommand {
@@ -98,3 +184,7 @@ class SamplePluginCommand extends PluginCommand {
     }
   }
 }
+
+class MockGitDir extends Mock implements GitDir {}
+
+class MockProcessResult extends Mock implements ProcessResult {}

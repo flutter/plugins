@@ -41,8 +41,8 @@ void main() {
           mockPackagesDir, mockFileSystem,
           processRunner: processRunner, gitDir: gitDir);
 
-      runner = CommandRunner<Null>(
-          'get_changed_packages_command', 'Test for $GetChangedPackagesCommand');
+      runner = CommandRunner<Null>('get_changed_packages_command',
+          'Test for $GetChangedPackagesCommand');
       runner.addCommand(command);
     });
 
@@ -50,14 +50,67 @@ void main() {
       cleanupPackages();
     });
 
-    test('No plugins changed', () async {
+    test('No files changed should have empty output', () async {
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['get-changed-packages', '--base_sha=master']);
+
+      expect(output, isEmpty);
+    });
+
+    test('Some none plugin files changed have empty output', () async {
       gitDiffResponse = ".cirrus";
       final List<String> output = await runCapturingPrint(
           runner, <String>['get-changed-packages', '--base_sha=master']);
 
-      expect(
-        output, isEmpty
-      );
+      expect(output, isEmpty);
+    });
+
+    test('plugin code changed should output the plugin', () async {
+      gitDiffResponse = "packages/plugin1/plugin1.dart";
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['get-changed-packages', '--base_sha=master']);
+
+      expect(output, equals(['plugin1']));
+    });
+
+    test(
+        'multiple files in one plugin changed should output the same plugin once',
+        () async {
+      gitDiffResponse = '''
+packages/plugin1/plugin1.dart
+packages/plugin1/ios/plugin1.m
+''';
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['get-changed-packages', '--base_sha=master']);
+
+      expect(output, equals(['plugin1']));
+    });
+
+    test(
+        'multiple plugins changed should output those plugins with , separated',
+        () async {
+      gitDiffResponse = '''
+packages/plugin1/plugin1.dart
+packages/plugin2/ios/plugin1.m
+''';
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['get-changed-packages', '--base_sha=master']);
+
+      expect(output, equals(['plugin1,plugin2']));
+    });
+
+    test(
+        'multiple plugins inside the same plugin group changed should output the plugin group name',
+        () async {
+      gitDiffResponse = '''
+packages/plugin1/plugin1/plugin1.dart
+packages/plugin1/plugin1_platform_interface/plugin1_platform_interface.dart
+packages/plugin1/plugin1_web/plugin1_web.dart
+''';
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['get-changed-packages', '--base_sha=master']);
+
+      expect(output, equals(['plugin1']));
     });
   });
 }

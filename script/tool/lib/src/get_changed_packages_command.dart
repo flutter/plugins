@@ -15,12 +15,11 @@ const String _kBaseSha = 'base_sha';
 ///
 /// Outputs the final result in a comma separated format.
 /// e.g. plugin1,plugin2...
-class GetChangedPackageCommand extends PluginCommand {
-
+class GetChangedPackagesCommand extends PluginCommand {
   /// Constructor of the command.
   ///
   /// An optional `gitDir` can be specified if the `gitDir` used is not the top level dir.
-  GetChangedPackageCommand(
+  GetChangedPackagesCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
@@ -61,15 +60,19 @@ class GetChangedPackageCommand extends PluginCommand {
     final GitVersionFinder gitVersionFinder =
         GitVersionFinder(baseGitDir, baseSha);
 
-    final List<String> allChangedFiles = await gitVersionFinder.getChangedFiles();
+    final List<String> allChangedFiles =
+        await gitVersionFinder.getChangedFiles();
     final Set<String> plugins = <String>{};
     allChangedFiles.forEach((String path) {
       final List<String> pathComponents = path.split('/');
-      final int packagesIndex = pathComponents.indexWhere((String element) => element == 'packages');
+      final int packagesIndex =
+          pathComponents.indexWhere((String element) => element == 'packages');
       if (packagesIndex != -1) {
-        plugins.add(pathComponents[packagesIndex+1]);
+        plugins.add(pathComponents[packagesIndex + 1]);
       }
     });
-    print(plugins.join(','));
+    if (plugins.isNotEmpty) {
+      print(plugins.join(','));
+    }
   }
 }
