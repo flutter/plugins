@@ -200,7 +200,8 @@ void main() {
           equals('show HEAD:packages/plugin_platform_interface/pubspec.yaml'));
     });
 
-    test('Throws if first line in change log is empty', () async {
+    test('Allow empty lines in front of the first version in CHANGELOG',
+        () async {
       createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
 
       final Directory pluginDirectory =
@@ -209,17 +210,23 @@ void main() {
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
       String changelog = '''
+      
+
 
 ## 1.0.1
 
 * Some changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      final Future<List<String>> output = runCapturingPrint(
+      final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base_sha=master']);
-      await expectLater(
+      await expect(
         output,
-        throwsA(const TypeMatcher<FormatException>()),
+        containsAllInOrder([
+          'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for plugin.',
+          'plugin passed version check',
+          'No version check errors found!'
+        ]),
       );
     });
 

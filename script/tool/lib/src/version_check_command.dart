@@ -235,9 +235,19 @@ class VersionCheckCommand extends PluginCommand {
     // get first version from CHANGELOG
     final File changelog = plugin.childFile('CHANGELOG.md');
     final List<String> lines = changelog.readAsLinesSync();
-    final String firstLine = lines.first;
+    String firstLineWithText;
+    final Iterator iterator = lines.iterator;
+    while (iterator.moveNext()) {
+      final String currentStriptEmptySpaces =
+          (iterator.current as String).replaceAll(' ', '');
+      if (currentStriptEmptySpaces != null &&
+          currentStriptEmptySpaces.isNotEmpty) {
+        firstLineWithText = iterator.current;
+        break;
+      }
+    }
     // Remove all leading mark down syntax from the version line.
-    final String versionString = firstLine.split(' ').last;
+    final String versionString = firstLineWithText.split(' ').last;
     Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
       final String error =
