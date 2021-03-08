@@ -77,10 +77,10 @@ static FlutterError *getFlutterError(NSError *error) {
                                                        ofType:@"plist"];
       if (path) {
         NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-        BOOL hasDynamicClientId = [[call.arguments objectForKey:@"clientId"] isKindOfClass:NSString.class];
+        BOOL hasDynamicClientId = [[call.arguments valueForKey:@"clientId"] isKindOfClass:[NSString class]];
 
         if (hasDynamicClientId) {
-          [GIDSignIn sharedInstance].clientID = [call.arguments objectForKey:@"clientId"];
+          [GIDSignIn sharedInstance].clientID = [call.arguments valueForKey:@"clientId"];
         } else {
           [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
         }
