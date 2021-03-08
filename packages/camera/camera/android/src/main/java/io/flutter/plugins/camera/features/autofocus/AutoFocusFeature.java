@@ -24,7 +24,7 @@ public class AutoFocusFeature extends CameraFeature<FocusMode> {
 
   @Override
   public String getDebugName() {
-    return "AutoFocus";
+    return "AutoFocusFeature";
   }
 
   @Override
