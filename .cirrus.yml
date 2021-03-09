@@ -9,6 +9,7 @@ task:
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
     PLUGIN_TOOLS: "dart run ./script/tool/lib/src/main.dart"
+    BRANCH: ${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
