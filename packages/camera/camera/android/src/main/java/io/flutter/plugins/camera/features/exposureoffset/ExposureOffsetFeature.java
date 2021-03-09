@@ -7,7 +7,6 @@ package io.flutter.plugins.camera.features.exposureoffset;
 import android.hardware.camera2.CaptureRequest;
 import android.util.Log;
 import android.util.Range;
-import android.util.Rational;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
@@ -28,9 +27,7 @@ public class ExposureOffsetFeature extends CameraFeature<ExposureOffsetValue> {
   }
 
   @Override
-  public String getDebugName() {
-    return "ExposureOffset";
-  }
+  public String getDebugName() { return "ExposureOffsetFeature"; }
 
   @Override
   public ExposureOffsetValue getValue() {
@@ -94,7 +91,6 @@ public class ExposureOffsetFeature extends CameraFeature<ExposureOffsetValue> {
    * @return
    */
   public double getExposureOffsetStepSize() {
-    Rational stepSize = cameraProperties.getControlAutoExposureCompensationStep();
-    return stepSize == null ? 0.0 : stepSize.doubleValue();
+    return cameraProperties.getControlAutoExposureCompensationStep();
   }
 }
