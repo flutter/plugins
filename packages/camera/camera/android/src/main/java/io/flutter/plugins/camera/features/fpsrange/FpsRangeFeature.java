@@ -41,7 +41,7 @@ public class FpsRangeFeature extends CameraFeature<Range<Integer>> {
 
   @Override
   public String getDebugName() {
-    return "FpsRange";
+    return "FpsRangeFeature";
   }
 
   @Override
