@@ -7,6 +7,7 @@ package io.flutter.plugins.camera.features.exposurepoint;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 import io.flutter.plugins.camera.features.Point;
@@ -26,7 +27,7 @@ public class ExposurePointFeature extends CameraFeature<Point> {
 
   @Override
   public String getDebugName() {
-    return "ExposurePoint";
+    return "ExposurePointFeature";
   }
 
   @Override
@@ -35,7 +36,7 @@ public class ExposurePointFeature extends CameraFeature<Point> {
   }
 
   @Override
-  public void setValue(Point value) {
+  public void setValue(@NonNull Point value) {
     this.currentSetting = value;
 
     try {
@@ -53,8 +54,7 @@ public class ExposurePointFeature extends CameraFeature<Point> {
   @Override
   public boolean checkIsSupported() {
     Integer supportedRegions = cameraProperties.getControlMaxRegionsAutoExposure();
-    final boolean supported = supportedRegions != null && supportedRegions > 0;
-    return supported;
+    return supportedRegions != null && supportedRegions > 0;
   }
 
   @Override
@@ -65,14 +65,14 @@ public class ExposurePointFeature extends CameraFeature<Point> {
 
     Log.i("Camera", "updateExposurePoint | currentSetting: " + currentSetting);
 
-    MeteringRectangle aeRect = null;
+    MeteringRectangle aeRect;
     try {
       aeRect = getCameraRegions.call().getAEMeteringRectangle();
       requestBuilder.set(
           CaptureRequest.CONTROL_AE_REGIONS,
           aeRect == null
               ? null
-              : new MeteringRectangle[] {getCameraRegions.call().getAEMeteringRectangle()});
+              : new MeteringRectangle[] { aeRect });
     } catch (Exception e) {
       e.printStackTrace();
     }
