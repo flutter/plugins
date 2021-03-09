@@ -8,6 +8,7 @@ task:
     memory: 16G
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
+    PLUGIN_TOOLS: "dart run ./script/tool/lib/src/main.dart"
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -16,6 +17,8 @@ task:
     - flutter channel master
     - flutter upgrade
     - git fetch origin master
+    - cd script/tool
+    - pub get
   matrix:
     - name: plugin_tools_tests
       script:
@@ -26,12 +29,12 @@ task:
       script:
         - flutter channel master
         - if [[$BRANCH != "master"]];then
-        -   CHANGED_PLUGINS=$(dart run ./script/tool/lib/src/main.dart get-changed-packages)
+        -   CHANGED_PLUGINS=$($PLUGIN_TOOLS get-changed-packages)
         -   echo "Running check-version on changed pacakges $CHANGED_PLUGINS"
-        -   dart run ./script/tool/lib/src/main.dart check-version --plugins=$CHANGED_PLUGINS
+        -   $PLUGIN_TOOLS check-version --plugins=$CHANGED_PLUGINS
         - else
         -   echo "Running check-version on all packages"
-        -   dart run ./script/tool/lib/src/main.dart check-version
+        -   $PLUGIN_TOOLS check-version
         - fi
         - ./script/check_publish.sh
     - name: format
