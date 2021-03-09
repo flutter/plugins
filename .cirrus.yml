@@ -9,7 +9,6 @@ task:
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
     PLUGIN_TOOLS: "dart run ./script/tool/lib/src/main.dart"
-    BRANCH: "${BRANCH:-'$(git rev-parse --abbrev-ref HEAD)'}"
   upgrade_script:
     - flutter channel stable
     - flutter upgrade
@@ -29,7 +28,7 @@ task:
     - name: publishable
       script:
         - flutter channel master
-        - echo $BRANCH
+        - BRANCH=${BRANCH:-'$(git rev-parse --abbrev-ref HEAD)'}
         - if [[$BRANCH != "master"]];then
         -   echo "Running version-check on changed pacakges"
         -   $PLUGIN_TOOLS version-check --run-on-changed-packages
