@@ -15,7 +15,7 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
-typedef Print = void Function(Object object);
+typedef void Print(Object object);
 
 /// Key for windows platform.
 const String kWindows = 'windows';
