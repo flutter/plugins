@@ -123,6 +123,7 @@ class LintPodspecsCommand extends PluginCommand {
       'lint',
       podspecPath,
       '--configuration=Debug', // Release targets unsupported arm64 simulators. Use Debug to only build against targeted x86_64 simulator devices.
+      '--skip-tests',
       if (allowWarnings) '--allow-warnings',
       if (libraryLint) '--use-libraries'
     ];
