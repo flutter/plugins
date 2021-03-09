@@ -82,7 +82,7 @@ void main() {
         'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
       };
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check', '--base_sha=master']);
+          runner, <String>['version-check', '--base-sha=master']);
 
       expect(
         output,
@@ -107,7 +107,7 @@ void main() {
         'HEAD:packages/plugin/pubspec.yaml': 'version: 0.2.0',
       };
       final Future<List<String>> result = runCapturingPrint(
-          runner, <String>['version-check', '--base_sha=master']);
+          runner, <String>['version-check', '--base-sha=master']);
 
       await expectLater(
         result,
@@ -131,11 +131,12 @@ void main() {
           .childFile('pubspec.yaml')
           .deleteSync();
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check', '--base_sha=master']);
+          runner, <String>['version-check', '--base-sha=master']);
 
       expect(
         output,
         orderedEquals(<String>[
+          'Determine diff with base sha: master',
           'No version check errors found!',
         ]),
       );
@@ -155,7 +156,7 @@ void main() {
             'version: 1.1.0',
       };
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check', '--base_sha=master']);
+          runner, <String>['version-check', '--base-sha=master']);
       expect(
         output,
         containsAllInOrder(<String>[
@@ -184,7 +185,7 @@ void main() {
             'version: 2.0.0',
       };
       final Future<List<String>> output = runCapturingPrint(
-          runner, <String>['version-check', '--base_sha=master']);
+          runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
         throwsA(const TypeMatcher<Error>()),
@@ -219,7 +220,7 @@ void main() {
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check', '--base_sha=master']);
+          runner, <String>['version-check', '--base-sha=master']);
       await expect(
         output,
         containsAllInOrder([
@@ -245,7 +246,7 @@ void main() {
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       final Future<List<String>> output = runCapturingPrint(
-          runner, <String>['version-check', '--base_sha=master']);
+          runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
         throwsA(const TypeMatcher<Error>()),
@@ -280,7 +281,7 @@ void main() {
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check', '--base_sha=master']);
+          runner, <String>['version-check', '--base-sha=master']);
       await expect(
         output,
         containsAllInOrder([
@@ -312,7 +313,7 @@ void main() {
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       Future<List<String>> output = runCapturingPrint(
-          runner, <String>['version-check', '--base_sha=master']);
+          runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
         throwsA(const TypeMatcher<Error>()),

@@ -12,7 +12,7 @@ import 'package:platform/platform.dart';
 
 import 'common.dart';
 
-typedef void Print(Object object);
+typedef Print = void Function(Object object);
 
 /// Lint the CocoaPod podspecs, run the static analyzer on iOS/macOS plugin
 /// platform code, and run unit tests.

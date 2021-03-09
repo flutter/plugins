@@ -31,9 +31,8 @@ task:
         - flutter channel master
         - echo $BRANCH
         - if [[$BRANCH != "master"]];then
-        -   CHANGED_PLUGINS=$($PLUGIN_TOOLS get-changed-packages)
         -   echo "Running version-check on changed pacakges $CHANGED_PLUGINS"
-        -   $PLUGIN_TOOLS version-check --plugins=$CHANGED_PLUGINS
+        -   $PLUGIN_TOOLS version-check --run-on-changed-packages
         - else
         -   echo "Running version-check on all packages"
         -   $PLUGIN_TOOLS version-check

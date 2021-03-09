@@ -13,7 +13,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common.dart';
 
-const String _kBaseSha = 'base_sha';
+const String _kBaseSha = 'base-sha';
 
 enum NextVersionType {
   BREAKING_MAJOR,
@@ -99,15 +99,9 @@ class VersionCheckCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-    this.gitDir,
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
-    argParser.addOption(_kBaseSha);
-  }
-
-  /// The git directory to use. By default it uses the parent directory.
-  ///
-  /// This can be mocked for testing.
-  final GitDir gitDir;
+    GitDir gitDir,
+  }) : super(packagesDir, fileSystem,
+            processRunner: processRunner, gitDir: gitDir);
 
   @override
   final String name = 'version-check';
@@ -121,25 +115,12 @@ class VersionCheckCommand extends PluginCommand {
   @override
   Future<Null> run() async {
     checkSharding();
-
-    final String rootDir = packagesDir.parent.absolute.path;
-    final String baseSha = argResults[_kBaseSha];
-
-    GitDir baseGitDir = gitDir;
-    if (baseGitDir == null) {
-      if (!await GitDir.isGitDir(rootDir)) {
-        print('$rootDir is not a valid Git repository.');
-        throw ToolExit(2);
-      }
-      baseGitDir = await GitDir.fromExisting(rootDir);
-    }
-
-    final GitVersionFinder gitVersionFinder =
-        GitVersionFinder(baseGitDir, baseSha);
+    final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
 
     final List<String> changedPubspecs =
         await gitVersionFinder.getChangedPubSpecs();
 
+    final String baseSha = argResults[_kBaseSha];
     for (final String pubspecPath in changedPubspecs) {
       try {
         final File pubspecFile = fileSystem.file(pubspecPath);

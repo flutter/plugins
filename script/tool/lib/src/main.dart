@@ -17,7 +17,6 @@ import 'common.dart';
 import 'create_all_plugins_app_command.dart';
 import 'drive_examples_command.dart';
 import 'firebase_test_lab_command.dart';
-import 'get_changed_packages_command.dart';
 import 'format_command.dart';
 import 'java_test_command.dart';
 import 'lint_podspecs_command.dart';
@@ -57,8 +56,7 @@ void main(List<String> args) {
     ..addCommand(PublishPluginCommand(packagesDir, fileSystem))
     ..addCommand(TestCommand(packagesDir, fileSystem))
     ..addCommand(VersionCheckCommand(packagesDir, fileSystem))
-    ..addCommand(XCTestCommand(packagesDir, fileSystem))
-    ..addCommand(GetChangedPackagesCommand(packagesDir, fileSystem));
+    ..addCommand(XCTestCommand(packagesDir, fileSystem));
 
   commandRunner.run(args).catchError((Object e) {
     final ToolExit toolExit = e;

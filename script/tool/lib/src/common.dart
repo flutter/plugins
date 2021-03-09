@@ -15,7 +15,7 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
-typedef void Print(Object object);
+typedef Print = void Function(Object object);
 
 /// Key for windows platform.
 const String kWindows = 'windows';
@@ -163,6 +163,7 @@ abstract class PluginCommand extends Command<Null> {
     this.packagesDir,
     this.fileSystem, {
     this.processRunner = const ProcessRunner(),
+    this.gitDir,
   }) {
     argParser.addMultiOption(
       _pluginsArg,
@@ -190,12 +191,23 @@ abstract class PluginCommand extends Command<Null> {
       help: 'Exclude packages from this command.',
       defaultsTo: <String>[],
     );
+    argParser.addFlag(_runOnChangedPackagesArg,
+        help: 'Run the command on changed packages/plugins.\n'
+            'If the $_pluginsArg is specified, this flag is ignored.\n'
+            'The packages excluded with $_excludeArg is also excluded even if changed.\n'
+            'See $_kBaseSha if a custom base is needed to determine the diff.');
+    argParser.addOption(_kBaseSha,
+        help: 'The base sha used to determine git diff. \n'
+            'This is useful when $_runOnChangedPackagesArg is specified.\n'
+            'If not specified, merge-base is used as base sha.');
   }
 
   static const String _pluginsArg = 'plugins';
   static const String _shardIndexArg = 'shardIndex';
   static const String _shardCountArg = 'shardCount';
   static const String _excludeArg = 'exclude';
+  static const String _runOnChangedPackagesArg = 'run-on-changed-packages';
+  static const String _kBaseSha = 'base-sha';
 
   /// The directory containing the plugin packages.
   final Directory packagesDir;
@@ -209,6 +221,11 @@ abstract class PluginCommand extends Command<Null> {
   ///
   /// This can be overridden for testing.
   final ProcessRunner processRunner;
+
+  /// The git directory to use. By default it uses the parent directory.
+  ///
+  /// This can be mocked for testing.
+  final GitDir gitDir;
 
   int _shardIndex;
   int _shardCount;
@@ -284,9 +301,13 @@ abstract class PluginCommand extends Command<Null> {
   ///    "client library" package, which declares the API for the plugin, as
   ///    well as one or more platform-specific implementations.
   Stream<Directory> _getAllPlugins() async* {
-    final Set<String> plugins = Set<String>.from(argResults[_pluginsArg]);
+    Set<String> plugins = Set<String>.from(argResults[_pluginsArg]);
     final Set<String> excludedPlugins =
         Set<String>.from(argResults[_excludeArg]);
+    final bool runOnChangedPackages = argResults[_runOnChangedPackagesArg];
+    if (plugins.isEmpty && runOnChangedPackages) {
+      plugins = await _getChangedPackages();
+    }
 
     await for (FileSystemEntity entity
         in packagesDir.list(followLinks: false)) {
@@ -373,6 +394,50 @@ abstract class PluginCommand extends Command<Null> {
         .where(
             (FileSystemEntity entity) => isFlutterPackage(entity, fileSystem))
         .cast<Directory>();
+  }
+
+  /// Retrieve an instance of [GitVersionFinder] based on `_kBaseSha` and [gitDir].
+  ///
+  /// Throws tool exit if [gitDir] nor root directory is a git directory.
+  Future<GitVersionFinder> retrieveVersionFinder() async {
+    final String rootDir = packagesDir.parent.absolute.path;
+    String baseSha = argResults[_kBaseSha];
+
+    GitDir baseGitDir = gitDir;
+    if (baseGitDir == null) {
+      if (!await GitDir.isGitDir(rootDir)) {
+        PrintErrorAndExit(
+            errorMessage: '$rootDir is not a valid Git repository.',
+            exitCode: 2);
+      }
+      baseGitDir = await GitDir.fromExisting(rootDir);
+    }
+
+    final GitVersionFinder gitVersionFinder =
+        GitVersionFinder(baseGitDir, baseSha);
+    return gitVersionFinder;
+  }
+
+  Future<Set<String>> _getChangedPackages() async {
+    final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+
+    final List<String> allChangedFiles =
+        await gitVersionFinder.getChangedFiles();
+    final Set<String> packages = <String>{};
+    allChangedFiles.forEach((String path) {
+      final List<String> pathComponents = path.split('/');
+      final int packagesIndex =
+          pathComponents.indexWhere((String element) => element == 'packages');
+      if (packagesIndex != -1) {
+        packages.add(pathComponents[packagesIndex + 1]);
+      }
+    });
+    if (packages.isNotEmpty) {
+      final String changedPackages = packages.join(',');
+      print(changedPackages);
+    }
+    print('No changed packages.');
+    return packages;
   }
 }
 
@@ -502,8 +567,10 @@ class GitVersionFinder {
 
   /// Get a list of all the changed files.
   Future<List<String>> getChangedFiles() async {
-    final io.ProcessResult changedFilesCommand = await baseGitDir.runCommand(
-        <String>['diff', '--name-only', '${await _getBaseSha()}', 'HEAD']);
+    final String baseSha = await _getBaseSha();
+    final io.ProcessResult changedFilesCommand = await baseGitDir
+        .runCommand(<String>['diff', '--name-only', '$baseSha', 'HEAD']);
+    print('Determine diff with base sha: $baseSha');
     if (changedFilesCommand.stdout.toString() == null ||
         changedFilesCommand.stdout.toString().isEmpty) {
       return <String>[];
