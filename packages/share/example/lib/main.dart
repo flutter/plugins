@@ -116,7 +116,7 @@ class DemoAppState extends State<DemoApp> {
     // RenderObject in its descendent tree when it's not
     // a RenderObjectWidget. The ElevatedButton's RenderObject
     // has its position and size after it's built.
-    final RenderBox box = context.findRenderObject();
+    final RenderBox box = context.findRenderObject() as RenderBox;
 
     if (imagePaths.isNotEmpty) {
       await Share.shareFiles(imagePaths,

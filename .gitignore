@@ -17,6 +17,7 @@ Pods/
 .symlinks/
 **/Flutter/App.framework/
 **/Flutter/ephemeral/
+**/Flutter/Flutter.podspec
 **/Flutter/Flutter.framework/
 **/Flutter/Generated.xcconfig
 **/Flutter/flutter_assets/
@@ -46,3 +47,6 @@ build/
 .project
 .classpath
 .settings
+
+# Downloaded by the plugin tools.
+google-java-format-1.3-all-deps.jar

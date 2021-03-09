@@ -30,6 +30,10 @@ abstract class WebViewPlatformCallbacksHandler {
   /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);
 
+  /// Invoked by [WebViewPlatformController] when a page is loading.
+  /// /// Only works when [WebSettings.hasProgressTracking] is set to `true`.
+  void onProgress(int progress);
+
   /// Report web resource loading error to the host application.
   void onWebResourceError(WebResourceError error);
 }
@@ -408,6 +412,7 @@ class WebSettings {
   WebSettings({
     this.javascriptMode,
     this.hasNavigationDelegate,
+    this.hasProgressTracking,
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
     this.allowsInlineMediaPlayback,
@@ -419,6 +424,10 @@ class WebSettings {
 
   /// Whether the [WebView] has a [NavigationDelegate] set.
   final bool? hasNavigationDelegate;
+
+  /// Whether the [WebView] should track page loading progress.
+  /// See also: [WebViewPlatformCallbacksHandler.onProgress] to get the progress.
+  final bool? hasProgressTracking;
 
   /// Whether to enable the platform's webview content debugging tools.
   ///
@@ -447,7 +456,7 @@ class WebSettings {
 
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
   }
 }
 

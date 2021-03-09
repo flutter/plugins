@@ -312,7 +312,8 @@ void main() {
         // ignore: deprecated_member_use_from_same_package
         final LostData response = await picker.retrieveLostData();
         expect(response.type, RetrieveType.image);
-        expect(response.file.path, '/example/path');
+        expect(response.file, isNotNull);
+        expect(response.file!.path, '/example/path');
       });
 
       test('retrieveLostData get error response', () async {
@@ -326,8 +327,9 @@ void main() {
         // ignore: deprecated_member_use_from_same_package
         final LostData response = await picker.retrieveLostData();
         expect(response.type, RetrieveType.video);
-        expect(response.exception.code, 'test_error_code');
-        expect(response.exception.message, 'test_error_message');
+        expect(response.exception, isNotNull);
+        expect(response.exception!.code, 'test_error_code');
+        expect(response.exception!.message, 'test_error_message');
       });
 
       test('retrieveLostData get null response', () async {

@@ -6,7 +6,7 @@
 
 import 'package:meta/meta.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:googleapis_auth/auth.dart' as googleapis_auth;
+import 'package:googleapis_auth/googleapis_auth.dart' as googleapis_auth;
 import 'package:http/http.dart' as http;
 
 /// Extension on [GoogleSignIn] that adds an `authenticatedClient` method.
@@ -15,15 +15,20 @@ import 'package:http/http.dart' as http;
 /// client that can be used with the rest of the `googleapis` libraries.
 extension GoogleApisGoogleSignInAuth on GoogleSignIn {
   /// Retrieve a `googleapis` authenticated client.
-  Future<googleapis_auth.AuthClient> authenticatedClient({
-    @visibleForTesting GoogleSignInAuthentication debugAuthentication,
-    @visibleForTesting List<String> debugScopes = const [],
+  Future<googleapis_auth.AuthClient?> authenticatedClient({
+    @visibleForTesting GoogleSignInAuthentication? debugAuthentication,
+    @visibleForTesting List<String>? debugScopes,
   }) async {
-    final auth = debugAuthentication ?? await currentUser.authentication;
+    final GoogleSignInAuthentication? auth =
+        debugAuthentication ?? await currentUser?.authentication;
+    final String? oathTokenString = auth?.accessToken;
+    if (oathTokenString == null) {
+      return null;
+    }
     final credentials = googleapis_auth.AccessCredentials(
       googleapis_auth.AccessToken(
         'Bearer',
-        auth.accessToken,
+        oathTokenString,
         // We don't know when the token expires, so we assume "never"
         DateTime.now().toUtc().add(Duration(days: 365)),
       ),

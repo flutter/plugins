@@ -1,3 +1,7 @@
+## 1.0.2+2
+
+* Fix tests from changes to `flutter test` machine output.
+
 ## 1.0.2+1
 
 * Update vm_service constraint

@@ -22,8 +22,8 @@ class ShortcutItem {
   ///
   /// Only [icon] should be nullable. It will remain `null` if unset.
   const ShortcutItem({
-    @required this.type,
-    @required this.localizedTitle,
+    required this.type,
+    required this.localizedTitle,
     this.icon,
   });
 
@@ -35,7 +35,7 @@ class ShortcutItem {
 
   /// Name of native resource (xcassets etc; NOT a Flutter asset) to be
   /// displayed as the icon for this item.
-  final String icon;
+  final String? icon;
 }
 
 /// Quick actions plugin.
@@ -65,7 +65,8 @@ class QuickActions {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
-    final String action = await channel.invokeMethod<String>('getLaunchAction');
+    final String? action =
+        await channel.invokeMethod<String?>('getLaunchAction');
     if (action != null) {
       handler(action);
     }
@@ -73,7 +74,7 @@ class QuickActions {
 
   /// Sets the [ShortcutItem]s to become the app's quick actions.
   Future<void> setShortcutItems(List<ShortcutItem> items) async {
-    final List<Map<String, String>> itemsList =
+    final List<Map<String, String?>> itemsList =
         items.map(_serializeItem).toList();
     await channel.invokeMethod<void>('setShortcutItems', itemsList);
   }
@@ -82,8 +83,8 @@ class QuickActions {
   Future<void> clearShortcutItems() =>
       channel.invokeMethod<void>('clearShortcutItems');
 
-  Map<String, String> _serializeItem(ShortcutItem item) {
-    return <String, String>{
+  Map<String, String?> _serializeItem(ShortcutItem item) {
+    return <String, String?>{
       'type': item.type,
       'localizedTitle': item.localizedTitle,
       'icon': item.icon,
