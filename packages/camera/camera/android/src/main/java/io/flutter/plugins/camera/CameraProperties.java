@@ -21,7 +21,7 @@ public interface CameraProperties {
 
   Range<Integer> getControlAutoExposureCompensationRange();
 
-  Rational getControlAutoExposureCompensationStep();
+  double getControlAutoExposureCompensationStep();
 
   int[] getControlAutoFocusAvailableModes();
 
@@ -78,8 +78,10 @@ class CameraPropertiesImpl implements CameraProperties {
   }
 
   @Override
-  public Rational getControlAutoExposureCompensationStep() {
-    return cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
+  public double getControlAutoExposureCompensationStep() {
+    Rational rational = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
+
+    return rational == null ? 0.0 : rational.doubleValue();
   }
 
   @Override
