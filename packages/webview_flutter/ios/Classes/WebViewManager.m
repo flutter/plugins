@@ -65,21 +65,27 @@
 }
 
 - (FLTWKWebView *)webViewForId:(NSString *)webViewId {
-    WebViewData* data = self.cache[webViewId];
-    if (data) {
-        [data updateDate];
+    @synchronized (self.cache) {
+        WebViewData* data = self.cache[webViewId];
+        if (data) {
+            [data updateDate];
+        }
+        return data.webView;
     }
-    return data.webView;
 }
 
 - (void)cacheWebView:(FLTWKWebView *)webView forId:(NSString *)webViewId {
     WebViewData *data = [[WebViewData alloc] initWithWebView:webView webViewId:webViewId];
-    self.cache[webViewId] = data;
+    @synchronized (self.cache) {
+        self.cache[webViewId] = data;
+    }
     [self removeOldTabsIfNeeded];
 }
 
 - (void)clearAll {
-    [self.cache removeAllObjects];
+    @synchronized (self.cache) {
+        [self.cache removeAllObjects];
+    }
 }
 
 - (void)removeOldTabsIfNeeded {
@@ -89,19 +95,22 @@
         return;
     }
     
-    // Sort cache values in descending order
-    NSArray *sortedCacheValues = [self.cache.allValues sortedArrayUsingComparator:^NSComparisonResult(WebViewData *obj1, WebViewData *obj2) {
-        return [obj2.cachedDate compare:obj1.cachedDate];
-    }];
-    
-    // Remove old tabs if cache contains more tabs than `maxCachedTabs`
-    if (sortedCacheValues.count > [self.maxCachedTabs intValue]) {
-        NSMutableArray *keysToRemove = [[NSMutableArray alloc] init];
-        for (int i=[self.maxCachedTabs intValue]; i<sortedCacheValues.count; i++) {
-            WebViewData *data = sortedCacheValues[i];
-            [keysToRemove addObject:data.webViewId];
+    @synchronized (self.cache) {
+        // Sort cache values in descending order
+        NSArray *sortedCacheValues = [self.cache.allValues sortedArrayUsingComparator:^NSComparisonResult(WebViewData *obj1, WebViewData *obj2) {
+            return [obj2.cachedDate compare:obj1.cachedDate];
+        }];
+        
+        // Remove old tabs if cache contains more tabs than `maxCachedTabs`
+        if (sortedCacheValues.count > [self.maxCachedTabs intValue]) {
+            NSMutableArray *keysToRemove = [[NSMutableArray alloc] init];
+            for (int i=[self.maxCachedTabs intValue]; i<sortedCacheValues.count; i++) {
+                WebViewData *data = sortedCacheValues[i];
+                [keysToRemove addObject:data.webViewId];
+            }
+            
+            [self.cache removeObjectsForKeys:keysToRemove];
         }
-        [self.cache removeObjectsForKeys:keysToRemove];
     }
 }
 
