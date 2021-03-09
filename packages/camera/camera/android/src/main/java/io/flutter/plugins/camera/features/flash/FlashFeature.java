@@ -18,7 +18,7 @@ public class FlashFeature extends CameraFeature<FlashMode> {
 
   @Override
   public String getDebugName() {
-    return "Flash";
+    return "FlashFeature";
   }
 
   @Override
@@ -34,8 +34,7 @@ public class FlashFeature extends CameraFeature<FlashMode> {
   @Override
   public boolean checkIsSupported() {
     Boolean available = cameraProperties.getFlashInfoAvailable();
-    final boolean supported = available != null && available;
-    return supported;
+    return available != null && available;
   }
 
   @Override
