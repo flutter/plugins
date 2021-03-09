@@ -145,7 +145,7 @@ bool isLinuxPlugin(FileSystemEntity entity, FileSystem fileSystem) {
 }
 
 /// Throws a [ToolExit] with `exitCode` and log the `errorMessage` in red.
-void PrintErrorAndExit({@required String errorMessage, int exitCode = 1}) {
+void printErrorAndExit({@required String errorMessage, int exitCode = 1}) {
   final Colorize redError = Colorize(errorMessage)..red();
   print(redError);
   throw ToolExit(exitCode);
@@ -406,7 +406,7 @@ abstract class PluginCommand extends Command<Null> {
     GitDir baseGitDir = gitDir;
     if (baseGitDir == null) {
       if (!await GitDir.isGitDir(rootDir)) {
-        PrintErrorAndExit(
+        printErrorAndExit(
             errorMessage: '$rootDir is not a valid Git repository.',
             exitCode: 2);
       }
@@ -571,12 +571,11 @@ class GitVersionFinder {
     final io.ProcessResult changedFilesCommand = await baseGitDir
         .runCommand(<String>['diff', '--name-only', '$baseSha', 'HEAD']);
     print('Determine diff with base sha: $baseSha');
-    if (changedFilesCommand.stdout.toString() == null ||
-        changedFilesCommand.stdout.toString().isEmpty) {
+    final String changedFilesStdout = changedFilesCommand.stdout.toString()  ?? '';
+    if (changedFilesStdout.isEmpty) {
       return <String>[];
     }
-    final List<String> changedFiles = changedFilesCommand.stdout
-        .toString()
+    final List<String> changedFiles = changedFilesStdout
         .split('\n')
           ..removeWhere((element) => element.isEmpty);
     return changedFiles.toList();
@@ -605,6 +604,6 @@ class GitVersionFinder {
       baseShaFromMergeBase = await baseGitDir
           .runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);
     }
-    return (baseShaFromMergeBase.stdout as String).replaceAll('\n', '');
+    return (baseShaFromMergeBase.stdout as String).trim();
   }
 }

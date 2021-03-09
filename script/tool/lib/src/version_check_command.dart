@@ -109,7 +109,7 @@ class VersionCheckCommand extends PluginCommand {
   @override
   final String description =
       'Checks if the versions of the plugins have been incremented per pub specification.\n'
-      'Also checks if the version in CHANGELOG matches the version in pubspec.\n\n'
+      'Also checks if the latest version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
 
   @override
@@ -147,7 +147,7 @@ class VersionCheckCommand extends PluginCommand {
           final String error = '$pubspecPath incorrectly updated version.\n'
               'HEAD: $headVersion, master: $masterVersion.\n'
               'Allowed versions: $allowedNextVersions';
-          PrintErrorAndExit(errorMessage: error);
+          printErrorAndExit(errorMessage: error);
         }
 
         bool isPlatformInterface = pubspec.name.endsWith("_platform_interface");
@@ -156,7 +156,7 @@ class VersionCheckCommand extends PluginCommand {
                 NextVersionType.BREAKING_MAJOR) {
           final String error = '$pubspecPath breaking change detected.\n'
               'Breaking changes to platform interfaces are strongly discouraged.\n';
-          PrintErrorAndExit(errorMessage: error);
+          printErrorAndExit(errorMessage: error);
         }
       } on io.ProcessException {
         print('Unable to find pubspec in master for $pubspecPath.'
@@ -181,7 +181,7 @@ class VersionCheckCommand extends PluginCommand {
     final Pubspec pubspec = _tryParsePubspec(plugin);
     if (pubspec == null) {
       final String error = 'Cannot parse version from pubspec.yaml';
-      PrintErrorAndExit(errorMessage: error);
+      printErrorAndExit(errorMessage: error);
     }
     final Version fromPubspec = pubspec.version;
 
@@ -191,10 +191,7 @@ class VersionCheckCommand extends PluginCommand {
     String firstLineWithText;
     final Iterator iterator = lines.iterator;
     while (iterator.moveNext()) {
-      final String currentStriptEmptySpaces =
-          (iterator.current as String).replaceAll(' ', '');
-      if (currentStriptEmptySpaces != null &&
-          currentStriptEmptySpaces.isNotEmpty) {
+      if ((iterator.current as String).trim().isNotEmpty) {
         firstLineWithText = iterator.current;
         break;
       }
@@ -204,8 +201,8 @@ class VersionCheckCommand extends PluginCommand {
     Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
       final String error =
-          'Cannot find version on the first line of CHANGELOG.md';
-      PrintErrorAndExit(errorMessage: error);
+          'Cannot find version on the first line of ${plugin.path}/CHANGELOG.md';
+      printErrorAndExit(errorMessage: error);
     }
 
     if (fromPubspec != fromChangeLog) {
@@ -214,7 +211,7 @@ versions for $packageName in CHANGELOG.md and pubspec.yaml do not match.
 The version in pubspec.yaml is $fromPubspec.
 The first version listed in CHANGELOG.md is $fromChangeLog.
 ''';
-      PrintErrorAndExit(errorMessage: error);
+      printErrorAndExit(errorMessage: error);
     }
     print('${packageName} passed version check');
   }
@@ -227,13 +224,13 @@ The first version listed in CHANGELOG.md is $fromChangeLog.
       if (pubspec == null) {
         final String error =
             'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';
-        PrintErrorAndExit(errorMessage: error);
+        printErrorAndExit(errorMessage: error);
       }
       return pubspec;
     } on Exception catch (exception) {
       final String error =
           'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}';
-      PrintErrorAndExit(errorMessage: error);
+      printErrorAndExit(errorMessage: error);
     }
     return null;
   }
