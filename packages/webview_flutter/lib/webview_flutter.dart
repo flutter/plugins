@@ -224,6 +224,7 @@ class WebView extends StatefulWidget {
     this.onPageStarted,
     this.onPageFinished,
     this.onProgress,
+    this.onPullToRefresh, //@pullToRefresh
     this.onWebResourceError,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
@@ -367,6 +368,12 @@ class WebView extends StatefulWidget {
   /// Invoked when a page is loading.
   final PageLoadingCallback? onProgress;
 
+  ///Invoked when a user is swiping to refresh.
+  ///
+  ///When the user swipes down he will trigger the refresh animation
+  ///To end the animation you need to complete the cycle by returning a [Future]
+  final Future<void> Function()? onPullToRefresh; //@pullToRefresh
+
   /// Invoked when a web resource has failed to load.
   ///
   /// This can be called for any resource (iframe, image, etc.), not just for
@@ -478,6 +485,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     webSettings: _webSettingsFromWidget(widget),
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
     userAgent: widget.userAgent,
+    hasPullToRefresh: widget.onPullToRefresh != null,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
   );
 }
@@ -591,6 +599,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   void onProgress(int progress) {
     if (_widget.onProgress != null) {
       _widget.onProgress!(progress);
+    }
+  }
+
+  @override
+  Future<void> onPullToRefresh() async {
+    if (_widget.onPullToRefresh != null) {
+      await _widget.onPullToRefresh!();
     }
   }
 

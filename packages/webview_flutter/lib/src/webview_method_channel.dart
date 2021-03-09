@@ -46,6 +46,12 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       case 'onPageStarted':
         _platformCallbacksHandler.onPageStarted(call.arguments['url']!);
         return null;
+      case 'onPullToRefresh':
+        final Future<void> refreshResult =
+            _platformCallbacksHandler.onPullToRefresh();
+        await refreshResult;
+        await _channel.invokeMethod('endRefreshing', null);
+        return null;
       case 'onWebResourceError':
         _platformCallbacksHandler.onWebResourceError(
           WebResourceError(
@@ -211,6 +217,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
       'usesHybridComposition': usesHybridComposition,
+      'hasPullToRefresh': creationParams.hasPullToRefresh,
     };
   }
 }

@@ -117,6 +117,18 @@
     if ([initialUrl isKindOfClass:[NSString class]]) {
       [self loadUrl:initialUrl];
     }
+    
+    
+    BOOL hasPullToRefresh = [args[@"hasPullToRefresh"] boolValue];
+
+    if (hasPullToRefresh) {
+      UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+      [refreshControl setTintColor:[UIColor grayColor]];
+      [refreshControl addTarget:self action:@selector(refreshWebview) forControlEvents:UIControlEventValueChanged];
+      if (@available(iOS 10.0, *)) {
+        _webView.scrollView.refreshControl = refreshControl;
+      }
+    }
   }
   return self;
 }
@@ -129,6 +141,12 @@
 
 - (UIView*)view {
   return _webView;
+}
+
+- (void) refreshWebview {
+  if (@available(iOS 10.0, *)) {
+    [_channel invokeMethod:@"onPullToRefresh" arguments:NULL];
+  }
 }
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -166,6 +184,10 @@
     [self getScrollX:call result:result];
   } else if ([[call method] isEqualToString:@"getScrollY"]) {
     [self getScrollY:call result:result];
+  } else if ([[call method] isEqualToString:@"endRefreshing"]){
+      if (@available(iOS 10.0, *)) {
+        [_webView.scrollView.refreshControl endRefreshing];
+      }
   } else {
     result(FlutterMethodNotImplemented);
   }

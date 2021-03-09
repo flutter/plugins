@@ -844,6 +844,39 @@ void main() {
     });
   });
 
+  group('pullToRefresh', () {
+    testWidgets('is null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      expect(platformWebView.hasPullToRefresh, isFalse);
+    });
+    testWidgets('is not null', (WidgetTester tester) async {
+      await tester.pumpWidget(WebView(
+        onPullToRefresh: () => Future.value(),
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      expect(platformWebView.hasPullToRefresh, isTrue);
+    });
+    testWidgets('implementation', (WidgetTester tester) async {
+      await tester.pumpWidget(WebView(
+        onPullToRefresh: () => Future.value(),
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      platformWebView.isRefreshing = true;
+
+      await platformWebView.fakeOnPullToRefreshCallBack();
+
+      expect(platformWebView.isRefreshing, isFalse);
+    });
+  });
   group('Custom platform implementation', () {
     setUpAll(() {
       WebView.platform = MyWebViewPlatform();
@@ -943,6 +976,7 @@ class FakePlatformWebView {
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
+    hasPullToRefresh = params['hasPullToRefresh'];
   }
 
   late MethodChannel channel;
@@ -959,6 +993,8 @@ class FakePlatformWebView {
   bool? hasNavigationDelegate;
   bool? debuggingEnabled;
   String? userAgent;
+  bool? hasPullToRefresh;
+  bool isRefreshing = true;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -1007,6 +1043,9 @@ class FakePlatformWebView {
       case 'clearCache':
         hasCache = false;
         return Future<void>.sync(() {});
+      case 'endRefreshing':
+        isRefreshing = false;
+        return Future.value(call.arguments);
     }
     return Future<void>.sync(() {});
   }
@@ -1094,6 +1133,16 @@ class FakePlatformWebView {
     history.add(url);
     currentPosition++;
     amountOfReloadsOnCurrentUrl = 0;
+  }
+
+  fakeOnPullToRefreshCallBack() {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+    final ByteData data = codec.encodeMethodCall(MethodCall(
+      'onPullToRefresh',
+      null,
+    ));
+    ServicesBinding.instance!.defaultBinaryMessenger
+        .handlePlatformMessage(channel.name, data, (ByteData? data) {});
   }
 }
 
