@@ -24,7 +24,7 @@ public class FocusPointFeature extends CameraFeature<Point> {
 
   @Override
   public String getDebugName() {
-    return "FocusPoint";
+    return "FocusPointFeature";
   }
 
   @Override
