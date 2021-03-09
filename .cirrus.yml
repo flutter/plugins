@@ -28,7 +28,7 @@ task:
     - name: publishable
       script:
         - flutter channel master
-        - BRANCH=${BRANCH:-'$(git rev-parse --abbrev-ref HEAD)'}
+        - export BRANCH=${BRANCH:-'$(git rev-parse --abbrev-ref HEAD)'}
         - if [[$BRANCH != "master"]];then
         -   echo "Running version-check on changed pacakges"
         -   $PLUGIN_TOOLS version-check --run-on-changed-packages
