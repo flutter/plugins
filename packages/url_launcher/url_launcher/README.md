@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/url_launcher.svg)](https://pub.dev/packages/url_launcher)
 
-A Flutter plugin for launching a URL in the mobile platform. Supports
+A Flutter plugin for launching a URL. Supports
 iOS, Android, web, Windows, macOS, and Linux.
 
 ## Usage
@@ -50,6 +50,10 @@ Common schemes supported by both iOS and Android:
 | `sms:<phone number>`, e.g. `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
+
+**Note**: URL schemes are only supported if there are apps installed on the device that can
+support them. For example, iOS simulators don't have a default email or phone
+apps installed, so can't open `tel:` or `mailto:` links.
 
 ### Encoding URLs
 

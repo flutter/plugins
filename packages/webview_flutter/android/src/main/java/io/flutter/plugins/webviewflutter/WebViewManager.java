@@ -1,5 +1,7 @@
 package io.flutter.plugins.webviewflutter;
 
+import android.webkit.WebView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.LruCache;
@@ -17,11 +19,11 @@ public enum WebViewManager {
         cache.resize(maxCachedTabs);
     }
 
-    public InputAwareWebView webViewForId(String webViewId) {
+    public WebView webViewForId(String webViewId) {
         return cache.get(webViewId);
     }
 
-    public void cacheWebView(InputAwareWebView webView, String webViewId) {
+    public void cacheWebView(WebView webView, String webViewId) {
         cache.put(webViewId, webView);
     }
 
@@ -29,15 +31,17 @@ public enum WebViewManager {
         cache.evictAll();
     }
 
-    private class WebViewCache extends LruCache<java.lang.String, InputAwareWebView> {
+    private class WebViewCache extends LruCache<java.lang.String, WebView> {
 
         WebViewCache() {
             super(10);
         }
 
         @Override
-        protected void entryRemoved(boolean evicted, @NonNull String key, @NonNull InputAwareWebView oldValue, @Nullable InputAwareWebView newValue) {
-            oldValue.dispose();
+        protected void entryRemoved(boolean evicted, @NonNull String key, @NonNull WebView oldValue, @Nullable WebView newValue) {
+            if (oldValue instanceof InputAwareWebView) {
+                ((InputAwareWebView) oldValue).dispose();
+            }
             oldValue.destroy();
         }
     }

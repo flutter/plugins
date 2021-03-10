@@ -8,7 +8,11 @@ class OpenTextPage extends StatelessWidget {
       label: 'text',
       extensions: ['txt', 'json'],
     );
-    final XFile file = await openFile(acceptedTypeGroups: [typeGroup]);
+    final XFile? file = await openFile(acceptedTypeGroups: [typeGroup]);
+    if (file == null) {
+      // Operation was canceled by the user.
+      return;
+    }
     final String fileName = file.name;
     final String fileContent = await file.readAsString();
 
@@ -28,9 +32,11 @@ class OpenTextPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: Text('Press to open a text file (json, txt)'),
               onPressed: () => _openTextFile(context),
             ),
@@ -62,7 +68,7 @@ class TextDisplay extends StatelessWidget {
         ),
       ),
       actions: [
-        FlatButton(
+        TextButton(
           child: const Text('Close'),
           onPressed: () => Navigator.pop(context),
         ),

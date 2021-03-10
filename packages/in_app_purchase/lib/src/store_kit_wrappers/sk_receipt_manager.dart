@@ -14,8 +14,9 @@ class SKReceiptManager {
   /// There are 2 ways to do so. Either validate locally or validate with App Store.
   /// For more details on how to validate the receipt data, you can refer to Apple's document about [`About Receipt Validation`](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Introduction.html#//apple_ref/doc/uid/TP40010573-CH105-SW1).
   /// If the receipt is invalid or missing, you can use [SKRequestMaker.startRefreshReceiptRequest] to request a new receipt.
-  static Future<String> retrieveReceiptData() {
-    return channel.invokeMethod<String>(
-        '-[InAppPurchasePlugin retrieveReceiptData:result:]');
+  static Future<String> retrieveReceiptData() async {
+    return (await channel.invokeMethod<String>(
+            '-[InAppPurchasePlugin retrieveReceiptData:result:]')) ??
+        '';
   }
 }

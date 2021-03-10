@@ -1,18 +1,18 @@
-## 6.0.0-nullsafety.3
+## 6.0.2
 
-* forceSafariVC should be nullable.
+* Update platform_plugin_interface version requirement.
 
-## 6.0.0-nullsafety.2
+## 6.0.1
 
-* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Update result to `True` on iOS when the url was loaded successfully.
+* Added a README note about required applications.
 
-## 6.0.0-nullsafety.1
-
-* Bump Dart SDK to support null safety.
-
-## 6.0.0-nullsafety
+## 6.0.0
 
 * Migrate to null safety.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Correct statement in description about which platforms url_launcher supports.
 
 ## 5.7.13
 

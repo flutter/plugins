@@ -8,7 +8,11 @@ class SaveTextPage extends StatelessWidget {
   final TextEditingController _contentController = TextEditingController();
 
   void _saveFile() async {
-    final String path = await getSavePath();
+    String? path = await getSavePath();
+    if (path == null) {
+      // Operation was canceled by the user.
+      return;
+    }
     final String text = _contentController.text;
     final String fileName = _nameController.text;
     final Uint8List fileData = Uint8List.fromList(text.codeUnits);
@@ -51,9 +55,11 @@ class SaveTextPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: Text('Press to save a text file'),
               onPressed: () => _saveFile(),
             ),

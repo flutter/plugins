@@ -1,3 +1,11 @@
+##  2.0.0
+
+* Migrate to null safety.
+
+## 0.4.5+20
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
 ## 0.4.5+19
 
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))

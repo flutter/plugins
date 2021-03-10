@@ -1,14 +1,16 @@
-## 1.0.0-nullsafety.2
-
-* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
-
-## 1.0.0-nullsafety.1
-
-* Update README for Android Integration.
-
-## 1.0.0-nullsafety
+## 1.1.0
 
 * Migrate to null safety.
+* Allow pin, passcode, and pattern authentication with `authenticate` method.
+* Fix incorrect error handling switch case fallthrough.
+* Update README for Android Integration.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276)).
+* **Breaking change**. Parameter names refactored to use the generic `biometric` prefix in place of `fingerprint` in the `AndroidAuthMessages` class
+  * `fingerprintHint` is now `biometricHint`
+  * `fingerprintNotRecognized`is now `biometricNotRecognized`
+  * `fingerprintSuccess`is now `biometricSuccess`
+  * `fingerprintRequiredTitle` is now `biometricRequiredTitle`
 
 ## 0.6.3+5
 

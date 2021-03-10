@@ -11,6 +11,10 @@ class OpenImagePage extends StatelessWidget {
       extensions: ['jpg', 'png'],
     );
     final List<XFile> files = await openFiles(acceptedTypeGroups: [typeGroup]);
+    if (files.isEmpty) {
+      // Operation was canceled by the user.
+      return;
+    }
     final XFile file = files[0];
     final String fileName = file.name;
     final String filePath = file.path;
@@ -31,9 +35,11 @@ class OpenImagePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: Text('Press to open an image file(png, jpg)'),
               onPressed: () => _openImageFile(context),
             ),
@@ -63,7 +69,7 @@ class ImageDisplay extends StatelessWidget {
       // while on other platforms it is a system path.
       content: kIsWeb ? Image.network(filePath) : Image.file(File(filePath)),
       actions: [
-        FlatButton(
+        TextButton(
           child: const Text('Close'),
           onPressed: () {
             Navigator.pop(context);
