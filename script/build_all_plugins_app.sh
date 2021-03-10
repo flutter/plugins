@@ -26,8 +26,6 @@ check_changed_packages > /dev/null
 # cases where using a relaxed version constraint isn't possible.
 readonly EXCLUDED_PLUGINS_LIST=(
   "plugin_platform_interface" # This should never be a direct app dependency.
-  "extension_google_sign_in_as_googleapis_auth" # Transitive dependency issues
-      # with integration_test.
 )
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
