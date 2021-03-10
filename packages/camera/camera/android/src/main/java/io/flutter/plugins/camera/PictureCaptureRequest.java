@@ -26,8 +26,24 @@ public class PictureCaptureRequest {
   /** To send errors back to dart */
   private final DartMessenger dartMessenger;
 
+  /**
+   * Factory method to create a picture capture request.
+   *
+   * @param result
+   * @param file
+   */
+  static PictureCaptureRequest create(
+      MethodChannel.Result result,
+      DartMessenger dartMessenger,
+      File file,
+      long preCaptureFocusingTimeoutMs,
+      long preCaptureMeteringTimeoutMs) {
+    return new PictureCaptureRequest(
+        result, dartMessenger, file, preCaptureFocusingTimeoutMs, preCaptureMeteringTimeoutMs);
+  }
+
   /** Create a new picture capture request */
-  public PictureCaptureRequest(
+  private PictureCaptureRequest(
       MethodChannel.Result result,
       DartMessenger dartMessenger,
       File file,
@@ -36,8 +52,8 @@ public class PictureCaptureRequest {
     this.result = result;
     this.dartMessenger = dartMessenger;
     this.file = file;
-    this.preCaptureFocusing = new Timeout(preCaptureFocusingTimeoutMs);
-    this.preCaptureMetering = new Timeout(preCaptureMeteringTimeoutMs);
+    this.preCaptureFocusing = Timeout.create(preCaptureFocusingTimeoutMs);
+    this.preCaptureMetering = Timeout.create(preCaptureMeteringTimeoutMs);
   }
 
   /**

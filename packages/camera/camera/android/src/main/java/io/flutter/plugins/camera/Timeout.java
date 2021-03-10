@@ -24,7 +24,16 @@ class Timeout {
   /** When this timeout was started. Will be used later to check if the timeout has expired yet. */
   private final long timeStarted;
 
-  public Timeout(long timeoutMs) {
+  static Timeout create(long timeoutMs) {
+    return new Timeout(timeoutMs);
+  }
+
+  /**
+   * Create a new timeout.
+   *
+   * @param timeoutMs the time in milliseconds for this timeout to lapse.
+   */
+  private Timeout(long timeoutMs) {
     this.timeoutMs = timeoutMs;
     this.timeStarted = SystemClock.elapsedRealtime();
   }
