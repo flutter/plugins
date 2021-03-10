@@ -5,11 +5,6 @@
 
 set -e
 
-# Set up the repository to the right channel before doing any Flutter operations
-# to ensure the upgrade doesn't start off by downloading the wrong Dart SDK
-# version.
-git co $@
-git pull
 # Run the normal channel-switch code to ensure that all the state is correct.
 flutter channel $@
 flutter upgrade
