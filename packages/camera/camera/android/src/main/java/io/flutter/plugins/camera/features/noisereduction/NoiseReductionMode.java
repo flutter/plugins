@@ -6,7 +6,13 @@ package io.flutter.plugins.camera.features.noisereduction;
 
 /** Only supports fast mode for now. */
 public enum NoiseReductionMode {
-  fast("fast");
+  off("off"),
+  fast("fast"),
+  highQuality("highQuality"),
+  minimal("minimal"),
+  zeroShutterLag("zeroShutterLag");
+
+
 
   private final String strValue;
 
