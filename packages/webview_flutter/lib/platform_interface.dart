@@ -325,7 +325,7 @@ abstract class WebViewPlatformController {
   }
 
   /// Return a screenshot of the content that is displayed in the webview.
-  Future<Uint8List> takeScreenshot() {
+  Future<Uint8List?> takeScreenshot() {
     throw UnimplementedError(
         "WebView takeScreenshot is not implemented on the current platform");
   }
@@ -464,7 +464,7 @@ class CreationParams {
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.hostsToBlock,
     this.tabId,
-    this.maxCachedTabs,
+    this.maxCachedTabs = 0,
   }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
@@ -499,10 +499,10 @@ class CreationParams {
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
   /// Which hosts will be blocked from loading.
-  final Set<String> hostsToBlock;
+  final Set<String>? hostsToBlock;
 
   /// Open a WebView with cached tab if exists.
-  final String tabId;
+  final String? tabId;
 
   /// Maximum number of cached tabs.
   final int maxCachedTabs;

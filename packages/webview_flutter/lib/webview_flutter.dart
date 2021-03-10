@@ -420,10 +420,10 @@ class WebView extends StatefulWidget {
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
   /// Provides a list of hosts which will be blocked.
-  final Set<String> hostsToBlock;
+  final Set<String>? hostsToBlock;
 
   /// Used for restoring previous WebView state.
-  final String tabId;
+  final String? tabId;
 
   /// Indicates the maximum number of cached tabs. When opening a new tab with cache full,
   /// the last tab will be discarded.
@@ -561,7 +561,7 @@ Set<String> _extractChannelNames(Set<JavascriptChannel>? channels) {
   return channelNames;
 }
 
-Set<String> _formatHostsToBlock(Set<String> hosts) {
+Set<String> _formatHostsToBlock(Set<String>? hosts) {
   return hosts == null ? <String>{} : hosts;
 }
 
@@ -824,7 +824,7 @@ class WebViewController {
   }
 
   /// Return a screenshot of the content that is displayed in the webview.
-  Future<Uint8List> takeScreenshot() {
+  Future<Uint8List?> takeScreenshot() {
     return _webViewPlatformController.takeScreenshot();
   }
 }

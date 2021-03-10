@@ -163,7 +163,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       _channel.invokeMethod<int>("getScrollY").then((result) => result!);
 
   @override
-  Future<Uint8List> takeScreenshot() =>
+  Future<Uint8List?> takeScreenshot() =>
       _channel.invokeMethod<Uint8List>("takeScreenshot");
 
   /// Method channel implementation for [WebViewPlatform.clearCookies].
@@ -216,7 +216,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
       'usesHybridComposition': usesHybridComposition,
-      'hostsToBlock': creationParams.hostsToBlock.toList(),
+      'hostsToBlock': creationParams.hostsToBlock?.toList(),
       'tabId': creationParams.tabId,
       'maxCachedTabs': creationParams.maxCachedTabs,
     };
