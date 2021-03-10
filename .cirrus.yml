@@ -1,24 +1,26 @@
-# Light-workload tasks.
+root_task_template: &ROOT_TASK_TEMPLATE
+  # Don't run on release tags since it creates O(n^2) tasks where n is the
+  # number of plugins
+  only_if: $CIRRUS_TAG == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  env:
+    INTEGRATION_TEST_PATH: "./packages/integration_test"
+    CHANNEL: "master" # Default to master when not explicitly set by a task.
+  setup_script:
+    - flutter channel $CHANNEL
+    - flutter upgrade
+    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
+    - cd script/tool
+    - pub get
+
+
+# Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
 # concurrency limits.
 task:
-  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-  only_if: $CIRRUS_TAG == ''
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  << : *ROOT_TASK_TEMPLATE
   container:
     dockerfile: .ci/Dockerfile
-  env:
-    INTEGRATION_TEST_PATH: "./packages/integration_test"
-    PLUGIN_TOOLS: "dart run ./script/tool/lib/src/main.dart"
-  upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - flutter config --enable-linux-desktop
-    - git fetch origin master
-    - cd script/tool
-    - pub get
   matrix:
     ### Platform-agnostic tasks ###
     - name: plugin_tools_tests
@@ -42,14 +44,12 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       test_script:
-        - flutter channel $CHANNEL
         - ./script/incremental_build.sh test
     - name: analyze_master
       env:
         matrix:
           CHANNEL: "master"
       script:
-        - flutter channel $CHANNEL
         - ./script/incremental_build.sh analyze
     ## TODO(cyanglaz):
     ## Combing stable and master analyze jobs when integration test null safety is ready on flutter stable.
@@ -58,7 +58,6 @@ task:
         matrix:
           CHANNEL: "stable"
       script:
-        - flutter channel $CHANNEL
         - find . -depth -type d -wholename '*_web/example' -exec rm -rf {} \;
         - ./script/incremental_build.sh analyze
     ### Android tasks ###
@@ -68,7 +67,6 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       script:
-        - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh apk
     ### Web tasks ###
     - name: build_all_plugins_web
@@ -77,14 +75,12 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       script:
-        - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh web
     - name: build-web-examples
       env:
         matrix:
           CHANNEL: "master"
       build_script:
-        - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --web
         # TODO: Add driving examples (and move to heavy-workload group).
     ### Linux desktop tasks ###
@@ -94,8 +90,17 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       script:
-        - flutter channel $CHANNEL
+        - flutter config --enable-linux-desktop
         - ./script/build_all_plugins_app.sh linux
+    - name: build-linux+drive-examples
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      build_script:
+        - flutter config --enable-linux-desktop
+        - ./script/incremental_build.sh build-examples --linux
+        - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
 # Legacy Dockerfile configuration for web integration tests.
 # https://github.com/flutter/web_installers doesn't yet support the current
@@ -104,20 +109,9 @@ task:
 # tasks" block above once web_installers has been updated to support Chrome 89
 # (which is what the current image generated from .ci/Dockerfile has).
 task:
-  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-  only_if: $CIRRUS_TAG == ''
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  << : *ROOT_TASK_TEMPLATE
   container:
     dockerfile: .ci/Dockerfile-LegacyChrome
-  env:
-    INTEGRATION_TEST_PATH: "./packages/integration_test"
-  upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - flutter config --enable-linux-desktop
-    - git fetch origin master
   matrix:
     - name: integration_web_smoke_test
       env:
@@ -127,7 +121,6 @@ task:
       # Tests integration example test in web.
       only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
       install_script:
-        - flutter channel $CHANNEL
         - git clone https://github.com/flutter/web_installers.git
         - cd web_installers/packages/web_drivers/
         - pub get
@@ -137,26 +130,15 @@ task:
         - cd $INTEGRATION_TEST_PATH/example/
         - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
 
-# Heavy-workload tasks.
+# Heavy-workload Linux tasks.
 # These use machines with more CPUs and memory, so will reduce parallelization
 # for non-credit runs.
 task:
-  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-  only_if: $CIRRUS_TAG == ''
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  << : *ROOT_TASK_TEMPLATE
   container:
     dockerfile: .ci/Dockerfile
-    cpu: 8
-    memory: 16G
-  env:
-    INTEGRATION_TEST_PATH: "./packages/integration_test"
-  upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - flutter config --enable-linux-desktop
-    - git fetch origin master
+    cpu: 4
+    memory: 12G
   matrix:
     ### Android tasks ###
     - name: build-apks+java-test+firebase-test-lab
@@ -172,7 +154,6 @@ task:
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
       script:
-        - flutter channel $CHANNEL
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
         # See: https://github.com/flutter/flutter/issues/24935
@@ -193,35 +174,16 @@ task:
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
-    ### Linux desktop tasks ###
-    - name: build-linux+drive-examples
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      build_script:
-        - flutter channel $CHANNEL
-        - ./script/incremental_build.sh build-examples --linux
-        - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
+# macOS tasks.
 task:
-  # Xcode 12 task
-  # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
-  only_if: $CIRRUS_TAG == ''
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  << : *ROOT_TASK_TEMPLATE
+  # Only one macOS task can run in parallel without credits, so use them for
+  # PRs on macOS.
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
     image: big-sur-xcode-12.3
-  upgrade_script:
-    - sudo gem install cocoapods
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - flutter config --enable-macos-desktop
-    - git fetch origin master
-  create_simulator_script:
-    - xcrun simctl list
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
+  cocoapod_install_script: sudo gem install cocoapods
   matrix:
     ### Platform-agnostic tasks ###
     - name: lint_darwin_plugins
@@ -232,8 +194,6 @@ task:
       script:
         # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
         - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
-        # Skip the dummy podspecs used to placate the tool.
-        - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
         - ./script/incremental_build.sh podspecs
     ### iOS tasks ###
     - name: build_all_plugins_ipa
@@ -242,7 +202,6 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       script:
-        - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh ios --no-codesign
     - name: build-ipas+drive-examples
       env:
@@ -257,8 +216,10 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
+      create_simulator_script:
+        - xcrun simctl list
+        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
       build_script:
-        - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh xctest --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
         # `drive-examples` contains integration tests, which changes the UI of the application.
@@ -272,7 +233,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       script:
-        - flutter channel $CHANNEL
+        - flutter config --enable-macos-desktop
         - ./script/build_all_plugins_app.sh macos
     - name: build-macos+drive-examples
       env:
@@ -281,6 +242,6 @@ task:
           CHANNEL: "stable"
         PATH: $PATH:/usr/local/bin
       build_script:
-        - flutter channel $CHANNEL
+        - flutter config --enable-macos-desktop
         - ./script/incremental_build.sh build-examples --macos --no-ipa
         - ./script/incremental_build.sh drive-examples --macos
