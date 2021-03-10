@@ -190,7 +190,7 @@ task:
   # Xcode 12 task
   # don't run on release tags since it creates O(n^2) tasks where n is the number of plugins
   only_if: $CIRRUS_TAG == ''
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
     image: big-sur-xcode-12.3
   setup_script:
