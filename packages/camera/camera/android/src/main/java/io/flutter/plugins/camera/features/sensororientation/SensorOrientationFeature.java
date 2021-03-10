@@ -33,7 +33,7 @@ public class SensorOrientationFeature extends CameraFeature<Integer> {
 
   @Override
   public String getDebugName() {
-    return "SensorOrientation";
+    return "SensorOrientationFeature";
   }
 
   @Override
