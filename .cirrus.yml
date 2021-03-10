@@ -206,8 +206,6 @@ task:
       script:
         # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
         - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
-        # Skip the dummy podspecs used to placate the tool.
-        - find . -name "*_web*.podspec" -o -name "*_mac*.podspec" | xargs rm
         - ./script/incremental_build.sh podspecs
     ### iOS tasks ###
     - name: build_all_plugins_ipa
