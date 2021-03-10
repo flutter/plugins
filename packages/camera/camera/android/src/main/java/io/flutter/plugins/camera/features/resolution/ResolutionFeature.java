@@ -82,7 +82,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
 
   @Override
   public String getDebugName() {
-    return "Resolution";
+    return "ResolutionFeature";
   }
 
   @Override
