@@ -7,10 +7,10 @@ root_task_template: &ROOT_TASK_TEMPLATE
     INTEGRATION_TEST_PATH: "./packages/integration_test"
     CHANNEL: "master" # Default to master when not explicitly set by a task.
   setup_script:
+    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
+  upgrade_flutter_script:
     - flutter channel $CHANNEL
     - flutter upgrade
-    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
-
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
@@ -184,6 +184,7 @@ task:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+      upgrade_flutter_script: # overridden, Flutter not a dependency.
       script:
         # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
         - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
