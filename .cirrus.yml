@@ -6,10 +6,13 @@ root_task_template: &ROOT_TASK_TEMPLATE
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
     CHANNEL: "master" # Default to master when not explicitly set by a task.
+    PLUGIN_TOOLS: "dart run ./script/tool/lib/src/main.dart"
   setup_script:
     - flutter channel $CHANNEL
     - flutter upgrade
     - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
+    - cd script/tool
+    - pub get
 
 
 # Light-workload Linux tasks.
@@ -24,10 +27,14 @@ task:
     - name: plugin_tools_tests
       script:
         - cd script/tool
-        - pub get
         - CIRRUS_BUILD_ID=null pub run test
     - name: publishable
       script:
+        - if [[ "$CIRRUS_BRANCH" == "master" ]]; then
+        -   $PLUGIN_TOOLS version-check
+        - else
+        -   $PLUGIN_TOOLS version-check --run-on-changed-packages
+        - fi
         - ./script/check_publish.sh
     - name: format
       format_script: ./script/incremental_build.sh format --fail-on-change
