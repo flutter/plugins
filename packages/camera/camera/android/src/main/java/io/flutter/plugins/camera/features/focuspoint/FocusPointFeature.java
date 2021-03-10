@@ -17,7 +17,8 @@ public class FocusPointFeature extends CameraFeature<Point> {
   private final Callable<CameraRegions> getCameraRegions;
   private Point currentSetting = new Point(0.0, 0.0);
 
-  public FocusPointFeature(CameraProperties cameraProperties, Callable<CameraRegions> getCameraRegions) {
+  public FocusPointFeature(
+      CameraProperties cameraProperties, Callable<CameraRegions> getCameraRegions) {
     super(cameraProperties);
     this.getCameraRegions = getCameraRegions;
   }

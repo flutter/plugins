@@ -13,26 +13,18 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 class CameraCaptureCallback extends CaptureCallback {
-  interface CameraCaptureStateListener {
-    void onConverged();
-
-    void onPrecapture();
-
-    void onPrecaptureTimeout();
-  }
-
   private final CameraCaptureStateListener cameraStateListener;
   private CameraState cameraState;
   private PictureCaptureRequest pictureCaptureRequest;
 
-  public static CameraCaptureCallback create(
-      @NonNull CameraCaptureStateListener cameraStateListener) {
-    return new CameraCaptureCallback(cameraStateListener);
-  }
-
   private CameraCaptureCallback(@NonNull CameraCaptureStateListener cameraStateListener) {
     cameraState = CameraState.STATE_PREVIEW;
     this.cameraStateListener = cameraStateListener;
+  }
+
+  public static CameraCaptureCallback create(
+      @NonNull CameraCaptureStateListener cameraStateListener) {
+    return new CameraCaptureCallback(cameraStateListener);
   }
 
   public CameraState getCameraState() {
@@ -73,8 +65,15 @@ class CameraCaptureCallback extends CaptureCallback {
           if (afState == null) {
             return;
           } else if (afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED
-              || afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+              || afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED
+
+              // Move forward in case of a focusing timeout.
+              || pictureCaptureRequest.preCaptureFocusing.getIsExpired()) {
             // CONTROL_AE_STATE can be null on some devices
+
+            if (pictureCaptureRequest.preCaptureFocusing.getIsExpired()) {
+              Log.i("Camera", "Focus timeout, moving on with capture");
+            }
 
             if (aeState == null || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
               cameraStateListener.onConverged();
@@ -91,7 +90,15 @@ class CameraCaptureCallback extends CaptureCallback {
           if (aeState == null
               || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED
               || aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE
-              || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED) {
+              || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED
+
+              // Move forward in case of a metering timeout.
+              || pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
+
+            if (pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
+              Log.i("Camera", "Metering timeout, moving on with capture");
+            }
+
             setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
           }
           break;
@@ -102,10 +109,6 @@ class CameraCaptureCallback extends CaptureCallback {
           // CONTROL_AE_STATE can be null on some devices
           if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
             cameraStateListener.onConverged();
-          } else if (pictureCaptureRequest != null
-              && pictureCaptureRequest.hitPreCaptureTimeout()) {
-            // Log.i(TAG, "===> Hit precapture timeout");
-            cameraStateListener.onPrecaptureTimeout();
           }
           break;
         }
@@ -126,5 +129,11 @@ class CameraCaptureCallback extends CaptureCallback {
       @NonNull CaptureRequest request,
       @NonNull TotalCaptureResult result) {
     process(result);
+  }
+
+  interface CameraCaptureStateListener {
+    void onConverged();
+
+    void onPrecapture();
   }
 }

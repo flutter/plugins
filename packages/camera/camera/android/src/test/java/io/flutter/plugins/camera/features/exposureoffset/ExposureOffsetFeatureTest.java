@@ -12,7 +12,8 @@ import io.flutter.plugins.camera.CameraProperties;
 import org.junit.Test;
 
 public class ExposureOffsetFeatureTest {
-  private static final ExposureOffsetValue DEFAULT_EXPOSURE_OFFSET_VALUE = new ExposureOffsetValue(0, 0, 0);
+  private static final ExposureOffsetValue DEFAULT_EXPOSURE_OFFSET_VALUE =
+      new ExposureOffsetValue(0, 0, 0);
 
   @Test
   public void getDebugName_should_return_the_name_of_the_feature() {
@@ -51,7 +52,8 @@ public class ExposureOffsetFeatureTest {
   }
 
   @Test
-  public void getExposureOffsetStepSize_should_return_the_control_exposure_compensation_step_value() {
+  public void
+      getExposureOffsetStepSize_should_return_the_control_exposure_compensation_step_value() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposureOffsetFeature exposureOffsetFeature = new ExposureOffsetFeature(mockCameraProperties);
 

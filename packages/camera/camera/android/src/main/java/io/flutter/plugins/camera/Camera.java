@@ -129,8 +129,6 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private final Activity activity;
   /** A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture. */
   private final CameraCaptureCallback mCaptureCallback;
-  /** This manages the state of the camera and the current capture request. */
-  PictureCaptureRequest pictureCaptureRequest;
   /** A {@link Handler} for running tasks in the background. */
   private Handler mBackgroundHandler;
   /**
@@ -166,6 +164,9 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   private File videoRecordingFile;
 
+  /** Holds the current picture capture request and its related timeouts */
+  private PictureCaptureRequest pictureCaptureRequest;
+
   public Camera(
       final Activity activity,
       final SurfaceTextureEntry flutterTexture,
@@ -198,7 +199,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
                 cameraFeatureFactory.createAutoFocusFeature(cameraProperties, false));
             put(
                 CameraFeatures.sensorOrientation,
-                cameraFeatureFactory.createSensorOrientationFeature(cameraProperties, activity, dartMessenger));
+                cameraFeatureFactory.createSensorOrientationFeature(
+                    cameraProperties, activity, dartMessenger));
             put(
                 CameraFeatures.exposureLock,
                 cameraFeatureFactory.createExposureLockFeature(cameraProperties));
@@ -207,13 +209,13 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
                 cameraFeatureFactory.createExposureOffsetFeature(cameraProperties));
             put(
                 CameraFeatures.exposurePoint,
-                cameraFeatureFactory.createExposurePointFeature(cameraProperties, () -> getCameraRegions()));
+                cameraFeatureFactory.createExposurePointFeature(
+                    cameraProperties, () -> getCameraRegions()));
             put(
                 CameraFeatures.focusPoint,
-                cameraFeatureFactory.createFocusPointFeature(cameraProperties, () -> getCameraRegions()));
-            put(
-                CameraFeatures.flash,
-                cameraFeatureFactory.createFlashFeature(cameraProperties));
+                cameraFeatureFactory.createFocusPointFeature(
+                    cameraProperties, () -> getCameraRegions()));
+            put(CameraFeatures.flash, cameraFeatureFactory.createFlashFeature(cameraProperties));
             put(
                 CameraFeatures.fpsRange,
                 cameraFeatureFactory.createFpsRangeFeature(cameraProperties));
@@ -243,11 +245,6 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   @Override
   public void onPrecapture() {
     runPrecaptureSequence();
-  }
-
-  @Override
-  public void onPrecaptureTimeout() {
-    unlockAutoFocus();
   }
 
   /**
@@ -313,12 +310,10 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
             try {
               startPreview();
 
-              final boolean isExposurePointSupported = cameraFeatures
-                  .get(CameraFeatures.exposurePoint)
-                  .checkIsSupported();
-              final boolean isFocusPointSupported = cameraFeatures
-                  .get(CameraFeatures.focusPoint)
-                  .checkIsSupported();
+              final boolean isExposurePointSupported =
+                  cameraFeatures.get(CameraFeatures.exposurePoint).checkIsSupported();
+              final boolean isFocusPointSupported =
+                  cameraFeatures.get(CameraFeatures.focusPoint).checkIsSupported();
 
               dartMessenger.sendCameraInitializedEvent(
                   getPreviewSize().getWidth(),
@@ -517,7 +512,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       final File file = File.createTempFile("CAP", ".jpg", outputDir);
 
       // Start a new capture
-      pictureCaptureRequest = PictureCaptureRequest.create(result, file, dartMessenger);
+      pictureCaptureRequest = new PictureCaptureRequest(result, dartMessenger, file, 3000, 3000);
       mCaptureCallback.setPictureCaptureRequest(pictureCaptureRequest);
     } catch (IOException | SecurityException e) {
       pictureCaptureRequest.error("cannotCreateFile", e.getMessage(), null);
@@ -527,7 +522,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     // Listen for picture being taken
     pictureImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 
-    final AutoFocusFeature autoFocusFeature = (AutoFocusFeature) cameraFeatures.get(CameraFeatures.autoFocus);
+    final AutoFocusFeature autoFocusFeature =
+        (AutoFocusFeature) cameraFeatures.get(CameraFeatures.autoFocus);
     final boolean isAutoFocusSupported = autoFocusFeature.checkIsSupported();
     if (isAutoFocusSupported && autoFocusFeature.getValue() == FocusMode.auto) {
       runPictureAutoFocus();
@@ -694,15 +690,12 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
 
     try {
-      captureSession.capture(
-          mPreviewRequestBuilder.build(),
-          null,
-          mBackgroundHandler);
-  } catch (CameraAccessException e) {
-    Log.i(TAG, "Error unlocking focus: " + e.getMessage());
-    dartMessenger.sendCameraErrorEvent(e.getMessage());
-    return;
-  }
+      captureSession.capture(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+    } catch (CameraAccessException e) {
+      Log.i(TAG, "Error unlocking focus: " + e.getMessage());
+      dartMessenger.sendCameraErrorEvent(e.getMessage());
+      return;
+    }
   }
 
   /** Cancel and reset auto focus state and refresh the preview session. */
@@ -881,7 +874,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    * @param y new y.
    */
   public void setExposurePoint(@NonNull final Result result, Double x, Double y) {
-    ((ExposurePointFeature) cameraFeatures.get(CameraFeatures.exposurePoint)).setValue(new Point(x, y));
+    ((ExposurePointFeature) cameraFeatures.get(CameraFeatures.exposurePoint))
+        .setValue(new Point(x, y));
     cameraFeatures.get(CameraFeatures.exposurePoint).updateBuilder(mPreviewRequestBuilder);
 
     refreshPreviewCaptureSession(
@@ -906,7 +900,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   /** Return the exposure offset step size to dart. */
   public double getExposureOffsetStepSize() {
-    final ExposureOffsetFeature val = (ExposureOffsetFeature) cameraFeatures.get(CameraFeatures.exposureOffset);
+    final ExposureOffsetFeature val =
+        (ExposureOffsetFeature) cameraFeatures.get(CameraFeatures.exposureOffset);
     return val.getExposureOffsetStepSize();
   }
 
@@ -932,11 +927,11 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
         // Set AF state to idle again
         mPreviewRequestBuilder.set(
-                CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+            CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
 
         try {
           captureSession.setRepeatingRequest(
-                  mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+              mPreviewRequestBuilder.build(), null, mBackgroundHandler);
         } catch (CameraAccessException e) {
           result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
         }
@@ -984,7 +979,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   }
 
   public float getMaxZoomLevel() {
-    final ZoomLevelFeature zoomLevel = (ZoomLevelFeature) cameraFeatures.get(CameraFeatures.zoomLevel);
+    final ZoomLevelFeature zoomLevel =
+        (ZoomLevelFeature) cameraFeatures.get(CameraFeatures.zoomLevel);
     return zoomLevel.getCameraZoom().maxZoom;
   }
 
@@ -1004,7 +1000,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   /** Shortcut to get current recording profile. */
   CamcorderProfile getRecordingProfile() {
-    return ((ResolutionFeature) cameraFeatures.get(CameraFeatures.resolution)).getRecordingProfile();
+    return ((ResolutionFeature) cameraFeatures.get(CameraFeatures.resolution))
+        .getRecordingProfile();
   }
 
   /** Shortut to get deviceOrientationListener. */
@@ -1020,7 +1017,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    * @param zoom new value.
    */
   public void setZoomLevel(@NonNull final Result result, float zoom) throws CameraAccessException {
-    final ZoomLevelFeature zoomLevel = (ZoomLevelFeature) cameraFeatures.get(CameraFeatures.zoomLevel);
+    final ZoomLevelFeature zoomLevel =
+        (ZoomLevelFeature) cameraFeatures.get(CameraFeatures.zoomLevel);
     float maxZoom = zoomLevel.getCameraZoom().maxZoom;
     float minZoom = CameraZoom.DEFAULT_ZOOM_FACTOR;
 

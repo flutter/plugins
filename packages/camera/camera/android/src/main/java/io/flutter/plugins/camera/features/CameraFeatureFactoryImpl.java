@@ -29,8 +29,7 @@ public class CameraFeatureFactoryImpl implements CameraFeatureFactory {
 
   @Override
   public AutoFocusFeature createAutoFocusFeature(
-      @NonNull CameraProperties cameraProperties,
-      boolean recordingVideo) {
+      @NonNull CameraProperties cameraProperties, boolean recordingVideo) {
     return new AutoFocusFeature(cameraProperties, recordingVideo);
   }
 
@@ -60,8 +59,7 @@ public class CameraFeatureFactoryImpl implements CameraFeatureFactory {
 
   @Override
   public FocusPointFeature createFocusPointFeature(
-      @NonNull CameraProperties cameraProperties,
-      Callable<CameraRegions> getCameraRegions) {
+      @NonNull CameraProperties cameraProperties, Callable<CameraRegions> getCameraRegions) {
     return new FocusPointFeature(cameraProperties, getCameraRegions);
   }
 
@@ -85,8 +83,7 @@ public class CameraFeatureFactoryImpl implements CameraFeatureFactory {
 
   @Override
   public RegionBoundariesFeature createRegionBoundariesFeature(
-      @NonNull CameraProperties cameraProperties,
-      @NonNull CaptureRequest.Builder requestBuilder) {
+      @NonNull CameraProperties cameraProperties, @NonNull CaptureRequest.Builder requestBuilder) {
     return new RegionBoundariesFeature(cameraProperties, requestBuilder);
   }
 

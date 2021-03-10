@@ -79,7 +79,8 @@ class CameraPropertiesImpl implements CameraProperties {
 
   @Override
   public double getControlAutoExposureCompensationStep() {
-    Rational rational = cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
+    Rational rational =
+        cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
 
     return rational == null ? 0.0 : rational.doubleValue();
   }

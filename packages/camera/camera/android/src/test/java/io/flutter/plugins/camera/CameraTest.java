@@ -37,37 +37,30 @@ public class CameraTest {
     when(mockCameraProperties.getCameraName()).thenReturn(cameraName);
 
     Camera camera =
-            new Camera(
-                mockActivity,
-                mockFlutterTexture,
-                mockCameraFeatureFactory,
-                mockDartMessenger,
-                mockCameraProperties,
-                resolutionPreset,
-                enableAudio);
+        new Camera(
+            mockActivity,
+            mockFlutterTexture,
+            mockCameraFeatureFactory,
+            mockDartMessenger,
+            mockCameraProperties,
+            resolutionPreset,
+            enableAudio);
 
-    verify(mockCameraFeatureFactory, times(1))
-        .createAutoFocusFeature(mockCameraProperties, false);
-    verify(mockCameraFeatureFactory, times(1))
-        .createExposureLockFeature(mockCameraProperties);
+    verify(mockCameraFeatureFactory, times(1)).createAutoFocusFeature(mockCameraProperties, false);
+    verify(mockCameraFeatureFactory, times(1)).createExposureLockFeature(mockCameraProperties);
     verify(mockCameraFeatureFactory, times(1))
         .createExposurePointFeature(eq(mockCameraProperties), any());
-    verify(mockCameraFeatureFactory, times(1))
-        .createExposureOffsetFeature(mockCameraProperties);
-    verify(mockCameraFeatureFactory, times(1))
-        .createFlashFeature(mockCameraProperties);
+    verify(mockCameraFeatureFactory, times(1)).createExposureOffsetFeature(mockCameraProperties);
+    verify(mockCameraFeatureFactory, times(1)).createFlashFeature(mockCameraProperties);
     verify(mockCameraFeatureFactory, times(1))
         .createFocusPointFeature(eq(mockCameraProperties), any());
-    verify(mockCameraFeatureFactory, times(1))
-        .createFpsRangeFeature(mockCameraProperties);
-    verify(mockCameraFeatureFactory, times(1))
-        .createNoiseReductionFeature(mockCameraProperties);
+    verify(mockCameraFeatureFactory, times(1)).createFpsRangeFeature(mockCameraProperties);
+    verify(mockCameraFeatureFactory, times(1)).createNoiseReductionFeature(mockCameraProperties);
     verify(mockCameraFeatureFactory, times(1))
         .createResolutionFeature(mockCameraProperties, resolutionPreset, cameraName);
     verify(mockCameraFeatureFactory, times(1))
         .createSensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
-    verify(mockCameraFeatureFactory, times(1))
-        .createZoomLevelFeature(mockCameraProperties);
+    verify(mockCameraFeatureFactory, times(1)).createZoomLevelFeature(mockCameraProperties);
     verify(mockCameraFeatureFactory, never()).createRegionBoundariesFeature(any(), any());
     assertNotNull("should create a camera", camera);
   }

@@ -97,7 +97,8 @@ public class FlashFeatureTest {
     flashFeature.setValue(FlashMode.off);
     flashFeature.updateBuilder(mockBuilder);
 
-    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+    verify(mockBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
     verify(mockBuilder, times(1)).set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
   }
 
@@ -112,7 +113,8 @@ public class FlashFeatureTest {
     flashFeature.setValue(FlashMode.always);
     flashFeature.updateBuilder(mockBuilder);
 
-    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
+    verify(mockBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
     verify(mockBuilder, times(1)).set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
   }
 
@@ -127,7 +129,8 @@ public class FlashFeatureTest {
     flashFeature.setValue(FlashMode.torch);
     flashFeature.updateBuilder(mockBuilder);
 
-    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+    verify(mockBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
     verify(mockBuilder, times(1)).set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
   }
 

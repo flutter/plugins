@@ -16,8 +16,12 @@ import io.flutter.plugins.camera.CameraProperties;
 import org.junit.Test;
 
 public class AutoFocusFeatureTest {
-  private static final int[] FOCUS_MODES_ONLY_OFF = new int[] { CameraCharacteristics.CONTROL_AF_MODE_OFF };
-  private static final int[] FOCUS_MODES = new int[] { CameraCharacteristics.CONTROL_AF_MODE_OFF, CameraCharacteristics.CONTROL_AF_MODE_AUTO };
+  private static final int[] FOCUS_MODES_ONLY_OFF =
+      new int[] {CameraCharacteristics.CONTROL_AF_MODE_OFF};
+  private static final int[] FOCUS_MODES =
+      new int[] {
+        CameraCharacteristics.CONTROL_AF_MODE_OFF, CameraCharacteristics.CONTROL_AF_MODE_AUTO
+      };
 
   @Test
   public void getDebugName_should_return_the_name_of_the_feature() {
@@ -128,11 +132,13 @@ public class AutoFocusFeatureTest {
     autoFocusFeature.setValue(FocusMode.locked);
     autoFocusFeature.updateBuilder(mockBuilder);
 
-    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+    verify(mockBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
   }
 
   @Test
-  public void updateBuilder_should_set_control_mode_to_continuous_video_when_focus_is_auto_and_recording_video() {
+  public void
+      updateBuilder_should_set_control_mode_to_continuous_video_when_focus_is_auto_and_recording_video() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, true);
@@ -143,11 +149,13 @@ public class AutoFocusFeatureTest {
     autoFocusFeature.setValue(FocusMode.auto);
     autoFocusFeature.updateBuilder(mockBuilder);
 
-    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
+    verify(mockBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
   }
 
   @Test
-  public void updateBuilder_should_set_control_mode_to_continuous_video_when_focus_is_auto_and_not_recording_video() {
+  public void
+      updateBuilder_should_set_control_mode_to_continuous_video_when_focus_is_auto_and_not_recording_video() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
@@ -158,6 +166,7 @@ public class AutoFocusFeatureTest {
     autoFocusFeature.setValue(FocusMode.auto);
     autoFocusFeature.updateBuilder(mockBuilder);
 
-    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+    verify(mockBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
   }
 }

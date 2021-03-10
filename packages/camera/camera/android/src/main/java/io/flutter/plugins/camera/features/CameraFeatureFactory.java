@@ -30,18 +30,19 @@ public interface CameraFeatureFactory {
   /**
    * Creates a new instance of the auto focus feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @param recordingVideo indicates if the camera is currently recording.
    * @return newly created instance of the AutoFocusFeature class.
    */
   AutoFocusFeature createAutoFocusFeature(
-      @NonNull CameraProperties cameraProperties,
-      boolean recordingVideo);
+      @NonNull CameraProperties cameraProperties, boolean recordingVideo);
 
   /**
    * Creates a new instance of the exposure lock feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @return newly created instance of the ExposureLockFeature class.
    */
   ExposureLockFeature createExposureLockFeature(@NonNull CameraProperties cameraProperties);
@@ -49,7 +50,8 @@ public interface CameraFeatureFactory {
   /**
    * Creates a new instance of the exposure offset feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @return newly created instance of the ExposureOffsetFeature class.
    */
   ExposureOffsetFeature createExposureOffsetFeature(@NonNull CameraProperties cameraProperties);
@@ -57,7 +59,8 @@ public interface CameraFeatureFactory {
   /**
    * Creates a new instance of the flash feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @return newly created instance of the FlashFeature class.
    */
   FlashFeature createFlashFeature(@NonNull CameraProperties cameraProperties);
@@ -65,7 +68,8 @@ public interface CameraFeatureFactory {
   /**
    * Creates a new instance of the resolution feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @param initialSetting initial resolution preset.
    * @param cameraName the name of the camera which can be used to identify the camera device.
    * @return newly created instance of the ResolutionFeature class.
@@ -78,18 +82,19 @@ public interface CameraFeatureFactory {
   /**
    * Creates a new instance of the focus point feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @param getCameraRegions function which is used to retrieve the current camera regions.
    * @return newly created instance of the FocusPointFeature class.
    */
   FocusPointFeature createFocusPointFeature(
-      @NonNull CameraProperties cameraProperties,
-      Callable<CameraRegions> getCameraRegions);
+      @NonNull CameraProperties cameraProperties, Callable<CameraRegions> getCameraRegions);
 
   /**
    * Creates a new instance of the FPS range feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @return newly created instance of the FpsRangeFeature class.
    */
   FpsRangeFeature createFpsRangeFeature(@NonNull CameraProperties cameraProperties);
@@ -97,9 +102,11 @@ public interface CameraFeatureFactory {
   /**
    * Creates a new instance of the sensor orientation feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @param activity current activity associated with the camera plugin.
-   * @param dartMessenger instance of the DartMessenger class, used to send state updates back to Dart.
+   * @param dartMessenger instance of the DartMessenger class, used to send state updates back to
+   *     Dart.
    * @return newly created instance of the SensorOrientationFeature class.
    */
   SensorOrientationFeature createSensorOrientationFeature(
@@ -110,7 +117,8 @@ public interface CameraFeatureFactory {
   /**
    * Creates a new instance of the zoom level feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @return newly created instance of the ZoomLevelFeature class.
    */
   ZoomLevelFeature createZoomLevelFeature(@NonNull CameraProperties cameraProperties);
@@ -118,18 +126,20 @@ public interface CameraFeatureFactory {
   /**
    * Creates a new instance of the region boundaries feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
-   * @param requestBuilder instance of the CaptureRequest.Builder class, used to inform the Camera2 API that the settings are updated.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
+   * @param requestBuilder instance of the CaptureRequest.Builder class, used to inform the Camera2
+   *     API that the settings are updated.
    * @return newly created instance of the RegionBoundariesFeature class.
    */
   RegionBoundariesFeature createRegionBoundariesFeature(
-      @NonNull CameraProperties cameraProperties,
-      @NonNull CaptureRequest.Builder requestBuilder);
+      @NonNull CameraProperties cameraProperties, @NonNull CaptureRequest.Builder requestBuilder);
 
   /**
    * Creates a new instance of the exposure point feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @param getCameraRegions function which is used to retrieve the current camera regions.
    * @return newly created instance of the ExposurePointFeature class.
    */
@@ -140,9 +150,9 @@ public interface CameraFeatureFactory {
   /**
    * Creates a new instance of the noise reduction feature.
    *
-   * @param cameraProperties instance of the CameraProperties class containing information about the cameras features.
+   * @param cameraProperties instance of the CameraProperties class containing information about the
+   *     cameras features.
    * @return newly created instance of the NoiseReductionFeature class.
    */
-  NoiseReductionFeature createNoiseReductionFeature(
-      @NonNull CameraProperties cameraProperties);
+  NoiseReductionFeature createNoiseReductionFeature(@NonNull CameraProperties cameraProperties);
 }

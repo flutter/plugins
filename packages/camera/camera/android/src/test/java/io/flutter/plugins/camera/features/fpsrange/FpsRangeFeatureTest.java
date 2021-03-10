@@ -31,7 +31,7 @@ public class FpsRangeFeatureTest {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     FpsRangeFeature fpsRangeFeature = createTestInstance();
 
-    assertEquals(13, (int)fpsRangeFeature.getValue().getUpper());
+    assertEquals(13, (int) fpsRangeFeature.getValue().getUpper());
   }
 
   @Test
@@ -77,7 +77,7 @@ public class FpsRangeFeatureTest {
     when(rangeThree.getUpper()).thenReturn(13);
 
     @SuppressWarnings("unchecked")
-    Range<Integer>[] ranges = new Range[] { rangeOne, rangeTwo, rangeThree };
+    Range<Integer>[] ranges = new Range[] {rangeOne, rangeTwo, rangeThree};
 
     CameraProperties cameraProperties = mock(CameraProperties.class);
 

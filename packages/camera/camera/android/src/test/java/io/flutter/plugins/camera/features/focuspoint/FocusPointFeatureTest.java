@@ -37,7 +37,8 @@ public class FocusPointFeatureTest {
   public void getValue_should_echo_the_set_value() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CameraRegions mockCameraRegions = mock(CameraRegions.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties, () -> mockCameraRegions);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, () -> mockCameraRegions);
     Point expectedPoint = new Point(0.0, 0.0);
 
     focusPointFeature.setValue(expectedPoint);
@@ -50,7 +51,8 @@ public class FocusPointFeatureTest {
   public void setValue_should_reset_point_when_x_coord_is_null() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CameraRegions mockCameraRegions = mock(CameraRegions.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties, () -> mockCameraRegions);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, () -> mockCameraRegions);
 
     focusPointFeature.setValue(new Point(null, 0.0));
 
@@ -61,7 +63,8 @@ public class FocusPointFeatureTest {
   public void setValue_should_reset_point_when_y_coord_is_null() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CameraRegions mockCameraRegions = mock(CameraRegions.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties, () -> mockCameraRegions);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, () -> mockCameraRegions);
 
     focusPointFeature.setValue(new Point(0.0, null));
 
@@ -72,7 +75,8 @@ public class FocusPointFeatureTest {
   public void setValue_should_reset_point_when_valid_coords_are_supplied() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CameraRegions mockCameraRegions = mock(CameraRegions.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties, () -> mockCameraRegions);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, () -> mockCameraRegions);
     Point point = new Point(0.0, 0.0);
 
     focusPointFeature.setValue(point);

@@ -19,7 +19,6 @@ import io.flutter.plugins.camera.CameraProperties;
 public abstract class CameraFeature<T> {
   protected final CameraProperties cameraProperties;
 
-
   protected CameraFeature(@NonNull CameraProperties cameraProperties) {
     this.cameraProperties = cameraProperties;
   }

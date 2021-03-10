@@ -21,8 +21,7 @@ public class RegionBoundariesFeature extends CameraFeature<Size> {
   private CameraRegions cameraRegions;
 
   public RegionBoundariesFeature(
-      CameraProperties cameraProperties,
-      CaptureRequest.Builder requestBuilder) {
+      CameraProperties cameraProperties, CaptureRequest.Builder requestBuilder) {
     super(cameraProperties);
 
     // No distortion correction support

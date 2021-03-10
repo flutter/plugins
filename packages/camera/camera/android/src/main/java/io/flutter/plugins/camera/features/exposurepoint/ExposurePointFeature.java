@@ -20,7 +20,8 @@ public class ExposurePointFeature extends CameraFeature<Point> {
   private final Callable<CameraRegions> getCameraRegions;
   private Point currentSetting = new Point(0.0, 0.0);
 
-  public ExposurePointFeature(CameraProperties cameraProperties, Callable<CameraRegions> getCameraRegions) {
+  public ExposurePointFeature(
+      CameraProperties cameraProperties, Callable<CameraRegions> getCameraRegions) {
     super(cameraProperties);
     this.getCameraRegions = getCameraRegions;
   }
@@ -70,9 +71,7 @@ public class ExposurePointFeature extends CameraFeature<Point> {
       aeRect = getCameraRegions.call().getAEMeteringRectangle();
       requestBuilder.set(
           CaptureRequest.CONTROL_AE_REGIONS,
-          aeRect == null
-              ? null
-              : new MeteringRectangle[] { aeRect });
+          aeRect == null ? null : new MeteringRectangle[] {aeRect});
     } catch (Exception e) {
       e.printStackTrace();
     }

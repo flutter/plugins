@@ -48,11 +48,11 @@ public class ExposureLockFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_set_control_ae_lock_to_false_when_auto_exposure_is_set_to_auto() {
+  public void
+      updateBuilder_should_set_control_ae_lock_to_false_when_auto_exposure_is_set_to_auto() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     ExposureLockFeature exposureLockFeature = new ExposureLockFeature(mockCameraProperties);
-
 
     exposureLockFeature.setValue(ExposureMode.auto);
     exposureLockFeature.updateBuilder(mockBuilder);
@@ -61,11 +61,11 @@ public class ExposureLockFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_set_control_ae_lock_to_false_when_auto_exposure_is_set_to_locked() {
+  public void
+      updateBuilder_should_set_control_ae_lock_to_false_when_auto_exposure_is_set_to_locked() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     ExposureLockFeature exposureLockFeature = new ExposureLockFeature(mockCameraProperties);
-
 
     exposureLockFeature.setValue(ExposureMode.locked);
     exposureLockFeature.updateBuilder(mockBuilder);

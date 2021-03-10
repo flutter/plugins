@@ -27,7 +27,9 @@ public class ExposureOffsetFeature extends CameraFeature<ExposureOffsetValue> {
   }
 
   @Override
-  public String getDebugName() { return "ExposureOffsetFeature"; }
+  public String getDebugName() {
+    return "ExposureOffsetFeature";
+  }
 
   @Override
   public ExposureOffsetValue getValue() {
