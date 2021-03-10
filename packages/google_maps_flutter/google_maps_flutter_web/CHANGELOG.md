@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Migrate package to null-safety.
+
 ## 0.2.1
 
 * Move integration tests to `example`.

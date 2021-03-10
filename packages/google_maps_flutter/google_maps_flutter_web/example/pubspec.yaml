@@ -2,8 +2,8 @@ name: google_maps_flutter_web_integration_tests
 publish_to: none
 
 environment:
-  sdk: ">=2.2.2 <3.0.0" # Bump this to 2.12 when migrating to nnbd.
-  flutter: ">=1.27.0-0" # For integration_test from sdk
+  sdk: ">=2.12.0 <3.0.0" # Bump this to 2.12 when migrating to nnbd.
+  flutter: ">=2.1.0-0" # For integration_test from sdk
 
 dependencies:
   google_maps_flutter_web:
@@ -12,9 +12,9 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  google_maps: ^3.4.4
+  google_maps: ^5.0.1
   http: ^0.13.0
-  mockito: ^4.1.1+1 # Update to ^5.0.0 as soon as this migrates to null-safety
+  mockito: ^5.0.0 # Update to ^5.0.0 as soon as this migrates to null-safety
   flutter_driver:
     sdk: flutter
   flutter_test:
