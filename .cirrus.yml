@@ -1,9 +1,14 @@
+setup_tool_template: &SETUP_TOOL_TEMPLATE
+  setup_tool_script:
+    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
+    - cd script/tool
+    - pub get
+
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
-  env:
-    CHANNEL: "master" # Default to master when not explicitly set by a task.
   upgrade_flutter_script:
     - flutter channel $CHANNEL
     - flutter upgrade
+  << : *SETUP_TOOL_TEMPLATE
 
 macos_template: &MACOS_TEMPLATE
   # Only one macOS task can run in parallel without credits, so use them for
@@ -19,11 +24,8 @@ only_if: $CIRRUS_TAG == ''
 use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
 env:
   INTEGRATION_TEST_PATH: "./packages/integration_test"
+  CHANNEL: "master" # Default to master when not explicitly set by a task.
   PLUGIN_TOOLS: "dart run ./script/tool/lib/src/main.dart"
-setup_tool_script:
-  - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
-  - cd script/tool
-  - pub get
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
@@ -244,6 +246,7 @@ task:
 task:
   # Don't used FLUTTER_UPGRADE_TEMPLATE, Flutter tooling not needed.
   << : *MACOS_TEMPLATE
+  << : *SETUP_TOOL_TEMPLATE
   matrix:
     - name: lint_darwin_plugins
       script:
