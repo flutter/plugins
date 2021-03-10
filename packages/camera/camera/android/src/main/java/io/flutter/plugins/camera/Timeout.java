@@ -24,6 +24,12 @@ class Timeout {
   /** When this timeout was started. Will be used later to check if the timeout has expired yet. */
   private final long timeStarted;
 
+  /**
+   * Factory method to create a new Timeout.
+   *
+   * @param timeoutMs timeout to use.
+   * @return returns a new Timeout.
+   */
   static Timeout create(long timeoutMs) {
     return new Timeout(timeoutMs);
   }

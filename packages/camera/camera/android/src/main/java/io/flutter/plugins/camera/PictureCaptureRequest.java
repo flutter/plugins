@@ -27,10 +27,14 @@ public class PictureCaptureRequest {
   private final DartMessenger dartMessenger;
 
   /**
-   * Factory method to create a picture capture request.
+   * Factory method to create a picture capture request
    *
-   * @param result
-   * @param file
+   * @param result dart result.
+   * @param dartMessenger dart messenger.
+   * @param file file to capture into.
+   * @param preCaptureFocusingTimeoutMs focusing timeout milliseconds.
+   * @param preCaptureMeteringTimeoutMs metering timeout milliseconds.
+   * @return returns a new PictureCaptureRequest.
    */
   static PictureCaptureRequest create(
       MethodChannel.Result result,
