@@ -1,6 +1,10 @@
-## 2.0.1
+## 2.0.2
 
 * iOS: Update texture on `seekTo`.
+
+## 2.0.1
+
+* Remove the deprecated API "exoPlayer.setAudioAttributes".
 
 ## 2.0.0
 

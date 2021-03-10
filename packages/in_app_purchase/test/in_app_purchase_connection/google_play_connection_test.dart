@@ -5,9 +5,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
-import 'package:test/test.dart';
 
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:in_app_purchase/billing_client_wrappers.dart';
@@ -234,6 +233,13 @@ void main() {
   group('refresh receipt data', () {
     test('should throw on android', () {
       expect(GooglePlayConnection.instance.refreshPurchaseVerificationData(),
+          throwsUnsupportedError);
+    });
+  });
+
+  group('present code redemption sheet', () {
+    test('should throw on android', () {
+      expect(GooglePlayConnection.instance.presentCodeRedemptionSheet(),
           throwsUnsupportedError);
     });
   });
@@ -632,9 +638,8 @@ void main() {
       purchaseDetails.status = PurchaseStatus.purchased;
       if (purchaseDetails.pendingCompletePurchase) {
         final BillingResultWrapper billingResultWrapper =
-            await GooglePlayConnection.instance.completePurchase(
-                purchaseDetails,
-                developerPayload: 'dummy payload');
+            await GooglePlayConnection.instance
+                .completePurchase(purchaseDetails);
         expect(billingResultWrapper, equals(expectedBillingResult));
         completer.complete(billingResultWrapper);
       }

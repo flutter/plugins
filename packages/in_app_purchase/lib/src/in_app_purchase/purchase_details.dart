@@ -90,7 +90,8 @@ class PurchaseParam {
       {required this.productDetails,
       this.applicationUserName,
       this.sandboxTesting = false,
-      this.simulatesAskToBuyInSandbox = false});
+      this.simulatesAskToBuyInSandbox = false,
+      this.changeSubscriptionParam});
 
   /// The product to create payment for.
   ///
@@ -117,6 +118,38 @@ class PurchaseParam {
   ///
   /// See also [SKPaymentWrapper.simulatesAskToBuyInSandbox].
   final bool simulatesAskToBuyInSandbox;
+
+  /// The 'changeSubscriptionParam' is only available on Android, for upgrading or
+  /// downgrading an existing subscription.
+  ///
+  /// This does not require on iOS since Apple provides a way to group related subscriptions
+  /// together in iTunesConnect. So when a subscription upgrade or downgrade is requested,
+  /// Apple finds the old subscription details from the group and handle it automatically.
+  final ChangeSubscriptionParam? changeSubscriptionParam;
+}
+
+/// This parameter object which is only applicable on Android for upgrading or downgrading an existing subscription.
+///
+/// This does not require on iOS since iTunesConnect provides a subscription grouping mechanism.
+/// Each subscription you offer must be assigned to a subscription group.
+/// So the developers can group related subscriptions together to prevent users from
+/// accidentally purchasing multiple subscriptions.
+///
+/// Please refer to the 'Creating a Subscription Group' sections of [Apple's subscription guide](https://developer.apple.com/app-store/subscriptions/)
+class ChangeSubscriptionParam {
+  /// Creates a new change subscription param object with given data
+  ChangeSubscriptionParam(
+      {required this.oldPurchaseDetails, this.prorationMode});
+
+  /// The purchase object of the existing subscription that the user needs to
+  /// upgrade/downgrade from.
+  final PurchaseDetails oldPurchaseDetails;
+
+  /// The proration mode.
+  ///
+  /// This is an optional parameter that indicates how to handle the existing
+  /// subscription when the new subscription comes into effect.
+  final ProrationMode? prorationMode;
 }
 
 /// Represents the transaction details of a purchase.
