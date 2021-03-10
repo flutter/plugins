@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -318,6 +319,12 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView getScrollY is not implemented on the current platform");
   }
+
+  /// Return a screenshot of the content that is displayed in the webview.
+  Future<Uint8List> takeScreenshot() {
+    throw UnimplementedError(
+        "WebView takeScreenshot is not implemented on the current platform");
+  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.
@@ -446,6 +453,9 @@ class CreationParams {
     this.userAgent,
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.hostsToBlock,
+    this.tabId,
+    this.maxCachedTabs,
   }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
@@ -479,9 +489,18 @@ class CreationParams {
   /// Which restrictions apply on automatic media playback.
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
+  /// Which hosts will be blocked from loading.
+  final Set<String> hostsToBlock;
+
+  /// Open a WebView with cached tab if exists.
+  final String tabId;
+
+  /// Maximum number of cached tabs.
+  final int maxCachedTabs;
+
   @override
   String toString() {
-    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent)';
+    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent, hostsToBlock: $hostsToBlock, tabId: $tabId, maxCachedTabs: $maxCachedTabs)';
   }
 }
 

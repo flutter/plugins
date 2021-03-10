@@ -7,17 +7,24 @@ package io.flutter.plugins.webviewflutter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodChannel;
+
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -30,9 +37,14 @@ class FlutterWebViewClient {
   private static final String TAG = "FlutterWebViewClient";
   private final MethodChannel methodChannel;
   private boolean hasNavigationDelegate;
+  private ArrayList<String> hostsToBlock;
 
   FlutterWebViewClient(MethodChannel methodChannel) {
     this.methodChannel = methodChannel;
+  }
+
+  private static WebResourceResponse createEmptyResource() {
+    return new WebResourceResponse("text/plain", "utf-8", new ByteArrayInputStream("".getBytes()));
   }
 
   private static String errorCodeToString(int errorCode) {
@@ -151,8 +163,9 @@ class FlutterWebViewClient {
   // This method attempts to avoid using WebViewClientCompat due to bug
   // https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
   // https://github.com/flutter/flutter/issues/29446.
-  WebViewClient createWebViewClient(boolean hasNavigationDelegate) {
+  WebViewClient createWebViewClient(boolean hasNavigationDelegate, ArrayList<String> hostsToBlock) {
     this.hasNavigationDelegate = hasNavigationDelegate;
+    this.hostsToBlock = hostsToBlock;
 
     if (!hasNavigationDelegate || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       return internalCreateWebViewClient();
@@ -177,6 +190,21 @@ class FlutterWebViewClient {
       @Override
       public void onPageFinished(WebView view, String url) {
         FlutterWebViewClient.this.onPageFinished(view, url);
+      }
+
+      @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+      @Nullable
+      @Override
+      public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+        String uriString = request.getUrl().toString();
+        if (hostsToBlock != null && !hostsToBlock.isEmpty()) {
+          for (String host: hostsToBlock) {
+            if (uriString.contains(host)) {
+              return createEmptyResource();
+            }
+          }
+        }
+        return super.shouldInterceptRequest(view, request);
       }
 
       @TargetApi(Build.VERSION_CODES.M)
@@ -222,6 +250,21 @@ class FlutterWebViewClient {
       @Override
       public void onPageFinished(WebView view, String url) {
         FlutterWebViewClient.this.onPageFinished(view, url);
+      }
+
+      @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+      @Nullable
+      @Override
+      public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+        String uriString = request.getUrl().toString();
+        if (hostsToBlock != null && !hostsToBlock.isEmpty()) {
+          for (String host: hostsToBlock) {
+            if (uriString.contains(host)) {
+              return createEmptyResource();
+            }
+          }
+        }
+        return super.shouldInterceptRequest(view, request);
       }
 
       // This method is only called when the WebViewFeature.RECEIVE_WEB_RESOURCE_ERROR feature is

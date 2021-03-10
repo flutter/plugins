@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -224,6 +225,9 @@ class WebView extends StatefulWidget {
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
+    this.hostsToBlock,
+    this.tabId,
+    this.maxCachedTabs = 0,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         assert(allowsInlineMediaPlayback != null),
@@ -405,6 +409,16 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
+  /// Provides a list of hosts which will be blocked.
+  final Set<String> hostsToBlock;
+
+  /// Used for restoring previous WebView state.
+  final String tabId;
+
+  /// Indicates the maximum number of cached tabs. When opening a new tab with cache full,
+  /// the last tab will be discarded.
+  final int maxCachedTabs;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -469,6 +483,9 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
     userAgent: widget.userAgent,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
+    hostsToBlock: _formatHostsToBlock(widget.hostsToBlock),
+    tabId: widget.tabId,
+    maxCachedTabs: widget.maxCachedTabs,
   );
 }
 
@@ -525,6 +542,10 @@ Set<String> _extractChannelNames(Set<JavascriptChannel>? channels) {
       ? <String>{}
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;
+}
+
+Set<String> _formatHostsToBlock(Set<String> hosts) {
+  return hosts == null ? <String>{} : hosts;
 }
 
 class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
@@ -777,6 +798,11 @@ class WebViewController {
   /// Scroll position is measured from top.
   Future<int> getScrollY() {
     return _webViewPlatformController.getScrollY();
+  }
+
+  /// Return a screenshot of the content that is displayed in the webview.
+  Future<Uint8List> takeScreenshot() {
+    return _webViewPlatformController.takeScreenshot();
   }
 }
 

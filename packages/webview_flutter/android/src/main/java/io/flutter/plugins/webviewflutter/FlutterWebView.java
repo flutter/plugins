@@ -16,6 +16,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import androidx.annotation.NonNull;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -23,16 +25,21 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.io.ByteArrayOutputStream;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
-  private final InputAwareWebView webView;
+  private InputAwareWebView webView = null;
+  private boolean shouldLoad = false;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+  private final ArrayList<String> hostsToBlock = new ArrayList<String>();
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
@@ -87,20 +94,50 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     DisplayManager displayManager =
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
-    webView = new InputAwareWebView(context, containerView);
+
+    WebViewManager webViewManager = WebViewManager.INSTANCE.getInstance();
+
+    if (params.containsKey("maxCachedTabs")) {
+      Integer maxCachedTabs = (Integer) params.get("maxCachedTabs");
+      webViewManager.updateMaxCachedTabs(maxCachedTabs);
+    }
+
+    if (params.containsKey("tabId")) {
+      String tabId = (String) params.get("tabId");
+      webView = webViewManager.webViewForId(tabId);
+    }
+
+    if (webView == null) {
+      webView = new InputAwareWebView(context, containerView);
+
+      shouldLoad = true;
+
+      if (params.containsKey("tabId")) {
+        String tabId = (String) params.get("tabId");
+        webViewManager.cacheWebView(webView, tabId);
+      }
+    }
+
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
     platformThreadHandler = new Handler(context.getMainLooper());
-    // Allow local storage.
-    webView.getSettings().setDomStorageEnabled(true);
-    webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
-    // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
-    webView.getSettings().setSupportMultipleWindows(true);
-    webView.setWebChromeClient(new FlutterWebChromeClient());
+    if (shouldLoad) {
+      // Allow local storage.
+      webView.getSettings().setDomStorageEnabled(true);
+      webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+
+      // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
+      webView.getSettings().setSupportMultipleWindows(true);
+      webView.setWebChromeClient(new FlutterWebChromeClient());
+    }
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
+
+    if (params.containsKey("hostsToBlock")) {
+      hostsToBlock.addAll((ArrayList<String>) params.get("hostsToBlock"));
+    }
 
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
     Map<String, Object> settings = (Map<String, Object>) params.get("settings");
@@ -117,7 +154,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String userAgent = (String) params.get("userAgent");
       updateUserAgent(userAgent);
     }
-    if (params.containsKey("initialUrl")) {
+    if (params.containsKey("initialUrl") && shouldLoad) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
@@ -221,6 +258,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "getScrollY":
         getScrollY(result);
+        break;
+      case "takeScreenshot":
+        takeScreenshot(result);
         break;
       default:
         result.notImplemented();
@@ -345,6 +385,41 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(webView.getScrollY());
   }
 
+  private void takeScreenshot(Result result){
+    View view = getView();
+
+    float scale = view.getContext().getResources().getDisplayMetrics().density;
+    int height = (int) (webView.getContentHeight() * scale);
+
+    Bitmap b = Bitmap.createBitmap(view.getWidth(),
+                  height, Bitmap.Config.ARGB_8888);
+    Canvas c = new Canvas(b);
+    view.draw(c);
+    int scrollY = webView.getScrollY();
+    int measuredHeight = webView.getMeasuredHeight();
+    int bitmapHeight = b.getHeight();
+
+    int scrollOffset = (scrollY + measuredHeight > bitmapHeight)
+                  ? (bitmapHeight - measuredHeight) : scrollY;
+    
+     if (scrollOffset < 0) {
+          scrollOffset = 0;
+    }
+
+    int rectX = 0;
+    int rectY = scrollOffset;
+    int rectWidth = b.getWidth();
+    int rectHeight = measuredHeight;
+
+    Bitmap resized = Bitmap.createBitmap(b, rectX, rectY, rectWidth, rectHeight);
+
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    resized.compress(Bitmap.CompressFormat.PNG, 100, stream);
+    byte[] imageByteArray = stream.toByteArray();
+    
+    result.success(imageByteArray);
+  }
+
   private void applySettings(Map<String, Object> settings) {
     for (String key : settings.keySet()) {
       switch (key) {
@@ -353,12 +428,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           if (mode != null) updateJsMode(mode);
           break;
         case "hasNavigationDelegate":
-          final boolean hasNavigationDelegate = (boolean) settings.get(key);
+          if (shouldLoad) {
+            final boolean hasNavigationDelegate = (boolean) settings.get(key);
 
-          final WebViewClient webViewClient =
-              flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
+            final WebViewClient webViewClient =
+                    flutterWebViewClient.createWebViewClient(hasNavigationDelegate, hostsToBlock);
 
-          webView.setWebViewClient(webViewClient);
+            webView.setWebViewClient(webViewClient);
+          }
           break;
         case "debuggingEnabled":
           final boolean debuggingEnabled = (boolean) settings.get(key);
@@ -417,7 +494,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @Override
   public void dispose() {
     methodChannel.setMethodCallHandler(null);
-    webView.dispose();
-    webView.destroy();
+    webView = null;
   }
 }

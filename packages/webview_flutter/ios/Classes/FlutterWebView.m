@@ -5,6 +5,7 @@
 #import "FlutterWebView.h"
 #import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
+#import "WebViewManager.h"
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
@@ -91,7 +92,29 @@
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
 
-    _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
+    WebViewManager *webViewManager = [WebViewManager sharedManager];
+
+    if ([args[@"maxCachedTabs"] isKindOfClass:[NSNumber class]]) {
+        NSNumber *maxCachedTabs = args[@"maxCachedTabs"];
+        [webViewManager updateMaxCachedTabs:maxCachedTabs];
+    }
+      
+    if ([args[@"tabId"] isKindOfClass:[NSString class]]) {
+        NSString *tabId = args[@"tabId"];
+        _webView = [webViewManager webViewForId:tabId];
+    }
+    
+    BOOL shouldLoad = NO;
+    if (!_webView) {
+        _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
+        shouldLoad = YES;
+
+        if ([args[@"tabId"] isKindOfClass:[NSString class]]) {
+            NSString *tabId = args[@"tabId"];
+            [webViewManager cacheWebView:_webView forId:tabId];
+        }
+    }
+      
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
@@ -111,9 +134,18 @@
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
     // https://github.com/flutter/flutter/issues/36228
 
-    NSString* initialUrl = args[@"initialUrl"];
-    if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self loadUrl:initialUrl];
+    void (^loadBlock)(void) = ^{
+      NSString* initialUrl = args[@"initialUrl"];
+      if ([initialUrl isKindOfClass:[NSString class]] && shouldLoad) {
+        [self loadUrl:initialUrl];
+      }
+    };
+
+    if ([args[@"hostsToBlock"] isKindOfClass:[NSArray class]]) {
+      NSArray *hosts = args[@"hostsToBlock"];
+      [self setupContentBlockers:hosts completion:loadBlock];
+    } else {
+      loadBlock();
     }
   }
   return self;
@@ -158,6 +190,8 @@
     [self getScrollX:call result:result];
   } else if ([[call method] isEqualToString:@"getScrollY"]) {
     [self getScrollY:call result:result];
+  } else if ([[call method] isEqualToString:@"takeScreenshot"]) {
+    [self takeScreenshot:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -170,6 +204,38 @@
     return;
   }
   result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
+}
+
+- (void)setupContentBlockers:(NSArray<NSString *> *)hosts completion:(void (^)(void))completion {
+    if ([hosts count] == 0) {
+        completion();
+        return;
+    }
+    NSString *contentBlockersIdentifier = @"contentBlockersIdentifier";
+    NSString *jsonStringFormat = @"[{\"trigger\":{\"url-filter\":\".*\",\"if-domain\":[%@]},\"action\":{\"type\":\"block\"}}]";
+    
+    NSMutableArray<NSString *> *formattedHosts = [NSMutableArray arrayWithCapacity:[hosts count]];
+    [hosts enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [formattedHosts addObject:[NSString stringWithFormat:@"\"%@\"", obj]];
+    }];
+    
+    NSString *hostsString = [formattedHosts componentsJoinedByString:@","];
+    NSString *jsonString = [NSString stringWithFormat:jsonStringFormat, hostsString];
+    
+    if (@available(iOS 11.0, *)) {
+        [WKContentRuleListStore.defaultStore compileContentRuleListForIdentifier:contentBlockersIdentifier encodedContentRuleList:jsonString completionHandler:^(WKContentRuleList *list, NSError *error) {
+            
+            if (error) {
+                completion();
+                return;
+            }
+            
+            [[self->_webView configuration].userContentController addContentRuleList: list];
+            completion();
+        }];
+    } else {
+        completion();
+    }
 }
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -311,6 +377,14 @@
 - (void)getScrollY:(FlutterMethodCall*)call result:(FlutterResult)result {
   int offsetY = _webView.scrollView.contentOffset.y;
   result([NSNumber numberWithInt:offsetY]);
+}
+
+- (void)takeScreenshot:(FlutterMethodCall*)call result:(FlutterResult)result{
+  [_webView takeSnapshotWithConfiguration:nil 
+        completionHandler:^(UIImage *snapshotImage, NSError *error){
+        NSData *imageData = UIImagePNGRepresentation(snapshotImage);
+        result(imageData);
+  }];
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.
