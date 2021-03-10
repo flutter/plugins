@@ -157,14 +157,19 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             padding: const EdgeInsets.all(5.0),
             child: Stack(
               children: <Widget>[
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.only(right: 90),
-                  child: _cameraTogglesRowWidget(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.only(right: 90),
+                    child: _cameraTogglesRowWidget(),
+                  ),
                 ),
-                Positioned(
-                  right: 0,
-                  child: _thumbnailWidget(),
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: _thumbnailWidget(),
+                  ),
                 ),
               ],
             ),
@@ -571,7 +576,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       }
     }
 
-    return Row(children: toggles);
+    return Row(
+      children: toggles,
+    );
   }
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
