@@ -1,3 +1,7 @@
+## 2.0.2+1
+
+* Enable zoom in android devices.
+
 ## 2.0.2
 
 * Fixes bug where text fields are hidden behind the keyboard
