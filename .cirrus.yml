@@ -6,6 +6,7 @@ root_task_template: &ROOT_TASK_TEMPLATE
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
     CHANNEL: "master" # Default to master when not explicitly set by a task.
+    PLUGIN_TOOLS: "dart run ./script/tool/lib/src/main.dart"
   setup_script:
     - flutter channel $CHANNEL
     - flutter upgrade
