@@ -96,7 +96,9 @@ class CameraCaptureCallback extends CaptureCallback {
               || pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
 
             if (pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
-              Log.i("Camera", "Metering timeout, moving on with capture");
+              Log.i(
+                  "Camera",
+                  "Metering timeout waiting for precapture to start, moving on with capture");
             }
 
             setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
@@ -107,7 +109,17 @@ class CameraCaptureCallback extends CaptureCallback {
       case STATE_WAITING_PRECAPTURE_DONE:
         {
           // CONTROL_AE_STATE can be null on some devices
-          if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
+          if (aeState == null
+              || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE
+              || pictureCaptureRequest.preCaptureMetering
+                  .getIsExpired() // Some devices like Pixel 5 will hang in pre capture metering
+          ) {
+            if (pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
+              Log.i(
+                  "Camera",
+                  "Metering timeout waiting for precapture to finish, moving on with capture");
+            }
+
             cameraStateListener.onConverged();
           }
           break;

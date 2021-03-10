@@ -512,7 +512,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       final File file = File.createTempFile("CAP", ".jpg", outputDir);
 
       // Start a new capture
-      pictureCaptureRequest = PictureCaptureRequest.create(result, dartMessenger, file, 3000, 3000);
+      pictureCaptureRequest = PictureCaptureRequest.create(result, dartMessenger, file, 3000, 1000);
       mCaptureCallback.setPictureCaptureRequest(pictureCaptureRequest);
     } catch (IOException | SecurityException e) {
       pictureCaptureRequest.error("cannotCreateFile", e.getMessage(), null);
@@ -539,7 +539,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private void runPrecaptureSequence() {
     Log.i(TAG, "runPrecaptureSequence");
     try {
-      // First set precapture state to idle or else it can hang in STATE_stPRECAPTURE
+      // First set precapture state to idle or else it can hang in STATE_WAITING_PRECAPTURE_START
       mPreviewRequestBuilder.set(
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
