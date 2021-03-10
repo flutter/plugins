@@ -30,7 +30,6 @@ task:
         - CIRRUS_BUILD_ID=null pub run test
     - name: publishable
       script:
-        - flutter channel master
         - if [[ "$CIRRUS_BRANCH" == "master" ]]; then
         -   $PLUGIN_TOOLS version-check
         - else
