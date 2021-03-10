@@ -1,3 +1,13 @@
+root_task_template: &ROOT_TASK_TEMPLATE
+  env:
+    INTEGRATION_TEST_PATH: "./packages/integration_test"
+    CHANNEL: "master" # Default to master when not explicitly set by a task.
+  setup_script:
+    - flutter channel $CHANNEL
+    - flutter upgrade
+    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
+
+
 # Light-workload tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
 # concurrency limits.
@@ -7,13 +17,7 @@ task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
     dockerfile: .ci/Dockerfile
-  env:
-    INTEGRATION_TEST_PATH: "./packages/integration_test"
-    CHANNEL: "master" # Default to master when not explicitly set by a task.
-  setup_script:
-    - flutter channel $CHANNEL
-    - flutter upgrade
-    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
+  << : *ROOT_TASK_TEMPLATE
   matrix:
     ### Platform-agnostic tasks ###
     - name: plugin_tools_tests
@@ -102,13 +106,7 @@ task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
     dockerfile: .ci/Dockerfile-LegacyChrome
-  env:
-    INTEGRATION_TEST_PATH: "./packages/integration_test"
-    CHANNEL: "master" # Default to master when not explicitly set by a task.
-  setup_script:
-    - flutter channel $CHANNEL
-    - flutter upgrade
-    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
+  << : *ROOT_TASK_TEMPLATE
   matrix:
     - name: integration_web_smoke_test
       env:
@@ -138,13 +136,7 @@ task:
     dockerfile: .ci/Dockerfile
     cpu: 4
     memory: 12G
-  env:
-    INTEGRATION_TEST_PATH: "./packages/integration_test"
-    CHANNEL: "master" # Default to master when not explicitly set by a task.
-  setup_script:
-    - flutter channel $CHANNEL
-    - flutter upgrade
-    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
+  << : *ROOT_TASK_TEMPLATE
   matrix:
     ### Android tasks ###
     - name: build-apks+java-test+firebase-test-lab
@@ -188,13 +180,8 @@ task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
     image: big-sur-xcode-12.3
-  env:
-    CHANNEL: "master" # Default to master when not explicitly set by a task.
-  setup_script:
-    - flutter channel $CHANNEL
-    - flutter upgrade
-    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
-    - sudo gem install cocoapods
+  << : *ROOT_TASK_TEMPLATE
+  cocoapod_install_script: sudo gem install cocoapods
   matrix:
     ### Platform-agnostic tasks ###
     - name: lint_darwin_plugins
