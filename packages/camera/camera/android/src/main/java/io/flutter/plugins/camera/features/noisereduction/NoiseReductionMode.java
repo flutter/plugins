@@ -12,8 +12,6 @@ public enum NoiseReductionMode {
   minimal("minimal"),
   zeroShutterLag("zeroShutterLag");
 
-
-
   private final String strValue;
 
   NoiseReductionMode(String strValue) {

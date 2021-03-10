@@ -21,18 +21,19 @@ public class NoiseReductionFeature extends CameraFeature<NoiseReductionMode> {
   private NoiseReductionMode currentSetting = NoiseReductionMode.fast;
 
   private static final HashMap<NoiseReductionMode, Integer> NOISE_REDUCTION_MODES = new HashMap<>();
+
   static {
     NOISE_REDUCTION_MODES.put(NoiseReductionMode.off, CaptureRequest.NOISE_REDUCTION_MODE_OFF);
     NOISE_REDUCTION_MODES.put(NoiseReductionMode.fast, CaptureRequest.NOISE_REDUCTION_MODE_FAST);
-    NOISE_REDUCTION_MODES.put(NoiseReductionMode.highQuality, CaptureRequest.NOISE_REDUCTION_MODE_HIGH_QUALITY);
+    NOISE_REDUCTION_MODES.put(
+        NoiseReductionMode.highQuality, CaptureRequest.NOISE_REDUCTION_MODE_HIGH_QUALITY);
     if (VERSION.SDK_INT >= VERSION_CODES.M) {
-      NOISE_REDUCTION_MODES
-          .put(NoiseReductionMode.minimal, CaptureRequest.NOISE_REDUCTION_MODE_MINIMAL);
-      NOISE_REDUCTION_MODES.put(NoiseReductionMode.zeroShutterLag,
-          CaptureRequest.NOISE_REDUCTION_MODE_ZERO_SHUTTER_LAG);
+      NOISE_REDUCTION_MODES.put(
+          NoiseReductionMode.minimal, CaptureRequest.NOISE_REDUCTION_MODE_MINIMAL);
+      NOISE_REDUCTION_MODES.put(
+          NoiseReductionMode.zeroShutterLag, CaptureRequest.NOISE_REDUCTION_MODE_ZERO_SHUTTER_LAG);
     }
   }
-
 
   public NoiseReductionFeature(CameraProperties cameraProperties) {
     super(cameraProperties);

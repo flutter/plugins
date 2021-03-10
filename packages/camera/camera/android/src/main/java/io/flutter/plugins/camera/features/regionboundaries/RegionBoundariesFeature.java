@@ -30,7 +30,8 @@ public class RegionBoundariesFeature extends CameraFeature<Size> {
       setValue(cameraProperties.getSensorInfoPixelArraySize());
     } else {
       // Get the current distortion correction mode
-      Integer distortionCorrectionMode = requestBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE);
+      Integer distortionCorrectionMode =
+          requestBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE);
 
       // Return the correct boundaries depending on the mode
       android.graphics.Rect rect;
