@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Fix a regression with simultaneous writes on Android.
+
 ## 2.0.3
 
 * Android: don't create additional Handler when method channel is called.
