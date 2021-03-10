@@ -225,6 +225,8 @@ class WebView extends StatefulWidget {
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.hostsToBlock,
+    this.tabId,
+    this.maxCachedTabs = 0,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         super(key: key);
@@ -401,6 +403,13 @@ class WebView extends StatefulWidget {
   /// Provides a list of hosts which will be blocked.
   final Set<String> hostsToBlock;
 
+  /// Used for restoring previous WebView state.
+  final String tabId;
+
+  /// Indicates the maximum number of cached tabs. When opening a new tab with cache full,
+  /// the last tab will be discarded.
+  final int maxCachedTabs;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
@@ -466,6 +475,8 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     userAgent: widget.userAgent,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
     hostsToBlock: _formatHostsToBlock(widget.hostsToBlock),
+    tabId: widget.tabId,
+    maxCachedTabs: widget.maxCachedTabs,
   );
 }
 
@@ -781,7 +792,7 @@ class WebViewController {
   }
 
   /// Return a screenshot of the content that is displayed in the webview.
-  Future<Uint8List> takeScreenshot(){
+  Future<Uint8List> takeScreenshot() {
     return _webViewPlatformController.takeScreenshot();
   }
 }

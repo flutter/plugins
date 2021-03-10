@@ -440,6 +440,8 @@ class CreationParams {
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.hostsToBlock,
+    this.tabId,
+    this.maxCachedTabs,
   }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
@@ -476,9 +478,15 @@ class CreationParams {
   /// Which hosts will be blocked from loading.
   final Set<String> hostsToBlock;
 
+  /// Open a WebView with cached tab if exists.
+  final String tabId;
+
+  /// Maximum number of cached tabs.
+  final int maxCachedTabs;
+
   @override
   String toString() {
-    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent, hostsToBlock: $hostsToBlock)';
+    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent, hostsToBlock: $hostsToBlock, tabId: $tabId, maxCachedTabs: $maxCachedTabs)';
   }
 }
 

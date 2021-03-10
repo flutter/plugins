@@ -5,6 +5,7 @@
 #import "FlutterWebView.h"
 #import "FLTWKNavigationDelegate.h"
 #import "JavaScriptChannelHandler.h"
+#import "WebViewManager.h"
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
@@ -91,7 +92,29 @@
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
 
-    _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
+    WebViewManager *webViewManager = [WebViewManager sharedManager];
+
+    if ([args[@"maxCachedTabs"] isKindOfClass:[NSNumber class]]) {
+        NSNumber *maxCachedTabs = args[@"maxCachedTabs"];
+        [webViewManager updateMaxCachedTabs:maxCachedTabs];
+    }
+      
+    if ([args[@"tabId"] isKindOfClass:[NSString class]]) {
+        NSString *tabId = args[@"tabId"];
+        _webView = [webViewManager webViewForId:tabId];
+    }
+    
+    BOOL shouldLoad = NO;
+    if (!_webView) {
+        _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
+        shouldLoad = YES;
+
+        if ([args[@"tabId"] isKindOfClass:[NSString class]]) {
+            NSString *tabId = args[@"tabId"];
+            [webViewManager cacheWebView:_webView forId:tabId];
+        }
+    }
+      
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
@@ -113,7 +136,7 @@
 
     void (^loadBlock)(void) = ^{
       NSString* initialUrl = args[@"initialUrl"];
-      if ([initialUrl isKindOfClass:[NSString class]]) {
+      if ([initialUrl isKindOfClass:[NSString class]] && shouldLoad) {
         [self loadUrl:initialUrl];
       }
     };
