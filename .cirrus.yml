@@ -26,9 +26,8 @@ task:
         - CIRRUS_BUILD_ID=null pub run test
     - name: publishable
       script:
-        - BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
         - flutter channel master
-        - if [[ "$BRANCH_NAME" -eq "master" ]]; then
+        - if [[ "$CIRRUS_BRANCH" == "master" ]]; then
         -   echo "Running version-check on all packages"
         -   $PLUGIN_TOOLS version-check
         - else
