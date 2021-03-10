@@ -9,40 +9,37 @@ task:
     dockerfile: .ci/Dockerfile
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
-  upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - flutter config --enable-linux-desktop
-    - git fetch origin master
+  setup_script:
+    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
   matrix:
     ### Platform-agnostic tasks ###
     - name: plugin_tools_tests
+      upgrade_script: ./script/set_channel.sh master
       script:
         - cd script/tool
         - pub get
         - CIRRUS_BUILD_ID=null pub run test
     - name: publishable
+      upgrade_script: ./script/set_channel.sh master
       script:
-        - flutter channel master
         - ./script/check_publish.sh
     - name: format
+      upgrade_script: ./script/set_channel.sh master
       format_script: ./script/incremental_build.sh format --fail-on-change
     - name: test
       env:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       test_script:
-        - flutter channel $CHANNEL
         - ./script/incremental_build.sh test
     - name: analyze_master
       env:
         matrix:
           CHANNEL: "master"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       script:
-        - flutter channel $CHANNEL
         - ./script/incremental_build.sh analyze
     ## TODO(cyanglaz):
     ## Combing stable and master analyze jobs when integration test null safety is ready on flutter stable.
@@ -50,8 +47,8 @@ task:
       env:
         matrix:
           CHANNEL: "stable"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       script:
-        - flutter channel $CHANNEL
         - find . -depth -type d -wholename '*_web/example' -exec rm -rf {} \;
         - ./script/incremental_build.sh analyze
     ### Android tasks ###
@@ -60,8 +57,8 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       script:
-        - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh apk
     ### Web tasks ###
     - name: build_all_plugins_web
@@ -69,15 +66,15 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       script:
-        - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh web
     - name: build-web-examples
       env:
         matrix:
           CHANNEL: "master"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       build_script:
-        - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --web
         # TODO: Add driving examples (and move to heavy-workload group).
     ### Linux desktop tasks ###
@@ -86,8 +83,9 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       script:
-        - flutter channel $CHANNEL
+        - flutter config --enable-linux-desktop
         - ./script/build_all_plugins_app.sh linux
 
 # Legacy Dockerfile configuration for web integration tests.
@@ -104,13 +102,8 @@ task:
     dockerfile: .ci/Dockerfile-LegacyChrome
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
-  upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - flutter config --enable-linux-desktop
-    - git fetch origin master
+  setup_script:
+    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
   matrix:
     - name: integration_web_smoke_test
       env:
@@ -119,8 +112,8 @@ task:
           CHANNEL: "stable"
       # Tests integration example test in web.
       only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       install_script:
-        - flutter channel $CHANNEL
         - git clone https://github.com/flutter/web_installers.git
         - cd web_installers/packages/web_drivers/
         - pub get
@@ -143,13 +136,8 @@ task:
     memory: 16G
   env:
     INTEGRATION_TEST_PATH: "./packages/integration_test"
-  upgrade_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - flutter config --enable-linux-desktop
-    - git fetch origin master
+  setup_script:
+    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
   matrix:
     ### Android tasks ###
     - name: build-apks+java-test+firebase-test-lab
@@ -164,8 +152,8 @@ task:
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       script:
-        - flutter channel $CHANNEL
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
         # See: https://github.com/flutter/flutter/issues/24935
@@ -192,8 +180,9 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       build_script:
-        - flutter channel $CHANNEL
+        - flutter config --enable-linux-desktop
         - ./script/incremental_build.sh build-examples --linux
         - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
@@ -204,17 +193,9 @@ task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   osx_instance:
     image: big-sur-xcode-12.3
-  upgrade_script:
+  setup_script:
+    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
     - sudo gem install cocoapods
-    - flutter channel stable
-    - flutter upgrade
-    - flutter channel master
-    - flutter upgrade
-    - flutter config --enable-macos-desktop
-    - git fetch origin master
-  create_simulator_script:
-    - xcrun simctl list
-    - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
   matrix:
     ### Platform-agnostic tasks ###
     - name: lint_darwin_plugins
@@ -234,8 +215,8 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       script:
-        - flutter channel $CHANNEL
         - ./script/build_all_plugins_app.sh ios --no-codesign
     - name: build-ipas+drive-examples
       env:
@@ -250,8 +231,11 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
+      create_simulator_script:
+        - xcrun simctl list
+        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       build_script:
-        - flutter channel $CHANNEL
         - ./script/incremental_build.sh build-examples --ipa
         - ./script/incremental_build.sh xctest --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
         # `drive-examples` contains integration tests, which changes the UI of the application.
@@ -264,8 +248,9 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       script:
-        - flutter channel $CHANNEL
+        - flutter config --enable-macos-desktop
         - ./script/build_all_plugins_app.sh macos
     - name: build-macos+drive-examples
       env:
@@ -273,7 +258,8 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         PATH: $PATH:/usr/local/bin
+      upgrade_script: ./script/set_channel.sh $CHANNEL
       build_script:
-        - flutter channel $CHANNEL
+        - flutter config --enable-macos-desktop
         - ./script/incremental_build.sh build-examples --macos --no-ipa
         - ./script/incremental_build.sh drive-examples --macos
