@@ -28,10 +28,8 @@ task:
       script:
         - flutter channel master
         - if [[ "$CIRRUS_BRANCH" == "master" ]]; then
-        -   echo "Running version-check on all packages"
         -   $PLUGIN_TOOLS version-check
         - else
-        -   echo "Running version-check on changed pacakges"
         -   $PLUGIN_TOOLS version-check --run-on-changed-packages
         - fi
         - ./script/check_publish.sh
