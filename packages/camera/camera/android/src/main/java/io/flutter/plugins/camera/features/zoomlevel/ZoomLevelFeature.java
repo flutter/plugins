@@ -12,20 +12,20 @@ import io.flutter.plugins.camera.features.CameraFeature;
 
 /** Exposure offset makes the image brighter or darker. */
 public class ZoomLevelFeature extends CameraFeature<Float> {
+  private final CameraZoom cameraZoom;
   private Float currentSetting = CameraZoom.DEFAULT_ZOOM_FACTOR;
-  private CameraZoom cameraZoom;
 
   public ZoomLevelFeature(CameraProperties cameraProperties) {
     super(cameraProperties);
     this.cameraZoom =
-        new CameraZoom(
+        CameraZoom.create(
             cameraProperties.getSensorInfoActiveArraySize(),
             cameraProperties.getScalerAvailableMaxDigitalZoom());
   }
 
   @Override
   public String getDebugName() {
-    return "ZoomLevel";
+    return "ZoomLevelFeature";
   }
 
   @Override
