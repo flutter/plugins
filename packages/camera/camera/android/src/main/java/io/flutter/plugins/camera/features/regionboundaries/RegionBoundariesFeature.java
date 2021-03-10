@@ -17,8 +17,8 @@ import java.util.Arrays;
  * CaptureRequestBuilder for which we can read the distortion correction settings from.
  */
 public class RegionBoundariesFeature extends CameraFeature<Size> {
+  private final CameraRegions cameraRegions;
   private Size currentSetting;
-  private CameraRegions cameraRegions;
 
   public RegionBoundariesFeature(
       CameraProperties cameraProperties, CaptureRequest.Builder requestBuilder) {
@@ -28,25 +28,23 @@ public class RegionBoundariesFeature extends CameraFeature<Size> {
     if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.P
         || !supportsDistortionCorrection()) {
       setValue(cameraProperties.getSensorInfoPixelArraySize());
-    }
-
-    // Get the current distortion correction mode
-    Integer distortionCorrectionMode = null;
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-      distortionCorrectionMode = requestBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE);
-    }
-
-    // Return the correct boundaries depending on the mode
-    android.graphics.Rect rect;
-    if (distortionCorrectionMode == null
-        || distortionCorrectionMode == CaptureRequest.DISTORTION_CORRECTION_MODE_OFF) {
-      rect = cameraProperties.getSensorInfoPreCorrectionActiveArraySize();
     } else {
-      rect = cameraProperties.getSensorInfoActiveArraySize();
-    }
+      // Get the current distortion correction mode
+      Integer distortionCorrectionMode =
+          requestBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE);
 
-    // Set new region size
-    setValue(rect == null ? null : new Size(rect.width(), rect.height()));
+      // Return the correct boundaries depending on the mode
+      android.graphics.Rect rect;
+      if (distortionCorrectionMode == null
+          || distortionCorrectionMode == CaptureRequest.DISTORTION_CORRECTION_MODE_OFF) {
+        rect = cameraProperties.getSensorInfoPreCorrectionActiveArraySize();
+      } else {
+        rect = cameraProperties.getSensorInfoActiveArraySize();
+      }
+
+      // Set new region size
+      setValue(rect == null ? null : new Size(rect.width(), rect.height()));
+    }
 
     // Create new camera regions using new size
     cameraRegions = new CameraRegions(currentSetting);
@@ -54,7 +52,7 @@ public class RegionBoundariesFeature extends CameraFeature<Size> {
 
   @Override
   public String getDebugName() {
-    return "RegionBoundaries";
+    return "RegionBoundariesFeature";
   }
 
   @Override
