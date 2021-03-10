@@ -17,6 +17,7 @@ Pods/
 .symlinks/
 **/Flutter/App.framework/
 **/Flutter/ephemeral/
+**/Flutter/Flutter.podspec
 **/Flutter/Flutter.framework/
 **/Flutter/Generated.xcconfig
 **/Flutter/flutter_assets/
