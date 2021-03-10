@@ -6,9 +6,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
-import 'package:test/test.dart';
 
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:in_app_purchase/src/in_app_purchase/app_store_connection.dart';
@@ -227,7 +226,7 @@ void main() {
       expect(
           () => AppStoreConnection.instance
               .buyConsumable(purchaseParam: purchaseParam, autoConsume: false),
-          throwsA(TypeMatcher<AssertionError>()));
+          throwsA(isInstanceOf<AssertionError>()));
     });
 
     test('should get failed purchase status', () async {
@@ -298,6 +297,13 @@ void main() {
           () => AppStoreConnection.instance
               .consumePurchase(PurchaseDetails.fromPurchase(dummyPurchase)),
           throwsUnsupportedError);
+    });
+  });
+
+  group('present code redemption sheet', () {
+    test('null', () async {
+      expect(
+          await AppStoreConnection.instance.presentCodeRedemptionSheet(), null);
     });
   });
 }
