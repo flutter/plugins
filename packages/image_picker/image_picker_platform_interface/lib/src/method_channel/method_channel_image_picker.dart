@@ -36,6 +36,52 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     return path != null ? PickedFile(path) : null;
   }
 
+  @override
+  Future<List<PickedFile>?> pickMultiImage({
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+  }) async {
+    List<String>? paths = await _pickMultiImagePath(
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      imageQuality: imageQuality,
+    );
+    List<PickedFile> files = [];
+    for (final path in paths!) {
+      files.add(PickedFile(path));
+    }
+    return files;
+  }
+
+  Future<dynamic?> _pickMultiImagePath({
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+  }) {
+    if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
+      throw ArgumentError.value(
+          imageQuality, 'imageQuality', 'must be between 0 and 100');
+    }
+
+    if (maxWidth != null && maxWidth < 0) {
+      throw ArgumentError.value(maxWidth, 'maxWidth', 'cannot be negative');
+    }
+
+    if (maxHeight != null && maxHeight < 0) {
+      throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
+    }
+
+    return _channel.invokeMethod<List<String>>(
+      'pickMultiImage',
+      <String, dynamic>{
+        'maxWidth': maxWidth,
+        'maxHeight': maxHeight,
+        'imageQuality': imageQuality,
+      },
+    );
+  }
+
   Future<String?> _pickImagePath({
     required ImageSource source,
     double? maxWidth,
