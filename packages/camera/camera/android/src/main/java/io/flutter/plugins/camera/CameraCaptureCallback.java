@@ -112,7 +112,7 @@ class CameraCaptureCallback extends CaptureCallback {
           if (aeState == null
               || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE
               || pictureCaptureRequest.preCaptureMetering
-                  .getIsExpired() // Some devices like Pixel 5 will hang in pre capture metering
+                  .getIsExpired() // Some devices can hang in precapture metering
           ) {
             if (pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
               Log.i(
