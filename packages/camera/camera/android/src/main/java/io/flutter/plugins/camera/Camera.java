@@ -33,6 +33,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.Display;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -589,7 +590,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       updateBuilderSettings(stillBuilder);
 
       // Orientation
-      int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+      int rotation = getDefaultDisplay().getRotation();
       stillBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation(rotation));
 
       CameraCaptureSession.CaptureCallback captureCallback =
@@ -629,6 +630,11 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     } catch (CameraAccessException e) {
       pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
     }
+  }
+
+  @SuppressWarnings("deprecated")
+  private Display getDefaultDisplay() {
+    return activity.getWindowManager().getDefaultDisplay();
   }
 
   /** Starts a background thread and its {@link Handler}. TODO: call when activity resumed */
