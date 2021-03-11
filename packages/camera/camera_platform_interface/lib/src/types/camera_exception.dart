@@ -13,7 +13,7 @@ class CameraException implements Exception {
   String code;
 
   /// Textual description of the error.
-  String description;
+  String? description;
 
   @override
   String toString() => 'CameraException($code, $description)';

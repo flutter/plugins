@@ -12,7 +12,7 @@ final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   freeTrialPeriod: 'freeTrialPeriod',
   introductoryPrice: 'introductoryPrice',
   introductoryPriceMicros: 'introductoryPriceMicros',
-  introductoryPriceCycles: 'introductoryPriceCycles',
+  introductoryPriceCycles: 1,
   introductoryPricePeriod: 'introductoryPricePeriod',
   price: 'price',
   priceAmountMicros: 1000,
@@ -21,7 +21,6 @@ final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   subscriptionPeriod: 'subscriptionPeriod',
   title: 'title',
   type: SkuType.inapp,
-  isRewarded: true,
   originalPrice: 'originalPrice',
   originalPriceAmountMicros: 1000,
 );
@@ -99,6 +98,33 @@ void main() {
       expect(parsed.billingResult, equals(expected.billingResult));
       expect(parsed.skuDetailsList, containsAll(expected.skuDetailsList));
     });
+
+    test('fromJson creates an object with default values', () {
+      final SkuDetailsResponseWrapper skuDetails =
+          SkuDetailsResponseWrapper.fromJson(<String, dynamic>{});
+      expect(
+          skuDetails.billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(skuDetails.skuDetailsList, isEmpty);
+    });
+  });
+
+  group('BillingResultWrapper', () {
+    test('fromJson on empty map creates an object with default values', () {
+      final BillingResultWrapper billingResult =
+          BillingResultWrapper.fromJson(<String, dynamic>{});
+      expect(billingResult.debugMessage, kInvalidBillingResultErrorMessage);
+      expect(billingResult.responseCode, BillingResponse.error);
+    });
+
+    test('fromJson on null creates an object with default values', () {
+      final BillingResultWrapper billingResult =
+          BillingResultWrapper.fromJson(null);
+      expect(billingResult.debugMessage, kInvalidBillingResultErrorMessage);
+      expect(billingResult.responseCode, BillingResponse.error);
+    });
   });
 }
 
@@ -117,7 +143,6 @@ Map<String, dynamic> buildSkuMap(SkuDetailsWrapper original) {
     'subscriptionPeriod': original.subscriptionPeriod,
     'title': original.title,
     'type': original.type.toString().substring(8),
-    'isRewarded': original.isRewarded,
     'originalPrice': original.originalPrice,
     'originalPriceAmountMicros': original.originalPriceAmountMicros,
   };

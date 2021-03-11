@@ -29,16 +29,18 @@ class LatLng {
   final double longitude;
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
+  Object toJson() {
     return <double>[latitude, longitude];
   }
 
   /// Initialize a LatLng from an \[lat, lng\] array.
-  static LatLng fromJson(dynamic json) {
+  static LatLng? fromJson(Object? json) {
     if (json == null) {
       return null;
     }
-    return LatLng(json[0], json[1]);
+    assert(json is List && json.length == 2);
+    final list = json as List;
+    return LatLng(list[0], list[1]);
   }
 
   @override
@@ -66,7 +68,7 @@ class LatLngBounds {
   ///
   /// The latitude of the southwest corner cannot be larger than the
   /// latitude of the northeast corner.
-  LatLngBounds({@required this.southwest, @required this.northeast})
+  LatLngBounds({required this.southwest, required this.northeast})
       : assert(southwest != null),
         assert(northeast != null),
         assert(southwest.latitude <= northeast.latitude);
@@ -78,8 +80,8 @@ class LatLngBounds {
   final LatLng northeast;
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() {
-    return <dynamic>[southwest.toJson(), northeast.toJson()];
+  Object toJson() {
+    return <Object>[southwest.toJson(), northeast.toJson()];
   }
 
   /// Returns whether this rectangle contains the given [LatLng].
@@ -102,13 +104,15 @@ class LatLngBounds {
 
   /// Converts a list to [LatLngBounds].
   @visibleForTesting
-  static LatLngBounds fromList(dynamic json) {
+  static LatLngBounds? fromList(Object? json) {
     if (json == null) {
       return null;
     }
+    assert(json is List && json.length == 2);
+    final list = json as List;
     return LatLngBounds(
-      southwest: LatLng.fromJson(json[0]),
-      northeast: LatLng.fromJson(json[1]),
+      southwest: LatLng.fromJson(list[0])!,
+      northeast: LatLng.fromJson(list[1])!,
     );
   }
 

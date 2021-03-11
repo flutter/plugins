@@ -70,12 +70,12 @@ class CameraInitializedEvent extends CameraEvent {
   CameraInitializedEvent(
     int cameraId,
     this.previewWidth,
-    this.previewHeight, [
+    this.previewHeight,
     this.exposureMode,
-    this.exposurePointSupported = false,
+    this.exposurePointSupported,
     this.focusMode,
-    this.focusPointSupported = false,
-  ]) : super(cameraId);
+    this.focusPointSupported,
+  ) : super(cameraId);
 
   /// Converts the supplied [Map] to an instance of the [CameraInitializedEvent]
   /// class.
@@ -234,4 +234,50 @@ class CameraErrorEvent extends CameraEvent {
 
   @override
   int get hashCode => super.hashCode ^ description.hashCode;
+}
+
+/// An event fired when a video has finished recording.
+class VideoRecordedEvent extends CameraEvent {
+  /// XFile of the recorded video.
+  final XFile file;
+
+  /// Maximum duration of the recorded video.
+  final Duration? maxVideoDuration;
+
+  /// Build a VideoRecordedEvent triggered from the camera with the `cameraId`.
+  ///
+  /// The `file` represents the file of the video.
+  /// The `maxVideoDuration` shows if a maxVideoDuration shows if a maximum
+  /// video duration was set.
+  VideoRecordedEvent(int cameraId, this.file, this.maxVideoDuration)
+      : super(cameraId);
+
+  /// Converts the supplied [Map] to an instance of the [VideoRecordedEvent]
+  /// class.
+  VideoRecordedEvent.fromJson(Map<String, dynamic> json)
+      : file = XFile(json['path']),
+        maxVideoDuration = json['maxVideoDuration'] != null
+            ? Duration(milliseconds: json['maxVideoDuration'] as int)
+            : null,
+        super(json['cameraId']);
+
+  /// Converts the [VideoRecordedEvent] instance into a [Map] instance that can be
+  /// serialized to JSON.
+  Map<String, dynamic> toJson() => {
+        'cameraId': cameraId,
+        'path': file.path,
+        'maxVideoDuration': maxVideoDuration?.inMilliseconds
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      super == other &&
+          other is VideoRecordedEvent &&
+          runtimeType == other.runtimeType &&
+          maxVideoDuration == other.maxVideoDuration;
+
+  @override
+  int get hashCode =>
+      super.hashCode ^ file.hashCode ^ maxVideoDuration.hashCode;
 }

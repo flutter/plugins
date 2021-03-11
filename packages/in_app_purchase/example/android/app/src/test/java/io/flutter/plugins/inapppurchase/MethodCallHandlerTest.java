@@ -18,9 +18,11 @@ import static io.flutter.plugins.inapppurchase.Translator.fromPurchasesResult;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
@@ -59,6 +61,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -78,7 +81,7 @@ public class MethodCallHandlerTest {
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     factory =
         (@NonNull Context context,
             @NonNull MethodChannel channel,
@@ -260,14 +263,18 @@ public class MethodCallHandlerTest {
     verify(result, never()).success(any());
   }
 
+  // Test launchBillingFlow not crash if `accountId` is `null`
+  // Ideally, we should check if the `accountId` is null in the parameter; however,
+  // since PBL 3.0, the `accountId` variable is not public.
   @Test
-  public void launchBillingFlow_ok_nullAccountId() {
+  public void launchBillingFlow_null_AccountId_do_not_crash() {
     // Fetch the sku details first and then prepare the launch billing flow call
     String skuId = "foo";
     queryForSkus(singletonList(skuId));
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("sku", skuId);
     arguments.put("accountId", null);
+    arguments.put("obfuscatedProfileId", null);
     MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
 
     // Launch the billing flow
@@ -285,8 +292,40 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
     assertEquals(params.getSku(), skuId);
-    assertNull(params.getAccountId());
 
+    // Verify we pass the response code to result
+    verify(result, never()).error(any(), any(), any());
+    verify(result, times(1)).success(fromBillingResult(billingResult));
+  }
+
+  @Test
+  public void launchBillingFlow_ok_null_OldSku() {
+    // Fetch the sku details first and then prepare the launch billing flow call
+    String skuId = "foo";
+    String accountId = "account";
+    queryForSkus(singletonList(skuId));
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    arguments.put("accountId", accountId);
+    arguments.put("oldSku", null);
+    MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
+
+    // Launch the billing flow
+    BillingResult billingResult =
+        BillingResult.newBuilder()
+            .setResponseCode(100)
+            .setDebugMessage("dummy debug message")
+            .build();
+    when(mockBillingClient.launchBillingFlow(any(), any())).thenReturn(billingResult);
+    methodChannelHandler.onMethodCall(launchCall, result);
+
+    // Verify we pass the arguments to the billing flow
+    ArgumentCaptor<BillingFlowParams> billingFlowParamsCaptor =
+        ArgumentCaptor.forClass(BillingFlowParams.class);
+    verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
+    BillingFlowParams params = billingFlowParamsCaptor.getValue();
+    assertEquals(params.getSku(), skuId);
+    assertNull(params.getOldSku());
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
     verify(result, times(1)).success(fromBillingResult(billingResult));
@@ -309,6 +348,41 @@ public class MethodCallHandlerTest {
     // Verify we pass the response code to result
     verify(result).error(contains("ACTIVITY_UNAVAILABLE"), contains("foreground"), any());
     verify(result, never()).success(any());
+  }
+
+  @Test
+  public void launchBillingFlow_ok_oldSku() {
+    // Fetch the sku details first and query the method call
+    String skuId = "foo";
+    String accountId = "account";
+    String oldSkuId = "oldFoo";
+    queryForSkus(unmodifiableList(asList(skuId, oldSkuId)));
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    arguments.put("accountId", accountId);
+    arguments.put("oldSku", oldSkuId);
+    MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
+
+    // Launch the billing flow
+    BillingResult billingResult =
+        BillingResult.newBuilder()
+            .setResponseCode(100)
+            .setDebugMessage("dummy debug message")
+            .build();
+    when(mockBillingClient.launchBillingFlow(any(), any())).thenReturn(billingResult);
+    methodChannelHandler.onMethodCall(launchCall, result);
+
+    // Verify we pass the arguments to the billing flow
+    ArgumentCaptor<BillingFlowParams> billingFlowParamsCaptor =
+        ArgumentCaptor.forClass(BillingFlowParams.class);
+    verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
+    BillingFlowParams params = billingFlowParamsCaptor.getValue();
+    assertEquals(params.getSku(), skuId);
+    assertEquals(params.getOldSku(), oldSkuId);
+
+    // Verify we pass the response code to result
+    verify(result, never()).error(any(), any(), any());
+    verify(result, times(1)).success(fromBillingResult(billingResult));
   }
 
   @Test
@@ -337,11 +411,85 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
     BillingFlowParams params = billingFlowParamsCaptor.getValue();
     assertEquals(params.getSku(), skuId);
-    assertEquals(params.getAccountId(), accountId);
 
     // Verify we pass the response code to result
     verify(result, never()).error(any(), any(), any());
     verify(result, times(1)).success(fromBillingResult(billingResult));
+  }
+
+  @Test
+  public void launchBillingFlow_ok_Proration() {
+    // Fetch the sku details first and query the method call
+    String skuId = "foo";
+    String oldSkuId = "oldFoo";
+    String purchaseToken = "purchaseTokenFoo";
+    String accountId = "account";
+    int prorationMode = BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE;
+    queryForSkus(unmodifiableList(asList(skuId, oldSkuId)));
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    arguments.put("accountId", accountId);
+    arguments.put("oldSku", oldSkuId);
+    arguments.put("purchaseToken", purchaseToken);
+    arguments.put("prorationMode", prorationMode);
+    MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
+
+    // Launch the billing flow
+    BillingResult billingResult =
+        BillingResult.newBuilder()
+            .setResponseCode(100)
+            .setDebugMessage("dummy debug message")
+            .build();
+    when(mockBillingClient.launchBillingFlow(any(), any())).thenReturn(billingResult);
+    methodChannelHandler.onMethodCall(launchCall, result);
+
+    // Verify we pass the arguments to the billing flow
+    ArgumentCaptor<BillingFlowParams> billingFlowParamsCaptor =
+        ArgumentCaptor.forClass(BillingFlowParams.class);
+    verify(mockBillingClient).launchBillingFlow(any(), billingFlowParamsCaptor.capture());
+    BillingFlowParams params = billingFlowParamsCaptor.getValue();
+    assertEquals(params.getSku(), skuId);
+    assertEquals(params.getOldSku(), oldSkuId);
+    assertEquals(params.getOldSkuPurchaseToken(), purchaseToken);
+    assertEquals(params.getReplaceSkusProrationMode(), prorationMode);
+
+    // Verify we pass the response code to result
+    verify(result, never()).error(any(), any(), any());
+    verify(result, times(1)).success(fromBillingResult(billingResult));
+  }
+
+  @Test
+  public void launchBillingFlow_ok_Proration_with_null_OldSku() {
+    // Fetch the sku details first and query the method call
+    String skuId = "foo";
+    String accountId = "account";
+    String queryOldSkuId = "oldFoo";
+    String oldSkuId = null;
+    int prorationMode = BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE;
+    queryForSkus(unmodifiableList(asList(skuId, queryOldSkuId)));
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    arguments.put("accountId", accountId);
+    arguments.put("oldSku", oldSkuId);
+    arguments.put("prorationMode", prorationMode);
+    MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
+
+    // Launch the billing flow
+    BillingResult billingResult =
+        BillingResult.newBuilder()
+            .setResponseCode(100)
+            .setDebugMessage("dummy debug message")
+            .build();
+    when(mockBillingClient.launchBillingFlow(any(), any())).thenReturn(billingResult);
+    methodChannelHandler.onMethodCall(launchCall, result);
+
+    // Assert that we sent an error back.
+    verify(result)
+        .error(
+            contains("IN_APP_PURCHASE_REQUIRE_OLD_SKU"),
+            contains("launchBillingFlow failed because oldSku is null"),
+            any());
+    verify(result, never()).success(any());
   }
 
   @Test
@@ -378,6 +526,27 @@ public class MethodCallHandlerTest {
 
     // Assert that we sent an error back.
     verify(result).error(contains("NOT_FOUND"), contains(skuId), any());
+    verify(result, never()).success(any());
+  }
+
+  @Test
+  public void launchBillingFlow_oldSkuNotFound() {
+    // Try to launch the billing flow for a random sku ID
+    establishConnectedBillingClient(null, null);
+    String skuId = "foo";
+    String accountId = "account";
+    String oldSkuId = "oldSku";
+    queryForSkus(singletonList(skuId));
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    arguments.put("accountId", accountId);
+    arguments.put("oldSku", oldSkuId);
+    MethodCall launchCall = new MethodCall(LAUNCH_BILLING_FLOW, arguments);
+
+    methodChannelHandler.onMethodCall(launchCall, result);
+
+    // Assert that we sent an error back.
+    verify(result).error(contains("IN_APP_PURCHASE_INVALID_OLD_SKU"), contains(oldSkuId), any());
     verify(result, never()).success(any());
   }
 
@@ -503,11 +672,7 @@ public class MethodCallHandlerTest {
 
     methodChannelHandler.onMethodCall(new MethodCall(CONSUME_PURCHASE_ASYNC, arguments), result);
 
-    ConsumeParams params =
-        ConsumeParams.newBuilder()
-            .setDeveloperPayload("mockPayload")
-            .setPurchaseToken("mockToken")
-            .build();
+    ConsumeParams params = ConsumeParams.newBuilder().setPurchaseToken("mockToken").build();
 
     // Verify we pass the data to result
     verify(mockBillingClient).consumeAsync(refEq(params), listenerCaptor.capture());
@@ -538,10 +703,7 @@ public class MethodCallHandlerTest {
     methodChannelHandler.onMethodCall(new MethodCall(ACKNOWLEDGE_PURCHASE, arguments), result);
 
     AcknowledgePurchaseParams params =
-        AcknowledgePurchaseParams.newBuilder()
-            .setDeveloperPayload("mockPayload")
-            .setPurchaseToken("mockToken")
-            .build();
+        AcknowledgePurchaseParams.newBuilder().setPurchaseToken("mockToken").build();
 
     // Verify we pass the data to result
     verify(mockBillingClient).acknowledgePurchase(refEq(params), listenerCaptor.capture());
@@ -609,6 +771,7 @@ public class MethodCallHandlerTest {
     verify(mockBillingClient).querySkuDetailsAsync(any(), listenerCaptor.capture());
     List<SkuDetails> skuDetailsResponse =
         skusList.stream().map(this::buildSkuDetails).collect(toList());
+
     BillingResult billingResult =
         BillingResult.newBuilder()
             .setResponseCode(100)
@@ -618,8 +781,16 @@ public class MethodCallHandlerTest {
   }
 
   private SkuDetails buildSkuDetails(String id) {
-    SkuDetails details = mock(SkuDetails.class);
-    when(details.getSku()).thenReturn(id);
+    String json =
+        String.format(
+            "{\"packageName\": \"dummyPackageName\",\"productId\":\"%s\",\"type\":\"inapp\",\"price\":\"$0.99\",\"price_amount_micros\":990000,\"price_currency_code\":\"USD\",\"title\":\"Example title\",\"description\":\"Example description.\",\"original_price\":\"$0.99\",\"original_price_micros\":990000}",
+            id);
+    SkuDetails details = null;
+    try {
+      details = new SkuDetails(json);
+    } catch (JSONException e) {
+      fail("buildSkuDetails failed with JSONException " + e.toString());
+    }
     return details;
   }
 
