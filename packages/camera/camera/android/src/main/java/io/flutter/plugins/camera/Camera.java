@@ -633,7 +633,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     }
   }
 
-  @SuppressWarnings("deprecated")
+  @SuppressWarnings("deprecation")
   private Display getDefaultDisplay() {
     return activity.getWindowManager().getDefaultDisplay();
   }
