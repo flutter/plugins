@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//
-//  FIAPReceiptManager.m
-//  in_app_purchase
-//
-//  Created by Chris Yang on 3/2/19.
-//
-
 #import "FIAPReceiptManager.h"
 #import <Flutter/Flutter.h>
 

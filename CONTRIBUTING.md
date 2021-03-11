@@ -5,6 +5,25 @@
 
 _See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/master/CODE_OF_CONDUCT.md)_
 
+## Important note
+
+As of January 2021, we are no longer accepting non-critical PRs for plugins
+for which there is a corresponding [Flutter Community Plus
+Plugin](https://plus.fluttercommunity.dev/), as we hope in time to be able
+to transition users to those versions of the plugins. If you have a PR for
+something other than a critical issue (crashes, build failures, null safety, etc.)
+for any of the following plugins, we encourage you to submit it
+[there](https://github.com/fluttercommunity/plus_plugins/pulls) instead:
+- `android_alarm_manager`
+- `android_intent`
+- `battery`
+- `connectivity`
+- `device_info`
+- `package_info`
+- `sensors`
+- `share`
+- `wifi_info_flutter` (corresponds to `network_info_plus`)
+
 ## Things you will need
 
 
@@ -50,7 +69,7 @@ If XCUITests has not been set up for the plugin, follow these steps to set it up
 1. Open <path_to_plugin>/example/ios/Runner.xcworkspace using XCode.
 1. Create a new "UI Testing Bundle".
 1. In the target options window, populate details as following, then click on "Finish".
-  * In the "product name" field, type in "RunnerUITests" (this is the test target name our CI looks for.).
+  * In the "product name" field, type in "RunnerUITests".
   * In the "Team" field, select "None".
   * In the Organization Name field, type in "Flutter". This should usually be pre-populated.
   * In the organization identifer field, type in "com.google". This should usually be pre-populated.

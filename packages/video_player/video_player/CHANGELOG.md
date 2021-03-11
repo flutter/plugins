@@ -1,42 +1,26 @@
-## 2.0.0-nullsafety.9
+<<<<<<< HEAD
+## 2.0.3
 
 * Introduce setCaptionOffset to offset the caption display based on a Duration.
 
-## 2.0.0-nullsafety.8
+## 2.0.2
 
-* Migrated from deprecated `defaultBinaryMessenger`.
+* Fix `VideoPlayerValue` size and aspect ratio documentation
 
-## 2.0.0-nullsafety.7
+## 2.0.1
 
-* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Remove the deprecated API "exoPlayer.setAudioAttributes".
 
-## 2.0.0-nullsafety.6
+## 2.0.0
 
-* Fix `VideoPlayerValue toString()` test.
-
-## 2.0.0-nullsafety.5
-
+* Migrate to null safety.
+* Fix an issue where `isBuffering` was not updating on Android.
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
-
-## 2.0.0-nullsafety.4
-
-* Fixed an issue where `isBuffering` was not updating on Android.
-
-## 2.0.0-nullsafety.3
-
-* Dart null safety requires `2.12`.
-
-## 2.0.0-nullsafety.2
-
-* Bump SDK version.
-
-## 2.0.0-nullsafety.1
-
-* Merge master.
-
-## 2.0.0-nullsafety
-
-* Migration to null safety.
+* Fix `VideoPlayerValue toString()` test.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Migrate from deprecated `defaultBinaryMessenger`.
+* Fix an issue where a crash can occur after a closing a video player view on iOS.
+* Setting the `mixWithOthers` `VideoPlayerOptions` in web now is silently ignored instead of throwing an exception.
 
 ## 1.0.2
 

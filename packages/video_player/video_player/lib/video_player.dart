@@ -93,12 +93,10 @@ class VideoPlayerValue {
 
   /// A description of the error if present.
   ///
-  /// If [hasError] is false this is [null].
+  /// If [hasError] is false this is `null`.
   final String? errorDescription;
 
   /// The [size] of the currently loaded video.
-  ///
-  /// Is null when [initialized] is false.
   final Size size;
 
   /// Indicates whether or not the video has been loaded and is ready to play.
@@ -108,8 +106,12 @@ class VideoPlayerValue {
   /// [errorDescription] should have information about the problem.
   bool get hasError => errorDescription != null;
 
-  /// Returns [size.width] / [size.height] when size is non-null, or `1.0.` when
-  /// size is null or the aspect ratio would be less than or equal to 0.0.
+  /// Returns [size.width] / [size.height].
+  ///
+  /// Will return `1.0` if:
+  /// * [isInitialized] is `false`
+  /// * [size.width], or [size.height] is equal to `0.0`
+  /// * aspect ratio would be less than or equal to `0.0`
   double get aspectRatio {
     if (!isInitialized || size.width == 0 || size.height == 0) {
       return 1.0;

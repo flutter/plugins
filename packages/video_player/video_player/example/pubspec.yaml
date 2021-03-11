@@ -7,6 +7,11 @@ dependencies:
   flutter:
     sdk: flutter
   video_player:
+    # When depending on this package from a real application you should use:
+    #   video_player: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
     path: ../
 
 dev_dependencies:
@@ -17,7 +22,7 @@ dev_dependencies:
   integration_test:
     path: ../../../integration_test
   test: any
-  pedantic: ^1.10.0-nullsafety.1
+  pedantic: ^1.10.0
 
 flutter:
   uses-material-design: true
@@ -27,5 +32,5 @@ flutter:
    - assets/bumble_bee_captions.srt
 
 environment:
-  sdk: ">=2.12.0-0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5 <2.0.0"
+  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  flutter: ">=1.12.13+hotfix.5"
