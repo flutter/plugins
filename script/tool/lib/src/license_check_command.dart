@@ -33,9 +33,9 @@ const Set<String> _ignoreList = <String>{
 // repository should be using the same license text, comment style, etc., so
 // they shouldn't need to be very flexible. Complexity can be added as-needed
 // on a case-by-case basis.
-final RegExp _copyrightRegex = RegExp(r'^// Copyright', multiLine: true);
+final RegExp _copyrightRegex = RegExp(r'^(?://|#) Copyright', multiLine: true);
 final RegExp _bsdLicenseRegex = RegExp(
-    r'^// Use of this source code is governed by a BSD-style license',
+    r'^(?://|#) Use of this source code is governed by a BSD-style license',
     multiLine: true);
 
 /// Validates that code files have copyright and license blocks.
