@@ -51,165 +51,259 @@ public class CameraCaptureCallbackStatesTest extends TestCase {
   }
 
   private static void setUpPreviewStateTest(TestSuite suite) {
-    CameraCaptureCallbackStatesTest previewStateTest = new CameraCaptureCallbackStatesTest("process_should_not_converge_or_pre_capture_when_state_is_preview", CameraState.STATE_PREVIEW, null, null);
-    previewStateTest.validate = () -> {
-      verify(previewStateTest.mockCaptureStateListener, never()).onConverged();
-      verify(previewStateTest.mockCaptureStateListener, never()).onConverged();
-      assertEquals(CameraState.STATE_PREVIEW, previewStateTest.cameraCaptureCallback.getCameraState());
-    };
+    CameraCaptureCallbackStatesTest previewStateTest =
+        new CameraCaptureCallbackStatesTest(
+            "process_should_not_converge_or_pre_capture_when_state_is_preview",
+            CameraState.STATE_PREVIEW,
+            null,
+            null);
+    previewStateTest.validate =
+        () -> {
+          verify(previewStateTest.mockCaptureStateListener, never()).onConverged();
+          verify(previewStateTest.mockCaptureStateListener, never()).onConverged();
+          assertEquals(
+              CameraState.STATE_PREVIEW, previewStateTest.cameraCaptureCallback.getCameraState());
+        };
     suite.addTest(previewStateTest);
   }
 
   private static void setUpWaitingFocusTests(TestSuite suite) {
-    Integer[] actionableAfStates = new Integer[] {
-        CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED,
-        CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED
-    };
+    Integer[] actionableAfStates =
+        new Integer[] {
+          CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED,
+          CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED
+        };
 
-    Integer[] nonActionableAfStates = new Integer[] {
-        CaptureResult.CONTROL_AF_STATE_ACTIVE_SCAN,
-        CaptureResult.CONTROL_AF_STATE_INACTIVE,
-        CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED,
-        CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN,
-        CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED
-    };
+    Integer[] nonActionableAfStates =
+        new Integer[] {
+          CaptureResult.CONTROL_AF_STATE_ACTIVE_SCAN,
+          CaptureResult.CONTROL_AF_STATE_INACTIVE,
+          CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED,
+          CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN,
+          CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED
+        };
 
-    Map<Integer, Boolean> aeStatesConvergeMap = new HashMap<Integer, Boolean>() {{
-      put(null, true);
-      put(CaptureResult.CONTROL_AE_STATE_CONVERGED, true);
-      put(CaptureResult.CONTROL_AE_STATE_PRECAPTURE, false);
-      put(CaptureResult.CONTROL_AE_STATE_LOCKED, false);
-      put(CaptureResult.CONTROL_AE_STATE_SEARCHING, false);
-      put(CaptureResult.CONTROL_AE_STATE_INACTIVE, false);
-      put(CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED, false);
-    }};
+    Map<Integer, Boolean> aeStatesConvergeMap =
+        new HashMap<Integer, Boolean>() {
+          {
+            put(null, true);
+            put(CaptureResult.CONTROL_AE_STATE_CONVERGED, true);
+            put(CaptureResult.CONTROL_AE_STATE_PRECAPTURE, false);
+            put(CaptureResult.CONTROL_AE_STATE_LOCKED, false);
+            put(CaptureResult.CONTROL_AE_STATE_SEARCHING, false);
+            put(CaptureResult.CONTROL_AE_STATE_INACTIVE, false);
+            put(CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED, false);
+          }
+        };
 
-    CameraCaptureCallbackStatesTest nullStateTest = new CameraCaptureCallbackStatesTest("process_should_not_converge_or_pre_capture_when_afstate_is_null", CameraState.STATE_WAITING_FOCUS, null, null);
-    nullStateTest.validate = () -> {
-      verify(nullStateTest.mockCaptureStateListener, never()).onConverged();
-      verify(nullStateTest.mockCaptureStateListener, never()).onConverged();
-      assertEquals(CameraState.STATE_WAITING_FOCUS, nullStateTest.cameraCaptureCallback.getCameraState());
-    };
+    CameraCaptureCallbackStatesTest nullStateTest =
+        new CameraCaptureCallbackStatesTest(
+            "process_should_not_converge_or_pre_capture_when_afstate_is_null",
+            CameraState.STATE_WAITING_FOCUS,
+            null,
+            null);
+    nullStateTest.validate =
+        () -> {
+          verify(nullStateTest.mockCaptureStateListener, never()).onConverged();
+          verify(nullStateTest.mockCaptureStateListener, never()).onConverged();
+          assertEquals(
+              CameraState.STATE_WAITING_FOCUS,
+              nullStateTest.cameraCaptureCallback.getCameraState());
+        };
     suite.addTest(nullStateTest);
 
     for (Integer afState : actionableAfStates) {
-      aeStatesConvergeMap.forEach((aeState, shouldConverge) -> {
-        CameraCaptureCallbackStatesTest focusLockedTest = new CameraCaptureCallbackStatesTest(
-            "process_should_converge_when_af_state_is_" + afState + "_and_ae_state_is_" + aeState,
-            CameraState.STATE_WAITING_FOCUS,
-            afState,
-            aeState);
-        focusLockedTest.validate = () -> {
-          if (shouldConverge) {
-            verify(focusLockedTest.mockCaptureStateListener, times(1)).onConverged();
-            verify(focusLockedTest.mockCaptureStateListener, never()).onPrecapture();
-          } else {
-            verify(focusLockedTest.mockCaptureStateListener, times(1)).onPrecapture();
-            verify(focusLockedTest.mockCaptureStateListener, never()).onConverged();
-          }
-          assertEquals(CameraState.STATE_WAITING_FOCUS, focusLockedTest.cameraCaptureCallback.getCameraState());
-        };
-        suite.addTest(focusLockedTest);
-      });
+      aeStatesConvergeMap.forEach(
+          (aeState, shouldConverge) -> {
+            CameraCaptureCallbackStatesTest focusLockedTest =
+                new CameraCaptureCallbackStatesTest(
+                    "process_should_converge_when_af_state_is_"
+                        + afState
+                        + "_and_ae_state_is_"
+                        + aeState,
+                    CameraState.STATE_WAITING_FOCUS,
+                    afState,
+                    aeState);
+            focusLockedTest.validate =
+                () -> {
+                  if (shouldConverge) {
+                    verify(focusLockedTest.mockCaptureStateListener, times(1)).onConverged();
+                    verify(focusLockedTest.mockCaptureStateListener, never()).onPrecapture();
+                  } else {
+                    verify(focusLockedTest.mockCaptureStateListener, times(1)).onPrecapture();
+                    verify(focusLockedTest.mockCaptureStateListener, never()).onConverged();
+                  }
+                  assertEquals(
+                      CameraState.STATE_WAITING_FOCUS,
+                      focusLockedTest.cameraCaptureCallback.getCameraState());
+                };
+            suite.addTest(focusLockedTest);
+          });
     }
 
     for (Integer afState : nonActionableAfStates) {
-        CameraCaptureCallbackStatesTest focusLockedTest = new CameraCaptureCallbackStatesTest(
-            "process_should_do_nothing_when_af_state_is_" + afState,
-            CameraState.STATE_WAITING_FOCUS,
-            afState,
-            null);
-        focusLockedTest.validate = () -> {
+      CameraCaptureCallbackStatesTest focusLockedTest =
+          new CameraCaptureCallbackStatesTest(
+              "process_should_do_nothing_when_af_state_is_" + afState,
+              CameraState.STATE_WAITING_FOCUS,
+              afState,
+              null);
+      focusLockedTest.validate =
+          () -> {
             verify(focusLockedTest.mockCaptureStateListener, never()).onConverged();
             verify(focusLockedTest.mockCaptureStateListener, never()).onPrecapture();
-            assertEquals(CameraState.STATE_WAITING_FOCUS, focusLockedTest.cameraCaptureCallback.getCameraState());
-        };
-        suite.addTest(focusLockedTest);
+            assertEquals(
+                CameraState.STATE_WAITING_FOCUS,
+                focusLockedTest.cameraCaptureCallback.getCameraState());
+          };
+      suite.addTest(focusLockedTest);
     }
 
     for (Integer afState : nonActionableAfStates) {
-      aeStatesConvergeMap.forEach((aeState, shouldConverge) -> {
-        CameraCaptureCallbackStatesTest focusLockedTest = new CameraCaptureCallbackStatesTest(
-            "process_should_converge_when_af_state_is_" + afState + "_and_ae_state_is_" + aeState,
-            CameraState.STATE_WAITING_FOCUS,
-            afState,
-            aeState,
-            true);
-        focusLockedTest.validate = () -> {
-          if (shouldConverge) {
-            verify(focusLockedTest.mockCaptureStateListener, times(1)).onConverged();
-            verify(focusLockedTest.mockCaptureStateListener, never()).onPrecapture();
-          } else {
-            verify(focusLockedTest.mockCaptureStateListener, times(1)).onPrecapture();
-            verify(focusLockedTest.mockCaptureStateListener, never()).onConverged();
-          }
-          assertEquals(CameraState.STATE_WAITING_FOCUS, focusLockedTest.cameraCaptureCallback.getCameraState());
-        };
-        suite.addTest(focusLockedTest);
-      });
+      aeStatesConvergeMap.forEach(
+          (aeState, shouldConverge) -> {
+            CameraCaptureCallbackStatesTest focusLockedTest =
+                new CameraCaptureCallbackStatesTest(
+                    "process_should_converge_when_af_state_is_"
+                        + afState
+                        + "_and_ae_state_is_"
+                        + aeState,
+                    CameraState.STATE_WAITING_FOCUS,
+                    afState,
+                    aeState,
+                    true);
+            focusLockedTest.validate =
+                () -> {
+                  if (shouldConverge) {
+                    verify(focusLockedTest.mockCaptureStateListener, times(1)).onConverged();
+                    verify(focusLockedTest.mockCaptureStateListener, never()).onPrecapture();
+                  } else {
+                    verify(focusLockedTest.mockCaptureStateListener, times(1)).onPrecapture();
+                    verify(focusLockedTest.mockCaptureStateListener, never()).onConverged();
+                  }
+                  assertEquals(
+                      CameraState.STATE_WAITING_FOCUS,
+                      focusLockedTest.cameraCaptureCallback.getCameraState());
+                };
+            suite.addTest(focusLockedTest);
+          });
     }
   }
 
   private static void setUpWaitingPreCaptureStartTests(TestSuite suite) {
-    Map<Integer, CameraState> cameraStateMap = new HashMap<Integer, CameraState>() {{
-      put(null, CameraState.STATE_WAITING_PRECAPTURE_DONE);
-      put(CaptureResult.CONTROL_AE_STATE_INACTIVE, CameraState.STATE_WAITING_PRECAPTURE_START);
-      put(CaptureResult.CONTROL_AE_STATE_SEARCHING, CameraState.STATE_WAITING_PRECAPTURE_START);
-      put(CaptureResult.CONTROL_AE_STATE_CONVERGED, CameraState.STATE_WAITING_PRECAPTURE_DONE);
-      put(CaptureResult.CONTROL_AE_STATE_LOCKED, CameraState.STATE_WAITING_PRECAPTURE_START);
-      put(CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED, CameraState.STATE_WAITING_PRECAPTURE_DONE);
-      put(CaptureResult.CONTROL_AE_STATE_PRECAPTURE, CameraState.STATE_WAITING_PRECAPTURE_DONE);
-    }};
+    Map<Integer, CameraState> cameraStateMap =
+        new HashMap<Integer, CameraState>() {
+          {
+            put(null, CameraState.STATE_WAITING_PRECAPTURE_DONE);
+            put(
+                CaptureResult.CONTROL_AE_STATE_INACTIVE,
+                CameraState.STATE_WAITING_PRECAPTURE_START);
+            put(
+                CaptureResult.CONTROL_AE_STATE_SEARCHING,
+                CameraState.STATE_WAITING_PRECAPTURE_START);
+            put(
+                CaptureResult.CONTROL_AE_STATE_CONVERGED,
+                CameraState.STATE_WAITING_PRECAPTURE_DONE);
+            put(CaptureResult.CONTROL_AE_STATE_LOCKED, CameraState.STATE_WAITING_PRECAPTURE_START);
+            put(
+                CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED,
+                CameraState.STATE_WAITING_PRECAPTURE_DONE);
+            put(
+                CaptureResult.CONTROL_AE_STATE_PRECAPTURE,
+                CameraState.STATE_WAITING_PRECAPTURE_DONE);
+          }
+        };
 
-    cameraStateMap.forEach((aeState, cameraState) -> {
-      CameraCaptureCallbackStatesTest testCase = new CameraCaptureCallbackStatesTest("process_should_update_camera_state_to_waiting_pre_capture_done_when_ae_state_is_" + aeState, CameraState.STATE_WAITING_PRECAPTURE_START, null, aeState);
-      testCase.validate = () -> assertEquals(cameraState, testCase.cameraCaptureCallback.getCameraState());
-      suite.addTest(testCase);
-    });
+    cameraStateMap.forEach(
+        (aeState, cameraState) -> {
+          CameraCaptureCallbackStatesTest testCase =
+              new CameraCaptureCallbackStatesTest(
+                  "process_should_update_camera_state_to_waiting_pre_capture_done_when_ae_state_is_"
+                      + aeState,
+                  CameraState.STATE_WAITING_PRECAPTURE_START,
+                  null,
+                  aeState);
+          testCase.validate =
+              () -> assertEquals(cameraState, testCase.cameraCaptureCallback.getCameraState());
+          suite.addTest(testCase);
+        });
 
-    cameraStateMap.forEach((aeState, cameraState) -> {
-      if (cameraState == CameraState.STATE_WAITING_PRECAPTURE_DONE) {
-        return;
-      }
+    cameraStateMap.forEach(
+        (aeState, cameraState) -> {
+          if (cameraState == CameraState.STATE_WAITING_PRECAPTURE_DONE) {
+            return;
+          }
 
-      CameraCaptureCallbackStatesTest testCase = new CameraCaptureCallbackStatesTest("process_should_update_camera_state_to_waiting_pre_capture_done_when_ae_state_is_" + aeState, CameraState.STATE_WAITING_PRECAPTURE_START, null, aeState, true);
-      testCase.validate = () -> assertEquals(CameraState.STATE_WAITING_PRECAPTURE_DONE, testCase.cameraCaptureCallback.getCameraState());
-      suite.addTest(testCase);
-    });
+          CameraCaptureCallbackStatesTest testCase =
+              new CameraCaptureCallbackStatesTest(
+                  "process_should_update_camera_state_to_waiting_pre_capture_done_when_ae_state_is_"
+                      + aeState,
+                  CameraState.STATE_WAITING_PRECAPTURE_START,
+                  null,
+                  aeState,
+                  true);
+          testCase.validate =
+              () ->
+                  assertEquals(
+                      CameraState.STATE_WAITING_PRECAPTURE_DONE,
+                      testCase.cameraCaptureCallback.getCameraState());
+          suite.addTest(testCase);
+        });
   }
 
   private static void setUpWaitingPreCaptureDoneTests(TestSuite suite) {
-    Integer[] onConvergeStates = new Integer[] {
-        null,
-        CaptureResult.CONTROL_AE_STATE_CONVERGED,
-        CaptureResult.CONTROL_AE_STATE_LOCKED,
-        CaptureResult.CONTROL_AE_STATE_SEARCHING,
-        CaptureResult.CONTROL_AE_STATE_INACTIVE,
-        CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED,
-    };
+    Integer[] onConvergeStates =
+        new Integer[] {
+          null,
+          CaptureResult.CONTROL_AE_STATE_CONVERGED,
+          CaptureResult.CONTROL_AE_STATE_LOCKED,
+          CaptureResult.CONTROL_AE_STATE_SEARCHING,
+          CaptureResult.CONTROL_AE_STATE_INACTIVE,
+          CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED,
+        };
 
     for (Integer aeState : onConvergeStates) {
-      CameraCaptureCallbackStatesTest shouldConvergeTest = new CameraCaptureCallbackStatesTest(
-          "process_should_converge_when_ae_state_is_" + aeState,
-          CameraState.STATE_WAITING_PRECAPTURE_DONE, null, null);
-      shouldConvergeTest.validate = () -> verify(shouldConvergeTest.mockCaptureStateListener, times(1)).onConverged();
+      CameraCaptureCallbackStatesTest shouldConvergeTest =
+          new CameraCaptureCallbackStatesTest(
+              "process_should_converge_when_ae_state_is_" + aeState,
+              CameraState.STATE_WAITING_PRECAPTURE_DONE,
+              null,
+              null);
+      shouldConvergeTest.validate =
+          () -> verify(shouldConvergeTest.mockCaptureStateListener, times(1)).onConverged();
       suite.addTest(shouldConvergeTest);
     }
 
-    CameraCaptureCallbackStatesTest shouldNotConvergeTest = new CameraCaptureCallbackStatesTest("process_should_not_converge_when_ae_state_is_pre_capture", CameraState.STATE_WAITING_PRECAPTURE_DONE, null, CaptureResult.CONTROL_AE_STATE_PRECAPTURE);
-    shouldNotConvergeTest.validate = () -> verify(shouldNotConvergeTest.mockCaptureStateListener, never()).onConverged();
+    CameraCaptureCallbackStatesTest shouldNotConvergeTest =
+        new CameraCaptureCallbackStatesTest(
+            "process_should_not_converge_when_ae_state_is_pre_capture",
+            CameraState.STATE_WAITING_PRECAPTURE_DONE,
+            null,
+            CaptureResult.CONTROL_AE_STATE_PRECAPTURE);
+    shouldNotConvergeTest.validate =
+        () -> verify(shouldNotConvergeTest.mockCaptureStateListener, never()).onConverged();
     suite.addTest(shouldNotConvergeTest);
 
-    CameraCaptureCallbackStatesTest shouldConvergeWhenTimedOutTest = new CameraCaptureCallbackStatesTest("process_should_not_converge_when_ae_state_is_pre_capture", CameraState.STATE_WAITING_PRECAPTURE_DONE, null, CaptureResult.CONTROL_AE_STATE_PRECAPTURE, true);
-    shouldConvergeWhenTimedOutTest.validate = () -> verify(shouldConvergeWhenTimedOutTest.mockCaptureStateListener, times(1)).onConverged();
+    CameraCaptureCallbackStatesTest shouldConvergeWhenTimedOutTest =
+        new CameraCaptureCallbackStatesTest(
+            "process_should_not_converge_when_ae_state_is_pre_capture",
+            CameraState.STATE_WAITING_PRECAPTURE_DONE,
+            null,
+            CaptureResult.CONTROL_AE_STATE_PRECAPTURE,
+            true);
+    shouldConvergeWhenTimedOutTest.validate =
+        () ->
+            verify(shouldConvergeWhenTimedOutTest.mockCaptureStateListener, times(1)).onConverged();
     suite.addTest(shouldConvergeWhenTimedOutTest);
   }
 
-  protected CameraCaptureCallbackStatesTest(String name, CameraState cameraState, Integer afState, Integer aeState) {
+  protected CameraCaptureCallbackStatesTest(
+      String name, CameraState cameraState, Integer afState, Integer aeState) {
     this(name, cameraState, afState, aeState, false);
   }
 
-  protected CameraCaptureCallbackStatesTest(String name, CameraState cameraState, Integer afState, Integer aeState, boolean isTimedOut) {
+  protected CameraCaptureCallbackStatesTest(
+      String name, CameraState cameraState, Integer afState, Integer aeState, boolean isTimedOut) {
     super(name);
 
     this.aeState = aeState;
@@ -261,11 +355,11 @@ public class CameraCaptureCallbackStatesTest extends TestCase {
     cameraCaptureCallback.setCameraState(cameraState);
     if (isTimedOut) {
       configureTimeout();
-      cameraCaptureCallback.onCaptureCompleted(mockCameraCaptureSession, mockCaptureRequest,
-          mockTotalCaptureResult);
+      cameraCaptureCallback.onCaptureCompleted(
+          mockCameraCaptureSession, mockCaptureRequest, mockTotalCaptureResult);
     } else {
-      cameraCaptureCallback.onCaptureProgressed(mockCameraCaptureSession, mockCaptureRequest,
-          mockPartialCaptureResult);
+      cameraCaptureCallback.onCaptureProgressed(
+          mockCameraCaptureSession, mockCaptureRequest, mockPartialCaptureResult);
     }
 
     validate.run();
@@ -277,7 +371,8 @@ public class CameraCaptureCallbackStatesTest extends TestCase {
 
     when(mockTimeout.getIsExpired()).thenReturn(true);
 
-    PictureCaptureRequest pictureCaptureRequest = PictureCaptureRequest.create(mockResult, mockFile, 1000, 1000);
+    PictureCaptureRequest pictureCaptureRequest =
+        PictureCaptureRequest.create(mockResult, mockFile, 1000, 1000);
     cameraCaptureCallback.setPictureCaptureRequest(pictureCaptureRequest);
   }
 }

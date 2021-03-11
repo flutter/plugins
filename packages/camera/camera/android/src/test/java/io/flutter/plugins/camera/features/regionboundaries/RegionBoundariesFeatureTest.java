@@ -232,6 +232,6 @@ public class RegionBoundariesFeatureTest {
   }
 
   private static void updateSdkVersion(int version) {
-    TestUtils.setFinalStatic(VERSION.class,"SDK_INT", version);
+    TestUtils.setFinalStatic(VERSION.class, "SDK_INT", version);
   }
 }

@@ -27,13 +27,13 @@ public class NoiseReductionFeatureTest {
   public void before() {
     // Make sure the VERSION.SDK_INT field returns 23, to allow using all available
     // noise reduction modes in tests.
-    TestUtils.setFinalStatic(VERSION.class,"SDK_INT", 23);
+    TestUtils.setFinalStatic(VERSION.class, "SDK_INT", 23);
   }
 
   @After
   public void after() {
     // Make sure we reset the VERSION.SDK_INT field to it's original value.
-    TestUtils.setFinalStatic(VERSION.class,"SDK_INT", 0);
+    TestUtils.setFinalStatic(VERSION.class, "SDK_INT", 0);
   }
 
   @Test

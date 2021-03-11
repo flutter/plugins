@@ -68,54 +68,76 @@ public class CameraCaptureCallbackTest {
 
     @Test
     public void process_should_converge_when_af_state_is_focus_locked_and_ae_state_is_null() {
-      CameraCaptureCallback captureCallback = CameraCaptureCallback.create(mockCaptureStateListener);
+      CameraCaptureCallback captureCallback =
+          CameraCaptureCallback.create(mockCaptureStateListener);
 
-      when(mockCaptureResult.get(CaptureResult.CONTROL_AF_STATE)).thenReturn(CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED);
+      when(mockCaptureResult.get(CaptureResult.CONTROL_AF_STATE))
+          .thenReturn(CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED);
       when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(null);
 
       captureCallback.setCameraState(CameraState.STATE_WAITING_FOCUS);
-      captureCallback.onCaptureProgressed(mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
+      captureCallback.onCaptureProgressed(
+          mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
 
       verify(mockCaptureStateListener, times(1)).onConverged();
     }
 
     @Test
     public void process_should_converge_when_af_state_is_focus_locked_and_ae_state_is_converged() {
-      CameraCaptureCallback captureCallback = CameraCaptureCallback.create(mockCaptureStateListener);
+      CameraCaptureCallback captureCallback =
+          CameraCaptureCallback.create(mockCaptureStateListener);
 
-      when(mockCaptureResult.get(CaptureResult.CONTROL_AF_STATE)).thenReturn(CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED);
-      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(CaptureResult.CONTROL_AE_STATE_CONVERGED);
+      when(mockCaptureResult.get(CaptureResult.CONTROL_AF_STATE))
+          .thenReturn(CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED);
+      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE))
+          .thenReturn(CaptureResult.CONTROL_AE_STATE_CONVERGED);
 
       captureCallback.setCameraState(CameraState.STATE_WAITING_FOCUS);
-      captureCallback.onCaptureProgressed(mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
+      captureCallback.onCaptureProgressed(
+          mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
 
       verify(mockCaptureStateListener, times(1)).onConverged();
     }
 
     @Test
-    public void process_should_converge_when_af_state_is_focus_locked_and_ae_state_is_not_null_and_not_converged() {
-      CameraCaptureCallback captureCallback = CameraCaptureCallback.create(mockCaptureStateListener);
+    public void
+        process_should_converge_when_af_state_is_focus_locked_and_ae_state_is_not_null_and_not_converged() {
+      CameraCaptureCallback captureCallback =
+          CameraCaptureCallback.create(mockCaptureStateListener);
 
-      when(mockCaptureResult.get(CaptureResult.CONTROL_AF_STATE)).thenReturn(CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED);
+      when(mockCaptureResult.get(CaptureResult.CONTROL_AF_STATE))
+          .thenReturn(CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED);
       captureCallback.setCameraState(CameraState.STATE_WAITING_FOCUS);
 
-      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(CaptureResult.CONTROL_AE_STATE_LOCKED);
-      captureCallback.onCaptureProgressed(mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
+      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE))
+          .thenReturn(CaptureResult.CONTROL_AE_STATE_LOCKED);
+      captureCallback.onCaptureProgressed(
+          mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
 
-      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(CaptureResult.CONTROL_AE_STATE_INACTIVE);
-      captureCallback.onCaptureProgressed(mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
+      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE))
+          .thenReturn(CaptureResult.CONTROL_AE_STATE_INACTIVE);
+      captureCallback.onCaptureProgressed(
+          mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
 
-      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(CaptureResult.CONTROL_AE_STATE_PRECAPTURE);
-      captureCallback.onCaptureProgressed(mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
+      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE))
+          .thenReturn(CaptureResult.CONTROL_AE_STATE_PRECAPTURE);
+      captureCallback.onCaptureProgressed(
+          mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
 
-      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(CaptureResult.CONTROL_AE_STATE_SEARCHING);
-      captureCallback.onCaptureProgressed(mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
+      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE))
+          .thenReturn(CaptureResult.CONTROL_AE_STATE_SEARCHING);
+      captureCallback.onCaptureProgressed(
+          mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
 
-      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(CaptureResult.CONTROL_AE_STATE_PRECAPTURE);
-      captureCallback.onCaptureProgressed(mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
+      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE))
+          .thenReturn(CaptureResult.CONTROL_AE_STATE_PRECAPTURE);
+      captureCallback.onCaptureProgressed(
+          mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
 
-      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED);
-      captureCallback.onCaptureProgressed(mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
+      when(mockCaptureResult.get(CaptureResult.CONTROL_AE_STATE))
+          .thenReturn(CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED);
+      captureCallback.onCaptureProgressed(
+          mockCameraCaptureSession, mockCaptureRequest, mockCaptureResult);
 
       verify(mockCaptureStateListener, times(6)).onPrecapture();
     }
