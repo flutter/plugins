@@ -36,6 +36,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.Range;
 import android.util.Rational;
@@ -73,6 +74,9 @@ interface ErrorCallback {
 public class Camera {
   private static final String TAG = "Camera";
 
+  /** Timeout for the pre-capture sequence. */
+  private static final long PRECAPTURE_TIMEOUT_MS = 1000;
+
   private final SurfaceTextureEntry flutterTexture;
   private final CameraManager cameraManager;
   private final DeviceOrientationManager deviceOrientationListener;
@@ -105,6 +109,7 @@ public class Camera {
   private boolean useAutoFocus = true;
   private Range<Integer> fpsRange;
   private PlatformChannel.DeviceOrientation lockedCaptureOrientation;
+  private long preCaptureStartTime;
 
   private static final HashMap<String, Integer> supportedImageFormats;
   // Current supported outputs
@@ -503,11 +508,16 @@ public class Camera {
                   || aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED
                   || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
                 pictureCaptureRequest.setState(State.waitingPreCaptureReady);
+                setPreCaptureStartTime();
               }
               break;
             case waitingPreCaptureReady:
               if (aeState == null || aeState != CaptureRequest.CONTROL_AE_STATE_PRECAPTURE) {
                 runPictureCapture();
+              } else {
+                if (hitPreCaptureTimeout()) {
+                  unlockAutoFocus();
+                }
               }
           }
         }
@@ -786,7 +796,7 @@ public class Camera {
     }
     // Set the metering rectangle
     if (x == null || y == null) cameraRegions.resetAutoExposureMeteringRectangle();
-    else cameraRegions.setAutoExposureMeteringRectangleFromPoint(x, y);
+    else cameraRegions.setAutoExposureMeteringRectangleFromPoint(y, 1 - x);
     // Apply it
     updateExposure(exposureMode);
     refreshPreviewCaptureSession(
@@ -838,7 +848,7 @@ public class Camera {
     if (x == null || y == null) {
       cameraRegions.resetAutoFocusMeteringRectangle();
     } else {
-      cameraRegions.setAutoFocusMeteringRectangleFromPoint(x, y);
+      cameraRegions.setAutoFocusMeteringRectangleFromPoint(y, 1 - x);
     }
 
     // Apply the new metering rectangle
@@ -1140,6 +1150,20 @@ public class Camera {
       imageStreamReader.setOnImageAvailableListener(null, null);
     }
     startPreview();
+  }
+
+  /** Sets the time the pre-capture sequence started. */
+  private void setPreCaptureStartTime() {
+    preCaptureStartTime = SystemClock.elapsedRealtime();
+  }
+
+  /**
+   * Check if the timeout for the pre-capture sequence has been reached.
+   *
+   * @return true if the timeout is reached; otherwise false is returned.
+   */
+  private boolean hitPreCaptureTimeout() {
+    return (SystemClock.elapsedRealtime() - preCaptureStartTime) > PRECAPTURE_TIMEOUT_MS;
   }
 
   private void closeCaptureSession() {

@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(cyanglaz): Remove once https://github.com/flutter/flutter/issues/59879 is fixed.
-// @dart = 2.9
-
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:device_info_platform_interface/device_info_platform_interface.dart';
@@ -14,7 +11,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group("$MethodChannelDeviceInfo", () {
-    MethodChannelDeviceInfo methodChannelDeviceInfo;
+    late MethodChannelDeviceInfo methodChannelDeviceInfo;
 
     setUp(() async {
       methodChannelDeviceInfo = MethodChannelDeviceInfo();
@@ -156,6 +153,221 @@ void main() {
       expect(result.utsname.version,
           "Darwin Kernel Version 19.6.0: Thu Jun 18 20:49:00 PDT 2020; root:xnu-6153.141.1~1/RELEASE_X86_64");
       expect(result.utsname.machine, "x86_64");
+    });
+  });
+
+  group(
+      "$MethodChannelDeviceInfo handles null value in the map returned from method channel",
+      () {
+    late MethodChannelDeviceInfo methodChannelDeviceInfo;
+
+    setUp(() async {
+      methodChannelDeviceInfo = MethodChannelDeviceInfo();
+
+      methodChannelDeviceInfo.channel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
+        switch (methodCall.method) {
+          case 'getAndroidDeviceInfo':
+            return ({
+              "version": null,
+              "board": null,
+              "bootloader": null,
+              "brand": null,
+              "device": null,
+              "display": null,
+              "fingerprint": null,
+              "hardware": null,
+              "host": null,
+              "id": null,
+              "manufacturer": null,
+              "model": null,
+              "product": null,
+              "supported32BitAbis": null,
+              "supported64BitAbis": null,
+              "supportedAbis": null,
+              "tags": null,
+              "type": null,
+              "isPhysicalDevice": null,
+              "androidId": null,
+              "systemFeatures": null,
+            });
+          case 'getIosDeviceInfo':
+            return ({
+              "name": null,
+              "systemName": null,
+              "systemVersion": null,
+              "model": null,
+              "localizedModel": null,
+              "identifierForVendor": null,
+              "isPhysicalDevice": null,
+              "utsname": null,
+            });
+          default:
+            return null;
+        }
+      });
+    });
+
+    test("androidInfo hanels null", () async {
+      final AndroidDeviceInfo result =
+          await methodChannelDeviceInfo.androidInfo();
+
+      expect(result.version.securityPatch, null);
+      expect(result.version.sdkInt, -1);
+      expect(result.version.release, '');
+      expect(result.version.previewSdkInt, null);
+      expect(result.version.incremental, '');
+      expect(result.version.codename, '');
+      expect(result.board, '');
+      expect(result.bootloader, '');
+      expect(result.brand, '');
+      expect(result.device, '');
+      expect(result.display, '');
+      expect(result.fingerprint, '');
+      expect(result.hardware, '');
+      expect(result.host, '');
+      expect(result.id, '');
+      expect(result.manufacturer, '');
+      expect(result.model, '');
+      expect(result.product, '');
+      expect(result.supported32BitAbis, <String>[]);
+      expect(result.supported64BitAbis, <String>[]);
+      expect(result.supportedAbis, <String>[]);
+      expect(result.tags, '');
+      expect(result.type, '');
+      expect(result.isPhysicalDevice, false);
+      expect(result.androidId, '');
+      expect(result.systemFeatures, <String>[]);
+    });
+
+    test("iosInfo handles null", () async {
+      final IosDeviceInfo result = await methodChannelDeviceInfo.iosInfo();
+      expect(result.name, '');
+      expect(result.systemName, '');
+      expect(result.systemVersion, '');
+      expect(result.model, '');
+      expect(result.localizedModel, '');
+      expect(result.identifierForVendor, '');
+      expect(result.isPhysicalDevice, false);
+      expect(result.utsname.sysname, '');
+      expect(result.utsname.nodename, '');
+      expect(result.utsname.release, '');
+      expect(result.utsname.version, '');
+      expect(result.utsname.machine, '');
+    });
+  });
+
+  group("$MethodChannelDeviceInfo handles method channel returns null", () {
+    late MethodChannelDeviceInfo methodChannelDeviceInfo;
+
+    setUp(() async {
+      methodChannelDeviceInfo = MethodChannelDeviceInfo();
+
+      methodChannelDeviceInfo.channel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
+        switch (methodCall.method) {
+          case 'getAndroidDeviceInfo':
+            return null;
+          case 'getIosDeviceInfo':
+            return null;
+          default:
+            return null;
+        }
+      });
+    });
+
+    test("androidInfo handles null", () async {
+      final AndroidDeviceInfo result =
+          await methodChannelDeviceInfo.androidInfo();
+
+      expect(result.version.securityPatch, null);
+      expect(result.version.sdkInt, -1);
+      expect(result.version.release, '');
+      expect(result.version.previewSdkInt, null);
+      expect(result.version.incremental, '');
+      expect(result.version.codename, '');
+      expect(result.board, '');
+      expect(result.bootloader, '');
+      expect(result.brand, '');
+      expect(result.device, '');
+      expect(result.display, '');
+      expect(result.fingerprint, '');
+      expect(result.hardware, '');
+      expect(result.host, '');
+      expect(result.id, '');
+      expect(result.manufacturer, '');
+      expect(result.model, '');
+      expect(result.product, '');
+      expect(result.supported32BitAbis, <String>[]);
+      expect(result.supported64BitAbis, <String>[]);
+      expect(result.supportedAbis, <String>[]);
+      expect(result.tags, '');
+      expect(result.type, '');
+      expect(result.isPhysicalDevice, false);
+      expect(result.androidId, '');
+      expect(result.systemFeatures, <String>[]);
+    });
+
+    test("iosInfo handles null", () async {
+      final IosDeviceInfo result = await methodChannelDeviceInfo.iosInfo();
+      expect(result.name, '');
+      expect(result.systemName, '');
+      expect(result.systemVersion, '');
+      expect(result.model, '');
+      expect(result.localizedModel, '');
+      expect(result.identifierForVendor, '');
+      expect(result.isPhysicalDevice, false);
+      expect(result.utsname.sysname, '');
+      expect(result.utsname.nodename, '');
+      expect(result.utsname.release, '');
+      expect(result.utsname.version, '');
+      expect(result.utsname.machine, '');
+    });
+  });
+
+  group("$MethodChannelDeviceInfo android handles null values in list", () {
+    late MethodChannelDeviceInfo methodChannelDeviceInfo;
+
+    setUp(() async {
+      methodChannelDeviceInfo = MethodChannelDeviceInfo();
+
+      methodChannelDeviceInfo.channel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
+        switch (methodCall.method) {
+          case 'getAndroidDeviceInfo':
+            return ({
+              "supported32BitAbis": <String>["x86"],
+              "supported64BitAbis": <String>["x86_64"],
+              "supportedAbis": <String>["x86_64", "x86"],
+              "systemFeatures": <String>[
+                "android.hardware.sensor.proximity",
+                "android.software.adoptable_storage",
+                "android.hardware.sensor.accelerometer",
+                "android.hardware.faketouch",
+                "android.software.backup",
+                "android.hardware.touchscreen",
+              ],
+            });
+          default:
+            return null;
+        }
+      });
+    });
+
+    test("androidInfo hanels null in list", () async {
+      final AndroidDeviceInfo result =
+          await methodChannelDeviceInfo.androidInfo();
+      expect(result.supported32BitAbis, <String>['x86']);
+      expect(result.supported64BitAbis, <String>['x86_64']);
+      expect(result.supportedAbis, <String>['x86_64', 'x86']);
+      expect(result.systemFeatures, <String>[
+        "android.hardware.sensor.proximity",
+        "android.software.adoptable_storage",
+        "android.hardware.sensor.accelerometer",
+        "android.hardware.faketouch",
+        "android.software.backup",
+        "android.hardware.touchscreen"
+      ]);
     });
   });
 }
