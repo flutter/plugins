@@ -27,8 +27,8 @@ class GoogleMapController {
   String _getViewType(int mapId) => 'plugins.flutter.io/google_maps_$mapId';
 
   // The Flutter widget that contains the rendered Map.
-  HtmlElementView _widget;
-  HtmlElement _div;
+  HtmlElementView? _widget;
+  late HtmlElement _div;
 
   /// The Flutter widget that will contain the rendered Map. Used for caching.
   HtmlElementView get widget {
@@ -37,18 +37,18 @@ class GoogleMapController {
         viewType: _getViewType(_mapId),
       );
     }
-    return _widget;
+    return _widget!;
   }
 
   // The currently-enabled traffic layer.
-  gmaps.TrafficLayer _trafficLayer;
+  gmaps.TrafficLayer? _trafficLayer;
 
   /// A getter for the current traffic layer. Only for tests.
   @visibleForTesting
-  gmaps.TrafficLayer get trafficLayer => _trafficLayer;
+  gmaps.TrafficLayer? get trafficLayer => _trafficLayer;
 
   // The underlying GMap instance. This is the interface with the JS SDK.
-  gmaps.GMap _googleMap;
+  gmaps.GMap? _googleMap;
 
   // The StreamController used by this controller and the geometry ones.
   final StreamController<MapEvent> _streamController;
@@ -57,10 +57,10 @@ class GoogleMapController {
   Stream<MapEvent> get events => _streamController.stream;
 
   // Geometry controllers, for different features of the map.
-  CirclesController _circlesController;
-  PolygonsController _polygonsController;
-  PolylinesController _polylinesController;
-  MarkersController _markersController;
+  CirclesController? _circlesController;
+  PolygonsController? _polygonsController;
+  PolylinesController? _polylinesController;
+  MarkersController? _markersController;
   // Keeps track if _attachGeometryControllers has been called or not.
   bool _controllersBoundToMap = false;
 
@@ -69,9 +69,9 @@ class GoogleMapController {
 
   /// Initializes the GMap, and the sub-controllers related to it. Wires events.
   GoogleMapController({
-    @required int mapId,
-    @required StreamController<MapEvent> streamController,
-    @required CameraPosition initialCameraPosition,
+    required int mapId,
+    required StreamController<MapEvent> streamController,
+    required CameraPosition initialCameraPosition,
     Set<Marker> markers = const <Marker>{},
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
@@ -107,11 +107,11 @@ class GoogleMapController {
   /// Overrides certain properties to install mocks defined during testing.
   @visibleForTesting
   void debugSetOverrides({
-    DebugCreateMapFunction createMap,
-    MarkersController markers,
-    CirclesController circles,
-    PolygonsController polygons,
-    PolylinesController polylines,
+    DebugCreateMapFunction? createMap,
+    MarkersController? markers,
+    CirclesController? circles,
+    PolygonsController? polygons,
+    PolylinesController? polylines,
   }) {
     _overrideCreateMap = createMap;
     _markersController = markers ?? _markersController;
@@ -120,11 +120,11 @@ class GoogleMapController {
     _polylinesController = polylines ?? _polylinesController;
   }
 
-  DebugCreateMapFunction _overrideCreateMap;
+  DebugCreateMapFunction? _overrideCreateMap;
 
   gmaps.GMap _createMap(HtmlElement div, gmaps.MapOptions options) {
     if (_overrideCreateMap != null) {
-      return _overrideCreateMap(div, options);
+      return _overrideCreateMap!(div, options);
     }
     return gmaps.GMap(div, options);
   }
@@ -144,8 +144,8 @@ class GoogleMapController {
     // Create the map...
     _googleMap = _createMap(_div, options);
 
-    _attachMapEvents(_googleMap);
-    _attachGeometryControllers(_googleMap);
+    _attachMapEvents(_googleMap!);
+    _attachGeometryControllers(_googleMap!);
 
     _renderInitialGeometry(
       markers: _markers,
@@ -154,19 +154,19 @@ class GoogleMapController {
       polylines: _polylines,
     );
 
-    _setTrafficLayer(_googleMap, _isTrafficLayerEnabled(_rawMapOptions));
+    _setTrafficLayer(_googleMap!, _isTrafficLayerEnabled(_rawMapOptions));
   }
 
   // Funnels map gmap events into the plugin's stream controller.
   void _attachMapEvents(gmaps.GMap map) {
     map.onClick.listen((event) {
       _streamController.add(
-        MapTapEvent(_mapId, _gmLatLngToLatLng(event.latLng)),
+        MapTapEvent(_mapId, _gmLatLngToLatLng(event.latLng!)),
       );
     });
     map.onRightclick.listen((event) {
       _streamController.add(
-        MapLongPressEvent(_mapId, _gmLatLngToLatLng(event.latLng)),
+        MapLongPressEvent(_mapId, _gmLatLngToLatLng(event.latLng!)),
       );
     });
     map.onBoundsChanged.listen((event) {
@@ -188,28 +188,28 @@ class GoogleMapController {
   void _attachGeometryControllers(gmaps.GMap map) {
     // Now we can add the initial geometry.
     // And bind the (ready) map instance to the other geometry controllers.
-    _circlesController.bindToMap(_mapId, map);
-    _polygonsController.bindToMap(_mapId, map);
-    _polylinesController.bindToMap(_mapId, map);
-    _markersController.bindToMap(_mapId, map);
+    _circlesController!.bindToMap(_mapId, map);
+    _polygonsController!.bindToMap(_mapId, map);
+    _polylinesController!.bindToMap(_mapId, map);
+    _markersController!.bindToMap(_mapId, map);
     _controllersBoundToMap = true;
   }
 
   // Renders the initial sets of geometry.
   void _renderInitialGeometry({
-    Set<Marker> markers,
-    Set<Circle> circles,
-    Set<Polygon> polygons,
-    Set<Polyline> polylines,
+    Set<Marker> markers = const {},
+    Set<Circle> circles = const {},
+    Set<Polygon> polygons = const {},
+    Set<Polyline> polylines = const {},
   }) {
     assert(
         _controllersBoundToMap,
         'Geometry controllers must be bound to a map before any geometry can ' +
             'be added to them. Ensure _attachGeometryControllers is called first.');
-    _markersController.addMarkers(markers);
-    _circlesController.addCircles(circles);
-    _polygonsController.addPolygons(polygons);
-    _polylinesController.addPolylines(polylines);
+    _markersController!.addMarkers(markers);
+    _circlesController!.addCircles(circles);
+    _polygonsController!.addPolygons(polygons);
+    _polylinesController!.addPolylines(polylines);
   }
 
   // Merges new options coming from the plugin into the _rawMapOptions map.
@@ -230,7 +230,7 @@ class GoogleMapController {
     final newOptions = _mergeRawOptions(optionsUpdate);
 
     _setOptions(_rawOptionsToGmapsOptions(newOptions));
-    _setTrafficLayer(_googleMap, _isTrafficLayerEnabled(newOptions));
+    _setTrafficLayer(_googleMap!, _isTrafficLayerEnabled(newOptions));
   }
 
   // Sets new [gmaps.MapOptions] on the wrapped map.
@@ -242,10 +242,10 @@ class GoogleMapController {
   void _setTrafficLayer(gmaps.GMap map, bool attach) {
     if (attach && _trafficLayer == null) {
       _trafficLayer = gmaps.TrafficLayer();
-      _trafficLayer.set('map', map);
+      _trafficLayer!.set('map', map);
     }
     if (!attach && _trafficLayer != null) {
-      _trafficLayer.set('map', null);
+      _trafficLayer!.set('map', null);
       _trafficLayer = null;
     }
   }
@@ -255,30 +255,30 @@ class GoogleMapController {
 
   /// Returns the [LatLngBounds] of the current viewport.
   Future<LatLngBounds> getVisibleRegion() async {
-    return _gmLatLngBoundsTolatLngBounds(await _googleMap.bounds);
+    return _gmLatLngBoundsTolatLngBounds(await _googleMap!.bounds);
   }
 
   /// Returns the [ScreenCoordinate] for a given viewport [LatLng].
   Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
     final point =
-        _googleMap.projection.fromLatLngToPoint(_latLngToGmLatLng(latLng));
-    return ScreenCoordinate(x: point.x, y: point.y);
+        _googleMap!.projection!.fromLatLngToPoint!(_latLngToGmLatLng(latLng))!;
+    return ScreenCoordinate(x: point.x! as int, y: point.y! as int);
   }
 
   /// Returns the [LatLng] for a `screenCoordinate` (in pixels) of the viewport.
   Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) async {
     final gmaps.LatLng latLng =
-        _pixelToLatLng(_googleMap, screenCoordinate.x, screenCoordinate.y);
+        _pixelToLatLng(_googleMap!, screenCoordinate.x, screenCoordinate.y);
     return _gmLatLngToLatLng(latLng);
   }
 
   /// Applies a `cameraUpdate` to the current viewport.
   Future<void> moveCamera(CameraUpdate cameraUpdate) async {
-    return _applyCameraUpdate(_googleMap, cameraUpdate);
+    return _applyCameraUpdate(_googleMap!, cameraUpdate);
   }
 
   /// Returns the zoom level of the current viewport.
-  Future<double> getZoomLevel() async => _googleMap.zoom.toDouble();
+  Future<double> getZoomLevel() async => _googleMap!.zoom!.toDouble();
 
   // Geometry manipulation
 
@@ -322,7 +322,7 @@ class GoogleMapController {
 
   /// Returns true if the [InfoWindow] of the marker identified by [MarkerId] is shown.
   bool isInfoWindowShown(MarkerId markerId) {
-    return _markersController?.isInfoWindowShown(markerId);
+    return _markersController?.isInfoWindowShown(markerId) ?? false;
   }
 
   // Cleanup
