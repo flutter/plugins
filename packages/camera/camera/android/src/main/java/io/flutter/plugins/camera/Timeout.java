@@ -13,7 +13,7 @@ import android.os.SystemClock;
  * <p>We use timeouts to ensure a picture is always captured within a reasonable amount of time even
  * if the settings don't converge and focus can't be locked.
  *
- * <p>You generally check the status of the timeout in the CameraCAptureCallback during the capture
+ * <p>You generally check the status of the timeout in the CameraCaptureCallback during the capture
  * sequence and use it to move to the next state if the timeout has passed.
  */
 class Timeout {

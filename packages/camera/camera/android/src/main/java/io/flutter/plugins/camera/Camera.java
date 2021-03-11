@@ -512,7 +512,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       final File file = File.createTempFile("CAP", ".jpg", outputDir);
 
       // Start a new capture
-      pictureCaptureRequest = PictureCaptureRequest.create(result, dartMessenger, file, 3000, 1000);
+      pictureCaptureRequest = PictureCaptureRequest.create(result, file, 3000, 3000);
       mCaptureCallback.setPictureCaptureRequest(pictureCaptureRequest);
     } catch (IOException | SecurityException e) {
       pictureCaptureRequest.error("cannotCreateFile", e.getMessage(), null);

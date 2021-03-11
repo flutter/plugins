@@ -23,14 +23,11 @@ public class PictureCaptureRequest {
   public final Timeout preCaptureMetering;
   /** Dart method chanel result. */
   private final MethodChannel.Result result;
-  /** To send errors back to dart */
-  private final DartMessenger dartMessenger;
 
   /**
    * Factory method to create a picture capture request
    *
    * @param result dart result.
-   * @param dartMessenger dart messenger.
    * @param file file to capture into.
    * @param preCaptureFocusingTimeoutMs focusing timeout milliseconds.
    * @param preCaptureMeteringTimeoutMs metering timeout milliseconds.
@@ -38,23 +35,20 @@ public class PictureCaptureRequest {
    */
   static PictureCaptureRequest create(
       MethodChannel.Result result,
-      DartMessenger dartMessenger,
       File file,
       long preCaptureFocusingTimeoutMs,
       long preCaptureMeteringTimeoutMs) {
     return new PictureCaptureRequest(
-        result, dartMessenger, file, preCaptureFocusingTimeoutMs, preCaptureMeteringTimeoutMs);
+        result, file, preCaptureFocusingTimeoutMs, preCaptureMeteringTimeoutMs);
   }
 
   /** Create a new picture capture request */
   private PictureCaptureRequest(
       MethodChannel.Result result,
-      DartMessenger dartMessenger,
       File file,
       long preCaptureFocusingTimeoutMs,
       long preCaptureMeteringTimeoutMs) {
     this.result = result;
-    this.dartMessenger = dartMessenger;
     this.file = file;
     this.preCaptureFocusing = Timeout.create(preCaptureFocusingTimeoutMs);
     this.preCaptureMetering = Timeout.create(preCaptureMeteringTimeoutMs);

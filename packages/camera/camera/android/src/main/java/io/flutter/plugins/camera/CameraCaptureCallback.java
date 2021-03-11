@@ -64,66 +64,56 @@ class CameraCaptureCallback extends CaptureCallback {
         {
           if (afState == null) {
             return;
-          } else if (afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED
-              || afState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED
-
-              // Move forward in case of a focusing timeout.
-              || pictureCaptureRequest.preCaptureFocusing.getIsExpired()) {
-            // CONTROL_AE_STATE can be null on some devices
-
-            if (pictureCaptureRequest.preCaptureFocusing.getIsExpired()) {
-              Log.i("Camera", "Focus timeout, moving on with capture");
-            }
-
-            if (aeState == null || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
-              cameraStateListener.onConverged();
-            } else {
-              cameraStateListener.onPrecapture();
-            }
+          } else if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED
+              || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+            handleWaitingFocusState(aeState);
+          } else if (pictureCaptureRequest != null && pictureCaptureRequest.preCaptureFocusing.getIsExpired()) {
+            Log.w("Camera", "Focus timeout, moving on with capture");
+            handleWaitingFocusState(aeState);
           }
+
           break;
         }
-
       case STATE_WAITING_PRECAPTURE_START:
         {
           // CONTROL_AE_STATE can be null on some devices
           if (aeState == null
               || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED
               || aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE
-              || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED
-
-              // Move forward in case of a metering timeout.
-              || pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
-
-            if (pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
-              Log.i(
-                  "Camera",
-                  "Metering timeout waiting for precapture to start, moving on with capture");
-            }
+              || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED) {
+            setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
+          } else if (pictureCaptureRequest != null && pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
+            Log.w(
+                "Camera",
+                "Metering timeout waiting for pre-capture to start, moving on with capture");
 
             setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
           }
           break;
         }
-
       case STATE_WAITING_PRECAPTURE_DONE:
         {
           // CONTROL_AE_STATE can be null on some devices
-          if (aeState == null
-              || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE
-              || pictureCaptureRequest.preCaptureMetering
-                  .getIsExpired() // Some devices can hang in precapture metering
-          ) {
-            if (pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
-              Log.i(
-                  "Camera",
-                  "Metering timeout waiting for precapture to finish, moving on with capture");
-            }
-
+          if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
+            cameraStateListener.onConverged();
+          } else if (pictureCaptureRequest != null && pictureCaptureRequest.preCaptureMetering.getIsExpired()) {
+            Log.w(
+                "Camera",
+                "Metering timeout waiting for pre-capture to finish, moving on with capture");
             cameraStateListener.onConverged();
           }
+
           break;
         }
+    }
+  }
+
+  private void handleWaitingFocusState(Integer aeState) {
+    // CONTROL_AE_STATE can be null on some devices
+    if (aeState == null || aeState == CaptureRequest.CONTROL_AE_STATE_CONVERGED) {
+      cameraStateListener.onConverged();
+    } else {
+      cameraStateListener.onPrecapture();
     }
   }
 
