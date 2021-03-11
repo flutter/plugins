@@ -64,11 +64,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
         ],
       );
@@ -80,11 +76,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signIn', arguments: null),
         ],
       );
@@ -94,11 +86,7 @@ void main() {
       await googleSignIn.signOut();
       expect(googleSignIn.currentUser, isNull);
       expect(log, <Matcher>[
-        isMethodCall('init', arguments: <String, dynamic>{
-          'signInOption': 'SignInOption.standard',
-          'scopes': <String>[],
-          'hostedDomain': null,
-        }),
+        _isSignInMethodCall(),
         isMethodCall('signOut', arguments: null),
       ]);
     });
@@ -109,11 +97,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('disconnect', arguments: null),
         ],
       );
@@ -126,11 +110,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('disconnect', arguments: null),
         ],
       );
@@ -140,11 +120,7 @@ void main() {
       final bool result = await googleSignIn.isSignedIn();
       expect(result, isTrue);
       expect(log, <Matcher>[
-        isMethodCall('init', arguments: <String, dynamic>{
-          'signInOption': 'SignInOption.standard',
-          'scopes': <String>[],
-          'hostedDomain': null,
-        }),
+        _isSignInMethodCall(),
         isMethodCall('isSignedIn', arguments: null),
       ]);
     });
@@ -159,11 +135,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
           isMethodCall('signIn', arguments: null),
         ],
@@ -187,11 +159,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
         ],
       );
@@ -204,11 +172,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
           isMethodCall('signIn', arguments: null),
         ],
@@ -226,11 +190,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
         ],
       );
@@ -257,11 +217,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signOut', arguments: null),
           isMethodCall('signOut', arguments: null),
           isMethodCall('disconnect', arguments: null),
@@ -282,11 +238,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
           isMethodCall('signOut', arguments: null),
           isMethodCall('signIn', arguments: null),
@@ -333,11 +285,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
         ],
       );
@@ -352,11 +300,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.games',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(signInOption: 'SignInOption.games'),
           isMethodCall('signInSilently', arguments: null),
         ],
       );
@@ -391,11 +335,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signIn', arguments: null),
           isMethodCall('requestScopes', arguments: <String, dynamic>{
             'scopes': ['testScope'],
@@ -445,5 +385,14 @@ void main() {
       await googleSignIn.disconnect();
       expect(googleSignIn.currentUser, isNull);
     });
+  });
+}
+
+Matcher _isSignInMethodCall({String signInOption = 'SignInOption.standard'}) {
+  return isMethodCall('init', arguments: <String, dynamic>{
+    'signInOption': signInOption,
+    'scopes': <String>[],
+    'hostedDomain': null,
+    'clientId': null,
   });
 }
