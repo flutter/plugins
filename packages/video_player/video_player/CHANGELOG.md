@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## 2.0.3
 
 * Introduce setCaptionOffset to offset the caption display based on a Duration.
