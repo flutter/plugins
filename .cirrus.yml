@@ -1,23 +1,3 @@
-setup_tool_template: &SETUP_TOOL_TEMPLATE
-  setup_tool_script:
-    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
-    - cd script/tool
-    - pub get
-
-flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
-  upgrade_flutter_script:
-    - flutter channel $CHANNEL
-    - flutter upgrade
-  << : *SETUP_TOOL_TEMPLATE
-
-macos_template: &MACOS_TEMPLATE
-  # Only one macOS task can run in parallel without credits, so use them for
-  # PRs on macOS.
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
-  osx_instance:
-    image: big-sur-xcode-12.3
-  cocoapod_install_script: sudo gem install cocoapods
-
 # Don't run on release tags since it creates O(n^2) tasks where n is the
 # number of plugins
 only_if: $CIRRUS_TAG == ''
@@ -26,6 +6,26 @@ env:
   INTEGRATION_TEST_PATH: "./packages/integration_test"
   CHANNEL: "master" # Default to master when not explicitly set by a task.
   PLUGIN_TOOLS: "dart run ./script/tool/lib/src/main.dart"
+
+tool_setup_template: &TOOL_SETUP_TEMPLATE
+  tool_setup_script:
+    - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
+    - cd script/tool
+    - pub get
+
+flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
+  upgrade_flutter_script:
+    - flutter channel $CHANNEL
+    - flutter upgrade
+  << : *TOOL_SETUP_TEMPLATE
+
+macos_template: &MACOS_TEMPLATE
+  # Only one macOS task can run in parallel without credits, so use them for
+  # PRs on macOS.
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
+  osx_instance:
+    image: big-sur-xcode-12.3
+  cocoapod_install_script: sudo gem install cocoapods
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
@@ -189,8 +189,8 @@ task:
 
 # macOS tasks.
 task:
-  << : *FLUTTER_UPGRADE_TEMPLATE
   << : *MACOS_TEMPLATE
+  << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
     ### iOS tasks ###
     - name: build_all_plugins_ipa
@@ -244,9 +244,9 @@ task:
         - ./script/incremental_build.sh drive-examples --macos
 
 task:
-  # Don't used FLUTTER_UPGRADE_TEMPLATE, Flutter tooling not needed.
+  # Don't use FLUTTER_UPGRADE_TEMPLATE, Flutter tooling not needed.
   << : *MACOS_TEMPLATE
-  << : *SETUP_TOOL_TEMPLATE
+  << : *TOOL_SETUP_TEMPLATE
   matrix:
     - name: lint_darwin_plugins
       script:
