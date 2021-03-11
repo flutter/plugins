@@ -197,12 +197,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// the video format detection code.
   /// [httpHeaders] option allows to specify HTTP headers
   /// for the request to the [dataSource].
-  VideoPlayerController.network(this.dataSource,
-      {this.formatHint,
-      this.closedCaptionFile,
-      this.videoPlayerOptions,
-      this.httpHeaders})
-      : dataSourceType = DataSourceType.network,
+  VideoPlayerController.network(
+    this.dataSource, {
+    this.formatHint,
+    this.closedCaptionFile,
+    this.videoPlayerOptions,
+    this.httpHeaders,
+  })  : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: Duration.zero));
 

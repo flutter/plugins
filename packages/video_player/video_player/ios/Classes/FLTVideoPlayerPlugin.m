@@ -168,7 +168,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                frameUpdater:(FLTFrameUpdater*)frameUpdater
                 httpHeaders:(NSDictionary<NSString*, NSString*>*)headers {
   NSDictionary<NSString*, id>* options = nil;
-  if (headers != NULL) {
+  if (headers != nil) {
     options = @{@"AVURLAssetHTTPHeaderFieldsKey" : headers};
   }
   AVURLAsset* urlAsset = [AVURLAsset URLAssetWithURL:url options:options];
