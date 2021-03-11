@@ -50,6 +50,74 @@ public class CameraCaptureCallbackStatesTest extends TestCase {
     return suite;
   }
 
+  protected CameraCaptureCallbackStatesTest(
+      String name, CameraState cameraState, Integer afState, Integer aeState) {
+    this(name, cameraState, afState, aeState, false);
+  }
+
+  protected CameraCaptureCallbackStatesTest(
+      String name, CameraState cameraState, Integer afState, Integer aeState, boolean isTimedOut) {
+    super(name);
+
+    this.aeState = aeState;
+    this.afState = afState;
+    this.cameraState = cameraState;
+    this.isTimedOut = isTimedOut;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  protected void setUp() throws Exception {
+    super.setUp();
+
+    mockedStaticTimeout = mockStatic(Timeout.class);
+    mockCaptureStateListener = mock(CameraCaptureStateListener.class);
+    mockCameraCaptureSession = mock(CameraCaptureSession.class);
+    mockCaptureRequest = mock(CaptureRequest.class);
+    mockPartialCaptureResult = mock(CaptureResult.class);
+    mockTotalCaptureResult = mock(TotalCaptureResult.class);
+    mockTimeout = mock(Timeout.class);
+    Key<Integer> mockAeStateKey = mock(Key.class);
+    Key<Integer> mockAfStateKey = mock(Key.class);
+
+    TestUtils.setFinalStatic(CaptureResult.class, "CONTROL_AE_STATE", mockAeStateKey);
+    TestUtils.setFinalStatic(CaptureResult.class, "CONTROL_AF_STATE", mockAfStateKey);
+
+    mockedStaticTimeout.when(() -> Timeout.create(1000)).thenReturn(mockTimeout);
+
+    cameraCaptureCallback = CameraCaptureCallback.create(mockCaptureStateListener);
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
+
+    mockedStaticTimeout.close();
+
+    TestUtils.setFinalStatic(CaptureResult.class, "CONTROL_AE_STATE", null);
+    TestUtils.setFinalStatic(CaptureResult.class, "CONTROL_AF_STATE", null);
+  }
+
+  @Override
+  protected void runTest() throws Throwable {
+    when(mockPartialCaptureResult.get(CaptureResult.CONTROL_AF_STATE)).thenReturn(afState);
+    when(mockPartialCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(aeState);
+    when(mockTotalCaptureResult.get(CaptureResult.CONTROL_AF_STATE)).thenReturn(afState);
+    when(mockTotalCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(aeState);
+
+    cameraCaptureCallback.setCameraState(cameraState);
+    if (isTimedOut) {
+      configureTimeout();
+      cameraCaptureCallback.onCaptureCompleted(
+          mockCameraCaptureSession, mockCaptureRequest, mockTotalCaptureResult);
+    } else {
+      cameraCaptureCallback.onCaptureProgressed(
+          mockCameraCaptureSession, mockCaptureRequest, mockPartialCaptureResult);
+    }
+
+    validate.run();
+  }
+
   private static void setUpPreviewStateTest(TestSuite suite) {
     CameraCaptureCallbackStatesTest previewStateTest =
         new CameraCaptureCallbackStatesTest(
@@ -95,7 +163,7 @@ public class CameraCaptureCallbackStatesTest extends TestCase {
             put(CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED, false);
           }
         };
-
+    
     CameraCaptureCallbackStatesTest nullStateTest =
         new CameraCaptureCallbackStatesTest(
             "process_should_not_converge_or_pre_capture_when_afstate_is_null",
@@ -295,74 +363,6 @@ public class CameraCaptureCallbackStatesTest extends TestCase {
         () ->
             verify(shouldConvergeWhenTimedOutTest.mockCaptureStateListener, times(1)).onConverged();
     suite.addTest(shouldConvergeWhenTimedOutTest);
-  }
-
-  protected CameraCaptureCallbackStatesTest(
-      String name, CameraState cameraState, Integer afState, Integer aeState) {
-    this(name, cameraState, afState, aeState, false);
-  }
-
-  protected CameraCaptureCallbackStatesTest(
-      String name, CameraState cameraState, Integer afState, Integer aeState, boolean isTimedOut) {
-    super(name);
-
-    this.aeState = aeState;
-    this.afState = afState;
-    this.cameraState = cameraState;
-    this.isTimedOut = isTimedOut;
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  protected void setUp() throws Exception {
-    super.setUp();
-
-    mockedStaticTimeout = mockStatic(Timeout.class);
-    mockCaptureStateListener = mock(CameraCaptureStateListener.class);
-    mockCameraCaptureSession = mock(CameraCaptureSession.class);
-    mockCaptureRequest = mock(CaptureRequest.class);
-    mockPartialCaptureResult = mock(CaptureResult.class);
-    mockTotalCaptureResult = mock(TotalCaptureResult.class);
-    mockTimeout = mock(Timeout.class);
-    Key<Integer> mockAeStateKey = mock(Key.class);
-    Key<Integer> mockAfStateKey = mock(Key.class);
-
-    TestUtils.setFinalStatic(CaptureResult.class, "CONTROL_AE_STATE", mockAeStateKey);
-    TestUtils.setFinalStatic(CaptureResult.class, "CONTROL_AF_STATE", mockAfStateKey);
-
-    mockedStaticTimeout.when(() -> Timeout.create(1000)).thenReturn(mockTimeout);
-
-    cameraCaptureCallback = CameraCaptureCallback.create(mockCaptureStateListener);
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-
-    mockedStaticTimeout.close();
-
-    TestUtils.setFinalStatic(CaptureResult.class, "CONTROL_AE_STATE", null);
-    TestUtils.setFinalStatic(CaptureResult.class, "CONTROL_AF_STATE", null);
-  }
-
-  @Override
-  protected void runTest() throws Throwable {
-    when(mockPartialCaptureResult.get(CaptureResult.CONTROL_AF_STATE)).thenReturn(afState);
-    when(mockPartialCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(aeState);
-    when(mockTotalCaptureResult.get(CaptureResult.CONTROL_AF_STATE)).thenReturn(afState);
-    when(mockTotalCaptureResult.get(CaptureResult.CONTROL_AE_STATE)).thenReturn(aeState);
-
-    cameraCaptureCallback.setCameraState(cameraState);
-    if (isTimedOut) {
-      configureTimeout();
-      cameraCaptureCallback.onCaptureCompleted(
-          mockCameraCaptureSession, mockCaptureRequest, mockTotalCaptureResult);
-    } else {
-      cameraCaptureCallback.onCaptureProgressed(
-          mockCameraCaptureSession, mockCaptureRequest, mockPartialCaptureResult);
-    }
-
-    validate.run();
   }
 
   private void configureTimeout() {
