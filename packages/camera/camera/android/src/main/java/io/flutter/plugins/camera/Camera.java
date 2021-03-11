@@ -158,6 +158,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private ImageReader imageStreamReader;
   /** {@link CaptureRequest.Builder} for the camera preview */
   private CaptureRequest.Builder mPreviewRequestBuilder;
+
   private MediaRecorder mediaRecorder;
   /** True when recording video. */
   private boolean recordingVideo;
