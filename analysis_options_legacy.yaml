@@ -7,7 +7,6 @@ analyzer:
     - '**/*.mocks.dart' # Mockito @GenerateMocks
   errors:
     always_require_non_null_named_parameters: false # not needed with nnbd
-    todo: ignore
     unnecessary_null_comparison: false # Turned as long as nnbd mix-mode is supported.
 linter:
   rules:
