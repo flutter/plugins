@@ -163,7 +163,7 @@ public class CameraCaptureCallbackStatesTest extends TestCase {
             put(CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED, false);
           }
         };
-    
+
     CameraCaptureCallbackStatesTest nullStateTest =
         new CameraCaptureCallbackStatesTest(
             "process_should_not_converge_or_pre_capture_when_afstate_is_null",
