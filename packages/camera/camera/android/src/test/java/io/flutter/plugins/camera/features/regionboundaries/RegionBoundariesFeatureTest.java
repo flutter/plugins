@@ -14,7 +14,6 @@ import android.os.Build.VERSION_CODES;
 import android.util.Size;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.utils.TestUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -233,10 +232,6 @@ public class RegionBoundariesFeatureTest {
   }
 
   private static void updateSdkVersion(int version) {
-    try {
-      TestUtils.setFinalStatic(VERSION.class.getField("SDK_INT"), version);
-    } catch (Exception e) {
-      Assert.fail("Unable to update SDK version");
-    }
+    TestUtils.setFinalStatic(VERSION.class, "SDK_INT", version);
   }
 }

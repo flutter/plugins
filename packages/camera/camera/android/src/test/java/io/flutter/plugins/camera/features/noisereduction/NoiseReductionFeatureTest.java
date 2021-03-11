@@ -19,7 +19,6 @@ import android.os.Build.VERSION;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.utils.TestUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,21 +27,13 @@ public class NoiseReductionFeatureTest {
   public void before() {
     // Make sure the VERSION.SDK_INT field returns 23, to allow using all available
     // noise reduction modes in tests.
-    try {
-      TestUtils.setFinalStatic(VERSION.class.getField("SDK_INT"), 23);
-    } catch (Exception e) {
-      Assert.fail("Unable to set SDK_INT");
-    }
+    TestUtils.setFinalStatic(VERSION.class, "SDK_INT", 23);
   }
 
   @After
   public void after() {
     // Make sure we reset the VERSION.SDK_INT field to it's original value.
-    try {
-      TestUtils.setFinalStatic(VERSION.class.getField("SDK_INT"), 0);
-    } catch (Exception e) {
-      Assert.fail("Unable to set SDK_INT");
-    }
+    TestUtils.setFinalStatic(VERSION.class, "SDK_INT", 0);
   }
 
   @Test
