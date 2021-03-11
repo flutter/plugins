@@ -19,7 +19,7 @@ class PathProviderLinux extends PathProviderPlatform {
 
   @override
   Future<String?> getTemporaryPath() {
-    return Future.value("/tmp");
+    return Future.value('/tmp');
   }
 
   @override

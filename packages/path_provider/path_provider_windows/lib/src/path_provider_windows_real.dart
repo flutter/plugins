@@ -167,7 +167,7 @@ class PathProviderWindows extends PathProviderPlatform {
       }
 
       // From that, load the VERSIONINFO resource
-      int infoSize = GetFileVersionInfoSize(moduleNameBuffer, unused);
+      final int infoSize = GetFileVersionInfoSize(moduleNameBuffer, unused);
       if (infoSize != 0) {
         infoBuffer = calloc<Uint8>(infoSize);
         if (GetFileVersionInfo(moduleNameBuffer, 0, infoSize, infoBuffer) ==
@@ -182,10 +182,7 @@ class PathProviderWindows extends PathProviderPlatform {
           versionInfoQuerier.getStringValue(infoBuffer, 'ProductName'));
 
       // If there was no product name, use the executable name.
-      if (productName == null) {
-        productName =
-            path.basenameWithoutExtension(moduleNameBuffer.toDartString());
-      }
+      productName ??= path.basenameWithoutExtension(moduleNameBuffer.toDartString());
 
       return companyName != null
           ? path.join(companyName, productName)

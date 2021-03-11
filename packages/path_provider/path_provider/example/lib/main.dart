@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -167,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 child: Text(
-                    '${Platform.isIOS ? "External directories are unavailable " "on iOS" : "Get External Storage Directory"}'),
+                    Platform.isIOS ? 'External directories are unavailable ' 'on iOS' : 'Get External Storage Directory'),
                 onPressed:
                     Platform.isIOS ? null : _requestExternalStorageDirectory,
               ),
@@ -179,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   child: Text(
-                      '${Platform.isIOS ? "External directories are unavailable " "on iOS" : "Get External Storage Directories"}'),
+                      Platform.isIOS ? 'External directories are unavailable ' 'on iOS' : 'Get External Storage Directories'),
                   onPressed: Platform.isIOS
                       ? null
                       : () {
@@ -198,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   child: Text(
-                      '${Platform.isIOS ? "External directories are unavailable " "on iOS" : "Get External Cache Directories"}'),
+                      Platform.isIOS ? 'External directories are unavailable ' 'on iOS' : 'Get External Cache Directories'),
                   onPressed:
                       Platform.isIOS ? null : _requestExternalCacheDirectories,
                 ),

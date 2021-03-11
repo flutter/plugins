@@ -19,7 +19,7 @@ import 'package:pathproviderexample/main.dart';
 void main() {
   group('Test linux path provider example', () {
     setUpAll(() async {
-      await WidgetsFlutterBinding.ensureInitialized();
+      WidgetsFlutterBinding.ensureInitialized();
     });
 
     testWidgets('Finds tmp directory', (WidgetTester tester) async {
