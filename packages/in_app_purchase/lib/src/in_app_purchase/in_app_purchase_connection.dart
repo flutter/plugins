@@ -239,6 +239,12 @@ abstract class InAppPurchaseConnection {
   /// Throws an [UnsupportedError] on Android.
   Future<PurchaseVerificationData?> refreshPurchaseVerificationData();
 
+  /// (App Store only) present Code Redemption Sheet.
+  /// Available on devices running iOS 14 and iPadOS 14 and later.
+  ///
+  /// Throws an [UnsupportedError] on Android.
+  Future<void> presentCodeRedemptionSheet();
+
   /// The [InAppPurchaseConnection] implemented for this platform.
   ///
   /// Throws an [UnsupportedError] when accessed on a platform other than

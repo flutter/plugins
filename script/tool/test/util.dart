@@ -37,6 +37,8 @@ Directory createFakePlugin(
   bool isLinuxPlugin = false,
   bool isMacOsPlugin = false,
   bool isWindowsPlugin = false,
+  bool includeChangeLog = false,
+  bool includeVersion = false,
   String parentDirectoryName = '',
 }) {
   assert(!(withSingleExample && withExamples.isNotEmpty),
@@ -57,7 +59,14 @@ Directory createFakePlugin(
     isLinuxPlugin: isLinuxPlugin,
     isMacOsPlugin: isMacOsPlugin,
     isWindowsPlugin: isWindowsPlugin,
+    includeVersion: includeVersion,
   );
+  if (includeChangeLog) {
+    createFakeCHANGELOG(pluginDirectory, '''
+## 0.0.1
+  * Some changes.
+  ''');
+  }
 
   if (withSingleExample) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
@@ -85,6 +94,11 @@ Directory createFakePlugin(
   return pluginDirectory;
 }
 
+void createFakeCHANGELOG(Directory parent, String texts) {
+  parent.childFile('CHANGELOG.md').createSync();
+  parent.childFile('CHANGELOG.md').writeAsStringSync(texts);
+}
+
 /// Creates a `pubspec.yaml` file with a flutter dependency.
 void createFakePubspec(
   Directory parent, {
@@ -97,6 +111,7 @@ void createFakePubspec(
   bool isLinuxPlugin = false,
   bool isMacOsPlugin = false,
   bool isWindowsPlugin = false,
+  String version = '0.0.1',
 }) {
   parent.childFile('pubspec.yaml').createSync();
   String yaml = '''
@@ -152,8 +167,8 @@ dependencies:
   }
   if (includeVersion) {
     yaml += '''
-version: 0.0.1
-publish_to: none # Hardcoded safeguard to prevent this from somehow being published by a broken test.
+version: $version
+publish_to: http://no_pub_server.com # Hardcoded safeguard to prevent this from somehow being published by a broken test.
 ''';
   }
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
