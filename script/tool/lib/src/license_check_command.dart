@@ -20,6 +20,12 @@ const Set<String> _codeFileExtensions = <String>{
   '.sh',
 };
 
+// Basenames with extensions of files to ignore.
+const Set<String> _ignoreList = <String>{
+  'GeneratedPluginRegistrant',
+  'generated_plugin_registrant',
+};
+
 // Copyright and license regexes.
 //
 // These are intentionally very simple, since almost all source in this
@@ -56,7 +62,8 @@ class LicenseCheckCommand extends PluginCommand {
     Iterable<File> codeFiles =
         (argResults['changed-only'] ? <File>[/* TODO */] : await _getAllFiles())
             .where((File file) =>
-                _codeFileExtensions.contains(p.extension(file.path)));
+                _codeFileExtensions.contains(p.extension(file.path)) &&
+                !_ignoreList.contains(p.basenameWithoutExtension(file.path)));
 
     bool succeeded = await _checkLicenses(codeFiles);
 
