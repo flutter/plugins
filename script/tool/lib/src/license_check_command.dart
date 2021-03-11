@@ -92,7 +92,7 @@ class LicenseCheckCommand extends PluginCommand {
       }
       print('Please check that they have a copyright and license block. '
           'If they do, the license check may need to be updated to recognize its '
-          'format.');
+          'format.\n\n');
     }
 
     if (filesWithoutDetectedLicense.isNotEmpty) {
@@ -102,7 +102,8 @@ class LicenseCheckCommand extends PluginCommand {
       }
       print('Please check that they have a license block. '
           'If they do, the license check may need to be updated to recognize '
-          'either the license or the specific format of the license block.');
+          'either the license or the specific format of the license '
+          'block.\n\n');
     }
 
     bool succeeded = filesWithoutDetectedCopyright.isEmpty &&
