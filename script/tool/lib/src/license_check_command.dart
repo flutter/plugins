@@ -22,6 +22,7 @@ const Set<String> _codeFileExtensions = <String>{
 
 // Basenames with extensions of files to ignore.
 const Set<String> _ignoreList = <String>{
+  'flutter_export_environment',
   'GeneratedPluginRegistrant',
   'generated_plugin_registrant',
 };
