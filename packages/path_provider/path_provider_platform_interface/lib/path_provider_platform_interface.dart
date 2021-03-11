@@ -4,12 +4,10 @@
 
 import 'dart:async';
 
-import 'src/enums.dart';
-import 'src/method_channel_path_provider.dart';
-
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-export 'src/enums.dart';
+import 'src/enums.dart';
+import 'src/method_channel_path_provider.dart';
 
 /// The interface that implementations of path_provider must implement.
 ///

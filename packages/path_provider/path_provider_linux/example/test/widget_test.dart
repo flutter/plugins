@@ -26,7 +26,7 @@ void main() {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 20));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that temporary directory is retrieved.
@@ -44,7 +44,7 @@ void main() {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 20));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that documents directory is retrieved.
@@ -62,7 +62,7 @@ void main() {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 20));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that downloads directory is retrieved.
@@ -81,7 +81,7 @@ void main() {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 20));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that Application Support Directory is retrieved.

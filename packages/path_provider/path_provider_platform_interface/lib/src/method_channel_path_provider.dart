@@ -4,19 +4,19 @@
 
 import 'dart:async';
 
-import 'enums.dart';
-
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:platform/platform.dart';
+
+import 'enums.dart';
 
 /// An implementation of [PathProviderPlatform] that uses method channels.
 class MethodChannelPathProvider extends PathProviderPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   MethodChannel methodChannel =
-      MethodChannel('plugins.flutter.io/path_provider');
+      const MethodChannel('plugins.flutter.io/path_provider');
 
   // Ideally, this property shouldn't exist, and each platform should
   // just implement the supported methods. Once all the platforms are

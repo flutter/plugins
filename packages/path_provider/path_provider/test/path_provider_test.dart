@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io' show Directory;
 import 'dart:async';
+import 'dart:io' show Directory;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
