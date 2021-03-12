@@ -128,18 +128,23 @@ bool _isJsonMapStyle(Map value) {
 }
 
 // Converts an incoming JSON-encoded Style info, into the correct gmaps array.
-List<gmaps.MapTypeStyle> _mapStyles(String? mapStyleJson) {
+List<gmaps.MapTypeStyle?> _mapStyles(String? mapStyleJson) {
   List<gmaps.MapTypeStyle> styles = [];
   if (mapStyleJson != null) {
-    styles = json.decode(mapStyleJson, reviver: (key, value) {
-      if (value is Map && _isJsonMapStyle(value)) {
-        return gmaps.MapTypeStyle()
-          ..elementType = value['elementType']
-          ..featureType = value['featureType']
-          ..stylers = value['stylers'];
-      }
-      return value;
-    }).cast<gmaps.MapTypeStyle>();
+    styles = json
+        .decode(mapStyleJson, reviver: (key, value) {
+          if (value is Map && _isJsonMapStyle(value)) {
+            return gmaps.MapTypeStyle()
+              ..elementType = value['elementType']
+              ..featureType = value['featureType']
+              ..stylers =
+                  (value['stylers'] as List).map((e) => jsify(e)).toList();
+          }
+          return value;
+        })
+        .cast<gmaps.MapTypeStyle>()
+        .toList();
+    // .toList calls are required so the JS API understands the underlying data structure.
   }
   return styles;
 }

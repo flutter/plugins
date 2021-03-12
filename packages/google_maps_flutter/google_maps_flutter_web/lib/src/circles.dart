@@ -15,7 +15,7 @@ class CirclesController extends GeometryController {
   /// Initialize the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
   CirclesController({
     required StreamController<MapEvent> stream,
-  })  : _streamController = stream,
+  })   : _streamController = stream,
         _circleIdToController = Map<CircleId, CircleController>();
 
   /// Returns the cache of [CircleController]s. Test only.
@@ -63,7 +63,8 @@ class CirclesController extends GeometryController {
   /// Removes a set of [CircleId]s from the cache.
   void removeCircles(Set<CircleId> circleIdsToRemove) {
     circleIdsToRemove.forEach((circleId) {
-      final CircleController? circleController = _circleIdToController[circleId];
+      final CircleController? circleController =
+          _circleIdToController[circleId];
       circleController?.remove();
       _circleIdToController.remove(circleId);
     });
