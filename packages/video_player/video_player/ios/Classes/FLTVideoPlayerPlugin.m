@@ -348,9 +348,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (void)seekTo:(int)location completionHandler:(void (^)(BOOL))completionHandler {
   [_player.currentItem cancelPendingSeeks];
   [_player seekToTime:CMTimeMake(location, 1000)
-      toleranceBefore:kCMTimeZero
-       toleranceAfter:kCMTimeZero
-    completionHandler:completionHandler];
+        toleranceBefore:kCMTimeZero
+         toleranceAfter:kCMTimeZero
+      completionHandler:completionHandler];
 }
 
 - (void)setIsLooping:(bool)isLooping {
