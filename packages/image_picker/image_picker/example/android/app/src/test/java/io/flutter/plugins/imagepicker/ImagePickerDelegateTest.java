@@ -100,7 +100,6 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
   public void chooseMultiImageFromGallery_WhenPendingResultExists_FinishesWithAlreadyActiveError() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
@@ -125,7 +124,6 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
   public void chooseMultiImageFromGallery_WhenHasNoExternalStoragePermission_RequestsForPermission() {
     when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
         .thenReturn(false);
@@ -154,7 +152,6 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
   public void
       chooseMultiImageFromGallery_WhenHasExternalStoragePermission_LaunchesChooseFromGalleryIntent() {
     when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
@@ -262,7 +259,6 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
   public void
   onRequestChooseMultiImagePermissionsResult_WhenReadExternalStorageGranted_LaunchesChooseMultiImageFromGalleryIntent() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();

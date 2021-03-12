@@ -623,6 +623,7 @@ public class ImagePickerDelegate
       if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
+      finishWithSuccess(finalImagePath);
     } else {
       finishWithSuccess(path);
     }
