@@ -189,7 +189,11 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   public interface IDelegate {
     /** Initializes this delegate so that it is ready to perform other operations. */
     public void init(
-        Result result, String signInOption, List<String> requestedScopes, String hostedDomain, String clientId);
+        Result result,
+        String signInOption,
+        List<String> requestedScopes,
+        String hostedDomain,
+        String clientId);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -310,7 +314,11 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
      */
     @Override
     public void init(
-        Result result, String signInOption, List<String> requestedScopes, String hostedDomain, String clientId) {
+        Result result,
+        String signInOption,
+        List<String> requestedScopes,
+        String hostedDomain,
+        String clientId) {
       try {
         GoogleSignInOptions.Builder optionsBuilder;
 
