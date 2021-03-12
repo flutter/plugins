@@ -70,6 +70,18 @@ class ImagePicker {
     );
   }
 
+  Future<List<PickedFile>?> getMultiImage({
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+  }) {
+    return platform.pickMultiImage(
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      imageQuality: imageQuality,
+    );
+  }
+
   /// Returns a [PickedFile] object wrapping the video that was picked.
   ///
   /// The returned [PickedFile] is intended to be used within a single APP session. Do not save the file path and use it across sessions.

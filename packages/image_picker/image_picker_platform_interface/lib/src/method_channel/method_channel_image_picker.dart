@@ -42,13 +42,13 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) async {
-    List<String>? paths = await _pickMultiImagePath(
+    List<dynamic> paths = await _pickMultiImagePath(
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
     );
     List<PickedFile> files = [];
-    for (final path in paths!) {
+    for (final path in paths) {
       files.add(PickedFile(path));
     }
     return files;
@@ -72,7 +72,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
 
-    return _channel.invokeMethod<List<String>>(
+    return _channel.invokeMethod<List<dynamic>>(
       'pickMultiImage',
       <String, dynamic>{
         'maxWidth': maxWidth,
