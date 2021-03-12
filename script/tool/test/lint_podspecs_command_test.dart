@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
@@ -99,8 +103,7 @@ void main() {
         ]),
       );
 
-      expect(
-          printedMessages, contains('Linting plugin1.podspec'));
+      expect(printedMessages, contains('Linting plugin1.podspec'));
       expect(printedMessages, contains('Foo'));
       expect(printedMessages, contains('Bar'));
     });
@@ -162,8 +165,7 @@ void main() {
         ]),
       );
 
-      expect(
-          printedMessages, contains('Linting plugin1.podspec'));
+      expect(printedMessages, contains('Linting plugin1.podspec'));
     });
   });
 }
