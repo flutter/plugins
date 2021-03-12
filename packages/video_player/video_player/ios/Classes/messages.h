@@ -62,7 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)play:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable FLTPositionMessage *)position:(FLTTextureMessage *)input
                                     error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)seekTo:(FLTPositionMessage *)input completionHandler:(void (^ _Nullable)(BOOL finished))completionHandler error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)seekTo:(FLTPositionMessage *)input
+    completionHandler:(void (^ _Nullable)(BOOL finished))completionHandler
+                error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)pause:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setMixWithOthers:(FLTMixWithOthersMessage *)input
                    error:(FlutterError *_Nullable *_Nonnull)error;

@@ -581,9 +581,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return result;
 }
 
-- (void)seekTo:(FLTPositionMessage*)input completionHandler:(void (^)(BOOL))completionHandler error:(FlutterError**)error {
+- (void)seekTo:(FLTPositionMessage*)input
+    completionHandler:(void (^)(BOOL))completionHandler
+                error:(FlutterError**)error {
   FLTVideoPlayer* player = _players[input.textureId];
-    [player seekTo:[input.position intValue] completionHandler:completionHandler];
+  [player seekTo:[input.position intValue] completionHandler:completionHandler];
 }
 
 - (void)pause:(FLTTextureMessage*)input error:(FlutterError**)error {
