@@ -20,11 +20,16 @@ const Set<String> _codeFileExtensions = <String>{
   '.sh',
 };
 
-// Basenames with extensions of files to ignore.
-const Set<String> _ignoreList = <String>{
+// Basenames without extensions of files to ignore.
+const Set<String> _ignoreBasenameList = <String>{
   'flutter_export_environment',
   'GeneratedPluginRegistrant',
   'generated_plugin_registrant',
+};
+
+// Extensions that otherwise match _codeFileExtensions to ignore.
+const Set<String> _ignoreSuffixList = <String>{
+  '.g.dart',
 };
 
 // Copyright and license regexes.
@@ -64,7 +69,7 @@ class LicenseCheckCommand extends PluginCommand {
         (argResults['changed-only'] ? <File>[/* TODO */] : await _getAllFiles())
             .where((File file) =>
                 _codeFileExtensions.contains(p.extension(file.path)) &&
-                !_ignoreList.contains(p.basenameWithoutExtension(file.path)));
+                !_shouldIgnoreFile(file));
 
     bool succeeded = await _checkLicenses(codeFiles);
 
@@ -122,6 +127,12 @@ class LicenseCheckCommand extends PluginCommand {
 
     return filesWithoutDetectedCopyright.isEmpty &&
         filesWithoutDetectedLicense.isEmpty;
+  }
+
+  bool _shouldIgnoreFile(File file) {
+    final String path = file.path;
+    return _ignoreBasenameList.contains(p.basenameWithoutExtension(path)) ||
+        _ignoreSuffixList.any((String suffix) => path.endsWith(suffix));
   }
 
   Future<List<File>> _getAllFiles() => packagesDir.parent
