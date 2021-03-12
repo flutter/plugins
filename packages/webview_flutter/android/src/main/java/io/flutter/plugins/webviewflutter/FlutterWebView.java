@@ -10,6 +10,7 @@ import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Looper;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.io.ByteArrayOutputStream;
+import java.lang.Thread;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
@@ -403,6 +405,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void takeScreenshot(Result result){
+    final Result fResult = result;
     View view = getView();
 
     float scale = view.getContext().getResources().getDisplayMetrics().density;
@@ -428,13 +431,25 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     int rectWidth = b.getWidth();
     int rectHeight = measuredHeight;
 
-    Bitmap resized = Bitmap.createBitmap(b, rectX, rectY, rectWidth, rectHeight);
+    final Bitmap resized = Bitmap.createBitmap(b, rectX, rectY, rectWidth, rectHeight);
 
-    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    resized.compress(Bitmap.CompressFormat.PNG, 100, stream);
-    byte[] imageByteArray = stream.toByteArray();
-    
-    result.success(imageByteArray);
+    // Run the compress function in a secondary thread
+    new Thread(new Runnable() {
+    @Override
+    public void run() {
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      resized.compress(Bitmap.CompressFormat.PNG, 100, stream);
+      final byte[] imageByteArray = stream.toByteArray();
+
+      //Make sure to return the result in the main thread
+      new Handler(Looper.getMainLooper()).post(new Runnable() {
+              @Override
+              public void run() {
+                 fResult.success(imageByteArray);
+              }
+            });
+    }
+   }).start();
   }
 
   private void applySettings(Map<String, Object> settings) {
