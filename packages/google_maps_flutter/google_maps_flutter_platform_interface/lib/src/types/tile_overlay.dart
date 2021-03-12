@@ -91,6 +91,7 @@ class TileOverlay implements MapsObject {
   /// unless overwritten by the specified parameters.
   TileOverlay copyWith({
     bool? fadeInParam,
+    TileProvider? tileProviderParam,
     double? transparencyParam,
     int? zIndexParam,
     bool? visibleParam,
@@ -99,6 +100,7 @@ class TileOverlay implements MapsObject {
     return TileOverlay(
       tileOverlayId: tileOverlayId,
       fadeIn: fadeInParam ?? fadeIn,
+      tileProvider: tileProviderParam ?? tileProvider,
       transparency: transparencyParam ?? transparency,
       zIndex: zIndexParam ?? zIndex,
       visible: visibleParam ?? visible,
