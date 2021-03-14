@@ -27,7 +27,9 @@ public enum WebViewManager {
     }
 
     public void cacheWebView(WebView webView, String webViewId) {
-        cache.put(webViewId, webView);
+        if (webViewId != null) {
+            cache.put(webViewId, webView);
+        }
     }
 
     public void clearAll() {
