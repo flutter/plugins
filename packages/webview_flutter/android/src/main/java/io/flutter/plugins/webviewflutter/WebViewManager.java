@@ -20,11 +20,16 @@ public enum WebViewManager {
     }
 
     public WebView webViewForId(String webViewId) {
+        if (webViewId == null) {
+            return null;
+        }
         return cache.get(webViewId);
     }
 
     public void cacheWebView(WebView webView, String webViewId) {
-        cache.put(webViewId, webView);
+        if (webViewId != null) {
+            cache.put(webViewId, webView);
+        }
     }
 
     public void clearAll() {
