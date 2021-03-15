@@ -28,6 +28,7 @@ import android.hardware.camera2.params.MeteringRectangle;
 import android.hardware.camera2.params.OutputConfiguration;
 import android.hardware.camera2.params.SessionConfiguration;
 import android.media.CamcorderProfile;
+import android.media.ExifInterface;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -423,6 +424,7 @@ public class Camera {
           try (Image image = reader.acquireLatestImage()) {
             ByteBuffer buffer = image.getPlanes()[0].getBuffer();
             writeToFile(buffer, file);
+            if(isFrontFacing) updateExifMetadata(file.getAbsolutePath());
             pictureCaptureRequest.finish(file.getAbsolutePath());
           } catch (IOException e) {
             pictureCaptureRequest.error("IOError", "Failed saving image", null);
@@ -435,6 +437,13 @@ public class Camera {
     } else {
       runPicturePreCapture();
     }
+  }
+
+  void updateExifMetadata(String filePath) throws IOException {
+    ExifInterface exif = new ExifInterface(filePath);
+    exif.setAttribute(
+        ExifInterface.TAG_ORIENTATION, String.valueOf(ExifInterface.ORIENTATION_TRANSVERSE));
+    exif.saveAttributes();
   }
 
   private final CameraCaptureSession.CaptureCallback pictureCaptureCallback =
