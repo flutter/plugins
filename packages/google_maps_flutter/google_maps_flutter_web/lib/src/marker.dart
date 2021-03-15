@@ -53,7 +53,7 @@ class MarkerController {
   /// Updates the options of the wrapped [gmaps.Marker] object.
   void update(
     gmaps.MarkerOptions options, {
-    String? newInfoWindowContent,
+    HtmlElement? newInfoWindowContent,
   }) {
     _marker!.options = options;
     if (_infoWindow != null && newInfoWindowContent != null) {

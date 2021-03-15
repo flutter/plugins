@@ -42,7 +42,7 @@ class MarkersController extends GeometryController {
       // Google Maps' JS SDK does not have a click event on the InfoWindow, so
       // we make one...
       if (infoWindowOptions.content is HtmlElement) {
-        final content = infoWindowOptions as HtmlElement;
+        final content = infoWindowOptions.content as HtmlElement;
         content.onClick.listen((_) {
           _onInfoWindowTap(marker.markerId);
         });
@@ -84,7 +84,7 @@ class MarkersController extends GeometryController {
       final infoWindow = _infoWindowOptionsFromMarker(marker);
       markerController.update(
         markerOptions,
-        newInfoWindowContent: infoWindow?.content as String?,
+        newInfoWindowContent: infoWindow?.content as HtmlElement?,
       );
     }
   }
