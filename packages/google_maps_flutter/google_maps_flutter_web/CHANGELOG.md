@@ -1,3 +1,15 @@
+## 0.2.1
+
+* Move integration tests to `example`.
+* Tweak pubspec dependencies for main package.
+
+## 0.2.0
+
+* Make this plugin compatible with the rest of null-safe plugins.
+* Noop tile overlays methods, so they don't crash on web.
+
+**NOTE**: This plugin is **not** null-safe yet!
+
 ## 0.1.2
 
 * Update min Flutter SDK to 1.20.0.

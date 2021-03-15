@@ -1,3 +1,7 @@
+## 0.5.1
+
+* [iOS] Introduce `SKPaymentQueueWrapper.presentCodeRedemptionSheet` 
+
 ## 0.5.0
 
 * Migrate to Google Billing Library 3.0

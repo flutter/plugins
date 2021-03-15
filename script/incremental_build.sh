@@ -5,15 +5,9 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
-source "$SCRIPT_DIR/nnbd_plugins.sh"
 
 # Plugins that are excluded from this task.
 ALL_EXCLUDED=("")
-# Exclude nnbd plugins from stable.
-if [ "$CHANNEL" == "stable" ]; then
-  ALL_EXCLUDED=($EXCLUDED_PLUGINS_FROM_STABLE)
-  echo "Excluding the following plugins because stable does not yet support NNBD: $ALL_EXCLUDED"
-fi
 
 # Plugins that deliberately use their own analysis_options.yaml.
 #
@@ -55,8 +49,5 @@ else
   else
     echo running "${ACTIONS[@]}"
     (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
-    echo "Running version check for changed packages"
-    # TODO(egarciad): Enable this check once in master.
-    # (cd "$REPO_DIR" && $PUB global run flutter_plugin_tools version-check --base_sha="$(get_branch_base_sha)")
   fi
 fi
