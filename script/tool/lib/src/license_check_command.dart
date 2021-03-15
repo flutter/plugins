@@ -101,6 +101,11 @@ class LicenseCheckCommand extends PluginCommand {
     }
     print('\n\n');
 
+    // Sort by path for more usable output.
+    final pathCompare = (File a, File b) => a.path.compareTo(b.path);
+    filesWithoutDetectedCopyright.sort(pathCompare);
+    filesWithoutDetectedLicense.sort(pathCompare);
+
     if (filesWithoutDetectedCopyright.isNotEmpty) {
       print('No copyright line was found for the following files:');
       for (final File file in filesWithoutDetectedCopyright) {
