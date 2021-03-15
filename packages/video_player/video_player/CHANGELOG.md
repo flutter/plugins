@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Fixed empty caption text still showing the caption widget.
+
 ## 2.0.2
 
 * Fix `VideoPlayerValue` size and aspect ratio documentation
