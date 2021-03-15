@@ -12,6 +12,7 @@ import 'common.dart';
 const Set<String> _codeFileExtensions = <String>{
   '.c',
   '.cc',
+  '.cpp',
   '.dart',
   '.h',
   '.java',
