@@ -13,6 +13,7 @@ const Set<String> _codeFileExtensions = <String>{
   '.c',
   '.cc',
   '.dart',
+  '.h',
   '.java',
   '.m',
   '.mm',
