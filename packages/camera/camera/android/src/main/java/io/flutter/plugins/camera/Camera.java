@@ -129,35 +129,35 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private final CameraProperties cameraProperties;
   private final Activity activity;
   /** A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture. */
-  private final CameraCaptureCallback mCaptureCallback;
+  private final CameraCaptureCallback cameraCaptureCallback;
   /** A {@link Handler} for running tasks in the background. */
-  private Handler mBackgroundHandler;
+  private Handler backgroundHandler;
   /**
    * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
    * still image is ready to be saved.
    */
-  private final ImageReader.OnImageAvailableListener mOnImageAvailableListener =
+  private final ImageReader.OnImageAvailableListener onImageAvailableListener =
       new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
           Log.i(TAG, "onImageAvailable");
 
           // Use acquireNextImage since our image reader is only for 1 image.
-          mBackgroundHandler.post(
+          backgroundHandler.post(
               new ImageSaver(
                   reader.acquireNextImage(), pictureCaptureRequest.file, pictureCaptureRequest));
-          mCaptureCallback.setCameraState(CameraState.STATE_PREVIEW);
+          cameraCaptureCallback.setCameraState(CameraState.STATE_PREVIEW);
         }
       };
   /** An additional thread for running tasks that shouldn't block the UI. */
-  private HandlerThread mBackgroundThread;
+  private HandlerThread backgroundHandlerThread;
 
   private CameraDevice cameraDevice;
   private CameraCaptureSession captureSession;
   private ImageReader pictureImageReader;
   private ImageReader imageStreamReader;
   /** {@link CaptureRequest.Builder} for the camera preview */
-  private CaptureRequest.Builder mPreviewRequestBuilder;
+  private CaptureRequest.Builder previewRequestBuilder;
 
   private MediaRecorder mediaRecorder;
   /** True when recording video. */
@@ -232,7 +232,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         };
 
     // Create capture callback
-    mCaptureCallback = CameraCaptureCallback.create(this);
+    cameraCaptureCallback = CameraCaptureCallback.create(this);
 
     // Start background thread.
     startBackgroundThread();
@@ -373,7 +373,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
             dartMessenger.sendCameraErrorEvent(errorDescription);
           }
         },
-        mBackgroundHandler);
+        backgroundHandler);
   }
 
   private void createCaptureSession(int templateType, Surface... surfaces)
@@ -390,26 +390,26 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     closeCaptureSession();
 
     // Create a new capture builder.
-    mPreviewRequestBuilder = cameraDevice.createCaptureRequest(templateType);
+    previewRequestBuilder = cameraDevice.createCaptureRequest(templateType);
 
     // Build Flutter surface to render to
     SurfaceTexture surfaceTexture = flutterTexture.surfaceTexture();
     surfaceTexture.setDefaultBufferSize(getPreviewSize().getWidth(), getPreviewSize().getHeight());
     Surface flutterSurface = new Surface(surfaceTexture);
-    mPreviewRequestBuilder.addTarget(flutterSurface);
+    previewRequestBuilder.addTarget(flutterSurface);
 
     List<Surface> remainingSurfaces = Arrays.asList(surfaces);
     if (templateType != CameraDevice.TEMPLATE_PREVIEW) {
       // If it is not preview mode, add all surfaces as targets.
       for (Surface surface : remainingSurfaces) {
-        mPreviewRequestBuilder.addTarget(surface);
+        previewRequestBuilder.addTarget(surface);
       }
     }
 
     // Update camera regions
     cameraFeatures.put(
         CameraFeatures.regionBoundaries,
-        new RegionBoundariesFeature(cameraProperties, mPreviewRequestBuilder));
+        new RegionBoundariesFeature(cameraProperties, previewRequestBuilder));
 
     // Prepare the callback
     CameraCaptureSession.StateCallback callback =
@@ -424,7 +424,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
             captureSession = session;
 
             Log.i(TAG, "Updating builder settings");
-            updateBuilderSettings(mPreviewRequestBuilder);
+            updateBuilderSettings(previewRequestBuilder);
 
             refreshPreviewCaptureSession(
                 onSuccessCallback, (code, message) -> dartMessenger.sendCameraErrorEvent(message));
@@ -471,7 +471,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private void createCaptureSession(
       List<Surface> surfaces, CameraCaptureSession.StateCallback callback)
       throws CameraAccessException {
-    cameraDevice.createCaptureSession(surfaces, callback, mBackgroundHandler);
+    cameraDevice.createCaptureSession(surfaces, callback, backgroundHandler);
   }
 
   // Send a repeating request to refresh our capture session.
@@ -485,7 +485,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
     try {
       captureSession.setRepeatingRequest(
-          mPreviewRequestBuilder.build(), mCaptureCallback, mBackgroundHandler);
+          previewRequestBuilder.build(), cameraCaptureCallback, backgroundHandler);
 
       if (onSuccessCallback != null) {
         onSuccessCallback.run();
@@ -502,7 +502,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         "takePicture | useAutoFocus: " + cameraFeatures.get(CameraFeatures.autoFocus).getValue());
 
     // Only take one 1 picture at a time.
-    if (mCaptureCallback.getCameraState() != CameraState.STATE_PREVIEW) {
+    if (cameraCaptureCallback.getCameraState() != CameraState.STATE_PREVIEW) {
       result.error("captureAlreadyActive", "Picture is currently already being captured", null);
       return;
     }
@@ -514,14 +514,14 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
       // Start a new capture
       pictureCaptureRequest = PictureCaptureRequest.create(result, file, 3000, 3000);
-      mCaptureCallback.setPictureCaptureRequest(pictureCaptureRequest);
+      cameraCaptureCallback.setPictureCaptureRequest(pictureCaptureRequest);
     } catch (IOException | SecurityException e) {
       pictureCaptureRequest.error("cannotCreateFile", e.getMessage(), null);
       return;
     }
 
     // Listen for picture being taken
-    pictureImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
+    pictureImageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler);
 
     final AutoFocusFeature autoFocusFeature =
         (AutoFocusFeature) cameraFeatures.get(CameraFeatures.autoFocus);
@@ -535,30 +535,32 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   /**
    * Run the precapture sequence for capturing a still image. This method should be called when we
-   * get a response in {@link #mCaptureCallback} from lockFocus().
+   * get a response in {@link #cameraCaptureCallback} from lockFocus().
    */
   private void runPrecaptureSequence() {
     Log.i(TAG, "runPrecaptureSequence");
     try {
       // First set precapture state to idle or else it can hang in STATE_WAITING_PRECAPTURE_START
-      mPreviewRequestBuilder.set(
+      previewRequestBuilder.set(
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
-      captureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback, mBackgroundHandler);
+      captureSession.capture(previewRequestBuilder.build(), cameraCaptureCallback,
+          backgroundHandler);
 
       // Repeating request to refresh preview session
       refreshPreviewCaptureSession(
           null, (code, message) -> pictureCaptureRequest.error("cameraAccess", message, null));
 
       // Start precapture now
-      mCaptureCallback.setCameraState(CameraState.STATE_WAITING_PRECAPTURE_START);
+      cameraCaptureCallback.setCameraState(CameraState.STATE_WAITING_PRECAPTURE_START);
 
-      mPreviewRequestBuilder.set(
+      previewRequestBuilder.set(
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
 
       // Trigger one capture to start AE sequence
-      captureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback, mBackgroundHandler);
+      captureSession.capture(previewRequestBuilder.build(), cameraCaptureCallback,
+          backgroundHandler);
 
     } catch (CameraAccessException e) {
       e.printStackTrace();
@@ -567,11 +569,11 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   /**
    * Capture a still picture. This method should be called when we get a response in {@link
-   * #mCaptureCallback} from both lockFocus().
+   * #cameraCaptureCallback} from both lockFocus().
    */
   private void takePictureAfterPrecapture() {
     Log.i(TAG, "captureStillPicture");
-    mCaptureCallback.setCameraState(CameraState.STATE_CAPTURING);
+    cameraCaptureCallback.setCameraState(CameraState.STATE_CAPTURING);
 
     try {
       if (null == cameraDevice) {
@@ -585,7 +587,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       // Zoom
       stillBuilder.set(
           CaptureRequest.SCALER_CROP_REGION,
-          mPreviewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
+          previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
 
       // Update builder settings
       updateBuilderSettings(stillBuilder);
@@ -627,7 +629,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       captureSession.stopRepeating();
       captureSession.abortCaptures();
       Log.i(TAG, "sending capture request");
-      captureSession.capture(stillBuilder.build(), captureCallback, mBackgroundHandler);
+      captureSession.capture(stillBuilder.build(), captureCallback, backgroundHandler);
     } catch (CameraAccessException e) {
       pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
     }
@@ -640,21 +642,21 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   /** Starts a background thread and its {@link Handler}. TODO: call when activity resumed */
   private void startBackgroundThread() {
-    mBackgroundThread = new HandlerThread("CameraBackground");
-    mBackgroundThread.start();
-    mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+    backgroundHandlerThread = new HandlerThread("CameraBackground");
+    backgroundHandlerThread.start();
+    backgroundHandler = new Handler(backgroundHandlerThread.getLooper());
   }
 
   /** Stops the background thread and its {@link Handler}. TODO: call when activity paused */
   private void stopBackgroundThread() {
     try {
-      if (mBackgroundThread != null) {
-        mBackgroundThread.quitSafely();
-        mBackgroundThread.join();
-        mBackgroundThread = null;
+      if (backgroundHandlerThread != null) {
+        backgroundHandlerThread.quitSafely();
+        backgroundHandlerThread.join();
+        backgroundHandlerThread = null;
       }
 
-      mBackgroundHandler = null;
+      backgroundHandler = null;
     } catch (InterruptedException e) {
       pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
     }
@@ -681,7 +683,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     Log.i(TAG, "runPictureAutoFocus");
     assert (pictureCaptureRequest != null);
 
-    mCaptureCallback.setCameraState(CameraState.STATE_WAITING_FOCUS);
+    cameraCaptureCallback.setCameraState(CameraState.STATE_WAITING_FOCUS);
     lockAutoFocus();
   }
 
@@ -692,11 +694,11 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     Log.i(TAG, "lockAutoFocus");
 
     // Trigger AF to start
-    mPreviewRequestBuilder.set(
+    previewRequestBuilder.set(
         CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
 
     try {
-      captureSession.capture(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+      captureSession.capture(previewRequestBuilder.build(), null, backgroundHandler);
     } catch (CameraAccessException e) {
       Log.i(TAG, "Error unlocking focus: " + e.getMessage());
       dartMessenger.sendCameraErrorEvent(e.getMessage());
@@ -709,15 +711,15 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     Log.i(TAG, "unlockAutoFocus");
     try {
       // Cancel existing AF state
-      mPreviewRequestBuilder.set(
+      previewRequestBuilder.set(
           CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-      captureSession.capture(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+      captureSession.capture(previewRequestBuilder.build(), null, backgroundHandler);
 
       // Set AF state to idle again
-      mPreviewRequestBuilder.set(
+      previewRequestBuilder.set(
           CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
 
-      captureSession.capture(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+      captureSession.capture(previewRequestBuilder.build(), null, backgroundHandler);
     } catch (CameraAccessException e) {
       Log.i(TAG, "Error unlocking focus: " + e.getMessage());
       dartMessenger.sendCameraErrorEvent(e.getMessage());
@@ -835,7 +837,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   public void setFlashMode(@NonNull final Result result, FlashMode newMode) {
     // Save the new flash mode setting
     ((FlashFeature) cameraFeatures.get(CameraFeatures.flash)).setValue(newMode);
-    cameraFeatures.get(CameraFeatures.flash).updateBuilder(mPreviewRequestBuilder);
+    cameraFeatures.get(CameraFeatures.flash).updateBuilder(previewRequestBuilder);
 
     refreshPreviewCaptureSession(
         () -> result.success(null),
@@ -850,7 +852,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    */
   public void setExposureMode(@NonNull final Result result, ExposureMode newMode) {
     ((ExposureLockFeature) cameraFeatures.get(CameraFeatures.exposureLock)).setValue(newMode);
-    cameraFeatures.get(CameraFeatures.exposureLock).updateBuilder(mPreviewRequestBuilder);
+    cameraFeatures.get(CameraFeatures.exposureLock).updateBuilder(previewRequestBuilder);
 
     refreshPreviewCaptureSession(
         () -> result.success(null),
@@ -882,7 +884,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   public void setExposurePoint(@NonNull final Result result, Double x, Double y) {
     ((ExposurePointFeature) cameraFeatures.get(CameraFeatures.exposurePoint))
         .setValue(new Point(x, y));
-    cameraFeatures.get(CameraFeatures.exposurePoint).updateBuilder(mPreviewRequestBuilder);
+    cameraFeatures.get(CameraFeatures.exposurePoint).updateBuilder(previewRequestBuilder);
 
     refreshPreviewCaptureSession(
         () -> result.success(null),
@@ -920,7 +922,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   public void setFocusMode(@NonNull final Result result, FocusMode newMode) {
     ((AutoFocusFeature) cameraFeatures.get(CameraFeatures.autoFocus)).setValue(newMode);
 
-    cameraFeatures.get(CameraFeatures.autoFocus).updateBuilder(mPreviewRequestBuilder);
+    cameraFeatures.get(CameraFeatures.autoFocus).updateBuilder(previewRequestBuilder);
 
     /*
      * For focus mode we need to do an extra step of actually locking/unlocking the
@@ -932,12 +934,12 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         lockAutoFocus();
 
         // Set AF state to idle again
-        mPreviewRequestBuilder.set(
+        previewRequestBuilder.set(
             CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
 
         try {
           captureSession.setRepeatingRequest(
-              mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+              previewRequestBuilder.build(), null, backgroundHandler);
         } catch (CameraAccessException e) {
           result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
         }
@@ -961,7 +963,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    */
   public void setFocusPoint(@NonNull final Result result, Double x, Double y) {
     ((FocusPointFeature) cameraFeatures.get(CameraFeatures.focusPoint)).setValue(new Point(x, y));
-    cameraFeatures.get(CameraFeatures.focusPoint).updateBuilder(mPreviewRequestBuilder);
+    cameraFeatures.get(CameraFeatures.focusPoint).updateBuilder(previewRequestBuilder);
 
     refreshPreviewCaptureSession(
         () -> result.success(null),
@@ -977,7 +979,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   public void setExposureOffset(@NonNull final Result result, double offset) {
     ((ExposureOffsetFeature) cameraFeatures.get(CameraFeatures.exposureOffset))
         .setValue(new ExposureOffsetValue(offset));
-    cameraFeatures.get(CameraFeatures.exposureOffset).updateBuilder(mPreviewRequestBuilder);
+    cameraFeatures.get(CameraFeatures.exposureOffset).updateBuilder(previewRequestBuilder);
 
     refreshPreviewCaptureSession(
         () -> result.success(null),
@@ -1040,7 +1042,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     }
 
     zoomLevel.setValue(zoom);
-    zoomLevel.updateBuilder(mPreviewRequestBuilder);
+    zoomLevel.updateBuilder(previewRequestBuilder);
 
     refreshPreviewCaptureSession(
         () -> result.success(null),
@@ -1084,7 +1086,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
           @Override
           public void onCancel(Object o) {
-            imageStreamReader.setOnImageAvailableListener(null, mBackgroundHandler);
+            imageStreamReader.setOnImageAvailableListener(null, backgroundHandler);
           }
         });
   }
@@ -1121,7 +1123,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
           handler.post(() -> imageStreamSink.success(imageBuffer));
           img.close();
         },
-        mBackgroundHandler);
+        backgroundHandler);
   }
 
   private void closeCaptureSession() {
