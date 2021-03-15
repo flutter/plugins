@@ -391,7 +391,7 @@ void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTVi
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
         FLTIOSDefaultAudioSessionConfigurationMessage *input = [FLTIOSDefaultAudioSessionConfigurationMessage fromMap:message];
-        [api setMixWithOthers:input error:&error];
+        [api setIOSDefaultAudioSessionConfiguration:input error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
