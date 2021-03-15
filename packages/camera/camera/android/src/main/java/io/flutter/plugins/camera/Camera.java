@@ -544,8 +544,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       previewRequestBuilder.set(
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
-      captureSession.capture(previewRequestBuilder.build(), cameraCaptureCallback,
-          backgroundHandler);
+      captureSession.capture(
+          previewRequestBuilder.build(), cameraCaptureCallback, backgroundHandler);
 
       // Repeating request to refresh preview session
       refreshPreviewCaptureSession(
@@ -559,8 +559,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
           CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
 
       // Trigger one capture to start AE sequence
-      captureSession.capture(previewRequestBuilder.build(), cameraCaptureCallback,
-          backgroundHandler);
+      captureSession.capture(
+          previewRequestBuilder.build(), cameraCaptureCallback, backgroundHandler);
 
     } catch (CameraAccessException e) {
       e.printStackTrace();
