@@ -120,6 +120,12 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
 
+  Future<void> setIOSDefaultAudioSessionConfiguration(
+      bool isDefaultAudioConfigurationEnabled) {
+    throw UnimplementedError(
+        'isDefaultAudioConfigurationEnabled() has not been implemented.');
+  }
+
   // This method makes sure that VideoPlayer isn't implemented with `implements`.
   //
   // See class doc for more details on why implementing this class is forbidden.
@@ -347,7 +353,10 @@ class VideoPlayerOptions {
   /// Set this to true to mix the video players audio with other audio sources.
   /// The default value is false
   final bool mixWithOthers;
+  final bool isDefaultAudioConfigurationEnabled;
 
   /// set additional optional player settings
-  VideoPlayerOptions({this.mixWithOthers = false});
+  VideoPlayerOptions(
+      {this.mixWithOthers = false,
+      this.isDefaultAudioConfigurationEnabled = true});
 }

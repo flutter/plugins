@@ -141,6 +141,16 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     );
   }
 
+  @override
+  Future<void> setIOSDefaultAudioSessionConfiguration(
+      bool isDefaultAudioConfigurationEnabled) {
+    return _api.setIOSDefaultAudioSessionConfiguration(
+      IOSDefaultAudioSessionConfigurationMessage()
+        ..isDefaultAudioConfigurationEnabled =
+            isDefaultAudioConfigurationEnabled,
+    );
+  }
+
   EventChannel _eventChannelFor(int textureId) {
     return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
   }

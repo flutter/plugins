@@ -288,7 +288,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       await _videoPlayerPlatform
           .setMixWithOthers(videoPlayerOptions!.mixWithOthers);
     }
-
+    if (videoPlayerOptions?.isDefaultAudioConfigurationEnabled != null) {
+      await _videoPlayerPlatform.setIOSDefaultAudioSessionConfiguration(
+          videoPlayerOptions!.isDefaultAudioConfigurationEnabled);
+    }
     _textureId = (await _videoPlayerPlatform.create(dataSourceDescription)) ??
         kUninitializedTextureId;
     _creatingCompleter!.complete(null);

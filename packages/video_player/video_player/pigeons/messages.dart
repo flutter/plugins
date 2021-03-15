@@ -37,6 +37,10 @@ class MixWithOthersMessage {
   bool mixWithOthers;
 }
 
+class IOSDefaultAudioSessionConfigurationMessage {
+  bool isDefaultAudioConfigurationEnabled;
+}
+
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class VideoPlayerApi {
   void initialize();
@@ -50,6 +54,8 @@ abstract class VideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
+  void setIOSDefaultAudioSessionConfiguration(
+      IOSDefaultAudioSessionConfigurationMessage msg);
 }
 
 void configurePigeon(PigeonOptions opts) {
