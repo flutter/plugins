@@ -599,10 +599,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
   }
 }
-// - (void)setIOSDefaultAudioSessionConfiguration:(FLTIOSDefaultAudioSessionConfigurationMessage*)input
-//                    error:(FlutterError* _Nullable __autoreleasing*)error {
-//   if ([input.isDefaultAudioConfigurationEnabled boolValue]) {
+- (void)setIOSDefaultAudioSessionConfiguration:(FLTIOSDefaultAudioSessionConfigurationMessage*)input
+                   error:(FlutterError* _Nullable __autoreleasing*)error {
+  if ([input.isDefaultAudioConfigurationEnabled boolValue]) {
    
-//   }
-// }
+  }
+}
 @end
