@@ -42,7 +42,6 @@ class SkuDetailsWrapper {
     required this.subscriptionPeriod,
     required this.title,
     required this.type,
-    required this.isRewarded,
     required this.originalPrice,
     required this.originalPriceAmountMicros,
   });
@@ -71,9 +70,10 @@ class SkuDetailsWrapper {
   @JsonKey(defaultValue: '')
   final String introductoryPriceMicros;
 
-  /// The number of billing perios that [introductoryPrice] is valid for ("2").
-  @JsonKey(defaultValue: '')
-  final String introductoryPriceCycles;
+  /// The number of subscription billing periods for which the user will be given the introductory price, such as 3.
+  /// Returns 0 if the SKU is not a subscription or doesn't have an introductory period.
+  @JsonKey(defaultValue: 0)
+  final int introductoryPriceCycles;
 
   /// The billing period of [introductoryPrice], in ISO 8601 format.
   @JsonKey(defaultValue: '')
@@ -106,10 +106,6 @@ class SkuDetailsWrapper {
   /// The [SkuType] of the product.
   final SkuType type;
 
-  /// False if the product is paid.
-  @JsonKey(defaultValue: false)
-  final bool isRewarded;
-
   /// The original price that the user purchased this product for.
   @JsonKey(defaultValue: '')
   final String originalPrice;
@@ -138,7 +134,6 @@ class SkuDetailsWrapper {
         typedOther.subscriptionPeriod == subscriptionPeriod &&
         typedOther.title == title &&
         typedOther.type == type &&
-        typedOther.isRewarded == isRewarded &&
         typedOther.originalPrice == originalPrice &&
         typedOther.originalPriceAmountMicros == originalPriceAmountMicros;
   }
@@ -158,7 +153,6 @@ class SkuDetailsWrapper {
         subscriptionPeriod.hashCode,
         title.hashCode,
         type.hashCode,
-        isRewarded.hashCode,
         originalPrice,
         originalPriceAmountMicros);
   }
