@@ -127,6 +127,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private final Context applicationContext;
   private final DartMessenger dartMessenger;
   private final CameraProperties cameraProperties;
+  private final CameraFeatureFactory cameraFeatureFactory;
   private final Activity activity;
   /** A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture. */
   private final CameraCaptureCallback cameraCaptureCallback;
@@ -186,6 +187,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     this.dartMessenger = dartMessenger;
     this.applicationContext = activity.getApplicationContext();
     this.cameraProperties = cameraProperties;
+    this.cameraFeatureFactory = cameraFeatureFactory;
 
     // Setup camera features
     this.cameraFeatures =
@@ -409,7 +411,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     // Update camera regions
     cameraFeatures.put(
         CameraFeatures.regionBoundaries,
-        new RegionBoundariesFeature(cameraProperties, previewRequestBuilder));
+        cameraFeatureFactory.createRegionBoundariesFeature(
+            cameraProperties, previewRequestBuilder));
 
     // Prepare the callback
     CameraCaptureSession.StateCallback callback =
@@ -878,12 +881,10 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    * Set new exposure point from dart.
    *
    * @param result Flutter result.
-   * @param x new x.
-   * @param y new y.
+   * @param point The exposure point.
    */
-  public void setExposurePoint(@NonNull final Result result, Double x, Double y) {
-    ((ExposurePointFeature) cameraFeatures.get(CameraFeatures.exposurePoint))
-        .setValue(new Point(x, y));
+  public void setExposurePoint(@NonNull final Result result, Point point) {
+    ((ExposurePointFeature) cameraFeatures.get(CameraFeatures.exposurePoint)).setValue(point);
     cameraFeatures.get(CameraFeatures.exposurePoint).updateBuilder(previewRequestBuilder);
 
     refreshPreviewCaptureSession(
@@ -961,8 +962,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    * @param x new x.
    * @param y new y.
    */
-  public void setFocusPoint(@NonNull final Result result, Double x, Double y) {
-    ((FocusPointFeature) cameraFeatures.get(CameraFeatures.focusPoint)).setValue(new Point(x, y));
+  public void setFocusPoint(@NonNull final Result result, Point point) {
+    ((FocusPointFeature) cameraFeatures.get(CameraFeatures.focusPoint)).setValue(point);
     cameraFeatures.get(CameraFeatures.focusPoint).updateBuilder(previewRequestBuilder);
 
     refreshPreviewCaptureSession(
