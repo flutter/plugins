@@ -103,7 +103,8 @@ void main() {
         ]),
       );
 
-      expect(printedMessages, contains('Linting plugin1.podspec'));
+      expect(
+          printedMessages, contains('Linting plugin1.podspec'));
       expect(printedMessages, contains('Foo'));
       expect(printedMessages, contains('Bar'));
     });
@@ -165,7 +166,8 @@ void main() {
         ]),
       );
 
-      expect(printedMessages, contains('Linting plugin1.podspec'));
+      expect(
+          printedMessages, contains('Linting plugin1.podspec'));
     });
   });
 }
