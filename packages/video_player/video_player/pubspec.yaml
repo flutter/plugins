@@ -34,11 +34,10 @@ dependencies:
   # TODO(amirh): Revisit this (either update this part in the  design or the pub tool).
   # https://github.com/flutter/flutter/issues/46264
   video_player_web: 
-    path: ../video_player_web
-    # git:
-    #     url: https://github.com/iAmPlus/plugins.git
-    #     ref: feature/AudioConfigurationEnabledIOS
-    #     path: packages/video_player/video_player_web
+    git:
+        url: https://github.com/iAmPlus/plugins.git
+        ref: feature/AudioConfigurationEnabledIOS
+        path: packages/video_player/video_player_web
 
   flutter:
     sdk: flutter
