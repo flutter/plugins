@@ -42,9 +42,18 @@ const Set<String> _ignoreSuffixList = <String>{
 // they shouldn't need to be very flexible. Complexity can be added as-needed
 // on a case-by-case basis.
 final RegExp _copyrightRegex = RegExp(r'^(?://|#) Copyright', multiLine: true);
+// All Flutter-authored code.
 final RegExp _bsdLicenseRegex = RegExp(
     r'^(?://|#) Use of this source code is governed by a BSD-style license',
     multiLine: true);
+// Other code. When adding license regexes here, include the copyright info to
+// ensure that any new additions are flagged for added scrutiny in review.
+// -----
+// Third-party code used in url_launcher_web.
+final RegExp _workivaLicenseRegex = RegExp(
+    r'^// Copyright 2017 Workiva Inc..*'
+    '^// Licensed under the Apache License, Version 2.0',
+    multiLine: true, dotAll: true);
 
 /// Validates that code files have copyright and license blocks.
 class LicenseCheckCommand extends PluginCommand {
@@ -95,7 +104,8 @@ class LicenseCheckCommand extends PluginCommand {
         continue;
       }
 
-      if (!_bsdLicenseRegex.hasMatch(content)) {
+      if (!_bsdLicenseRegex.hasMatch(content) &&
+          !_workivaLicenseRegex.hasMatch(content)) {
         filesWithoutDetectedLicense.add(file);
       }
     }
