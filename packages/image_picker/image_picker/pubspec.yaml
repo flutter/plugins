@@ -13,7 +13,7 @@ flutter:
       ios:
         pluginClass: FLTImagePickerPlugin
       web:
-        pluginClass: ImagePickerPlugin
+        default_package: image_picker_for_web
 
 dependencies:
   flutter:
