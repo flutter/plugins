@@ -15,6 +15,7 @@ const Set<String> _codeFileExtensions = <String>{
   '.cpp',
   '.dart',
   '.h',
+  '.html',
   '.java',
   '.m',
   '.mm',
@@ -47,14 +48,10 @@ const Set<String> _ignoredFullBasenameList = <String>{
 // they shouldn't need to be very flexible. Complexity can be added as-needed
 // on a case-by-case basis.
 final RegExp _copyrightRegex =
-    RegExp(r'^(?://|#) Copyright \d+,? ([^.]+)', multiLine: true);
-// All Flutter-authored code.
-final RegExp _bsdLicenseRegex = RegExp(
-    r'^(?://|#) Use of this source code is governed by a BSD-style license that can be\n'
-    r'^(?://|#) found in the LICENSE file.$',
-    multiLine: true);
-// Other code. When adding license regexes here, include the copyright info to
-// ensure that any new additions are flagged for added scrutiny in review.
+    RegExp(r'^(?://|#|<!--) Copyright \d+,? ([^.]+)', multiLine: true);
+// Non-Flutter code. When adding license regexes here, include the copyright
+// info to ensure that any new additions are flagged for added scrutiny in
+// review.
 // -----
 // Third-party code used in url_launcher_web.
 final RegExp _workivaLicenseRegex = RegExp(
@@ -104,12 +101,28 @@ class LicenseCheckCommand extends PluginCommand {
     }
   }
 
+  // Creates the expected license block (without copyright) for first-party
+  // code.
+  String _generateLicense(String comment, {String suffix = ''}) {
+    return '${comment}Use of this source code is governed by a BSD-style license that can be\n'
+        '${comment}found in the LICENSE file.$suffix\n';
+  }
+
   // Checks all license blocks for [codeFiles], returning false if any of them
   // fail validation.
   Future<bool> _checkLicenses(Iterable<File> codeFiles) async {
     final List<File> filesWithoutDetectedCopyright = <File>[];
     final List<File> filesWithoutDetectedLicense = <File>[];
     final List<File> misplacedThirdPartyFiles = <File>[];
+
+    // Most code file types in the repository use '//' comments.
+    final String defaultBsdLicenseBlock = _generateLicense('// ');
+    // A few file types have a different comment structure.
+    final Map<String, String> bsdLicenseBlockByExtension = <String, String>{
+      '.sh': _generateLicense('# '),
+      '.html': _generateLicense('', suffix: ' -->'),
+    };
+
     for (final File file in codeFiles) {
       _print('Checking ${file.path}');
       final String content = await file.readAsString();
@@ -125,7 +138,10 @@ class LicenseCheckCommand extends PluginCommand {
         misplacedThirdPartyFiles.add(file);
       }
 
-      if (!_bsdLicenseRegex.hasMatch(content) &&
+      final String bsdLicense =
+          bsdLicenseBlockByExtension[p.extension(file.path)] ??
+              defaultBsdLicenseBlock;
+      if (!content.contains(bsdLicense) &&
           !_workivaLicenseRegex.hasMatch(content)) {
         filesWithoutDetectedLicense.add(file);
       }

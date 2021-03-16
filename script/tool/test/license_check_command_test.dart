@@ -35,9 +35,15 @@ void main() {
 
     /// Writes a copyright+license block to [file], defaulting to a standard
     /// block for this repository.
+    ///
+    /// [commentString] is added to the start of each line.
+    /// [prefix] is added to the start of the entire block.
+    /// [suffix] is added to the end of the entire block.
     void _writeLicense(
       File file, {
-      String commentString = '//',
+      String comment = '// ',
+      String prefix = '',
+      String suffix = '',
       String copyright =
           'Copyright 2019 The Chromium Authors. All rights reserved.',
       List<String> license = const <String>[
@@ -45,11 +51,11 @@ void main() {
         'found in the LICENSE file.',
       ],
     }) {
-      List<String> lines = ['$commentString $copyright'];
+      List<String> lines = ['$prefix$comment$copyright'];
       for (String line in license) {
-        lines.add('$commentString $line');
+        lines.add('$comment$line');
       }
-      file.writeAsStringSync(lines.join('\n'));
+      file.writeAsStringSync(lines.join('\n') + suffix + '\n');
     }
 
     test('looks at only expected extensions', () async {
@@ -59,6 +65,7 @@ void main() {
         'cpp': true,
         'dart': true,
         'h': true,
+        'html': true,
         'java': true,
         'json': false,
         'm': true,
@@ -127,6 +134,26 @@ void main() {
 
       // Sanity check that the test did actually check a file.
       expect(printedMessages, contains('Checking checked.cc'));
+      expect(printedMessages, contains('All files passed validation!'));
+    });
+
+    test('handles the comment styles for all supported languages', () async {
+      File file_a = root.childFile('file_a.cc');
+      file_a.createSync();
+      _writeLicense(file_a, comment: '// ');
+      File file_b = root.childFile('file_b.sh');
+      file_b.createSync();
+      _writeLicense(file_b, comment: '# ');
+      File file_c = root.childFile('file_c.html');
+      file_c.createSync();
+      _writeLicense(file_c, comment: '', prefix: '<!-- ', suffix: ' -->');
+
+      await runner.run(<String>['license-check']);
+
+      // Sanity check that the test did actually check the files.
+      expect(printedMessages, contains('Checking file_a.cc'));
+      expect(printedMessages, contains('Checking file_b.sh'));
+      expect(printedMessages, contains('Checking file_c.html'));
       expect(printedMessages, contains('All files passed validation!'));
     });
 
