@@ -2,114 +2,113 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'dart:async';
 
 import 'package:integration_test/integration_test.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-
-class _MockCircle extends Mock implements gmaps.Circle {
-  final onClickController = StreamController<gmaps.MouseEvent>();
-  @override
-  Stream<gmaps.MouseEvent> get onClick => onClickController.stream;
-}
-
-class _MockPolygon extends Mock implements gmaps.Polygon {
-  final onClickController = StreamController<gmaps.PolyMouseEvent>();
-  @override
-  Stream<gmaps.PolyMouseEvent> get onClick => onClickController.stream;
-}
-
-class _MockPolyline extends Mock implements gmaps.Polyline {
-  final onClickController = StreamController<gmaps.PolyMouseEvent>();
-  @override
-  Stream<gmaps.PolyMouseEvent> get onClick => onClickController.stream;
-}
 
 /// Test Shapes (Circle, Polygon, Polyline)
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  bool called = false;
+  late Completer<bool> _called;
+  late Future<bool> called;
   void onTap() {
-    called = true;
+    _called.complete(true);
   }
 
   setUp(() {
-    called = false;
+    _called = Completer();
+    called = _called.future;
   });
 
   group('CircleController', () {
-    _MockCircle circle;
+    late gmaps.Circle circle;
 
     setUp(() {
-      circle = _MockCircle();
+      circle = gmaps.Circle();
     });
 
     testWidgets('onTap gets called', (WidgetTester tester) async {
       CircleController(circle: circle, consumeTapEvents: true, onTap: onTap);
-      expect(circle.onClickController.hasListener, isTrue);
-      // Simulate a click
-      await circle.onClickController.add(null);
-      expect(called, isTrue);
+
+      // Trigger a click event...
+      gmaps.Event.trigger(circle, 'click', [gmaps.MapMouseEvent()]);
+
+      // The event handling is now truly async. Wait for it...
+      expect(await called, isTrue);
     });
 
     testWidgets('update', (WidgetTester tester) async {
       final controller = CircleController(circle: circle);
-      final options = gmaps.CircleOptions()..draggable = false;
+      final options = gmaps.CircleOptions()..draggable = true;
+
+      expect(circle.draggable, isNull);
+
       controller.update(options);
-      verify(circle.options = options);
+
+      expect(circle.draggable, isTrue);
     });
   });
 
   group('PolygonController', () {
-    _MockPolygon polygon;
+    late gmaps.Polygon polygon;
 
     setUp(() {
-      polygon = _MockPolygon();
+      polygon = gmaps.Polygon();
     });
 
     testWidgets('onTap gets called', (WidgetTester tester) async {
       PolygonController(polygon: polygon, consumeTapEvents: true, onTap: onTap);
-      expect(polygon.onClickController.hasListener, isTrue);
-      // Simulate a click
-      await polygon.onClickController.add(null);
-      expect(called, isTrue);
+
+      // Trigger a click event...
+      gmaps.Event.trigger(polygon, 'click', [gmaps.MapMouseEvent()]);
+
+      // The event handling is now truly async. Wait for it...
+      expect(await called, isTrue);
     });
 
     testWidgets('update', (WidgetTester tester) async {
       final controller = PolygonController(polygon: polygon);
-      final options = gmaps.PolygonOptions()..draggable = false;
+      final options = gmaps.PolygonOptions()..draggable = true;
+
+      expect(polygon.draggable, isNull);
+
       controller.update(options);
-      verify(polygon.options = options);
+
+      expect(polygon.draggable, isTrue);
     });
   });
 
   group('PolylineController', () {
-    _MockPolyline polyline;
+    late gmaps.Polyline polyline;
 
     setUp(() {
-      polyline = _MockPolyline();
+      polyline = gmaps.Polyline();
     });
 
     testWidgets('onTap gets called', (WidgetTester tester) async {
       PolylineController(
           polyline: polyline, consumeTapEvents: true, onTap: onTap);
-      expect(polyline.onClickController.hasListener, isTrue);
-      // Simulate a click
-      await polyline.onClickController.add(null);
-      expect(called, isTrue);
+
+      // Trigger a click event...
+      gmaps.Event.trigger(polyline, 'click', [gmaps.MapMouseEvent()]);
+
+      // The event handling is now truly async. Wait for it...
+      expect(await called, isTrue);
     });
 
     testWidgets('update', (WidgetTester tester) async {
       final controller = PolylineController(polyline: polyline);
-      final options = gmaps.PolylineOptions()..draggable = false;
+      final options = gmaps.PolylineOptions()..draggable = true;
+
+      expect(polyline.draggable, isNull);
+
       controller.update(options);
-      verify(polyline.options = options);
+
+      expect(polyline.draggable, isTrue);
     });
   });
 }
