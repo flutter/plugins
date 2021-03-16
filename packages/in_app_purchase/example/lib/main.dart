@@ -13,26 +13,30 @@ void main() {
   // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
   // as part of initializing the app.
   InAppPurchaseConnection.enablePendingPurchases();
-  runApp(MyApp());
+  runApp(_MyApp());
 }
 
-const bool kAutoConsume = true;
+const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
+const String _kUpgradeId = 'upgrade';
+const String _kSilverSubscriptionId = 'subscription_silver';
+const String _kGoldSubscriptionId = 'subscription_gold';
 const List<String> _kProductIds = <String>[
   _kConsumableId,
-  'upgrade',
-  'subscription'
+  _kUpgradeId,
+  _kSilverSubscriptionId,
+  _kGoldSubscriptionId,
 ];
 
-class MyApp extends StatefulWidget {
+class _MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<_MyApp> {
   final InAppPurchaseConnection _connection = InAppPurchaseConnection.instance;
-  StreamSubscription<List<PurchaseDetails>> _subscription;
+  late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
   List<ProductDetails> _products = [];
   List<PurchaseDetails> _purchases = [];
@@ -40,11 +44,11 @@ class _MyAppState extends State<MyApp> {
   bool _isAvailable = false;
   bool _purchasePending = false;
   bool _loading = true;
-  String _queryProductError;
+  String? _queryProductError;
 
   @override
   void initState() {
-    Stream purchaseUpdated =
+    final Stream<List<PurchaseDetails>> purchaseUpdated =
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
@@ -76,7 +80,7 @@ class _MyAppState extends State<MyApp> {
         await _connection.queryProductDetails(_kProductIds.toSet());
     if (productDetailResponse.error != null) {
       setState(() {
-        _queryProductError = productDetailResponse.error.message;
+        _queryProductError = productDetailResponse.error!.message;
         _isAvailable = isAvailable;
         _products = productDetailResponse.productDetails;
         _purchases = [];
@@ -146,7 +150,7 @@ class _MyAppState extends State<MyApp> {
       );
     } else {
       stack.add(Center(
-        child: Text(_queryProductError),
+        child: Text(_queryProductError!),
       ));
     }
     if (_purchasePending) {
@@ -225,7 +229,7 @@ class _MyAppState extends State<MyApp> {
 
     // This loading previous purchases code is just a demo. Please do not use this as it is.
     // In your app you should always verify the purchase data using the `verificationData` inside the [PurchaseDetails] object before trusting it.
-    // We recommend that you use your own server to verity the purchase data.
+    // We recommend that you use your own server to verify the purchase data.
     Map<String, PurchaseDetails> purchases =
         Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
       if (purchase.pendingCompletePurchase) {
@@ -235,7 +239,7 @@ class _MyAppState extends State<MyApp> {
     }));
     productList.addAll(_products.map(
       (ProductDetails productDetails) {
-        PurchaseDetails previousPurchase = purchases[productDetails.id];
+        PurchaseDetails? previousPurchase = purchases[productDetails.id];
         return ListTile(
             title: Text(
               productDetails.title,
@@ -245,19 +249,33 @@ class _MyAppState extends State<MyApp> {
             ),
             trailing: previousPurchase != null
                 ? Icon(Icons.check)
-                : FlatButton(
+                : TextButton(
                     child: Text(productDetails.price),
-                    color: Colors.green[800],
-                    textColor: Colors.white,
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.green[800],
+                      primary: Colors.white,
+                    ),
                     onPressed: () {
+                      // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
+                      // verify the latest status of you your subscription by using server side receipt validation
+                      // and update the UI accordingly. The subscription purchase status shown
+                      // inside the app may not be accurate.
+                      final oldSubscription =
+                          _getOldSubscription(productDetails, purchases);
                       PurchaseParam purchaseParam = PurchaseParam(
                           productDetails: productDetails,
                           applicationUserName: null,
-                          sandboxTesting: true);
+                          changeSubscriptionParam: Platform.isAndroid &&
+                                  oldSubscription != null
+                              ? ChangeSubscriptionParam(
+                                  oldPurchaseDetails: oldSubscription,
+                                  prorationMode:
+                                      ProrationMode.immediateWithTimeProration)
+                              : null);
                       if (productDetails.id == _kConsumableId) {
                         _connection.buyConsumable(
                             purchaseParam: purchaseParam,
-                            autoConsume: kAutoConsume || Platform.isIOS);
+                            autoConsume: _kAutoConsume || Platform.isIOS);
                       } else {
                         _connection.buyNonConsumable(
                             purchaseParam: purchaseParam);
@@ -325,9 +343,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   void deliverProduct(PurchaseDetails purchaseDetails) async {
-    // IMPORTANT!! Always verify a purchase purchase details before delivering the product.
+    // IMPORTANT!! Always verify purchase details before delivering the product.
     if (purchaseDetails.productID == _kConsumableId) {
-      await ConsumableStore.save(purchaseDetails.purchaseID);
+      await ConsumableStore.save(purchaseDetails.purchaseID!);
       List<String> consumables = await ConsumableStore.load();
       setState(() {
         _purchasePending = false;
@@ -363,7 +381,7 @@ class _MyAppState extends State<MyApp> {
         showPendingUI();
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
-          handleError(purchaseDetails.error);
+          handleError(purchaseDetails.error!);
         } else if (purchaseDetails.status == PurchaseStatus.purchased) {
           bool valid = await _verifyPurchase(purchaseDetails);
           if (valid) {
@@ -374,7 +392,7 @@ class _MyAppState extends State<MyApp> {
           }
         }
         if (Platform.isAndroid) {
-          if (!kAutoConsume && purchaseDetails.productID == _kConsumableId) {
+          if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
             await InAppPurchaseConnection.instance
                 .consumePurchase(purchaseDetails);
           }
@@ -385,5 +403,25 @@ class _MyAppState extends State<MyApp> {
         }
       }
     });
+  }
+
+  PurchaseDetails? _getOldSubscription(
+      ProductDetails productDetails, Map<String, PurchaseDetails> purchases) {
+    // This is just to demonstrate a subscription upgrade or downgrade.
+    // This method assumes that you have only 2 subscriptions under a group, 'subscription_silver' & 'subscription_gold'.
+    // The 'subscription_silver' subscription can be upgraded to 'subscription_gold' and
+    // the 'subscription_gold' subscription can be downgraded to 'subscription_silver'.
+    // Please remember to replace the logic of finding the old subscription Id as per your app.
+    // The old subscription is only required on Android since Apple handles this internally
+    // by using the subscription group feature in iTunesConnect.
+    PurchaseDetails? oldSubscription;
+    if (productDetails.id == _kSilverSubscriptionId &&
+        purchases[_kGoldSubscriptionId] != null) {
+      oldSubscription = purchases[_kGoldSubscriptionId];
+    } else if (productDetails.id == _kGoldSubscriptionId &&
+        purchases[_kSilverSubscriptionId] != null) {
+      oldSubscription = purchases[_kSilverSubscriptionId];
+    }
+    return oldSubscription;
   }
 }

@@ -3,7 +3,26 @@
 
 [![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
 
-_See also: [Flutter's code of conduct](https://flutter.io/design-principles/#code-of-conduct)_
+_See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/master/CODE_OF_CONDUCT.md)_
+
+## Important note
+
+As of January 2021, we are no longer accepting non-critical PRs for plugins
+for which there is a corresponding [Flutter Community Plus
+Plugin](https://plus.fluttercommunity.dev/), as we hope in time to be able
+to transition users to those versions of the plugins. If you have a PR for
+something other than a critical issue (crashes, build failures, null safety, etc.)
+for any of the following plugins, we encourage you to submit it
+[there](https://github.com/fluttercommunity/plus_plugins/pulls) instead:
+- `android_alarm_manager`
+- `android_intent`
+- `battery`
+- `connectivity`
+- `device_info`
+- `package_info`
+- `sensors`
+- `share`
+- `wifi_info_flutter` (corresponds to `network_info_plus`)
 
 ## Things you will need
 
@@ -39,6 +58,28 @@ USB and debugging enabled on that device.
 
  * `cd packages/battery/example`
  * `flutter run`
+
+## Setting up XCUITests
+
+Sometimes, XCUITests are useful when integration testing a plugin that has native UI on iOS (e.g image_picker, in_app_purchase, camera, share, local_auth etc). Most of the time, XCUITests are not necessary, consider using [integration_test](https://pub.dev/packages/integration_test) if the tests are not focused on iOS system UI.
+
+If XCUITests has always been set up for the plugin, a RunnerUITests folder under `<the_plugin>/example/ios` directory can be found.
+If XCUITests has not been set up for the plugin, follow these steps to set it up:
+
+1. Open <path_to_plugin>/example/ios/Runner.xcworkspace using XCode.
+1. Create a new "UI Testing Bundle".
+1. In the target options window, populate details as following, then click on "Finish".
+  * In the "product name" field, type in "RunnerUITests".
+  * In the "Team" field, select "None".
+  * In the Organization Name field, type in "Flutter". This should usually be pre-populated.
+  * In the organization identifer field, type in "com.google". This should usually be pre-populated.
+  * In the Language field, select "Objective-C".
+  * In the Project field, select the xcodeproj "Runner" (blue color).
+  * In the Target to be Tested, select xcworkspace "Runner" (white color).
+1. A RunnerUITests folder should be created and you can start hacking in `RunnerUITests.m`.
+1. To enable the test on CI, the plugin needs to be removed from the "skip" list:
+  * Open `./cirrus.yml` and find PLUGINS_TO_SKIP_XCTESTS.
+  * Remove the plugin name from the list.
 
 ## Running the tests
 
@@ -84,14 +125,33 @@ cd android
 ./gradlew test
 ```
 
+### XCTests (iOS)
+
+XCUnitTests are typically configured to run with cocoapods in this repo. To run all the XCUnitTests for a plugin:
+
+```console
+cd ios
+pod lib lint --allow-warnings
+```
+
+XCUITests aren't usually configured with cocoapods in this repo. They are configured in a xcode workspace target named RunnerUITests.
+To run all the XCUITests in a plugin, follow the steps in a regular iOS development workflow [here](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/05-running_tests.html)
+
+For convenience, a [flutter_plugin_tools](https://pub.dev/packages/flutter_plugin_tools) command `xctest` could also be used to run all the XCUITests in the repo:
+
+```console
+pub global activate flutter_plugin_tools
+cd <path_to_plugins>/packages
+pub global run flutter_plugin_tools xctest --target RunnerUITests --skip <plugins_to_skip>
+```
+
 ## Contributing code
 
 We gladly accept contributions via GitHub pull requests.
 
 Please peruse our
-[style guide](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo) and
-[design principles](https://flutter.io/design-principles/) before
-working on anything non-trivial. These guidelines are intended to
+[style guide](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo)
+before working on anything non-trivial. These guidelines are intended to
 keep the code consistent and avoid common pitfalls.
 
 To start working on a patch:
@@ -99,7 +159,7 @@ To start working on a patch:
  * `git fetch upstream`
  * `git checkout upstream/master -b <name_of_your_branch>`
  * Hack away.
- * Verify changes with [flutter_plugin_tools](https://pub.dartlang.org/packages/flutter_plugin_tools)
+ * Verify changes with [flutter_plugin_tools](https://pub.dev/packages/flutter_plugin_tools)
 ```
 pub global activate flutter_plugin_tools
 pub global run flutter_plugin_tools format --plugins plugin_name

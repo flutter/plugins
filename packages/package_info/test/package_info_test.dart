@@ -11,7 +11,7 @@ void main() {
 
   const MethodChannel channel =
       MethodChannel('plugins.flutter.io/package_info');
-  List<MethodCall> log;
+  late List<MethodCall> log;
 
   channel.setMockMethodCallHandler((MethodCall methodCall) async {
     log.add(methodCall);

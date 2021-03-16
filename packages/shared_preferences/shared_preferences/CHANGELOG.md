@@ -1,6 +1,79 @@
-## 0.5.9
+## 2.0.6
 
 * Add `prefix` named argument to `getInstance` method.
+
+## 2.0.5
+
+* Fix missing declaration of windows' default_package
+
+## 2.0.4
+
+* Fix a regression with simultaneous writes on Android.
+
+## 2.0.3
+
+* Android: don't create additional Handler when method channel is called.
+
+## 2.0.2
+
+* Don't create additional thread pools when method channel is called.
+
+## 2.0.1
+
+* Removed deprecated [AsyncTask](https://developer.android.com/reference/android/os/AsyncTask) was deprecated in API level 30 ([#3481](https://github.com/flutter/plugins/pull/3481))
+
+## 2.0.0
+
+* Migrate to null-safety.
+
+**Breaking changes**:
+
+* Setters no longer accept null to mean removing values. If you were previously using `set*(key, null)` for removing, use `remove(key)` instead.
+
+## 0.5.13+2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.5.13+1
+
+* Update Flutter SDK constraint.
+
+## 0.5.13
+
+* Update integration test examples to use `testWidgets` instead of `test`.
+
+## 0.5.12+4
+
+* Remove unused `test` dependency.
+
+## 0.5.12+3
+
+* Check in windows/ directory for example/
+
+## 0.5.12+2
+
+* Update android compileSdkVersion to 29.
+
+## 0.5.12+1
+
+* Check in linux/ directory for example/
+
+## 0.5.12
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.5.11
+
+* Support Windows by default.
+
+## 0.5.10
+
+* Update package:e2e -> package:integration_test
+
+## 0.5.9
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
 
 ## 0.5.8
 

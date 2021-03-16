@@ -1,3 +1,40 @@
+## 5.0.0
+
+* Migrate to null safety.
+
+## 4.5.9
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 4.5.8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 4.5.7
+
+* Update Flutter SDK constraint.
+
+## 4.5.6
+
+* Fix deprecated member warning in tests.
+
+## 4.5.5
+
+* Update android compileSdkVersion to 29.
+
+## 4.5.4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 4.5.3
+
+* Update package:e2e -> package:integration_test
+
+## 4.5.2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 4.5.1
 
 * Add note on Apple sign in requirement in README.

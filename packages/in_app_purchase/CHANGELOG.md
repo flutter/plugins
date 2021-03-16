@@ -1,3 +1,116 @@
+## 0.5.1
+
+* [iOS] Introduce `SKPaymentQueueWrapper.presentCodeRedemptionSheet` 
+
+## 0.5.0
+
+* Migrate to Google Billing Library 3.0
+  * Add `obfuscatedProfileId`, `purchaseToken` in [BillingClientWrapper.launchBillingFlow].
+  * **Breaking Change**
+    * Removed `developerPayload` in [BillingClientWrapper.acknowledgePurchase], [BillingClientWrapper.consumeAsync], [InAppPurchaseConnection.completePurchase], [InAppPurchaseConnection.consumePurchase].
+    * Removed `isRewarded` from [SkuDetailsWrapper].
+    * [SkuDetailsWrapper.introductoryPriceCycles] now returns `int` instead of `String`.
+    * Above breaking changes are inline with the breaking changes introduced in [Google Play Billing 3.0 release](https://developer.android.com/google/play/billing/release-notes#3-0).
+    * Additional information on some the changes:
+      * [Dropping reward SKU support](https://support.google.com/googleplay/android-developer/answer/9155268?hl=en)
+      * [Developer payload](https://developer.android.com/google/play/billing/developer-payload)
+
+## 0.4.1
+
+* Support InApp subscription upgrade/downgrade.
+
+## 0.4.0
+
+* Migrate to nullsafety.
+* Deprecate `sandboxTesting`, introduce `simulatesAskToBuyInSandbox`.
+* **Breaking Change:**
+  * Removed `callbackChannel` in `channels.dart`, see https://github.com/flutter/flutter/issues/69225.
+
+## 0.3.5+2
+
+* Migrate deprecated references.
+
+## 0.3.5+1
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.3.5
+
+* [Android] Fixed: added support for the SERVICE_TIMEOUT (-3) response code.
+
+## 0.3.4+18
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.3.4+17
+
+* Update Flutter SDK constraint.
+
+## 0.3.4+16
+
+* Add Dartdocs to all public APIs.
+
+## 0.3.4+15
+
+* Update android compileSdkVersion to 29.
+
+## 0.3.4+14
+
+* Add test target to iOS example app Podfile
+
+## 0.3.4+13
+
+* Android Code Inspection and Clean up.
+
+## 0.3.4+12
+
+* [iOS] Fixed: finishing purchases upon payment dialog cancellation.
+
+## 0.3.4+11
+
+* [iOS] Fixed: crash when sending null for simulatesAskToBuyInSandbox parameter.
+
+## 0.3.4+10
+
+* Fixed typo 'verity' for 'verify'.
+
+## 0.3.4+9
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
+
+## 0.3.4+8
+
+* [iOS] Fixed: purchase dialog not showing always.
+* [iOS] Fixed: completing purchases could fail.
+* [iOS] Fixed: restorePurchases caused hang (call never returned).
+
+## 0.3.4+7
+
+* iOS: Fix typo of the `simulatesAskToBuyInSandbox` key.
+
+## 0.3.4+6
+
+* iOS: Fix the bug that prevent restored subscription transactions from being completed
+
+## 0.3.4+5
+
+* Added necessary README docs for getting started with Android.
+
+## 0.3.4+4
+
+* Update package:e2e -> package:integration_test
+
+## 0.3.4+3
+
+* Fixed typo 'manuelly' for 'manually'.
+
+## 0.3.4+2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
 ## 0.3.4+1
 
 * iOS: Fix the bug that `SKPaymentQueueWrapper.transactions` doesn't return all transactions.
