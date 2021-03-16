@@ -29,6 +29,10 @@ task:
         - ./script/check_publish.sh
     - name: format
       format_script: ./script/incremental_build.sh format --fail-on-change
+      license_script:
+        - cd script/tool
+        - pub get
+        - dart ./lib/src/main.dart license-check
     - name: test
       env:
         matrix:
