@@ -4,20 +4,23 @@
 
 package io.flutter.plugins.camera;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.app.Activity;
 import android.graphics.Rect;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CaptureRequest.Builder;
 import android.media.CamcorderProfile;
 import android.util.Size;
-
 import androidx.annotation.NonNull;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.concurrent.Callable;
-
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.features.CameraFeatureFactory;
 import io.flutter.plugins.camera.features.Point;
@@ -41,16 +44,9 @@ import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFea
 import io.flutter.plugins.camera.features.zoomlevel.CameraZoom;
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
 import io.flutter.view.TextureRegistry;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.util.concurrent.Callable;
+import org.junit.Before;
+import org.junit.Test;
 
 public class CameraTest {
   private CameraProperties mockCameraProperties;
