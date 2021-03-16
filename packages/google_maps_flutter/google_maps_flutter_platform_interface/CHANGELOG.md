@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Mark constructors for CameraUpdate, CircleId, MapsObjectId, MarkerId, PolygonId, PolylineId and TileOverlayId as const
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.
