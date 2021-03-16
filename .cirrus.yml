@@ -53,7 +53,8 @@ task:
       license_script:
         - cd script/tool
         - pub get
-        - dart ./lib/src/main.dart license-check
+        - cd ../..
+        - dart script/tool/lib/src/main.dart license-check
     - name: test
       env:
         matrix:
