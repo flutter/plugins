@@ -1,18 +1,14 @@
-## 0.8.0-nullsafety.3
+## 0.8.1
 
 * Solved a rotation issue on iOS which caused the default preview to be displayed as landscape right instead of portrait.
 
-## 0.8.0-nullsafety.2
+## 0.8.0
 
+
+* Stable null safety release.
 * Solved delay when using the zoom feature on iOS.
-
-## 0.8.0-nullsafety.1
-
 * Added a timeout to the pre-capture sequence on Android to prevent crashes when the camera cannot get a focus.
-
-## 0.8.0-nullsafety
-
-* Migrated to null safety.
+* Updates the example code listed in the [README.md](README.md), so it runs without errors when you simply copy/ paste it into a Flutter App.
 
 ## 0.7.0+4
 

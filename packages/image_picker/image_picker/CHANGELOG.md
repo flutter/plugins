@@ -1,3 +1,15 @@
+## 0.7.2+1
+
+* Android: fixes an issue where videos could be wrongly picked with `.jpg` extension.
+
+## 0.7.2
+
+* Run CocoaPods iOS tests in RunnerUITests target
+
+## 0.7.1
+
+* Update platform_plugin_interface version requirement.
+
 ## 0.7.0
 
 * Migrate to nullsafety

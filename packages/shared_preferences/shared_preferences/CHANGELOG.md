@@ -1,8 +1,24 @@
-## 2.0.0-nullsafety.1
+## 2.0.5
 
-* Fix crash when list string's type is dynamic.
+* Fix missing declaration of windows' default_package
 
-## 2.0.0-nullsafety
+## 2.0.4
+
+* Fix a regression with simultaneous writes on Android.
+
+## 2.0.3
+
+* Android: don't create additional Handler when method channel is called.
+
+## 2.0.2
+
+* Don't create additional thread pools when method channel is called.
+
+## 2.0.1
+
+* Removed deprecated [AsyncTask](https://developer.android.com/reference/android/os/AsyncTask) was deprecated in API level 30 ([#3481](https://github.com/flutter/plugins/pull/3481))
+
+## 2.0.0
 
 * Migrate to null-safety.
 

@@ -1,6 +1,10 @@
-## 2.0.0-nullsafety
+## 2.0.1
 
-* Migration to nnbd.
+* Updates `init` function in `MethodChannelGoogleSignIn` to parametrize `clientId` property.
+
+## 2.0.0
+
+* Migrate to null-safety.
 
 ## 1.1.3
 
