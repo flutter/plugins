@@ -54,7 +54,8 @@ final RegExp _bsdLicenseRegex = RegExp(
 final RegExp _workivaLicenseRegex = RegExp(
     r'^// Copyright 2017 Workiva Inc..*'
     '^// Licensed under the Apache License, Version 2.0',
-    multiLine: true, dotAll: true);
+    multiLine: true,
+    dotAll: true);
 
 /// Validates that code files have copyright and license blocks.
 class LicenseCheckCommand extends PluginCommand {
@@ -63,11 +64,7 @@ class LicenseCheckCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
-    argParser.addFlag('changed-only',
-        help:
-            'Checks only files changed on this branch, rather than all files.');
-  }
+  }) : super(packagesDir, fileSystem, processRunner: processRunner);
 
   @override
   final String name = 'license-check';
@@ -78,11 +75,9 @@ class LicenseCheckCommand extends PluginCommand {
 
   @override
   Future<Null> run() async {
-    Iterable<File> codeFiles =
-        (argResults['changed-only'] ? <File>[/* TODO */] : await _getAllFiles())
-            .where((File file) =>
-                _codeFileExtensions.contains(p.extension(file.path)) &&
-                !_shouldIgnoreFile(file));
+    Iterable<File> codeFiles = (await _getAllFiles()).where((File file) =>
+        _codeFileExtensions.contains(p.extension(file.path)) &&
+        !_shouldIgnoreFile(file));
 
     bool succeeded = await _checkLicenses(codeFiles);
 
