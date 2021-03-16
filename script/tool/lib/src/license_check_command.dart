@@ -46,7 +46,8 @@ const Set<String> _ignoredFullBasenameList = <String>{
 // repository should be using the same license text, comment style, etc., so
 // they shouldn't need to be very flexible. Complexity can be added as-needed
 // on a case-by-case basis.
-final RegExp _copyrightRegex = RegExp(r'^(?://|#) Copyright', multiLine: true);
+final RegExp _copyrightRegex =
+    RegExp(r'^(?://|#) Copyright \d+,? ([^.]+)', multiLine: true);
 // All Flutter-authored code.
 final RegExp _bsdLicenseRegex = RegExp(
     r'^(?://|#) Use of this source code is governed by a BSD-style license',
@@ -61,6 +62,15 @@ final RegExp _workivaLicenseRegex = RegExp(
     multiLine: true,
     dotAll: true);
 
+// TODO(stuartmorgan): Replace this with a single string once all the copyrights
+// are standardized.
+final List<String> _firstPartyAuthors = <String>[
+  'The Chromium Authors',
+  'the Chromium project authors',
+  'The Flutter Authors',
+  'the Flutter project authors',
+];
+
 /// Validates that code files have copyright and license blocks.
 class LicenseCheckCommand extends PluginCommand {
   /// Creates a new license check command for [packagesDir].
@@ -68,7 +78,8 @@ class LicenseCheckCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     Print print = print,
-  })  : _print = print, super(packagesDir, fileSystem);
+  })  : _print = print,
+        super(packagesDir, fileSystem);
 
   final Print _print;
 
@@ -97,13 +108,20 @@ class LicenseCheckCommand extends PluginCommand {
   Future<bool> _checkLicenses(Iterable<File> codeFiles) async {
     final List<File> filesWithoutDetectedCopyright = <File>[];
     final List<File> filesWithoutDetectedLicense = <File>[];
+    final List<File> misplacedThirdPartyFiles = <File>[];
     for (final File file in codeFiles) {
       _print('Checking ${file.path}');
       final String content = await file.readAsString();
 
-      if (!_copyrightRegex.hasMatch(content)) {
+      final RegExpMatch copyright = _copyrightRegex.firstMatch(content);
+      if (copyright == null) {
         filesWithoutDetectedCopyright.add(file);
         continue;
+      }
+      final String author = copyright.group(1);
+      if (!_firstPartyAuthors.contains(author) &&
+          !p.split(file.path).contains('third_party')) {
+        misplacedThirdPartyFiles.add(file);
       }
 
       if (!_bsdLicenseRegex.hasMatch(content) &&
@@ -117,6 +135,7 @@ class LicenseCheckCommand extends PluginCommand {
     final pathCompare = (File a, File b) => a.path.compareTo(b.path);
     filesWithoutDetectedCopyright.sort(pathCompare);
     filesWithoutDetectedLicense.sort(pathCompare);
+    misplacedThirdPartyFiles.sort(pathCompare);
 
     if (filesWithoutDetectedCopyright.isNotEmpty) {
       _print('No copyright line was found for the following files:');
@@ -125,7 +144,7 @@ class LicenseCheckCommand extends PluginCommand {
       }
       _print('Please check that they have a copyright and license block. '
           'If they do, the license check may need to be updated to recognize its '
-          'format.\n\n');
+          'format.\n');
     }
 
     if (filesWithoutDetectedLicense.isNotEmpty) {
@@ -136,11 +155,21 @@ class LicenseCheckCommand extends PluginCommand {
       _print('Please check that they have a license at the top of the file. '
           'If they do, the license check may need to be updated to recognize '
           'either the license or the specific format of the license '
-          'block.\n\n');
+          'block.\n');
+    }
+
+    if (misplacedThirdPartyFiles.isNotEmpty) {
+      _print('The following files do not have a recognized first-party author '
+          'but are not in a "third_party/" directory:');
+      for (final File file in misplacedThirdPartyFiles) {
+        _print('  ${file.path}');
+      }
+      _print('Please move these files to "third_party/".\n');
     }
 
     bool succeeded = filesWithoutDetectedCopyright.isEmpty &&
-        filesWithoutDetectedLicense.isEmpty;
+        filesWithoutDetectedLicense.isEmpty &&
+        misplacedThirdPartyFiles.isEmpty;
     if (succeeded) {
       _print('All files passed validation!');
     }
@@ -150,8 +179,9 @@ class LicenseCheckCommand extends PluginCommand {
   bool _shouldIgnoreFile(File file) {
     final String path = file.path;
     return _ignoreBasenameList.contains(p.basenameWithoutExtension(path)) ||
-        _ignoreSuffixList.any((String suffix) => path.endsWith(suffix) ||
-        _ignoredFullBasenameList.contains(p.basename(path)));
+        _ignoreSuffixList.any((String suffix) =>
+            path.endsWith(suffix) ||
+            _ignoredFullBasenameList.contains(p.basename(path)));
   }
 
   Future<List<File>> _getAllFiles() => packagesDir.parent

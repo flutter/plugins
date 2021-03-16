@@ -190,12 +190,50 @@ void main() {
       expect(printedMessages, isNot(contains('All files passed validation!')));
     });
 
+    test('fails if any third-party code is not in a third_party directory',
+        () async {
+      File thirdPartyFile = root.childFile('third_party.cc');
+      thirdPartyFile.createSync();
+      _writeLicense(thirdPartyFile, copyright: 'Copyright 2017 Someone Else');
+
+      await expectLater(() => runner.run(<String>['license-check']),
+          throwsA(const TypeMatcher<ToolExit>()));
+
+      // Failure should give information about the problematic files.
+      expect(
+          printedMessages,
+          contains(
+              'The following files do not have a recognized first-party author '
+              'but are not in a "third_party/" directory:'));
+      expect(printedMessages, contains('  third_party.cc'));
+      // Failure shouldn't print the success message.
+      expect(printedMessages, isNot(contains('All files passed validation!')));
+    });
+
+    test('succeeds for third-party code in a third_party directory', () async {
+      File thirdPartyFile = root
+          .childDirectory('a_plugin')
+          .childDirectory('lib')
+          .childDirectory('src')
+          .childDirectory('third_party')
+          .childFile('file.cc');
+      thirdPartyFile.createSync(recursive: true);
+      _writeLicense(thirdPartyFile, copyright: 'Copyright 2017 Someone Else');
+
+      await runner.run(<String>['license-check']);
+
+      // Sanity check that the test did actually check the file.
+      expect(printedMessages,
+          contains('Checking a_plugin/lib/src/third_party/file.cc'));
+      expect(printedMessages, contains('All files passed validation!'));
+    });
+
     test('fails for licenses that the tool does not expect', () async {
       File good = root.childFile('good.cc');
       good.createSync();
       _writeLicense(good);
-      File bad = root.childFile('bad.cc');
-      bad.createSync();
+      File bad = root.childDirectory('third_party').childFile('bad.cc');
+      bad.createSync(recursive: true);
       _writeLicense(bad, license: <String>[
         'This program is free software: you can redistribute it and/or modify',
         'it under the terms of the GNU General Public License',
@@ -207,7 +245,7 @@ void main() {
       // Failure should give information about the problematic files.
       expect(printedMessages,
           contains('No recognized license was found for the following files:'));
-      expect(printedMessages, contains('  bad.cc'));
+      expect(printedMessages, contains('  third_party/bad.cc'));
       // Failure shouldn't print the success message.
       expect(printedMessages, isNot(contains('All files passed validation!')));
     });
@@ -217,8 +255,8 @@ void main() {
       File good = root.childFile('good.cc');
       good.createSync();
       _writeLicense(good);
-      File bad = root.childFile('bad.cc');
-      bad.createSync();
+      File bad = root.childDirectory('third_party').childFile('bad.cc');
+      bad.createSync(recursive: true);
       _writeLicense(
         bad,
         copyright: 'Copyright 2017 Some New Authors',
@@ -233,7 +271,7 @@ void main() {
       // Failure should give information about the problematic files.
       expect(printedMessages,
           contains('No recognized license was found for the following files:'));
-      expect(printedMessages, contains('  bad.cc'));
+      expect(printedMessages, contains('  third_party/bad.cc'));
       // Failure shouldn't print the success message.
       expect(printedMessages, isNot(contains('All files passed validation!')));
     });
