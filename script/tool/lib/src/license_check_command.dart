@@ -50,7 +50,8 @@ final RegExp _copyrightRegex =
     RegExp(r'^(?://|#) Copyright \d+,? ([^.]+)', multiLine: true);
 // All Flutter-authored code.
 final RegExp _bsdLicenseRegex = RegExp(
-    r'^(?://|#) Use of this source code is governed by a BSD-style license',
+    r'^(?://|#) Use of this source code is governed by a BSD-style license that can be\n'
+    r'^(?://|#) found in the LICENSE file.$',
     multiLine: true);
 // Other code. When adding license regexes here, include the copyright info to
 // ensure that any new additions are flagged for added scrutiny in review.

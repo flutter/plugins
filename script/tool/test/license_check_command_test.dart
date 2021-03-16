@@ -98,7 +98,7 @@ void main() {
         'GeneratedPluginRegistrant.m',
         'generated_plugin_registrant.cc',
         'generated_plugin_registrant.cpp',
-// Ignored path suffixes.
+        // Ignored path suffixes.
         'foo.g.dart',
         'foo.mocks.dart',
         // Ignored files.
