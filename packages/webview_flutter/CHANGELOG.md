@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Add common support for Android WebView initializing(`FlutterWebView.setCommonIniter()`) [flutter/issues/70731](https://github.com/flutter/flutter/issues/70731).
+
 ## 2.0.2
 
 * Fixes bug where text fields are hidden behind the keyboard
