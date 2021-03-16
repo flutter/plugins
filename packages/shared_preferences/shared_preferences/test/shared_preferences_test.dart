@@ -203,7 +203,7 @@ void main() {
   });
 
   group('Mock with non-prefixed', () {
-    SharedPreferences prefs;
+    late SharedPreferences prefs;
 
     setUp(() async {
       SharedPreferences.setMockInitialValues(<String, String>{
@@ -218,13 +218,13 @@ void main() {
 
     test('calling mock initial values with non-prefixed keys succeeds',
         () async {
-      final String value = prefs.getString('test');
+      final String value = prefs.getString('test')!;
       expect(value, 'foo');
     });
   });
 
   group('Custom prefix', () {
-    const Map<String, dynamic> kTestValues = <String, dynamic>{
+    const Map<String, Object> kTestValues = <String, Object>{
       'flutter.String': 'hello world',
       'flutter.bool': true,
       'flutter.int': 42,
