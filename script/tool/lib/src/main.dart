@@ -19,6 +19,7 @@ import 'drive_examples_command.dart';
 import 'firebase_test_lab_command.dart';
 import 'format_command.dart';
 import 'java_test_command.dart';
+import 'license_check_command.dart';
 import 'lint_podspecs_command.dart';
 import 'list_command.dart';
 import 'test_command.dart';
@@ -50,6 +51,7 @@ void main(List<String> args) {
     ..addCommand(FirebaseTestLabCommand(packagesDir, fileSystem))
     ..addCommand(FormatCommand(packagesDir, fileSystem))
     ..addCommand(JavaTestCommand(packagesDir, fileSystem))
+    ..addCommand(LicenseCheckCommand(packagesDir, fileSystem))
     ..addCommand(LintPodspecsCommand(packagesDir, fileSystem))
     ..addCommand(ListCommand(packagesDir, fileSystem))
     ..addCommand(PublishCheckCommand(packagesDir, fileSystem))
