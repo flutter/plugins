@@ -345,6 +345,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 
 @implementation FLTCam {
   dispatch_queue_t _dispatchQueue;
+  UIDeviceOrientation _deviceOrientation;
 }
 // Format used for video and image streaming.
 FourCharCode videoFormat = kCVPixelFormatType_32BGRA;
@@ -353,6 +354,7 @@ NSString *const errorMethod = @"error";
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                        enableAudio:(BOOL)enableAudio
+                       orientation:(UIDeviceOrientation)orientation
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error {
   self = [super init];
@@ -370,6 +372,7 @@ NSString *const errorMethod = @"error";
   _exposureMode = ExposureModeAuto;
   _focusMode = FocusModeAuto;
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
+  _deviceOrientation = orientation;
 
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
@@ -389,10 +392,11 @@ NSString *const errorMethod = @"error";
   AVCaptureConnection *connection =
       [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
                                              output:_captureVideoOutput];
+    
   if ([_captureDevice position] == AVCaptureDevicePositionFront) {
     connection.videoMirrored = YES;
   }
-  connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+  
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
   [_captureSession addConnection:connection];
@@ -406,6 +410,8 @@ NSString *const errorMethod = @"error";
   [_motionManager startAccelerometerUpdates];
 
   [self setCaptureSessionPreset:_resolutionPreset];
+  [self updateOrientation];
+  
   return self;
 }
 
@@ -416,6 +422,41 @@ NSString *const errorMethod = @"error";
 - (void)stop {
   [_captureSession stopRunning];
 }
+
+- (void)setDeviceOrientation:(UIDeviceOrientation)orientation {
+    if (_deviceOrientation == orientation) {
+        return;
+    }
+    
+    _deviceOrientation = orientation;
+    [self updateOrientation];
+}
+
+- (void)updateOrientation {
+    if (_isRecording) {
+        return;
+    }
+    
+    UIDeviceOrientation orientation = (_lockedCaptureOrientation != UIDeviceOrientationUnknown)
+    ? _lockedCaptureOrientation
+    : _deviceOrientation;
+    
+    [self updateOrientation:orientation forCaptureOutput:_capturePhotoOutput];
+    [self updateOrientation:orientation forCaptureOutput:_captureVideoOutput];
+}
+
+- (void)updateOrientation:(UIDeviceOrientation) orientation
+         forCaptureOutput:(AVCaptureOutput*) captureOutput {
+    if (!captureOutput) {
+        return;
+    }
+    
+    AVCaptureConnection *connection = [captureOutput connectionWithMediaType:AVMediaTypeVideo];
+    if(connection && connection.isVideoOrientationSupported) {
+        connection.videoOrientation = [self getVideoOrientationForDeviceOrientation:orientation];
+    }
+}
+
 
 - (void)captureToFile:(FlutterResult)result API_AVAILABLE(ios(10)) {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
@@ -435,18 +476,6 @@ NSString *const errorMethod = @"error";
   if (error) {
     result(getFlutterError(error));
     return;
-  }
-
-  AVCaptureConnection *connection = [_capturePhotoOutput connectionWithMediaType:AVMediaTypeVideo];
-
-  if (connection) {
-    if (_lockedCaptureOrientation != UIDeviceOrientationUnknown) {
-      connection.videoOrientation =
-          [self getVideoOrientationForDeviceOrientation:_lockedCaptureOrientation];
-    } else {
-      connection.videoOrientation =
-          [self getVideoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]];
-    }
   }
 
   [_capturePhotoOutput capturePhotoWithSettings:settings
@@ -812,9 +841,11 @@ NSString *const errorMethod = @"error";
 - (void)stopVideoRecordingWithResult:(FlutterResult)result {
   if (_isRecording) {
     _isRecording = NO;
+    
     if (_videoWriter.status != AVAssetWriterStatusUnknown) {
       [_videoWriter finishWritingWithCompletionHandler:^{
         if (self->_videoWriter.status == AVAssetWriterStatusCompleted) {
+          [self updateOrientation];
           result(self->_videoRecordingPath);
           self->_videoRecordingPath = nil;
         } else {
@@ -854,12 +885,18 @@ NSString *const errorMethod = @"error";
     result(getFlutterError(e));
     return;
   }
-  _lockedCaptureOrientation = orientation;
+    
+    if (_lockedCaptureOrientation != orientation) {
+        _lockedCaptureOrientation = orientation;
+        [self updateOrientation];
+    }
+    
   result(nil);
 }
 
 - (void)unlockCaptureOrientationWithResult:(FlutterResult)result {
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
+  [self updateOrientation];
   result(nil);
 }
 
@@ -1101,6 +1138,7 @@ NSString *const errorMethod = @"error";
   if (_enableAudio && !_isAudioSetup) {
     [self setUpCaptureSessionForAudio];
   }
+    
   _videoWriter = [[AVAssetWriter alloc] initWithURL:outputURL
                                            fileType:AVFileTypeMPEG4
                                               error:&error];
@@ -1109,11 +1147,8 @@ NSString *const errorMethod = @"error";
     [_methodChannel invokeMethod:errorMethod arguments:error.description];
     return NO;
   }
-  NSDictionary *videoSettings = [NSDictionary
-      dictionaryWithObjectsAndKeys:AVVideoCodecH264, AVVideoCodecKey,
-                                   [NSNumber numberWithInt:_previewSize.width], AVVideoWidthKey,
-                                   [NSNumber numberWithInt:_previewSize.height], AVVideoHeightKey,
-                                   nil];
+  
+  NSDictionary *videoSettings = [_captureVideoOutput recommendedVideoSettingsForAssetWriterWithOutputFileType:AVFileTypeMPEG4];
   _videoWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
                                                          outputSettings:videoSettings];
 
@@ -1124,14 +1159,7 @@ NSString *const errorMethod = @"error";
                                  }];
 
   NSParameterAssert(_videoWriterInput);
-  CGFloat rotationDegrees;
-  if (_lockedCaptureOrientation != UIDeviceOrientationUnknown) {
-    rotationDegrees = [self getRotationFromDeviceOrientation:_lockedCaptureOrientation];
-  } else {
-    rotationDegrees = [self getRotationFromDeviceOrientation:[UIDevice currentDevice].orientation];
-  }
 
-  _videoWriterInput.transform = CGAffineTransformMakeRotation(rotationDegrees * M_PI / 180);
   _videoWriterInput.expectsMediaDataInRealTime = YES;
 
   // Add the audio input
@@ -1194,21 +1222,6 @@ NSString *const errorMethod = @"error";
     }
   }
 }
-
-- (int)getRotationFromDeviceOrientation:(UIDeviceOrientation)orientation {
-  switch (orientation) {
-    case UIDeviceOrientationPortraitUpsideDown:
-      return 270;
-    case UIDeviceOrientationLandscapeRight:
-      return 180;
-    case UIDeviceOrientationLandscapeLeft:
-      return 0;
-    case UIDeviceOrientationPortrait:
-    default:
-      return 90;
-  };
-}
-
 @end
 
 @interface CameraPlugin ()
@@ -1257,7 +1270,13 @@ NSString *const errorMethod = @"error";
 
 - (void)orientationChanged:(NSNotification *)note {
   UIDevice *device = note.object;
-  [self sendDeviceOrientation:device.orientation];
+  UIDeviceOrientation orientation = device.orientation;
+  
+    if (_camera) {
+        [_camera setDeviceOrientation:orientation];
+    }
+  
+  [self sendDeviceOrientation:orientation];
 }
 
 - (void)sendDeviceOrientation:(UIDeviceOrientation)orientation {
@@ -1318,6 +1337,7 @@ NSString *const errorMethod = @"error";
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
                                          enableAudio:[enableAudio boolValue]
+                                         orientation: [[UIDevice currentDevice] orientation]
                                        dispatchQueue:_dispatchQueue
                                                error:&error];
 

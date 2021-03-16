@@ -116,12 +116,14 @@ class FakeController extends ValueNotifier<CameraValue>
 }
 
 void main() {
-  group('rotated box', () {
+  group('RotatedBox (Android only)', () {
     testWidgets(
         'when recording rotatedBox should turn according to recording orientation',
         (
       WidgetTester tester,
     ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
       final FakeController controller = FakeController();
       controller.value = controller.value.copyWith(
         isInitialized: true,
@@ -145,6 +147,8 @@ void main() {
       RotatedBox rotatedBox =
           tester.widget<RotatedBox>(find.byType(RotatedBox));
       expect(rotatedBox.quarterTurns, 1);
+
+      debugDefaultTargetPlatformOverride = null;
     });
 
     testWidgets(
@@ -152,6 +156,8 @@ void main() {
         (
       WidgetTester tester,
     ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
       final FakeController controller = FakeController();
       controller.value = controller.value.copyWith(
         isInitialized: true,
@@ -174,6 +180,8 @@ void main() {
       RotatedBox rotatedBox =
           tester.widget<RotatedBox>(find.byType(RotatedBox));
       expect(rotatedBox.quarterTurns, 3);
+
+      debugDefaultTargetPlatformOverride = null;
     });
 
     testWidgets(
@@ -181,6 +189,8 @@ void main() {
         (
       WidgetTester tester,
     ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
       final FakeController controller = FakeController();
       controller.value = controller.value.copyWith(
         isInitialized: true,
@@ -202,6 +212,28 @@ void main() {
       RotatedBox rotatedBox =
           tester.widget<RotatedBox>(find.byType(RotatedBox));
       expect(rotatedBox.quarterTurns, 0);
+
+      debugDefaultTargetPlatformOverride = null;
     });
+  });
+
+  testWidgets('when not on Android there should not be a rotated box',
+      (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final FakeController controller = FakeController();
+    controller.value = controller.value.copyWith(
+      isInitialized: true,
+      previewSize: Size(480, 640),
+    );
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: CameraPreview(controller),
+      ),
+    );
+    expect(find.byType(RotatedBox), findsNothing);
+    expect(find.byType(Texture), findsOneWidget);
+    debugDefaultTargetPlatformOverride = null;
   });
 }

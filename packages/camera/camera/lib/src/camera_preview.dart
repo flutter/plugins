@@ -4,6 +4,7 @@
 
 import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -28,16 +29,23 @@ class CameraPreview extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                RotatedBox(
-                  quarterTurns: _getQuarterTurns(),
-                  child:
-                      CameraPlatform.instance.buildPreview(controller.cameraId),
-                ),
+                _wrapInRotatedBox(child: controller.buildPreview()),
                 child ?? Container(),
               ],
             ),
           )
         : Container();
+  }
+
+  Widget _wrapInRotatedBox({required Widget child}) {
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      return child;
+    }
+
+    return RotatedBox(
+      quarterTurns: _getQuarterTurns(),
+      child: child,
+    );
   }
 
   bool _isLandscape() {
