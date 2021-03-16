@@ -12,7 +12,7 @@ import 'package:meta/meta.dart' show immutable;
 @immutable
 class TileOverlayId extends MapsObjectId<TileOverlay> {
   /// Creates an immutable identifier for a [TileOverlay].
-  TileOverlayId(String value) : super(value);
+  const TileOverlayId(String value) : super(value);
 }
 
 /// A set of images which are displayed on top of the base map tiles.

@@ -15,7 +15,7 @@ import 'types.dart';
 @immutable
 class PolygonId extends MapsObjectId<Polygon> {
   /// Creates an immutable identifier for a [Polygon].
-  PolygonId(String value) : super(value);
+  const PolygonId(String value) : super(value);
 }
 
 /// Draws a polygon through geographical locations on the map.

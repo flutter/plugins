@@ -109,7 +109,7 @@ class CameraPosition {
 /// Defines a camera move, supporting absolute moves as well as moves relative
 /// the current position.
 class CameraUpdate {
-  CameraUpdate._(this._json);
+  const CameraUpdate._(this._json);
 
   /// Returns a camera update that moves the camera to the specified position.
   static CameraUpdate newCameraPosition(CameraPosition cameraPosition) {
