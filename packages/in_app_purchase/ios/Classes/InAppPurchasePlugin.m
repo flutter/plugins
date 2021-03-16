@@ -93,6 +93,9 @@
     [self finishTransaction:call result:result];
   } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
     [self restoreTransactions:call result:result];
+  } else if ([@"-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]"
+                 isEqualToString:call.method]) {
+    [self presentCodeRedemptionSheet:call result:result];
   } else if ([@"-[InAppPurchasePlugin retrieveReceiptData:result:]" isEqualToString:call.method]) {
     [self retrieveReceiptData:call result:result];
   } else if ([@"-[InAppPurchasePlugin refreshReceipt:result:]" isEqualToString:call.method]) {
@@ -243,6 +246,11 @@
     return;
   }
   [self.paymentQueueHandler restoreTransactions:call.arguments];
+  result(nil);
+}
+
+- (void)presentCodeRedemptionSheet:(FlutterMethodCall *)call result:(FlutterResult)result {
+  [self.paymentQueueHandler presentCodeRedemptionSheet];
   result(nil);
 }
 

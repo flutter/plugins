@@ -63,7 +63,13 @@ class GooglePlayConnection
     BillingResultWrapper billingResultWrapper =
         await billingClient.launchBillingFlow(
             sku: purchaseParam.productDetails.id,
-            accountId: purchaseParam.applicationUserName);
+            accountId: purchaseParam.applicationUserName,
+            oldSku: purchaseParam
+                .changeSubscriptionParam?.oldPurchaseDetails.productID,
+            purchaseToken: purchaseParam.changeSubscriptionParam
+                ?.oldPurchaseDetails.verificationData.serverVerificationData,
+            prorationMode:
+                purchaseParam.changeSubscriptionParam?.prorationMode);
     return billingResultWrapper.responseCode == BillingResponse.ok;
   }
 
@@ -77,8 +83,8 @@ class GooglePlayConnection
   }
 
   @override
-  Future<BillingResultWrapper> completePurchase(PurchaseDetails purchase,
-      {String? developerPayload}) async {
+  Future<BillingResultWrapper> completePurchase(
+      PurchaseDetails purchase) async {
     if (purchase.billingClientPurchase!.isAcknowledged) {
       return BillingResultWrapper(responseCode: BillingResponse.ok);
     }
@@ -86,21 +92,18 @@ class GooglePlayConnection
       throw ArgumentError(
           'completePurchase unsuccessful. The `purchase.verificationData` is not valid');
     }
-    return await billingClient.acknowledgePurchase(
-        purchase.verificationData.serverVerificationData,
-        developerPayload: developerPayload);
+    return await billingClient
+        .acknowledgePurchase(purchase.verificationData.serverVerificationData);
   }
 
   @override
-  Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase,
-      {String? developerPayload}) {
+  Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase) {
     if (purchase.verificationData == null) {
       throw ArgumentError(
           'consumePurchase unsuccessful. The `purchase.verificationData` is not valid');
     }
-    return billingClient.consumeAsync(
-        purchase.verificationData.serverVerificationData,
-        developerPayload: developerPayload);
+    return billingClient
+        .consumeAsync(purchase.verificationData.serverVerificationData);
   }
 
   @override
@@ -174,6 +177,12 @@ class GooglePlayConnection
   Future<PurchaseVerificationData> refreshPurchaseVerificationData() async {
     throw UnsupportedError(
         'The method <refreshPurchaseVerificationData> only works on iOS.');
+  }
+
+  @override
+  Future presentCodeRedemptionSheet() async {
+    throw UnsupportedError(
+        'The method <presentCodeRedemptionSheet> only works on iOS.');
   }
 
   /// Resets the connection instance.

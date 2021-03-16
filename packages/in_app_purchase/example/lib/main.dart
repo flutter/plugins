@@ -19,10 +19,14 @@ void main() {
 const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
+const String _kUpgradeId = 'upgrade';
+const String _kSilverSubscriptionId = 'subscription_silver';
+const String _kGoldSubscriptionId = 'subscription_gold';
 const List<String> _kProductIds = <String>[
   _kConsumableId,
-  'upgrade',
-  'subscription'
+  _kUpgradeId,
+  _kSilverSubscriptionId,
+  _kGoldSubscriptionId,
 ];
 
 class _MyApp extends StatefulWidget {
@@ -252,9 +256,22 @@ class _MyAppState extends State<_MyApp> {
                       primary: Colors.white,
                     ),
                     onPressed: () {
+                      // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
+                      // verify the latest status of you your subscription by using server side receipt validation
+                      // and update the UI accordingly. The subscription purchase status shown
+                      // inside the app may not be accurate.
+                      final oldSubscription =
+                          _getOldSubscription(productDetails, purchases);
                       PurchaseParam purchaseParam = PurchaseParam(
                           productDetails: productDetails,
-                          applicationUserName: null);
+                          applicationUserName: null,
+                          changeSubscriptionParam: Platform.isAndroid &&
+                                  oldSubscription != null
+                              ? ChangeSubscriptionParam(
+                                  oldPurchaseDetails: oldSubscription,
+                                  prorationMode:
+                                      ProrationMode.immediateWithTimeProration)
+                              : null);
                       if (productDetails.id == _kConsumableId) {
                         _connection.buyConsumable(
                             purchaseParam: purchaseParam,
@@ -326,7 +343,7 @@ class _MyAppState extends State<_MyApp> {
   }
 
   void deliverProduct(PurchaseDetails purchaseDetails) async {
-    // IMPORTANT!! Always verify a purchase purchase details before delivering the product.
+    // IMPORTANT!! Always verify purchase details before delivering the product.
     if (purchaseDetails.productID == _kConsumableId) {
       await ConsumableStore.save(purchaseDetails.purchaseID!);
       List<String> consumables = await ConsumableStore.load();
@@ -386,5 +403,25 @@ class _MyAppState extends State<_MyApp> {
         }
       }
     });
+  }
+
+  PurchaseDetails? _getOldSubscription(
+      ProductDetails productDetails, Map<String, PurchaseDetails> purchases) {
+    // This is just to demonstrate a subscription upgrade or downgrade.
+    // This method assumes that you have only 2 subscriptions under a group, 'subscription_silver' & 'subscription_gold'.
+    // The 'subscription_silver' subscription can be upgraded to 'subscription_gold' and
+    // the 'subscription_gold' subscription can be downgraded to 'subscription_silver'.
+    // Please remember to replace the logic of finding the old subscription Id as per your app.
+    // The old subscription is only required on Android since Apple handles this internally
+    // by using the subscription group feature in iTunesConnect.
+    PurchaseDetails? oldSubscription;
+    if (productDetails.id == _kSilverSubscriptionId &&
+        purchases[_kGoldSubscriptionId] != null) {
+      oldSubscription = purchases[_kGoldSubscriptionId];
+    } else if (productDetails.id == _kGoldSubscriptionId &&
+        purchases[_kSilverSubscriptionId] != null) {
+      oldSubscription = purchases[_kSilverSubscriptionId];
+    }
+    return oldSubscription;
   }
 }
