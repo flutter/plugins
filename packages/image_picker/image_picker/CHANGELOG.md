@@ -1,3 +1,7 @@
+## 0.7.3
+
+* Endorse image_picker_for_web
+
 ## 0.7.2+1
 
 * Android: fixes an issue where videos could be wrongly picked with `.jpg` extension.
