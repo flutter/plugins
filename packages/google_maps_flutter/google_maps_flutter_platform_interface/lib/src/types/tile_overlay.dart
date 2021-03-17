@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:ui' show hashValues;
+
 import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart' show immutable;
 
 import 'types.dart';
-import 'package:meta/meta.dart' show immutable;
 
 /// Uniquely identifies a [TileOverlay] among [GoogleMap] tile overlays.
 @immutable
