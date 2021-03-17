@@ -6,9 +6,9 @@ import 'dart:ui' show hashValues, hashList;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_maps_flutter_platform_interface/src/types/utils/maps_object.dart';
-import 'package:google_maps_flutter_platform_interface/src/types/maps_object_updates.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/maps_object.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/maps_object_updates.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/utils/maps_object.dart';
 
 import 'test_maps_object.dart';
 
@@ -23,15 +23,15 @@ void main() {
 
   group('tile overlay updates tests', () {
     test('Correctly set toRemove, toAdd and toChange', () async {
-      final TestMapsObject to1 =
+      const TestMapsObject to1 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id1'));
-      final TestMapsObject to2 =
+      const TestMapsObject to2 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id2'));
-      final TestMapsObject to3 =
+      const TestMapsObject to3 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'));
-      final TestMapsObject to3Changed =
+      const TestMapsObject to3Changed =
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'), data: 2);
-      final TestMapsObject to4 =
+      const TestMapsObject to4 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id4'));
       final Set<TestMapsObject> previous =
           Set.from(<TestMapsObject>[to1, to2, to3]);
@@ -40,8 +40,10 @@ void main() {
       final TestMapsObjectUpdate updates =
           TestMapsObjectUpdate.from(previous, current);
 
-      final Set<MapsObjectId<TestMapsObject>> toRemove = Set.from(
-          <MapsObjectId<TestMapsObject>>[MapsObjectId<TestMapsObject>('id1')]);
+      final Set<MapsObjectId<TestMapsObject>> toRemove =
+          Set.from(<MapsObjectId<TestMapsObject>>[
+        const MapsObjectId<TestMapsObject>('id1')
+      ]);
       expect(updates.objectIdsToRemove, toRemove);
 
       final Set<TestMapsObject> toAdd = Set.from(<TestMapsObject>[to4]);
@@ -53,15 +55,15 @@ void main() {
     });
 
     test('toJson', () async {
-      final TestMapsObject to1 =
+      const TestMapsObject to1 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id1'));
-      final TestMapsObject to2 =
+      const TestMapsObject to2 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id2'));
-      final TestMapsObject to3 =
+      const TestMapsObject to3 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'));
-      final TestMapsObject to3Changed =
+      const TestMapsObject to3Changed =
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'), data: 2);
-      final TestMapsObject to4 =
+      const TestMapsObject to4 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id4'));
       final Set<TestMapsObject> previous =
           Set.from(<TestMapsObject>[to1, to2, to3]);
@@ -81,15 +83,15 @@ void main() {
     });
 
     test('equality', () async {
-      final TestMapsObject to1 =
+      const TestMapsObject to1 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id1'));
-      final TestMapsObject to2 =
+      const TestMapsObject to2 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id2'));
-      final TestMapsObject to3 =
+      const TestMapsObject to3 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'));
-      final TestMapsObject to3Changed =
+      const TestMapsObject to3Changed =
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'), data: 2);
-      final TestMapsObject to4 =
+      const TestMapsObject to4 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id4'));
       final Set<TestMapsObject> previous =
           Set.from(<TestMapsObject>[to1, to2, to3]);
@@ -109,15 +111,15 @@ void main() {
     });
 
     test('hashCode', () async {
-      final TestMapsObject to1 =
+      const TestMapsObject to1 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id1'));
-      final TestMapsObject to2 =
+      const TestMapsObject to2 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id2'));
-      final TestMapsObject to3 =
+      const TestMapsObject to3 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'));
-      final TestMapsObject to3Changed =
+      const TestMapsObject to3Changed =
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'), data: 2);
-      final TestMapsObject to4 =
+      const TestMapsObject to4 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id4'));
       final Set<TestMapsObject> previous =
           Set.from(<TestMapsObject>[to1, to2, to3]);
@@ -134,15 +136,15 @@ void main() {
     });
 
     test('toString', () async {
-      final TestMapsObject to1 =
+      const TestMapsObject to1 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id1'));
-      final TestMapsObject to2 =
+      const TestMapsObject to2 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id2'));
-      final TestMapsObject to3 =
+      const TestMapsObject to3 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'));
-      final TestMapsObject to3Changed =
+      const TestMapsObject to3Changed =
           TestMapsObject(MapsObjectId<TestMapsObject>('id3'), data: 2);
-      final TestMapsObject to4 =
+      const TestMapsObject to4 =
           TestMapsObject(MapsObjectId<TestMapsObject>('id4'));
       final Set<TestMapsObject> previous =
           Set.from(<TestMapsObject>[to1, to2, to3]);
