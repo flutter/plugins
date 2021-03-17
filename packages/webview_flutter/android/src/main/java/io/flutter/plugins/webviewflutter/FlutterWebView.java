@@ -4,19 +4,26 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -24,6 +31,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +44,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
+
+    private boolean isFullscreen = false;
+    private WebChromeClient.CustomViewCallback customViewCallback;
+    private View customView;
+    private int currentUiSettings;
+
     @Override
     public boolean onCreateWindow(
         final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
@@ -71,6 +85,78 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       resultMsg.sendToTarget();
 
       return true;
+    }
+
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    @Override
+    public void onShowCustomView(View view, CustomViewCallback callback) {
+      super.onShowCustomView(view, callback);
+      if (customView != null) {
+        callback.onCustomViewHidden();
+        return;
+      }
+      customView = view;
+      customViewCallback = callback;
+
+      Activity activity = io.flutter.plugins.webviewflutter.WebViewFlutterPlugin.activityRef.get();
+      if (activity != null) {
+        ((FrameLayout)activity.getWindow().getDecorView()).addView(view);
+        View currentView = activity.getWindow().getDecorView();
+
+        /*
+          when compileSDK gets bumped to 30, SystemUiVisibility stuff will get deprecated. Use something like
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            activity.getWindow().setDecorFitsSystemWindows();
+          }
+          else {
+            current code
+          }
+        */
+        this.currentUiSettings = currentView.getSystemUiVisibility();
+        currentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN |
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+      }
+      isFullscreen = true;
+      onScreenStateChanged(isFullscreen);
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    @Override
+    public void onHideCustomView() {
+      if (customView == null) return;
+
+      Activity activity = io.flutter.plugins.webviewflutter.WebViewFlutterPlugin.activityRef.get();
+
+      if (activity != null) {
+        ((FrameLayout) activity.getWindow().getDecorView()).removeView(this.customView);
+        this.customView = null;
+        activity.getWindow().getDecorView().setSystemUiVisibility(this.currentUiSettings);
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        customViewCallback.onCustomViewHidden();
+      }
+      isFullscreen = false;
+      onScreenStateChanged(isFullscreen);
+      super.onHideCustomView();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void onPermissionRequest(PermissionRequest request) {
+      request.grant(request.getResources());
+    }
+
+    boolean onBackPressed() {
+      if (isFullscreen) onHideCustomView();
+      return isFullscreen;
+    }
+
+    private void onScreenStateChanged(boolean isFullscreen) {
+      Map<String, Object> args = new HashMap<>();
+      args.put("isLandscape", isFullscreen);
+      methodChannel.invokeMethod("onScreenStateChanged", args);
     }
 
     @Override
