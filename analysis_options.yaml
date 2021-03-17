@@ -238,3 +238,8 @@ linter:
     # - use_to_and_as_if_applicable # has false positives, so we prefer to catch this by code-review
     - valid_regexps
     - void_checks
+    ### Local flutter/plugins changes ###
+    # These are from flutter/flutter/packages, so will need to be preserved
+    # separately when moving to a shared file.
+    - no_runtimeType_toString # use objectRuntimeType from package:foundation
+    - public_member_api_docs # see https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo#documentation-dartdocs-javadocs-etc
