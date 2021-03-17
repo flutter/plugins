@@ -1,3 +1,7 @@
+## 3.0.3
+
+* Re-endorse connectivity_for_web
+
 ## 3.0.2
 
 * Update platform_plugin_interface version requirement.
