@@ -1,6 +1,10 @@
-## 2.0.2
+## 2.0.3
 
 * iOS: Update texture on `seekTo`.
+
+## 2.0.2
+
+* Fix `VideoPlayerValue` size and aspect ratio documentation
 
 ## 2.0.1
 
