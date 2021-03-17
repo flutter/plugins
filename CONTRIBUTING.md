@@ -61,7 +61,7 @@ USB and debugging enabled on that device.
 
 ## Setting up XCUITests
 
-Sometimes, XCUITests are useful when integration testing a plugin that has native UI on iOS (e.g image_picker, in_app_purchase, camera, share, local_auth etc). Most of the time, XCUITests are not necessary, consider using [integration_test](https://pub.dev/packages/integration_test) if the tests are not focused on iOS system UI.
+Sometimes, XCUITests are useful when integration testing a plugin that has native UI on iOS (e.g image_picker, in_app_purchase, camera, share, local_auth etc). Most of the time, XCUITests are not necessary, consider using `integration_test` if the tests are not focused on iOS system UI.
 
 If XCUITests has always been set up for the plugin, a RunnerUITests folder under `<the_plugin>/example/ios` directory can be found.
 If XCUITests has not been set up for the plugin, follow these steps to set it up:
