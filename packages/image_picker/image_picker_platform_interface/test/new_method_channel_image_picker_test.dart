@@ -15,12 +15,12 @@ void main() {
     MethodChannelImagePicker picker = MethodChannelImagePicker();
 
     final List<MethodCall> log = <MethodCall>[];
+    dynamic returnValue = '';
 
-
-    setUpAll(() {
+    setUp(() {
       picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
-        return '';
+        return returnValue;
       });
 
       log.clear();
@@ -199,6 +199,7 @@ void main() {
 
     group('#pickMultiImage', () {
       test('calls the method correctly', () async {
+        returnValue = ['0', '1'];
         await picker.pickMultiImage();
 
         expect(
@@ -214,6 +215,7 @@ void main() {
       });
 
       test('passes the width and height arguments correctly', () async {
+        returnValue = ['0', '1'];
         await picker.pickMultiImage();
         await picker.pickMultiImage(
           maxWidth: 10.0,
@@ -282,6 +284,7 @@ void main() {
       });
 
       test('does not accept a negative width or height argument', () {
+        returnValue = ['0', '1'];
         expect(
           () => picker.pickMultiImage(maxWidth: -1.0),
           throwsArgumentError,
