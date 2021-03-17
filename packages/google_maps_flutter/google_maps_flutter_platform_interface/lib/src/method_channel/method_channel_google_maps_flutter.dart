@@ -414,10 +414,11 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   Future<bool> isMarkerInfoWindowShown(
     MarkerId markerId, {
     required int mapId,
-  }) {
+  }) async {
     assert(markerId != null);
-    return channel(mapId).invokeMethod<bool>('markers#isInfoWindowShown',
-        <String, String>{'markerId': markerId.value}) as Future<bool>;
+    bool? res  = await channel(mapId).invokeMethod<bool?>('markers#isInfoWindowShown',
+        <String, String>{'markerId': markerId.value}) ;
+    return res!;
   }
 
   @override
