@@ -31,7 +31,7 @@ class GoogleMapController {
   late HtmlElement _div;
 
   /// The Flutter widget that will contain the rendered Map. Used for caching.
-  HtmlElementView get widget {
+  Widget get widget {
     if (_widget == null && !_streamController.isClosed) {
       _widget = HtmlElementView(
         viewType: _getViewType(_mapId),
