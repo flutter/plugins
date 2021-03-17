@@ -2,114 +2,101 @@
 // in google_maps_flutter_web_integration_tests/integration_test/google_maps_plugin_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i6;
+import 'dart:async' as _i5;
 
-import 'package:flutter/src/widgets/framework.dart' as _i2;
 import 'package:google_maps_flutter_platform_interface/src/events/map_event.dart'
-    as _i7;
+    as _i6;
 import 'package:google_maps_flutter_platform_interface/src/types/camera.dart'
-    as _i8;
+    as _i7;
 import 'package:google_maps_flutter_platform_interface/src/types/circle_updates.dart'
-    as _i9;
+    as _i8;
 import 'package:google_maps_flutter_platform_interface/src/types/location.dart'
-    as _i3;
+    as _i2;
 import 'package:google_maps_flutter_platform_interface/src/types/marker.dart'
-    as _i13;
-import 'package:google_maps_flutter_platform_interface/src/types/marker_updates.dart'
     as _i12;
-import 'package:google_maps_flutter_platform_interface/src/types/polygon_updates.dart'
-    as _i10;
-import 'package:google_maps_flutter_platform_interface/src/types/polyline_updates.dart'
+import 'package:google_maps_flutter_platform_interface/src/types/marker_updates.dart'
     as _i11;
+import 'package:google_maps_flutter_platform_interface/src/types/polygon_updates.dart'
+    as _i9;
+import 'package:google_maps_flutter_platform_interface/src/types/polyline_updates.dart'
+    as _i10;
 import 'package:google_maps_flutter_platform_interface/src/types/screen_coordinate.dart'
-    as _i4;
-import 'package:google_maps_flutter_web/google_maps_flutter_web.dart' as _i5;
+    as _i3;
+import 'package:google_maps_flutter_web/google_maps_flutter_web.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: comment_references
 // ignore_for_file: unnecessary_parenthesis
 
-class _FakeWidget extends _i1.Fake implements _i2.Widget {
-  // ---   ADDED BY HAND ---
-  @override
-  String toString({dynamic minLevel}) {
-    return super.toString();
-  }
-  // --- / ADDED BY HAND ---
-}
+class _FakeLatLngBounds extends _i1.Fake implements _i2.LatLngBounds {}
 
-class _FakeLatLngBounds extends _i1.Fake implements _i3.LatLngBounds {}
+class _FakeScreenCoordinate extends _i1.Fake implements _i3.ScreenCoordinate {}
 
-class _FakeScreenCoordinate extends _i1.Fake implements _i4.ScreenCoordinate {}
-
-class _FakeLatLng extends _i1.Fake implements _i3.LatLng {}
+class _FakeLatLng extends _i1.Fake implements _i2.LatLng {}
 
 /// A class which mocks [GoogleMapController].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGoogleMapController extends _i1.Mock
-    implements _i5.GoogleMapController {
+    implements _i4.GoogleMapController {
   @override
-  _i2.Widget get widget => (super.noSuchMethod(Invocation.getter(#widget),
-      returnValue: _FakeWidget()) as _i2.Widget);
-  @override
-  _i6.Stream<_i7.MapEvent<dynamic>> get events =>
+  _i5.Stream<_i6.MapEvent<dynamic>> get events =>
       (super.noSuchMethod(Invocation.getter(#events),
-              returnValue: Stream<_i7.MapEvent<dynamic>>.empty())
-          as _i6.Stream<_i7.MapEvent<dynamic>>);
+              returnValue: Stream<_i6.MapEvent<dynamic>>.empty())
+          as _i5.Stream<_i6.MapEvent<dynamic>>);
   @override
   void updateRawOptions(Map<String, dynamic>? optionsUpdate) =>
       super.noSuchMethod(Invocation.method(#updateRawOptions, [optionsUpdate]),
           returnValueForMissingStub: null);
   @override
-  _i6.Future<_i3.LatLngBounds> getVisibleRegion() =>
+  _i5.Future<_i2.LatLngBounds> getVisibleRegion() =>
       (super.noSuchMethod(Invocation.method(#getVisibleRegion, []),
               returnValue: Future.value(_FakeLatLngBounds()))
-          as _i6.Future<_i3.LatLngBounds>);
+          as _i5.Future<_i2.LatLngBounds>);
   @override
-  _i6.Future<_i4.ScreenCoordinate> getScreenCoordinate(_i3.LatLng? latLng) =>
+  _i5.Future<_i3.ScreenCoordinate> getScreenCoordinate(_i2.LatLng? latLng) =>
       (super.noSuchMethod(Invocation.method(#getScreenCoordinate, [latLng]),
               returnValue: Future.value(_FakeScreenCoordinate()))
-          as _i6.Future<_i4.ScreenCoordinate>);
+          as _i5.Future<_i3.ScreenCoordinate>);
   @override
-  _i6.Future<_i3.LatLng> getLatLng(_i4.ScreenCoordinate? screenCoordinate) =>
+  _i5.Future<_i2.LatLng> getLatLng(_i3.ScreenCoordinate? screenCoordinate) =>
       (super.noSuchMethod(Invocation.method(#getLatLng, [screenCoordinate]),
-          returnValue: Future.value(_FakeLatLng())) as _i6.Future<_i3.LatLng>);
+          returnValue: Future.value(_FakeLatLng())) as _i5.Future<_i2.LatLng>);
   @override
-  _i6.Future<void> moveCamera(_i8.CameraUpdate? cameraUpdate) =>
+  _i5.Future<void> moveCamera(_i7.CameraUpdate? cameraUpdate) =>
       (super.noSuchMethod(Invocation.method(#moveCamera, [cameraUpdate]),
           returnValue: Future.value(null),
-          returnValueForMissingStub: Future.value()) as _i6.Future<void>);
+          returnValueForMissingStub: Future.value()) as _i5.Future<void>);
   @override
-  _i6.Future<double> getZoomLevel() =>
+  _i5.Future<double> getZoomLevel() =>
       (super.noSuchMethod(Invocation.method(#getZoomLevel, []),
-          returnValue: Future.value(0.0)) as _i6.Future<double>);
+          returnValue: Future.value(0.0)) as _i5.Future<double>);
   @override
-  void updateCircles(_i9.CircleUpdates? updates) =>
+  void updateCircles(_i8.CircleUpdates? updates) =>
       super.noSuchMethod(Invocation.method(#updateCircles, [updates]),
           returnValueForMissingStub: null);
   @override
-  void updatePolygons(_i10.PolygonUpdates? updates) =>
+  void updatePolygons(_i9.PolygonUpdates? updates) =>
       super.noSuchMethod(Invocation.method(#updatePolygons, [updates]),
           returnValueForMissingStub: null);
   @override
-  void updatePolylines(_i11.PolylineUpdates? updates) =>
+  void updatePolylines(_i10.PolylineUpdates? updates) =>
       super.noSuchMethod(Invocation.method(#updatePolylines, [updates]),
           returnValueForMissingStub: null);
   @override
-  void updateMarkers(_i12.MarkerUpdates? updates) =>
+  void updateMarkers(_i11.MarkerUpdates? updates) =>
       super.noSuchMethod(Invocation.method(#updateMarkers, [updates]),
           returnValueForMissingStub: null);
   @override
-  void showInfoWindow(_i13.MarkerId? markerId) =>
+  void showInfoWindow(_i12.MarkerId? markerId) =>
       super.noSuchMethod(Invocation.method(#showInfoWindow, [markerId]),
           returnValueForMissingStub: null);
   @override
-  void hideInfoWindow(_i13.MarkerId? markerId) =>
+  void hideInfoWindow(_i12.MarkerId? markerId) =>
       super.noSuchMethod(Invocation.method(#hideInfoWindow, [markerId]),
           returnValueForMissingStub: null);
   @override
-  bool isInfoWindowShown(_i13.MarkerId? markerId) =>
+  bool isInfoWindowShown(_i12.MarkerId? markerId) =>
       (super.noSuchMethod(Invocation.method(#isInfoWindowShown, [markerId]),
           returnValue: false) as bool);
 }
