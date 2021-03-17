@@ -1,8 +1,4 @@
-## 1.1.0-nullsafety.1
-
-* Bump Dart SDK to support null safety.
-
-## 1.1.0-nullsafety
+## 2.0.0
 
 * Migrate to null safety.
 

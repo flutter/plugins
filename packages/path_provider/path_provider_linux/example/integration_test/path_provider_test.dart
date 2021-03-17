@@ -1,17 +1,20 @@
-// Copyright 2019, the Chromium project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2019, the Chromium project authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// @dart=2.9
 
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('getTemporaryDirectory', (WidgetTester tester) async {
-    final Directory result = await getTemporaryDirectory();
+    final PathProviderLinux provider = PathProviderLinux();
+    final String result = await provider.getTemporaryPath();
     _verifySampleFile(result, 'temporaryDirectory');
   });
 
@@ -19,25 +22,29 @@ void main() {
     if (!Platform.isLinux) {
       return;
     }
-    final Directory result = await getDownloadsDirectory();
+    final PathProviderLinux provider = PathProviderLinux();
+    final String result = await provider.getDownloadsPath();
     _verifySampleFile(result, 'downloadDirectory');
   });
 
   testWidgets('getApplicationDocumentsDirectory', (WidgetTester tester) async {
-    final Directory result = await getApplicationDocumentsDirectory();
+    final PathProviderLinux provider = PathProviderLinux();
+    final String result = await provider.getApplicationDocumentsPath();
     _verifySampleFile(result, 'applicationDocuments');
   });
 
   testWidgets('getApplicationSupportDirectory', (WidgetTester tester) async {
-    final Directory result = await getApplicationSupportDirectory();
+    final PathProviderLinux provider = PathProviderLinux();
+    final String result = await provider.getApplicationSupportPath();
     _verifySampleFile(result, 'applicationSupport');
   });
 }
 
-/// Verify a file called [name] in [directory] by recreating it with test
+/// Verify a file called [name] in [directoryPath] by recreating it with test
 /// contents when necessary.
-void _verifySampleFile(Directory directory, String name) {
-  final File file = File('${directory.path}/$name');
+void _verifySampleFile(String directoryPath, String name) {
+  final Directory directory = Directory(directoryPath);
+  final File file = File('${directory.path}${Platform.pathSeparator}$name');
 
   if (file.existsSync()) {
     file.deleteSync();

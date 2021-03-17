@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.8
-
 import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 import 'package:wifi_info_flutter_platform_interface/wifi_info_flutter_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:mockito/mockito.dart';
 
 const String kWifiNameResult = '1337wifi';
 const String kWifiBSSIDResult = 'c0:ff:33:c0:d3:55';
@@ -20,7 +16,7 @@ const LocationAuthorizationStatus kGetLocationResult =
 
 void main() {
   group('$WifiInfo', () {
-    WifiInfo wifiInfo;
+    late WifiInfo wifiInfo;
     MockWifiInfoFlutterPlatform fakePlatform;
 
     setUp(() async {
@@ -30,17 +26,17 @@ void main() {
     });
 
     test('getWifiName', () async {
-      String result = await wifiInfo.getWifiName();
+      String? result = await wifiInfo.getWifiName();
       expect(result, kWifiNameResult);
     });
 
     test('getWifiBSSID', () async {
-      String result = await wifiInfo.getWifiBSSID();
+      String? result = await wifiInfo.getWifiBSSID();
       expect(result, kWifiBSSIDResult);
     });
 
     test('getWifiIP', () async {
-      String result = await wifiInfo.getWifiIP();
+      String? result = await wifiInfo.getWifiIP();
       expect(result, kWifiIpAddressResult);
     });
 
@@ -58,27 +54,30 @@ void main() {
   });
 }
 
-class MockWifiInfoFlutterPlatform extends Mock
-    with MockPlatformInterfaceMixin
-    implements WifiInfoFlutterPlatform {
-  Future<String> getWifiName() async {
+class MockWifiInfoFlutterPlatform extends WifiInfoFlutterPlatform {
+  @override
+  Future<String?> getWifiName() async {
     return kWifiNameResult;
   }
 
-  Future<String> getWifiBSSID() async {
+  @override
+  Future<String?> getWifiBSSID() async {
     return kWifiBSSIDResult;
   }
 
-  Future<String> getWifiIP() async {
+  @override
+  Future<String?> getWifiIP() async {
     return kWifiIpAddressResult;
   }
 
+  @override
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
     bool requestAlwaysLocationUsage = false,
   }) async {
     return kRequestLocationResult;
   }
 
+  @override
   Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
     return kGetLocationResult;
   }

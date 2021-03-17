@@ -1,10 +1,8 @@
-## 0.1.0-nullsafety.1
-
-* Bump Dart SDK to support null safety.
-
-## 0.1.0-nullsafety
+## 2.0.0
 
 * Migrate to null-safety.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Set `implementation` in pubspec.yaml
 
 ## 0.0.2+1
 

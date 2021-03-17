@@ -17,16 +17,16 @@ class Cap {
   ///
   /// This is the default cap type at start and end vertices of Polylines with
   /// solid stroke pattern.
-  static const Cap buttCap = Cap._(<dynamic>['buttCap']);
+  static const Cap buttCap = Cap._(<Object>['buttCap']);
 
   /// Cap that is a semicircle with radius equal to half the stroke width,
   /// centered at the start or end vertex of a [Polyline] with solid stroke
   /// pattern.
-  static const Cap roundCap = Cap._(<dynamic>['roundCap']);
+  static const Cap roundCap = Cap._(<Object>['roundCap']);
 
   /// Cap that is squared off after extending half the stroke width beyond the
   /// start or end vertex of a [Polyline] with solid stroke pattern.
-  static const Cap squareCap = Cap._(<dynamic>['squareCap']);
+  static const Cap squareCap = Cap._(<Object>['squareCap']);
 
   /// Constructs a new CustomCap with a bitmap overlay centered at the start or
   /// end vertex of a [Polyline], orientated according to the direction of the line's
@@ -45,11 +45,11 @@ class Cap {
   }) {
     assert(bitmapDescriptor != null);
     assert(refWidth > 0.0);
-    return Cap._(<dynamic>['customCap', bitmapDescriptor.toJson(), refWidth]);
+    return Cap._(<Object>['customCap', bitmapDescriptor.toJson(), refWidth]);
   }
 
-  final dynamic _json;
+  final Object _json;
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() => _json;
+  Object toJson() => _json;
 }

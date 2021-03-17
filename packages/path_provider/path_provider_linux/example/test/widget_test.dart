@@ -1,3 +1,7 @@
+// Copyright 2017 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 // This is a basic Flutter widget test.
 //
 // To perform an interaction with a widget in your test, use the WidgetTester
@@ -30,7 +34,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data.startsWith('Temp Directory: /tmp'),
+                widget.data!.startsWith('Temp Directory: /tmp'),
           ),
           findsOneWidget,
         );
@@ -48,7 +52,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data.startsWith('Documents Directory: /'),
+                widget.data!.startsWith('Documents Directory: /'),
           ),
           findsOneWidget,
         );
@@ -66,7 +70,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data.startsWith('Downloads Directory: /'),
+                widget.data!.startsWith('Downloads Directory: /'),
           ),
           findsOneWidget,
         );
@@ -85,7 +89,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data.startsWith('Application Support Directory: /'),
+                widget.data!.startsWith('Application Support Directory: /'),
           ),
           findsOneWidget,
         );

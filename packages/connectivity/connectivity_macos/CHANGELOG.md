@@ -1,6 +1,7 @@
-## 0.2.0-nullsafety
+## 0.2.0
 
-* Update Dart SDK constraint.
+* Remove placeholder Dart file.
+* Update Dart SDK constraint for compatibility with null safety.
 
 ## 0.1.0+8
 

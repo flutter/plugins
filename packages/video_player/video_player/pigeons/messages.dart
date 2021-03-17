@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 // @dart = 2.9
 
 import 'package:pigeon/pigeon_lib.dart';
@@ -54,6 +58,7 @@ abstract class VideoPlayerApi {
 
 void configurePigeon(PigeonOptions opts) {
   opts.dartOut = '../video_player_platform_interface/lib/messages.dart';
+  opts.dartTestOut = '../video_player_platform_interface/lib/test.dart';
   opts.objcHeaderOut = 'ios/Classes/messages.h';
   opts.objcSourceOut = 'ios/Classes/messages.m';
   opts.objcOptions.prefix = 'FLT';

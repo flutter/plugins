@@ -1,6 +1,6 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'package:in_app_purchase/src/in_app_purchase/purchase_details.dart';
 import 'package:test/test.dart';
@@ -46,6 +46,20 @@ final PurchaseHistoryRecordWrapper dummyPurchaseHistoryRecord =
   developerPayload: 'dummy payload',
 );
 
+final PurchaseWrapper dummyOldPurchase = PurchaseWrapper(
+  orderId: 'oldOrderId',
+  packageName: 'oldPackageName',
+  purchaseTime: 0,
+  signature: 'oldSignature',
+  sku: 'oldSku',
+  purchaseToken: 'oldPurchaseToken',
+  isAutoRenewing: false,
+  originalJson: '',
+  developerPayload: 'old dummy payload',
+  isAcknowledged: true,
+  purchaseState: PurchaseStateWrapper.purchased,
+);
+
 void main() {
   group('PurchaseWrapper', () {
     test('converts from map', () {
@@ -62,6 +76,7 @@ void main() {
       expect(details.purchaseID, dummyPurchase.orderId);
       expect(details.productID, dummyPurchase.sku);
       expect(details.transactionDate, dummyPurchase.purchaseTime.toString());
+      expect(details.verificationData, isNotNull);
       expect(details.verificationData.source, IAPSource.GooglePlay);
       expect(details.verificationData.localVerificationData,
           dummyPurchase.originalJson);
@@ -111,6 +126,18 @@ void main() {
       expect(parsed.responseCode, equals(expected.responseCode));
       expect(parsed.purchasesList, containsAll(expected.purchasesList));
     });
+
+    test('parsed from empty map', () {
+      final PurchasesResultWrapper parsed =
+          PurchasesResultWrapper.fromJson(<String, dynamic>{});
+      expect(
+          parsed.billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(parsed.responseCode, BillingResponse.error);
+      expect(parsed.purchasesList, isEmpty);
+    });
   });
 
   group('PurchasesHistoryResult', () {
@@ -138,6 +165,17 @@ void main() {
       expect(parsed.billingResult, equals(billingResult));
       expect(parsed.purchaseHistoryRecordList,
           containsAll(expected.purchaseHistoryRecordList));
+    });
+
+    test('parsed from empty map', () {
+      final PurchasesHistoryResult parsed =
+          PurchasesHistoryResult.fromJson(<String, dynamic>{});
+      expect(
+          parsed.billingResult,
+          equals(BillingResultWrapper(
+              responseCode: BillingResponse.error,
+              debugMessage: kInvalidBillingResultErrorMessage)));
+      expect(parsed.purchaseHistoryRecordList, isEmpty);
     });
   });
 }

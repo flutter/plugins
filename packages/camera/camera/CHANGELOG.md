@@ -1,3 +1,108 @@
+## 0.8.0
+
+* Stable null safety release.
+* Solved delay when using the zoom feature on iOS.
+* Added a timeout to the pre-capture sequence on Android to prevent crashes when the camera cannot get a focus.
+* Updates the example code listed in the [README.md](README.md), so it runs without errors when you simply copy/ paste it into a Flutter App.
+
+## 0.7.0+4
+
+* Fix crash when taking picture with orientation lock
+
+## 0.7.0+3
+
+* Clockwise rotation of focus point in android 
+
+## 0.7.0+2
+
+* Fix example reference in README.
+* Revert compileSdkVersion back to 29 (from 30) as this is causing problems with add-to-app configurations.
+
+## 0.7.0+1
+
+* Ensure communication from JAVA to Dart is done on the main UI thread.
+
+## 0.7.0
+
+* BREAKING CHANGE: `CameraValue.aspectRatio` now returns `width / height` rather than `height / width`. [(commit)](https://github.com/flutter/plugins/commit/100c7470d4066b1d0f8f7e4ec6d7c943e736f970)
+  * Added support for capture orientation locking on Android and iOS.
+  * Fixed camera preview not rotating correctly on Android and iOS.
+  * Fixed camera preview sometimes appearing stretched on Android and iOS.
+  * Fixed videos & photos saving with the incorrect rotation on iOS.
+* New Features:
+  * Adds auto focus support for Android and iOS implementations. [(commmit)](https://github.com/flutter/plugins/commit/71a831790220f898bf8120c8a23840ac6e742db5)
+  * Adds ImageFormat selection for ImageStream and Video(iOS only). [(commit)](https://github.com/flutter/plugins/commit/da1b4638b750a5ff832d7be86a42831c42c6d6c0)
+* Bug Fixes:
+  * Fixes crash when taking a picture on iOS devices without flash. [(commit)](https://github.com/flutter/plugins/commit/831344490984b1feec007afc9c8595d80b6c13f4)
+  * Make sure the configured zoom scale is copied over to the final capture builder on Android. Fixes the issue where the preview is zoomed but the final picture is not. [(commit)](https://github.com/flutter/plugins/commit/5916f55664e1772a4c3f0c02c5c71fc11e491b76)
+  * Fixes crash with using inner camera on some Android devices. [(commit)](https://github.com/flutter/plugins/commit/980b674cb4020c1927917426211a87e275346d5e)
+  * Improved error feedback by differentiating between uninitialized and disposed camera controllers. [(commit)](https://github.com/flutter/plugins/commit/d0b7109f6b00a0eda03506fed2c74cc123ffc6f3)
+  * Fixes picture captures causing a crash on some Huawei devices. [(commit)](https://github.com/flutter/plugins/commit/6d18db83f00f4861ffe485aba2d1f8aa08845ce6)
+
+## 0.6.4+5
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.6.4+4
+
+* Set camera auto focus enabled by default.
+
+## 0.6.4+3
+
+* Detect if selected camera supports auto focus and act accordingly on Android. This solves a problem where front facing cameras are not capturing the picture because auto focus is not supported.
+
+## 0.6.4+2
+
+* Set ImageStreamReader listener to null to prevent stale images when streaming images.
+
+## 0.6.4+1
+
+* Added closeCaptureSession() to stopVideoRecording in Camera.java to fix an Android 6 crash.
+
+## 0.6.4
+
+* Adds auto exposure support for Android and iOS implementations.
+
+## 0.6.3+4
+
+* Revert previous dependency update: Changed dependency on camera_platform_interface to >=1.04 <1.1.0.
+
+## 0.6.3+3
+
+* Updated dependency on camera_platform_interface to ^1.2.0.
+
+## 0.6.3+2
+
+* Fixes crash on Android which occurs after video recording has stopped just before taking a picture.
+
+## 0.6.3+1
+
+* Fixes flash & torch modes not working on some Android devices.
+
+## 0.6.3
+
+* Adds torch mode as a flash mode for Android and iOS implementations.
+
+## 0.6.2+1
+
+* Fix the API documentation for the `CameraController.takePicture` method.
+
+## 0.6.2
+
+* Add zoom support for Android and iOS implementations.
+
+## 0.6.1+1
+
+* Added implementation of the `didFinishProcessingPhoto` on iOS which allows saving image metadata (EXIF) on iOS 11 and up.
+
+## 0.6.1
+
+* Add flash support for Android and iOS implementations.
+
+## 0.6.0+2
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
 ## 0.6.0+1
 
 Updated README to inform users that iOS 10.0+ is needed for use

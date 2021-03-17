@@ -8,18 +8,18 @@ part of 'purchase_wrapper.dart';
 
 PurchaseWrapper _$PurchaseWrapperFromJson(Map json) {
   return PurchaseWrapper(
-    orderId: json['orderId'] as String,
-    packageName: json['packageName'] as String,
-    purchaseTime: json['purchaseTime'] as int,
-    purchaseToken: json['purchaseToken'] as String,
-    signature: json['signature'] as String,
-    sku: json['sku'] as String,
+    orderId: json['orderId'] as String? ?? '',
+    packageName: json['packageName'] as String? ?? '',
+    purchaseTime: json['purchaseTime'] as int? ?? 0,
+    purchaseToken: json['purchaseToken'] as String? ?? '',
+    signature: json['signature'] as String? ?? '',
+    sku: json['sku'] as String? ?? '',
     isAutoRenewing: json['isAutoRenewing'] as bool,
-    originalJson: json['originalJson'] as String,
-    developerPayload: json['developerPayload'] as String,
-    isAcknowledged: json['isAcknowledged'] as bool,
+    originalJson: json['originalJson'] as String? ?? '',
+    developerPayload: json['developerPayload'] as String?,
+    isAcknowledged: json['isAcknowledged'] as bool? ?? false,
     purchaseState:
-        const PurchaseStateConverter().fromJson(json['purchaseState'] as int),
+        const PurchaseStateConverter().fromJson(json['purchaseState'] as int?),
   );
 }
 
@@ -41,12 +41,12 @@ Map<String, dynamic> _$PurchaseWrapperToJson(PurchaseWrapper instance) =>
 
 PurchaseHistoryRecordWrapper _$PurchaseHistoryRecordWrapperFromJson(Map json) {
   return PurchaseHistoryRecordWrapper(
-    purchaseTime: json['purchaseTime'] as int,
-    purchaseToken: json['purchaseToken'] as String,
-    signature: json['signature'] as String,
-    sku: json['sku'] as String,
-    originalJson: json['originalJson'] as String,
-    developerPayload: json['developerPayload'] as String,
+    purchaseTime: json['purchaseTime'] as int? ?? 0,
+    purchaseToken: json['purchaseToken'] as String? ?? '',
+    signature: json['signature'] as String? ?? '',
+    sku: json['sku'] as String? ?? '',
+    originalJson: json['originalJson'] as String? ?? '',
+    developerPayload: json['developerPayload'] as String?,
   );
 }
 
@@ -64,11 +64,16 @@ Map<String, dynamic> _$PurchaseHistoryRecordWrapperToJson(
 PurchasesResultWrapper _$PurchasesResultWrapperFromJson(Map json) {
   return PurchasesResultWrapper(
     responseCode:
-        const BillingResponseConverter().fromJson(json['responseCode'] as int),
-    billingResult: BillingResultWrapper.fromJson(json['billingResult'] as Map),
-    purchasesList: (json['purchasesList'] as List)
-        .map((e) => PurchaseWrapper.fromJson(e as Map))
-        .toList(),
+        const BillingResponseConverter().fromJson(json['responseCode'] as int?),
+    billingResult:
+        BillingResultWrapper.fromJson((json['billingResult'] as Map?)?.map(
+      (k, e) => MapEntry(k as String, e),
+    )),
+    purchasesList: (json['purchasesList'] as List<dynamic>?)
+            ?.map((e) =>
+                PurchaseWrapper.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList() ??
+        [],
   );
 }
 
@@ -83,10 +88,16 @@ Map<String, dynamic> _$PurchasesResultWrapperToJson(
 
 PurchasesHistoryResult _$PurchasesHistoryResultFromJson(Map json) {
   return PurchasesHistoryResult(
-    billingResult: BillingResultWrapper.fromJson(json['billingResult'] as Map),
-    purchaseHistoryRecordList: (json['purchaseHistoryRecordList'] as List)
-        .map((e) => PurchaseHistoryRecordWrapper.fromJson(e as Map))
-        .toList(),
+    billingResult:
+        BillingResultWrapper.fromJson((json['billingResult'] as Map?)?.map(
+      (k, e) => MapEntry(k as String, e),
+    )),
+    purchaseHistoryRecordList:
+        (json['purchaseHistoryRecordList'] as List<dynamic>?)
+                ?.map((e) => PurchaseHistoryRecordWrapper.fromJson(
+                    Map<String, dynamic>.from(e as Map)))
+                .toList() ??
+            [],
   );
 }
 

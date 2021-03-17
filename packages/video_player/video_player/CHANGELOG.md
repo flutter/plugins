@@ -1,22 +1,21 @@
-## 2.0.0-nullsafety.4
+## 2.0.2
 
-* Fixed an issue where `isBuffering` was not updating on Android.
+* Fix `VideoPlayerValue` size and aspect ratio documentation
 
-## 2.0.0-nullsafety.3
+## 2.0.1
 
-* Dart null safety requires `2.12`.
+* Remove the deprecated API "exoPlayer.setAudioAttributes".
 
-## 2.0.0-nullsafety.2
+## 2.0.0
 
-* Bump SDK version.
-
-## 2.0.0-nullsafety.1
-
-* Merge master.
-
-## 2.0.0-nullsafety
-
-* Migration to null safety.
+* Migrate to null safety.
+* Fix an issue where `isBuffering` was not updating on Android.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Fix `VideoPlayerValue toString()` test.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Migrate from deprecated `defaultBinaryMessenger`.
+* Fix an issue where a crash can occur after a closing a video player view on iOS.
+* Setting the `mixWithOthers` `VideoPlayerOptions` in web now is silently ignored instead of throwing an exception.
 
 ## 1.0.2
 

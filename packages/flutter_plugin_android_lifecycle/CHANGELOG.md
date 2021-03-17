@@ -1,10 +1,7 @@
-## 2.0.0-nullsafety.1
+## 2.0.0
 
-* Fix example app SDK.
-
-## 2.0.0-nullsafety
-
-* Bump Dart SDK.
+* Bump Dart SDK for null-safety compatibility.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
 
 ## 1.0.12
 

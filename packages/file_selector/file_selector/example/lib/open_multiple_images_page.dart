@@ -1,3 +1,7 @@
+// Copyright 2017 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:file_selector/file_selector.dart';
@@ -18,6 +22,10 @@ class OpenMultipleImagesPage extends StatelessWidget {
       jpgsTypeGroup,
       pngTypeGroup,
     ]);
+    if (files.isEmpty) {
+      // Operation was canceled by the user.
+      return;
+    }
     await showDialog(
       context: context,
       builder: (context) => MultipleImagesDisplay(files),
@@ -34,9 +42,11 @@ class OpenMultipleImagesPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: Text('Press to open multiple images (png, jpg)'),
               onPressed: () => _openImageFile(context),
             ),
@@ -74,7 +84,7 @@ class MultipleImagesDisplay extends StatelessWidget {
         ),
       ),
       actions: [
-        FlatButton(
+        TextButton(
           child: const Text('Close'),
           onPressed: () {
             Navigator.pop(context);

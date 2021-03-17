@@ -19,6 +19,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
   FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
+  [registrar addApplicationDelegate:instance];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

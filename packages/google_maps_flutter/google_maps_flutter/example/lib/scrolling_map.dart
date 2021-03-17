@@ -48,15 +48,12 @@ class ScrollingMapBody extends StatelessWidget {
                         target: center,
                         zoom: 11.0,
                       ),
-                      gestureRecognizers:
-                          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-                          // https://github.com/flutter/flutter/issues/28312
-                          // ignore: prefer_collection_literals
-                          <Factory<OneSequenceGestureRecognizer>>[
+                      gestureRecognizers: //
+                          <Factory<OneSequenceGestureRecognizer>>{
                         Factory<OneSequenceGestureRecognizer>(
                           () => EagerGestureRecognizer(),
                         ),
-                      ].toSet(),
+                      },
                     ),
                   ),
                 ),
@@ -84,34 +81,25 @@ class ScrollingMapBody extends StatelessWidget {
                         target: center,
                         zoom: 11.0,
                       ),
-                      markers:
-                          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-                          // https://github.com/flutter/flutter/issues/28312
-                          // ignore: prefer_collection_literals
-                          Set<Marker>.of(
-                        <Marker>[
-                          Marker(
-                            markerId: MarkerId("test_marker_id"),
-                            position: LatLng(
-                              center.latitude,
-                              center.longitude,
-                            ),
-                            infoWindow: const InfoWindow(
-                              title: 'An interesting location',
-                              snippet: '*',
-                            ),
-                          )
-                        ],
-                      ),
-                      gestureRecognizers:
-                          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-                          // https://github.com/flutter/flutter/issues/28312
-                          // ignore: prefer_collection_literals
-                          <Factory<OneSequenceGestureRecognizer>>[
+                      markers: <Marker>{
+                        Marker(
+                          markerId: MarkerId("test_marker_id"),
+                          position: LatLng(
+                            center.latitude,
+                            center.longitude,
+                          ),
+                          infoWindow: const InfoWindow(
+                            title: 'An interesting location',
+                            snippet: '*',
+                          ),
+                        ),
+                      },
+                      gestureRecognizers: <
+                          Factory<OneSequenceGestureRecognizer>>{
                         Factory<OneSequenceGestureRecognizer>(
                           () => ScaleGestureRecognizer(),
                         ),
-                      ].toSet(),
+                      },
                     ),
                   ),
                 ),

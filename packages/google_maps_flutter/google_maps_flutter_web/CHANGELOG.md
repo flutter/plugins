@@ -1,3 +1,28 @@
+## 0.2.1
+
+* Move integration tests to `example`.
+* Tweak pubspec dependencies for main package.
+
+## 0.2.0
+
+* Make this plugin compatible with the rest of null-safe plugins.
+* Noop tile overlays methods, so they don't crash on web.
+
+**NOTE**: This plugin is **not** null-safe yet!
+
+## 0.1.2
+
+* Update min Flutter SDK to 1.20.0.
+
+## 0.1.1
+
+* Auto-reverse holes if they're the same direction as the polygon. [Issue](https://github.com/flutter/flutter/issues/74096).
+
+## 0.1.0+10
+
+* Update `package:google_maps_flutter_platform_interface` to `^1.1.0`.
+* Add support for Polygon Holes.
+
 ## 0.1.0+9
 
 * Update Flutter SDK constraint.

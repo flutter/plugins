@@ -1,5 +1,10 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/utils/utils.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -28,6 +33,28 @@ void main() {
         () => parseCameraLensDirection('test'),
         throwsA(isArgumentError),
       );
+    });
+
+    test("serializeDeviceOrientation() should serialize correctly", () {
+      expect(serializeDeviceOrientation(DeviceOrientation.portraitUp),
+          "portraitUp");
+      expect(serializeDeviceOrientation(DeviceOrientation.portraitDown),
+          "portraitDown");
+      expect(serializeDeviceOrientation(DeviceOrientation.landscapeRight),
+          "landscapeRight");
+      expect(serializeDeviceOrientation(DeviceOrientation.landscapeLeft),
+          "landscapeLeft");
+    });
+
+    test("deserializeDeviceOrientation() should deserialize correctly", () {
+      expect(deserializeDeviceOrientation('portraitUp'),
+          DeviceOrientation.portraitUp);
+      expect(deserializeDeviceOrientation('portraitDown'),
+          DeviceOrientation.portraitDown);
+      expect(deserializeDeviceOrientation('landscapeRight'),
+          DeviceOrientation.landscapeRight);
+      expect(deserializeDeviceOrientation('landscapeLeft'),
+          DeviceOrientation.landscapeLeft);
     });
   });
 }

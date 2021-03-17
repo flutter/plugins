@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:html';
 import 'src/shims/dart_ui.dart' as ui;
@@ -144,6 +148,10 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   Widget buildView(int textureId) {
     return HtmlElementView(viewType: 'videoPlayer-$textureId');
   }
+
+  /// Sets the audio mode to mix with other sources (ignored)
+  @override
+  Future<void> setMixWithOthers(bool mixWithOthers) => Future<void>.value();
 }
 
 class _VideoPlayer {
