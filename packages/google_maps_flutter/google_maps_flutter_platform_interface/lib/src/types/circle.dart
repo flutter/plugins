@@ -14,7 +14,7 @@ import 'types.dart';
 @immutable
 class CircleId extends MapsObjectId<Circle> {
   /// Creates an immutable identifier for a [Circle].
-  CircleId(String value) : super(value);
+  const CircleId(String value) : super(value);
 }
 
 /// Draws a circle on the map.

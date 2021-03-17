@@ -109,7 +109,7 @@ class CameraPosition {
 /// Defines a camera move, supporting absolute moves as well as moves relative
 /// the current position.
 class CameraUpdate {
-  CameraUpdate._(this._json);
+  const CameraUpdate._(this._json);
 
   /// Returns a camera update that moves the camera to the specified position.
   static CameraUpdate newCameraPosition(CameraPosition cameraPosition) {
@@ -176,7 +176,7 @@ class CameraUpdate {
   ///
   /// Equivalent to the result of calling `zoomBy(1.0)`.
   static CameraUpdate zoomIn() {
-    return CameraUpdate._(<Object>['zoomIn']);
+    return const CameraUpdate._(<Object>['zoomIn']);
   }
 
   /// Returns a camera update that zooms the camera out, bringing the camera
@@ -184,7 +184,7 @@ class CameraUpdate {
   ///
   /// Equivalent to the result of calling `zoomBy(-1.0)`.
   static CameraUpdate zoomOut() {
-    return CameraUpdate._(<Object>['zoomOut']);
+    return const CameraUpdate._(<Object>['zoomOut']);
   }
 
   /// Returns a camera update that sets the camera zoom level.
