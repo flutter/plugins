@@ -31,13 +31,13 @@ class GoogleMapController {
   late HtmlElement _div;
 
   /// The Flutter widget that will contain the rendered Map. Used for caching.
-  Widget get widget {
+  Widget? get widget {
     if (_widget == null && !_streamController.isClosed) {
       _widget = HtmlElementView(
         viewType: _getViewType(_mapId),
       );
     }
-    return _widget!;
+    return _widget;
   }
 
   // The currently-enabled traffic layer.

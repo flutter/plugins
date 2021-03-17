@@ -314,6 +314,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
     onPlatformViewCreated.call(creationId);
 
-    return mapController.widget;
+    return mapController.widget!;
   }
 }
