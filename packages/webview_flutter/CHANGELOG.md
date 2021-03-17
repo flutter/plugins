@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Support playing videos in fullscreen.
+
 ## 2.0.2
 
 * Fixes bug where text fields are hidden behind the keyboard
