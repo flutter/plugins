@@ -106,6 +106,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.getSettings().setDomStorageEnabled(true);
     webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
+    // Zoom support.
+    // // Zooms out the content to fit on screen by width.
+    webView.getSettings().setLoadWithOverviewMode(true);
+    // // It loads the WebView with the attributes defined in the meta tag of the webpage.
+    // // So it scales the webpage as defined in the html.
+    webView.getSettings().setUseWideViewPort(true);
+    // // Pop-up zoom controls disabled. This is a temporary stop because dialog is not responding to touch events.
+    webView.getSettings().setDisplayZoomControls(false);
+    // // Enable zoom.
+    webView.getSettings().setBuiltInZoomControls(true);
+
+
     // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
     webView.getSettings().setSupportMultipleWindows(true);
     webView.setWebChromeClient(new FlutterWebChromeClient());
