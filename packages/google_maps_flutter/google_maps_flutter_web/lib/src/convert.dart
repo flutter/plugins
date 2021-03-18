@@ -128,7 +128,7 @@ bool _isJsonMapStyle(Map value) {
 }
 
 // Converts an incoming JSON-encoded Style info, into the correct gmaps array.
-List<gmaps.MapTypeStyle?> _mapStyles(String? mapStyleJson) {
+List<gmaps.MapTypeStyle> _mapStyles(String? mapStyleJson) {
   List<gmaps.MapTypeStyle> styles = [];
   if (mapStyleJson != null) {
     styles = json
