@@ -12,11 +12,11 @@ Add this to your Flutter app to:
 2. Load in app products currently owned by the user according to the underlying
    shop.
 3. Send your user to the underlying store to purchase your products.
+4. Displays a sheet that allows users to redeem subscription offer codes. (iOS 14 only)
 
 ## Getting Started
 
-This plugin is in beta. Please use with caution and file any potential issues
-you see on our [issue tracker](https://github.com/flutter/flutter/issues/new/choose).
+### Initial Configuration
 
 This plugin relies on the App Store and Google Play for making in app purchases.
 It exposes a unified surface, but you'll still need to understand and configure
@@ -59,7 +59,6 @@ void main() {
   //
   // On iOS this is a no-op.
   InAppPurchaseConnection.enablePendingPurchases();
-  
   runApp(MyApp());
 }
 ```
@@ -101,7 +100,7 @@ if (!available) {
 
 ```dart
 // Set literals require Dart 2.2. Alternatively, use `Set<String> _kIds = <String>['product1', 'product2'].toSet()`.
-const Set<String> _kIds = {'product1', 'product2'};
+const Set<String> _kIds = <String>{'product1', 'product2'};
 final ProductDetailsResponse response = await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
 if (response.notFoundIDs.isNotEmpty) {
     // Handle the error.
@@ -117,12 +116,15 @@ if (response.error != null) {
     // Handle the error.
 }
 for (PurchaseDetails purchase in response.pastPurchases) {
-    _verifyPurchase(purchase);  // Verify the purchase following the best practices for each storefront.
-    _deliverPurchase(purchase); // Deliver the purchase to the user in your app.
-    if (Platform.isIOS) {
-        // Mark that you've delivered the purchase. Only the App Store requires
-        // this final confirmation.
-        InAppPurchaseConnection.instance.completePurchase(purchase);
+    // Verify the purchase following the best practices for each storefront.
+    // [Android](https://developer.android.com/google/play/billing/security#verify)
+    // [iOS](https://developer.apple.com/documentation/storekit/in-app_purchase/validating_receipts_with_the_app_store)
+    _verifyPurchase(purchase);
+    // Deliver the purchase to the user in your app.
+    _deliverPurchase(purchase);
+    if (purchase.pendingCompletePurchase) {
+      // Mark that you've delivered the purchase. This is mandatory.
+      InAppPurchaseConnection.instance.completePurchase(purchase);
     }
 }
 ```
@@ -149,6 +151,34 @@ To listen to the update:
   }, onError: (error) {
     // handle error here.
   });
+```
+
+Here is an example of how to handle purchase updates:
+
+```dart
+void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
+  purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+    if (purchaseDetails.status == PurchaseStatus.pending) {
+      _showPendingUI();
+    } else {
+      if (purchaseDetails.status == PurchaseStatus.error) {
+        _handleError(purchaseDetails.error!);
+      } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+        bool valid = await _verifyPurchase(purchaseDetails);
+        if (valid) {
+          _deliverProduct(purchaseDetails);
+        } else {
+          _handleInvalidPurchase(purchaseDetails);
+          return;
+        }
+      }
+      if (purchaseDetails.pendingCompletePurchase) {
+        await InAppPurchaseConnection.instance
+            .completePurchase(purchaseDetails);
+      }
+    }
+  });
+}
 ```
 
 ### Making a purchase
@@ -180,13 +210,13 @@ WARNING! Failure to call `InAppPurchaseConnection.completePurchase` and get a su
 
 ### Upgrading or Downgrading an existing InApp Subscription
 
-In order to upgrade/downgrade an existing InApp subscription on `PlayStore`, 
-you need to provide an instance of `ChangeSubscriptionParam` with the old 
+In order to upgrade/downgrade an existing InApp subscription on `PlayStore`,
+you need to provide an instance of `ChangeSubscriptionParam` with the old
 `PurchaseDetails` that the user needs to migrate from, and an optional `ProrationMode`
 with the `PurchaseParam` object while calling `InAppPurchaseConnection.buyNonConsumable`.
-`AppStore` does not require this since they provides a subscription grouping mechanism. 
-Each subscription you offer must be assigned to a subscription group. 
-So the developers can group related subscriptions together to prevents users from 
+`AppStore` does not require this since they provides a subscription grouping mechanism.
+Each subscription you offer must be assigned to a subscription group.
+So the developers can group related subscriptions together to prevents users from
 accidentally purchasing multiple subscriptions.
 Please refer to the 'Creating a Subscription Group' sections of [Apple's subscription guide](https://developer.apple.com/app-store/subscriptions/)
 
@@ -202,6 +232,16 @@ InAppPurchaseConnection.instance
     .buyNonConsumable(purchaseParam: purchaseParam);
 ```
 
+### Present code redemption sheet on iOS 14.
+
+You can set up offer codes in App Store Connect for your users and let them redeem in your app. The below code will
+bring up a sheet that enables user to redeem their offer codes. For more information on redeeming offer codes, check
+out the [App Store Documentation](https://developer.apple.com/documentation/storekit/in-app_purchase/subscriptions_and_offers/implementing_offer_codes_in_your_app).
+
+```dart
+InAppPurchaseConnection.instance.presentCodeRedemptionSheet();
+```
+
 ## Development
 
 This plugin uses
@@ -211,3 +251,8 @@ editing any of the serialized data structs, rebuild the serializers by running
 `flutter packages pub run build_runner build --delete-conflicting-outputs`.
 `flutter packages pub run build_runner watch --delete-conflicting-outputs` will
 watch the filesystem for changes.
+
+This plugin is in beta. Please use with caution and file any potential issues
+you see on our [issue tracker](https://github.com/flutter/flutter/issues/new/choose).
+
+If you would like to contribute to the plugin, please check out our [Contribution Guide](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md).
