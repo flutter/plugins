@@ -60,11 +60,7 @@ final RegExp _workivaLicenseRegex = RegExp(
     multiLine: true,
     dotAll: true);
 
-// TODO(stuartmorgan): Replace this with a single string once all the copyrights
-// are standardized.
-final List<String> _firstPartyAuthors = <String>[
-  'The Flutter Authors',
-];
+const String _firstPartyAuthors = 'The Flutter Authors';
 
 // The exact format of the BSD license that our license files should contain.
 // Slight variants are not accepted because they may prevent consolidation in
@@ -127,7 +123,7 @@ class LicenseCheckCommand extends PluginCommand {
             p.basename(file.basename) == 'LICENSE' && !_isThirdParty(file));
 
     final bool copyrightCheckSucceeded = await _checkCodeLicenses(codeFiles);
-    print('\n=======================================\n');
+    _print('\n=======================================\n');
     final bool licenseCheckSucceeded =
         await _checkLicenseFiles(firstPartyLicenseFiles);
 
@@ -168,7 +164,7 @@ class LicenseCheckCommand extends PluginCommand {
         continue;
       }
       final String author = copyright.group(1);
-      if (!_firstPartyAuthors.contains(author) && !_isThirdParty(file)) {
+      if (author != _firstPartyAuthors && !_isThirdParty(file)) {
         misplacedThirdPartyFiles.add(file);
       }
 
