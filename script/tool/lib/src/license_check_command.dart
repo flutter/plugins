@@ -63,8 +63,6 @@ final RegExp _workivaLicenseRegex = RegExp(
 // TODO(stuartmorgan): Replace this with a single string once all the copyrights
 // are standardized.
 final List<String> _firstPartyAuthors = <String>[
-  'The Chromium Authors',
-  'the Chromium project authors',
   'The Flutter Authors',
 ];
 
