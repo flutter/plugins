@@ -66,7 +66,6 @@ final List<String> _firstPartyAuthors = <String>[
   'The Chromium Authors',
   'the Chromium project authors',
   'The Flutter Authors',
-  'the Flutter project authors',
 ];
 
 /// Validates that code files have copyright and license blocks.
