@@ -4,6 +4,8 @@ Demonstrates how to use the In App Purchase (IAP) Plugin.
 
 ## Getting Started
 
+### Preparation
+
 There's a significant amount of setup required for testing in app purchases
 successfully, including registering new app IDs and store entries to use for
 testing in both the Play Developer Console and App Store Connect. Both Google

@@ -16,7 +16,7 @@ Add this to your Flutter app to:
 
 ## Getting Started
 
-### Initial Configuration
+### Preparation
 
 This plugin relies on the App Store and Google Play for making in app purchases.
 It exposes a unified surface, but you'll still need to understand and configure
