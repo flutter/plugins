@@ -188,8 +188,9 @@ to merge the pull request and `pub submit` any affected packages.
 You must complete the
 [Contributor License Agreement](https://cla.developers.google.com/clas).
 You can do this online, and it only takes a minute.
-If you've never submitted code before, you must add your (or your
-organization's) name and contact info to the [AUTHORS](AUTHORS) file.
+If you've never submitted code for that plugin before, you may also add your (or
+your organization's) name and contact info to the AUTHORS file for the plugin.
+You may also add it to the AUTHORS file for [the repository](AUTHORS).
 
 ### The review process
 
