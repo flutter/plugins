@@ -6,6 +6,7 @@ package io.flutter.plugins.camera.types;
 
 import static org.junit.Assert.assertEquals;
 
+import io.flutter.plugins.camera.features.flash.FlashMode;
 import org.junit.Test;
 
 public class FlashModeTest {

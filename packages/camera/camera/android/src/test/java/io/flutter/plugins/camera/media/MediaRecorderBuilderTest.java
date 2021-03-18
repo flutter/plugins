@@ -9,10 +9,12 @@ import static org.mockito.Mockito.*;
 
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import io.flutter.plugins.camera.media.MediaRecorderBuilder.MediaRecorderFactory;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.MockedStatic;
 
 public class MediaRecorderBuilderTest {
   @Test
@@ -26,19 +28,21 @@ public class MediaRecorderBuilderTest {
   @Test
   public void build_Should_set_values_in_correct_order_When_audio_is_disabled() throws IOException {
     CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
-    MediaRecorderBuilder.MediaRecorderFactory mockFactory =
-        mock(MediaRecorderBuilder.MediaRecorderFactory.class);
-    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
     String outputFilePath = "mock_video_file_path";
     int mediaOrientation = 1;
-    MediaRecorderBuilder builder =
-        new MediaRecorderBuilder(recorderProfile, outputFilePath, mockFactory)
-            .setEnableAudio(false)
-            .setMediaOrientation(mediaOrientation);
+    MediaRecorder recorder;
 
-    when(mockFactory.makeMediaRecorder()).thenReturn(mockMediaRecorder);
+    try (MockedStatic<MediaRecorderFactory> mockMediaRecorderFactory =
+        mockStatic(MediaRecorderFactory.class)) {
+      MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+      mockMediaRecorderFactory.when(MediaRecorderFactory::create).thenReturn(mockMediaRecorder);
 
-    MediaRecorder recorder = builder.build();
+      MediaRecorderBuilder builder =
+          new MediaRecorderBuilder(recorderProfile, outputFilePath)
+              .setEnableAudio(false)
+              .setMediaOrientation(mediaOrientation);
+      recorder = builder.build();
+    }
 
     InOrder inOrder = inOrder(recorder);
     inOrder.verify(recorder).setVideoSource(MediaRecorder.VideoSource.SURFACE);
@@ -56,20 +60,23 @@ public class MediaRecorderBuilderTest {
 
   @Test
   public void build_Should_set_values_in_correct_order_When_audio_is_enabled() throws IOException {
+    MediaRecorder recorder;
     CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
-    MediaRecorderBuilder.MediaRecorderFactory mockFactory =
-        mock(MediaRecorderBuilder.MediaRecorderFactory.class);
-    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
     String outputFilePath = "mock_video_file_path";
     int mediaOrientation = 1;
-    MediaRecorderBuilder builder =
-        new MediaRecorderBuilder(recorderProfile, outputFilePath, mockFactory)
-            .setEnableAudio(true)
-            .setMediaOrientation(mediaOrientation);
 
-    when(mockFactory.makeMediaRecorder()).thenReturn(mockMediaRecorder);
+    try (MockedStatic<MediaRecorderFactory> mockMediaRecorderFactory =
+        mockStatic(MediaRecorderFactory.class)) {
+      MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+      mockMediaRecorderFactory.when(MediaRecorderFactory::create).thenReturn(mockMediaRecorder);
 
-    MediaRecorder recorder = builder.build();
+      MediaRecorderBuilder builder =
+          new MediaRecorderBuilder(recorderProfile, outputFilePath)
+              .setEnableAudio(true)
+              .setMediaOrientation(mediaOrientation);
+
+      recorder = builder.build();
+    }
 
     InOrder inOrder = inOrder(recorder);
     inOrder.verify(recorder).setAudioSource(MediaRecorder.AudioSource.MIC);

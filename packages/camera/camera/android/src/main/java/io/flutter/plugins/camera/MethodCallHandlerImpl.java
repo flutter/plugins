@@ -15,9 +15,12 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
-import io.flutter.plugins.camera.types.ExposureMode;
-import io.flutter.plugins.camera.types.FlashMode;
-import io.flutter.plugins.camera.types.FocusMode;
+import io.flutter.plugins.camera.features.CameraFeatureFactoryImpl;
+import io.flutter.plugins.camera.features.Point;
+import io.flutter.plugins.camera.features.autofocus.FocusMode;
+import io.flutter.plugins.camera.features.exposurelock.ExposureMode;
+import io.flutter.plugins.camera.features.flash.FlashMode;
+import io.flutter.plugins.camera.features.resolution.ResolutionPreset;
 import io.flutter.view.TextureRegistry;
 import java.util.HashMap;
 import java.util.Map;
@@ -170,7 +173,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
             y = call.argument("y");
           }
           try {
-            camera.setExposurePoint(result, x, y);
+            camera.setExposurePoint(result, new Point(x, y));
           } catch (Exception e) {
             handleException(e, result);
           }
@@ -237,7 +240,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
             y = call.argument("y");
           }
           try {
-            camera.setFocusPoint(result, x, y);
+            camera.setFocusPoint(result, new Point(x, y));
           } catch (Exception e) {
             handleException(e, result);
           }
@@ -349,17 +352,23 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private void instantiateCamera(MethodCall call, Result result) throws CameraAccessException {
     String cameraName = call.argument("cameraName");
-    String resolutionPreset = call.argument("resolutionPreset");
+    String preset = call.argument("resolutionPreset");
     boolean enableAudio = call.argument("enableAudio");
+
     TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture =
         textureRegistry.createSurfaceTexture();
     DartMessenger dartMessenger = new DartMessenger(messenger, flutterSurfaceTexture.id());
+    CameraProperties cameraProperties =
+        new CameraPropertiesImpl(cameraName, CameraUtils.getCameraManager(activity));
+    ResolutionPreset resolutionPreset = ResolutionPreset.valueOf(preset);
+
     camera =
         new Camera(
             activity,
             flutterSurfaceTexture,
+            new CameraFeatureFactoryImpl(),
             dartMessenger,
-            cameraName,
+            cameraProperties,
             resolutionPreset,
             enableAudio);
 

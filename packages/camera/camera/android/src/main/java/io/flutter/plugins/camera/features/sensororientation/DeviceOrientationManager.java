@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera;
+package io.flutter.plugins.camera.features.sensororientation;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -16,9 +16,11 @@ import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.WindowManager;
+import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
+import io.flutter.plugins.camera.DartMessenger;
 
-class DeviceOrientationManager {
+public class DeviceOrientationManager {
 
   private static final IntentFilter orientationIntentFilter =
       new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED);
@@ -31,8 +33,20 @@ class DeviceOrientationManager {
   private OrientationEventListener orientationEventListener;
   private BroadcastReceiver broadcastReceiver;
 
-  public DeviceOrientationManager(
-      Activity activity, DartMessenger messenger, boolean isFrontFacing, int sensorOrientation) {
+  /** Factory method to create a device orientation manager. */
+  public static DeviceOrientationManager create(
+      @NonNull Activity activity,
+      @NonNull DartMessenger messenger,
+      boolean isFrontFacing,
+      int sensorOrientation) {
+    return new DeviceOrientationManager(activity, messenger, isFrontFacing, sensorOrientation);
+  }
+
+  private DeviceOrientationManager(
+      @NonNull Activity activity,
+      @NonNull DartMessenger messenger,
+      boolean isFrontFacing,
+      int sensorOrientation) {
     this.activity = activity;
     this.messenger = messenger;
     this.isFrontFacing = isFrontFacing;

@@ -11,30 +11,22 @@ import java.io.IOException;
 
 public class MediaRecorderBuilder {
   static class MediaRecorderFactory {
-    MediaRecorder makeMediaRecorder() {
+    static MediaRecorder create() {
       return new MediaRecorder();
     }
   }
 
   private final String outputFilePath;
   private final CamcorderProfile recordingProfile;
-  private final MediaRecorderFactory recorderFactory;
 
   private boolean enableAudio;
   private int mediaOrientation;
 
   public MediaRecorderBuilder(
       @NonNull CamcorderProfile recordingProfile, @NonNull String outputFilePath) {
-    this(recordingProfile, outputFilePath, new MediaRecorderFactory());
-  }
 
-  MediaRecorderBuilder(
-      @NonNull CamcorderProfile recordingProfile,
-      @NonNull String outputFilePath,
-      MediaRecorderFactory helper) {
-    this.outputFilePath = outputFilePath;
     this.recordingProfile = recordingProfile;
-    this.recorderFactory = helper;
+    this.outputFilePath = outputFilePath;
   }
 
   public MediaRecorderBuilder setEnableAudio(boolean enableAudio) {
@@ -48,7 +40,7 @@ public class MediaRecorderBuilder {
   }
 
   public MediaRecorder build() throws IOException {
-    MediaRecorder mediaRecorder = recorderFactory.makeMediaRecorder();
+    MediaRecorder mediaRecorder = MediaRecorderFactory.create();
 
     // There's a fixed order that mediaRecorder expects. Only change these functions accordingly.
     // You can find the specifics here: https://developer.android.com/reference/android/media/MediaRecorder.

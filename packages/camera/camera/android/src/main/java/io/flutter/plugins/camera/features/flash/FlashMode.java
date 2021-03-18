@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera.types;
+package io.flutter.plugins.camera.features.flash;
 
-// Mirrors exposure_mode.dart
-public enum ExposureMode {
+// Mirrors flash_mode.dart
+public enum FlashMode {
+  off("off"),
   auto("auto"),
-  locked("locked");
+  always("always"),
+  torch("torch");
 
   private final String strValue;
 
-  ExposureMode(String strValue) {
+  FlashMode(String strValue) {
     this.strValue = strValue;
   }
 
-  public static ExposureMode getValueForString(String modeStr) {
-    for (ExposureMode value : values()) {
+  public static FlashMode getValueForString(String modeStr) {
+    for (FlashMode value : values()) {
       if (value.strValue.equals(modeStr)) return value;
     }
     return null;

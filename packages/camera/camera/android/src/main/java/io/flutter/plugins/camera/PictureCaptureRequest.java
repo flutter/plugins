@@ -1,96 +1,77 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 package io.flutter.plugins.camera;
 
-import android.os.Handler;
-import android.os.Looper;
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.MethodChannel;
+import java.io.File;
 
-class PictureCaptureRequest {
-
-  enum State {
-    idle,
-    focusing,
-    preCapture,
-    waitingPreCaptureReady,
-    capturing,
-    finished,
-    error,
-  }
-
-  private final Runnable timeoutCallback =
-      new Runnable() {
-        @Override
-        public void run() {
-          error("captureTimeout", "Picture capture request timed out", state.toString());
-        }
-      };
-
+/**
+ * Holds the temporary things associated with an image capture like the file, the dartMessenger to
+ * send errors, and the dart result to send the image file back as the capture result.
+ */
+public class PictureCaptureRequest {
+  /** The file for saving the capture. */
+  public final File file;
+  /**
+   * The timeout related to pre-capture focusing. Will ensure that we reach focus in a reasonable
+   * amount of time.
+   */
+  public final Timeout preCaptureFocusing;
+  /**
+   * The the timeout related to pre-capture metering. Will ensure that we reach a metering result in
+   * a reasonable amount of time.
+   */
+  public final Timeout preCaptureMetering;
+  /** Dart method chanel result. */
   private final MethodChannel.Result result;
-  private final TimeoutHandler timeoutHandler;
-  private State state;
 
-  public PictureCaptureRequest(MethodChannel.Result result) {
-    this(result, new TimeoutHandler());
+  /**
+   * Factory method to create a picture capture request
+   *
+   * @param result dart result.
+   * @param file file to capture into.
+   * @param preCaptureFocusingTimeoutMs focusing timeout milliseconds.
+   * @param preCaptureMeteringTimeoutMs metering timeout milliseconds.
+   * @return returns a new PictureCaptureRequest.
+   */
+  static PictureCaptureRequest create(
+      MethodChannel.Result result,
+      File file,
+      long preCaptureFocusingTimeoutMs,
+      long preCaptureMeteringTimeoutMs) {
+    return new PictureCaptureRequest(
+        result, file, preCaptureFocusingTimeoutMs, preCaptureMeteringTimeoutMs);
   }
 
-  public PictureCaptureRequest(MethodChannel.Result result, TimeoutHandler timeoutHandler) {
+  /** Create a new picture capture request */
+  private PictureCaptureRequest(
+      MethodChannel.Result result,
+      File file,
+      long preCaptureFocusingTimeoutMs,
+      long preCaptureMeteringTimeoutMs) {
     this.result = result;
-    this.state = State.idle;
-    this.timeoutHandler = timeoutHandler;
+    this.file = file;
+    this.preCaptureFocusing = Timeout.create(preCaptureFocusingTimeoutMs);
+    this.preCaptureMetering = Timeout.create(preCaptureMeteringTimeoutMs);
   }
 
-  public void setState(State state) {
-    if (isFinished()) throw new IllegalStateException("Request has already been finished");
-    this.state = state;
-    if (state != State.idle && state != State.finished && state != State.error) {
-      this.timeoutHandler.resetTimeout(timeoutCallback);
-    } else {
-      this.timeoutHandler.clearTimeout(timeoutCallback);
-    }
-  }
-
-  public State getState() {
-    return state;
-  }
-
-  public boolean isFinished() {
-    return state == State.finished || state == State.error;
-  }
-
+  /**
+   * Send the picture result back to Flutter. Returns the image path.
+   *
+   * @param absolutePath
+   */
   public void finish(String absolutePath) {
-    if (isFinished()) throw new IllegalStateException("Request has already been finished");
-    this.timeoutHandler.clearTimeout(timeoutCallback);
     result.success(absolutePath);
-    state = State.finished;
   }
 
+  /**
+   * Return an error to dart for this picture capture request.
+   *
+   * @param errorCode error code.
+   * @param errorMessage error message.
+   * @param errorDetails error details.
+   */
   public void error(
       String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
-    if (isFinished()) throw new IllegalStateException("Request has already been finished");
-    this.timeoutHandler.clearTimeout(timeoutCallback);
     result.error(errorCode, errorMessage, errorDetails);
-    state = State.error;
-  }
-
-  static class TimeoutHandler {
-    private static final int REQUEST_TIMEOUT = 5000;
-    private final Handler handler;
-
-    TimeoutHandler() {
-      this.handler = new Handler(Looper.getMainLooper());
-    }
-
-    public void resetTimeout(Runnable runnable) {
-      clearTimeout(runnable);
-      handler.postDelayed(runnable, REQUEST_TIMEOUT);
-    }
-
-    public void clearTimeout(Runnable runnable) {
-      handler.removeCallbacks(runnable);
-    }
   }
 }

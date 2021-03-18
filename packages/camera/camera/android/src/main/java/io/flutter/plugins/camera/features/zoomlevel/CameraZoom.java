@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera;
+package io.flutter.plugins.camera.features.zoomlevel;
 
 import android.graphics.Rect;
 import androidx.annotation.NonNull;
@@ -18,7 +18,11 @@ public final class CameraZoom {
   public final float maxZoom;
   public final boolean hasSupport;
 
-  public CameraZoom(@Nullable final Rect sensorArraySize, final Float maxZoom) {
+  public static CameraZoom create(@Nullable final Rect sensorArraySize, final Float maxZoom) {
+    return new CameraZoom(sensorArraySize, maxZoom);
+  }
+
+  private CameraZoom(@Nullable final Rect sensorArraySize, final Float maxZoom) {
     this.sensorSize = sensorArraySize;
 
     if (this.sensorSize == null) {

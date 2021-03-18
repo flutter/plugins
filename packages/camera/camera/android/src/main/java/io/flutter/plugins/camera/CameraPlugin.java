@@ -26,7 +26,7 @@ import io.flutter.view.TextureRegistry;
  */
 public final class CameraPlugin implements FlutterPlugin, ActivityAware {
 
-  private static final String TAG = "CameraPlugin";
+  // private static final String TAG = "CameraPlugin";
   private @Nullable FlutterPluginBinding flutterPluginBinding;
   private @Nullable MethodCallHandlerImpl methodCallHandler;
 

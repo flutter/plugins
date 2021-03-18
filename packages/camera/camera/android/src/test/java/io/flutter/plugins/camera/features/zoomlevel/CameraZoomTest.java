@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera;
+package io.flutter.plugins.camera.features.zoomlevel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,7 +22,7 @@ public class CameraZoomTest {
   public void ctor_when_parameters_are_valid() {
     final Rect sensorSize = new Rect(0, 0, 0, 0);
     final Float maxZoom = 4.0f;
-    final CameraZoom cameraZoom = new CameraZoom(sensorSize, maxZoom);
+    final CameraZoom cameraZoom = CameraZoom.create(sensorSize, maxZoom);
 
     assertNotNull(cameraZoom);
     assertTrue(cameraZoom.hasSupport);
@@ -34,7 +34,7 @@ public class CameraZoomTest {
   public void ctor_when_sensor_size_is_null() {
     final Rect sensorSize = null;
     final Float maxZoom = 4.0f;
-    final CameraZoom cameraZoom = new CameraZoom(sensorSize, maxZoom);
+    final CameraZoom cameraZoom = CameraZoom.create(sensorSize, maxZoom);
 
     assertNotNull(cameraZoom);
     assertFalse(cameraZoom.hasSupport);
@@ -45,7 +45,7 @@ public class CameraZoomTest {
   public void ctor_when_max_zoom_is_null() {
     final Rect sensorSize = new Rect(0, 0, 0, 0);
     final Float maxZoom = null;
-    final CameraZoom cameraZoom = new CameraZoom(sensorSize, maxZoom);
+    final CameraZoom cameraZoom = CameraZoom.create(sensorSize, maxZoom);
 
     assertNotNull(cameraZoom);
     assertFalse(cameraZoom.hasSupport);
@@ -56,7 +56,7 @@ public class CameraZoomTest {
   public void ctor_when_max_zoom_is_smaller_then_default_zoom_factor() {
     final Rect sensorSize = new Rect(0, 0, 0, 0);
     final Float maxZoom = 0.5f;
-    final CameraZoom cameraZoom = new CameraZoom(sensorSize, maxZoom);
+    final CameraZoom cameraZoom = CameraZoom.create(sensorSize, maxZoom);
 
     assertNotNull(cameraZoom);
     assertFalse(cameraZoom.hasSupport);
@@ -65,7 +65,7 @@ public class CameraZoomTest {
 
   @Test
   public void setZoom_when_no_support_should_not_set_scaler_crop_region() {
-    final CameraZoom cameraZoom = new CameraZoom(null, null);
+    final CameraZoom cameraZoom = CameraZoom.create(null, null);
     final Rect computedZoom = cameraZoom.computeZoom(2f);
 
     assertNull(computedZoom);
@@ -74,7 +74,7 @@ public class CameraZoomTest {
   @Test
   public void setZoom_when_sensor_size_equals_zero_should_return_crop_region_of_zero() {
     final Rect sensorSize = new Rect(0, 0, 0, 0);
-    final CameraZoom cameraZoom = new CameraZoom(sensorSize, 20f);
+    final CameraZoom cameraZoom = CameraZoom.create(sensorSize, 20f);
     final Rect computedZoom = cameraZoom.computeZoom(18f);
 
     assertNotNull(computedZoom);
@@ -87,7 +87,7 @@ public class CameraZoomTest {
   @Test
   public void setZoom_when_sensor_size_is_valid_should_return_crop_region() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
-    final CameraZoom cameraZoom = new CameraZoom(sensorSize, 20f);
+    final CameraZoom cameraZoom = CameraZoom.create(sensorSize, 20f);
     final Rect computedZoom = cameraZoom.computeZoom(18f);
 
     assertNotNull(computedZoom);
@@ -100,7 +100,7 @@ public class CameraZoomTest {
   @Test
   public void setZoom_when_zoom_is_greater_then_max_zoom_clamp_to_max_zoom() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
-    final CameraZoom cameraZoom = new CameraZoom(sensorSize, 10f);
+    final CameraZoom cameraZoom = CameraZoom.create(sensorSize, 10f);
     final Rect computedZoom = cameraZoom.computeZoom(25f);
 
     assertNotNull(computedZoom);
@@ -113,7 +113,7 @@ public class CameraZoomTest {
   @Test
   public void setZoom_when_zoom_is_smaller_then_min_zoom_clamp_to_min_zoom() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
-    final CameraZoom cameraZoom = new CameraZoom(sensorSize, 10f);
+    final CameraZoom cameraZoom = CameraZoom.create(sensorSize, 10f);
     final Rect computedZoom = cameraZoom.computeZoom(0.5f);
 
     assertNotNull(computedZoom);

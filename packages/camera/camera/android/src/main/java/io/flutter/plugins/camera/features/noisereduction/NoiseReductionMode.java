@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera.types;
+package io.flutter.plugins.camera.features.noisereduction;
 
-// Mirrors flash_mode.dart
-public enum FlashMode {
+/** Only supports fast mode for now. */
+public enum NoiseReductionMode {
   off("off"),
-  auto("auto"),
-  always("always"),
-  torch("torch");
+  fast("fast"),
+  highQuality("highQuality"),
+  minimal("minimal"),
+  zeroShutterLag("zeroShutterLag");
 
   private final String strValue;
 
-  FlashMode(String strValue) {
+  NoiseReductionMode(String strValue) {
     this.strValue = strValue;
   }
 
-  public static FlashMode getValueForString(String modeStr) {
-    for (FlashMode value : values()) {
+  public static NoiseReductionMode getValueForString(String modeStr) {
+    for (NoiseReductionMode value : values()) {
       if (value.strValue.equals(modeStr)) return value;
     }
     return null;
