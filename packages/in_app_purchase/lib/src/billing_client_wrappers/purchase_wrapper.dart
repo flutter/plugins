@@ -1,6 +1,6 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
@@ -120,6 +120,8 @@ class PurchaseWrapper {
   /// The payload specified by the developer when the purchase was acknowledged or consumed.
   ///
   /// The value is `null` if it wasn't specified when the purchase was acknowledged or consumed.
+  /// The `developerPayload` is removed from [BillingClientWrapper.acknowledgePurchase], [BillingClientWrapper.consumeAsync], [InAppPurchaseConnection.completePurchase], [InAppPurchaseConnection.consumePurchase]
+  /// after plugin version `0.5.0`. As a result, this will be `null` for new purchases that happen after updating to `0.5.0`.
   final String? developerPayload;
 
   /// Whether the purchase has been acknowledged.

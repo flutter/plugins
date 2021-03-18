@@ -69,7 +69,7 @@ If XCUITests has not been set up for the plugin, follow these steps to set it up
 1. Open <path_to_plugin>/example/ios/Runner.xcworkspace using XCode.
 1. Create a new "UI Testing Bundle".
 1. In the target options window, populate details as following, then click on "Finish".
-  * In the "product name" field, type in "RunnerUITests" (this is the test target name our CI looks for.).
+  * In the "product name" field, type in "RunnerUITests".
   * In the "Team" field, select "None".
   * In the Organization Name field, type in "Flutter". This should usually be pre-populated.
   * In the organization identifer field, type in "com.google". This should usually be pre-populated.
@@ -188,8 +188,9 @@ to merge the pull request and `pub submit` any affected packages.
 You must complete the
 [Contributor License Agreement](https://cla.developers.google.com/clas).
 You can do this online, and it only takes a minute.
-If you've never submitted code before, you must add your (or your
-organization's) name and contact info to the [AUTHORS](AUTHORS) file.
+If you've never submitted code for that plugin before, you may also add your (or
+your organization's) name and contact info to the AUTHORS file for the plugin.
+You may also add it to the AUTHORS file for [the repository](AUTHORS).
 
 ### The review process
 

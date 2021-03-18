@@ -1,3 +1,11 @@
+## 2.0.2
+
+* Fix `VideoPlayerValue` size and aspect ratio documentation
+
+## 2.0.1
+
+* Remove the deprecated API "exoPlayer.setAudioAttributes".
+
 ## 2.0.0
 
 * Migrate to null safety.

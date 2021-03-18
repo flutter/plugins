@@ -104,7 +104,7 @@ class InfoWindow {
 @immutable
 class MarkerId extends MapsObjectId<Marker> {
   /// Creates an immutable identifier for a [Marker].
-  MarkerId(String value) : super(value);
+  const MarkerId(String value) : super(value);
 }
 
 /// Marks a geographical location on the map.

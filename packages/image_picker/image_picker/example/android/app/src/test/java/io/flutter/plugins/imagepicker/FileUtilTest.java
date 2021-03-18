@@ -54,4 +54,13 @@ public class FileUtilTest {
     String imageStream = new String(bytes, UTF_8);
     assertTrue(imageStream.equals("imageStream"));
   }
+
+  @Test
+  public void FileUtil_getImageExtension() throws IOException {
+    Uri uri = Uri.parse("content://dummy/dummy.png");
+    shadowContentResolver.registerInputStream(
+        uri, new ByteArrayInputStream("imageStream".getBytes(UTF_8)));
+    String path = fileUtils.getPathFromUri(context, uri);
+    assertTrue(path.endsWith(".jpg"));
+  }
 }

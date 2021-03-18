@@ -1,6 +1,6 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'package:test/test.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
@@ -12,7 +12,7 @@ final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   freeTrialPeriod: 'freeTrialPeriod',
   introductoryPrice: 'introductoryPrice',
   introductoryPriceMicros: 'introductoryPriceMicros',
-  introductoryPriceCycles: 'introductoryPriceCycles',
+  introductoryPriceCycles: 1,
   introductoryPricePeriod: 'introductoryPricePeriod',
   price: 'price',
   priceAmountMicros: 1000,
@@ -21,7 +21,6 @@ final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   subscriptionPeriod: 'subscriptionPeriod',
   title: 'title',
   type: SkuType.inapp,
-  isRewarded: true,
   originalPrice: 'originalPrice',
   originalPriceAmountMicros: 1000,
 );
@@ -144,7 +143,6 @@ Map<String, dynamic> buildSkuMap(SkuDetailsWrapper original) {
     'subscriptionPeriod': original.subscriptionPeriod,
     'title': original.title,
     'type': original.type.toString().substring(8),
-    'isRewarded': original.isRewarded,
     'originalPrice': original.originalPrice,
     'originalPriceAmountMicros': original.originalPriceAmountMicros,
   };
