@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
@@ -43,14 +45,16 @@ class MethodCallHandlerImpl
   private static final String LOAD_SKU_DOC_URL =
       "https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/README.md#loading-products-for-sale";
 
-  @Nullable private BillingClient billingClient;
+  @VisibleForTesting
+  @Nullable BillingClient billingClient;
   private final BillingClientFactory billingClientFactory;
 
   @Nullable private Activity activity;
   private final Context applicationContext;
   private final MethodChannel methodChannel;
 
-  private HashMap<String, SkuDetails> cachedSkus = new HashMap<>();
+  @VisibleForTesting
+  HashMap<String, SkuDetails> cachedSkus = new HashMap<>();
 
   /** Constructs the MethodCallHandlerImpl */
   MethodCallHandlerImpl(
