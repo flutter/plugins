@@ -110,7 +110,7 @@ void main() {
 
       testWidgets('returns cached instance if it already exists',
           (WidgetTester tester) async {
-        final Widget expected = HtmlElementView(viewType: 'only-for-testing');
+        final expected = HtmlElementView(viewType: 'only-for-testing');
         when(controller.widget).thenReturn(expected);
         plugin.debugSetMapById({testMapId: controller});
 
