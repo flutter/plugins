@@ -76,11 +76,6 @@ void main() {
       final testMapId = 33930;
       final initialCameraPosition = CameraPosition(target: LatLng(0, 0));
 
-      testWidgets('throws without _webOnlyMapCreationId',
-          (WidgetTester tester) async {
-        // The argument type 'Null' can't be assigned to the parameter type 'int'.
-      });
-
       testWidgets(
           'returns an HtmlElementView and caches the controller for later',
           (WidgetTester tester) async {

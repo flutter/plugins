@@ -300,24 +300,6 @@ void main() {
                   'disabling scroll gestures disables all gesture handling');
         });
 
-        testWidgets('does not set initial position if absent',
-            (WidgetTester tester) async {
-          // The argument type 'Null' can't be assigned to the parameter type 'CameraPosition'.
-          controller = _createController();
-
-          controller.debugSetOverrides(createMap: (_, options) {
-            capturedOptions = options;
-            return map;
-          });
-
-          controller.init();
-
-          expect(capturedOptions, isNotNull);
-          expect(capturedOptions!.zoom, 0);
-          expect(capturedOptions!.center?.lat, 0);
-          expect(capturedOptions!.center?.lng, 0);
-        });
-
         testWidgets('sets initial position when passed',
             (WidgetTester tester) async {
           controller = _createController(

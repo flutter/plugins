@@ -138,12 +138,7 @@ void main() {
       expect(controller.markers[MarkerId('2')]?.infoWindowShown, isTrue);
     });
 
-    // https://github.com/flutter/flutter/issues/64938
-    testWidgets('markers with icon:null work', (WidgetTester tester) async {
-      // The argument type 'Null' can't be assigned to the parameter type 'BitmapDescriptor'.
-    });
-
-    //
+    // https://github.com/flutter/flutter/issues/66622
     testWidgets('markers with custom bitmap icon work',
         (WidgetTester tester) async {
       final bytes = Base64Decoder().convert(iconImageBase64);
