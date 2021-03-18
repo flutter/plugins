@@ -24,7 +24,7 @@ your app with each store to handle purchases using them. Both have extensive
 guides:
 
 * [In-App Purchase (App Store)](https://developer.apple.com/in-app-purchase/)
-* [Google Play Biling Overview](https://developer.android.com/google/play/billing/billing_overview)
+* [Google Play Billing Overview](https://developer.android.com/google/play/billing/billing_overview)
 
 You can check out the [example app README](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/example/README.md) for steps on how
 to configure in app purchases in both stores.
@@ -34,7 +34,7 @@ able to start using the plugin. There's two basic options available to you to
 use.
 
 1. [in_app_purchase.dart](https://github.com/flutter/plugins/tree/master/packages/in_app_purchase/lib/src/in_app_purchase),
-   the generic idiommatic Flutter API. This exposes the most basic IAP-related
+   the generic idiomatic Flutter API. This exposes the most basic IAP-related
    functionality. The goal is that Flutter apps should be able to use this API
    surface on its own for the vast majority of cases. If you use this you should
    be able to handle most use cases for loading and making purchases. If you would
