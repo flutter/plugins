@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
@@ -22,7 +23,7 @@ void main() {
     });
 
     test('toJson handles null data', () async {
-      final Tile tile = Tile(0, 0, null);
+      const Tile tile = Tile(0, 0, null);
       final Object json = tile.toJson();
       expect(json, <String, Object>{
         'width': 0,
