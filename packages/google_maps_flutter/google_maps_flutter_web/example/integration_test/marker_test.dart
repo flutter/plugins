@@ -102,5 +102,41 @@ void main() {
       expect(infoWindow.get('map'), isNull);
       expect(controller.infoWindowShown, isFalse);
     });
+
+    group('remove', () {
+      late MarkerController controller;
+
+      setUp(() {
+        final infoWindow = gmaps.InfoWindow();
+        final map = gmaps.GMap(html.DivElement());
+        marker.set('map', map);
+        controller = MarkerController(marker: marker, infoWindow: infoWindow);
+
+        controller.remove();
+      });
+
+      testWidgets('drops gmaps instance', (WidgetTester tester) async {
+        expect(controller.marker, isNull);
+      });
+
+      testWidgets('cannot call update after remove', (WidgetTester tester) async {
+        final options = gmaps.MarkerOptions()..draggable = true;
+        expect((){
+          controller.update(options);
+        }, throwsAssertionError);
+      });
+
+      testWidgets('cannot call showInfoWindow after remove', (WidgetTester tester) async {
+        expect((){
+          controller.showInfoWindow();
+        }, throwsAssertionError);
+      });
+
+      testWidgets('cannot call hideInfoWindow after remove', (WidgetTester tester) async {
+        expect((){
+          controller.hideInfoWindow();
+        }, throwsAssertionError);
+      });
+    });
   });
 }

@@ -51,10 +51,13 @@ class MarkerController {
   gmaps.InfoWindow? get infoWindow => _infoWindow;
 
   /// Updates the options of the wrapped [gmaps.Marker] object.
+  /// 
+  /// This cannot be called after [remove].
   void update(
     gmaps.MarkerOptions options, {
     HtmlElement? newInfoWindowContent,
   }) {
+    assert(_marker != null, 'Cannot `update` Marker after calling `remove`.');
     _marker!.options = options;
     if (_infoWindow != null && newInfoWindowContent != null) {
       _infoWindow!.content = newInfoWindowContent;
@@ -64,6 +67,7 @@ class MarkerController {
   /// Disposes of the currently wrapped [gmaps.Marker].
   void remove() {
     if (_marker != null) {
+      _infoWindowShown = false;
       _marker!.visible = false;
       _marker!.map = null;
       _marker = null;
@@ -71,7 +75,10 @@ class MarkerController {
   }
 
   /// Hide the associated [gmaps.InfoWindow].
+  /// 
+  /// This cannot be called after [remove].
   void hideInfoWindow() {
+    assert(_marker != null, 'Cannot `hideInfoWindow` on a `remove`d Marker.');
     if (_infoWindow != null) {
       _infoWindow!.close();
       _infoWindowShown = false;
@@ -79,7 +86,10 @@ class MarkerController {
   }
 
   /// Show the associated [gmaps.InfoWindow].
+  /// 
+  /// This cannot be called after [remove].
   void showInfoWindow() {
+    assert(_marker != null, 'Cannot `showInfoWindow` on a `remove`d Marker.');
     if (_infoWindow != null) {
       _infoWindow!.open(_marker!.map, _marker);
       _infoWindowShown = true;

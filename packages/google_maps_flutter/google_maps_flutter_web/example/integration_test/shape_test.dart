@@ -51,6 +51,27 @@ void main() {
 
       expect(circle.draggable, isTrue);
     });
+
+    group('remove', () {
+      late CircleController controller;
+
+      setUp(() {
+        controller = CircleController(circle: circle);
+
+        controller.remove();
+      });
+
+      testWidgets('drops gmaps instance', (WidgetTester tester) async {
+        expect(controller.circle, isNull);
+      });
+
+      testWidgets('cannot call update after remove', (WidgetTester tester) async {
+        final options = gmaps.CircleOptions()..draggable = true;
+        expect((){
+          controller.update(options);
+        }, throwsAssertionError);
+      });
+    });
   });
 
   group('PolygonController', () {
@@ -79,6 +100,27 @@ void main() {
       controller.update(options);
 
       expect(polygon.draggable, isTrue);
+    });
+
+    group('remove', () {
+      late PolygonController controller;
+
+      setUp(() {
+        controller = PolygonController(polygon: polygon);
+
+        controller.remove();
+      });
+
+      testWidgets('drops gmaps instance', (WidgetTester tester) async {
+        expect(controller.polygon, isNull);
+      });
+
+      testWidgets('cannot call update after remove', (WidgetTester tester) async {
+        final options = gmaps.PolygonOptions()..draggable = true;
+        expect((){
+          controller.update(options);
+        }, throwsAssertionError);
+      });
     });
   });
 
@@ -109,6 +151,27 @@ void main() {
       controller.update(options);
 
       expect(polyline.draggable, isTrue);
+    });
+
+    group('remove', () {
+      late PolylineController controller;
+
+      setUp(() {
+        controller = PolylineController(polyline: polyline);
+
+        controller.remove();
+      });
+
+      testWidgets('drops gmaps instance', (WidgetTester tester) async {
+        expect(controller.line, isNull);
+      });
+
+      testWidgets('cannot call update after remove', (WidgetTester tester) async {
+        final options = gmaps.PolylineOptions()..draggable = true;
+        expect((){
+          controller.update(options);
+        }, throwsAssertionError);
+      });
     });
   });
 }
