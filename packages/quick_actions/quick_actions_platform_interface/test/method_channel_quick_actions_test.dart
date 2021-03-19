@@ -44,7 +44,8 @@ void main() {
 
       test('initialize', () async {
         final Completer<bool> quickActionsHandler = Completer<bool>();
-        quickActions.initialize((_) => quickActionsHandler.complete(true));
+        await quickActions
+            .initialize((_) => quickActionsHandler.complete(true));
         expect(
           log,
           <Matcher>[
