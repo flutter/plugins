@@ -12,7 +12,7 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
   integration_test:
-    path: ../../integration_test
+    sdk: flutter
 
 dev_dependencies:
   flutter_driver:

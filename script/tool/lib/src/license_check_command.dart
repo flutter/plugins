@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,14 +60,39 @@ final RegExp _workivaLicenseRegex = RegExp(
     multiLine: true,
     dotAll: true);
 
-// TODO(stuartmorgan): Replace this with a single string once all the copyrights
-// are standardized.
-final List<String> _firstPartyAuthors = <String>[
-  'The Chromium Authors',
-  'the Chromium project authors',
-  'The Flutter Authors',
-  'the Flutter project authors',
-];
+const String _firstPartyAuthors = 'The Flutter Authors';
+
+// The exact format of the BSD license that our license files should contain.
+// Slight variants are not accepted because they may prevent consolidation in
+// tools that assemble all licenses used in distributed applications.
+//
+// TODO(stuartmorgan): Add the copyright string here once that's completely
+// standardized.
+final String _fullBsdLicenseText = '''
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the name of Google Inc. nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''';
 
 /// Validates that code files have copyright and license blocks.
 class LicenseCheckCommand extends PluginCommand {
@@ -90,13 +115,19 @@ class LicenseCheckCommand extends PluginCommand {
 
   @override
   Future<Null> run() async {
-    Iterable<File> codeFiles = (await _getAllFiles()).where((File file) =>
+    final Iterable<File> codeFiles = (await _getAllFiles()).where((File file) =>
         _codeFileExtensions.contains(p.extension(file.path)) &&
         !_shouldIgnoreFile(file));
+    final Iterable<File> firstPartyLicenseFiles = (await _getAllFiles()).where(
+        (File file) =>
+            p.basename(file.basename) == 'LICENSE' && !_isThirdParty(file));
 
-    bool succeeded = await _checkLicenses(codeFiles);
+    final bool copyrightCheckSucceeded = await _checkCodeLicenses(codeFiles);
+    _print('\n=======================================\n');
+    final bool licenseCheckSucceeded =
+        await _checkLicenseFiles(firstPartyLicenseFiles);
 
-    if (!succeeded) {
+    if (!copyrightCheckSucceeded || !licenseCheckSucceeded) {
       throw ToolExit(1);
     }
   }
@@ -110,7 +141,7 @@ class LicenseCheckCommand extends PluginCommand {
 
   // Checks all license blocks for [codeFiles], returning false if any of them
   // fail validation.
-  Future<bool> _checkLicenses(Iterable<File> codeFiles) async {
+  Future<bool> _checkCodeLicenses(Iterable<File> codeFiles) async {
     final List<File> filesWithoutDetectedCopyright = <File>[];
     final List<File> filesWithoutDetectedLicense = <File>[];
     final List<File> misplacedThirdPartyFiles = <File>[];
@@ -133,8 +164,7 @@ class LicenseCheckCommand extends PluginCommand {
         continue;
       }
       final String author = copyright.group(1);
-      if (!_firstPartyAuthors.contains(author) &&
-          !p.split(file.path).contains('third_party')) {
+      if (author != _firstPartyAuthors && !_isThirdParty(file)) {
         misplacedThirdPartyFiles.add(file);
       }
 
@@ -146,7 +176,7 @@ class LicenseCheckCommand extends PluginCommand {
         filesWithoutDetectedLicense.add(file);
       }
     }
-    _print('\n\n');
+    _print('\n');
 
     // Sort by path for more usable output.
     final pathCompare = (File a, File b) => a.path.compareTo(b.path);
@@ -188,7 +218,35 @@ class LicenseCheckCommand extends PluginCommand {
         filesWithoutDetectedLicense.isEmpty &&
         misplacedThirdPartyFiles.isEmpty;
     if (succeeded) {
-      _print('All files passed validation!');
+      _print('All source files passed validation!');
+    }
+    return succeeded;
+  }
+
+  // Checks all provide LICENSE files, returning false if any of them
+  // fail validation.
+  Future<bool> _checkLicenseFiles(Iterable<File> files) async {
+    final List<File> incorrectLicenseFiles = <File>[];
+
+    for (final File file in files) {
+      _print('Checking ${file.path}');
+      if (!file.readAsStringSync().contains(_fullBsdLicenseText)) {
+        incorrectLicenseFiles.add(file);
+      }
+    }
+    _print('\n');
+
+    if (incorrectLicenseFiles.isNotEmpty) {
+      _print('The following LICENSE files do not follow the expected format:');
+      for (final File file in incorrectLicenseFiles) {
+        _print('  ${file.path}');
+      }
+      _print('Please ensure that they use the exact format used in this repository".\n');
+    }
+
+    bool succeeded = incorrectLicenseFiles.isEmpty;
+    if (succeeded) {
+      _print('All LICENSE files passed validation!');
     }
     return succeeded;
   }
@@ -199,6 +257,10 @@ class LicenseCheckCommand extends PluginCommand {
         _ignoreSuffixList.any((String suffix) =>
             path.endsWith(suffix) ||
             _ignoredFullBasenameList.contains(p.basename(path)));
+  }
+
+  bool _isThirdParty(File file) {
+    return p.split(file.path).contains('third_party');
   }
 
   Future<List<File>> _getAllFiles() => packagesDir.parent

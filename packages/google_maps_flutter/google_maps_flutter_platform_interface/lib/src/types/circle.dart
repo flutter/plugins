@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import 'types.dart';
 @immutable
 class CircleId extends MapsObjectId<Circle> {
   /// Creates an immutable identifier for a [Circle].
-  CircleId(String value) : super(value);
+  const CircleId(String value) : super(value);
 }
 
 /// Draws a circle on the map.

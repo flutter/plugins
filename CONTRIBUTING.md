@@ -61,7 +61,7 @@ USB and debugging enabled on that device.
 
 ## Setting up XCUITests
 
-Sometimes, XCUITests are useful when integration testing a plugin that has native UI on iOS (e.g image_picker, in_app_purchase, camera, share, local_auth etc). Most of the time, XCUITests are not necessary, consider using [integration_test](https://pub.dev/packages/integration_test) if the tests are not focused on iOS system UI.
+Sometimes, XCUITests are useful when integration testing a plugin that has native UI on iOS (e.g image_picker, in_app_purchase, camera, share, local_auth etc). Most of the time, XCUITests are not necessary, consider using `integration_test` if the tests are not focused on iOS system UI.
 
 If XCUITests has always been set up for the plugin, a RunnerUITests folder under `<the_plugin>/example/ios` directory can be found.
 If XCUITests has not been set up for the plugin, follow these steps to set it up:
@@ -188,8 +188,9 @@ to merge the pull request and `pub submit` any affected packages.
 You must complete the
 [Contributor License Agreement](https://cla.developers.google.com/clas).
 You can do this online, and it only takes a minute.
-If you've never submitted code before, you must add your (or your
-organization's) name and contact info to the [AUTHORS](AUTHORS) file.
+If you've never submitted code for that plugin before, you may also add your (or
+your organization's) name and contact info to the AUTHORS file for the plugin.
+You may also add it to the AUTHORS file for [the repository](AUTHORS).
 
 ### The review process
 
