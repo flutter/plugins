@@ -221,4 +221,3 @@ Tried searching for the following:
     return isAndroidPlugin(plugin, fileSystem);
   }
 }
-//  - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart
