@@ -153,13 +153,13 @@ gmaps.LatLng _latLngToGmLatLng(LatLng latLng) {
 }
 
 LatLng _gmLatLngToLatLng(gmaps.LatLng latLng) {
-  return LatLng(latLng.lat!.toDouble(), latLng.lng!.toDouble());
+  return LatLng(latLng.lat.toDouble(), latLng.lng.toDouble());
 }
 
 LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds latLngBounds) {
   return LatLngBounds(
-    southwest: _gmLatLngToLatLng(latLngBounds.southWest!),
-    northeast: _gmLatLngToLatLng(latLngBounds.northEast!),
+    southwest: _gmLatLngToLatLng(latLngBounds.southWest),
+    northeast: _gmLatLngToLatLng(latLngBounds.northEast),
   );
 }
 
@@ -326,8 +326,8 @@ bool _isPolygonClockwise(List<gmaps.LatLng> path) {
   var direction = 0.0;
   for (var i = 0; i < path.length; i++) {
     direction = direction +
-        ((path[(i + 1) % path.length].lat! - path[i].lat!) *
-            (path[(i + 1) % path.length].lng! + path[i].lng!));
+        ((path[(i + 1) % path.length].lat - path[i].lat) *
+            (path[(i + 1) % path.length].lng + path[i].lng));
   }
   return direction >= 0;
 }

@@ -13,7 +13,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^1.11.0
-  google_maps: ^5.0.1
+  google_maps: ^5.1.0
   http: ^0.13.0
   mockito: ^5.0.0
   flutter_driver:

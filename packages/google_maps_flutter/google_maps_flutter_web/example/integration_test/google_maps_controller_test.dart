@@ -389,7 +389,7 @@ void main() {
         testWidgets('getVisibleRegion', (WidgetTester tester) async {
           final gmCenter = map.center!;
           final center =
-              LatLng(gmCenter.lat!.toDouble(), gmCenter.lng!.toDouble());
+              LatLng(gmCenter.lat.toDouble(), gmCenter.lng.toDouble());
 
           final bounds = await controller.getVisibleRegion();
 
