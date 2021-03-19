@@ -1,18 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:ui' show hashValues;
+
 import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart' show immutable;
 
 import 'types.dart';
-import 'package:meta/meta.dart' show immutable;
 
 /// Uniquely identifies a [TileOverlay] among [GoogleMap] tile overlays.
 @immutable
 class TileOverlayId extends MapsObjectId<TileOverlay> {
   /// Creates an immutable identifier for a [TileOverlay].
-  TileOverlayId(String value) : super(value);
+  const TileOverlayId(String value) : super(value);
 }
 
 /// A set of images which are displayed on top of the base map tiles.

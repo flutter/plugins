@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,7 +104,7 @@ class InfoWindow {
 @immutable
 class MarkerId extends MapsObjectId<Marker> {
   /// Creates an immutable identifier for a [Marker].
-  MarkerId(String value) : super(value);
+  const MarkerId(String value) : super(value);
 }
 
 /// Marks a geographical location on the map.

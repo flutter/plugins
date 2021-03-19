@@ -82,6 +82,25 @@ void main() {
       );
     });
 
+    test('signIn prioritize clientId parameter when available', () async {
+      final fakeClientId = 'fakeClientId';
+      googleSignIn = GoogleSignIn(clientId: fakeClientId);
+      await googleSignIn.signIn();
+      expect(googleSignIn.currentUser, isNotNull);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
+            'scopes': <String>[],
+            'hostedDomain': null,
+            'clientId': fakeClientId,
+          }),
+          isMethodCall('signIn', arguments: null),
+        ],
+      );
+    });
+
     test('signOut', () async {
       await googleSignIn.signOut();
       expect(googleSignIn.currentUser, isNull);
