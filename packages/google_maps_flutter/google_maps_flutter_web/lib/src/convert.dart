@@ -8,7 +8,6 @@ part of google_maps_flutter_web;
 final _nullGmapsLatLng = gmaps.LatLng(0, 0);
 final _nullGmapsLatLngBounds =
     gmaps.LatLngBounds(_nullGmapsLatLng, _nullGmapsLatLng);
-final _nullZoom = 0;
 
 // Defaults taken from the Google Maps Platform SDK documentation.
 final _defaultCssColor = '#000000';
