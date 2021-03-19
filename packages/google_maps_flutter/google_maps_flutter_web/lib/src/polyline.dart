@@ -32,10 +32,11 @@ class PolylineController {
   bool get consumeTapEvents => _consumeTapEvents;
 
   /// Updates the options of the wrapped [gmaps.Polyline] object.
-  /// 
+  ///
   /// This cannot be called after [remove].
   void update(gmaps.PolylineOptions options) {
-    assert(_polyline != null, 'Cannot `update` Polyline after calling `remove`.');
+    assert(
+        _polyline != null, 'Cannot `update` Polyline after calling `remove`.');
     _polyline!.options = options;
   }
 

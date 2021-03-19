@@ -32,7 +32,7 @@ class CircleController {
   bool get consumeTapEvents => _consumeTapEvents;
 
   /// Updates the options of the wrapped [gmaps.Circle] object.
-  /// 
+  ///
   /// This cannot be called after [remove].
   void update(gmaps.CircleOptions options) {
     assert(_circle != null, 'Cannot `update` Circle after calling `remove`.');

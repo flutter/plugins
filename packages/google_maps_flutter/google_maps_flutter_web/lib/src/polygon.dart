@@ -32,7 +32,7 @@ class PolygonController {
   bool get consumeTapEvents => _consumeTapEvents;
 
   /// Updates the options of the wrapped [gmaps.Polygon] object.
-  /// 
+  ///
   /// This cannot be called after [remove].
   void update(gmaps.PolygonOptions options) {
     assert(_polygon != null, 'Cannot `update` Polygon after calling `remove`.');

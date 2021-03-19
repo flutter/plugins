@@ -31,8 +31,10 @@ class MarkerController {
     }
     if (onDragEnd != null) {
       _marker!.onDragend.listen((event) {
-        _marker!.position = event.latLng;
-        onDragEnd.call(event.latLng!);
+        if (_marker != null) {
+          _marker!.position = event.latLng;
+        }
+        onDragEnd.call(event.latLng ?? _nullGmapsLatLng);
       });
     }
   }
@@ -51,7 +53,7 @@ class MarkerController {
   gmaps.InfoWindow? get infoWindow => _infoWindow;
 
   /// Updates the options of the wrapped [gmaps.Marker] object.
-  /// 
+  ///
   /// This cannot be called after [remove].
   void update(
     gmaps.MarkerOptions options, {
@@ -75,7 +77,7 @@ class MarkerController {
   }
 
   /// Hide the associated [gmaps.InfoWindow].
-  /// 
+  ///
   /// This cannot be called after [remove].
   void hideInfoWindow() {
     assert(_marker != null, 'Cannot `hideInfoWindow` on a `remove`d Marker.');
@@ -86,7 +88,7 @@ class MarkerController {
   }
 
   /// Show the associated [gmaps.InfoWindow].
-  /// 
+  ///
   /// This cannot be called after [remove].
   void showInfoWindow() {
     assert(_marker != null, 'Cannot `showInfoWindow` on a `remove`d Marker.');

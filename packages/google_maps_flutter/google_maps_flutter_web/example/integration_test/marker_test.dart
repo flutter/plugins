@@ -119,21 +119,24 @@ void main() {
         expect(controller.marker, isNull);
       });
 
-      testWidgets('cannot call update after remove', (WidgetTester tester) async {
+      testWidgets('cannot call update after remove',
+          (WidgetTester tester) async {
         final options = gmaps.MarkerOptions()..draggable = true;
-        expect((){
+        expect(() {
           controller.update(options);
         }, throwsAssertionError);
       });
 
-      testWidgets('cannot call showInfoWindow after remove', (WidgetTester tester) async {
-        expect((){
+      testWidgets('cannot call showInfoWindow after remove',
+          (WidgetTester tester) async {
+        expect(() {
           controller.showInfoWindow();
         }, throwsAssertionError);
       });
 
-      testWidgets('cannot call hideInfoWindow after remove', (WidgetTester tester) async {
-        expect((){
+      testWidgets('cannot call hideInfoWindow after remove',
+          (WidgetTester tester) async {
+        expect(() {
           controller.hideInfoWindow();
         }, throwsAssertionError);
       });

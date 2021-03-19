@@ -255,7 +255,8 @@ class GoogleMapController {
 
   /// Returns the [LatLngBounds] of the current viewport.
   Future<LatLngBounds> getVisibleRegion() async {
-    return _gmLatLngBoundsTolatLngBounds(await _googleMap!.bounds);
+    return _gmLatLngBoundsTolatLngBounds(
+        await _googleMap!.bounds ?? _nullGmapsLatLngBounds);
   }
 
   /// Returns the [ScreenCoordinate] for a given viewport [LatLng].
@@ -328,6 +329,9 @@ class GoogleMapController {
   // Cleanup
 
   /// Disposes of this controller and its resources.
+  ///
+  /// You won't be able to call many of the methods on this controller after
+  /// calling `dispose`!
   void dispose() {
     _widget = null;
     _googleMap = null;

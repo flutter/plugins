@@ -4,11 +4,11 @@
 
 part of google_maps_flutter_web;
 
-final _nullLatLng = LatLng(0, 0);
-final _nullLatLngBounds = LatLngBounds(
-  northeast: _nullLatLng,
-  southwest: _nullLatLng,
-);
+// Default values for when the gmaps objects return null/undefined values.
+final _nullGmapsLatLng = gmaps.LatLng(0, 0);
+final _nullGmapsLatLngBounds =
+    gmaps.LatLngBounds(_nullGmapsLatLng, _nullGmapsLatLng);
+final _nullZoom = 0;
 
 // Defaults taken from the Google Maps Platform SDK documentation.
 final _defaultCssColor = '#000000';
@@ -149,21 +149,15 @@ List<gmaps.MapTypeStyle> _mapStyles(String? mapStyleJson) {
   return styles;
 }
 
-gmaps.LatLng? _latLngToGmLatLng(LatLng latLng) {
-  if (latLng == null) return null;
+gmaps.LatLng _latLngToGmLatLng(LatLng latLng) {
   return gmaps.LatLng(latLng.latitude, latLng.longitude);
 }
 
-LatLng _gmLatLngToLatLng(gmaps.LatLng? latLng) {
-  if (latLng == null) return _nullLatLng;
+LatLng _gmLatLngToLatLng(gmaps.LatLng latLng) {
   return LatLng(latLng.lat!.toDouble(), latLng.lng!.toDouble());
 }
 
-LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds? latLngBounds) {
-  if (latLngBounds == null) {
-    return _nullLatLngBounds;
-  }
-
+LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds latLngBounds) {
   return LatLngBounds(
     southwest: _gmLatLngToLatLng(latLngBounds.southWest!),
     northeast: _gmLatLngToLatLng(latLngBounds.northEast!),
@@ -172,10 +166,10 @@ LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds? latLngBounds) {
 
 CameraPosition _gmViewportToCameraPosition(gmaps.GMap map) {
   return CameraPosition(
-    target: _gmLatLngToLatLng(map.center),
+    target: _gmLatLngToLatLng(map.center ?? _nullGmapsLatLng),
     bearing: map.heading?.toDouble() ?? 0,
     tilt: map.tilt?.toDouble() ?? 0,
-    zoom: map.zoom?.toDouble() ?? 10,
+    zoom: map.zoom?.toDouble() ?? 0,
   );
 }
 
@@ -184,8 +178,11 @@ CameraPosition _gmViewportToCameraPosition(gmaps.GMap map) {
 // Marker.fromMarker(anotherMarker, moreOptions);
 
 gmaps.InfoWindowOptions? _infoWindowOptionsFromMarker(Marker marker) {
-  if ((marker.infoWindow.title?.isEmpty ?? true) &&
-      (marker.infoWindow.snippet?.isEmpty ?? true)) {
+  final markerTitle = marker.infoWindow.title;
+  final markerSnippet = marker.infoWindow.snippet;
+
+  // If both the title and the snippet are null or empty, bail out...
+  if ((markerTitle?.isEmpty ?? true) && (markerSnippet?.isEmpty ?? true)) {
     return null;
   }
 
@@ -193,17 +190,18 @@ gmaps.InfoWindowOptions? _infoWindowOptionsFromMarker(Marker marker) {
   // to click events...
   final HtmlElement container = DivElement()
     ..id = 'gmaps-marker-${marker.markerId.value}-infowindow';
-  if (marker.infoWindow.title?.isNotEmpty ?? false) {
+
+  if (markerTitle != null && markerTitle.isNotEmpty) {
     final HtmlElement title = HeadingElement.h3()
       ..className = 'infowindow-title'
-      ..innerText = marker.infoWindow.title!;
+      ..innerText = markerTitle;
     container.children.add(title);
   }
-  if (marker.infoWindow.snippet?.isNotEmpty ?? false) {
+  if (markerSnippet != null && markerSnippet.isNotEmpty) {
     final HtmlElement snippet = DivElement()
       ..className = 'infowindow-snippet'
       ..setInnerHtml(
-        sanitizeHtml(marker.infoWindow.snippet!),
+        sanitizeHtml(markerSnippet),
         treeSanitizer: NodeTreeSanitizer.trusted,
       );
     container.children.add(snippet);
@@ -282,14 +280,14 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
     gmaps.GMap googleMap, Polygon polygon) {
   List<gmaps.LatLng> path = [];
   polygon.points.forEach((point) {
-    path.add(_latLngToGmLatLng(point)!);
+    path.add(_latLngToGmLatLng(point));
   });
   final polygonDirection = _isPolygonClockwise(path);
   List<List<gmaps.LatLng>> paths = [path];
   int holeIndex = 0;
   polygon.holes.forEach((hole) {
     List<gmaps.LatLng> holePath =
-        hole.map((point) => _latLngToGmLatLng(point)!).toList();
+        hole.map((point) => _latLngToGmLatLng(point)).toList();
     if (_isPolygonClockwise(holePath) == polygonDirection) {
       holePath = holePath.reversed.toList();
       if (kDebugMode) {
@@ -318,6 +316,13 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
 /// based on: https://stackoverflow.com/a/1165943
 ///
 /// returns [true] if clockwise [false] if counterclockwise
+///
+/// This method expects that the incoming [path] is a `List` of well-formed,
+/// non-null [gmaps.LatLng] objects.
+///
+/// Currently, this method is only called from [_polygonOptionsFromPolygon], and
+/// the `path` is a transformed version of [Polygon.points] or each of the
+/// [Polygon.holes], guaranteeing that `lat` and `lng` can be accessed with `!`.
 bool _isPolygonClockwise(List<gmaps.LatLng> path) {
   var direction = 0.0;
   for (var i = 0; i < path.length; i++) {
@@ -332,7 +337,7 @@ gmaps.PolylineOptions _polylineOptionsFromPolyline(
     gmaps.GMap googleMap, Polyline polyline) {
   List<gmaps.LatLng> paths = [];
   polyline.points.forEach((point) {
-    paths.add(_latLngToGmLatLng(point)!);
+    paths.add(_latLngToGmLatLng(point));
   });
 
   return gmaps.PolylineOptions()
@@ -391,16 +396,16 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
           // print('Error computing new focus LatLng. JS Error: ' + e.toString());
         }
       }
-      map.zoom = map.zoom! + newZoomDelta;
+      map.zoom = (map.zoom ?? 0) + newZoomDelta;
       if (focusLatLng != null) {
         map.panTo(focusLatLng);
       }
       break;
     case 'zoomIn':
-      map.zoom = map.zoom! + 1;
+      map.zoom = (map.zoom ?? 0) + 1;
       break;
     case 'zoomOut':
-      map.zoom = map.zoom! - 1;
+      map.zoom = (map.zoom ?? 0) - 1;
       break;
     case 'zoomTo':
       map.zoom = json[1];
@@ -412,14 +417,24 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
 
 // original JS by: Byron Singh (https://stackoverflow.com/a/30541162)
 gmaps.LatLng _pixelToLatLng(gmaps.GMap map, int x, int y) {
-  final ne = map.bounds!.northEast;
-  final sw = map.bounds!.southWest;
-  final projection = map.projection!;
+  final bounds = map.bounds;
+  final projection = map.projection;
+  final zoom = map.zoom;
 
-  final topRight = projection.fromLatLngToPoint!(ne)!;
+  assert(
+      bounds != null, 'Map Bounds required to compute LatLng of screen x/y.');
+  assert(projection != null,
+      'Map Projection required to compute LatLng of screen x/y');
+  assert(zoom != null,
+      'Current map zoom level required to compute LatLng of screen x/y');
+
+  final ne = bounds!.northEast;
+  final sw = bounds.southWest;
+
+  final topRight = projection!.fromLatLngToPoint!(ne)!;
   final bottomLeft = projection.fromLatLngToPoint!(sw)!;
 
-  final scale = 1 << (map.zoom! as int); // 2 ^ zoom
+  final scale = 1 << (zoom! as int); // 2 ^ zoom
 
   final point =
       gmaps.Point((x / scale) + bottomLeft.x!, (y / scale) + topRight.y!);
