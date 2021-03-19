@@ -173,7 +173,7 @@ task:
         - ./script/incremental_build.sh build-examples --web
       test_script:
         # TODO(stuartmorgan): Eliminate this check once 2.1 reaches stable.
-        - if [[ "$CIRRUS_BRANCH" == "master" ]]; then
+        - if [[ "$CHANNEL" == "master" ]]; then
         -   ./script/incremental_build.sh drive-examples --web
         - else
         -   echo "Requires null-safe integration_test; skipping."
