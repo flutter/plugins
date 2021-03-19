@@ -17,8 +17,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.3.0
-  quick_actions_platform_interface:
-      path: ../quick_actions_platform_interface
+  quick_actions_platform_interface: 1.0.0
 
 dev_dependencies:
   flutter_test:
