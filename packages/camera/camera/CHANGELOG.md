@@ -3,12 +3,6 @@
 * Solved a rotation issue on iOS which caused the default preview to be displayed as landscape right instead of portrait.
 
 ## 0.8.0
-<<<<<<< HEAD
-
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-=======
->>>>>>> ios_orientation_issue
 
 * Stable null safety release.
 * Solved delay when using the zoom feature on iOS.
