@@ -8,11 +8,11 @@ if pgrep -lf chromedriver > /dev/null; then
 
   if [ $# -eq 0 ]; then
     echo "No target specified, running all tests..."
-    find integration_test/ -iname *_test.dart | xargs -n1 -i -t flutter drive -d web-server --web-port=7357 --browser-name=chrome --driver=test_driver/integration_driver.dart --target='{}'
+    find integration_test/ -iname *_test.dart | xargs -n1 -i -t flutter drive -d web-server --web-port=7357 --browser-name=chrome --driver=test_driver/integration_test.dart --target='{}'
   else
     echo "Running test target: $1..."
     set -x
-    flutter drive -d web-server --web-port=7357 --browser-name=chrome --driver=test_driver/integration_driver.dart --target=$1
+    flutter drive -d web-server --web-port=7357 --browser-name=chrome --driver=test_driver/integration_test.dart --target=$1
   fi
 
   else

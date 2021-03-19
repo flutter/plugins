@@ -427,6 +427,7 @@ void main() {
                   'drive',
                   '-d',
                   'web-server',
+                  '--web-port=7357',
                   '--browser-name=chrome',
                   '--driver',
                   driverTestPath,
