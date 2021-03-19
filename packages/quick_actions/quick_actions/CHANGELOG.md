@@ -1,3 +1,7 @@
+## 0.6.0
+
+* Migrate to federated architecture.
+
 ## 0.5.0
 
 * Migrate to null safety.

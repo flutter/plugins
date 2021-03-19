@@ -1,90 +1,68 @@
-// Copyright 2017 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-import 'dart:async';
-
-import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:quick_actions/quick_actions.dart';
+import 'package:quick_actions_platform_interface/platform_interface/quick_actions_platform.dart';
+import 'package:quick_actions_platform_interface/quick_actions_platform_interface.dart';
+import 'package:quick_actions_platform_interface/types/shortcut_item.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  late QuickActions quickActions;
-  final List<MethodCall> log = <MethodCall>[];
+  group('$QuickActions', () {
 
-  setUp(() {
-    quickActions = QuickActions();
-    quickActions.channel.setMockMethodCallHandler(
-      (MethodCall methodCall) async {
-        log.add(methodCall);
-        return 'non empty response';
-      },
-    );
-  });
+    setUpAll(() {
+      QuickActionsPlatform.instance = MockQuickActionsPlatform();
+    });
 
-  test('setShortcutItems with demo data', () async {
-    const String type = 'type';
-    const String localizedTitle = 'localizedTitle';
-    const String icon = 'icon';
-    await quickActions.setShortcutItems(
-      const <ShortcutItem>[
-        ShortcutItem(type: type, localizedTitle: localizedTitle, icon: icon)
-      ],
-    );
-    expect(
-      log,
-      <Matcher>[
-        isMethodCall(
-          'setShortcutItems',
-          arguments: <Map<String, String>>[
-            <String, String>{
-              'type': type,
-              'localizedTitle': localizedTitle,
-              'icon': icon,
-            }
-          ],
-        ),
-      ],
-    );
-    log.clear();
-  });
+    test('initialize() PlatformInterface', () {
+      MockQuickActions quickActions = MockQuickActions();
+      quickActions.initialize((type) { });
 
-  test('clearShortcutItems', () {
-    quickActions.clearShortcutItems();
-    expect(
-      log,
-      <Matcher>[
-        isMethodCall('clearShortcutItems', arguments: null),
-      ],
-    );
-    log.clear();
-  });
+      verify(QuickActionsPlatform.instance.initialize((_)=>{})).called(1);
+    });
 
-  test('initialize', () async {
-    final Completer<bool> quickActionsHandler = Completer<bool>();
-    quickActions.initialize((_) => quickActionsHandler.complete(true));
-    expect(
-      log,
-      <Matcher>[
-        isMethodCall('getLaunchAction', arguments: null),
-      ],
-    );
-    log.clear();
+    test('setShortcutItems() PlatformInterface', () {
+      MockQuickActions quickActions = MockQuickActions();
+      quickActions.initialize((type) { });
+      quickActions.setShortcutItems([]);
 
-    expect(quickActionsHandler.future, completion(isTrue));
-  });
+      verify(QuickActionsPlatform.instance.initialize((String _) => {})).called(1);
+      verify(QuickActionsPlatform.instance.setShortcutItems([])).called(1);
+    });
 
-  test('Shortcut item can be constructed', () {
-    const String type = 'type';
-    const String localizedTitle = 'title';
-    const String icon = 'foo';
+    test('clearShortcutItems() PlatformInterface', () {
+      MockQuickActions quickActions = MockQuickActions();
+      quickActions.initialize((type) { 'launch';});
+      quickActions.clearShortcutItems();
 
-    const ShortcutItem item =
-        ShortcutItem(type: type, localizedTitle: localizedTitle, icon: icon);
-
-    expect(item.type, type);
-    expect(item.localizedTitle, localizedTitle);
-    expect(item.icon, icon);
+      verify(QuickActionsPlatform.instance.initialize((type) { 'launch';})).called(1);
+      verify(QuickActionsPlatform.instance.clearShortcutItems()).called(1);
+    });
   });
 }
+
+class MockQuickActionsPlatform extends Mock
+    with MockPlatformInterfaceMixin
+    implements QuickActionsPlatform {
+  @override
+  Future<void> clearShortcutItems() async {
+    super.noSuchMethod(
+        Invocation.method(#clearShortcutItems, []));
+  }
+
+  @override
+  void initialize(QuickActionHandler handler) {
+    super.noSuchMethod(
+        Invocation.method(#initialize, [handler]));
+  }
+
+  @override
+  Future<void> setShortcutItems(List<ShortcutItem> items) async {
+    super.noSuchMethod(
+        Invocation.method(#setShortcutItems, [items]));
+  }
+}
+
+class MockQuickActions extends QuickActions {}
