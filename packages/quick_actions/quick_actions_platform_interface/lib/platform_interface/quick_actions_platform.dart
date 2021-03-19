@@ -36,7 +36,7 @@ abstract class QuickActionsPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  /// Initializes this plugin
+  /// Initializes this plugin.
   ///
   /// Call this once before any further interaction with the the plugin.
   Future<void> initialize(QuickActionHandler handler) async {
