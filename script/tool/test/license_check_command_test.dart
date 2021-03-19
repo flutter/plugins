@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ void main() {
       String prefix = '',
       String suffix = '',
       String copyright =
-          'Copyright 2019 The Flutter Authors. All rights reserved.',
+          'Copyright 2013 The Flutter Authors. All rights reserved.',
       List<String> license = const <String>[
         'Use of this source code is governed by a BSD-style license that can be',
         'found in the LICENSE file.',
@@ -171,8 +171,10 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       // Failure should give information about the problematic files.
-      expect(printedMessages,
-          contains('No copyright line was found for the following files:'));
+      expect(
+          printedMessages,
+          contains(
+              'The license block for these files is missing or incorrect:'));
       expect(printedMessages, contains('  bad.cc'));
       expect(printedMessages, contains('  bad.h'));
       // Failure shouldn't print the success message.
@@ -192,8 +194,10 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       // Failure should give information about the problematic files.
-      expect(printedMessages,
-          contains('No copyright line was found for the following files:'));
+      expect(
+          printedMessages,
+          contains(
+              'The license block for these files is missing or incorrect:'));
       expect(printedMessages, contains('  bad.cc'));
       // Failure shouldn't print the success message.
       expect(printedMessages,
@@ -212,8 +216,10 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       // Failure should give information about the problematic files.
-      expect(printedMessages,
-          contains('No recognized license was found for the following files:'));
+      expect(
+          printedMessages,
+          contains(
+              'The license block for these files is missing or incorrect:'));
       expect(printedMessages, contains('  bad.cc'));
       // Failure shouldn't print the success message.
       expect(printedMessages,
@@ -233,8 +239,7 @@ void main() {
       expect(
           printedMessages,
           contains(
-              'The following files do not have a recognized first-party author '
-              'but are not in a "third_party/" directory:'));
+              'The license block for these files is missing or incorrect:'));
       expect(printedMessages, contains('  third_party.cc'));
       // Failure shouldn't print the success message.
       expect(printedMessages,
@@ -249,7 +254,12 @@ void main() {
           .childDirectory('third_party')
           .childFile('file.cc');
       thirdPartyFile.createSync(recursive: true);
-      _writeLicense(thirdPartyFile, copyright: 'Copyright 2017 Someone Else');
+      _writeLicense(thirdPartyFile,
+          copyright: 'Copyright 2017 Workiva Inc.',
+          license: <String>[
+            'Licensed under the Apache License, Version 2.0 (the "License");',
+            'you may not use this file except in compliance with the License.'
+          ]);
 
       await runner.run(<String>['license-check']);
 
@@ -274,8 +284,10 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       // Failure should give information about the problematic files.
-      expect(printedMessages,
-          contains('No recognized license was found for the following files:'));
+      expect(
+          printedMessages,
+          contains(
+              'No recognized license was found for the following third-party files:'));
       expect(printedMessages, contains('  third_party/bad.cc'));
       // Failure shouldn't print the success message.
       expect(printedMessages,
@@ -291,10 +303,11 @@ void main() {
       bad.createSync(recursive: true);
       _writeLicense(
         bad,
-        copyright: 'Copyright 2017 Some New Authors',
-        license: <String>[
-          'Licensed under the Apache License, Version 2.0',
-        ],
+        copyright: 'Copyright 2017 Some New Authors.',
+          license: <String>[
+            'Licensed under the Apache License, Version 2.0 (the "License");',
+            'you may not use this file except in compliance with the License.'
+          ],
       );
 
       await expectLater(() => runner.run(<String>['license-check']),
@@ -302,7 +315,7 @@ void main() {
 
       // Failure should give information about the problematic files.
       expect(printedMessages,
-          contains('No recognized license was found for the following files:'));
+          contains('No recognized license was found for the following third-party files:'));
       expect(printedMessages, contains('  third_party/bad.cc'));
       // Failure shouldn't print the success message.
       expect(printedMessages,
@@ -335,8 +348,7 @@ void main() {
           isNot(contains('All LICENSE files passed validation!')));
     });
 
-    test('ignores third-party LICENSE format',
-        () async {
+    test('ignores third-party LICENSE format', () async {
       File license = root.childDirectory('third_party').childFile('LICENSE');
       license.createSync(recursive: true);
       license.writeAsStringSync(_incorrectLicenseFileText);
@@ -351,7 +363,7 @@ void main() {
 }
 
 const String _correctLicenseFileText =
-    '''Copyright 2017 The Flutter Authors. All rights reserved.
+    '''Copyright 2013 The Flutter Authors. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -381,7 +393,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // A common incorrect version created by copying text intended for a code file,
 // with comment markers.
 const String _incorrectLicenseFileText =
-    '''// Copyright 2017 The Flutter Authors. All rights reserved.
+    '''// Copyright 2013 The Flutter Authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
