@@ -6,9 +6,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:quick_actions_platform_interface/method_channel/method_channel_quick_actions.dart';
 import 'package:quick_actions_platform_interface/types/shortcut_item.dart';
-
-import '../lib/method_channel/method_channel_quick_actions.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
