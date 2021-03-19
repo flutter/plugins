@@ -16,8 +16,6 @@ Add this to your Flutter app to:
 
 ## Getting Started
 
-### Preparation
-
 This plugin relies on the App Store and Google Play for making in app purchases.
 It exposes a unified surface, but you'll still need to understand and configure
 your app with each store to handle purchases using them. Both have extensive
@@ -48,6 +46,8 @@ use.
    more fine-tuned control when needed. However if you use this you'll need to
    code your purchase handling logic significantly differently depending on
    which platform you're on.
+
+## Usage
 
 ### Initializing the plugin
 
@@ -242,7 +242,7 @@ out the [App Store Documentation](https://developer.apple.com/documentation/stor
 InAppPurchaseConnection.instance.presentCodeRedemptionSheet();
 ```
 
-## Development
+### Contributing to this plugin
 
 This plugin uses
 [json_serializable](https://pub.dev/packages/json_serializable) for the
