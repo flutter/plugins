@@ -22,13 +22,13 @@ abstract class QuickActionsPlatform extends PlatformInterface {
 
   static QuickActionsPlatform _instance = MethodChannelQuickActions();
 
-  /// The default instance of [ImagePickerPlatform] to use.
+  /// The default instance of [QuickActionsPlatform] to use.
   ///
-  /// Defaults to [MethodChannelImagePicker].
+  /// Defaults to [MethodChannelQuickActions].
   static QuickActionsPlatform get instance => _instance;
 
   /// Platform-specific plugins should set this with their own platform-specific
-  /// class that extends [ImagePickerPlatform] when they register themselves.
+  /// class that extends [QuickActionsPlatform] when they register themselves.
   // TODO(amirh): Extract common platform interface logic.
   // https://github.com/flutter/flutter/issues/43368
   static set instance(QuickActionsPlatform instance) {
