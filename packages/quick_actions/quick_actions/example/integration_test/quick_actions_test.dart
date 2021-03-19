@@ -12,7 +12,7 @@ void main() {
 
   testWidgets('Can set shortcuts', (WidgetTester tester) async {
     final QuickActions quickActions = QuickActions();
-    quickActions.initialize(null);
+    await quickActions.initialize(null);
 
     const ShortcutItem shortCutItem = ShortcutItem(
       type: 'action_one',

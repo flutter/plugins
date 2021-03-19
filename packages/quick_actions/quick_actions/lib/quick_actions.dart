@@ -4,8 +4,6 @@
 
 import 'dart:async';
 
-import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 import 'package:quick_actions_platform_interface/platform_interface/quick_actions_platform.dart';
 import 'package:quick_actions_platform_interface/types/types.dart';
 
@@ -16,7 +14,7 @@ class QuickActions {
   /// Initializes this plugin.
   ///
   /// Call this once before any further interaction with the the plugin.
-  void initialize(QuickActionHandler handler) async =>
+  Future<void> initialize(QuickActionHandler handler) async =>
       QuickActionsPlatform.instance.initialize(handler);
 
   /// Sets the [ShortcutItem]s to become the app's quick actions.
