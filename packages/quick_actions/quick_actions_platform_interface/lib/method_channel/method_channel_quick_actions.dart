@@ -14,15 +14,14 @@ class MethodChannelQuickActions extends QuickActionsPlatform {
   @visibleForTesting
   MethodChannel get channel => _channel;
 
-
   @override
-  void initialize(QuickActionHandler handler) async {
+  Future<void> initialize(QuickActionHandler handler) async {
     channel.setMethodCallHandler((MethodCall call) async {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
     final String? action =
-    await channel.invokeMethod<String?>('getLaunchAction');
+        await channel.invokeMethod<String?>('getLaunchAction');
     if (action != null) {
       handler(action);
     }
@@ -31,14 +30,13 @@ class MethodChannelQuickActions extends QuickActionsPlatform {
   @override
   Future<void> setShortcutItems(List<ShortcutItem> items) async {
     final List<Map<String, String?>> itemsList =
-    items.map(_serializeItem).toList();
+        items.map(_serializeItem).toList();
     await channel.invokeMethod<void>('setShortcutItems', itemsList);
   }
 
   @override
   Future<void> clearShortcutItems() =>
       channel.invokeMethod<void>('clearShortcutItems');
-
 
   Map<String, String?> _serializeItem(ShortcutItem item) {
     return <String, String?>{

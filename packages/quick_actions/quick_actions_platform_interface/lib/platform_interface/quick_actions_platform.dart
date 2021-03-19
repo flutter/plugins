@@ -3,7 +3,6 @@ import 'package:quick_actions_platform_interface/types/types.dart';
 
 import '../method_channel/method_channel_quick_actions.dart';
 
-
 /// The interface that implementations of quick_actions must implement.
 ///
 /// Platform implementations should extend this class rather than implement it as `quick_actions`
@@ -36,7 +35,7 @@ abstract class QuickActionsPlatform extends PlatformInterface {
   /// Initializes this plugin
   ///
   /// Call this once before any further interaction with the the plugin.
-  void initialize(QuickActionHandler handler) async {
+  Future<void> initialize(QuickActionHandler handler) async {
     throw UnimplementedError("initialize() has not been implemented.");
   }
 
