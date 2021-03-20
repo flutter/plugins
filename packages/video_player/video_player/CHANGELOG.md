@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Introduce setCaptionOffset to offset the caption display based on a Duration.
+
 ## 2.0.2
 
 * Fix `VideoPlayerValue` size and aspect ratio documentation
