@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Migrate to null-safety
+
 ## 1.0.2+3
 
 * Update README to reflect deprecation.
