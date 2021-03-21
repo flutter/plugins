@@ -11,12 +11,12 @@ import 'dart:convert';
 /// An object sent from integration_test back to the Flutter Driver in response to
 /// `request_data` command.
 class Response {
-  final List<Failure> _failureDetails;
+  final List<Failure>? _failureDetails;
 
   final bool _allTestsPassed;
 
   /// The extra information to be added along side the test result.
-  Map<String, dynamic> data;
+  Map<String, dynamic>? data;
 
   /// Constructor to use for positive response.
   Response.allTestsPassed({this.data})
@@ -28,7 +28,7 @@ class Response {
       : this._allTestsPassed = false;
 
   /// Constructor for failure response.
-  Response.toolException({String ex})
+  Response.toolException({String? ex})
       : this._allTestsPassed = false,
         this._failureDetails = [Failure('ToolException', ex)];
 
@@ -42,10 +42,10 @@ class Response {
 
   /// If the result are failures get the formatted details.
   String get formattedFailureDetails =>
-      _allTestsPassed ? '' : formatFailures(_failureDetails);
+      _allTestsPassed ? '' : formatFailures(_failureDetails!);
 
   /// Failure details as a list.
-  List<Failure> get failureDetails => _failureDetails;
+  List<Failure>? get failureDetails => _failureDetails;
 
   /// Serializes this message to a JSON map.
   String toJson() => json.encode(<String, dynamic>{
@@ -57,7 +57,7 @@ class Response {
   /// Deserializes the result from JSON.
   static Response fromJson(String source) {
     final Map<String, dynamic> responseJson = json.decode(source);
-    if (responseJson['result'] as String == 'true') {
+    if (responseJson['result']! as String == 'true') {
       return Response.allTestsPassed(data: responseJson['data']);
     } else {
       return Response.someTestsFailed(
@@ -87,11 +87,11 @@ class Response {
   /// Create a list of Strings from [_failureDetails].
   List<String> _failureDetailsAsString() {
     final List<String> list = <String>[];
-    if (_failureDetails == null || _failureDetails.isEmpty) {
+    if (_failureDetails == null || _failureDetails!.isEmpty) {
       return list;
     }
 
-    _failureDetails.forEach((Failure f) {
+    _failureDetails!.forEach((Failure f) {
       list.add(f.toJson());
     });
 
@@ -112,17 +112,17 @@ class Response {
 /// Representing a failure includes the method name and the failure details.
 class Failure {
   /// The name of the test method which failed.
-  final String methodName;
+  final String? methodName;
 
   /// The details of the failure such as stack trace.
-  final String details;
+  final String? details;
 
   /// Constructor requiring all fields during initialization.
   Failure(this.methodName, this.details);
 
   /// Serializes the object to JSON.
   String toJson() {
-    return json.encode(<String, String>{
+    return json.encode(<String, String?>{
       'methodName': methodName,
       'details': details,
     });
@@ -194,7 +194,7 @@ class DriverTestMessage {
   }
 
   /// Return a DriverTestMessage depending on `status`.
-  static DriverTestMessage fromString(String status) {
+  static DriverTestMessage fromString(String? status) {
     switch (status) {
       case 'error':
         return DriverTestMessage.error();
@@ -294,7 +294,7 @@ abstract class IntegrationTestResults {
   List<Failure> get failureMethodsDetails;
 
   /// The extra data for the reported result.
-  Map<String, dynamic> get reportData;
+  Map<String, dynamic>? get reportData;
 
   /// Whether all the test methods completed succesfully.
   Completer<bool> get allTestsPassed;

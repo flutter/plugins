@@ -75,7 +75,7 @@ class WebCallbackManager implements CallbackManager {
   @override
   Future<Map<String, dynamic>> callback(
       Map<String, String> params, IntegrationTestResults testRunner) async {
-    final String command = params['command'];
+    final String? command = params['command'];
     Map<String, String> response;
     switch (command) {
       case 'request_data':
@@ -96,7 +96,7 @@ class WebCallbackManager implements CallbackManager {
   }
 
   Future<Map<String, dynamic>> _requestDataWithMessage(
-      String extraMessage, IntegrationTestResults testRunner) async {
+      String? extraMessage, IntegrationTestResults testRunner) async {
     Map<String, String> response;
     // Driver side tests' status is added as an extra message.
     final DriverTestMessage message =

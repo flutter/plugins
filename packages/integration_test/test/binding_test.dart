@@ -5,11 +5,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-
-import 'package:integration_test/integration_test.dart';
-import 'package:integration_test/common.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/common.dart';
+import 'package:integration_test/integration_test.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:mockito/mockito.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:vm_service/vm_service.dart' as vm;
 
 vm.Timeline _ktimelines = vm.Timeline(
@@ -19,16 +20,16 @@ vm.Timeline _ktimelines = vm.Timeline(
 );
 
 void main() async {
-  Future<Map<String, dynamic>> request;
+  Future<Map<String, dynamic>>? request;
 
   group('Test Integration binding', () {
     final WidgetsBinding binding =
-        IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+        IntegrationTestWidgetsFlutterBinding.ensureInitialized()!;
     assert(binding is IntegrationTestWidgetsFlutterBinding);
     final IntegrationTestWidgetsFlutterBinding integrationBinding =
         binding as IntegrationTestWidgetsFlutterBinding;
 
-    MockVM mockVM;
+    MockVM? mockVM;
     List<int> clockTimes = [100, 200];
 
     setUp(() {
@@ -36,11 +37,11 @@ void main() async {
         'command': 'request_data',
       });
       mockVM = MockVM();
-      when(mockVM.getVMTimeline(
+      when(mockVM!.getVMTimeline(
         timeOriginMicros: anyNamed('timeOriginMicros'),
         timeExtentMicros: anyNamed('timeExtentMicros'),
       )).thenAnswer((_) => Future.value(_ktimelines));
-      when(mockVM.getVMTimelineMicros()).thenAnswer(
+      when(mockVM!.getVMTimelineMicros()).thenAnswer(
         (_) => Future.value(vm.Timestamp(timestamp: clockTimes.removeAt(0))),
       );
     });
@@ -83,9 +84,9 @@ void main() async {
       await integrationBinding.enableTimeline(vmService: mockVM);
       await integrationBinding.traceAction(() async {});
       expect(integrationBinding.reportData, isNotNull);
-      expect(integrationBinding.reportData.containsKey('timeline'), true);
+      expect(integrationBinding.reportData!.containsKey('timeline'), true);
       expect(
-        json.encode(integrationBinding.reportData['timeline']),
+        json.encode(integrationBinding.reportData!['timeline']),
         json.encode(_ktimelines),
       );
     });
@@ -96,10 +97,10 @@ void main() async {
     // part of the `tearDownAll` registerred in the group during
     // `IntegrationTestWidgetsFlutterBinding` initialization.
     final Map<String, dynamic> response =
-        (await request)['response'] as Map<String, dynamic>;
+        (await request)!['response'] as Map<String, dynamic>;
     final String message = response['message'] as String;
     Response result = Response.fromJson(message);
-    assert(result.data['answer'] == 42);
+    assert(result.data!['answer'] == 42);
   });
 }
 

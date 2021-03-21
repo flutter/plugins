@@ -39,13 +39,13 @@ void main() {
     response = Response.allTestsPassed(data: data);
     jsonString = response.toJson();
     restored = Response.fromJson(jsonString);
-    expect(restored.data.keys, ['aaa']);
-    expect(restored.data.values, ['bbb']);
+    expect(restored.data!.keys, ['aaa']);
+    expect(restored.data!.values, ['bbb']);
 
     response = Response.someTestsFailed([fail, fail2], data: data);
     jsonString = response.toJson();
     restored = Response.fromJson(jsonString);
-    expect(restored.data.keys, ['aaa']);
-    expect(restored.data.values, ['bbb']);
+    expect(restored.data!.keys, ['aaa']);
+    expect(restored.data!.values, ['bbb']);
   });
 }
