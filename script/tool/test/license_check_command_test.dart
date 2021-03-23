@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ void main() {
       String prefix = '',
       String suffix = '',
       String copyright =
-          'Copyright 2019 The Chromium Authors. All rights reserved.',
+          'Copyright 2013 The Flutter Authors. All rights reserved.',
       List<String> license = const <String>[
         'Use of this source code is governed by a BSD-style license that can be',
         'found in the LICENSE file.',
@@ -134,7 +134,7 @@ void main() {
 
       // Sanity check that the test did actually check a file.
       expect(printedMessages, contains('Checking checked.cc'));
-      expect(printedMessages, contains('All files passed validation!'));
+      expect(printedMessages, contains('All source files passed validation!'));
     });
 
     test('handles the comment styles for all supported languages', () async {
@@ -154,7 +154,7 @@ void main() {
       expect(printedMessages, contains('Checking file_a.cc'));
       expect(printedMessages, contains('Checking file_b.sh'));
       expect(printedMessages, contains('Checking file_c.html'));
-      expect(printedMessages, contains('All files passed validation!'));
+      expect(printedMessages, contains('All source files passed validation!'));
     });
 
     test('fails if any checked files are missing license blocks', () async {
@@ -171,12 +171,15 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       // Failure should give information about the problematic files.
-      expect(printedMessages,
-          contains('No copyright line was found for the following files:'));
+      expect(
+          printedMessages,
+          contains(
+              'The license block for these files is missing or incorrect:'));
       expect(printedMessages, contains('  bad.cc'));
       expect(printedMessages, contains('  bad.h'));
       // Failure shouldn't print the success message.
-      expect(printedMessages, isNot(contains('All files passed validation!')));
+      expect(printedMessages,
+          isNot(contains('All source files passed validation!')));
     });
 
     test('fails if any checked files are missing just the copyright', () async {
@@ -191,11 +194,14 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       // Failure should give information about the problematic files.
-      expect(printedMessages,
-          contains('No copyright line was found for the following files:'));
+      expect(
+          printedMessages,
+          contains(
+              'The license block for these files is missing or incorrect:'));
       expect(printedMessages, contains('  bad.cc'));
       // Failure shouldn't print the success message.
-      expect(printedMessages, isNot(contains('All files passed validation!')));
+      expect(printedMessages,
+          isNot(contains('All source files passed validation!')));
     });
 
     test('fails if any checked files are missing just the license', () async {
@@ -210,11 +216,14 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       // Failure should give information about the problematic files.
-      expect(printedMessages,
-          contains('No recognized license was found for the following files:'));
+      expect(
+          printedMessages,
+          contains(
+              'The license block for these files is missing or incorrect:'));
       expect(printedMessages, contains('  bad.cc'));
       // Failure shouldn't print the success message.
-      expect(printedMessages, isNot(contains('All files passed validation!')));
+      expect(printedMessages,
+          isNot(contains('All source files passed validation!')));
     });
 
     test('fails if any third-party code is not in a third_party directory',
@@ -230,11 +239,11 @@ void main() {
       expect(
           printedMessages,
           contains(
-              'The following files do not have a recognized first-party author '
-              'but are not in a "third_party/" directory:'));
+              'The license block for these files is missing or incorrect:'));
       expect(printedMessages, contains('  third_party.cc'));
       // Failure shouldn't print the success message.
-      expect(printedMessages, isNot(contains('All files passed validation!')));
+      expect(printedMessages,
+          isNot(contains('All source files passed validation!')));
     });
 
     test('succeeds for third-party code in a third_party directory', () async {
@@ -245,14 +254,19 @@ void main() {
           .childDirectory('third_party')
           .childFile('file.cc');
       thirdPartyFile.createSync(recursive: true);
-      _writeLicense(thirdPartyFile, copyright: 'Copyright 2017 Someone Else');
+      _writeLicense(thirdPartyFile,
+          copyright: 'Copyright 2017 Workiva Inc.',
+          license: <String>[
+            'Licensed under the Apache License, Version 2.0 (the "License");',
+            'you may not use this file except in compliance with the License.'
+          ]);
 
       await runner.run(<String>['license-check']);
 
       // Sanity check that the test did actually check the file.
       expect(printedMessages,
           contains('Checking a_plugin/lib/src/third_party/file.cc'));
-      expect(printedMessages, contains('All files passed validation!'));
+      expect(printedMessages, contains('All source files passed validation!'));
     });
 
     test('fails for licenses that the tool does not expect', () async {
@@ -270,11 +284,14 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       // Failure should give information about the problematic files.
-      expect(printedMessages,
-          contains('No recognized license was found for the following files:'));
+      expect(
+          printedMessages,
+          contains(
+              'No recognized license was found for the following third-party files:'));
       expect(printedMessages, contains('  third_party/bad.cc'));
       // Failure shouldn't print the success message.
-      expect(printedMessages, isNot(contains('All files passed validation!')));
+      expect(printedMessages,
+          isNot(contains('All source files passed validation!')));
     });
 
     test('Apache is not recognized for new authors without validation changes',
@@ -286,10 +303,11 @@ void main() {
       bad.createSync(recursive: true);
       _writeLicense(
         bad,
-        copyright: 'Copyright 2017 Some New Authors',
-        license: <String>[
-          'Licensed under the Apache License, Version 2.0',
-        ],
+        copyright: 'Copyright 2017 Some New Authors.',
+          license: <String>[
+            'Licensed under the Apache License, Version 2.0 (the "License");',
+            'you may not use this file except in compliance with the License.'
+          ],
       );
 
       await expectLater(() => runner.run(<String>['license-check']),
@@ -297,10 +315,109 @@ void main() {
 
       // Failure should give information about the problematic files.
       expect(printedMessages,
-          contains('No recognized license was found for the following files:'));
+          contains('No recognized license was found for the following third-party files:'));
       expect(printedMessages, contains('  third_party/bad.cc'));
       // Failure shouldn't print the success message.
-      expect(printedMessages, isNot(contains('All files passed validation!')));
+      expect(printedMessages,
+          isNot(contains('All source files passed validation!')));
+    });
+
+    test('passes if all first-party LICENSE files are correctly formatted',
+        () async {
+      File license = root.childFile('LICENSE');
+      license.createSync();
+      license.writeAsStringSync(_correctLicenseFileText);
+
+      await runner.run(<String>['license-check']);
+
+      // Sanity check that the test did actually check the file.
+      expect(printedMessages, contains('Checking LICENSE'));
+      expect(printedMessages, contains('All LICENSE files passed validation!'));
+    });
+
+    test('fails if any first-party LICENSE files are incorrectly formatted',
+        () async {
+      File license = root.childFile('LICENSE');
+      license.createSync();
+      license.writeAsStringSync(_incorrectLicenseFileText);
+
+      await expectLater(() => runner.run(<String>['license-check']),
+          throwsA(const TypeMatcher<ToolExit>()));
+
+      expect(printedMessages,
+          isNot(contains('All LICENSE files passed validation!')));
+    });
+
+    test('ignores third-party LICENSE format', () async {
+      File license = root.childDirectory('third_party').childFile('LICENSE');
+      license.createSync(recursive: true);
+      license.writeAsStringSync(_incorrectLicenseFileText);
+
+      await runner.run(<String>['license-check']);
+
+      // The file shouldn't be checked.
+      expect(printedMessages, isNot(contains('Checking third_party/LICENSE')));
+      expect(printedMessages, contains('All LICENSE files passed validation!'));
     });
   });
 }
+
+const String _correctLicenseFileText =
+    '''Copyright 2013 The Flutter Authors. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the name of Google Inc. nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''';
+
+// A common incorrect version created by copying text intended for a code file,
+// with comment markers.
+const String _incorrectLicenseFileText =
+    '''// Copyright 2013 The Flutter Authors. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//    * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//    * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//    * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''';
