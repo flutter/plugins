@@ -116,6 +116,7 @@ task:
       build_script:
         - flutter config --enable-linux-desktop
         - ./script/incremental_build.sh build-examples --linux
+      test_script:
         - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
 # Heavy-workload Linux tasks.
