@@ -93,13 +93,6 @@ task:
           CHANNEL: "stable"
       script:
         - ./script/build_all_plugins_app.sh web
-    - name: build-web-examples
-      env:
-        matrix:
-          CHANNEL: "master"
-      build_script:
-        - ./script/incremental_build.sh build-examples --web
-        # TODO: Add driving examples (and move to heavy-workload group).
     ### Linux desktop tasks ###
     - name: build_all_plugins_linux
       env:
@@ -117,35 +110,8 @@ task:
       build_script:
         - flutter config --enable-linux-desktop
         - ./script/incremental_build.sh build-examples --linux
-        - xvfb-run ./script/incremental_build.sh drive-examples --linux
-
-# Legacy Dockerfile configuration for web integration tests.
-# https://github.com/flutter/web_installers doesn't yet support the current
-# stable version of Chrome, so newly-generated Docker images don't work.
-# TODO: Merge this task into the "Web tasks" section of the "Light-workload
-# tasks" block above once web_installers has been updated to support Chrome 89
-# (which is what the current image generated from .ci/Dockerfile has).
-task:
-  << : *FLUTTER_UPGRADE_TEMPLATE
-  container:
-    dockerfile: .ci/Dockerfile-LegacyChrome
-  matrix:
-    - name: integration_web_smoke_test
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      # Tests integration example test in web.
-      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
-      install_script:
-        - git clone https://github.com/flutter/web_installers.git
-        - cd web_installers/packages/web_drivers/
-        - pub get
-        - dart lib/web_driver_installer.dart chromedriver --install-only
-        - ./chromedriver/chromedriver --port=4444 &
       test_script:
-        - cd $INTEGRATION_TEST_PATH/example/
-        - flutter drive -v --driver=test_driver/integration_test.dart --target=integration_test/example_test.dart -d web-server --release --browser-name=chrome
+        - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
 # Heavy-workload Linux tasks.
 # These use machines with more CPUs and memory, so will reduce parallelization
@@ -191,6 +157,27 @@ task:
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
+    ### Web tasks ###
+    - name: build-web+drive-examples
+      env:
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+      install_script:
+        - git clone https://github.com/flutter/web_installers.git
+        - cd web_installers/packages/web_drivers/
+        - pub get
+        - dart lib/web_driver_installer.dart chromedriver --install-only
+        - ./chromedriver/chromedriver --port=4444 &
+      build_script:
+        - ./script/incremental_build.sh build-examples --web
+      test_script:
+        # TODO(stuartmorgan): Eliminate this check once 2.1 reaches stable.
+        - if [[ "$CHANNEL" == "master" ]]; then
+        -   ./script/incremental_build.sh drive-examples --web
+        - else
+        -   echo "Requires null-safe integration_test; skipping."
+        - fi
 
 # macOS tasks.
 task:
@@ -223,6 +210,7 @@ task:
         - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
       build_script:
         - ./script/incremental_build.sh build-examples --ipa
+      test_script:
         - ./script/incremental_build.sh xctest --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
@@ -246,6 +234,7 @@ task:
       build_script:
         - flutter config --enable-macos-desktop
         - ./script/incremental_build.sh build-examples --macos --no-ipa
+      test_script:
         - ./script/incremental_build.sh drive-examples --macos
 
 task:
