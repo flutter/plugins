@@ -37,7 +37,7 @@ task:
     dockerfile: .ci/Dockerfile
     builder_image_name: docker-builder # gce vm image
     builder_image_project: flutter-cirrus
-    cluster_name: build-32-cluster
+    cluster_name: test-cluster
     zone: us-central1-a
     namespace: default
   matrix:
@@ -118,38 +118,6 @@ task:
         - ./script/incremental_build.sh build-examples --linux
         - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
-# Legacy Dockerfile configuration for web integration tests.
-# https://github.com/flutter/web_installers doesn't yet support the current
-# stable version of Chrome, so newly-generated Docker images don't work.
-# TODO: Merge this task into the "Web tasks" section of the "Light-workload
-# tasks" block above once web_installers has been updated to support Chrome 89
-# (which is what the current image generated from .ci/Dockerfile has).
-task:
-  << : *FLUTTER_UPGRADE_TEMPLATE
-  gke_container:
-    dockerfile: .ci/Dockerfile-LegacyChrome
-    builder_image_name: docker-builder # gce vm image
-    builder_image_project: flutter-cirrus
-    cluster_name: build-32-cluster
-    zone: us-central1-a
-    namespace: default
-  matrix:
-    - name: integration_web_smoke_test
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      # Tests integration example test in web.
-      only_if: "changesInclude('.cirrus.yml', 'packages/integration_test/**') || $CIRRUS_PR == ''"
-      install_script:
-        - git clone https://github.com/flutter/web_installers.git
-        - cd web_installers/packages/web_drivers/
-        - pub get
-        - dart lib/web_driver_installer.dart chromedriver --install-only
-        - ./chromedriver/chromedriver --port=4444 &
-      test_script:
-        - xvfb-run ./script/incremental_build.sh drive-examples --linux
-
 # Heavy-workload Linux tasks.
 # These use machines with more CPUs and memory, so will reduce parallelization
 # for non-credit runs.
@@ -159,7 +127,7 @@ task:
     dockerfile: .ci/Dockerfile
     builder_image_name: docker-builder # gce vm image
     builder_image_project: flutter-cirrus
-    cluster_name: build-32-cluster
+    cluster_name: test-cluster
     zone: us-central1-a
     namespace: default
     cpu: 4
