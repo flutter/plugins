@@ -84,7 +84,7 @@ final class VideoPlayer {
               DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
               DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
               true);
-      if (httpHeaders != null) {
+      if (httpHeaders != null && !httpHeaders.isEmpty()) {
         httpDataSourceFactory.getDefaultRequestProperties().set(httpHeaders);
       }
       dataSourceFactory = httpDataSourceFactory;

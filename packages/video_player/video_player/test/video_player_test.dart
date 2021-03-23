@@ -31,7 +31,7 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   String get dataSource => '';
 
   @override
-  Map<String, String>? get httpHeaders => null;
+  Map<String, String> get httpHeaders => {};
 
   @override
   DataSourceType get dataSourceType => DataSourceType.file;
@@ -213,7 +213,7 @@ void main() {
         );
         expect(
           fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
-          null,
+          {},
         );
       });
 
@@ -231,27 +231,6 @@ void main() {
         expect(
           fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
           'dash',
-        );
-        expect(
-          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
-          null,
-        );
-      });
-
-      test('network with empty headers', () async {
-        final VideoPlayerController controller = VideoPlayerController.network(
-          'https://127.0.0.1',
-          httpHeaders: {},
-        );
-        await controller.initialize();
-
-        expect(
-          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
-          'https://127.0.0.1',
-        );
-        expect(
-          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
-          null,
         );
         expect(
           fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,

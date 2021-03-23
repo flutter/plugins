@@ -187,7 +187,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       {this.package, this.closedCaptionFile, this.videoPlayerOptions})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
-        httpHeaders = null,
+        httpHeaders = const {},
         super(VideoPlayerValue(duration: Duration.zero));
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
@@ -204,7 +204,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     this.formatHint,
     this.closedCaptionFile,
     this.videoPlayerOptions,
-    this.httpHeaders,
+    this.httpHeaders = const {},
   })  : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: Duration.zero));
@@ -219,7 +219,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
-        httpHeaders = null,
+        httpHeaders = const {},
         super(VideoPlayerValue(duration: Duration.zero));
 
   /// The URI to the video file. This will be in different formats depending on
@@ -227,7 +227,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   final String dataSource;
 
   /// HTTP headers used for the request to the [dataSource].
-  final Map<String, String>? httpHeaders;
+  /// Only for [VideoPlayerController.network].
+  /// Always empty for other video types.
+  final Map<String, String> httpHeaders;
 
   /// **Android only**. Will override the platform's generic file format
   /// detection with whatever is set here.

@@ -145,21 +145,6 @@ void main() {
       expect(log.createMessage?.uri, 'someUri');
       expect(log.createMessage?.packageName, null);
       expect(log.createMessage?.formatHint, 'dash');
-      expect(log.createMessage?.httpHeaders, null);
-      expect(textureId, 3);
-    });
-
-    test('create with network (empty headers)', () async {
-      final int? textureId = await player.create(DataSource(
-        sourceType: DataSourceType.network,
-        uri: 'someUri',
-        httpHeaders: {},
-      ));
-      expect(log.log.last, 'create');
-      expect(log.createMessage?.asset, null);
-      expect(log.createMessage?.uri, 'someUri');
-      expect(log.createMessage?.packageName, null);
-      expect(log.createMessage?.formatHint, null);
       expect(log.createMessage?.httpHeaders, {});
       expect(textureId, 3);
     });
