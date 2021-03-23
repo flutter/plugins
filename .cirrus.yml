@@ -1,7 +1,8 @@
+gcp_credentials: ENCRYPTED[ec898795b6f1b54f9cc2ab4104909f1053651f65fcab96397cfdc33dae6df5fd0fa972e29ba19f4f95125de844ab1641]
+
 # Don't run on release tags since it creates O(n^2) tasks where n is the
 # number of plugins
 only_if: $CIRRUS_TAG == ''
-use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
 env:
   INTEGRATION_TEST_PATH: "./packages/integration_test"
   CHANNEL: "master" # Default to master when not explicitly set by a task.
@@ -32,8 +33,13 @@ macos_template: &MACOS_TEMPLATE
 # concurrency limits.
 task:
   << : *FLUTTER_UPGRADE_TEMPLATE
-  container:
+  gke_container:
     dockerfile: .ci/Dockerfile
+    builder_image_name: docker-builder # gce vm image
+    builder_image_project: flutter-cirrus
+    cluster_name: test-cluster
+    zone: us-central1-a
+    namespace: default
   matrix:
     ### Platform-agnostic tasks ###
     - name: plugin_tools_tests
@@ -118,8 +124,13 @@ task:
 # for non-credit runs.
 task:
   << : *FLUTTER_UPGRADE_TEMPLATE
-  container:
+  gke_container:
     dockerfile: .ci/Dockerfile
+    builder_image_name: docker-builder # gce vm image
+    builder_image_project: flutter-cirrus
+    cluster_name: test-cluster
+    zone: us-central1-a
+    namespace: default
     cpu: 4
     memory: 12G
   matrix:
