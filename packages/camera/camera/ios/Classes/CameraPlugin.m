@@ -448,6 +448,9 @@ NSString *const errorMethod = @"error";
           [self getVideoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]];
     }
   }
+  if([_captureDevice position] == AVCaptureDevicePositionFront && connection.supportsVideoMirroring) {
+    connection.videoMirrored = YES;
+  }
 
   [_capturePhotoOutput capturePhotoWithSettings:settings
                                        delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
