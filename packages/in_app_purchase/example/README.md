@@ -16,7 +16,7 @@ documentation on how to do this, and we've also included a high level guide
 below.
 
 * [In-App Purchase (App Store)](https://developer.apple.com/in-app-purchase/)
-* [Google Play Biling Overview](https://developer.android.com/google/play/billing/billing_overview)
+* [Google Play Billing Overview](https://developer.android.com/google/play/billing/billing_overview)
 
 ### Android
 
