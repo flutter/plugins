@@ -63,7 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: 'ic_launcher'),
     ]).then((value) {
       setState(() {
-        shortcut = "actions ready";
+        if(shortcut == 'no action set') {
+          shortcut = "actions ready";
+        }
       });
     });
   }
