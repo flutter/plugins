@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ]).then((value) {
       setState(() {
         if (shortcut == 'no action set') {
-          shortcut = "actions ready";
+          shortcut = 'actions ready';
         }
       });
     });
