@@ -32,10 +32,6 @@ dependencies:
   flutter_test:
     sdk: flutter
 
-dependency_overrides:
-  video_player_platform_interface:
-    path: ../video_player_platform_interface
-
 dev_dependencies:
   pedantic: ^1.10.0
   pigeon: ^0.1.21
