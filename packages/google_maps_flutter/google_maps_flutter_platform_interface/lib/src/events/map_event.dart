@@ -136,6 +136,15 @@ class CircleTapEvent extends MapEvent<CircleId> {
   CircleTapEvent(int mapId, CircleId circleId) : super(mapId, circleId);
 }
 
+/// An event fired when a [GroundOverlay] is tapped.
+class GroundOverlayTapEvent extends MapEvent<GroundOverlayId> {
+  /// Build GroundOverlayTap Event triggered from the map represented by `mapId`.
+  ///
+  /// The `value` of this event is a [GroundOverlayId] object that represents the tapped GroundOverlay
+  GroundOverlayTapEvent(int mapId, GroundOverlayId groundOverlayId)
+      : super(mapId, groundOverlayId);
+}
+
 /// An event fired when a Map is tapped.
 class MapTapEvent extends _PositionedMapEvent<void> {
   /// Build an MapTap Event triggered from the map represented by `mapId`.

@@ -21,6 +21,7 @@ class FakePlatformGoogleMap {
     updatePolylines(params);
     updateCircles(params);
     updateTileOverlays(Map.castFrom<dynamic, dynamic, String, dynamic>(params));
+    updateGroundOverlays(params);
   }
 
   MethodChannel channel;
@@ -91,6 +92,12 @@ class FakePlatformGoogleMap {
 
   Set<TileOverlay> tileOverlaysToChange = <TileOverlay>{};
 
+  Set<GroundOverlayId> groundOverlayIdsToRemove = <GroundOverlayId>{};
+
+  Set<GroundOverlay> groundOverlaysToAdd = <GroundOverlay>{};
+
+  Set<GroundOverlay> groundOverlaysToChange = <GroundOverlay>{};
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -111,6 +118,9 @@ class FakePlatformGoogleMap {
         return Future<void>.sync(() {});
       case 'circles#update':
         updateCircles(call.arguments);
+        return Future<void>.sync(() {});
+      case 'groundOverlays#update':
+        updateGroundOverlays(call.arguments);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -361,6 +371,47 @@ class FakePlatformGoogleMap {
         fadeIn: fadeIn,
         transparency: transparency,
         zIndex: zIndex,
+        visible: visible,
+      ));
+    }
+
+    return result;
+  }
+
+  void updateGroundOverlays(Map<dynamic, dynamic>? groundOverlayUpdates) {
+    if (groundOverlayUpdates == null) {
+      return;
+    }
+    groundOverlaysToAdd =
+        _deserializeGroundOverlays(groundOverlayUpdates['groundOverlaysToAdd']);
+    groundOverlayIdsToRemove = _deserializeGroundOverlayIds(
+        groundOverlayUpdates['groundOverlayIdsToRemove']);
+    groundOverlaysToChange = _deserializeGroundOverlays(
+        groundOverlayUpdates['groundOverlaysToChange']);
+  }
+
+  Set<GroundOverlayId> _deserializeGroundOverlayIds(
+      List<dynamic> groundOverlayIds) {
+    if (groundOverlayIds == null) {
+      return <GroundOverlayId>{};
+    }
+    return groundOverlayIds
+        .map((dynamic groundOverlayId) => GroundOverlayId(groundOverlayId))
+        .toSet();
+  }
+
+  Set<GroundOverlay> _deserializeGroundOverlays(
+      List<Map<dynamic, dynamic>>? groundOverlays) {
+    if (groundOverlays == null || groundOverlays.isEmpty) {
+      return <GroundOverlay>{};
+    }
+    final Set<GroundOverlay> result = <GroundOverlay>{};
+    for (Map<dynamic, dynamic> groundOverlayData in groundOverlays) {
+      final String groundOverlayId = groundOverlayData['groundOverlayId'];
+      final bool visible = groundOverlayData['visible'];
+
+      result.add(GroundOverlay(
+        groundOverlayId: GroundOverlayId(groundOverlayId),
         visible: visible,
       ));
     }
