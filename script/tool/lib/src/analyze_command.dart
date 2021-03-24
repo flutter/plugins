@@ -42,10 +42,12 @@ class AnalyzeCommand extends PluginCommand {
         continue;
       }
 
-      final bool whitelisted = argResults[_customAnalysisFlag].any(
+      final bool allowed = argResults[_customAnalysisFlag].any(
           (String directory) =>
+              directory != null &&
+              directory.isNotEmpty &&
               p.isWithin(p.join(packagesDir.path, directory), file.path));
-      if (whitelisted) {
+      if (allowed) {
         continue;
       }
 
