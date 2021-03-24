@@ -6,6 +6,8 @@ package io.flutter.plugins.camera;
 
 import android.app.Activity;
 import android.hardware.camera2.CameraAccessException;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
@@ -353,7 +355,9 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     boolean enableAudio = call.argument("enableAudio");
     TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture =
         textureRegistry.createSurfaceTexture();
-    DartMessenger dartMessenger = new DartMessenger(messenger, flutterSurfaceTexture.id());
+    DartMessenger dartMessenger =
+        new DartMessenger(
+            messenger, flutterSurfaceTexture.id(), new Handler(Looper.getMainLooper()));
     camera =
         new Camera(
             activity,
