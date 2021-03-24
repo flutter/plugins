@@ -32,7 +32,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String shortcut = "no action set";
+  String shortcut = 'no action set';
 
   @override
   void initState() {
