@@ -32,7 +32,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String shortcut = "no action set";
+  String shortcut = 'no action set';
 
   @override
   void initState() {
@@ -63,7 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: 'ic_launcher'),
     ]).then((value) {
       setState(() {
-        shortcut = "actions ready";
+        if (shortcut == 'no action set') {
+          shortcut = 'actions ready';
+        }
       });
     });
   }
