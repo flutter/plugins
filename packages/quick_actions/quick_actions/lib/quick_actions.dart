@@ -9,7 +9,6 @@ import 'package:quick_actions_platform_interface/types/types.dart';
 
 export 'package:quick_actions_platform_interface/types/types.dart';
 
-
 /// Quick actions plugin.
 class QuickActions {
   /// Initializes this plugin.
