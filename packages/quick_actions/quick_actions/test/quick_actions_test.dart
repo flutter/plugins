@@ -12,8 +12,6 @@ import 'package:quick_actions_platform_interface/quick_actions_platform_interfac
 import 'package:quick_actions_platform_interface/types/shortcut_item.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
   group('$QuickActions', () {
     setUp(() {
       QuickActionsPlatform.instance = MockQuickActionsPlatform();
