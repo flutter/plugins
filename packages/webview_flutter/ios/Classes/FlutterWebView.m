@@ -10,12 +10,14 @@
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
+  NSObject<FlutterPluginRegistrar>* _registrar;
 }
 
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   self = [super init];
   if (self) {
-    _messenger = messenger;
+    _registrar = registrar;
+    _messenger = registrar.messenger;
   }
   return self;
 }
@@ -30,7 +32,7 @@
   FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
                                                                          viewIdentifier:viewId
                                                                               arguments:args
-                                                                        binaryMessenger:_messenger];
+                                                                        registrar:_registrar];
   return webviewController;
 }
 
@@ -66,18 +68,21 @@
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
   FLTWKNavigationDelegate* _navigationDelegate;
+  NSObject<FlutterPluginRegistrar>* _registrar;
   FLTWKProgressionDelegate* _progressionDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+              registrar:(nonnull NSObject<FlutterPluginRegistrar>*)registrar {
   if (self = [super init]) {
     _viewId = viewId;
 
+    _registrar = registrar;
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
-    _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
+    _channel = [FlutterMethodChannel methodChannelWithName:channelName
+                                           binaryMessenger:_registrar.messenger];
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
 
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
@@ -168,6 +173,10 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"loadAssetHtmlFile"]) {
+    [self onLoadAssetHtmlFile:call result:result];
+  } else if ([[call method] isEqualToString:@"loadLocalHtmlFile"]) {
+    [self onLoadLocalHtmlFile:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -256,6 +265,29 @@
     result(nil);
   }
 }
+
+- (void)onLoadAssetHtmlFile:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* url = [call arguments];
+  if (![self loadAssetHtmlFile:url]) {
+    result([FlutterError errorWithCode:@"loadAssetHtmlFile_failed"
+                               message:@"Failed parsing the URL"
+                               details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
+  } else {
+    result(nil);
+  }
+}
+
+- (void)onLoadLocalHtmlFile:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* url = [call arguments];
+  if (![self loadLocalHtmlFile:url]) {
+    result([FlutterError errorWithCode:@"loadAssetHtmlFile_failed"
+                               message:@"Failed parsing the URL"
+                               details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
+  } else {
+    result(nil);
+  }
+}
+
 
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
   BOOL canGoBack = [_webView canGoBack];
@@ -502,6 +534,52 @@
   [request setAllHTTPHeaderFields:headers];
   [_webView loadRequest:request];
   return true;
+}
+
+- (BOOL)loadAssetHtmlFile:(NSString*)url {
+  NSArray* array = [url componentsSeparatedByString:@"?"];
+  NSString* pathString = [array objectAtIndex:0];
+  NSString* key = [_registrar lookupKeyForAsset:pathString];
+  NSURL* baseURL = [[NSBundle mainBundle] URLForResource:key withExtension:nil];
+  if (!baseURL) {
+    return NO;
+  }
+  NSURL* newUrl = baseURL;
+  if ([array count] > 1) {
+    NSString* queryString = [array objectAtIndex:1];
+    NSString* queryPart = [NSString stringWithFormat:@"%@%@", @"?", queryString];
+    newUrl = [NSURL URLWithString:queryPart relativeToURL:baseURL];
+  }
+  if (@available(iOS 9.0, *)) {
+    [_webView loadFileURL:newUrl allowingReadAccessToURL:[NSURL URLWithString:@"file:///"]];
+  } else {
+    return NO;
+  }
+  return YES;
+}
+
+- (BOOL)loadLocalHtmlFile:(NSString*)url {
+  NSArray* array = [url componentsSeparatedByString:@"?"];
+  NSString* pathString = [array objectAtIndex:0];
+  NSString* key = [_registrar lookupKeyForAsset:pathString];
+  NSURL* baseURL = [[NSBundle mainBundle] URLForResource:key withExtension:nil];
+  if (!baseURL) {
+    [_webView loadFileURL:[NSURL fileURLWithPath:pathString]
+        allowingReadAccessToURL:[NSURL fileURLWithPath:pathString]];
+    return YES;
+  }
+  NSURL* newUrl = baseURL;
+  if ([array count] > 1) {
+    NSString* queryString = [array objectAtIndex:1];
+    NSString* queryPart = [NSString stringWithFormat:@"%@%@", @"?", queryString];
+    newUrl = [NSURL URLWithString:queryPart relativeToURL:baseURL];
+  }
+  if (@available(iOS 9.0, *)) {
+    [_webView loadFileURL:newUrl allowingReadAccessToURL:[NSURL URLWithString:@"file:///"]];
+  } else {
+    return NO;
+  }
+  return YES;
 }
 
 - (void)registerJavaScriptChannels:(NSSet*)channelNames

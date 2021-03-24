@@ -669,6 +669,22 @@ class WebViewController {
     _validateUrlString(url);
     return _webViewPlatformController.loadUrl(url, headers);
   }
+  
+  /// Load html file from assets
+  ///
+  /// `url` must not be null.
+  Future<void> loadAssetHtmlFile(String url) async {
+    assert(url != null);
+    return _webViewPlatformController.loadAssetHtmlFile(url);
+  }
+
+  /// Load html file from local path
+  ///
+  /// `url` must not be null.
+  Future<void> loadLocalHtmlFile(String url) async {
+    assert(url != null);
+    return _webViewPlatformController.loadLocalHtmlFile(url);
+  }
 
   /// Accessor to the current URL that the WebView is displaying.
   ///
