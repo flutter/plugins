@@ -7,6 +7,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
 #import <UIKit/UIKit.h>
 
 #import "FLTImagePickerImageUtil.h"
@@ -58,6 +59,40 @@ static const int SOURCE_GALLERY = 1;
   return topController;
 }
 
+- (void)pickImage:(bool)single {
+    if(@available(iOS 14, *)){
+        PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+        if (single) config.selectionLimit = 1000;
+        config.filter = [PHPickerFilter imagesFilter];
+
+        PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+        //No clue what this is supposed to do, it was in the guide but doesnt work
+//        pickerViewController.delegate = self;
+        [[self viewControllerWithWindow:nil] presentViewController:pickerViewController
+                                                          animated:YES
+                                                        completion:nil];
+    }
+}
+
+-(void)picker:(PHPickerViewController *)picker didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)){
+   [picker dismissViewControllerAnimated:YES completion:nil];
+    
+   for (PHPickerResult *result in results)
+   {
+      // Get UIImage
+      [result.itemProvider loadObjectOfClass:[UIImage class] completionHandler:^(__kindof id<NSItemProviderReading>  _Nullable object, NSError * _Nullable error)
+      {
+         if ([object isKindOfClass:[UIImage class]])
+         {
+            dispatch_async(dispatch_get_main_queue(), ^{
+               NSLog(@"Selected image: %@", (UIImage*)object);
+            });
+         }
+      }];
+   }
+}
+
+
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (self.result) {
     self.result([FlutterError errorWithCode:@"multiple_request"
@@ -67,8 +102,11 @@ static const int SOURCE_GALLERY = 1;
   }
 
   if ([@"pickImage" isEqualToString:call.method]) {
-    _imagePickerController = [[UIImagePickerController alloc] init];
-    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+      if(@available(iOS 14, *)) {
+          [self pickImage: false];
+      } else {
+          _imagePickerController = [[UIImagePickerController alloc] init];
+      _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
@@ -93,8 +131,12 @@ static const int SOURCE_GALLERY = 1;
                                    message:@"Invalid image source."
                                    details:nil]);
         break;
-    }
-  } else if ([@"pickVideo" isEqualToString:call.method]) {
+    }}
+  } else if ([@"pickMultiImage" isEqualToString:call.method]) {
+      if(@available(iOS 14, *)) {
+          [self pickImage: true];
+      }
+    } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
