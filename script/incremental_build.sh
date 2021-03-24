@@ -19,8 +19,39 @@ ALL_EXCLUDED=("")
 # because we adopted stricter analysis rules recently and needed to exclude
 # already failing packages to start linting the repo as a whole.
 #
-# TODO(mklim): Remove everything from this list. https://github.com/flutter/flutter/issues/45440
+# Finding all: `find packages -name analysis_options.yaml | sort | cut -d/ -f2`
+#
+# TODO(ecosystem): Remove everything from this list. https://github.com/flutter/flutter/issues/76229
 CUSTOM_ANALYSIS_PLUGINS=(
+  android_alarm_manager
+  android_intent
+  battery
+  camera
+  connectivity
+  cross_file
+  device_info
+  e2e
+  espresso
+  file_selector
+  flutter_plugin_android_lifecycle
+  google_maps_flutter
+  google_sign_in
+  image_picker
+  in_app_purchase
+  integration_test
+  ios_platform_images
+  local_auth
+  package_info
+  path_provider
+  plugin_platform_interface
+  quick_actions
+  sensors
+  share
+  shared_preferences
+  url_launcher
+  video_player
+  webview_flutter
+  wifi_info_flutter
 )
 
 # Comma-separated string of the list above
