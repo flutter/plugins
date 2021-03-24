@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:camera/camera.dart';
-import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,11 +28,7 @@ class CameraPreview extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                RotatedBox(
-                  quarterTurns: _getQuarterTurns(),
-                  child:
-                      CameraPlatform.instance.buildPreview(controller.cameraId),
-                ),
+                _wrapInRotatedBox(child: controller.buildPreview()),
                 child ?? Container(),
               ],
             ),
@@ -41,11 +36,15 @@ class CameraPreview extends StatelessWidget {
         : Container();
   }
 
-  DeviceOrientation _getApplicableOrientation() {
-    return controller.value.isRecordingVideo
-        ? controller.value.recordingOrientation!
-        : (controller.value.lockedCaptureOrientation ??
-            controller.value.deviceOrientation);
+  Widget _wrapInRotatedBox({required Widget child}) {
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      return child;
+    }
+
+    return RotatedBox(
+      quarterTurns: _getQuarterTurns(),
+      child: child,
+    );
   }
 
   bool _isLandscape() {
@@ -54,13 +53,19 @@ class CameraPreview extends StatelessWidget {
   }
 
   int _getQuarterTurns() {
-    int platformOffset = defaultTargetPlatform == TargetPlatform.iOS ? 1 : 0;
     Map<DeviceOrientation, int> turns = {
       DeviceOrientation.portraitUp: 0,
       DeviceOrientation.landscapeLeft: 1,
       DeviceOrientation.portraitDown: 2,
       DeviceOrientation.landscapeRight: 3,
     };
-    return turns[_getApplicableOrientation()]! + platformOffset;
+    return turns[_getApplicableOrientation()]!;
+  }
+
+  DeviceOrientation _getApplicableOrientation() {
+    return controller.value.isRecordingVideo
+        ? controller.value.recordingOrientation!
+        : (controller.value.lockedCaptureOrientation ??
+            controller.value.deviceOrientation);
   }
 }
