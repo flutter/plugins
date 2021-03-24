@@ -258,7 +258,7 @@
 			attributes = {
 				DefaultBuildSystemTypeForWorkspace = Original;
 				LastUpgradeCheck = 1100;
-				ORGANIZATIONNAME = "The Chromium Authors";
+				ORGANIZATIONNAME = "The Flutter Authors";
 				TargetAttributes = {
 					6801C8352555D726009DAF8D = {
 						CreatedOnToolsVersion = 11.7;
