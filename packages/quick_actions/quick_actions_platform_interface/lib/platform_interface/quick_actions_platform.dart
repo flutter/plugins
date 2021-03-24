@@ -1,4 +1,4 @@
-// Copyright 2017 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,13 @@ abstract class QuickActionsPlatform extends PlatformInterface {
 
   static QuickActionsPlatform _instance = MethodChannelQuickActions();
 
-  /// The default instance of [ImagePickerPlatform] to use.
+  /// The default instance of [QuickActionsPlatform] to use.
   ///
-  /// Defaults to [MethodChannelImagePicker].
+  /// Defaults to [MethodChannelQuickActions].
   static QuickActionsPlatform get instance => _instance;
 
   /// Platform-specific plugins should set this with their own platform-specific
-  /// class that extends [ImagePickerPlatform] when they register themselves.
+  /// class that extends [QuickActionsPlatform] when they register themselves.
   // TODO(amirh): Extract common platform interface logic.
   // https://github.com/flutter/flutter/issues/43368
   static set instance(QuickActionsPlatform instance) {
@@ -36,7 +36,7 @@ abstract class QuickActionsPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  /// Initializes this plugin
+  /// Initializes this plugin.
   ///
   /// Call this once before any further interaction with the the plugin.
   Future<void> initialize(QuickActionHandler handler) async {
