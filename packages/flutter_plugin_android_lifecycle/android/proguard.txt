@@ -1,0 +1,4 @@
+# The point of this package is to specify that a dependent plugin intends to
+# use the AndroidX lifecycle classes. Make sure no R8 heuristics shrink classes
+# brought in by the embedding's pom.
+-keep class androidx.lifecycle.DefaultLifecycleObserver

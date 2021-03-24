@@ -1,3 +1,6 @@
+## 2.0.1
+* Make sure androidx.lifecycle.DefaultLifecycleObservable doesn't get shrunk
+  away.
 ## 2.0.0
 
 * Bump Dart SDK for null-safety compatibility.
