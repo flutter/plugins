@@ -93,5 +93,20 @@ void main() {
                 pluginDir.path),
           ]));
     });
+
+    // See: https://github.com/flutter/flutter/issues/78994
+    test('takes an empty allow list', () async {
+      await createFakePlugin('foo', withExtraFiles: <List<String>>[
+        <String>['analysis_options.yaml']
+      ]);
+
+      final MockProcess mockProcess = MockProcess();
+      mockProcess.exitCodeCompleter.complete(0);
+      processRunner.processToReturn = mockProcess;
+
+      await expectLater(
+          () => runner.run(<String>['analyze', '--custom-analysis', '']),
+          throwsA(const TypeMatcher<ToolExit>()));
+    });
   });
 }
