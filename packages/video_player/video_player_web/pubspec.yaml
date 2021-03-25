@@ -1,6 +1,7 @@
 name: video_player_web
 description: Web platform implementation of video_player.
 homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player_web
+publish_to: none
 version: 2.0.0
 
 flutter:
@@ -16,7 +17,8 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   meta: ^1.3.0
-  video_player_platform_interface: ^4.0.0
+  video_player_platform_interface:
+    path: ../video_player_platform_interface
 
 dev_dependencies:
   flutter_test:

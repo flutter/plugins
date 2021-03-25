@@ -10,16 +10,16 @@ package io.flutter.plugins.videoplayer;
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Generated class from Pigeon. */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "unchecked", "CodeBlock2Expr", "RedundantSuppression"})
 public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class TextureMessage {
-
     private Long textureId;
 
     public Long getTextureId() {
@@ -30,13 +30,13 @@ public class Messages {
       this.textureId = setterArg;
     }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       return toMapResult;
     }
 
-    static TextureMessage fromMap(HashMap map) {
+    static TextureMessage fromMap(Map<String, Object> map) {
       TextureMessage fromMapResult = new TextureMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -49,7 +49,6 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class CreateMessage {
-
     private String asset;
 
     public String getAsset() {
@@ -90,16 +89,27 @@ public class Messages {
       this.formatHint = setterArg;
     }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
+    private Map<Object, Object> httpHeaders;
+
+    public Map<Object, Object> getHttpHeaders() {
+      return httpHeaders;
+    }
+
+    public void setHttpHeaders(Map<Object, Object> setterArg) {
+      this.httpHeaders = setterArg;
+    }
+
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("asset", asset);
       toMapResult.put("uri", uri);
       toMapResult.put("packageName", packageName);
       toMapResult.put("formatHint", formatHint);
+      toMapResult.put("httpHeaders", httpHeaders);
       return toMapResult;
     }
 
-    static CreateMessage fromMap(HashMap map) {
+    static CreateMessage fromMap(Map<String, Object> map) {
       CreateMessage fromMapResult = new CreateMessage();
       Object asset = map.get("asset");
       fromMapResult.asset = (String) asset;
@@ -109,13 +119,14 @@ public class Messages {
       fromMapResult.packageName = (String) packageName;
       Object formatHint = map.get("formatHint");
       fromMapResult.formatHint = (String) formatHint;
+      Object httpHeaders = map.get("httpHeaders");
+      fromMapResult.httpHeaders = (Map<Object, Object>) httpHeaders;
       return fromMapResult;
     }
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class LoopingMessage {
-
     private Long textureId;
 
     public Long getTextureId() {
@@ -136,14 +147,14 @@ public class Messages {
       this.isLooping = setterArg;
     }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("isLooping", isLooping);
       return toMapResult;
     }
 
-    static LoopingMessage fromMap(HashMap map) {
+    static LoopingMessage fromMap(Map<String, Object> map) {
       LoopingMessage fromMapResult = new LoopingMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -158,7 +169,6 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class VolumeMessage {
-
     private Long textureId;
 
     public Long getTextureId() {
@@ -179,14 +189,14 @@ public class Messages {
       this.volume = setterArg;
     }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("volume", volume);
       return toMapResult;
     }
 
-    static VolumeMessage fromMap(HashMap map) {
+    static VolumeMessage fromMap(Map<String, Object> map) {
       VolumeMessage fromMapResult = new VolumeMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -201,7 +211,6 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class PlaybackSpeedMessage {
-
     private Long textureId;
 
     public Long getTextureId() {
@@ -222,14 +231,14 @@ public class Messages {
       this.speed = setterArg;
     }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("speed", speed);
       return toMapResult;
     }
 
-    static PlaybackSpeedMessage fromMap(HashMap map) {
+    static PlaybackSpeedMessage fromMap(Map<String, Object> map) {
       PlaybackSpeedMessage fromMapResult = new PlaybackSpeedMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -244,7 +253,6 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class PositionMessage {
-
     private Long textureId;
 
     public Long getTextureId() {
@@ -265,14 +273,14 @@ public class Messages {
       this.position = setterArg;
     }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("position", position);
       return toMapResult;
     }
 
-    static PositionMessage fromMap(HashMap map) {
+    static PositionMessage fromMap(Map<String, Object> map) {
       PositionMessage fromMapResult = new PositionMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -290,7 +298,6 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class TrackSelectionsMessage {
-
     private Long textureId;
 
     public Long getTextureId() {
@@ -311,25 +318,25 @@ public class Messages {
       this.trackId = setterArg;
     }
 
-    private ArrayList<Object> trackSelections;
+    private List<Object> trackSelections;
 
-    public ArrayList<Object> getTrackSelections() {
+    public List<Object> getTrackSelections() {
       return trackSelections;
     }
 
-    public void setTrackSelections(ArrayList<Object> setterArg) {
+    public void setTrackSelections(List<Object> setterArg) {
       this.trackSelections = setterArg;
     }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("trackId", trackId);
       toMapResult.put("trackSelections", trackSelections);
       return toMapResult;
     }
 
-    static TrackSelectionsMessage fromMap(HashMap map) {
+    static TrackSelectionsMessage fromMap(Map<String, Object> map) {
       TrackSelectionsMessage fromMapResult = new TrackSelectionsMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId =
@@ -337,14 +344,15 @@ public class Messages {
               ? null
               : ((textureId instanceof Integer) ? (Integer) textureId : (Long) textureId);
       Object trackId = map.get("trackId");
-      fromMapResult.trackId = (trackId == null) ? null : (String) trackId;
+      fromMapResult.trackId = (String) trackId;
+      Object trackSelections = map.get("trackSelections");
+      fromMapResult.trackSelections = (List<Object>) trackSelections;
       return fromMapResult;
     }
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class MixWithOthersMessage {
-
     private Boolean mixWithOthers;
 
     public Boolean getMixWithOthers() {
@@ -355,13 +363,13 @@ public class Messages {
       this.mixWithOthers = setterArg;
     }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
+    Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("mixWithOthers", mixWithOthers);
       return toMapResult;
     }
 
-    static MixWithOthersMessage fromMap(HashMap map) {
+    static MixWithOthersMessage fromMap(Map<String, Object> map) {
       MixWithOthersMessage fromMapResult = new MixWithOthersMessage();
       Object mixWithOthers = map.get("mixWithOthers");
       fromMapResult.mixWithOthers = (Boolean) mixWithOthers;
@@ -371,7 +379,6 @@ public class Messages {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface VideoPlayerApi {
-
     void initialize();
 
     TextureMessage create(CreateMessage arg);
@@ -398,7 +405,7 @@ public class Messages {
 
     void setMixWithOthers(MixWithOthersMessage arg);
 
-    /** Sets up an instance of `VideoPlayerApi` to handle messages through the `binaryMessenger` */
+    /** Sets up an instance of `VideoPlayerApi` to handle messages through the `binaryMessenger`. */
     static void setup(BinaryMessenger binaryMessenger, VideoPlayerApi api) {
       {
         BasicMessageChannel<Object> channel =
@@ -409,11 +416,11 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   api.initialize();
                   wrapped.put("result", null);
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -431,13 +438,13 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  CreateMessage input = CreateMessage.fromMap((HashMap) message);
+                  CreateMessage input = CreateMessage.fromMap((Map<String, Object>) message);
                   TextureMessage output = api.create(input);
                   wrapped.put("result", output.toMap());
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -455,13 +462,13 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  TextureMessage input = TextureMessage.fromMap((Map<String, Object>) message);
                   api.dispose(input);
                   wrapped.put("result", null);
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -479,13 +486,13 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  LoopingMessage input = LoopingMessage.fromMap((HashMap) message);
+                  LoopingMessage input = LoopingMessage.fromMap((Map<String, Object>) message);
                   api.setLooping(input);
                   wrapped.put("result", null);
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -503,13 +510,13 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  VolumeMessage input = VolumeMessage.fromMap((HashMap) message);
+                  VolumeMessage input = VolumeMessage.fromMap((Map<String, Object>) message);
                   api.setVolume(input);
                   wrapped.put("result", null);
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -527,13 +534,14 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  PlaybackSpeedMessage input = PlaybackSpeedMessage.fromMap((HashMap) message);
+                  PlaybackSpeedMessage input =
+                      PlaybackSpeedMessage.fromMap((Map<String, Object>) message);
                   api.setPlaybackSpeed(input);
                   wrapped.put("result", null);
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -551,13 +559,13 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  TextureMessage input = TextureMessage.fromMap((Map<String, Object>) message);
                   api.play(input);
                   wrapped.put("result", null);
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -575,13 +583,13 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  TextureMessage input = TextureMessage.fromMap((Map<String, Object>) message);
                   PositionMessage output = api.position(input);
                   wrapped.put("result", output.toMap());
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -599,13 +607,13 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  PositionMessage input = PositionMessage.fromMap((HashMap) message);
+                  PositionMessage input = PositionMessage.fromMap((Map<String, Object>) message);
                   api.seekTo(input);
                   wrapped.put("result", null);
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -623,13 +631,13 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  TextureMessage input = TextureMessage.fromMap((Map<String, Object>) message);
                   TrackSelectionsMessage output = api.trackSelections(input);
                   wrapped.put("result", output.toMap());
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -647,13 +655,14 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  TrackSelectionsMessage input = TrackSelectionsMessage.fromMap((HashMap) message);
+                  TrackSelectionsMessage input =
+                      TrackSelectionsMessage.fromMap((Map<String, Object>) message);
                   api.setTrackSelection(input);
                   wrapped.put("result", null);
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -671,13 +680,13 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  TextureMessage input = TextureMessage.fromMap((Map<String, Object>) message);
                   api.pause(input);
                   wrapped.put("result", null);
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -695,13 +704,14 @@ public class Messages {
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
-                HashMap<String, HashMap> wrapped = new HashMap<>();
+                Map<String, Object> wrapped = new HashMap<>();
                 try {
                   @SuppressWarnings("ConstantConditions")
-                  MixWithOthersMessage input = MixWithOthersMessage.fromMap((HashMap) message);
+                  MixWithOthersMessage input =
+                      MixWithOthersMessage.fromMap((Map<String, Object>) message);
                   api.setMixWithOthers(input);
                   wrapped.put("result", null);
-                } catch (Exception exception) {
+                } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
                 }
                 reply.reply(wrapped);
@@ -713,8 +723,8 @@ public class Messages {
     }
   }
 
-  private static HashMap wrapError(Exception exception) {
-    HashMap<String, Object> errorMap = new HashMap<>();
+  private static Map<String, Object> wrapError(Throwable exception) {
+    Map<String, Object> errorMap = new HashMap<>();
     errorMap.put("message", exception.toString());
     errorMap.put("code", exception.getClass().getSimpleName());
     errorMap.put("details", null);

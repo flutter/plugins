@@ -129,10 +129,8 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
               final bitrate = trackSelectionMap['bitrate'] as int;
               final width = trackSelectionMap['width'] as int;
               final height = trackSelectionMap['height'] as int;
-              final role =
-                  _buildRoleString(rolesFlag, trackSelectionNameResource);
               final trackSelectionName = _joinWithSeparator([
-                role,
+                _buildRoleString(rolesFlag, trackSelectionNameResource),
                 _buildVideoQualityOrResolutionString(
                     bitrate, width, height, trackSelectionNameResource),
               ], trackSelectionNameResource.trackItemListSeparator);
@@ -146,7 +144,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
                 size: width == -1 || height == -1
                     ? null
                     : Size(width.toDouble(), height.toDouble()),
-                role: role.isEmpty ? null : role,
+                role: _toRoleType(rolesFlag),
                 bitrate: bitrate == -1 ? null : bitrate,
               ));
               break;
@@ -158,8 +156,6 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
               final label = trackSelectionMap['label'] as String;
               final channelCount = trackSelectionMap['channelCount'] as int;
               final bitrate = trackSelectionMap['bitrate'] as int;
-              final role =
-                  _buildRoleString(rolesFlag, trackSelectionNameResource);
               final trackSelectionName = _joinWithSeparator([
                 _buildLanguageOrLabelString(
                     language, rolesFlag, label, trackSelectionNameResource),
@@ -176,8 +172,8 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
                 isSelected: isSelected,
                 language: language.isEmpty ? null : language,
                 label: label.isEmpty ? null : label,
-                channelCount: channelCount == -1 ? null : channelCount,
-                role: role.isEmpty ? null : role,
+                channel: _toChannelType(channelCount),
+                role: _toRoleType(rolesFlag),
                 bitrate: bitrate == -1 ? null : bitrate,
               ));
               break;
@@ -187,8 +183,6 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
               final rolesFlag = trackSelectionMap['rolesFlag'] as int;
               final language = trackSelectionMap['language'] as String;
               final label = trackSelectionMap['label'] as String;
-              final role =
-                  _buildRoleString(rolesFlag, trackSelectionNameResource);
               final trackSelectionName = _buildLanguageOrLabelString(
                   language, rolesFlag, label, trackSelectionNameResource);
               trackSelections.add(TrackSelection(
@@ -200,7 +194,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
                 isSelected: isSelected,
                 language: language.isEmpty ? null : language,
                 label: label.isEmpty ? null : label,
-                role: role.isEmpty ? null : role,
+                role: _toRoleType(rolesFlag),
               ));
               break;
             }
@@ -282,6 +276,30 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     2: TrackSelectionType.video,
     3: TrackSelectionType.text,
   };
+
+  TrackSelectionRoleType? _toRoleType(int rolesFlag) {
+    switch (rolesFlag) {
+      case 0:
+        return TrackSelectionRoleType.alternate;
+      case 1:
+        return TrackSelectionRoleType.supplementary;
+      case 2:
+        return TrackSelectionRoleType.commentary;
+      case 3:
+        return TrackSelectionRoleType.closedCaptions;
+    }
+  }
+
+  TrackSelectionChannelType? _toChannelType(int channelCount) {
+    switch (channelCount) {
+      case 1:
+        return TrackSelectionChannelType.mono;
+      case 2:
+        return TrackSelectionChannelType.stereo;
+      default:
+        return TrackSelectionChannelType.surround;
+    }
+  }
 
   String _buildVideoQualityOrResolutionString(
     int bitrate,

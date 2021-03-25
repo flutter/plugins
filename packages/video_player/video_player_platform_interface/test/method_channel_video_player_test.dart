@@ -97,7 +97,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
           'language': 'English',
           'label': '',
           'rolesFlag': -1,
-          'channelCount': 1,
+          'channelCount': 2,
           'bitrate': -1,
         },
         {
@@ -120,7 +120,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
         {
           'trackId': '1',
           'trackType': 2,
-          'unknown': false,
+          'isUnknown': false,
           'isAuto': true,
           'isSelected': false,
         }
@@ -294,70 +294,77 @@ void main() {
       expect(position, const Duration(milliseconds: 234));
     });
 
+    test('setTrackSelection', () async {
+      await player.setTrackSelection(
+        1,
+        const TrackSelection(
+          trackId: '121',
+          trackType: TrackSelectionType.audio,
+          trackName: 'English, Stereo',
+          isSelected: false,
+          language: 'English',
+          channel: TrackSelectionChannelType.stereo,
+        ),
+      );
+      expect(log.log.last, 'setTrackSelection');
+      expect(log.trackSelectionsMessage?.textureId, 1);
+      expect(log.trackSelectionsMessage?.trackId, '121');
+    });
+
     test('getTrackSelections', () async {
       final List<TrackSelection> trackSelections =
           await player.getTrackSelections(1);
       expect(log.log.last, 'trackSelections');
       expect(log.textureMessage?.textureId, 1);
       expect(
-          trackSelections[0],
-          TrackSelection(
-            trackId: '203',
-            trackType: TrackSelectionType.video,
-            trackName: '2048 × 1080',
-            isSelected: true,
-            size: Size(2048.0, 1080.0),
-          ));
+        trackSelections[0],
+        equals(const TrackSelection(
+          trackId: '203',
+          trackType: TrackSelectionType.video,
+          trackName: '2048 × 1080',
+          isSelected: true,
+          size: Size(2048.0, 1080.0),
+        )),
+      );
       expect(
-          trackSelections[1],
-          TrackSelection(
-            trackId: '121',
-            trackType: TrackSelectionType.audio,
-            trackName: 'English, Stereo',
-            isSelected: false,
-            language: 'English',
-            channelCount: 1,
-          ));
+        trackSelections[1],
+        equals(const TrackSelection(
+          trackId: '121',
+          trackType: TrackSelectionType.audio,
+          trackName: 'English, Stereo',
+          isSelected: false,
+          language: 'English',
+          channel: TrackSelectionChannelType.stereo,
+        )),
+      );
       expect(
-          trackSelections[2],
-          TrackSelection(
-            trackId: '310',
-            trackType: TrackSelectionType.text,
-            trackName: 'Persian',
-            isSelected: false,
-            language: 'Persian',
-          ));
+        trackSelections[2],
+        equals(const TrackSelection(
+          trackId: '310',
+          trackType: TrackSelectionType.text,
+          trackName: 'Persian',
+          isSelected: false,
+          language: 'Persian',
+        )),
+      );
       expect(
-          trackSelections[3],
-          TrackSelection(
-            trackId: '100',
-            trackType: TrackSelectionType.audio,
-            trackName: 'Unknown',
-            isSelected: false,
-          ));
+        trackSelections[3],
+        equals(const TrackSelection(
+          trackId: '100',
+          trackType: TrackSelectionType.audio,
+          trackName: 'Unknown',
+          isSelected: false,
+        )),
+      );
       expect(
-          trackSelections[4],
-          TrackSelection(
-            trackId: '1',
-            trackType: TrackSelectionType.video,
-            trackName: 'Auto',
-            isSelected: false,
-          ));
-    });
-
-    test('setTrackSelection', () async {
-      await player.setTrackSelection(
-        1,
-        TrackSelection(
+        trackSelections[4],
+        equals(const TrackSelection(
           trackId: '1',
           trackType: TrackSelectionType.video,
           trackName: 'Auto',
           isSelected: false,
-        ),
+        )),
       );
-      expect(log.log.last, 'setTrackSelection');
-      expect(log.trackSelectionsMessage?.textureId, 1);
-      expect(log.trackSelectionsMessage?.trackId, '1');
     });
 
     test('videoEventsFor', () async {

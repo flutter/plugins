@@ -21,6 +21,8 @@ export 'package:video_player_platform_interface/video_player_platform_interface.
         VideoPlayerOptions,
         TrackSelection,
         TrackSelectionType,
+        TrackSelectionRoleType,
+        TrackSelectionChannelType,
         TrackSelectionNameResource;
 
 export 'src/closed_caption_file.dart';

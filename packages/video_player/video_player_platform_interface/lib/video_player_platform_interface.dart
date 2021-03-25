@@ -386,7 +386,7 @@ class TrackSelection {
   /// The [trackId], [trackType], [trackName] and [isSelected] argument is required.
   ///
   /// Depending on the [trackType], the [width], [height], [language], [label],
-  /// [channelCount] and [bitrate] arguments can be null.
+  /// [channel] and [bitrate] arguments can be null.
   const TrackSelection({
     required this.trackId,
     required this.trackType,
@@ -396,7 +396,7 @@ class TrackSelection {
     this.role,
     this.language,
     this.label,
-    this.channelCount,
+    this.channel,
     this.bitrate,
   });
 
@@ -428,7 +428,7 @@ class TrackSelection {
   /// is not an unknown or a auto track selection.
   ///
   /// If the track selection doesn't specify the role this may be null.
-  final String? role;
+  final TrackSelectionRoleType? role;
 
   /// The language of track selection. This will be null if the [trackType]
   /// is not [TrackSelectionType.audio] and [TrackSelectionType.text] or an unknown
@@ -448,7 +448,7 @@ class TrackSelection {
   /// is not [TrackSelectionType.audio] or an unknown or a auto track selection.
   ///
   /// If the track selection doesn't specify the channelCount this may be null.
-  final int? channelCount;
+  final TrackSelectionChannelType? channel;
 
   /// The label of track selection. This will be null if the [trackType]
   /// is not [TrackSelectionType.video] and [TrackSelectionType.audio] or an unknown
@@ -462,15 +462,42 @@ class TrackSelection {
     return '$runtimeType('
         'trackId: $trackId, '
         'trackType: $trackType, '
-        'trackName: $trackName,'
-        'isSelected: $isSelected,'
-        'size: $size,'
-        'role: $role,'
-        'language: $language,'
-        'label: $label,'
-        'channelCount: $channelCount,'
+        'trackName: $trackName, '
+        'isSelected: $isSelected, '
+        'size: $size, '
+        'role: $role, '
+        'language: $language, '
+        'label: $label, '
+        'channel: $channel, '
         'bitrate: $bitrate)';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TrackSelection &&
+          runtimeType == other.runtimeType &&
+          trackId == other.trackId &&
+          trackType == other.trackType &&
+          trackName == other.trackName &&
+          isSelected == other.isSelected &&
+          size == other.size &&
+          role == other.role &&
+          label == other.label &&
+          channel == other.channel &&
+          bitrate == other.bitrate;
+
+  @override
+  int get hashCode =>
+      trackId.hashCode ^
+      trackType.hashCode ^
+      trackName.hashCode ^
+      isSelected.hashCode ^
+      size.hashCode ^
+      role.hashCode ^
+      label.hashCode ^
+      channel.hashCode ^
+      bitrate.hashCode;
 }
 
 /// Type of the track selection.
@@ -483,6 +510,33 @@ enum TrackSelectionType {
 
   /// The text track selection.
   text,
+}
+
+/// Type of the track selection role.
+enum TrackSelectionRoleType {
+  /// The alternate role.
+  alternate,
+
+  /// The supplementary role.
+  supplementary,
+
+  /// The commentary role.
+  commentary,
+
+  /// The closedCaptions role.
+  closedCaptions,
+}
+
+/// Type of the track selection channel for [TrackSelectionType.audio].
+enum TrackSelectionChannelType {
+  /// The mono channel.
+  mono,
+
+  /// The stereo channel.
+  stereo,
+
+  /// The surround channel.
+  surround,
 }
 
 /// String resources uses to represent track selection name.

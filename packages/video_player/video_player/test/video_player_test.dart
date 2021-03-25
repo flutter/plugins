@@ -587,7 +587,7 @@ void main() {
           'VideoPlayerValue(duration: 0:00:05.000000, '
           'size: Size(400.0, 300.0), '
           'position: 0:00:01.000000, '
-          'trackSelections: [TrackSelection(trackId: 203, trackName: TrackSelectionType.video, trackName: 2048 × 1080, isSelected: true, size: Size(2048.0, 1080.0), role: null, language: null, label: null, channelCount: null, bitrate: null)]'
+          'trackSelections: [TrackSelection(trackId: 203, trackType: TrackSelectionType.video, trackName: 2048 × 1080, isSelected: true, size: Size(2048.0, 1080.0), role: null, language: null, label: null, channel: null, bitrate: null)], '
           'caption: Caption(number: 0, start: 0:00:00.000000, end: 0:00:00.000000, text: foo), '
           'buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], '
           'isInitialized: true, '
