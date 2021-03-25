@@ -421,18 +421,17 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   Future<bool> isMarkerInfoWindowShown(
     MarkerId markerId, {
     required int mapId,
-  }) {
+  }) async {
     assert(markerId != null);
-    return channel(mapId).invokeMethod<bool>('markers#isInfoWindowShown',
-        <String, String>{'markerId': markerId.value}) as Future<bool>;
+    return (await channel(mapId).invokeMethod<bool>('markers#isInfoWindowShown',
+        <String, String>{'markerId': markerId.value}))!;
   }
 
   @override
   Future<double> getZoomLevel({
     required int mapId,
-  }) {
-    return channel(mapId).invokeMethod<double>('map#getZoomLevel')
-        as Future<double>;
+  }) async {
+    return (await channel(mapId).invokeMethod<double>('map#getZoomLevel'))!;
   }
 
   @override
