@@ -1,3 +1,7 @@
+## 1.0.2+3
+
+* Update README to reflect deprecation.
+
 ## 1.0.2+2
 
 * Fix tests from changes to `flutter test` machine output.
