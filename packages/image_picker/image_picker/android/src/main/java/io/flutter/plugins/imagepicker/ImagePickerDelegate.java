@@ -548,6 +548,11 @@ public class ImagePickerDelegate
 
   private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
     if (methodCall != null) {
+      if (path.toLowerCase().endsWith(".gif")) {
+        finishWithSuccess(path);
+        return;
+      }
+
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
       Integer imageQuality = methodCall.argument("imageQuality");
@@ -557,7 +562,7 @@ public class ImagePickerDelegate
 
       finishWithSuccess(finalImagePath);
 
-      //delete original file if scaled
+      // Delete original file if scaled
       if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }

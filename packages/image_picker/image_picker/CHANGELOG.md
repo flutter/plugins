@@ -1,3 +1,7 @@
+## 0.7.4
+
+* Android: Disable image resizing for GIF images.
+
 ## 0.7.3
 
 * Endorse image_picker_for_web
