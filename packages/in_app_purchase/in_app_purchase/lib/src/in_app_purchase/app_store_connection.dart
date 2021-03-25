@@ -97,7 +97,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
   @override
   Future<BillingResultWrapper> consumePurchase(PurchaseDetails purchase) {
-    throw UnsupportedError('consume purchase is not available on Android');
+    throw UnsupportedError('consume purchase is not available on iOS');
   }
 
   @override
