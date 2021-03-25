@@ -294,9 +294,16 @@ void main() {
   group('consume purchase', () {
     test('should throw when calling consume purchase on iOS', () async {
       expect(
-          () => AppStoreConnection.instance
-              .consumePurchase(PurchaseDetails.fromPurchase(dummyPurchase)),
-          throwsUnsupportedError);
+        () => AppStoreConnection.instance
+            .consumePurchase(PurchaseDetails.fromPurchase(dummyPurchase)),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (error) => error.message,
+            'message',
+            'consume purchase is not available on iOS',
+          ),
+        ),
+      );
     });
   });
 
