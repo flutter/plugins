@@ -1,9 +1,6 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-// TODO(egarciad): Remove once Mockito has been migrated to null safety.
-// @dart = 2.9
 
 import 'dart:ui';
 
@@ -19,18 +16,20 @@ final MethodCodec _codec = const JSONMethodCodec();
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  PlatformMessageCallback oldHandler;
-  MethodCall lastCall;
+  PlatformMessageCallback? oldHandler;
+  MethodCall? lastCall;
 
   setUp(() {
     oldHandler = window.onPlatformMessage;
     window.onPlatformMessage = (
       String name,
-      ByteData data,
-      PlatformMessageResponseCallback callback,
+      ByteData? data,
+      PlatformMessageResponseCallback? callback,
     ) {
       lastCall = _codec.decodeMethodCall(data);
-      callback(_codec.encodeSuccessEnvelope(true));
+      if (callback != null) {
+        callback(_codec.encodeSuccessEnvelope(true));
+      }
     };
   });
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ class DomHelper {
 
   /// Default constructor, initializes the container DOM element.
   DomHelper() {
-    final body = querySelector('body');
+    final body = querySelector('body')!;
     body.children.add(_container);
   }
 
@@ -22,42 +22,45 @@ class DomHelper {
   Future<List<XFile>> getFiles({
     String accept = '',
     bool multiple = false,
-    @visibleForTesting FileUploadInputElement input,
+    @visibleForTesting FileUploadInputElement? input,
   }) {
-    final Completer<List<XFile>> _completer = Completer();
-    input = input ?? FileUploadInputElement();
+    final Completer<List<XFile>> completer = Completer();
+    final FileUploadInputElement inputElement =
+        input ?? FileUploadInputElement();
 
     _container.children.add(
-      input
+      inputElement
         ..accept = accept
         ..multiple = multiple,
     );
 
-    input.onChange.first.then((_) {
-      final List<XFile> files = input.files.map(_convertFileToXFile).toList();
-      input.remove();
-      _completer.complete(files);
+    inputElement.onChange.first.then((_) {
+      final List<XFile> files =
+          inputElement.files!.map(_convertFileToXFile).toList();
+      inputElement.remove();
+      completer.complete(files);
     });
 
-    input.onError.first.then((event) {
-      final ErrorEvent error = event;
+    inputElement.onError.first.then((event) {
+      final ErrorEvent error = event as ErrorEvent;
       final platformException = PlatformException(
         code: error.type,
         message: error.message,
       );
-      input.remove();
-      _completer.completeError(platformException);
+      inputElement.remove();
+      completer.completeError(platformException);
     });
 
-    input.click();
+    inputElement.click();
 
-    return _completer.future;
+    return completer.future;
   }
 
   XFile _convertFileToXFile(File file) => XFile(
         Url.createObjectUrl(file),
         name: file.name,
         length: file.size,
-        lastModified: DateTime.fromMillisecondsSinceEpoch(file.lastModified),
+        lastModified: DateTime.fromMillisecondsSinceEpoch(
+            file.lastModified ?? DateTime.now().millisecondsSinceEpoch),
       );
 }

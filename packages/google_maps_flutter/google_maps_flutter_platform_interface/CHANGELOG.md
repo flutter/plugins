@@ -1,8 +1,12 @@
-## 2.0.0-nullsafety.1
+## 2.0.2
 
-* Fix overly-restrictive type check.
+* Mark constructors for CameraUpdate, CircleId, MapsObjectId, MarkerId, PolygonId, PolylineId and TileOverlayId as const
 
-## 2.0.0-nullsafety
+## 2.0.1
+
+* Update platform_plugin_interface version requirement.
+
+## 2.0.0
 
 * Migrated to null-safety.
 * BREAKING CHANGE: Removed deprecated APIs.

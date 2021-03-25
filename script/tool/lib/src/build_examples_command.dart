@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ class BuildExamplesCommand extends PluginCommand {
   }) : super(packagesDir, fileSystem, processRunner: processRunner) {
     argParser.addFlag(kLinux, defaultsTo: false);
     argParser.addFlag(kMacos, defaultsTo: false);
+    argParser.addFlag(kWeb, defaultsTo: false);
     argParser.addFlag(kWindows, defaultsTo: false);
     argParser.addFlag(kIpa, defaultsTo: io.Platform.isMacOS);
     argParser.addFlag(kApk);
@@ -43,10 +44,10 @@ class BuildExamplesCommand extends PluginCommand {
         !argResults[kApk] &&
         !argResults[kLinux] &&
         !argResults[kMacos] &&
+        !argResults[kWeb] &&
         !argResults[kWindows]) {
-      print(
-          'None of --linux, --macos, --windows, --apk nor --ipa were specified, '
-          'so not building anything.');
+      print('None of --linux, --macos, --web, --windows, --apk, or --ipa were '
+          'specified, so not building anything.');
       return;
     }
     final String flutterCommand =
@@ -84,30 +85,40 @@ class BuildExamplesCommand extends PluginCommand {
         if (argResults[kMacos]) {
           print('\nBUILDING macOS for $packageName');
           if (isMacOsPlugin(plugin, fileSystem)) {
-            // TODO(https://github.com/flutter/flutter/issues/46236):
-            // Builing macos without running flutter pub get first results
-            // in an error.
             int exitCode = await processRunner.runAndStream(
-                flutterCommand, <String>['pub', 'get'],
+                flutterCommand,
+                <String>[
+                  'build',
+                  kMacos,
+                  if (enableExperiment.isNotEmpty)
+                    '--enable-experiment=$enableExperiment',
+                ],
                 workingDir: example);
             if (exitCode != 0) {
               failingPackages.add('$packageName (macos)');
-            } else {
-              exitCode = await processRunner.runAndStream(
-                  flutterCommand,
-                  <String>[
-                    'build',
-                    kMacos,
-                    if (enableExperiment.isNotEmpty)
-                      '--enable-experiment=$enableExperiment',
-                  ],
-                  workingDir: example);
-              if (exitCode != 0) {
-                failingPackages.add('$packageName (macos)');
-              }
             }
           } else {
             print('macOS is not supported by this plugin');
+          }
+        }
+
+        if (argResults[kWeb]) {
+          print('\nBUILDING web for $packageName');
+          if (isWebPlugin(plugin, fileSystem)) {
+            int buildExitCode = await processRunner.runAndStream(
+                flutterCommand,
+                <String>[
+                  'build',
+                  kWeb,
+                  if (enableExperiment.isNotEmpty)
+                    '--enable-experiment=$enableExperiment',
+                ],
+                workingDir: example);
+            if (buildExitCode != 0) {
+              failingPackages.add('$packageName (web)');
+            }
+          } else {
+            print('Web is not supported by this plugin');
           }
         }
 
