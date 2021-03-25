@@ -42,7 +42,6 @@ CUSTOM_ANALYSIS_PLUGINS=(
   ios_platform_images
   local_auth
   package_info
-  path_provider
   plugin_platform_interface
   quick_actions
   sensors
