@@ -1,3 +1,8 @@
+## 2.0.3
+
+* Fix type issues in `isMarkerInfoWindowShown` and `getZoomLevel` introduced
+  in the null safety migration.
+
 ## 2.0.2
 
 * Mark constructors for CameraUpdate, CircleId, MapsObjectId, MarkerId, PolygonId, PolylineId and TileOverlayId as const
