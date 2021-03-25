@@ -19,11 +19,11 @@ import 'package:js/js.dart';
 
 // Module gapi
 typedef void LoadCallback(
-    [dynamic? args1,
-    dynamic? args2,
-    dynamic? args3,
-    dynamic? args4,
-    dynamic? args5]);
+    [dynamic args1,
+    dynamic args2,
+    dynamic args3,
+    dynamic args4,
+    dynamic args5]);
 
 @anonymous
 @JS()

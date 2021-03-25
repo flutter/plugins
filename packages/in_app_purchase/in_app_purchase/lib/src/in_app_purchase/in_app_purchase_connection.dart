@@ -304,5 +304,5 @@ class IAPError {
   final String message;
 
   /// Error details, possibly null.
-  final dynamic? details;
+  final dynamic details;
 }
