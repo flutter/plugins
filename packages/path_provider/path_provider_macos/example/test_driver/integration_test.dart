@@ -4,7 +4,6 @@
 
 // @dart=2.9
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_driver/flutter_driver.dart';
