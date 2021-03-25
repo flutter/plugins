@@ -4,6 +4,7 @@
 // @dart = 2.12
 import 'dart:async';
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,6 +20,8 @@ abstract class TestHostVideoPlayerApi {
   void play(TextureMessage arg);
   PositionMessage position(TextureMessage arg);
   void seekTo(PositionMessage arg);
+  TrackSelectionsMessage trackSelections(TextureMessage arg);
+  void setTrackSelection(TrackSelectionsMessage arg);
   void pause(TextureMessage arg);
   void setMixWithOthers(MixWithOthersMessage arg);
   static void setup(TestHostVideoPlayerApi? api) {
@@ -156,6 +159,39 @@ abstract class TestHostVideoPlayerApi {
               'Argument for dev.flutter.pigeon.VideoPlayerApi.seekTo was null. Expected PositionMessage.');
           final PositionMessage input = PositionMessage.decode(message!);
           api.seekTo(input);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.VideoPlayerApi.trackSelections',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.VideoPlayerApi.trackSelections was null. Expected TextureMessage.');
+          final TextureMessage input = TextureMessage.decode(message!);
+          final TrackSelectionsMessage output = api.trackSelections(input);
+          return <Object?, Object?>{'result': output.encode()};
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.VideoPlayerApi.setTrackSelection',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.VideoPlayerApi.setTrackSelection was null. Expected TrackSelectionsMessage.');
+          final TrackSelectionsMessage input =
+              TrackSelectionsMessage.decode(message!);
+          api.setTrackSelection(input);
           return <Object?, Object?>{};
         });
       }

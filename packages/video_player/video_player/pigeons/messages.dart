@@ -26,6 +26,12 @@ class PositionMessage {
   int position;
 }
 
+class TrackSelectionsMessage {
+  int textureId;
+  String trackId;
+  List<Object> trackSelections;
+}
+
 class CreateMessage {
   String asset;
   String uri;
@@ -48,6 +54,8 @@ abstract class VideoPlayerApi {
   void play(TextureMessage msg);
   PositionMessage position(TextureMessage msg);
   void seekTo(PositionMessage msg);
+  TrackSelectionsMessage trackSelections(TextureMessage msg);
+  void setTrackSelection(TrackSelectionsMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
 }

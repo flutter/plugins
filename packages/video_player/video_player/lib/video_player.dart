@@ -11,15 +11,23 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-export 'package:video_player_platform_interface/video_player_platform_interface.dart'
-    show DurationRange, DataSourceType, VideoFormat, VideoPlayerOptions;
-
 import 'src/closed_caption_file.dart';
+
+export 'package:video_player_platform_interface/video_player_platform_interface.dart'
+    show
+        DurationRange,
+        DataSourceType,
+        VideoFormat,
+        VideoPlayerOptions,
+        TrackSelection,
+        TrackSelectionType,
+        TrackSelectionNameResource;
+
 export 'src/closed_caption_file.dart';
 
 final VideoPlayerPlatform _videoPlayerPlatform = VideoPlayerPlatform.instance
-  // This will clear all open videos on the platform when a full restart is
-  // performed.
+// This will clear all open videos on the platform when a full restart is
+// performed.
   ..init();
 
 /// The duration, current position, buffering state, error state and settings
@@ -31,6 +39,7 @@ class VideoPlayerValue {
     required this.duration,
     this.size = Size.zero,
     this.position = Duration.zero,
+    this.trackSelections = const <TrackSelection>[],
     this.caption = Caption.none,
     this.buffered = const <DurationRange>[],
     this.isInitialized = false,
@@ -60,6 +69,9 @@ class VideoPlayerValue {
 
   /// The current playback position.
   final Duration position;
+
+  /// The current playback track selections.
+  final List<TrackSelection> trackSelections;
 
   /// The [Caption] that should be displayed based on the current [position].
   ///
@@ -123,6 +135,7 @@ class VideoPlayerValue {
     Duration? duration,
     Size? size,
     Duration? position,
+    List<TrackSelection>? trackSelections,
     Caption? caption,
     List<DurationRange>? buffered,
     bool? isInitialized,
@@ -137,6 +150,7 @@ class VideoPlayerValue {
       duration: duration ?? this.duration,
       size: size ?? this.size,
       position: position ?? this.position,
+      trackSelections: trackSelections ?? this.trackSelections,
       caption: caption ?? this.caption,
       buffered: buffered ?? this.buffered,
       isInitialized: isInitialized ?? this.isInitialized,
@@ -155,6 +169,7 @@ class VideoPlayerValue {
         'duration: $duration, '
         'size: $size, '
         'position: $position, '
+        'trackSelections: $trackSelections, '
         'caption: $caption, '
         'buffered: [${buffered.join(', ')}], '
         'isInitialized: $isInitialized, '
@@ -479,6 +494,22 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     await _videoPlayerPlatform.seekTo(_textureId, position);
     _updatePosition(position);
+  }
+
+  /// The track selections in the current video.
+  Future<List<TrackSelection>?> get trackSelections async {
+    if (!value.isInitialized || _isDisposed) {
+      return null;
+    }
+    return await _videoPlayerPlatform.getTrackSelections(_textureId);
+  }
+
+  /// Sets the selected video track selection.
+  Future<void> setTrackSelection(TrackSelection trackSelection) async {
+    if (!value.isInitialized || _isDisposed) {
+      return;
+    }
+    await _videoPlayerPlatform.setTrackSelection(_textureId, trackSelection);
   }
 
   /// Sets the audio volume of [this].

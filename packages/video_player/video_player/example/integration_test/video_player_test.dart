@@ -9,8 +9,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:video_player/video_player.dart';
 
 const Duration _playDuration = Duration(seconds: 1);
@@ -30,6 +30,33 @@ void main() {
 
       expect(_controller.value.isInitialized, true);
       expect(_controller.value.position, const Duration(seconds: 0));
+      expect(_controller.value.trackSelections, [
+        TrackSelection(
+          trackId: '0',
+          trackType: TrackSelectionType.video,
+          trackName: 'Auto',
+          isSelected: true,
+        ),
+        TrackSelection(
+          trackId: '000',
+          trackType: TrackSelectionType.video,
+          trackName: '1280 × 720',
+          isSelected: false,
+          size: Size(1280.0, 720.0),
+        ),
+        TrackSelection(
+          trackId: '1',
+          trackType: TrackSelectionType.audio,
+          trackName: 'Auto',
+          isSelected: true,
+        ),
+        TrackSelection(
+          trackId: '100',
+          trackType: TrackSelectionType.audio,
+          trackName: 'Stereo',
+          isSelected: false,
+        ),
+      ]);
       expect(_controller.value.isPlaying, false);
       expect(_controller.value.duration,
           const Duration(seconds: 7, milliseconds: 540));
@@ -105,6 +132,56 @@ void main() {
         await _controller.seekTo(const Duration(seconds: 3));
 
         expect(_controller.value.position, const Duration(seconds: 3));
+      },
+    );
+
+    testWidgets(
+      'can set track selection',
+      (WidgetTester tester) async {
+        await _controller.initialize();
+
+        await _controller.setTrackSelection(TrackSelection(
+          trackId: '000',
+          trackType: TrackSelectionType.video,
+          trackName: '1280 × 720',
+          isSelected: false,
+          size: Size(1280.0, 720.0),
+        ));
+
+        await _controller.setTrackSelection(TrackSelection(
+          trackId: '1',
+          trackType: TrackSelectionType.audio,
+          trackName: 'Auto',
+          isSelected: false,
+        ));
+
+        expect(_controller.value.trackSelections, [
+          TrackSelection(
+            trackId: '0',
+            trackType: TrackSelectionType.video,
+            trackName: 'Auto',
+            isSelected: false,
+          ),
+          TrackSelection(
+            trackId: '000',
+            trackType: TrackSelectionType.video,
+            trackName: '1280 × 720',
+            isSelected: true,
+            size: Size(1280.0, 720.0),
+          ),
+          TrackSelection(
+            trackId: '1',
+            trackType: TrackSelectionType.audio,
+            trackName: 'Auto',
+            isSelected: false,
+          ),
+          TrackSelection(
+            trackId: '100',
+            trackType: TrackSelectionType.audio,
+            trackName: 'Stereo',
+            isSelected: true,
+          ),
+        ]);
       },
     );
 

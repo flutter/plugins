@@ -16,6 +16,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   TextureMessage? textureMessage;
   CreateMessage? createMessage;
   PositionMessage? positionMessage;
+  TrackSelectionsMessage? trackSelectionsMessage;
   LoopingMessage? loopingMessage;
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
@@ -68,6 +69,68 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void seekTo(PositionMessage arg) {
     log.add('seekTo');
     positionMessage = arg;
+  }
+
+  @override
+  TrackSelectionsMessage trackSelections(TextureMessage arg) {
+    log.add('trackSelections');
+    textureMessage = arg;
+    return TrackSelectionsMessage()
+      ..trackSelections = [
+        {
+          'trackId': '203',
+          'trackType': 2,
+          'isUnknown': false,
+          'isAuto': false,
+          'isSelected': true,
+          'rolesFlag': -1,
+          'width': 2048,
+          'height': 1080,
+          'bitrate': -1,
+        },
+        {
+          'trackId': '121',
+          'trackType': 1,
+          'isUnknown': false,
+          'isAuto': false,
+          'isSelected': false,
+          'language': 'English',
+          'label': '',
+          'rolesFlag': -1,
+          'channelCount': 1,
+          'bitrate': -1,
+        },
+        {
+          'trackId': '310',
+          'trackType': 3,
+          'isUnknown': false,
+          'isAuto': false,
+          'isSelected': false,
+          'language': 'Persian',
+          'label': '',
+          'rolesFlag': -1,
+        },
+        {
+          'trackId': '100',
+          'trackType': 1,
+          'isUnknown': true,
+          'isAuto': false,
+          'isSelected': false,
+        },
+        {
+          'trackId': '1',
+          'trackType': 2,
+          'unknown': false,
+          'isAuto': true,
+          'isSelected': false,
+        }
+      ];
+  }
+
+  @override
+  void setTrackSelection(TrackSelectionsMessage arg) {
+    log.add('setTrackSelection');
+    trackSelectionsMessage = arg;
   }
 
   @override
@@ -211,6 +274,72 @@ void main() {
       expect(log.log.last, 'position');
       expect(log.textureMessage?.textureId, 1);
       expect(position, const Duration(milliseconds: 234));
+    });
+
+    test('getTrackSelections', () async {
+      final List<TrackSelection> trackSelections =
+          await player.getTrackSelections(1);
+      expect(log.log.last, 'trackSelections');
+      expect(log.textureMessage?.textureId, 1);
+      expect(
+          trackSelections[0],
+          TrackSelection(
+            trackId: '203',
+            trackType: TrackSelectionType.video,
+            trackName: '2048 × 1080',
+            isSelected: true,
+            size: Size(2048.0, 1080.0),
+          ));
+      expect(
+          trackSelections[1],
+          TrackSelection(
+            trackId: '121',
+            trackType: TrackSelectionType.audio,
+            trackName: 'English, Stereo',
+            isSelected: false,
+            language: 'English',
+            channelCount: 1,
+          ));
+      expect(
+          trackSelections[2],
+          TrackSelection(
+            trackId: '310',
+            trackType: TrackSelectionType.text,
+            trackName: 'Persian',
+            isSelected: false,
+            language: 'Persian',
+          ));
+      expect(
+          trackSelections[3],
+          TrackSelection(
+            trackId: '100',
+            trackType: TrackSelectionType.audio,
+            trackName: 'Unknown',
+            isSelected: false,
+          ));
+      expect(
+          trackSelections[4],
+          TrackSelection(
+            trackId: '1',
+            trackType: TrackSelectionType.video,
+            trackName: 'Auto',
+            isSelected: false,
+          ));
+    });
+
+    test('setTrackSelection', () async {
+      await player.setTrackSelection(
+        1,
+        TrackSelection(
+          trackId: '1',
+          trackType: TrackSelectionType.video,
+          trackName: 'Auto',
+          isSelected: false,
+        ),
+      );
+      expect(log.log.last, 'setTrackSelection');
+      expect(log.trackSelectionsMessage?.textureId, 1);
+      expect(log.trackSelectionsMessage?.trackId, '1');
     });
 
     test('videoEventsFor', () async {

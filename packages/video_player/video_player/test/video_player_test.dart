@@ -43,6 +43,13 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<void> seekTo(Duration moment) async {}
 
   @override
+  Future<List<TrackSelection>> get trackSelections async =>
+      value.trackSelections;
+
+  @override
+  Future<void> setTrackSelection(TrackSelection trackSelection) async {}
+
+  @override
   Future<void> setVolume(double volume) async {}
 
   @override
@@ -499,6 +506,7 @@ void main() {
 
       expect(uninitialized.duration, equals(Duration.zero));
       expect(uninitialized.position, equals(Duration.zero));
+      expect(uninitialized.trackSelections, equals([]));
       expect(uninitialized.caption, equals(Caption.none));
       expect(uninitialized.buffered, isEmpty);
       expect(uninitialized.isPlaying, isFalse);
@@ -519,6 +527,7 @@ void main() {
 
       expect(error.duration, equals(Duration.zero));
       expect(error.position, equals(Duration.zero));
+      expect(error.trackSelections, equals([]));
       expect(error.caption, equals(Caption.none));
       expect(error.buffered, isEmpty);
       expect(error.isPlaying, isFalse);
@@ -537,6 +546,15 @@ void main() {
       const Duration duration = Duration(seconds: 5);
       const Size size = Size(400, 300);
       const Duration position = Duration(seconds: 1);
+      const List<TrackSelection> trackSelections = [
+        TrackSelection(
+          trackId: '203',
+          trackType: TrackSelectionType.video,
+          trackName: '2048 × 1080',
+          isSelected: true,
+          size: Size(2048.0, 1080.0),
+        )
+      ];
       const Caption caption = Caption(
           text: 'foo', number: 0, start: Duration.zero, end: Duration.zero);
       final List<DurationRange> buffered = <DurationRange>[
@@ -553,6 +571,7 @@ void main() {
         duration: duration,
         size: size,
         position: position,
+        trackSelections: trackSelections,
         caption: caption,
         buffered: buffered,
         isInitialized: isInitialized,
@@ -568,6 +587,7 @@ void main() {
           'VideoPlayerValue(duration: 0:00:05.000000, '
           'size: Size(400.0, 300.0), '
           'position: 0:00:01.000000, '
+          'trackSelections: [TrackSelection(trackId: 203, trackName: TrackSelectionType.video, trackName: 2048 × 1080, isSelected: true, size: Size(2048.0, 1080.0), role: null, language: null, label: null, channelCount: null, bitrate: null)]'
           'caption: Caption(number: 0, start: 0:00:00.000000, end: 0:00:00.000000, text: foo), '
           'buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], '
           'isInitialized: true, '
@@ -717,6 +737,66 @@ class FakeVideoPlayerPlatform extends TestHostVideoPlayerApi {
   }
 
   @override
+  TrackSelectionsMessage trackSelections(TextureMessage arg) {
+    calls.add('trackSelections');
+    final List<Map<Object?, Object?>> fakeTrackSelections = [
+      FakeTrackSelection(
+        trackId: '203',
+        trackType: 2,
+        isUnknown: false,
+        isAuto: false,
+        isSelected: true,
+        rolesFlag: -1,
+        width: 2048,
+        height: 1080,
+        bitrate: -1,
+      ).toMap(),
+      FakeTrackSelection(
+        trackId: '121',
+        trackType: 1,
+        isUnknown: false,
+        isAuto: false,
+        isSelected: false,
+        rolesFlag: -1,
+        language: 'English',
+        label: '',
+        channelCount: 1,
+        bitrate: -1,
+      ).toMap(),
+      FakeTrackSelection(
+        trackId: '310',
+        trackType: 3,
+        isUnknown: false,
+        isAuto: false,
+        isSelected: false,
+        rolesFlag: -1,
+        language: 'Persian',
+        label: '',
+      ).toMap(),
+      FakeTrackSelection(
+        trackId: '100',
+        trackType: 1,
+        isUnknown: true,
+        isAuto: false,
+        isSelected: false,
+      ).toMap(),
+      FakeTrackSelection(
+        trackId: '1',
+        trackType: 2,
+        isUnknown: false,
+        isAuto: true,
+        isSelected: false,
+      ).toMap(),
+    ];
+    return TrackSelectionsMessage()..trackSelections = fakeTrackSelections;
+  }
+
+  @override
+  Future<void> setTrackSelection(TrackSelectionsMessage arg) async {
+    calls.add('setTrackSelection');
+  }
+
+  @override
   void setLooping(LoopingMessage arg) {
     calls.add('setLooping');
   }
@@ -798,5 +878,52 @@ class FakeEventsChannel {
   void _sendMessage(ByteData data) {
     ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
         eventsMethodChannel.name, data, (ByteData? data) {});
+  }
+}
+
+class FakeTrackSelection {
+  FakeTrackSelection({
+    required this.trackId,
+    required this.trackType,
+    required this.isUnknown,
+    required this.isAuto,
+    required this.isSelected,
+    this.rolesFlag,
+    this.width,
+    this.height,
+    this.language,
+    this.label,
+    this.channelCount,
+    this.bitrate,
+  });
+
+  String trackId;
+  int trackType;
+  bool isUnknown;
+  bool isAuto;
+  bool isSelected;
+  int? rolesFlag;
+  int? width;
+  int? height;
+  String? language;
+  String? label;
+  int? channelCount;
+  int? bitrate;
+
+  Map<Object?, Object?> toMap() {
+    return <Object?, Object?>{
+      'trackId': trackId,
+      'trackType': trackType,
+      'isUnknown': isUnknown,
+      'isAuto': isAuto,
+      'isSelected': isSelected,
+      'rolesFlag': rolesFlag,
+      'width': width,
+      'height': height,
+      'language': language,
+      'label': label,
+      'channelCount': channelCount,
+      'bitrate': bitrate,
+    };
   }
 }

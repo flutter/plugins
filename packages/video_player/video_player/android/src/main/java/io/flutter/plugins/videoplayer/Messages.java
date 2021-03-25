@@ -6,6 +6,7 @@ package io.flutter.plugins.videoplayer;
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /** Generated class from Pigeon. */
@@ -14,6 +15,7 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class TextureMessage {
+
     private Long textureId;
 
     public Long getTextureId() {
@@ -43,6 +45,7 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class CreateMessage {
+
     private String asset;
 
     public String getAsset() {
@@ -108,6 +111,7 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class LoopingMessage {
+
     private Long textureId;
 
     public Long getTextureId() {
@@ -150,6 +154,7 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class VolumeMessage {
+
     private Long textureId;
 
     public Long getTextureId() {
@@ -192,6 +197,7 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class PlaybackSpeedMessage {
+
     private Long textureId;
 
     public Long getTextureId() {
@@ -234,6 +240,7 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class PositionMessage {
+
     private Long textureId;
 
     public Long getTextureId() {
@@ -278,7 +285,62 @@ public class Messages {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
+  public static class TrackSelectionsMessage {
+
+    private Long textureId;
+
+    public Long getTextureId() {
+      return textureId;
+    }
+
+    public void setTextureId(Long setterArg) {
+      this.textureId = setterArg;
+    }
+
+    private String trackId;
+
+    public String getTrackId() {
+      return trackId;
+    }
+
+    public void setTrackId(String setterArg) {
+      this.trackId = setterArg;
+    }
+
+    private ArrayList<Object> trackSelections;
+
+    public ArrayList<Object> getTrackSelections() {
+      return trackSelections;
+    }
+
+    public void setTrackSelections(ArrayList<Object> setterArg) {
+      this.trackSelections = setterArg;
+    }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("trackId", trackId);
+      toMapResult.put("trackSelections", trackSelections);
+      return toMapResult;
+    }
+
+    static TrackSelectionsMessage fromMap(HashMap map) {
+      TrackSelectionsMessage fromMapResult = new TrackSelectionsMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId =
+          (textureId == null)
+              ? null
+              : ((textureId instanceof Integer) ? (Integer) textureId : (Long) textureId);
+      Object trackId = map.get("trackId");
+      fromMapResult.trackId = (trackId == null) ? null : (String) trackId;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
   public static class MixWithOthersMessage {
+
     private Boolean mixWithOthers;
 
     public Boolean getMixWithOthers() {
@@ -305,6 +367,7 @@ public class Messages {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface VideoPlayerApi {
+
     void initialize();
 
     TextureMessage create(CreateMessage arg);
@@ -322,6 +385,10 @@ public class Messages {
     PositionMessage position(TextureMessage arg);
 
     void seekTo(PositionMessage arg);
+
+    TrackSelectionsMessage trackSelections(TextureMessage arg);
+
+    void setTrackSelection(TrackSelectionsMessage arg);
 
     void pause(TextureMessage arg);
 
@@ -533,6 +600,54 @@ public class Messages {
                   @SuppressWarnings("ConstantConditions")
                   PositionMessage input = PositionMessage.fromMap((HashMap) message);
                   api.seekTo(input);
+                  wrapped.put("result", null);
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.trackSelections",
+                new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  TextureMessage input = TextureMessage.fromMap((HashMap) message);
+                  TrackSelectionsMessage output = api.trackSelections(input);
+                  wrapped.put("result", output.toMap());
+                } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.VideoPlayerApi.setTrackSelection",
+                new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                HashMap<String, HashMap> wrapped = new HashMap<>();
+                try {
+                  @SuppressWarnings("ConstantConditions")
+                  TrackSelectionsMessage input = TrackSelectionsMessage.fromMap((HashMap) message);
+                  api.setTrackSelection(input);
                   wrapped.put("result", null);
                 } catch (Exception exception) {
                   wrapped.put("error", wrapError(exception));

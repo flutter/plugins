@@ -5,6 +5,7 @@ import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -17,31 +18,51 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.source.TrackGroup;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.Parameters;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.SelectionOverride;
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector.MappedTrackInfo;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Assertions;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 final class VideoPlayer {
+
   private static final String FORMAT_SS = "ss";
   private static final String FORMAT_DASH = "dash";
   private static final String FORMAT_HLS = "hls";
   private static final String FORMAT_OTHER = "other";
 
   private SimpleExoPlayer exoPlayer;
+
+  private DefaultTrackSelector trackSelector;
+
+  private Parameters trackSelectorParameters;
 
   private Surface surface;
 
@@ -66,7 +87,13 @@ final class VideoPlayer {
     this.textureEntry = textureEntry;
     this.options = options;
 
-    exoPlayer = new SimpleExoPlayer.Builder(context).build();
+    TrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory();
+    trackSelectorParameters = new DefaultTrackSelector.ParametersBuilder(context).build();
+
+    trackSelector = new DefaultTrackSelector(context, trackSelectionFactory);
+    trackSelector.setParameters(trackSelectorParameters);
+
+    exoPlayer = new SimpleExoPlayer.Builder(context).setTrackSelector(trackSelector).build();
 
     Uri uri = Uri.parse(dataSource);
 
@@ -201,6 +228,13 @@ final class VideoPlayer {
           }
 
           @Override
+          @SuppressWarnings("ReferenceEquality")
+          public void onTracksChanged(
+              TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+            //todo(aliyazdi75): use this listener to change subtitle after implementing ffmpeg.
+          }
+
+          @Override
           public void onPlayerError(final ExoPlaybackException error) {
             setBuffering(false);
             if (eventSink != null) {
@@ -258,6 +292,206 @@ final class VideoPlayer {
     return exoPlayer.getCurrentPosition();
   }
 
+  private void updateTrackSelectorParameters() {
+    if (trackSelector != null) {
+      trackSelectorParameters = trackSelector.getParameters();
+    }
+  }
+
+  public ArrayList<Object> getTrackSelections() {
+    ArrayList<Object> trackSelections = new ArrayList<>();
+    ArrayList<Integer> autoTrackSelectionTypes = new ArrayList<>();
+    MappedTrackInfo mappedTrackInfo =
+        Assertions.checkNotNull(trackSelector.getCurrentMappedTrackInfo());
+    for (int rendererIndex = 0;
+        rendererIndex < mappedTrackInfo.getRendererCount();
+        rendererIndex++) {
+      TrackGroupArray trackGroups = mappedTrackInfo.getTrackGroups(rendererIndex);
+      if (isSupportedTrackForRenderer(trackGroups, mappedTrackInfo, rendererIndex)) {
+        int trackType = mappedTrackInfo.getRendererType(rendererIndex);
+        for (int groupIndex = 0; groupIndex < trackGroups.length; groupIndex++) {
+          TrackGroup group = trackGroups.get(groupIndex);
+
+          //add auto track for each track selection types
+          if (!autoTrackSelectionTypes.contains(trackType)) {
+            autoTrackSelectionTypes.add(trackType);
+            HashMap<String, Object> autoTrackSelection = new HashMap<>();
+            autoTrackSelection.put("isUnknown", false);
+            autoTrackSelection.put("isAuto", true);
+            autoTrackSelection.put("trackType", trackType);
+            autoTrackSelection.put(
+                "isSelected",
+                !trackSelectorParameters.hasSelectionOverride(rendererIndex, trackGroups));
+            autoTrackSelection.put("trackId", Integer.toString(rendererIndex));
+            trackSelections.add(autoTrackSelection);
+          }
+
+          //add tracks
+          for (int trackIndex = 0; trackIndex < group.length; trackIndex++) {
+            HashMap<String, Object> trackSelection = new HashMap<>();
+            Format trackFormat = group.getFormat(trackIndex);
+            int inferPrimaryTrackType = inferPrimaryTrackType(trackFormat);
+            trackSelection.put("isUnknown", false);
+            switch (inferPrimaryTrackType) {
+              case C.TRACK_TYPE_VIDEO:
+                trackSelection.put("rolesFlag", roleIntMap(trackFormat));
+                trackSelection.put("width", trackWidth(trackFormat));
+                trackSelection.put("height", trackHeight(trackFormat));
+                trackSelection.put("bitrate", trackBitrate(trackFormat));
+                break;
+              case C.TRACK_TYPE_AUDIO:
+                trackSelection.put("language", buildLanguageString(trackFormat));
+                trackSelection.put("label", buildLabelString(trackFormat));
+                trackSelection.put("rolesFlag", roleIntMap(trackFormat));
+                trackSelection.put("channelCount", audioChannelCount(trackFormat));
+                trackSelection.put("bitrate", trackBitrate(trackFormat));
+                break;
+              case C.TRACK_TYPE_TEXT:
+                trackSelection.put("language", buildLanguageString(trackFormat));
+                trackSelection.put("label", buildLabelString(trackFormat));
+                trackSelection.put("rolesFlag", roleIntMap(trackFormat));
+                break;
+              default:
+                trackSelection.put("isUnknown", true);
+            }
+
+            SelectionOverride selectionOverride =
+                trackSelectorParameters.getSelectionOverride(rendererIndex, trackGroups);
+            trackSelection.put("isAuto", false);
+            trackSelection.put("trackType", trackType);
+            trackSelection.put(
+                "isSelected",
+                selectionOverride != null
+                    && selectionOverride.containsTrack(trackIndex)
+                    && selectionOverride.groupIndex == groupIndex);
+            trackSelection.put("trackId", getTrackId(rendererIndex, groupIndex, trackIndex));
+            trackSelections.add(trackSelection);
+          }
+        }
+      }
+    }
+    return trackSelections;
+  }
+
+  private Boolean isSupportedTrackForRenderer(
+      TrackGroupArray trackGroups,
+      MappingTrackSelector.MappedTrackInfo mappedTrackInfo,
+      Integer rendererIndex) {
+    if (trackGroups.length == 0) {
+      return false;
+    }
+    int trackType = mappedTrackInfo.getRendererType(rendererIndex);
+    return isSupportedTrackType(trackType);
+  }
+
+  private Boolean isSupportedTrackType(Integer trackType) {
+    switch (trackType) {
+      case C.TRACK_TYPE_VIDEO:
+      case C.TRACK_TYPE_AUDIO:
+      case C.TRACK_TYPE_TEXT:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  private static Integer inferPrimaryTrackType(Format format) {
+    int trackType = MimeTypes.getTrackType(format.sampleMimeType);
+    if (trackType != C.TRACK_TYPE_UNKNOWN) {
+      return trackType;
+    }
+    if (MimeTypes.getVideoMediaMimeType(format.codecs) != null) {
+      return C.TRACK_TYPE_VIDEO;
+    }
+    if (MimeTypes.getAudioMediaMimeType(format.codecs) != null) {
+      return C.TRACK_TYPE_AUDIO;
+    }
+    if (format.width != Format.NO_VALUE || format.height != Format.NO_VALUE) {
+      return C.TRACK_TYPE_VIDEO;
+    }
+    if (format.channelCount != Format.NO_VALUE || format.sampleRate != Format.NO_VALUE) {
+      return C.TRACK_TYPE_AUDIO;
+    }
+    return C.TRACK_TYPE_UNKNOWN;
+  }
+
+  private String buildLabelString(Format format) {
+    return TextUtils.isEmpty(format.label) ? "" : format.label;
+  }
+
+  private String buildLanguageString(Format format) {
+    String language = format.language;
+    if (language == null
+        || TextUtils.isEmpty(language)
+        || C.LANGUAGE_UNDETERMINED.equals(language)) {
+      return "";
+    }
+    Locale locale = Util.SDK_INT >= 21 ? Locale.forLanguageTag(language) : new Locale(language);
+    return locale.getDisplayName();
+  }
+
+  private Integer roleIntMap(Format format) {
+    if ((format.roleFlags & C.ROLE_FLAG_ALTERNATE) != 0) {
+      return 0;
+    }
+    if ((format.roleFlags & C.ROLE_FLAG_SUPPLEMENTARY) != 0) {
+      return 1;
+    }
+    if ((format.roleFlags & C.ROLE_FLAG_COMMENTARY) != 0) {
+      return 2;
+    }
+    if ((format.roleFlags & (C.ROLE_FLAG_CAPTION | C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND)) != 0) {
+      return 3;
+    }
+    return -1;
+  }
+
+  private Integer audioChannelCount(Format format) {
+    int channelCount = format.channelCount;
+    if (channelCount < 1) {
+      return -1;
+    }
+    return channelCount;
+  }
+
+  private Integer trackBitrate(Format format) {
+    return format.bitrate;
+  }
+
+  private Integer trackWidth(Format format) {
+    return format.width;
+  }
+
+  private Integer trackHeight(Format format) {
+    return format.height;
+  }
+
+  private String getTrackId(Integer rendererIndex, Integer groupIndex, Integer trackIndex) {
+    return rendererIndex.toString() + groupIndex.toString() + trackIndex.toString();
+  }
+
+  public void setTrackSelection(String trackId) {
+    if (!(trackId.length() == 1 || trackId.length() == 3)) {
+      throw new IllegalStateException("Unsupported trackId: " + trackId);
+    }
+    //set auto track selection
+    int rendererIndex = Character.getNumericValue(trackId.charAt(0));
+    ParametersBuilder builder = trackSelectorParameters.buildUpon();
+    builder.clearSelectionOverrides(rendererIndex);
+    //set non auto track selection
+    if (trackId.length() == 3) {
+      int groupIndex = Character.getNumericValue(trackId.charAt(1));
+      int trackIndex = Character.getNumericValue(trackId.charAt(2));
+      SelectionOverride override = new SelectionOverride(groupIndex, trackIndex);
+      MappedTrackInfo mappedTrackInfo =
+          Assertions.checkNotNull(trackSelector.getCurrentMappedTrackInfo());
+      builder.setSelectionOverride(
+          rendererIndex, mappedTrackInfo.getTrackGroups(rendererIndex), override);
+    }
+    trackSelector.setParameters(builder);
+    updateTrackSelectorParameters();
+  }
+
   @SuppressWarnings("SuspiciousNameCombination")
   private void sendInitialized() {
     if (isInitialized) {
@@ -288,6 +522,10 @@ final class VideoPlayer {
     }
     textureEntry.release();
     eventChannel.setStreamHandler(null);
+    updateTrackSelectorParameters();
+    if (trackSelector != null) {
+      trackSelector = null;
+    }
     if (surface != null) {
       surface.release();
     }

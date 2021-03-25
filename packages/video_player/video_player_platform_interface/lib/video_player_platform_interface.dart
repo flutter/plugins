@@ -110,6 +110,21 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('getPosition() has not been implemented.');
   }
 
+  /// Gets the video [TrackSelection]s. For convenience if the video file has at
+  /// least one [TrackSelection] for a specific type, the auto track selection will
+  /// be added to this list with that type.
+  Future<List<TrackSelection>> getTrackSelections(
+    int textureId, {
+    TrackSelectionNameResource? trackSelectionNameResource,
+  }) {
+    throw UnimplementedError('getTrackSelection() has not been implemented.');
+  }
+
+  /// Sets the selected video track selection.
+  Future<void> setTrackSelection(int textureId, TrackSelection trackSelection) {
+    throw UnimplementedError('setTrackSelection() has not been implemented.');
+  }
+
   /// Returns a widget displaying the video with a given textureID.
   Widget buildView(int textureId) {
     throw UnimplementedError('buildView() has not been implemented.');
@@ -353,4 +368,202 @@ class VideoPlayerOptions {
 
   /// set additional optional player settings
   VideoPlayerOptions({this.mixWithOthers = false});
+}
+
+/// A representation of a single track selection.
+///
+/// A typical video file will include several [TrackSelection]s. For convenience
+/// the auto track selection will be added to this list of [getTrackSelections].
+class TrackSelection {
+  /// Creates an instance of [VideoEvent].
+  ///
+  /// The [trackId], [trackType], [trackName] and [isSelected] argument is required.
+  ///
+  /// Depending on the [trackType], the [width], [height], [language], [label],
+  /// [channelCount] and [bitrate] arguments can be null.
+  const TrackSelection({
+    required this.trackId,
+    required this.trackType,
+    required this.trackName,
+    required this.isSelected,
+    this.size,
+    this.role,
+    this.language,
+    this.label,
+    this.channelCount,
+    this.bitrate,
+  });
+
+  /// The track id of track selection that uses to determine track selection.
+  ///
+  /// The track id includes a render number for auto track selection and three numbers
+  /// (a render number, a render group index number and a track number) for non-auto
+  /// track selection.
+  final String trackId;
+
+  /// The type of the track selection.
+  final TrackSelectionType trackType;
+
+  /// The name of track selection that uses [TrackSelectionNameResource] to represent
+  /// the suggestion name for each track selection based on its type.
+  final String trackName;
+
+  /// If the track selection is selected using [setTrackSelection] method, this
+  /// is true. For each type there is one selected track selection.
+  final bool isSelected;
+
+  /// The size of video track selection. This will be null if the [trackType]
+  /// is not [TrackSelectionType.video] or an unknown or a auto track selection.
+  ///
+  /// If the track selection doesn't specify the width or height this may be null.
+  final Size? size;
+
+  /// The label of track selection. This will be null if the [trackType]
+  /// is not an unknown or a auto track selection.
+  ///
+  /// If the track selection doesn't specify the role this may be null.
+  final String? role;
+
+  /// The language of track selection. This will be null if the [trackType]
+  /// is not [TrackSelectionType.audio] and [TrackSelectionType.text] or an unknown
+  /// or a auto track selection.
+  ///
+  /// If the track selection doesn't specify the language this may be null.
+  final String? language;
+
+  /// The label of track selection. This will be null if the [trackType]
+  /// is not [TrackSelectionType.audio] and [TrackSelectionType.text] or an unknown
+  /// or a auto track selection.
+  ///
+  /// If the track selection doesn't specify the label this may be null.
+  final String? label;
+
+  /// The channelCount of track selection. This will be null if the [trackType]
+  /// is not [TrackSelectionType.audio] or an unknown or a auto track selection.
+  ///
+  /// If the track selection doesn't specify the channelCount this may be null.
+  final int? channelCount;
+
+  /// The label of track selection. This will be null if the [trackType]
+  /// is not [TrackSelectionType.video] and [TrackSelectionType.audio] or an unknown
+  /// or a auto track selection.
+  ///
+  /// If the track selection doesn't specify the bitrate this may be null.
+  final int? bitrate;
+
+  @override
+  String toString() {
+    return '$runtimeType('
+        'trackId: $trackId, '
+        'trackType: $trackType, '
+        'trackName: $trackName,'
+        'isSelected: $isSelected,'
+        'size: $size,'
+        'role: $role,'
+        'language: $language,'
+        'label: $label,'
+        'channelCount: $channelCount,'
+        'bitrate: $bitrate)';
+  }
+}
+
+/// Type of the track selection.
+enum TrackSelectionType {
+  /// The video track selection.
+  video,
+
+  /// The audio track selection.
+  audio,
+
+  /// The text track selection.
+  text,
+}
+
+/// String resources uses to represent track selection name.
+///
+/// Pass this class as an argument to [getTrackSelections].
+class TrackSelectionNameResource {
+  /// Constructs an instance of [TrackSelectionNameResource].
+  const TrackSelectionNameResource({
+    this.trackAuto = 'Auto',
+    this.trackUnknown = 'Unknown',
+    this.trackBitrate1080p = '1080P',
+    this.trackBitrate720p = '720P',
+    this.trackBitrate480p = '480P',
+    this.trackBitrate360p = '360P',
+    this.trackBitrate240p = '240P',
+    this.trackBitrate160p = '160P',
+    this.trackResolutionSeparator = '×',
+    this.trackBitrateMbps = 'Mbps',
+    this.trackMono = 'Mono',
+    this.trackStereo = 'Stereo',
+    this.trackSurround = 'Surround sound',
+    this.trackItemListSeparator = ',',
+    this.trackRoleAlternate = 'Alternate',
+    this.trackRoleSupplementary = 'Supplementary',
+    this.trackRoleCommentary = 'Commentary',
+    this.trackRoleClosedCaptions = 'CC',
+  });
+
+  /// [TrackSelection.trackName] is `Auto` if track selection is auto.
+  final String trackAuto;
+
+  /// [TrackSelection.trackName] is `Unknown` if track selection is unknown.
+  final String trackUnknown;
+
+  /// `1080P` quality for [TrackSelectionType.video] track selection.
+  final String trackBitrate1080p;
+
+  /// `720P` quality for [TrackSelectionType.video] track selection.
+  final String trackBitrate720p;
+
+  /// `480P` quality for [TrackSelectionType.video] track selection.
+  final String trackBitrate480p;
+
+  /// `360P` quality for [TrackSelectionType.video] track selection.
+  final String trackBitrate360p;
+
+  /// `240P` quality for [TrackSelectionType.video] track selection.
+  final String trackBitrate240p;
+
+  /// `160P` quality for [TrackSelectionType.video] track selection.
+  final String trackBitrate160p;
+
+  /// `×` resolution separator for [TrackSelectionType.video] track selection.
+  ///
+  /// For example if track selection bitrate is not in range of 0.3 to 2.8 Mbps,
+  /// [TrackSelection.trackName] will be `2048 × 1080`.
+  final String trackResolutionSeparator;
+
+  /// `Mbps` followed by bitrate.
+  ///
+  /// For example `3.5 Mbps`.
+  final String trackBitrateMbps;
+
+  /// `Mono` for [TrackSelectionType.audio] if track selection
+  /// channel count is 1.
+  final String trackMono;
+
+  /// `Stereo` for [TrackSelectionType.audio] if track selection
+  /// channel count is 1.
+  final String trackStereo;
+
+  /// `Surround sound` for [TrackSelectionType.audio] if track selection
+  /// channel count is 1.
+  final String trackSurround;
+
+  /// `,` to separate items in track name.
+  final String trackItemListSeparator;
+
+  /// `Alternate` for a track if it has role.
+  final String trackRoleAlternate;
+
+  /// `Supplementary` for a track if it has role.
+  final String trackRoleSupplementary;
+
+  /// `Commentary` for a track if it has role.
+  final String trackRoleCommentary;
+
+  /// `CC` for a track if it has role.
+  final String trackRoleClosedCaptions;
 }
