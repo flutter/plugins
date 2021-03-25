@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:mockito/mockito.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -34,26 +33,6 @@ void main() {
 
     test('Can be extended', () {
       GoogleMapsFlutterPlatform.instance = ExtendsGoogleMapsFlutterPlatform();
-    });
-  });
-
-  group('$MethodChannelGoogleMapsFlutter', () {
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/google_maps_flutter');
-    final List<MethodCall> log = <MethodCall>[];
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      log.add(methodCall);
-    });
-
-    tearDown(() {
-      log.clear();
-    });
-
-    test('foo', () async {
-      expect(
-        log,
-        <Matcher>[],
-      );
     });
   });
 }
