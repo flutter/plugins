@@ -1,8 +1,8 @@
-## 2.0.0-nullsafety.1
+## 2.0.1
 
-* Bump Dart SDK to support null safety.
+* Update platform_plugin_interface version requirement.
 
-## 2.0.0-nullsafety
+## 2.0.0
 
 * Migrate to null safety.
 
@@ -16,7 +16,7 @@
 
 ## 1.0.5
 
-* Remove dart:io Platform checks from the MethodChannel implementation. This is 
+* Remove dart:io Platform checks from the MethodChannel implementation. This is
 tripping the analysis of other versions of the plugin.
 
 ## 1.0.4

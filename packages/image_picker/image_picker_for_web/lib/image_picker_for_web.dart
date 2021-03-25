@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:html' as html;
 
@@ -30,6 +34,18 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     ImagePickerPlatform.instance = ImagePickerPlugin();
   }
 
+  /// Returns a [PickedFile] with the image that was picked.
+  ///
+  /// The `source` argument controls where the image comes from. This can
+  /// be either [ImageSource.camera] or [ImageSource.gallery].
+  ///
+  /// Note that the `maxWidth`, `maxHeight` and `imageQuality` arguments are not supported on the web. If any of these arguments is supplied, it'll be silently ignored by the web version of the plugin.
+  ///
+  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear].
+  ///
+  /// If no images were picked, the return value is null.
   @override
   Future<PickedFile> pickImage({
     required ImageSource source,
@@ -42,6 +58,18 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return pickFile(accept: _kAcceptImageMimeType, capture: capture);
   }
 
+  /// Returns a [PickedFile] containing the video that was picked.
+  ///
+  /// The [source] argument controls where the video comes from. This can
+  /// be either [ImageSource.camera] or [ImageSource.gallery].
+  ///
+  /// Note that the `maxDuration` argument is not supported on the web. If the argument is supplied, it'll be silently ignored by the web version of the plugin.
+  ///
+  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear].
+  ///
+  /// If no images were picked, the return value is null.
   @override
   Future<PickedFile> pickVideo({
     required ImageSource source,

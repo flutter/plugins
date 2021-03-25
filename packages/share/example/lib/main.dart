@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,7 +116,7 @@ class DemoAppState extends State<DemoApp> {
     // RenderObject in its descendent tree when it's not
     // a RenderObjectWidget. The ElevatedButton's RenderObject
     // has its position and size after it's built.
-    final RenderBox box = context.findRenderObject();
+    final RenderBox box = context.findRenderObject() as RenderBox;
 
     if (imagePaths.isNotEmpty) {
       await Share.shareFiles(imagePaths,

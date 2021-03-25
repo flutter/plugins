@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright 2013 The Flutter Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 #  Usage:
 #
@@ -14,7 +17,6 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
-source "$SCRIPT_DIR/nnbd_plugins.sh"
 
 check_changed_packages > /dev/null
 
@@ -26,22 +28,12 @@ check_changed_packages > /dev/null
 # updating multiple plugins for a breaking change in a common dependency in
 # cases where using a relaxed version constraint isn't possible.
 readonly EXCLUDED_PLUGINS_LIST=(
-  # "file_selector" # currently out of sync with camera
-  # "flutter_plugin_android_lifecycle"
-  # "image_picker"
-  # "local_auth" # flutter_plugin_android_lifecycle conflict
   "plugin_platform_interface" # This should never be a direct app dependency.
 )
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
 
 ALL_EXCLUDED=($EXCLUDED)
-# Exclude nnbd plugins from stable, and conflicting plugins otherwise.
-if [ "$CHANNEL" == "stable" ]; then
-  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_STABLE")
-else
-  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FOR_NNBD")
-fi
 
 echo "Excluding the following plugins: $ALL_EXCLUDED"
 
@@ -53,7 +45,14 @@ function error() {
 
 failures=0
 
-for version in "debug" "release"; do
+BUILD_MODES=("debug" "release")
+# Web doesn't support --debug for builds.
+if [[ "$1" == "web" ]]; then
+  BUILD_MODES=("release")
+fi
+
+for version in "${BUILD_MODES[@]}"; do
+  echo "Building $version..."
   (cd $REPO_DIR/all_plugins && flutter build $@ --$version)
 
   if [ $? -eq 0 ]; then

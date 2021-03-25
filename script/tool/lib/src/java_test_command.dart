@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,9 +32,12 @@ class JavaTestCommand extends PluginCommand {
     final Stream<Directory> examplesWithTests = getExamples().where(
         (Directory d) =>
             isFlutterPackage(d, fileSystem) &&
-            fileSystem
-                .directory(p.join(d.path, 'android', 'app', 'src', 'test'))
-                .existsSync());
+            (fileSystem
+                    .directory(p.join(d.path, 'android', 'app', 'src', 'test'))
+                    .existsSync() ||
+                fileSystem
+                    .directory(p.join(d.path, '..', 'android', 'src', 'test'))
+                    .existsSync()));
 
     final List<String> failingPackages = <String>[];
     final List<String> missingFlutterBuild = <String>[];

@@ -1,14 +1,7 @@
-## 2.0.0-nullsafety
-
-* Update version to (semi-belatedly) meet 1.0-consistency promise.
-
-## 0.2.0-nullsafety.1
+## 0.2.0
 
 * Remove placeholder Dart file.
-
-## 0.2.0-nullsafety
-
-* Update Dart SDK constraint.
+* Update Dart SDK constraint for compatibility with null safety.
 
 ## 0.1.0+8
 

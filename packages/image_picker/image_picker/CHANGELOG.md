@@ -1,4 +1,21 @@
-## 0.7.0-nullsafety
+## 0.7.3
+
+* Endorse image_picker_for_web
+
+## 0.7.2+1
+
+* Android: fixes an issue where videos could be wrongly picked with `.jpg` extension.
+
+## 0.7.2
+
+* Run CocoaPods iOS tests in RunnerUITests target
+
+## 0.7.1
+
+* Update platform_plugin_interface version requirement.
+
+## 0.7.0
+
 * Migrate to nullsafety
 * Breaking Changes:
     * Removed the deprecated methods: `ImagePicker.pickImage`, `ImagePicker.pickVideo`,

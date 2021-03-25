@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _myLocationEnabled = true;
   bool _myTrafficEnabled = false;
   bool _myLocationButtonEnabled = true;
-  GoogleMapController _controller;
+  late GoogleMapController _controller;
   bool _nightMode = false;
 
   @override
@@ -249,10 +249,9 @@ class MapUiBodyState extends State<MapUiBody> {
     });
   }
 
+  // Should only be called if _isMapCreated is true.
   Widget _nightModeToggler() {
-    if (!_isMapCreated) {
-      return null;
-    }
+    assert(_isMapCreated);
     return TextButton(
       child: Text('${_nightMode ? 'disable' : 'enable'} night mode'),
       onPressed: () {

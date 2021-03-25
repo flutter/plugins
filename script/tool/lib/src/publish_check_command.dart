@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,7 +97,7 @@ class PublishCheckCommand extends PluginCommand {
     await stdInCompleter.future;
 
     final String output = outputBuffer.toString();
-    return output.contains('Package has 1 warning.') &&
+    return output.contains('Package has 1 warning') &&
         output.contains(
             'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.');
   }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,11 +100,12 @@ void main() {
               hostedDomain: 'example.com',
               scopes: <String>['two', 'scopes'],
               signInOption: SignInOption.games,
-              clientId: 'UNUSED!');
+              clientId: 'fakeClientId');
         }: isMethodCall('init', arguments: <String, dynamic>{
           'hostedDomain': 'example.com',
           'scopes': <String>['two', 'scopes'],
           'signInOption': 'SignInOption.games',
+          'clientId': 'fakeClientId',
         }),
         () {
           googleSignIn.getTokens(
