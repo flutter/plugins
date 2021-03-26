@@ -99,11 +99,6 @@ class VideoPlayerValue {
   /// The [size] of the currently loaded video.
   final Size size;
 
-  /// The [aspectRatio] of the currently loaded video.
-  ///
-  /// Is null when [initialized] is false.
-  final double? aspectRatio;
-
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
 
@@ -149,7 +144,6 @@ class VideoPlayerValue {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
       size: size ?? this.size,
-      aspectRatio: aspectRatio ?? this.aspectRatio,
       position: position ?? this.position,
       absolutePosition: absolutePosition ?? this.absolutePosition,
       caption: caption ?? this.caption,
@@ -458,7 +452,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           if (newPosition == null) {
             return;
           }
-          _updatePosition(newPosition, absolutePosition: newAbsolutePosition);
+          _updatePosition(newPosition, newAbsolutePosition);
         },
       );
 
@@ -509,9 +503,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (_isDisposed) {
       return null;
     }
-    final int milliseconds = await _videoPlayerPlatform.getAbsolutePosition(_textureId);
+    final int? milliseconds = await _videoPlayerPlatform.getAbsolutePosition(_textureId);
 
-    if (milliseconds <= 0) return null;
+    if (milliseconds == null || milliseconds <= 0) return null;
 
     return DateTime.fromMillisecondsSinceEpoch(milliseconds);
   }

@@ -36,7 +36,6 @@ class CreateMessage {
   Map<String, String> httpHeaders;
   String packageName;
   String formatHint;
-  Map<String, String> httpHeaders;
 }
 
 class MixWithOthersMessage {

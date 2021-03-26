@@ -131,25 +131,21 @@ class PositionMessage {
 }
 
 class AbsolutePositionMessage {
-  int textureId;
-  int absolutePosition;
-  // ignore: unused_element
-  Map<dynamic, dynamic> _toMap() {
-    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+  int? textureId;
+  int? absolutePosition;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
     pigeonMap['textureId'] = textureId;
     pigeonMap['absolutePosition'] = absolutePosition;
     return pigeonMap;
   }
 
-  // ignore: unused_element
-  static AbsolutePositionMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
-    if (pigeonMap == null) {
-      return null;
-    }
-    final AbsolutePositionMessage result = AbsolutePositionMessage();
-    result.textureId = pigeonMap['textureId'];
-    result.absolutePosition = pigeonMap['absolutePosition'];
-    return result;
+  static AbsolutePositionMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return AbsolutePositionMessage()
+      ..textureId = pigeonMap['textureId'] as int?
+      ..absolutePosition = pigeonMap['absolutePosition'] as int?;
   }
 }
 
@@ -371,24 +367,25 @@ class VideoPlayerApi {
   }
 
   Future<AbsolutePositionMessage> absolutePosition(TextureMessage arg) async {
-    final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.VideoPlayerApi.absolutePosition', StandardMessageCodec());
-
-    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    final Map<Object?, Object?>? replyMap =
+    await channel.send(encoded) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
           code: 'channel-error',
           message: 'Unable to establish connection on channel.',
           details: null);
     } else if (replyMap['error'] != null) {
-      final Map<dynamic, dynamic> error = replyMap['error'];
+      final Map<Object?, Object?> error = replyMap['error'] as Map<Object?, Object?>;
       throw PlatformException(
-          code: error['code'],
-          message: error['message'],
-          details: error['details']);
+          code: error['code'] as String,
+          message: error['message'] as String?,
+          details: error['details'],
+      );
     } else {
-      return AbsolutePositionMessage._fromMap(replyMap['result']);
+      return AbsolutePositionMessage.decode(replyMap['result']!);
     }
   }
 

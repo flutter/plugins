@@ -84,12 +84,6 @@ public class Messages {
       return formatHint;
     }
 
-    private Map httpHeaders;
-
-    public Map getHttpHeaders() {
-      return httpHeaders;
-    }
-
     public void setFormatHint(String setterArg) {
       this.formatHint = setterArg;
     }
@@ -367,31 +361,6 @@ public class Messages {
       MixWithOthersMessage fromMapResult = new MixWithOthersMessage();
       Object mixWithOthers = map.get("mixWithOthers");
       fromMapResult.mixWithOthers = (Boolean) mixWithOthers;
-      return fromMapResult;
-    }
-  }
-
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class MixWithOthersMessage {
-    private Boolean mixWithOthers;
-
-    public Boolean getMixWithOthers() {
-      return mixWithOthers;
-    }
-
-    public void setMixWithOthers(Boolean setterArg) {
-      this.mixWithOthers = setterArg;
-    }
-
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<String, Object>();
-      toMapResult.put("mixWithOthers", mixWithOthers);
-      return toMapResult;
-    }
-
-    static MixWithOthersMessage fromMap(HashMap map) {
-      MixWithOthersMessage fromMapResult = new MixWithOthersMessage();
-      fromMapResult.mixWithOthers = (Boolean) map.get("mixWithOthers");
       return fromMapResult;
     }
   }
