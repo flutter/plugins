@@ -65,10 +65,10 @@ class PublishCheckCommand extends PluginCommand {
   }
 
   Future<bool> hasValidPublishCheckRun(Directory package) async {
-    final io.Process process = await io.Process.start(
+    final io.Process process = await processRunner.start(
       'flutter',
       <String>['pub', 'publish', '--', '--dry-run'],
-      workingDirectory: package.path,
+      workingDirectory: package,
     );
 
     final StringBuffer outputBuffer = StringBuffer();
