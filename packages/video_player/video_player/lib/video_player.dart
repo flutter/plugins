@@ -370,6 +370,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Starts playing the video.
   ///
+  /// If the video is at the end, this method starts playing from the beginning.
+  ///
   /// This method returns a future that completes as soon as the "play" command
   /// has been sent to the platform, not when playback itself is totally
   /// finished.
