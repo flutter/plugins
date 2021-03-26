@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Fix iOS crash on `EXC_BAD_ACCESS KERN_PROTECTION_FAILURE` if the map frame changes long after creation.
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.
