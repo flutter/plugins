@@ -115,7 +115,7 @@ void main() {
     await tester.pumpWidget(VideoPlayer(controller1));
     expect(
         find.byWidgetPredicate(
-          (Widget widget) => widget is Texture && widget.textureId == 101,
+              (Widget widget) => widget is Texture && widget.textureId == 101,
         ),
         findsOneWidget);
 
@@ -124,7 +124,7 @@ void main() {
     await tester.pumpWidget(VideoPlayer(controller2));
     expect(
         find.byWidgetPredicate(
-          (Widget widget) => widget is Texture && widget.textureId == 102,
+              (Widget widget) => widget is Texture && widget.textureId == 102,
         ),
         findsOneWidget);
   });
@@ -160,18 +160,18 @@ void main() {
     });
 
     testWidgets('Passes text contrast ratio guidelines',
-        (WidgetTester tester) async {
-      final String text = 'foo';
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          backgroundColor: Colors.white,
-          body: ClosedCaption(text: text),
-        ),
-      ));
-      expect(find.text(text), findsOneWidget);
+            (WidgetTester tester) async {
+          final String text = 'foo';
+          await tester.pumpWidget(MaterialApp(
+            home: Scaffold(
+              backgroundColor: Colors.white,
+              body: ClosedCaption(text: text),
+            ),
+          ));
+          expect(find.text(text), findsOneWidget);
 
-      await expectLater(tester, meetsGuideline(textContrastGuideline));
-    }, skip: isBrowser);
+          await expectLater(tester, meetsGuideline(textContrastGuideline));
+        }, skip: isBrowser);
   });
 
   group('VideoPlayerController', () {
@@ -235,7 +235,7 @@ void main() {
 
       test('file', () async {
         final VideoPlayerController controller =
-            VideoPlayerController.file(File('a.avi'));
+        VideoPlayerController.file(File('a.avi'));
         await controller.initialize();
 
         expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
@@ -440,7 +440,7 @@ void main() {
         expect(controller.value.isBuffering, false);
         expect(controller.value.buffered, isEmpty);
         final FakeVideoEventStream fakeVideoEventStream =
-            fakeVideoPlayerPlatform.streams[controller.textureId]!;
+        fakeVideoPlayerPlatform.streams[controller.textureId]!;
 
         fakeVideoEventStream.eventsChannel
             .sendEvent(<String, dynamic>{'event': 'bufferingStart'});
@@ -566,17 +566,17 @@ void main() {
       expect(
           value.toString(),
           'VideoPlayerValue(duration: 0:00:05.000000, '
-          'size: Size(400.0, 300.0), '
-          'position: 0:00:01.000000, '
-          'caption: Caption(number: 0, start: 0:00:00.000000, end: 0:00:00.000000, text: foo), '
-          'buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], '
-          'isInitialized: true, '
-          'isPlaying: true, '
-          'isLooping: true, '
-          'isBuffering: true, '
-          'volume: 0.5, '
-          'playbackSpeed: 1.5, '
-          'errorDescription: null)');
+              'size: Size(400.0, 300.0), '
+              'position: 0:00:01.000000, '
+              'caption: Caption(number: 0, start: 0:00:00.000000, end: 0:00:00.000000, text: foo), '
+              'buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], '
+              'isInitialized: true, '
+              'isPlaying: true, '
+              'isLooping: true, '
+              'isBuffering: true, '
+              'volume: 0.5, '
+              'playbackSpeed: 1.5, '
+              'errorDescription: null)');
     });
 
     test('copyWith()', () {
