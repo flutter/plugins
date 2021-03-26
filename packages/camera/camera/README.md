@@ -45,6 +45,60 @@ minSdkVersion 21
 
 It's important to note that the `MediaRecorder` class is not working properly on emulators, as stated in the documentation: https://developer.android.com/reference/android/media/MediaRecorder. Specifically, when recording a video with sound enabled and trying to play it back, the duration won't be correct and you will only see the first frame.
 
+
+### When creating release app
+
+As of flutter v2.0, the native code is being getting deleted to decrease size of app and
+due to that, many package functionalities are crashing. Same is the case of camera plugin.
+It is requested to add `proguard-rules.pro` files in app folder:
+
+```
+## Flutter wrapper
+-keep class io.flutter.app.** { *; }
+-keep class io.flutter.plugin.**  { *; }
+-keep class io.flutter.util.**  { *; }
+-keep class io.flutter.view.**  { *; }
+-keep class io.flutter.**  { *; }
+-keep class io.flutter.plugins.**  { *; }
+-dontwarn io.flutter.embedding.**
+
+## Gson rules
+# Gson uses generic type information stored in a class file when working with fields. Proguard
+# removes such information by default, so configure it to keep all of it.
+-keepattributes Signature
+
+# For using GSON @Expose annotation
+-keepattributes *Annotation*
+
+# Gson specific classes
+-dontwarn sun.misc.**
+#-keep class com.google.gson.stream.** { *; }
+
+# Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,
+# JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
+-keep class * extends com.google.gson.TypeAdapter
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+
+# Prevent R8 from leaving Data object members always null
+-keepclassmembers,allowobfuscation class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+
+## flutter_local_notification plugin rules
+-keep class com.dexterous.** { *; }
+-keep class com.arthenica.mobileffmpeg.Config {
+    native <methods>;
+    void log(long, int, byte[]);
+    void statistics(long, int, float, float, long , int, double, double);
+}
+
+-keep class com.arthenica.mobileffmpeg.AbiDetect {
+    native <methods>;
+}
+```
+
 ### Handling Lifecycle states
 
 As of version [0.5.0](https://github.com/flutter/plugins/blob/master/packages/camera/CHANGELOG.md#050) of the camera plugin, lifecycle changes are no longer handled by the plugin. This means developers are now responsible to control camera resources when the lifecycle state is updated. Failure to do so might lead to unexpected behavior (for example as described in issue [#39109](https://github.com/flutter/flutter/issues/39109)). Handling lifecycle changes can be done by overriding the `didChangeAppLifecycleState` method like so:
