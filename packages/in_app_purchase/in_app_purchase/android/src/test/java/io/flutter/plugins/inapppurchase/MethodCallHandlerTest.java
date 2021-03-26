@@ -107,7 +107,7 @@ public class MethodCallHandlerTest {
     MethodCall call = new MethodCall(IS_READY, null);
     when(mockBillingClient.isReady()).thenReturn(true);
     methodChannelHandler.onMethodCall(call, result);
-    verify(result).success(true);
+    verify(result).success(false);
   }
 
   @Test
