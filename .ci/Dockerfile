@@ -31,7 +31,7 @@ RUN sudo apt-get install -y xvfb libegl1-mesa
 # Install Linux desktop build tool requirements.
 RUN sudo apt-get install -y clang cmake ninja-build file pkg-config
 # Install necessary libraries.
-RUN sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev
+RUN sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev libgcrypt20-dev
 
 # Add repo for Google Chrome and install it
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -

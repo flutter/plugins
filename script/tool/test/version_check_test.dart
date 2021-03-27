@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:io';
 
@@ -211,7 +215,7 @@ void main() {
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
       String changelog = '''
-      
+
 
 
 ## 1.0.1

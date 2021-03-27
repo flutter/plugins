@@ -24,7 +24,7 @@ dev_dependencies:
     sdk: flutter
   plugin_platform_interface: ^2.0.0
   integration_test:
-    path: ../../integration_test
+    sdk: flutter
   pedantic: ^1.10.0
   test: ^1.16.3
 
