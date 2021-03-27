@@ -7,7 +7,6 @@ import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
-import 'package:flutter_plugin_tools/src/analyze_command.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/publish_check_command.dart';
 import 'package:test/test.dart';
@@ -108,7 +107,7 @@ void main() {
 }
 
 class PublishCheckProcessRunner extends RecordingProcessRunner {
-  Queue<MockProcess> processesToReturn = Queue<MockProcess>();
+  final Queue<MockProcess> processesToReturn = Queue<MockProcess>();
 
   @override
   io.Process get processToReturn => processesToReturn.removeFirst();
