@@ -280,19 +280,19 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       BiometricManager biometricManager = BiometricManager.from(activity.getApplicationContext());
 
       if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)
-              && (biometricManager.canAuthenticate( BIOMETRIC_STRONG | BIOMETRIC_WEAK)
+          && (biometricManager.canAuthenticate( BIOMETRIC_STRONG | BIOMETRIC_WEAK)
               == BiometricManager.BIOMETRIC_SUCCESS)) {
         biometrics.add("face");
       }
 
       if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
-              && (biometricManager.canAuthenticate(BIOMETRIC_STRONG | BIOMETRIC_WEAK)
+          && (biometricManager.canAuthenticate(BIOMETRIC_STRONG | BIOMETRIC_WEAK)
               == BiometricManager.BIOMETRIC_SUCCESS)) {
         biometrics.add("fingerprint");
       }
 
       if (packageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)
-              && (biometricManager.canAuthenticate(BIOMETRIC_STRONG | BIOMETRIC_WEAK)
+          && (biometricManager.canAuthenticate(BIOMETRIC_STRONG | BIOMETRIC_WEAK)
               == BiometricManager.BIOMETRIC_SUCCESS)) {
         biometrics.add("iris");
       }
