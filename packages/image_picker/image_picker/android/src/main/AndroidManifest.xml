@@ -3,6 +3,21 @@
    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
+    <!--
+      These queries are required for apps targeting Android 11 (API level 30)
+      and above because this plugin checks that at least one camera app exists
+      before launching intents.
+      https://developer.android.com/training/basics/intents/package-visibility
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.media.action.VIDEO_CAPTURE" />
+        </intent>
+    </queries>
+
     <application>
         <provider
             android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"

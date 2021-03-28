@@ -1,4 +1,4 @@
-FROM cirrusci/flutter:stable
+FROM cirrusci/flutter:dev
 
 RUN sudo apt-get update -y
 
@@ -16,8 +16,8 @@ RUN sudo apt-get update && sudo apt-get install -y google-cloud-sdk && \
     gcloud config set component_manager/disable_update_check true
 
 RUN yes | sdkmanager \
-    "platforms;android-27" \
-    "build-tools;27.0.3" \
+    "platforms;android-30" \
+    "build-tools;30.0.3" \
     "extras;google;m2repository" \
     "extras;android;m2repository"
 
