@@ -3,6 +3,10 @@
 A Flutter plugin for in-app purchases. Exposes APIs for making in-app purchases
 through the App Store (on iOS) and Google Play (on Android).
 
+![The example app running in Android](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/doc/iap_android.gif?raw=true)
+
+![The example app running in iOS](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/doc/iap_ios.gif?raw=true)
+
 ## Features
 
 Add this to your Flutter app to:
