@@ -1,3 +1,7 @@
+## 2.0.2
+
+* iOS: Added the pattern support for polylines
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.
