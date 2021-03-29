@@ -9,7 +9,7 @@ Use it by specifying action, category, data and extra arguments for the intent.
 It does not support returning the result of the launched activity. Sample usage:
 
 ```dart
-if (platform.isAndroid) {
+if (Platform.isAndroid) {
   AndroidIntent intent = AndroidIntent(
       action: 'action_view',
       data: 'https://play.google.com/store/apps/details?'
@@ -33,7 +33,7 @@ for it in the plugin and use an action constant to refer to it. For instance:
 `'action_application_details_settings'` translates to `android.settings.ACTION_APPLICATION_DETAILS_SETTINGS`
 
 ```dart
-if (platform.isAndroid) {
+if (Platform.isAndroid) {
   final AndroidIntent intent = AndroidIntent(
     action: 'action_application_details_settings',
     data: 'package:com.example.app', // replace com.example.app with your applicationId
