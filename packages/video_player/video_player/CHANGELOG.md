@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Add `httpHeaders` option to `VideoPlayerController.network`
+
 ## 2.0.2
 
 * Fix `VideoPlayerValue` size and aspect ratio documentation

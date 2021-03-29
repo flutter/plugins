@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,6 +92,21 @@ void main() {
             ProcessCall('pub', <String>['global', 'run', 'tuneup', 'check'],
                 pluginDir.path),
           ]));
+    });
+
+    // See: https://github.com/flutter/flutter/issues/78994
+    test('takes an empty allow list', () async {
+      await createFakePlugin('foo', withExtraFiles: <List<String>>[
+        <String>['analysis_options.yaml']
+      ]);
+
+      final MockProcess mockProcess = MockProcess();
+      mockProcess.exitCodeCompleter.complete(0);
+      processRunner.processToReturn = mockProcess;
+
+      await expectLater(
+          () => runner.run(<String>['analyze', '--custom-analysis', '']),
+          throwsA(const TypeMatcher<ToolExit>()));
     });
   });
 }

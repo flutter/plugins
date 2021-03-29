@@ -71,7 +71,8 @@ below.
 
    - A consumable with product ID `consumable`
    - An upgrade with product ID `upgrade`
-   - An auto-renewing subscription with product ID `subscription`
+   - An auto-renewing subscription with product ID `subscription_silver`
+   - An non-renewing subscription with product ID `subscription_gold`
 
 2. In XCode, `File > Open File` `example/ios/Runner.xcworkspace`. Update the
    Bundle ID to match the Bundle ID of the app created in step #1.
@@ -81,8 +82,15 @@ below.
    in-app purchases with.
 
 4. Use `flutter run` to install the app and test it. Note that you need to test
-   it on a real device instead of a simulator, and signing into any production
-   service (including iTunes!) with the test account will permanently invalidate
-   it. Sign in to the test account in the example app following the steps in the
-   [*In-App Purchase Programming
-   Guide*](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Chapters/ShowUI.html#//apple_ref/doc/uid/TP40008267-CH3-SW11).
+   it on a real device instead of a simulator. Next click on one of the products
+   in the example App, this enables the "SANDBOX ACCOUNT" section in the iOS
+   settings. You will now be asked to sign in with your sandbox test account to
+   complete the purchase (no worries you won't be charged). If for some reason
+   you aren't asked to sign-in or the wrong user is listed, go into the iOS
+   settings ("Settings" -> "App Store" -> "SANDBOX ACCOUNT") and update your
+   sandbox account from there. This procedure is explained in great detail in
+   the [Testing In-App Purchases with Sandbox](https://developer.apple.com/documentation/storekit/in-app_purchase/testing_in-app_purchases_with_sandbox?language=objc) article.
+
+
+**Important:** signing into any production service (including iTunes!) with the
+sandbox test account will permanently invalidate it.

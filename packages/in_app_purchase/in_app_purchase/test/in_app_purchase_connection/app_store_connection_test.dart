@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -294,9 +294,16 @@ void main() {
   group('consume purchase', () {
     test('should throw when calling consume purchase on iOS', () async {
       expect(
-          () => AppStoreConnection.instance
-              .consumePurchase(PurchaseDetails.fromPurchase(dummyPurchase)),
-          throwsUnsupportedError);
+        () => AppStoreConnection.instance
+            .consumePurchase(PurchaseDetails.fromPurchase(dummyPurchase)),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (error) => error.message,
+            'message',
+            'consume purchase is not available on iOS',
+          ),
+        ),
+      );
     });
   });
 
