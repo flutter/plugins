@@ -13,7 +13,7 @@ typedef _g_application_get_default_dart = int Function();
 typedef _g_application_get_application_id_c = Pointer<Utf8> Function(IntPtr);
 typedef _g_application_get_application_id_dart = Pointer<Utf8> Function(int);
 
-// Gets the application ID set in GApplication.
+/// Gets the application ID for this app.
 String? getApplicationId() {
   DynamicLibrary gio;
   try {
