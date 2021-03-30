@@ -1,3 +1,8 @@
+## 0.7.4
+
+* Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
+  on some versions.
+
 ## 0.7.3
 
 * Endorse image_picker_for_web
