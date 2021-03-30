@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package io.flutter.plugins.camera;
 
 import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class DartMessenger {
+  @NonNull private final Handler handler;
   @Nullable private MethodChannel cameraChannel;
   @Nullable private MethodChannel deviceChannel;
 
@@ -41,9 +42,10 @@ class DartMessenger {
     }
   }
 
-  DartMessenger(BinaryMessenger messenger, long cameraId) {
+  DartMessenger(BinaryMessenger messenger, long cameraId, @NonNull Handler handler) {
     cameraChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/camera" + cameraId);
     deviceChannel = new MethodChannel(messenger, "flutter.io/cameraPlugin/device");
+    this.handler = handler;
   }
 
   void sendDeviceOrientationChangeEvent(PlatformChannel.DeviceOrientation orientation) {
@@ -106,14 +108,14 @@ class DartMessenger {
     if (cameraChannel == null) {
       return;
     }
-    new Handler(Looper.getMainLooper())
-        .post(
-            new Runnable() {
-              @Override
-              public void run() {
-                cameraChannel.invokeMethod(eventType.method, args);
-              }
-            });
+
+    handler.post(
+        new Runnable() {
+          @Override
+          public void run() {
+            cameraChannel.invokeMethod(eventType.method, args);
+          }
+        });
   }
 
   void send(DeviceEventType eventType) {
@@ -124,13 +126,13 @@ class DartMessenger {
     if (deviceChannel == null) {
       return;
     }
-    new Handler(Looper.getMainLooper())
-        .post(
-            new Runnable() {
-              @Override
-              public void run() {
-                deviceChannel.invokeMethod(eventType.method, args);
-              }
-            });
+
+    handler.post(
+        new Runnable() {
+          @Override
+          public void run() {
+            deviceChannel.invokeMethod(eventType.method, args);
+          }
+        });
   }
 }

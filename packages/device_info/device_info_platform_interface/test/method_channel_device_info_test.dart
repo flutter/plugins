@@ -1,9 +1,6 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-// TODO(cyanglaz): Remove once https://github.com/flutter/flutter/issues/59879 is fixed.
-// @dart = 2.9
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +11,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group("$MethodChannelDeviceInfo", () {
-    MethodChannelDeviceInfo methodChannelDeviceInfo;
+    late MethodChannelDeviceInfo methodChannelDeviceInfo;
 
     setUp(() async {
       methodChannelDeviceInfo = MethodChannelDeviceInfo();
@@ -162,7 +159,7 @@ void main() {
   group(
       "$MethodChannelDeviceInfo handles null value in the map returned from method channel",
       () {
-    MethodChannelDeviceInfo methodChannelDeviceInfo;
+    late MethodChannelDeviceInfo methodChannelDeviceInfo;
 
     setUp(() async {
       methodChannelDeviceInfo = MethodChannelDeviceInfo();
@@ -261,7 +258,7 @@ void main() {
   });
 
   group("$MethodChannelDeviceInfo handles method channel returns null", () {
-    MethodChannelDeviceInfo methodChannelDeviceInfo;
+    late MethodChannelDeviceInfo methodChannelDeviceInfo;
 
     setUp(() async {
       methodChannelDeviceInfo = MethodChannelDeviceInfo();
@@ -329,7 +326,7 @@ void main() {
   });
 
   group("$MethodChannelDeviceInfo android handles null values in list", () {
-    MethodChannelDeviceInfo methodChannelDeviceInfo;
+    late MethodChannelDeviceInfo methodChannelDeviceInfo;
 
     setUp(() async {
       methodChannelDeviceInfo = MethodChannelDeviceInfo();
@@ -339,9 +336,9 @@ void main() {
         switch (methodCall.method) {
           case 'getAndroidDeviceInfo':
             return ({
-              "supported32BitAbis": <String>["x86", null],
-              "supported64BitAbis": <String>["x86_64", null],
-              "supportedAbis": <String>["x86_64", "x86", null],
+              "supported32BitAbis": <String>["x86"],
+              "supported64BitAbis": <String>["x86_64"],
+              "supportedAbis": <String>["x86_64", "x86"],
               "systemFeatures": <String>[
                 "android.hardware.sensor.proximity",
                 "android.software.adoptable_storage",
@@ -349,7 +346,6 @@ void main() {
                 "android.hardware.faketouch",
                 "android.software.backup",
                 "android.hardware.touchscreen",
-                null
               ],
             });
           default:

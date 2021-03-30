@@ -1,4 +1,17 @@
-# integration_test
+# integration_test (deprecated)
+
+## DEPRECATED
+
+This package has been moved to the Flutter SDK. Starting with Flutter 2.0,
+it should be included as:
+
+```
+dev_dependencies:
+  integration_test:
+    sdk: flutter
+```
+
+## Old instructions
 
 This package enables self-driving testing of Flutter code on devices and emulators.
 It adapts flutter_test results into a format that is compatible with `flutter drive`

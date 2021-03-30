@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Update platform_plugin_interface version requirement.
+
 ## 2.0.0
 
 * Migrate to null safety.
@@ -12,7 +16,7 @@
 
 ## 1.0.5
 
-* Remove dart:io Platform checks from the MethodChannel implementation. This is 
+* Remove dart:io Platform checks from the MethodChannel implementation. This is
 tripping the analysis of other versions of the plugin.
 
 ## 1.0.4

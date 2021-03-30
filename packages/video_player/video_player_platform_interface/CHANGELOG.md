@@ -1,3 +1,7 @@
+## 4.1.0
+
+* Add `httpHeaders` to `DataSource`
+
 ## 4.0.0
 
 * **Breaking Changes**:

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,16 +14,18 @@ class DriveExamplesCommand extends PluginCommand {
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+    argParser.addFlag(kAndroid,
+        help: 'Runs the Android implementation of the examples');
+    argParser.addFlag(kIos,
+        help: 'Runs the iOS implementation of the examples');
     argParser.addFlag(kLinux,
         help: 'Runs the Linux implementation of the examples');
     argParser.addFlag(kMacos,
         help: 'Runs the macOS implementation of the examples');
+    argParser.addFlag(kWeb,
+        help: 'Runs the web implementation of the examples');
     argParser.addFlag(kWindows,
         help: 'Runs the Windows implementation of the examples');
-    argParser.addFlag(kIos,
-        help: 'Runs the iOS implementation of the examples');
-    argParser.addFlag(kAndroid,
-        help: 'Runs the Android implementation of the examples');
     argParser.addOption(
       kEnableExperiment,
       defaultsTo: '',
@@ -51,6 +53,7 @@ class DriveExamplesCommand extends PluginCommand {
     final List<String> failingTests = <String>[];
     final bool isLinux = argResults[kLinux];
     final bool isMacos = argResults[kMacos];
+    final bool isWeb = argResults[kWeb];
     final bool isWindows = argResults[kWindows];
     await for (Directory plugin in getPlugins()) {
       final String flutterCommand =
@@ -139,6 +142,14 @@ Tried searching for the following:
               'macos',
             ]);
           }
+          if (isWeb && isWebPlugin(plugin, fileSystem)) {
+            driveArgs.addAll(<String>[
+              '-d',
+              'web-server',
+              '--web-port=7357',
+              '--browser-name=chrome',
+            ]);
+          }
           if (isWindows && isWindowsPlugin(plugin, fileSystem)) {
             driveArgs.addAll(<String>[
               '-d',
@@ -180,25 +191,29 @@ Tried searching for the following:
 
   Future<bool> pluginSupportedOnCurrentPlatform(
       FileSystemEntity plugin, FileSystem fileSystem) async {
+    final bool isAndroid = argResults[kAndroid];
+    final bool isIOS = argResults[kIos];
     final bool isLinux = argResults[kLinux];
     final bool isMacos = argResults[kMacos];
+    final bool isWeb = argResults[kWeb];
     final bool isWindows = argResults[kWindows];
-    final bool isIOS = argResults[kIos];
-    final bool isAndroid = argResults[kAndroid];
+    if (isAndroid) {
+      return (isAndroidPlugin(plugin, fileSystem));
+    }
+    if (isIOS) {
+      return isIosPlugin(plugin, fileSystem);
+    }
     if (isLinux) {
       return isLinuxPlugin(plugin, fileSystem);
     }
     if (isMacos) {
       return isMacOsPlugin(plugin, fileSystem);
     }
+    if (isWeb) {
+      return isWebPlugin(plugin, fileSystem);
+    }
     if (isWindows) {
       return isWindowsPlugin(plugin, fileSystem);
-    }
-    if (isIOS) {
-      return isIosPlugin(plugin, fileSystem);
-    }
-    if (isAndroid) {
-      return (isAndroidPlugin(plugin, fileSystem));
     }
     // When we are here, no flags are specified. Only return true if the plugin
     // supports Android for legacy command support. TODO(cyanglaz): Make Android

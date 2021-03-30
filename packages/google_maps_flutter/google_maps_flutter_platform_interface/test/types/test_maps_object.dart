@@ -1,15 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:ui' show hashValues;
+
 import 'package:flutter/rendering.dart';
-import 'package:google_maps_flutter_platform_interface/src/types/maps_object_updates.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/maps_object.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/maps_object_updates.dart';
 
 /// A trivial TestMapsObject implementation for testing updates with.
 class TestMapsObject implements MapsObject {
-  TestMapsObject(this.mapsId, {this.data = 1});
+  const TestMapsObject(this.mapsId, {this.data = 1});
 
   final MapsObjectId<TestMapsObject> mapsId;
 

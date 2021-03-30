@@ -21,5 +21,10 @@ dependencies:
   http_multi_server: ^2.2.0
   collection: 1.14.13
 
+dev_dependencies:
+  matcher: ^0.12.6
+  mockito: ^4.1.1
+  pedantic: 1.8.0
+
 environment:
   sdk: ">=2.3.0 <3.0.0"

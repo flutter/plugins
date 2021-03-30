@@ -42,8 +42,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "68BDCAE823C3F7CB00D9C032"
-               BuildableName = "webview_flutter_exampleTests.xctest"
-               BlueprintName = "webview_flutter_exampleTests"
+               BuildableName = "RunnerUITests.xctest"
+               BlueprintName = "RunnerUITests"
                ReferencedContainer = "container:Runner.xcodeproj">
             </BuildableReference>
          </TestableReference>

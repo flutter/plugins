@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.videoplayer;
 
 import static com.google.android.exoplayer2.Player.REPEAT_MODE_ALL;
@@ -5,7 +9,6 @@ import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -62,6 +65,7 @@ final class VideoPlayer {
       TextureRegistry.SurfaceTextureEntry textureEntry,
       String dataSource,
       String formatHint,
+      Map<String, String> httpHeaders,
       VideoPlayerOptions options) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
@@ -73,13 +77,17 @@ final class VideoPlayer {
 
     DataSource.Factory dataSourceFactory;
     if (isHTTP(uri)) {
-      dataSourceFactory =
+      DefaultHttpDataSourceFactory httpDataSourceFactory =
           new DefaultHttpDataSourceFactory(
               "ExoPlayer",
               null,
               DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
               DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
               true);
+      if (httpHeaders != null && !httpHeaders.isEmpty()) {
+        httpDataSourceFactory.getDefaultRequestProperties().set(httpHeaders);
+      }
+      dataSourceFactory = httpDataSourceFactory;
     } else {
       dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
     }
@@ -222,12 +230,8 @@ final class VideoPlayer {
 
   @SuppressWarnings("deprecation")
   private static void setAudioAttributes(SimpleExoPlayer exoPlayer, boolean isMixMode) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      exoPlayer.setAudioAttributes(
-          new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(), !isMixMode);
-    } else {
-      exoPlayer.setAudioStreamType(C.STREAM_TYPE_MUSIC);
-    }
+    exoPlayer.setAudioAttributes(
+        new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(), !isMixMode);
   }
 
   void play() {

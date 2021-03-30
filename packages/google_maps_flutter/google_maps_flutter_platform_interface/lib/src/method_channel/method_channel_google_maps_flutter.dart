@@ -1,17 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
-
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:stream_transform/stream_transform.dart';
+
 import '../types/tile_overlay_updates.dart';
 import '../types/utils/tile_overlay.dart';
 
@@ -62,8 +62,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   // Keep a collection of mapId to a map of TileOverlays.
   final Map<int, Map<TileOverlayId, TileOverlay>> _tileOverlays = {};
 
-  @override
-  Future<void> init(int mapId) {
+  /// Returns the channel for [mapId], creating it if it doesn't already exist.
+  @visibleForTesting
+  MethodChannel ensureChannelInitialized(int mapId) {
     MethodChannel? channel = _channels[mapId];
     if (channel == null) {
       channel = MethodChannel('plugins.flutter.io/google_maps_$mapId');
@@ -71,6 +72,12 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
           (MethodCall call) => _handleMethodCall(call, mapId));
       _channels[mapId] = channel;
     }
+    return channel;
+  }
+
+  @override
+  Future<void> init(int mapId) {
+    MethodChannel channel = ensureChannelInitialized(mapId);
     return channel.invokeMethod<void>('map#waitForMap');
   }
 
@@ -414,18 +421,17 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   Future<bool> isMarkerInfoWindowShown(
     MarkerId markerId, {
     required int mapId,
-  }) {
+  }) async {
     assert(markerId != null);
-    return channel(mapId).invokeMethod<bool>('markers#isInfoWindowShown',
-        <String, String>{'markerId': markerId.value}) as Future<bool>;
+    return (await channel(mapId).invokeMethod<bool>('markers#isInfoWindowShown',
+        <String, String>{'markerId': markerId.value}))!;
   }
 
   @override
   Future<double> getZoomLevel({
     required int mapId,
-  }) {
-    return channel(mapId).invokeMethod<double>('map#getZoomLevel')
-        as Future<double>;
+  }) async {
+    return (await channel(mapId).invokeMethod<double>('map#getZoomLevel'))!;
   }
 
   @override

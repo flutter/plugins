@@ -6,10 +6,8 @@
 
 
 packages/camera/**                             @bparrishMines
-packages/cross_file/**                         @ditman @mvanbeusekom
 packages/file_selector/**                      @ditman
 packages/google_maps_flutter/**                @cyanglaz
 packages/image_picker/**                       @cyanglaz
-packages/integration_test/**                   @dnfield
 packages/in_app_purchase/**                    @cyanglaz @LHLL
 packages/ios_platform_images/**                @gaaclarke

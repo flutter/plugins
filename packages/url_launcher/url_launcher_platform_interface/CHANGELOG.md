@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Update platform_plugin_interface version requirement.
+
 ## 2.0.1
 
 * Fix SDK range.

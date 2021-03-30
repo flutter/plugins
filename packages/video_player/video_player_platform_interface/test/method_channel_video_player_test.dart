@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,8 +141,26 @@ void main() {
         formatHint: VideoFormat.dash,
       ));
       expect(log.log.last, 'create');
+      expect(log.createMessage?.asset, null);
       expect(log.createMessage?.uri, 'someUri');
+      expect(log.createMessage?.packageName, null);
       expect(log.createMessage?.formatHint, 'dash');
+      expect(log.createMessage?.httpHeaders, {});
+      expect(textureId, 3);
+    });
+
+    test('create with network (some headers)', () async {
+      final int? textureId = await player.create(DataSource(
+        sourceType: DataSourceType.network,
+        uri: 'someUri',
+        httpHeaders: {'Authorization': 'Bearer token'},
+      ));
+      expect(log.log.last, 'create');
+      expect(log.createMessage?.asset, null);
+      expect(log.createMessage?.uri, 'someUri');
+      expect(log.createMessage?.packageName, null);
+      expect(log.createMessage?.formatHint, null);
+      expect(log.createMessage?.httpHeaders, {'Authorization': 'Bearer token'});
       expect(textureId, 3);
     });
 

@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 /// Corresponds to constants defined in Androids `android.os.Environment` class.
 ///
 /// https://developer.android.com/reference/android/os/Environment.html#fields_1

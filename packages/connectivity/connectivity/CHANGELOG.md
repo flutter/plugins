@@ -1,3 +1,15 @@
+## 3.0.3
+
+* Re-endorse connectivity_for_web
+
+## 3.0.2
+
+* Update platform_plugin_interface version requirement.
+
+## 3.0.1
+
+* Migrate tests to null safety.
+
 ## 3.0.0
 
 * Migrate to null safety.

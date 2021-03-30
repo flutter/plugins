@@ -1,9 +1,13 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:html' as html show NetworkInformation;
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 
 /// Converts an incoming NetworkInformation object into the correct ConnectivityResult.
 ConnectivityResult networkInformationToConnectivityResult(
-  html.NetworkInformation info,
+  html.NetworkInformation? info,
 ) {
   if (info == null) {
     return ConnectivityResult.none;
@@ -12,10 +16,10 @@ ConnectivityResult networkInformationToConnectivityResult(
     return ConnectivityResult.none;
   }
   if (info.effectiveType != null) {
-    return _effectiveTypeToConnectivityResult(info.effectiveType);
+    return _effectiveTypeToConnectivityResult(info.effectiveType!);
   }
   if (info.type != null) {
-    return _typeToConnectivityResult(info.type);
+    return _typeToConnectivityResult(info.type!);
   }
   return ConnectivityResult.none;
 }

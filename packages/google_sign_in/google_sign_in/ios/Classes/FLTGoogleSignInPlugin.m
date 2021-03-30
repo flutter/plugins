@@ -1,6 +1,6 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #import "FLTGoogleSignInPlugin.h"
 #import <GoogleSignIn/GoogleSignIn.h>
@@ -77,7 +77,15 @@ static FlutterError *getFlutterError(NSError *error) {
                                                        ofType:@"plist"];
       if (path) {
         NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-        [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
+        BOOL hasDynamicClientId =
+            [[call.arguments valueForKey:@"clientId"] isKindOfClass:[NSString class]];
+
+        if (hasDynamicClientId) {
+          [GIDSignIn sharedInstance].clientID = [call.arguments valueForKey:@"clientId"];
+        } else {
+          [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
+        }
+
         [GIDSignIn sharedInstance].serverClientID = plist[kServerClientIdKey];
         [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
         [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];

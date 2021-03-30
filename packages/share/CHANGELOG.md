@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Migrate unit tests to sound null safety.
+
 ## 2.0.0
 
 * Migrate to null safety.
