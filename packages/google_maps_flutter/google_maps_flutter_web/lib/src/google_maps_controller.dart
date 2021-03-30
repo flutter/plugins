@@ -195,10 +195,14 @@ class GoogleMapController {
     // These controllers are either created in the constructor of this class, or
     // overriden (for testing) by the [debugSetOverrides] method. They can't be
     // null.
-    assert(_circlesController != null, 'Cannot attach a map to a null CirclesController instance.');
-    assert(_polygonsController != null, 'Cannot attach a map to a null PolygonsController instance.');
-    assert(_polylinesController != null, 'Cannot attach a map to a null PolylinesController instance.');
-    assert(_markersController != null, 'Cannot attach a map to a null MarkersController instance.');
+    assert(_circlesController != null,
+        'Cannot attach a map to a null CirclesController instance.');
+    assert(_polygonsController != null,
+        'Cannot attach a map to a null PolygonsController instance.');
+    assert(_polylinesController != null,
+        'Cannot attach a map to a null PolylinesController instance.');
+    assert(_markersController != null,
+        'Cannot attach a map to a null MarkersController instance.');
 
     _circlesController!.bindToMap(_mapId, map);
     _polygonsController!.bindToMap(_mapId, map);
@@ -277,26 +281,30 @@ class GoogleMapController {
     assert(_googleMap != null, 'Cannot get the visible region of a null map.');
 
     return _gmLatLngBoundsTolatLngBounds(
-        await _googleMap!.bounds ?? _nullGmapsLatLngBounds,
-        );
+      await _googleMap!.bounds ?? _nullGmapsLatLngBounds,
+    );
   }
 
   /// Returns the [ScreenCoordinate] for a given viewport [LatLng].
   Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
-    assert(_googleMap != null, 'Cannot get the screen coordinates with a null map.');
-    assert(_googleMap!.projection != null, 'Cannot compute screen coordinate with a null map or projection.');
+    assert(_googleMap != null,
+        'Cannot get the screen coordinates with a null map.');
+    assert(_googleMap!.projection != null,
+        'Cannot compute screen coordinate with a null map or projection.');
 
     final point =
         _googleMap!.projection!.fromLatLngToPoint!(_latLngToGmLatLng(latLng))!;
 
-    assert(point.x != null && point.y != null, 'The x and y of a ScreenCoordinate cannot be null.');
+    assert(point.x != null && point.y != null,
+        'The x and y of a ScreenCoordinate cannot be null.');
 
     return ScreenCoordinate(x: point.x!.toInt(), y: point.y!.toInt());
   }
 
   /// Returns the [LatLng] for a `screenCoordinate` (in pixels) of the viewport.
   Future<LatLng> getLatLng(ScreenCoordinate screenCoordinate) async {
-    assert(_googleMap != null, 'Cannot get the lat, lng of a screen coordinate with a null map.');
+    assert(_googleMap != null,
+        'Cannot get the lat, lng of a screen coordinate with a null map.');
 
     final gmaps.LatLng latLng =
         _pixelToLatLng(_googleMap!, screenCoordinate.x, screenCoordinate.y);
@@ -313,7 +321,8 @@ class GoogleMapController {
   /// Returns the zoom level of the current viewport.
   Future<double> getZoomLevel() async {
     assert(_googleMap != null, 'Cannot get zoom level of a null map.');
-    assert(_googleMap!.zoom != null, 'Zoom level should not be null. Is the map correctly initialized?');
+    assert(_googleMap!.zoom != null,
+        'Zoom level should not be null. Is the map correctly initialized?');
 
     return _googleMap!.zoom!.toDouble();
   }
@@ -322,7 +331,8 @@ class GoogleMapController {
 
   /// Applies [CircleUpdates] to the currently managed circles.
   void updateCircles(CircleUpdates updates) {
-    assert(_circlesController != null, 'Cannot update circles after dispose().');
+    assert(
+        _circlesController != null, 'Cannot update circles after dispose().');
     _circlesController?.addCircles(updates.circlesToAdd);
     _circlesController?.changeCircles(updates.circlesToChange);
     _circlesController?.removeCircles(updates.circleIdsToRemove);
@@ -330,7 +340,8 @@ class GoogleMapController {
 
   /// Applies [PolygonUpdates] to the currently managed polygons.
   void updatePolygons(PolygonUpdates updates) {
-    assert(_polygonsController != null, 'Cannot update polygons after dispose().');
+    assert(
+        _polygonsController != null, 'Cannot update polygons after dispose().');
     _polygonsController?.addPolygons(updates.polygonsToAdd);
     _polygonsController?.changePolygons(updates.polygonsToChange);
     _polygonsController?.removePolygons(updates.polygonIdsToRemove);
@@ -338,7 +349,8 @@ class GoogleMapController {
 
   /// Applies [PolylineUpdates] to the currently managed lines.
   void updatePolylines(PolylineUpdates updates) {
-    assert(_polylinesController != null, 'Cannot update polylines after dispose().');
+    assert(_polylinesController != null,
+        'Cannot update polylines after dispose().');
     _polylinesController?.addPolylines(updates.polylinesToAdd);
     _polylinesController?.changePolylines(updates.polylinesToChange);
     _polylinesController?.removePolylines(updates.polylineIdsToRemove);
@@ -346,7 +358,8 @@ class GoogleMapController {
 
   /// Applies [MarkerUpdates] to the currently managed markers.
   void updateMarkers(MarkerUpdates updates) {
-    assert(_markersController != null, 'Cannot update markers after dispose().');
+    assert(
+        _markersController != null, 'Cannot update markers after dispose().');
     _markersController?.addMarkers(updates.markersToAdd);
     _markersController?.changeMarkers(updates.markersToChange);
     _markersController?.removeMarkers(updates.markerIdsToRemove);
@@ -354,13 +367,15 @@ class GoogleMapController {
 
   /// Shows the [InfoWindow] of the marker identified by its [MarkerId].
   void showInfoWindow(MarkerId markerId) {
-    assert(_markersController != null, 'Cannot show infowindow of marker [${markerId.value}] after dispose().');
+    assert(_markersController != null,
+        'Cannot show infowindow of marker [${markerId.value}] after dispose().');
     _markersController?.showMarkerInfoWindow(markerId);
   }
 
   /// Hides the [InfoWindow] of the marker identified by its [MarkerId].
   void hideInfoWindow(MarkerId markerId) {
-    assert(_markersController != null, 'Cannot hide infowindow of marker [${markerId.value}] after dispose().');
+    assert(_markersController != null,
+        'Cannot hide infowindow of marker [${markerId.value}] after dispose().');
     _markersController?.hideMarkerInfoWindow(markerId);
   }
 

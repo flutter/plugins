@@ -47,14 +47,15 @@ void main() {
       Map<String, dynamic> options = const <String, dynamic>{},
     }) {
       return GoogleMapController(
-          mapId: mapId,
-          streamController: stream,
-          initialCameraPosition: initialCameraPosition,
-          markers: markers,
-          polygons: polygons,
-          polylines: polylines,
-          circles: circles,
-          mapOptions: options,);
+        mapId: mapId,
+        streamController: stream,
+        initialCameraPosition: initialCameraPosition,
+        markers: markers,
+        polygons: polygons,
+        polylines: polylines,
+        circles: circles,
+        mapOptions: options,
+      );
     }
 
     setUp(() {
@@ -102,7 +103,9 @@ void main() {
           controller.dispose();
 
           expect(() async {
-            await controller.getScreenCoordinate(LatLng(43.3072465,-5.6918241));
+            await controller.getScreenCoordinate(
+              LatLng(43.3072465, -5.6918241),
+            );
           }, throwsAssertionError);
         });
 
@@ -111,7 +114,9 @@ void main() {
           controller.dispose();
 
           expect(() async {
-            await controller.getLatLng(ScreenCoordinate(x: 640, y: 480));
+            await controller.getLatLng(
+              ScreenCoordinate(x: 640, y: 480),
+            );
           }, throwsAssertionError);
         });
 
@@ -177,12 +182,11 @@ void main() {
           }, throwsAssertionError);
         });
 
-        testWidgets('isInfoWindowShown defaults to false', (WidgetTester tester) async {
+        testWidgets('isInfoWindowShown defaults to false',
+            (WidgetTester tester) async {
           controller.dispose();
 
-          expect(
-            controller.isInfoWindowShown(MarkerId('any'))
-          , false);
+          expect(controller.isInfoWindowShown(MarkerId('any')), false);
         });
       });
     });
