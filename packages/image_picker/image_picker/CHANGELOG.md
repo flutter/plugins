@@ -1,3 +1,7 @@
+## 0.7.4
+
+* Fix [#78625](https://github.com/flutter/flutter/issues/78625)
+
 ## 0.7.3
 
 * Endorse image_picker_for_web
