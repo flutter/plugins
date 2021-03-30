@@ -60,6 +60,20 @@ below.
 
 ### iOS
 
+When using Xcode 12 and iOS 14 or higher you can run the example in the simulator or real device
+without having to configure an App in App Store Connect. The example app is set up to use
+StoreKit Testing configured in the `example/ios/Runner/Configuration.storekit` file (as documented in the
+article [Setting Up StoreKit Testing in Xcode](https://developer.apple.com/documentation/xcode/setting_up_storekit_testing_in_xcode?language=objc)).
+To run the application take the following steps (note that it will only work when running from Xcode):
+
+1. Open the example app with Xcode, `File > Open File` `example/ios/Runner.xcworkspace`;
+
+2. Select the device you want to run the example App on;
+
+3. Run the application using `Product > Run` (or hit the run button).
+
+When testing on pre-iOS 14 you will need to take the following steps:
+
 1. Follow ["Workflow for configuring in-app
    purchases"](https://help.apple.com/app-store-connect/#/devb57be10e7), a
    detailed guide on all the steps needed to enable IAPs for an app. Complete
