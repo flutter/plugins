@@ -94,7 +94,7 @@ class _MyAppState extends State<MyApp> {
     final Stream purchaseUpdates =
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
     _subscription = purchaseUpdates.listen((purchases) {
-      _handlePurchaseUpdates(purchases);
+      _listenToPurchaseUpdated(purchases);
     });
     super.initState();
   }
@@ -168,7 +168,7 @@ You should always start listening to purchase update as early as possible to be 
 to catch all purchase updates, including the ones from the previous app session.
 To listen to the update:
 ***[PENDING: We already showed code like this above (except the handler was called
-`_handlePurchaseUpdates`). Copy this up there and remove from here?]***
+`_listenToPurchaseUpdated`). Copy this up there and remove from here?]***
 
 ```dart
   Stream purchaseUpdated =
@@ -236,7 +236,7 @@ After delivering the content to the user, call
 `InAppPurchaseConnection.completePurchase` to tell the App Store and
 Google Play that the purchase has been finished.
 
-> **Warning:** Failure to call `InAppPurchaseConnection.completePurchase` and 
+> **Warning:** Failure to call `InAppPurchaseConnection.completePurchase` and
 > get a successful response within 3 days of the purchase will result a refund.
 
 ### Upgrading or downgrading an existing in-app subscription
