@@ -139,7 +139,7 @@ void main() {
 
   testWidgets("Can't go back before loading a page",
       (WidgetTester tester) async {
-        WebViewController? controller;
+    WebViewController? controller;
     await _pumpWebView(
       tester,
       WebView(
