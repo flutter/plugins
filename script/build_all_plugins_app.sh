@@ -59,7 +59,7 @@ fi
 
 for version in "${BUILD_MODES[@]}"; do
   echo "Building $version..."
-  (cd $REPO_DIR/all_plugins && flutter build $@ --$version)
+  (cd $REPO_DIR/all_plugins && flutter build $@ --$version --no-sound-null-safety)
 
   if [ $? -eq 0 ]; then
     echo "Successfully built $version all_plugins app."
