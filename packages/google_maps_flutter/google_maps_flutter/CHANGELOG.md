@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Fix incorrect typecast in TileOverlay example.
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.
