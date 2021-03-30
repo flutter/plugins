@@ -1,3 +1,8 @@
+## 2.0.2
+
+* Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
+  on some versions.
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.
