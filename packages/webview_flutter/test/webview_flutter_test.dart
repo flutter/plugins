@@ -215,7 +215,7 @@ void main() {
 
   testWidgets("Can't go forward before loading a page",
       (WidgetTester tester) async {
-        WebViewController? controller;
+    WebViewController? controller;
     await _pumpWebView(
       tester,
       WebView(
@@ -398,7 +398,7 @@ void main() {
 
   testWidgets('evaluate Javascript with JavascriptMode disabled',
       (WidgetTester tester) async {
-        late WebViewController controller;
+    late WebViewController controller;
     await _pumpWebView(
       tester,
       WebView(
