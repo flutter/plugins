@@ -29,68 +29,6 @@ import java.io.File;
 public class ImagePickerPlugin
     implements MethodChannel.MethodCallHandler, FlutterPlugin, ActivityAware {
 
-  private class LifeCycleObserver
-      implements Application.ActivityLifecycleCallbacks, DefaultLifecycleObserver {
-    private final Activity thisActivity;
-
-    LifeCycleObserver(Activity activity) {
-      this.thisActivity = activity;
-    }
-
-    @Override
-    public void onCreate(@NonNull LifecycleOwner owner) {}
-
-    @Override
-    public void onStart(@NonNull LifecycleOwner owner) {}
-
-    @Override
-    public void onResume(@NonNull LifecycleOwner owner) {}
-
-    @Override
-    public void onPause(@NonNull LifecycleOwner owner) {}
-
-    @Override
-    public void onStop(@NonNull LifecycleOwner owner) {
-      onActivityStopped(thisActivity);
-    }
-
-    @Override
-    public void onDestroy(@NonNull LifecycleOwner owner) {
-      onActivityDestroyed(thisActivity);
-    }
-
-    @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
-
-    @Override
-    public void onActivityStarted(Activity activity) {}
-
-    @Override
-    public void onActivityResumed(Activity activity) {}
-
-    @Override
-    public void onActivityPaused(Activity activity) {}
-
-    @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
-
-    @Override
-    public void onActivityDestroyed(Activity activity) {
-      if (thisActivity == activity && activity.getApplicationContext() != null) {
-        ((Application) activity.getApplicationContext())
-            .unregisterActivityLifecycleCallbacks(
-                this); // Use getApplicationContext() to avoid casting failures
-      }
-    }
-
-    @Override
-    public void onActivityStopped(Activity activity) {
-      if (thisActivity == activity) {
-        delegate.saveStateBeforeResult();
-      }
-    }
-  }
-
   static final String METHOD_CALL_IMAGE = "pickImage";
   static final String METHOD_CALL_VIDEO = "pickVideo";
   private static final String METHOD_CALL_RETRIEVE = "retrieve";
@@ -109,7 +47,8 @@ public class ImagePickerPlugin
   private Activity activity;
   // This is null when not using v2 embedding;
   private Lifecycle lifecycle;
-  private LifeCycleObserver observer;
+  private DefaultLifecycleObserver observer;
+  private Application.ActivityLifecycleCallbacks lifecycleCallbacks;
 
   @SuppressWarnings("deprecation")
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
@@ -188,10 +127,69 @@ public class ImagePickerPlugin
     this.delegate = constructDelegate(activity);
     channel = new MethodChannel(messenger, CHANNEL);
     channel.setMethodCallHandler(this);
-    observer = new LifeCycleObserver(activity);
+
+    lifecycleCallbacks =
+        new Application.ActivityLifecycleCallbacks() {
+          @Override
+          public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+
+          @Override
+          public void onActivityStarted(Activity activity) {}
+
+          @Override
+          public void onActivityResumed(Activity activity) {}
+
+          @Override
+          public void onActivityPaused(Activity activity) {}
+
+          @Override
+          public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+
+          @Override
+          public void onActivityDestroyed(Activity currActivity) {
+            if (activity == currActivity && currActivity.getApplicationContext() != null) {
+              ((Application) currActivity.getApplicationContext())
+                  .unregisterActivityLifecycleCallbacks(
+                      this); // Use getApplicationContext() to avoid casting failures
+            }
+          }
+
+          @Override
+          public void onActivityStopped(Activity currActivity) {
+            if (activity == currActivity) {
+              delegate.saveStateBeforeResult();
+            }
+          }
+        };
+
+    observer =
+        new DefaultLifecycleObserver() {
+          @Override
+          public void onCreate(@NonNull LifecycleOwner owner) {}
+
+          @Override
+          public void onStart(@NonNull LifecycleOwner owner) {}
+
+          @Override
+          public void onResume(@NonNull LifecycleOwner owner) {}
+
+          @Override
+          public void onPause(@NonNull LifecycleOwner owner) {}
+
+          @Override
+          public void onStop(@NonNull LifecycleOwner owner) {
+            lifecycleCallbacks.onActivityStopped(activity);
+          }
+
+          @Override
+          public void onDestroy(@NonNull LifecycleOwner owner) {
+            lifecycleCallbacks.onActivityDestroyed(activity);
+          }
+        };
+
     if (registrar != null) {
       // V1 embedding setup for activity listeners.
-      application.registerActivityLifecycleCallbacks(observer);
+      application.registerActivityLifecycleCallbacks(lifecycleCallbacks);
       registrar.addActivityResultListener(delegate);
       registrar.addRequestPermissionsResultListener(delegate);
     } else {
@@ -212,7 +210,7 @@ public class ImagePickerPlugin
     delegate = null;
     channel.setMethodCallHandler(null);
     channel = null;
-    application.unregisterActivityLifecycleCallbacks(observer);
+    application.unregisterActivityLifecycleCallbacks(lifecycleCallbacks);
     application = null;
   }
 
