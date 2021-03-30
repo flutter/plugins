@@ -288,8 +288,6 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
         const <Factory<OneSequenceGestureRecognizer>>{},
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {
-    assert(creationId != null,
-        'buildView needs a `_webOnlyMapCreationId` in its creationParams to prevent widget reloads in web.');
 
     // Bail fast if we've already rendered this map ID...
     if (_mapById[creationId]?.widget != null) {
@@ -313,6 +311,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     _mapById[creationId] = mapController;
 
     onPlatformViewCreated.call(creationId);
+
+    assert(mapController.widget != null, 'The widget of a GoogleMapController cannot be null before calling dispose on it.');
 
     return mapController.widget!;
   }

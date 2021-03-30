@@ -44,7 +44,7 @@ void main() {
       Set<Polygon> polygons = const <Polygon>{},
       Set<Polyline> polylines = const <Polyline>{},
       Set<Circle> circles = const <Circle>{},
-      Map<String, dynamic>? options,
+      Map<String, dynamic> options = const <String, dynamic>{},
     }) {
       return GoogleMapController(
           mapId: mapId,
@@ -54,7 +54,7 @@ void main() {
           polygons: polygons,
           polylines: polylines,
           circles: circles,
-          mapOptions: options ?? <String, dynamic>{});
+          mapOptions: options,);
     }
 
     setUp(() {

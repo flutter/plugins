@@ -14,20 +14,26 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  late Completer<bool> _called;
-  late Future<bool> called;
+  // Since onTap/DragEnd events happen asynchronously, we need to store when the event
+  // is fired. We use a completer so the test can wait for the future to be completed.
+  late Completer<bool> _methodCalledCompleter;
+
+  /// This is the future value of the [_methodCalledCompleter]. Reinitialized
+  /// in the [setUp] method, and completed (as `true`) by [onTap] and [onDragEnd]
+  /// when those methods are called from the MarkerController.
+  late Future<bool> methodCalled;
 
   void onTap() {
-    _called.complete(true);
+    _methodCalledCompleter.complete(true);
   }
 
   void onDragEnd(gmaps.LatLng _) {
-    _called.complete(true);
+    _methodCalledCompleter.complete(true);
   }
 
   setUp(() {
-    _called = Completer();
-    called = _called.future;
+    _methodCalledCompleter = Completer();
+    methodCalled = _methodCalledCompleter.future;
   });
 
   group('MarkerController', () {
@@ -44,7 +50,7 @@ void main() {
       gmaps.Event.trigger(marker, 'click', [gmaps.MapMouseEvent()]);
 
       // The event handling is now truly async. Wait for it...
-      expect(await called, isTrue);
+      expect(await methodCalled, isTrue);
     });
 
     testWidgets('onDragEnd gets called', (WidgetTester tester) async {
@@ -54,7 +60,7 @@ void main() {
       gmaps.Event.trigger(marker, 'dragend',
           [gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)]);
 
-      expect(await called, isTrue);
+      expect(await methodCalled, isTrue);
     });
 
     testWidgets('update', (WidgetTester tester) async {
@@ -111,17 +117,20 @@ void main() {
         final map = gmaps.GMap(html.DivElement());
         marker.set('map', map);
         controller = MarkerController(marker: marker, infoWindow: infoWindow);
-
-        controller.remove();
       });
 
       testWidgets('drops gmaps instance', (WidgetTester tester) async {
+        controller.remove();
+
         expect(controller.marker, isNull);
       });
 
       testWidgets('cannot call update after remove',
           (WidgetTester tester) async {
         final options = gmaps.MarkerOptions()..draggable = true;
+
+        controller.remove();
+
         expect(() {
           controller.update(options);
         }, throwsAssertionError);
@@ -129,6 +138,8 @@ void main() {
 
       testWidgets('cannot call showInfoWindow after remove',
           (WidgetTester tester) async {
+        controller.remove();
+
         expect(() {
           controller.showInfoWindow();
         }, throwsAssertionError);
@@ -136,6 +147,8 @@ void main() {
 
       testWidgets('cannot call hideInfoWindow after remove',
           (WidgetTester tester) async {
+        controller.remove();
+
         expect(() {
           controller.hideInfoWindow();
         }, throwsAssertionError);

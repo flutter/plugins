@@ -25,14 +25,14 @@ class MarkerController {
         _infoWindow = infoWindow,
         _consumeTapEvents = consumeTapEvents {
     if (onTap != null) {
-      _marker!.onClick.listen((event) {
+      marker.onClick.listen((event) {
         onTap.call();
       });
     }
     if (onDragEnd != null) {
-      _marker!.onDragend.listen((event) {
-        if (_marker != null) {
-          _marker!.position = event.latLng;
+      marker.onDragend.listen((event) {
+        if (marker != null) {
+          marker.position = event.latLng;
         }
         onDragEnd.call(event.latLng ?? _nullGmapsLatLng);
       });

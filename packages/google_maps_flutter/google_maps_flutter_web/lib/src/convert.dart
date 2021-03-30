@@ -177,11 +177,12 @@ CameraPosition _gmViewportToCameraPosition(gmaps.GMap map) {
 // Marker.fromMarker(anotherMarker, moreOptions);
 
 gmaps.InfoWindowOptions? _infoWindowOptionsFromMarker(Marker marker) {
-  final markerTitle = marker.infoWindow.title;
-  final markerSnippet = marker.infoWindow.snippet;
+  final markerTitle = marker.infoWindow.title ?? '';
+  final markerSnippet = marker.infoWindow.snippet ?? '';
 
-  // If both the title and the snippet are null or empty, bail out...
-  if ((markerTitle?.isEmpty ?? true) && (markerSnippet?.isEmpty ?? true)) {
+  // If both the title and snippet of an infowindow are empty, we don't really
+  // want an infowindow...
+  if ((markerTitle.isEmpty) && (markerSnippet.isEmpty)) {
     return null;
   }
 
@@ -190,13 +191,13 @@ gmaps.InfoWindowOptions? _infoWindowOptionsFromMarker(Marker marker) {
   final HtmlElement container = DivElement()
     ..id = 'gmaps-marker-${marker.markerId.value}-infowindow';
 
-  if (markerTitle != null && markerTitle.isNotEmpty) {
+  if (markerTitle.isNotEmpty) {
     final HtmlElement title = HeadingElement.h3()
       ..className = 'infowindow-title'
       ..innerText = markerTitle;
     container.children.add(title);
   }
-  if (markerSnippet != null && markerSnippet.isNotEmpty) {
+  if (markerSnippet.isNotEmpty) {
     final HtmlElement snippet = DivElement()
       ..className = 'infowindow-snippet'
       ..setInnerHtml(
@@ -433,7 +434,7 @@ gmaps.LatLng _pixelToLatLng(gmaps.GMap map, int x, int y) {
   final topRight = projection!.fromLatLngToPoint!(ne)!;
   final bottomLeft = projection.fromLatLngToPoint!(sw)!;
 
-  final scale = 1 << (zoom! as int); // 2 ^ zoom
+  final scale = 1 << (zoom!.toInt()); // 2 ^ zoom
 
   final point =
       gmaps.Point((x / scale) + bottomLeft.x!, (y / scale) + topRight.y!);
