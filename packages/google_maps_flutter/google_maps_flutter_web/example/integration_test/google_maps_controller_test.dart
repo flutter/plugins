@@ -79,11 +79,111 @@ void main() {
         expect(identical(first, again), isTrue);
       });
 
-      testWidgets('dispose closes the stream and removes the widget',
-          (WidgetTester tester) async {
-        controller.dispose();
-        expect(stream.isClosed, isTrue);
-        expect(controller.widget, isNull);
+      group('dispose', () {
+        testWidgets('closes the stream and removes the widget',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(stream.isClosed, isTrue);
+          expect(controller.widget, isNull);
+        });
+
+        testWidgets('cannot call getVisibleRegion after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() async {
+            await controller.getVisibleRegion();
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot call getScreenCoordinate after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() async {
+            await controller.getScreenCoordinate(LatLng(43.3072465,-5.6918241));
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot call getLatLng after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() async {
+            await controller.getLatLng(ScreenCoordinate(x: 640, y: 480));
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot call moveCamera after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() async {
+            await controller.moveCamera(CameraUpdate.zoomIn());
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot call getZoomLevel after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() async {
+            await controller.getZoomLevel();
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot updateCircles after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() {
+            controller.updateCircles(CircleUpdates.from({}, {}));
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot updatePolygons after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() {
+            controller.updatePolygons(PolygonUpdates.from({}, {}));
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot updatePolylines after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() {
+            controller.updatePolylines(PolylineUpdates.from({}, {}));
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot updateMarkers after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() {
+            controller.updateMarkers(MarkerUpdates.from({}, {}));
+          }, throwsAssertionError);
+
+          expect(() {
+            controller.showInfoWindow(MarkerId('any'));
+          }, throwsAssertionError);
+
+          expect(() {
+            controller.hideInfoWindow(MarkerId('any'));
+          }, throwsAssertionError);
+        });
+
+        testWidgets('isInfoWindowShown defaults to false', (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(
+            controller.isInfoWindowShown(MarkerId('any'))
+          , false);
+        });
       });
     });
 
