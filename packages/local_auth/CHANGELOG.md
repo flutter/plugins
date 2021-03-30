@@ -1,6 +1,7 @@
 * Migrate to null safety.
 * Allow pin, passcode, and pattern authentication with `authenticate` method.
 * Fix incorrect error handling switch case fallthrough.
+* Fix crash on biometric lockout
 * Update README for Android Integration.
 * Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276)).
