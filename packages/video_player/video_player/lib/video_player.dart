@@ -269,6 +269,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   @visibleForTesting
   int get textureId => _textureId;
 
+  /// This value can be used to check if the [VideoPlayerController] is disposed or not
+  bool get isDisposed => _isDisposed;
+
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
     _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
