@@ -36,12 +36,13 @@ void main() {
   });
 
   testWidgets('Create WebView', (WidgetTester tester) async {
-    await tester.pumpWidget(const WebView());
+    await _pumpWebView(tester, const WebView());
   });
 
   testWidgets('Initial url', (WidgetTester tester) async {
     late WebViewController controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://youtube.com',
         onWebViewCreated: (WebViewController webViewController) {
@@ -54,26 +55,31 @@ void main() {
   });
 
   testWidgets('Javascript mode', (WidgetTester tester) async {
-    await tester.pumpWidget(const WebView(
-      initialUrl: 'https://youtube.com',
-      javascriptMode: JavascriptMode.unrestricted,
-    ));
+    await _pumpWebView(
+        tester,
+        const WebView(
+          initialUrl: 'https://youtube.com',
+          javascriptMode: JavascriptMode.unrestricted,
+        ));
 
     final FakePlatformWebView platformWebView =
         fakePlatformViewsController.lastCreatedView!;
 
     expect(platformWebView.javascriptMode, JavascriptMode.unrestricted);
 
-    await tester.pumpWidget(const WebView(
-      initialUrl: 'https://youtube.com',
-      javascriptMode: JavascriptMode.disabled,
-    ));
+    await _pumpWebView(
+        tester,
+        const WebView(
+          initialUrl: 'https://youtube.com',
+          javascriptMode: JavascriptMode.disabled,
+        ));
     expect(platformWebView.javascriptMode, JavascriptMode.disabled);
   });
 
   testWidgets('Load url', (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
@@ -90,7 +96,8 @@ void main() {
 
   testWidgets('Invalid urls', (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
@@ -112,7 +119,8 @@ void main() {
 
   testWidgets('Headers in loadUrl', (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
@@ -131,8 +139,9 @@ void main() {
 
   testWidgets("Can't go back before loading a page",
       (WidgetTester tester) async {
-    WebViewController? controller;
-    await tester.pumpWidget(
+        WebViewController? controller;
+    await _pumpWebView(
+      tester,
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
@@ -149,7 +158,8 @@ void main() {
 
   testWidgets("Clear Cache", (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
@@ -167,7 +177,8 @@ void main() {
 
   testWidgets("Can't go back with no history", (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://flutter.io',
         onWebViewCreated: (WebViewController webViewController) {
@@ -184,7 +195,8 @@ void main() {
 
   testWidgets('Can go back', (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://flutter.io',
         onWebViewCreated: (WebViewController webViewController) {
@@ -203,8 +215,9 @@ void main() {
 
   testWidgets("Can't go forward before loading a page",
       (WidgetTester tester) async {
-    WebViewController? controller;
-    await tester.pumpWidget(
+        WebViewController? controller;
+    await _pumpWebView(
+      tester,
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
@@ -221,7 +234,8 @@ void main() {
 
   testWidgets("Can't go forward with no history", (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://flutter.io',
         onWebViewCreated: (WebViewController webViewController) {
@@ -238,7 +252,8 @@ void main() {
 
   testWidgets('Can go forward', (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://flutter.io',
         onWebViewCreated: (WebViewController webViewController) {
@@ -258,7 +273,8 @@ void main() {
 
   testWidgets('Go back', (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://youtube.com',
         onWebViewCreated: (WebViewController webViewController) {
@@ -282,7 +298,8 @@ void main() {
 
   testWidgets('Go forward', (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://youtube.com',
         onWebViewCreated: (WebViewController webViewController) {
@@ -310,7 +327,8 @@ void main() {
 
   testWidgets('Current URL', (WidgetTester tester) async {
     WebViewController? controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
@@ -335,7 +353,8 @@ void main() {
 
   testWidgets('Reload url', (WidgetTester tester) async {
     late WebViewController controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://flutter.io',
         onWebViewCreated: (WebViewController webViewController) {
@@ -362,7 +381,8 @@ void main() {
 
   testWidgets('evaluate Javascript', (WidgetTester tester) async {
     late WebViewController controller;
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://flutter.io',
         javascriptMode: JavascriptMode.unrestricted,
@@ -378,8 +398,9 @@ void main() {
 
   testWidgets('evaluate Javascript with JavascriptMode disabled',
       (WidgetTester tester) async {
-    late WebViewController controller;
-    await tester.pumpWidget(
+        late WebViewController controller;
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://flutter.io',
         javascriptMode: JavascriptMode.disabled,
@@ -395,7 +416,8 @@ void main() {
   });
 
   testWidgets('Cookies can be cleared once', (WidgetTester tester) async {
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       const WebView(
         initialUrl: 'https://flutter.io',
       ),
@@ -407,7 +429,8 @@ void main() {
 
   testWidgets('Second cookie clear does not have cookies',
       (WidgetTester tester) async {
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       const WebView(
         initialUrl: 'https://flutter.io',
       ),
@@ -420,7 +443,8 @@ void main() {
   });
 
   testWidgets('Initial JavaScript channels', (WidgetTester tester) async {
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>{
@@ -458,7 +482,8 @@ void main() {
 
   testWidgets('Unique JavaScript channel names are required',
       (WidgetTester tester) async {
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>{
@@ -473,7 +498,8 @@ void main() {
   });
 
   testWidgets('JavaScript channels update', (WidgetTester tester) async {
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>{
@@ -485,7 +511,8 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>{
@@ -512,7 +539,8 @@ void main() {
     // updating it again with a subset of the previously registered channels fails as the
     // widget's cache of current channel wasn't properly updated when updating javascriptChannels to
     // null.
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>{
@@ -522,13 +550,15 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       const WebView(
         initialUrl: 'https://youtube.com',
       ),
     );
 
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>{
@@ -548,7 +578,8 @@ void main() {
   testWidgets('JavaScript channel messages', (WidgetTester tester) async {
     final List<String> ttsMessagesReceived = <String>[];
     final List<String> alarmMessagesReceived = <String>[];
-    await tester.pumpWidget(
+    await _pumpWebView(
+      tester,
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>{
@@ -582,12 +613,14 @@ void main() {
     testWidgets('onPageStarted is not null', (WidgetTester tester) async {
       String? returnedUrl;
 
-      await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
-        onPageStarted: (String url) {
-          returnedUrl = url;
-        },
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            initialUrl: 'https://youtube.com',
+            onPageStarted: (String url) {
+              returnedUrl = url;
+            },
+          ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -598,10 +631,12 @@ void main() {
     });
 
     testWidgets('onPageStarted is null', (WidgetTester tester) async {
-      await tester.pumpWidget(const WebView(
-        initialUrl: 'https://youtube.com',
-        onPageStarted: null,
-      ));
+      await _pumpWebView(
+          tester,
+          const WebView(
+            initialUrl: 'https://youtube.com',
+            onPageStarted: null,
+          ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -614,17 +649,21 @@ void main() {
     testWidgets('onPageStarted changed', (WidgetTester tester) async {
       String? returnedUrl;
 
-      await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
-        onPageStarted: (String url) {},
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            initialUrl: 'https://youtube.com',
+            onPageStarted: (String url) {},
+          ));
 
-      await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
-        onPageStarted: (String url) {
-          returnedUrl = url;
-        },
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            initialUrl: 'https://youtube.com',
+            onPageStarted: (String url) {
+              returnedUrl = url;
+            },
+          ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -639,12 +678,14 @@ void main() {
     testWidgets('onPageFinished is not null', (WidgetTester tester) async {
       String? returnedUrl;
 
-      await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
-        onPageFinished: (String url) {
-          returnedUrl = url;
-        },
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            initialUrl: 'https://youtube.com',
+            onPageFinished: (String url) {
+              returnedUrl = url;
+            },
+          ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -655,10 +696,12 @@ void main() {
     });
 
     testWidgets('onPageFinished is null', (WidgetTester tester) async {
-      await tester.pumpWidget(const WebView(
-        initialUrl: 'https://youtube.com',
-        onPageFinished: null,
-      ));
+      await _pumpWebView(
+          tester,
+          const WebView(
+            initialUrl: 'https://youtube.com',
+            onPageFinished: null,
+          ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -671,17 +714,21 @@ void main() {
     testWidgets('onPageFinished changed', (WidgetTester tester) async {
       String? returnedUrl;
 
-      await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
-        onPageFinished: (String url) {},
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            initialUrl: 'https://youtube.com',
+            onPageFinished: (String url) {},
+          ));
 
-      await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
-        onPageFinished: (String url) {
-          returnedUrl = url;
-        },
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            initialUrl: 'https://youtube.com',
+            onPageFinished: (String url) {
+              returnedUrl = url;
+            },
+          ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -696,12 +743,14 @@ void main() {
     testWidgets('onLoadingProgress is not null', (WidgetTester tester) async {
       int? loadingProgress;
 
-      await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
-        onProgress: (int progress) {
-          loadingProgress = progress;
-        },
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            initialUrl: 'https://youtube.com',
+            onProgress: (int progress) {
+              loadingProgress = progress;
+            },
+          ));
 
       final FakePlatformWebView? platformWebView =
           fakePlatformViewsController.lastCreatedView;
@@ -712,10 +761,12 @@ void main() {
     });
 
     testWidgets('onLoadingProgress is null', (WidgetTester tester) async {
-      await tester.pumpWidget(const WebView(
-        initialUrl: 'https://youtube.com',
-        onProgress: null,
-      ));
+      await _pumpWebView(
+          tester,
+          const WebView(
+            initialUrl: 'https://youtube.com',
+            onProgress: null,
+          ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -727,17 +778,21 @@ void main() {
     testWidgets('onLoadingProgress changed', (WidgetTester tester) async {
       int? loadingProgress;
 
-      await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
-        onProgress: (int progress) {},
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            initialUrl: 'https://youtube.com',
+            onProgress: (int progress) {},
+          ));
 
-      await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
-        onProgress: (int progress) {
-          loadingProgress = progress;
-        },
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            initialUrl: 'https://youtube.com',
+            onProgress: (int progress) {
+              loadingProgress = progress;
+            },
+          ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -750,20 +805,24 @@ void main() {
 
   group('navigationDelegate', () {
     testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
-      await tester.pumpWidget(const WebView(
-        initialUrl: 'https://youtube.com',
-      ));
+      await _pumpWebView(
+          tester,
+          const WebView(
+            initialUrl: 'https://youtube.com',
+          ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
       expect(platformWebView.hasNavigationDelegate, false);
 
-      await tester.pumpWidget(WebView(
-        initialUrl: 'https://youtube.com',
-        navigationDelegate: (NavigationRequest r) =>
-            NavigationDecision.navigate,
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            initialUrl: 'https://youtube.com',
+            navigationDelegate: (NavigationRequest r) =>
+                NavigationDecision.navigate,
+          ));
 
       expect(platformWebView.hasNavigationDelegate, true);
     });
@@ -771,15 +830,17 @@ void main() {
     testWidgets('Block navigation', (WidgetTester tester) async {
       final List<NavigationRequest> navigationRequests = <NavigationRequest>[];
 
-      await tester.pumpWidget(WebView(
-          initialUrl: 'https://youtube.com',
-          navigationDelegate: (NavigationRequest request) {
-            navigationRequests.add(request);
-            // Only allow navigating to https://flutter.dev
-            return request.url == 'https://flutter.dev'
-                ? NavigationDecision.navigate
-                : NavigationDecision.prevent;
-          }));
+      await _pumpWebView(
+          tester,
+          WebView(
+              initialUrl: 'https://youtube.com',
+              navigationDelegate: (NavigationRequest request) {
+                navigationRequests.add(request);
+                // Only allow navigating to https://flutter.dev
+                return request.url == 'https://flutter.dev'
+                    ? NavigationDecision.navigate
+                    : NavigationDecision.prevent;
+              }));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -802,9 +863,11 @@ void main() {
 
   group('debuggingEnabled', () {
     testWidgets('enable debugging', (WidgetTester tester) async {
-      await tester.pumpWidget(const WebView(
-        debuggingEnabled: true,
-      ));
+      await _pumpWebView(
+          tester,
+          const WebView(
+            debuggingEnabled: true,
+          ));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -813,7 +876,7 @@ void main() {
     });
 
     testWidgets('defaults to false', (WidgetTester tester) async {
-      await tester.pumpWidget(const WebView());
+      await _pumpWebView(tester, const WebView());
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
@@ -823,22 +886,26 @@ void main() {
 
     testWidgets('can be changed', (WidgetTester tester) async {
       final GlobalKey key = GlobalKey();
-      await tester.pumpWidget(WebView(key: key));
+      await _pumpWebView(tester, WebView(key: key));
 
       final FakePlatformWebView platformWebView =
           fakePlatformViewsController.lastCreatedView!;
 
-      await tester.pumpWidget(WebView(
-        key: key,
-        debuggingEnabled: true,
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            key: key,
+            debuggingEnabled: true,
+          ));
 
       expect(platformWebView.debuggingEnabled, true);
 
-      await tester.pumpWidget(WebView(
-        key: key,
-        debuggingEnabled: false,
-      ));
+      await _pumpWebView(
+          tester,
+          WebView(
+            key: key,
+            debuggingEnabled: false,
+          ));
 
       expect(platformWebView.debuggingEnabled, false);
     });
@@ -853,7 +920,8 @@ void main() {
     });
 
     testWidgets('creation', (WidgetTester tester) async {
-      await tester.pumpWidget(
+      await _pumpWebView(
+        tester,
         const WebView(
           initialUrl: 'https://youtube.com',
           gestureNavigationEnabled: true,
@@ -879,7 +947,8 @@ void main() {
 
     testWidgets('loadUrl', (WidgetTester tester) async {
       late WebViewController controller;
-      await tester.pumpWidget(
+      await _pumpWebView(
+        tester,
         WebView(
           initialUrl: 'https://youtube.com',
           onWebViewCreated: (WebViewController webViewController) {
@@ -902,24 +971,33 @@ void main() {
     });
   });
   testWidgets('Set UserAgent', (WidgetTester tester) async {
-    await tester.pumpWidget(const WebView(
-      initialUrl: 'https://youtube.com',
-      javascriptMode: JavascriptMode.unrestricted,
-    ));
+    await _pumpWebView(
+        tester,
+        const WebView(
+          initialUrl: 'https://youtube.com',
+          javascriptMode: JavascriptMode.unrestricted,
+        ));
 
     final FakePlatformWebView platformWebView =
         fakePlatformViewsController.lastCreatedView!;
 
     expect(platformWebView.userAgent, isNull);
 
-    await tester.pumpWidget(const WebView(
-      initialUrl: 'https://youtube.com',
-      javascriptMode: JavascriptMode.unrestricted,
-      userAgent: 'UA',
-    ));
+    await _pumpWebView(
+        tester,
+        const WebView(
+          initialUrl: 'https://youtube.com',
+          javascriptMode: JavascriptMode.unrestricted,
+          userAgent: 'UA',
+        ));
 
     expect(platformWebView.userAgent, 'UA');
   });
+}
+
+Future<void> _pumpWebView(WidgetTester tester, WebView webView) {
+  return tester.pumpWidget(
+      Directionality(textDirection: TextDirection.rtl, child: webView));
 }
 
 class FakePlatformWebView {
