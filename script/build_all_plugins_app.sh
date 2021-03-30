@@ -39,6 +39,12 @@ echo "Excluding the following plugins: $ALL_EXCLUDED"
 
 (cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
 
+# Master now creates null-safe app code by default; migrate stable so both
+# branches are building in the same mode.
+if [[ "${BRANCH_NAME}" == "stable" ]]; then
+  (cd $REPO_DIR/all_plugins && dart migrate --apply-changes)
+fi
+
 function error() {
   echo "$@" 1>&2
 }
