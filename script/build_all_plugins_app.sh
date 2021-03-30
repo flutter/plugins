@@ -42,6 +42,7 @@ echo "Excluding the following plugins: $ALL_EXCLUDED"
 # Master now creates null-safe app code by default; migrate stable so both
 # branches are building in the same mode.
 BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
+echo "On branch '${BRANCH_NAME}'"
 if [[ "${BRANCH_NAME}" == "stable" ]]; then
   (cd $REPO_DIR/all_plugins && dart migrate --apply-changes)
 fi
