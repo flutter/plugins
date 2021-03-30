@@ -7,6 +7,8 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'src/enums.dart';
 import 'src/method_channel_path_provider.dart';
 
+export 'src/enums.dart';
+
 /// The interface that implementations of path_provider must implement.
 ///
 /// Platform implementations should extend this class rather than implement it as `PathProvider`
