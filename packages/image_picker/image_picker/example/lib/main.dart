@@ -87,19 +87,17 @@ class _MyHomePageState extends State<MyHomePage> {
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
-          final pickedFile = await _picker.getMultiImage(
-            // source: source,
+          final pickedFile = await _picker.getImage(
+            source: source,
             maxWidth: maxWidth,
             maxHeight: maxHeight,
             imageQuality: quality,
           );
           setState(() {
-            debugPrint('This is a list test' + pickedFile.toString());
-            // _imageFile = pickedFile[0];
+            _imageFile = pickedFile;
           });
         } catch (e) {
           setState(() {
-            debugPrint('Mistakes have been made :(');
             _pickImageError = e;
           });
         }
