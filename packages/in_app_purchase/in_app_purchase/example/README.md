@@ -60,10 +60,9 @@ below.
 
 ### iOS
 
-When using Xcode 12 and iOS 14 or higher you can run the example in the simulator or real device
-without having to configure an App in App Store Connect. The example app is set up to use
-StoreKit Testing configured in the `example/ios/Runner/Configuration.storekit` file (as documented in the
-article [Setting Up StoreKit Testing in Xcode](https://developer.apple.com/documentation/xcode/setting_up_storekit_testing_in_xcode?language=objc)).
+When using Xcode 12 and iOS 14 or higher you can run the example in the simulator without having to
+configure an App in App Store Connect. The example app is set up to use StoreKit Testing configured
+in the `example/ios/Runner/Configuration.storekit` file (as documented in the article [Setting Up StoreKit Testing in Xcode](https://developer.apple.com/documentation/xcode/setting_up_storekit_testing_in_xcode?language=objc)).
 To run the application take the following steps (note that it will only work when running from Xcode):
 
 1. Open the example app with Xcode, `File > Open File` `example/ios/Runner.xcworkspace`;
