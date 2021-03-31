@@ -14,7 +14,7 @@ void main() {
   tearDown(() {});
 
   test('getTemporaryPath', () async {
-    final plugin = PathProviderPlatform.instance;
+    final PathProviderPlatform plugin = PathProviderPlatform.instance;
     expect(await plugin.getTemporaryPath(), '/tmp');
   });
 }
