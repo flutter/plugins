@@ -1,9 +1,15 @@
 name: google_maps_flutter_web_integration_tests
 publish_to: none
 
+# Tests require flutter beta or greater to run.
 environment:
-  sdk: ">=2.2.2 <3.0.0" # Bump this to 2.12 when migrating to nnbd.
-  flutter: ">=1.27.0-0" # For integration_test from sdk
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0" 
+  # Actually, Flutter 2.0.0 shipped with a slightly older version of integration_test that
+  # did *not* support null safety. This flutter constraint should be changed to >=2.1.0 when
+  # that version (or greater) is shipped to the `stable` channel.
+  # This causes integration tests to *not* work in `stable`, for now. Please, run integration tests
+  # in `beta` or newer (flutter/plugins runs these tests in `master`).
 
 dependencies:
   google_maps_flutter_web:
@@ -12,12 +18,19 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  google_maps: ^3.4.4
+  build_runner: ^1.11.0
+  google_maps: ^5.1.0
   http: ^0.13.0
-  mockito: ^4.1.1+1 # Update to ^5.0.0 as soon as this migrates to null-safety
+  mockito: ^5.0.0
   flutter_driver:
     sdk: flutter
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
+
+# Remove these once environment flutter is set to ">=2.1.0".
+# Used to reconcile mockito ^5.0.0 with flutter 2.0.x (current stable).
+dependency_overrides:
+  crypto: ^3.0.0
+  convert: ^3.0.0

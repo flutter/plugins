@@ -14,8 +14,8 @@ class CirclesController extends GeometryController {
 
   /// Initialize the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
   CirclesController({
-    @required StreamController<MapEvent> stream,
-  })  : _streamController = stream,
+    required StreamController<MapEvent> stream,
+  })   : _streamController = stream,
         _circleIdToController = Map<CircleId, CircleController>();
 
   /// Returns the cache of [CircleController]s. Test only.
@@ -26,7 +26,7 @@ class CirclesController extends GeometryController {
   ///
   /// Wraps each [Circle] into its corresponding [CircleController].
   void addCircles(Set<Circle> circlesToAdd) {
-    circlesToAdd?.forEach((circle) {
+    circlesToAdd.forEach((circle) {
       _addCircle(circle);
     });
   }
@@ -50,20 +50,21 @@ class CirclesController extends GeometryController {
 
   /// Updates a set of [Circle] objects with new options.
   void changeCircles(Set<Circle> circlesToChange) {
-    circlesToChange?.forEach((circleToChange) {
+    circlesToChange.forEach((circleToChange) {
       _changeCircle(circleToChange);
     });
   }
 
   void _changeCircle(Circle circle) {
-    final circleController = _circleIdToController[circle?.circleId];
+    final circleController = _circleIdToController[circle.circleId];
     circleController?.update(_circleOptionsFromCircle(circle));
   }
 
   /// Removes a set of [CircleId]s from the cache.
   void removeCircles(Set<CircleId> circleIdsToRemove) {
-    circleIdsToRemove?.forEach((circleId) {
-      final CircleController circleController = _circleIdToController[circleId];
+    circleIdsToRemove.forEach((circleId) {
+      final CircleController? circleController =
+          _circleIdToController[circleId];
       circleController?.remove();
       _circleIdToController.remove(circleId);
     });
