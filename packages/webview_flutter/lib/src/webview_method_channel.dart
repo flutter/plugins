@@ -193,6 +193,12 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull(
         'allowsInlineMediaPlayback', settings.allowsInlineMediaPlayback);
     _addSettingIfPresent('userAgent', settings.userAgent);
+    _addSettingIfPresent('zoomEnabled', settings.zoomEnabled);
+    _addSettingIfPresent(
+        'builtInZoomControlsEnabled', settings.builtInZoomControlsEnabled);
+    _addSettingIfPresent('displayZoomControls', settings.displayZoomControls);
+    _addSettingIfPresent('useWideViewPort', settings.useWideViewPort);
+    _addSettingIfPresent('loadWithOverviewMode', settings.loadWithOverviewMode);
     return map;
   }
 

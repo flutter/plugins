@@ -228,10 +228,20 @@ class WebView extends StatefulWidget {
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
+    this.zoomEnabled = true,
+    this.builtInZoomControlsEnabled = true,
+    this.displayZoomControls = false,
+    this.useWideViewPort = true,
+    this.loadWithOverviewMode = true,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
   })  : assert(javascriptMode != null),
+        assert(zoomEnabled != null),
+        assert(builtInZoomControlsEnabled != null),
+        assert(displayZoomControls != null),
+        assert(useWideViewPort != null),
+        assert(loadWithOverviewMode != null),
         assert(initialMediaPlaybackPolicy != null),
         assert(allowsInlineMediaPlayback != null),
         super(key: key);
@@ -407,6 +417,56 @@ class WebView extends StatefulWidget {
   /// By default `userAgent` is null.
   final String? userAgent;
 
+  /// Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  ///
+  /// The particular zoom mechanisms that should be used can be set with builtInZoomControlsEnabled(boolean).
+  ///
+  /// On iOS this property is ignored.
+  ///
+  /// By default 'zoomEnabled' is true
+  // TODO(https://github.com/flutter/flutter/issues/75196): Update other platform implementations so this param can be used by those platforms
+  final bool zoomEnabled;
+
+  /// Sets whether the WebView should use its built-in zoom mechanisms.
+  ///
+  /// The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
+  ///
+  /// On iOS this property is ignored.
+  ///
+  /// By default 'builtInZoomControlsEnabled' is true
+  final bool builtInZoomControlsEnabled;
+
+  /// Sets whether the WebView should use its built-in zoom mechanisms.
+  ///
+  /// The built-in zoom mechanisms comprise on-screen zoom controls, which are displayed over the WebView's content, and the use of a pinch gesture to control zooming.
+  ///
+  /// On iOS this property is ignored.
+  ///
+  /// By default 'displayZoomControls` is false
+  final bool displayZoomControls;
+
+  /// Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
+  ///
+  /// When the value of the setting is false, the layout width is always set to the width of the WebView control in device-independent (CSS) pixels.
+  ///
+  /// When the value is true and the page contains the viewport meta tag, the value of the width specified in the tag is used.
+  ///
+  /// If the page does not contain the tag or does not provide a width, then a wide viewport will be used.
+  ///
+  /// On iOS this property is ignored.
+  ///
+  /// By default 'useWideViewPort` is true
+  final bool useWideViewPort;
+
+  /// Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
+  ///
+  /// This setting is taken into account when the content width is greater than the width of the WebView control, for example, when getUseWideViewPort() is enabled.
+  ///
+  /// On iOS this property is ignored.
+  ///
+  /// By default 'loadWithOverviewMode' is true
+  final bool loadWithOverviewMode;
+
   /// Which restrictions apply on automatic media playback.
   ///
   /// This initial value is applied to the platform's webview upon creation. Any following
@@ -491,6 +551,12 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
+    zoomEnabled: WebSetting<bool?>.of(widget.zoomEnabled),
+    builtInZoomControlsEnabled:
+        WebSetting<bool?>.of(widget.builtInZoomControlsEnabled),
+    displayZoomControls: WebSetting<bool?>.of(widget.displayZoomControls),
+    useWideViewPort: WebSetting<bool?>.of(widget.useWideViewPort),
+    loadWithOverviewMode: WebSetting<bool?>.of(widget.loadWithOverviewMode),
   );
 }
 
@@ -501,17 +567,26 @@ WebSettings _clearUnchangedWebSettings(
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.hasProgressTracking != null);
   assert(currentValue.debuggingEnabled != null);
-  assert(currentValue.userAgent != null);
   assert(newValue.javascriptMode != null);
   assert(newValue.hasNavigationDelegate != null);
   assert(newValue.debuggingEnabled != null);
   assert(newValue.userAgent != null);
+  assert(newValue.zoomEnabled != null);
+  assert(newValue.builtInZoomControlsEnabled != null);
+  assert(newValue.displayZoomControls != null);
+  assert(newValue.useWideViewPort != null);
+  assert(newValue.loadWithOverviewMode != null);
 
   JavascriptMode? javascriptMode;
   bool? hasNavigationDelegate;
   bool? hasProgressTracking;
   bool? debuggingEnabled;
   WebSetting<String?> userAgent = WebSetting.absent();
+  WebSetting<bool?> zoomEnabled = WebSetting.absent();
+  WebSetting<bool?> builtInZoomControlsEnabled = WebSetting.absent();
+  WebSetting<bool?> displayZoomControls = WebSetting.absent();
+  WebSetting<bool?> useWideViewPort = WebSetting.absent();
+  WebSetting<bool?> loadWithOverviewMode = WebSetting.absent();
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -527,6 +602,22 @@ WebSettings _clearUnchangedWebSettings(
   if (currentValue.userAgent != newValue.userAgent) {
     userAgent = newValue.userAgent;
   }
+  if (currentValue.zoomEnabled != newValue.zoomEnabled) {
+    zoomEnabled = newValue.zoomEnabled;
+  }
+  if (currentValue.builtInZoomControlsEnabled !=
+      newValue.builtInZoomControlsEnabled) {
+    builtInZoomControlsEnabled = newValue.builtInZoomControlsEnabled;
+  }
+  if (currentValue.displayZoomControls != newValue.displayZoomControls) {
+    displayZoomControls = newValue.displayZoomControls;
+  }
+  if (currentValue.useWideViewPort != newValue.useWideViewPort) {
+    useWideViewPort = newValue.useWideViewPort;
+  }
+  if (currentValue.loadWithOverviewMode != newValue.loadWithOverviewMode) {
+    loadWithOverviewMode = newValue.loadWithOverviewMode;
+  }
 
   return WebSettings(
     javascriptMode: javascriptMode,
@@ -534,6 +625,11 @@ WebSettings _clearUnchangedWebSettings(
     hasProgressTracking: hasProgressTracking,
     debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,
+    zoomEnabled: zoomEnabled,
+    builtInZoomControlsEnabled: builtInZoomControlsEnabled,
+    displayZoomControls: displayZoomControls,
+    useWideViewPort: useWideViewPort,
+    loadWithOverviewMode: loadWithOverviewMode,
   );
 }
 

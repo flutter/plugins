@@ -396,8 +396,18 @@ class WebSettings {
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
     this.allowsInlineMediaPlayback,
+    required this.zoomEnabled,
+    required this.builtInZoomControlsEnabled,
+    required this.displayZoomControls,
+    required this.useWideViewPort,
+    required this.loadWithOverviewMode,
     required this.userAgent,
-  }) : assert(userAgent != null);
+  }) : assert(zoomEnabled != null &&
+            builtInZoomControlsEnabled != null &&
+            displayZoomControls != null &&
+            useWideViewPort != null &&
+            loadWithOverviewMode != null &&
+            userAgent != null);
 
   /// The JavaScript execution mode to be used by the webview.
   final JavascriptMode? javascriptMode;
@@ -414,6 +424,11 @@ class WebSettings {
   /// See also: [WebView.debuggingEnabled].
   final bool? debuggingEnabled;
 
+  /// Whether to allow swipe based navigation in iOS.
+  ///
+  /// See also: [WebView.gestureNavigationEnabled]
+  final bool? gestureNavigationEnabled;
+
   /// Whether to play HTML5 videos inline or use the native full-screen controller on iOS.
   ///
   /// This will have no effect on Android.
@@ -429,10 +444,24 @@ class WebSettings {
   /// See also [WebView.userAgent].
   final WebSetting<String?> userAgent;
 
-  /// Whether to allow swipe based navigation in iOS.
+  /// Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  final WebSetting<bool?> zoomEnabled;
+
+  /// Sets whether the WebView should use its built-in zoom mechanisms.
+  final WebSetting<bool?> builtInZoomControlsEnabled;
+
+  /// Sets whether the WebView should display on-screen zoom controls when using the built-in zoom mechanisms.
   ///
-  /// See also: [WebView.gestureNavigationEnabled]
-  final bool? gestureNavigationEnabled;
+  ///The default is true. However, on-screen zoom controls are deprecated in Android so it's recommended to set this to false.
+  final WebSetting<bool?> displayZoomControls;
+
+  /// Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
+  final WebSetting<bool?> useWideViewPort;
+
+  /// Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
+  ///
+  /// This setting is taken into account when the content width is greater than the width of the WebView control, for example, when getUseWideViewPort() is enabled.
+  final WebSetting<bool?> loadWithOverviewMode;
 
   @override
   String toString() {

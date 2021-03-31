@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Enable native double-tap to zoom, and pinch to zoom functionality on Android
+
 ## 2.0.2
 
 * Fixes bug where text fields are hidden behind the keyboard
