@@ -12,11 +12,21 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common.dart';
 
-// TODO(cyanglaz): Add tests for this command.
-// https://github.com/flutter/flutter/issues/61049
 class CreateAllPluginsAppCommand extends PluginCommand {
-  CreateAllPluginsAppCommand(Directory packagesDir, FileSystem fileSystem)
-      : super(packagesDir, fileSystem);
+  CreateAllPluginsAppCommand(
+    Directory packagesDir,
+    FileSystem fileSystem, {
+    this.pluginsRoot,
+  }) : super(packagesDir, fileSystem) {
+    pluginsRoot ??= fileSystem.currentDirectory;
+    appDirectory = pluginsRoot.childDirectory('all_plugins');
+  }
+
+  /// The root directory of the plugin repository.
+  Directory pluginsRoot;
+
+  /// The location of the synthesized app project.
+  Directory appDirectory;
 
   @override
   String get description =>
@@ -27,7 +37,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
   @override
   Future<Null> run() async {
-    final int exitCode = await _createPlugin();
+    final int exitCode = await _createApp();
     if (exitCode != 0) {
       throw ToolExit(exitCode);
     }
@@ -39,7 +49,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     ]);
   }
 
-  Future<int> _createPlugin() async {
+  Future<int> _createApp() async {
     final io.ProcessResult result = io.Process.runSync(
       'flutter',
       <String>[
@@ -47,7 +57,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
         '--template=app',
         '--project-name=all_plugins',
         '--android-language=java',
-        './all_plugins',
+        appDirectory.path,
       ],
     );
 
@@ -57,12 +67,10 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   }
 
   Future<void> _updateAppGradle() async {
-    final File gradleFile = fileSystem.file(p.join(
-      'all_plugins',
-      'android',
-      'app',
-      'build.gradle',
-    ));
+    final File gradleFile = appDirectory
+        .childDirectory('android')
+        .childDirectory('app')
+        .childFile('build.gradle');
     if (!gradleFile.existsSync()) {
       throw ToolExit(64);
     }
@@ -86,14 +94,12 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   }
 
   Future<void> _updateManifest() async {
-    final File manifestFile = fileSystem.file(p.join(
-      'all_plugins',
-      'android',
-      'app',
-      'src',
-      'main',
-      'AndroidManifest.xml',
-    ));
+    final File manifestFile = appDirectory
+        .childDirectory('android')
+        .childDirectory('app')
+        .childDirectory('src')
+        .childDirectory('main')
+        .childFile('AndroidManifest.xml');
     if (!manifestFile.existsSync()) {
       throw ToolExit(64);
     }
@@ -124,7 +130,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
       version: Version.parse('1.0.0+1'),
       environment: <String, VersionConstraint>{
         'sdk': VersionConstraint.compatibleWith(
-          Version.parse('2.0.0'),
+          Version.parse('2.12.0'),
         ),
       },
       dependencies: <String, Dependency>{
@@ -135,8 +141,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
       },
       dependencyOverrides: pluginDeps,
     );
-    final File pubspecFile =
-        fileSystem.file(p.join('all_plugins', 'pubspec.yaml'));
+    final File pubspecFile = appDirectory.childFile('pubspec.yaml');
     pubspecFile.writeAsStringSync(_pubspecToString(pubspec));
   }
 

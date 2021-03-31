@@ -39,6 +39,12 @@ echo "Excluding the following plugins: $ALL_EXCLUDED"
 
 (cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
 
+# Master now creates null-safe app code by default; migrate stable so both
+# branches are building in the same mode.
+if [[ "${CHANNEL}" == "stable" ]]; then
+  (cd $REPO_DIR/all_plugins && dart migrate --apply-changes)
+fi
+
 function error() {
   echo "$@" 1>&2
 }
@@ -53,7 +59,7 @@ fi
 
 for version in "${BUILD_MODES[@]}"; do
   echo "Building $version..."
-  (cd $REPO_DIR/all_plugins && flutter build $@ --$version)
+  (cd $REPO_DIR/all_plugins && flutter build $@ --$version --no-sound-null-safety)
 
   if [ $? -eq 0 ]; then
     echo "Successfully built $version all_plugins app."
