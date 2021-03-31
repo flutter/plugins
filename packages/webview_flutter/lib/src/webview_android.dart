@@ -46,6 +46,7 @@ class AndroidWebView implements WebViewPlatform {
           onWebViewPlatformCreated(MethodChannelWebViewPlatform(
               id, webViewPlatformCallbacksHandler));
         },
+        layoutDirection: Directionality.maybeOf(context) ?? TextDirection.rtl,
         gestureRecognizers: gestureRecognizers,
         creationParams:
             MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
