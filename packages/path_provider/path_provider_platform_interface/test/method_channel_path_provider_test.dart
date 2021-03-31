@@ -147,7 +147,7 @@ void main() {
       }
     });
 
-    for (StorageDirectory? type in <StorageDirectory?>[
+    for (final StorageDirectory? type in <StorageDirectory?>[
       null,
       ...StorageDirectory.values
     ]) {
