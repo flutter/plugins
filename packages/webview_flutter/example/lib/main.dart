@@ -82,6 +82,10 @@ class _WebViewExampleState extends State<WebViewExample> {
           onPageFinished: (String url) {
             print('Page finished loading: $url');
           },
+          onPullToRefresh: () {
+            print('Pull to refresh.');
+            return Future.delayed(Duration(seconds: 1));
+          },
           gestureNavigationEnabled: true,
         );
       }),

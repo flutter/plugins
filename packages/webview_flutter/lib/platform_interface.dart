@@ -34,6 +34,9 @@ abstract class WebViewPlatformCallbacksHandler {
   /// /// Only works when [WebSettings.hasProgressTracking] is set to `true`.
   void onProgress(int progress);
 
+  ///Invoked by [WebViewPlatformController] when a user is swiping to reload a webview. //@pullToRefresh
+  Future<void> onPullToRefresh(); //@pullToRefresh
+
   /// Report web resource loading error to the host application.
   void onWebResourceError(WebResourceError error);
 }
@@ -453,6 +456,7 @@ class CreationParams {
     this.webSettings,
     this.javascriptChannelNames = const <String>{},
     this.userAgent,
+    this.hasPullToRefresh = false,
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
   }) : assert(autoMediaPlaybackPolicy != null);
@@ -485,12 +489,18 @@ class CreationParams {
   /// When null the platform's webview default is used for the User-Agent header.
   final String? userAgent;
 
+  ///This value is required by the platforms [iOS] and [Android] in order to know
+  ///if we should attach the [RefreshControl] or [SwiperLayout] to the native [WebView].
+  ///
+  ///The default value is false.
+  final bool? hasPullToRefresh;
+
   /// Which restrictions apply on automatic media playback.
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
   @override
   String toString() {
-    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent)';
+    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, hasPullToRefresh: $hasPullToRefresh, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent)';
   }
 }
 

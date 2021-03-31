@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Added native `pullToRefresh`.
+
 ## 2.0.2
 
 * Fixes bug where text fields are hidden behind the keyboard

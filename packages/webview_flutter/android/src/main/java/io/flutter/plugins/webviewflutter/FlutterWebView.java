@@ -17,6 +17,7 @@ import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -33,6 +34,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+  private SwipeRefreshLayout swiperLayout; // @onPullToRefresh
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
@@ -113,6 +115,24 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
 
+    //Add Swiper, initially is null, if it remains null we return the webView in getView()
+    //This way we avoid adding and returning the swiper when pullToRefresh in not implemented
+    swiperLayout = null;
+    if (params.containsKey("hasPullToRefresh")) {
+      boolean hasPullToRefresh = (boolean) params.get("hasPullToRefresh");
+      if (hasPullToRefresh) {
+        swiperLayout = new SwipeRefreshLayout(context);
+        swiperLayout.addView(webView);
+        swiperLayout.setOnRefreshListener(
+            new SwipeRefreshLayout.OnRefreshListener() {
+              @Override
+              public void onRefresh() {
+                methodChannel.invokeMethod("onPullToRefresh", null);
+              }
+            });
+      }
+    }
+
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
     Map<String, Object> settings = (Map<String, Object>) params.get("settings");
     if (settings != null) applySettings(settings);
@@ -136,6 +156,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   @Override
   public View getView() {
+    if (swiperLayout != null) {
+      return swiperLayout;
+    }
     return webView;
   }
 
@@ -240,6 +263,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "getScrollY":
         getScrollY(result);
+        break;
+      case "endRefreshing":
+        swiperLayout.setRefreshing(false);
         break;
       default:
         result.notImplemented();
