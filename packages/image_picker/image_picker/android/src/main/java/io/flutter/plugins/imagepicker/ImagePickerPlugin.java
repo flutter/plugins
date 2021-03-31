@@ -306,7 +306,7 @@ public class ImagePickerPlugin
         break;
       case METHOD_CALL_MULTI_IMAGE:
         delegate.chooseMultiImageFromGallery(call, result);
-         break;
+        break;
       case METHOD_CALL_VIDEO:
         imageSource = call.argument("source");
         switch (imageSource) {

@@ -10,14 +10,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.File;
@@ -124,7 +121,8 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  public void chooseMultiImageFromGallery_WhenHasNoExternalStoragePermission_RequestsForPermission() {
+  public void
+      chooseMultiImageFromGallery_WhenHasNoExternalStoragePermission_RequestsForPermission() {
     when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
         .thenReturn(false);
 
@@ -162,7 +160,8 @@ public class ImagePickerDelegateTest {
 
     verify(mockActivity)
         .startActivityForResult(
-            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY));
+            any(Intent.class),
+            eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY));
   }
 
   @Test
@@ -260,17 +259,18 @@ public class ImagePickerDelegateTest {
 
   @Test
   public void
-  onRequestChooseMultiImagePermissionsResult_WhenReadExternalStorageGranted_LaunchesChooseMultiImageFromGalleryIntent() {
+      onRequestChooseMultiImagePermissionsResult_WhenReadExternalStorageGranted_LaunchesChooseMultiImageFromGalleryIntent() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onRequestPermissionsResult(
-            ImagePickerDelegate.REQUEST_EXTERNAL_MULTI_IMAGE_STORAGE_PERMISSION,
-            new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-            new int[] {PackageManager.PERMISSION_GRANTED});
+        ImagePickerDelegate.REQUEST_EXTERNAL_MULTI_IMAGE_STORAGE_PERMISSION,
+        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+        new int[] {PackageManager.PERMISSION_GRANTED});
 
     verify(mockActivity)
-            .startActivityForResult(
-                    any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY));
+        .startActivityForResult(
+            any(Intent.class),
+            eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY));
   }
 
   @Test
