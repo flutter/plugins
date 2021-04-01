@@ -324,7 +324,8 @@ abstract class PluginCommand extends Command<void> {
         }
       } else if (entity is Directory) {
         // Look for Dart packages under this top-level directory.
-        await for (final FileSystemEntity subdir in entity.list(followLinks: false)) {
+        await for (final FileSystemEntity subdir
+            in entity.list(followLinks: false)) {
           if (_isDartPackage(subdir)) {
             // If --plugin=my_plugin is passed, then match all federated
             // plugins under 'my_plugin'. Also match if the exact plugin is
@@ -429,14 +430,14 @@ abstract class PluginCommand extends Command<void> {
     final List<String> allChangedFiles =
         await gitVersionFinder.getChangedFiles();
     final Set<String> packages = <String>{};
-    allChangedFiles.forEach((String path) {
+    for (final String path in allChangedFiles) {
       final List<String> pathComponents = path.split('/');
       final int packagesIndex =
           pathComponents.indexWhere((String element) => element == 'packages');
       if (packagesIndex != -1) {
         packages.add(pathComponents[packagesIndex + 1]);
       }
-    });
+    }
     if (packages.isNotEmpty) {
       final String changedPackages = packages.join(',');
       print(changedPackages);
@@ -582,7 +583,7 @@ class GitVersionFinder {
       return <String>[];
     }
     final List<String> changedFiles = changedFilesStdout.split('\n')
-      ..removeWhere((element) => element.isEmpty);
+      ..removeWhere((String element) => element.isEmpty);
     return changedFiles.toList();
   }
 

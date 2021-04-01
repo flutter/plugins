@@ -85,9 +85,9 @@ class AnalyzeCommand extends PluginCommand {
     print('\n\n');
     if (failingPackages.isNotEmpty) {
       print('The following packages have analyzer errors (see above):');
-      failingPackages.forEach((String package) {
+      for (final String package in failingPackages) {
         print(' * $package');
-      });
+      }
       throw ToolExit(1);
     }
 

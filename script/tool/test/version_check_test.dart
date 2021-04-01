@@ -216,7 +216,7 @@ void main() {
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
-      final String changelog = '''
+      const String changelog = '''
 
 
 
@@ -245,7 +245,7 @@ void main() {
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
-      final String changelog = '''
+      const String changelog = '''
 ## 1.0.2
 
 * Some changes.
@@ -280,7 +280,7 @@ void main() {
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
-      final String changelog = '''
+      const String changelog = '''
 ## 1.0.1
 
 * Some changes.
@@ -308,7 +308,7 @@ void main() {
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.0');
-      final String changelog = '''
+      const String changelog = '''
 ## 1.0.1
 
 * Some changes.

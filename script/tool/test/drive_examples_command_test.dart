@@ -17,7 +17,7 @@ void main() {
     CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
     final String flutterCommand =
-        LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
     setUp(() {
       initializeFakePackages();
       processRunner = RecordingProcessRunner();
@@ -173,7 +173,8 @@ void main() {
         ]),
       );
 
-      final String driverTestPath = p.join('test_driver', 'integration_test.dart');
+      final String driverTestPath =
+          p.join('test_driver', 'integration_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,

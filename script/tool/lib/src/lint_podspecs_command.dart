@@ -75,9 +75,9 @@ class LintPodspecsCommand extends PluginCommand {
     _print('\n\n');
     if (failingPlugins.isNotEmpty) {
       _print('The following plugins have podspec errors (see above):');
-      failingPlugins.forEach((String plugin) {
+      for (final String plugin in failingPlugins) {
         _print(' * $plugin');
-      });
+      }
       throw ToolExit(1);
     }
   }

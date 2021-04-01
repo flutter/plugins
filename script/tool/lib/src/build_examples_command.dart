@@ -48,7 +48,7 @@ class BuildExamplesCommand extends PluginCommand {
       kWeb,
       kWindows,
     ];
-    final Map<String, bool> platforms = {
+    final Map<String, bool> platforms = <String, bool>{
       for (final String platform in platformSwitches)
         platform: argResults[platform] as bool
     };
@@ -59,7 +59,7 @@ class BuildExamplesCommand extends PluginCommand {
       return;
     }
     final String flutterCommand =
-        LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
     final String enableExperiment = argResults[kEnableExperiment] as String;
 

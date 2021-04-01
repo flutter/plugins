@@ -85,12 +85,12 @@ class FormatCommand extends PluginCommand {
   Future<void> _formatCppAndObjectiveC() async {
     print('Formatting all .cc, .cpp, .mm, .m, and .h files...');
     final Iterable<String> allFiles = <String>[
-      ...await _getFilesWithExtension('.h')
-    ]
-      ..addAll(await _getFilesWithExtension('.m'))
-      ..addAll(await _getFilesWithExtension('.mm'))
-      ..addAll(await _getFilesWithExtension('.cc'))
-      ..addAll(await _getFilesWithExtension('.cpp'));
+      ...await _getFilesWithExtension('.h'),
+      ...await _getFilesWithExtension('.m'),
+      ...await _getFilesWithExtension('.mm'),
+      ...await _getFilesWithExtension('.cc'),
+      ...await _getFilesWithExtension('.cpp'),
+    ];
     // Split this into multiple invocations to avoid a
     // 'ProcessException: Argument list too long'.
     final Iterable<List<String>> batches = partition(allFiles, 100);

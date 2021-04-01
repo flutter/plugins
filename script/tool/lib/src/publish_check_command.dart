@@ -31,7 +31,9 @@ class PublishCheckCommand extends PluginCommand {
     final List<Directory> failedPackages = <Directory>[];
 
     await for (final Directory plugin in getPlugins()) {
-      if (!(await passesPublishCheck(plugin))) failedPackages.add(plugin);
+      if (!(await passesPublishCheck(plugin))) {
+        failedPackages.add(plugin);
+      }
     }
 
     if (failedPackages.isNotEmpty) {
@@ -91,7 +93,9 @@ class PublishCheckCommand extends PluginCommand {
       onDone: () => stdInCompleter.complete(),
     );
 
-    if (await process.exitCode == 0) return true;
+    if (await process.exitCode == 0) {
+      return true;
+    }
 
     await stdOutCompleter.future;
     await stdInCompleter.future;

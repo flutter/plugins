@@ -17,7 +17,7 @@ import 'util.dart';
 void main() {
   group('$PublishCheckProcessRunner tests', () {
     PublishCheckProcessRunner processRunner;
-    CommandRunner runner;
+    CommandRunner<void> runner;
 
     setUp(() {
       initializeFakePackages();
@@ -52,10 +52,14 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall('flutter',
-                <String>['pub', 'publish', '--', '--dry-run'], plugin1Dir.path),
-            ProcessCall('flutter',
-                <String>['pub', 'publish', '--', '--dry-run'], plugin2Dir.path),
+            ProcessCall(
+                'flutter',
+                const <String>['pub', 'publish', '--', '--dry-run'],
+                plugin1Dir.path),
+            ProcessCall(
+                'flutter',
+                const <String>['pub', 'publish', '--', '--dry-run'],
+                plugin2Dir.path),
           ]));
     });
 

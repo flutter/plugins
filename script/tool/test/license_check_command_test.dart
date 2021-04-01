@@ -51,7 +51,7 @@ void main() {
         'found in the LICENSE file.',
       ],
     }) {
-      final List<String> lines = ['$prefix$comment$copyright'];
+      final List<String> lines = <String>['$prefix$comment$copyright'];
       for (final String line in license) {
         lines.add('$comment$line');
       }
@@ -351,7 +351,8 @@ void main() {
     });
 
     test('ignores third-party LICENSE format', () async {
-      final File license = root.childDirectory('third_party').childFile('LICENSE');
+      final File license =
+          root.childDirectory('third_party').childFile('LICENSE');
       license.createSync(recursive: true);
       license.writeAsStringSync(_incorrectLicenseFileText);
 
@@ -364,8 +365,8 @@ void main() {
   });
 }
 
-const String _correctLicenseFileText =
-    '''Copyright 2013 The Flutter Authors. All rights reserved.
+const String _correctLicenseFileText = '''
+Copyright 2013 The Flutter Authors. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -394,8 +395,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // A common incorrect version created by copying text intended for a code file,
 // with comment markers.
-const String _incorrectLicenseFileText =
-    '''// Copyright 2013 The Flutter Authors. All rights reserved.
+const String _incorrectLicenseFileText = '''
+// Copyright 2013 The Flutter Authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are

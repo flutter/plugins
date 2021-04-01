@@ -57,7 +57,7 @@ class DriveExamplesCommand extends PluginCommand {
     final bool isWindows = argResults[kWindows] == true;
     await for (final Directory plugin in getPlugins()) {
       final String flutterCommand =
-          LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+          const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
       for (final Directory example in getExamplesForPlugin(plugin)) {
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
@@ -158,10 +158,10 @@ Tried searching for the following:
             ]);
           }
 
-          for (final targetPath in targetPaths) {
+          for (final String targetPath in targetPaths) {
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
-                [
+                <String>[
                   ...driveArgs,
                   '--driver',
                   p.join('test_driver', driverTestName),
@@ -217,9 +217,9 @@ Tried searching for the following:
       return isWindowsPlugin(plugin, fileSystem);
     }
     // When we are here, no flags are specified. Only return true if the plugin
-    // supports Android for legacy command support. TODO(cyanglaz): Make Android
-    // flag also required like other platforms (breaking change).
-    // https://github.com/flutter/flutter/issues/58285
+    // supports Android for legacy command support.
+    // TODO(cyanglaz): Make Android flag also required like other platforms
+    // (breaking change). https://github.com/flutter/flutter/issues/58285
     return isAndroidPlugin(plugin, fileSystem);
   }
 }

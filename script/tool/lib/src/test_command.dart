@@ -90,9 +90,9 @@ class TestCommand extends PluginCommand {
     print('\n\n');
     if (failingPackages.isNotEmpty) {
       print('Tests for the following packages are failing (see above):');
-      failingPackages.forEach((String package) {
+      for (final String package in failingPackages) {
         print(' * $package');
-      });
+      }
       throw ToolExit(1);
     }
 

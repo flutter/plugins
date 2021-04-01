@@ -86,7 +86,7 @@ void main() {
         ],
       ]);
 
-      final List<String> output = await runCapturingPrint(runner, <String>[
+      await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
         '--device',
         'model=flame,version=29',

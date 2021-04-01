@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/lint_podspecs_command.dart';
@@ -78,7 +76,7 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -122,7 +120,7 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
         ]),
       );
     });
@@ -138,7 +136,7 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
           ProcessCall(
               'pod',
               <String>[

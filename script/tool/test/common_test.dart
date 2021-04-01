@@ -15,7 +15,7 @@ import 'util.dart';
 
 void main() {
   RecordingProcessRunner processRunner;
-  CommandRunner runner;
+  CommandRunner<void> runner;
   List<String> plugins;
   List<List<String>> gitDirCommands;
   String gitDiffResponse;
@@ -35,7 +35,7 @@ void main() {
     });
     initializeFakePackages();
     processRunner = RecordingProcessRunner();
-    plugins = [];
+    plugins = <String>[];
     final SamplePluginCommand samplePluginCommand = SamplePluginCommand(
       plugins,
       mockPackagesDir,
@@ -284,8 +284,8 @@ file2/file2.cc
 ''';
       final GitVersionFinder finder = GitVersionFinder(gitDir, null);
       await finder.getChangedFiles();
-      verify(gitDir
-          .runCommand(['diff', '--name-only', mergeBaseResponse, 'HEAD']));
+      verify(gitDir.runCommand(
+          <String>['diff', '--name-only', mergeBaseResponse, 'HEAD']));
     });
 
     test('use correct base sha if specified', () async {
@@ -296,14 +296,15 @@ file2/file2.cc
 ''';
       final GitVersionFinder finder = GitVersionFinder(gitDir, customBaseSha);
       await finder.getChangedFiles();
-      verify(gitDir.runCommand(['diff', '--name-only', customBaseSha, 'HEAD']));
+      verify(gitDir
+          .runCommand(<String>['diff', '--name-only', customBaseSha, 'HEAD']));
     });
   });
 }
 
 class SamplePluginCommand extends PluginCommand {
   SamplePluginCommand(
-    this.plugins_,
+    this._plugins,
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
@@ -311,7 +312,7 @@ class SamplePluginCommand extends PluginCommand {
   }) : super(packagesDir, fileSystem,
             processRunner: processRunner, gitDir: gitDir);
 
-  List<String> plugins_;
+  final List<String> _plugins;
 
   @override
   final String name = 'sample';
@@ -322,7 +323,7 @@ class SamplePluginCommand extends PluginCommand {
   @override
   Future<void> run() async {
     await for (final Directory package in getPlugins()) {
-      plugins_.add(package.path);
+      _plugins.add(package.path);
     }
   }
 }

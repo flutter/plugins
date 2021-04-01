@@ -50,7 +50,7 @@ void main() {
         orderedEquals(<ProcessCall>[
           ProcessCall(
             p.join(plugin.path, 'example/android/gradlew'),
-            <String>['testDebugUnitTest', '--info'],
+            const <String>['testDebugUnitTest', '--info'],
             p.join(plugin.path, 'example/android'),
           ),
         ]),
@@ -76,7 +76,7 @@ void main() {
         orderedEquals(<ProcessCall>[
           ProcessCall(
             p.join(plugin.path, 'example/android/gradlew'),
-            <String>['testDebugUnitTest', '--info'],
+            const <String>['testDebugUnitTest', '--info'],
             p.join(plugin.path, 'example/android'),
           ),
         ]),
