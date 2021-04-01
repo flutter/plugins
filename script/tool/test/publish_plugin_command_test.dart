@@ -97,7 +97,7 @@ void main() {
           () => commandRunner
               .run(<String>['publish-plugin', '--package', testPluginName]),
           throwsA(const TypeMatcher<ToolExit>()));
-      expect(processRunner.results.last.stdout, contains("No such remote"));
+      expect(processRunner.results.last.stderr, contains("No such remote"));
     });
 
     test("doesn't validate the remote if it's not pushing tags", () async {
