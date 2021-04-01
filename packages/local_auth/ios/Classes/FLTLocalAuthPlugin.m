@@ -6,8 +6,10 @@
 #import "FLTLocalAuthPlugin.h"
 
 @interface FLTLocalAuthPlugin ()
-@property(copy, nullable) NSDictionary<NSString *, NSNumber *> *lastCallArgs;
-@property(nullable) FlutterResult lastResult;
+@property(nonatomic, copy, nullable) NSDictionary<NSString *, NSNumber *> *lastCallArgs;
+@property(nonatomic, nullable) FlutterResult lastResult;
+// For unit tests to inject a dummy LAContext instance.
+@property(nonatomic, nullable) LAContext *authContextOverride;
 @end
 
 @implementation FLTLocalAuthPlugin
@@ -39,6 +41,13 @@
 }
 
 #pragma mark Private Methods
+
+- (LAContext *)authContext {
+  if (_authContextOverride != nil) {
+    return _authContextOverride;
+  }
+  return [[LAContext alloc] init];
+}
 
 - (void)alertMessage:(NSString *)message
          firstButton:(NSString *)firstButton
@@ -75,7 +84,7 @@
 }
 
 - (void)getAvailableBiometrics:(FlutterResult)result {
-  LAContext *context = [[LAContext alloc] init];
+  LAContext *context = self.authContext;
   NSError *authError = nil;
   NSMutableArray<NSString *> *biometrics = [[NSMutableArray<NSString *> alloc] init];
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
@@ -96,9 +105,10 @@
   }
   result(biometrics);
 }
+
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments
                  withFlutterResult:(FlutterResult)result {
-  LAContext *context = [[LAContext alloc] init];
+  LAContext *context = self.authContext;
   NSError *authError = nil;
   self.lastCallArgs = nil;
   self.lastResult = nil;
@@ -109,27 +119,12 @@
     [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
             localizedReason:arguments[@"localizedReason"]
                       reply:^(BOOL success, NSError *error) {
-                        if (success) {
-                          result(@YES);
-                        } else {
-                          switch (error.code) {
-                            case LAErrorPasscodeNotSet:
-                            case LAErrorTouchIDNotAvailable:
-                            case LAErrorTouchIDNotEnrolled:
-                            case LAErrorTouchIDLockout:
-                              [self handleErrors:error
-                                   flutterArguments:arguments
-                                  withFlutterResult:result];
-                              return;
-                            case LAErrorSystemCancel:
-                              if ([arguments[@"stickyAuth"] boolValue]) {
-                                self.lastCallArgs = arguments;
-                                self.lastResult = result;
-                                return;
-                              }
-                          }
-                          result(@NO);
-                        }
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                          [self handleAuthReplyWithSuccess:success
+                                                     error:error
+                                          flutterArguments:arguments
+                                             flutterResult:result];
+                        });
                       }];
   } else {
     [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
@@ -137,7 +132,7 @@
 }
 
 - (void)authenticate:(NSDictionary *)arguments withFlutterResult:(FlutterResult)result {
-  LAContext *context = [[LAContext alloc] init];
+  LAContext *context = self.authContext;
   NSError *authError = nil;
   _lastCallArgs = nil;
   _lastResult = nil;
@@ -148,33 +143,44 @@
       [context evaluatePolicy:kLAPolicyDeviceOwnerAuthentication
               localizedReason:arguments[@"localizedReason"]
                         reply:^(BOOL success, NSError *error) {
-                          if (success) {
-                            result(@YES);
-                          } else {
-                            switch (error.code) {
-                              case LAErrorPasscodeNotSet:
-                              case LAErrorTouchIDNotAvailable:
-                              case LAErrorTouchIDNotEnrolled:
-                              case LAErrorTouchIDLockout:
-                                [self handleErrors:error
-                                     flutterArguments:arguments
-                                    withFlutterResult:result];
-                                return;
-                              case LAErrorSystemCancel:
-                                if ([arguments[@"stickyAuth"] boolValue]) {
-                                  self->_lastCallArgs = arguments;
-                                  self->_lastResult = result;
-                                  return;
-                                }
-                            }
-                            result(@NO);
-                          }
+                          dispatch_async(dispatch_get_main_queue(), ^{
+                            [self handleAuthReplyWithSuccess:success
+                                                       error:error
+                                            flutterArguments:arguments
+                                               flutterResult:result];
+                          });
                         }];
     } else {
       [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
     }
   } else {
     // Fallback on earlier versions
+  }
+}
+
+- (void)handleAuthReplyWithSuccess:(BOOL)success
+                             error:(NSError *)error
+                  flutterArguments:(NSDictionary *)arguments
+                     flutterResult:(FlutterResult)result {
+  NSAssert([NSThread isMainThread], @"Response handling must be done on the main thread.");
+  if (success) {
+    result(@YES);
+  } else {
+    switch (error.code) {
+      case LAErrorPasscodeNotSet:
+      case LAErrorTouchIDNotAvailable:
+      case LAErrorTouchIDNotEnrolled:
+      case LAErrorTouchIDLockout:
+        [self handleErrors:error flutterArguments:arguments withFlutterResult:result];
+        return;
+      case LAErrorSystemCancel:
+        if ([arguments[@"stickyAuth"] boolValue]) {
+          self->_lastCallArgs = arguments;
+          self->_lastResult = result;
+          return;
+        }
+    }
+    result(@NO);
   }
 }
 
