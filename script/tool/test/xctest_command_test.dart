@@ -13,66 +13,66 @@ import 'mocks.dart';
 import 'util.dart';
 
 final _kDeviceListMap = {
-  "runtimes": [
+  'runtimes': [
     {
-      "bundlePath":
-          "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime",
-      "buildversion": "17A577",
-      "runtimeRoot":
-          "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime/Contents/Resources/RuntimeRoot",
-      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-13-0",
-      "version": "13.0",
-      "isAvailable": true,
-      "name": "iOS 13.0"
+      'bundlePath':
+          '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime',
+      'buildversion': '17A577',
+      'runtimeRoot':
+          '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime/Contents/Resources/RuntimeRoot',
+      'identifier': 'com.apple.CoreSimulator.SimRuntime.iOS-13-0',
+      'version': '13.0',
+      'isAvailable': true,
+      'name': 'iOS 13.0'
     },
     {
-      "bundlePath":
-          "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.4.simruntime",
-      "buildversion": "17L255",
-      "runtimeRoot":
-          "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.4.simruntime/Contents/Resources/RuntimeRoot",
-      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-13-4",
-      "version": "13.4",
-      "isAvailable": true,
-      "name": "iOS 13.4"
+      'bundlePath':
+          '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.4.simruntime',
+      'buildversion': '17L255',
+      'runtimeRoot':
+          '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.4.simruntime/Contents/Resources/RuntimeRoot',
+      'identifier': 'com.apple.CoreSimulator.SimRuntime.iOS-13-4',
+      'version': '13.4',
+      'isAvailable': true,
+      'name': 'iOS 13.4'
     },
     {
-      "bundlePath":
-          "/Applications/Xcode_11_7.app/Contents/Developer/Platforms/WatchOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/watchOS.simruntime",
-      "buildversion": "17T531",
-      "runtimeRoot":
-          "/Applications/Xcode_11_7.app/Contents/Developer/Platforms/WatchOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/watchOS.simruntime/Contents/Resources/RuntimeRoot",
-      "identifier": "com.apple.CoreSimulator.SimRuntime.watchOS-6-2",
-      "version": "6.2.1",
-      "isAvailable": true,
-      "name": "watchOS 6.2"
+      'bundlePath':
+          '/Applications/Xcode_11_7.app/Contents/Developer/Platforms/WatchOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/watchOS.simruntime',
+      'buildversion': '17T531',
+      'runtimeRoot':
+          '/Applications/Xcode_11_7.app/Contents/Developer/Platforms/WatchOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/watchOS.simruntime/Contents/Resources/RuntimeRoot',
+      'identifier': 'com.apple.CoreSimulator.SimRuntime.watchOS-6-2',
+      'version': '6.2.1',
+      'isAvailable': true,
+      'name': 'watchOS 6.2'
     }
   ],
-  "devices": {
-    "com.apple.CoreSimulator.SimRuntime.iOS-13-4": [
+  'devices': {
+    'com.apple.CoreSimulator.SimRuntime.iOS-13-4': [
       {
-        "dataPath":
-            "/Users/xxx/Library/Developer/CoreSimulator/Devices/2706BBEB-1E01-403E-A8E9-70E8E5A24774/data",
-        "logPath":
-            "/Users/xxx/Library/Logs/CoreSimulator/2706BBEB-1E01-403E-A8E9-70E8E5A24774",
-        "udid": "2706BBEB-1E01-403E-A8E9-70E8E5A24774",
-        "isAvailable": true,
-        "deviceTypeIdentifier":
-            "com.apple.CoreSimulator.SimDeviceType.iPhone-8",
-        "state": "Shutdown",
-        "name": "iPhone 8"
+        'dataPath':
+            '/Users/xxx/Library/Developer/CoreSimulator/Devices/2706BBEB-1E01-403E-A8E9-70E8E5A24774/data',
+        'logPath':
+            '/Users/xxx/Library/Logs/CoreSimulator/2706BBEB-1E01-403E-A8E9-70E8E5A24774',
+        'udid': '2706BBEB-1E01-403E-A8E9-70E8E5A24774',
+        'isAvailable': true,
+        'deviceTypeIdentifier':
+            'com.apple.CoreSimulator.SimDeviceType.iPhone-8',
+        'state': 'Shutdown',
+        'name': 'iPhone 8'
       },
       {
-        "dataPath":
-            "/Users/xxx/Library/Developer/CoreSimulator/Devices/1E76A0FD-38AC-4537-A989-EA639D7D012A/data",
-        "logPath":
-            "/Users/xxx/Library/Logs/CoreSimulator/1E76A0FD-38AC-4537-A989-EA639D7D012A",
-        "udid": "1E76A0FD-38AC-4537-A989-EA639D7D012A",
-        "isAvailable": true,
-        "deviceTypeIdentifier":
-            "com.apple.CoreSimulator.SimDeviceType.iPhone-8-Plus",
-        "state": "Shutdown",
-        "name": "iPhone 8 Plus"
+        'dataPath':
+            '/Users/xxx/Library/Developer/CoreSimulator/Devices/1E76A0FD-38AC-4537-A989-EA639D7D012A/data',
+        'logPath':
+            '/Users/xxx/Library/Logs/CoreSimulator/1E76A0FD-38AC-4537-A989-EA639D7D012A',
+        'udid': '1E76A0FD-38AC-4537-A989-EA639D7D012A',
+        'isAvailable': true,
+        'deviceTypeIdentifier':
+            'com.apple.CoreSimulator.SimDeviceType.iPhone-8-Plus',
+        'state': 'Shutdown',
+        'name': 'iPhone 8 Plus'
       }
     ]
   }
@@ -145,7 +145,7 @@ void main() {
       processRunner.processToReturn = mockProcess;
       processRunner.resultStdout =
           '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
-      List<String> output = await runCapturingPrint(runner, <String>[
+      final List<String> output = await runCapturingPrint(runner, <String>[
         'xctest',
         _kDestination,
         'foo_destination',
@@ -200,8 +200,8 @@ void main() {
       mockProcess.exitCodeCompleter.complete(0);
       processRunner.processToReturn = mockProcess;
       final Map<String, dynamic> schemeCommandResult = <String, dynamic>{
-        "project": {
-          "targets": ["bar_scheme", "foo_scheme"]
+        'project': {
+          'targets': ['bar_scheme', 'foo_scheme']
         }
       };
       // For simplicity of the test, we combine all the mock results into a single mock result, each internal command

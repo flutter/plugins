@@ -33,7 +33,7 @@ class TestCommand extends PluginCommand {
   Future<void> run() async {
     checkSharding();
     final List<String> failingPackages = <String>[];
-    await for (Directory packageDir in getPackages()) {
+    await for (final Directory packageDir in getPackages()) {
       final String packageName =
           p.relative(packageDir.path, from: packagesDir.path);
       if (!fileSystem.directory(p.join(packageDir.path, 'test')).existsSync()) {

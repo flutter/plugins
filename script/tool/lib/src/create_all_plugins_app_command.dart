@@ -76,7 +76,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     }
 
     final StringBuffer newGradle = StringBuffer();
-    for (String line in gradleFile.readAsLinesSync()) {
+    for (final String line in gradleFile.readAsLinesSync()) {
       newGradle.writeln(line);
       if (line.contains('defaultConfig {')) {
         newGradle.writeln('        multiDexEnabled true');
@@ -105,7 +105,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     }
 
     final StringBuffer newManifest = StringBuffer();
-    for (String line in manifestFile.readAsLinesSync()) {
+    for (final String line in manifestFile.readAsLinesSync()) {
       if (line.contains('package="com.example.all_plugins"')) {
         newManifest
           ..writeln('package="com.example.all_plugins"')
@@ -149,7 +149,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     final Map<String, PathDependency> pathDependencies =
         <String, PathDependency>{};
 
-    await for (Directory package in getPlugins()) {
+    await for (final Directory package in getPlugins()) {
       final String pluginName = package.path.split('/').last;
       final File pubspecFile =
           fileSystem.file(p.join(package.path, 'pubspec.yaml'));
@@ -183,7 +183,7 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
   String _pubspecMapString(Map<String, dynamic> values) {
     final StringBuffer buffer = StringBuffer();
 
-    for (MapEntry<String, dynamic> entry in values.entries) {
+    for (final MapEntry<String, dynamic> entry in values.entries) {
       buffer.writeln();
       if (entry.value is VersionConstraint) {
         buffer.write('  ${entry.key}: ${entry.value}');

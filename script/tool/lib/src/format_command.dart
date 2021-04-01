@@ -84,8 +84,9 @@ class FormatCommand extends PluginCommand {
 
   Future<void> _formatCppAndObjectiveC() async {
     print('Formatting all .cc, .cpp, .mm, .m, and .h files...');
-    final Iterable<String> allFiles = <String>[]
-      ..addAll(await _getFilesWithExtension('.h'))
+    final Iterable<String> allFiles = <String>[
+      ...await _getFilesWithExtension('.h')
+    ]
       ..addAll(await _getFilesWithExtension('.m'))
       ..addAll(await _getFilesWithExtension('.mm'))
       ..addAll(await _getFilesWithExtension('.cc'))
@@ -93,9 +94,9 @@ class FormatCommand extends PluginCommand {
     // Split this into multiple invocations to avoid a
     // 'ProcessException: Argument list too long'.
     final Iterable<List<String>> batches = partition(allFiles, 100);
-    for (List<String> batch in batches) {
+    for (final List<String> batch in batches) {
       await processRunner.runAndStream(argResults['clang-format'] as String,
-          <String>['-i', '--style=Google']..addAll(batch),
+          <String>['-i', '--style=Google', ...batch],
           workingDir: packagesDir, exitOnError: true);
     }
   }
@@ -104,7 +105,7 @@ class FormatCommand extends PluginCommand {
     print('Formatting all .java files...');
     final Iterable<String> javaFiles = await _getFilesWithExtension('.java');
     await processRunner.runAndStream('java',
-        <String>['-jar', googleFormatterPath, '--replace']..addAll(javaFiles),
+        <String>['-jar', googleFormatterPath, '--replace', ...javaFiles],
         workingDir: packagesDir, exitOnError: true);
   }
 
@@ -118,7 +119,7 @@ class FormatCommand extends PluginCommand {
           'No .dart files to format. If you set the `--exclude` flag, most likey they were skipped');
     } else {
       await processRunner.runAndStream(
-          'flutter', <String>['format']..addAll(dartFiles),
+          'flutter', <String>['format', ...dartFiles],
           workingDir: packagesDir, exitOnError: true);
     }
   }

@@ -30,7 +30,7 @@ class PublishCheckCommand extends PluginCommand {
     checkSharding();
     final List<Directory> failedPackages = <Directory>[];
 
-    await for (Directory plugin in getPlugins()) {
+    await for (final Directory plugin in getPlugins()) {
       if (!(await passesPublishCheck(plugin))) failedPackages.add(plugin);
     }
 
@@ -115,7 +115,7 @@ class PublishCheckCommand extends PluginCommand {
     }
 
     if (await hasValidPublishCheckRun(package)) {
-      print("Package $packageName is able to be published.");
+      print('Package $packageName is able to be published.');
       return true;
     } else {
       print('Unable to publish $packageName');

@@ -36,22 +36,22 @@ class ListCommand extends PluginCommand {
     checkSharding();
     switch (argResults[_type] as String) {
       case _plugin:
-        await for (Directory package in getPlugins()) {
+        await for (final Directory package in getPlugins()) {
           print(package.path);
         }
         break;
       case _example:
-        await for (Directory package in getExamples()) {
+        await for (final Directory package in getExamples()) {
           print(package.path);
         }
         break;
       case _package:
-        await for (Directory package in getPackages()) {
+        await for (final Directory package in getPackages()) {
           print(package.path);
         }
         break;
       case _file:
-        await for (File file in getFiles()) {
+        await for (final File file in getFiles()) {
           print(file.path);
         }
         break;

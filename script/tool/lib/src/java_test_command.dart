@@ -41,7 +41,7 @@ class JavaTestCommand extends PluginCommand {
 
     final List<String> failingPackages = <String>[];
     final List<String> missingFlutterBuild = <String>[];
-    await for (Directory example in examplesWithTests) {
+    await for (final Directory example in examplesWithTests) {
       final String packageName =
           p.relative(example.path, from: packagesDir.path);
       print('\nRUNNING JAVA TESTS for $packageName');
@@ -71,14 +71,14 @@ class JavaTestCommand extends PluginCommand {
       print(
           'The Java tests for the following packages are failing (see above for'
           'details):');
-      for (String package in failingPackages) {
+      for (final String package in failingPackages) {
         print(' * $package');
       }
     }
     if (missingFlutterBuild.isNotEmpty) {
       print('Run "pub global run flutter_plugin_tools build-examples --apk" on'
           'the following packages before executing tests again:');
-      for (String package in missingFlutterBuild) {
+      for (final String package in missingFlutterBuild) {
         print(' * $package');
       }
     }

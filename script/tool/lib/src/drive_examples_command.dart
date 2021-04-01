@@ -55,10 +55,10 @@ class DriveExamplesCommand extends PluginCommand {
     final bool isMacos = argResults[kMacos] == true;
     final bool isWeb = argResults[kWeb] == true;
     final bool isWindows = argResults[kWindows] == true;
-    await for (Directory plugin in getPlugins()) {
+    await for (final Directory plugin in getPlugins()) {
       final String flutterCommand =
           LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
-      for (Directory example in getExamplesForPlugin(plugin)) {
+      for (final Directory example in getExamplesForPlugin(plugin)) {
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
         if (!(await pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
@@ -71,7 +71,7 @@ class DriveExamplesCommand extends PluginCommand {
           continue;
         }
         // Look for driver tests ending in _test.dart in test_driver/
-        await for (FileSystemEntity test in driverTests.list()) {
+        await for (final FileSystemEntity test in driverTests.list()) {
           final String driverTestName =
               p.relative(test.path, from: driverTests.path);
           if (!driverTestName.endsWith('_test.dart')) {
@@ -100,7 +100,7 @@ class DriveExamplesCommand extends PluginCommand {
                 fileSystem.directory(p.join(example.path, 'integration_test'));
 
             if (await integrationTests.exists()) {
-              await for (FileSystemEntity integration_test
+              await for (final FileSystemEntity integration_test
                   in integrationTests.list()) {
                 if (!integration_test.basename.endsWith('_test.dart')) {
                   continue;
@@ -181,7 +181,7 @@ Tried searching for the following:
 
     if (failingTests.isNotEmpty) {
       print('The following driver tests are failing (see above for details):');
-      for (String test in failingTests) {
+      for (final String test in failingTests) {
         print(' * $test');
       }
       throw ToolExit(1);
@@ -199,7 +199,7 @@ Tried searching for the following:
     final bool isWeb = argResults[kWeb] == true;
     final bool isWindows = argResults[kWindows] == true;
     if (isAndroid) {
-      return (isAndroidPlugin(plugin, fileSystem));
+      return isAndroidPlugin(plugin, fileSystem);
     }
     if (isIOS) {
       return isIosPlugin(plugin, fileSystem);

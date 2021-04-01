@@ -49,7 +49,7 @@ class XCTestCommand extends PluginCommand {
   Future<void> run() async {
     String destination = argResults[_kiOSDestination] as String;
     if (destination == null) {
-      String simulatorId = await _findAvailableIphoneSimulator();
+      final String simulatorId = await _findAvailableIphoneSimulator();
       if (simulatorId == null) {
         print(_kFoundNoSimulatorsMessage);
         throw ToolExit(1);
@@ -61,8 +61,8 @@ class XCTestCommand extends PluginCommand {
 
     final List<String> skipped = argResults[_kSkip] as List<String>;
 
-    List<String> failingPackages = <String>[];
-    await for (Directory plugin in getPlugins()) {
+    final List<String> failingPackages = <String>[];
+    await for (final Directory plugin in getPlugins()) {
       // Start running for package.
       final String packageName =
           p.relative(plugin.path, from: packagesDir.path);
@@ -77,7 +77,7 @@ class XCTestCommand extends PluginCommand {
         print('\n\n');
         continue;
       }
-      for (Directory example in getExamplesForPlugin(plugin)) {
+      for (final Directory example in getExamplesForPlugin(plugin)) {
         // Running tests and static analyzer.
         print('Running tests and analyzer for $packageName ...');
         int exitCode = await _runTests(true, destination, example);
@@ -96,11 +96,11 @@ class XCTestCommand extends PluginCommand {
 
     // Command end, print reports.
     if (failingPackages.isEmpty) {
-      print("All XCTests have passed!");
+      print('All XCTests have passed!');
     } else {
       print(
           'The following packages are failing XCTests (see above for details):');
-      for (String package in failingPackages) {
+      for (final String package in failingPackages) {
         print(' * $package');
       }
       throw ToolExit(1);
@@ -162,7 +162,7 @@ class XCTestCommand extends PluginCommand {
     }
     String id;
     // Looking for runtimes, trying to find one with highest OS version.
-    for (Map<String, dynamic> runtimeMap in runtimes.reversed) {
+    for (final Map<String, dynamic> runtimeMap in runtimes.reversed) {
       if (!(runtimeMap['name'] as String).contains('iOS')) {
         continue;
       }
@@ -173,7 +173,7 @@ class XCTestCommand extends PluginCommand {
         continue;
       }
       // Looking for runtimes, trying to find latest version of device.
-      for (Map<String, dynamic> device in devicesForRuntime.reversed) {
+      for (final Map<String, dynamic> device in devicesForRuntime.reversed) {
         if (device['availabilityError'] != null ||
             (device['isAvailable'] as bool == false)) {
           continue;

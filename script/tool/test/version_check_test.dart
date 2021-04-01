@@ -10,8 +10,8 @@ import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:git/git.dart';
 import 'package:mockito/mockito.dart';
-import "package:test/test.dart";
-import "package:flutter_plugin_tools/src/version_check_command.dart";
+import 'package:test/test.dart';
+import 'package:flutter_plugin_tools/src/version_check_command.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'util.dart';
 
@@ -82,7 +82,7 @@ void main() {
 
     test('allows valid version', () async {
       createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-      gitDiffResponse = "packages/plugin/pubspec.yaml";
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
         'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
@@ -107,7 +107,7 @@ void main() {
 
     test('denies invalid version', () async {
       createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-      gitDiffResponse = "packages/plugin/pubspec.yaml";
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 0.0.1',
         'HEAD:packages/plugin/pubspec.yaml': 'version: 0.2.0',
@@ -130,7 +130,7 @@ void main() {
 
     test('gracefully handles missing pubspec.yaml', () async {
       createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-      gitDiffResponse = "packages/plugin/pubspec.yaml";
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
       mockFileSystem.currentDirectory
           .childDirectory('packages')
           .childDirectory('plugin')
@@ -154,7 +154,7 @@ void main() {
     test('allows minor changes to platform interfaces', () async {
       createFakePlugin('plugin_platform_interface',
           includeChangeLog: true, includeVersion: true);
-      gitDiffResponse = "packages/plugin_platform_interface/pubspec.yaml";
+      gitDiffResponse = 'packages/plugin_platform_interface/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin_platform_interface/pubspec.yaml':
             'version: 1.0.0',
@@ -183,7 +183,7 @@ void main() {
     test('disallows breaking changes to platform interfaces', () async {
       createFakePlugin('plugin_platform_interface',
           includeChangeLog: true, includeVersion: true);
-      gitDiffResponse = "packages/plugin_platform_interface/pubspec.yaml";
+      gitDiffResponse = 'packages/plugin_platform_interface/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin_platform_interface/pubspec.yaml':
             'version: 1.0.0',
@@ -216,7 +216,7 @@ void main() {
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
-      String changelog = '''
+      final String changelog = '''
 
 
 
@@ -227,7 +227,7 @@ void main() {
       createFakeCHANGELOG(pluginDirectory, changelog);
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
-      await expect(
+      expect(
         output,
         containsAllInOrder(<String>[
           'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for plugin.',
@@ -245,7 +245,7 @@ void main() {
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
-      String changelog = '''
+      final String changelog = '''
 ## 1.0.2
 
 * Some changes.
@@ -258,7 +258,7 @@ void main() {
         throwsA(const TypeMatcher<Error>()),
       );
       try {
-        List<String> outputValue = await output;
+        final List<String> outputValue = await output;
         await expectLater(
           outputValue,
           containsAllInOrder(<String>[
@@ -280,7 +280,7 @@ void main() {
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
-      String changelog = '''
+      final String changelog = '''
 ## 1.0.1
 
 * Some changes.
@@ -288,7 +288,7 @@ void main() {
       createFakeCHANGELOG(pluginDirectory, changelog);
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
-      await expect(
+      expect(
         output,
         containsAllInOrder(<String>[
           'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for plugin.',
@@ -308,7 +308,7 @@ void main() {
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.0');
-      String changelog = '''
+      final String changelog = '''
 ## 1.0.1
 
 * Some changes.
@@ -318,14 +318,14 @@ void main() {
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      Future<List<String>> output = runCapturingPrint(
+      final Future<List<String>> output = runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
         throwsA(const TypeMatcher<Error>()),
       );
       try {
-        List<String> outputValue = await output;
+        final List<String> outputValue = await output;
         await expectLater(
           outputValue,
           containsAllInOrder(<String>[
@@ -340,122 +340,122 @@ void main() {
     });
   });
 
-  group("Pre 1.0", () {
-    test("nextVersion allows patch version", () {
-      testAllowedVersion("0.12.0", "0.12.0+1",
+  group('Pre 1.0', () {
+    test('nextVersion allows patch version', () {
+      testAllowedVersion('0.12.0', '0.12.0+1',
           nextVersionType: NextVersionType.PATCH);
-      testAllowedVersion("0.12.0+4", "0.12.0+5",
+      testAllowedVersion('0.12.0+4', '0.12.0+5',
           nextVersionType: NextVersionType.PATCH);
     });
 
-    test("nextVersion does not allow jumping patch", () {
-      testAllowedVersion("0.12.0", "0.12.0+2", allowed: false);
-      testAllowedVersion("0.12.0+2", "0.12.0+4", allowed: false);
+    test('nextVersion does not allow jumping patch', () {
+      testAllowedVersion('0.12.0', '0.12.0+2', allowed: false);
+      testAllowedVersion('0.12.0+2', '0.12.0+4', allowed: false);
     });
 
-    test("nextVersion does not allow going back", () {
-      testAllowedVersion("0.12.0", "0.11.0", allowed: false);
-      testAllowedVersion("0.12.0+2", "0.12.0+1", allowed: false);
-      testAllowedVersion("0.12.0+1", "0.12.0", allowed: false);
+    test('nextVersion does not allow going back', () {
+      testAllowedVersion('0.12.0', '0.11.0', allowed: false);
+      testAllowedVersion('0.12.0+2', '0.12.0+1', allowed: false);
+      testAllowedVersion('0.12.0+1', '0.12.0', allowed: false);
     });
 
-    test("nextVersion allows minor version", () {
-      testAllowedVersion("0.12.0", "0.12.1",
+    test('nextVersion allows minor version', () {
+      testAllowedVersion('0.12.0', '0.12.1',
           nextVersionType: NextVersionType.MINOR);
-      testAllowedVersion("0.12.0+4", "0.12.1",
+      testAllowedVersion('0.12.0+4', '0.12.1',
           nextVersionType: NextVersionType.MINOR);
     });
 
-    test("nextVersion does not allow jumping minor", () {
-      testAllowedVersion("0.12.0", "0.12.2", allowed: false);
-      testAllowedVersion("0.12.0+2", "0.12.3", allowed: false);
+    test('nextVersion does not allow jumping minor', () {
+      testAllowedVersion('0.12.0', '0.12.2', allowed: false);
+      testAllowedVersion('0.12.0+2', '0.12.3', allowed: false);
     });
   });
 
-  group("Releasing 1.0", () {
-    test("nextVersion allows releasing 1.0", () {
-      testAllowedVersion("0.12.0", "1.0.0",
+  group('Releasing 1.0', () {
+    test('nextVersion allows releasing 1.0', () {
+      testAllowedVersion('0.12.0', '1.0.0',
           nextVersionType: NextVersionType.BREAKING_MAJOR);
-      testAllowedVersion("0.12.0+4", "1.0.0",
+      testAllowedVersion('0.12.0+4', '1.0.0',
           nextVersionType: NextVersionType.BREAKING_MAJOR);
     });
 
-    test("nextVersion does not allow jumping major", () {
-      testAllowedVersion("0.12.0", "2.0.0", allowed: false);
-      testAllowedVersion("0.12.0+4", "2.0.0", allowed: false);
+    test('nextVersion does not allow jumping major', () {
+      testAllowedVersion('0.12.0', '2.0.0', allowed: false);
+      testAllowedVersion('0.12.0+4', '2.0.0', allowed: false);
     });
 
-    test("nextVersion does not allow un-releasing", () {
-      testAllowedVersion("1.0.0", "0.12.0+4", allowed: false);
-      testAllowedVersion("1.0.0", "0.12.0", allowed: false);
+    test('nextVersion does not allow un-releasing', () {
+      testAllowedVersion('1.0.0', '0.12.0+4', allowed: false);
+      testAllowedVersion('1.0.0', '0.12.0', allowed: false);
     });
   });
 
-  group("Post 1.0", () {
-    test("nextVersion allows patch jumps", () {
-      testAllowedVersion("1.0.1", "1.0.2",
+  group('Post 1.0', () {
+    test('nextVersion allows patch jumps', () {
+      testAllowedVersion('1.0.1', '1.0.2',
           nextVersionType: NextVersionType.PATCH);
-      testAllowedVersion("1.0.0", "1.0.1",
+      testAllowedVersion('1.0.0', '1.0.1',
           nextVersionType: NextVersionType.PATCH);
     });
 
-    test("nextVersion does not allow build jumps", () {
-      testAllowedVersion("1.0.1", "1.0.1+1", allowed: false);
-      testAllowedVersion("1.0.0+5", "1.0.0+6", allowed: false);
+    test('nextVersion does not allow build jumps', () {
+      testAllowedVersion('1.0.1', '1.0.1+1', allowed: false);
+      testAllowedVersion('1.0.0+5', '1.0.0+6', allowed: false);
     });
 
-    test("nextVersion does not allow skipping patches", () {
-      testAllowedVersion("1.0.1", "1.0.3", allowed: false);
-      testAllowedVersion("1.0.0", "1.0.6", allowed: false);
+    test('nextVersion does not allow skipping patches', () {
+      testAllowedVersion('1.0.1', '1.0.3', allowed: false);
+      testAllowedVersion('1.0.0', '1.0.6', allowed: false);
     });
 
-    test("nextVersion allows minor version jumps", () {
-      testAllowedVersion("1.0.1", "1.1.0",
+    test('nextVersion allows minor version jumps', () {
+      testAllowedVersion('1.0.1', '1.1.0',
           nextVersionType: NextVersionType.MINOR);
-      testAllowedVersion("1.0.0", "1.1.0",
+      testAllowedVersion('1.0.0', '1.1.0',
           nextVersionType: NextVersionType.MINOR);
     });
 
-    test("nextVersion does not allow skipping minor versions", () {
-      testAllowedVersion("1.0.1", "1.2.0", allowed: false);
-      testAllowedVersion("1.1.0", "1.3.0", allowed: false);
+    test('nextVersion does not allow skipping minor versions', () {
+      testAllowedVersion('1.0.1', '1.2.0', allowed: false);
+      testAllowedVersion('1.1.0', '1.3.0', allowed: false);
     });
 
-    test("nextVersion allows breaking changes", () {
-      testAllowedVersion("1.0.1", "2.0.0",
+    test('nextVersion allows breaking changes', () {
+      testAllowedVersion('1.0.1', '2.0.0',
           nextVersionType: NextVersionType.BREAKING_MAJOR);
-      testAllowedVersion("1.0.0", "2.0.0",
+      testAllowedVersion('1.0.0', '2.0.0',
           nextVersionType: NextVersionType.BREAKING_MAJOR);
     });
 
-    test("nextVersion allows null safety pre prelease", () {
-      testAllowedVersion("1.0.1", "2.0.0-nullsafety",
+    test('nextVersion allows null safety pre prelease', () {
+      testAllowedVersion('1.0.1', '2.0.0-nullsafety',
           nextVersionType: NextVersionType.MAJOR_NULLSAFETY_PRE_RELEASE);
-      testAllowedVersion("1.0.0", "2.0.0-nullsafety",
+      testAllowedVersion('1.0.0', '2.0.0-nullsafety',
           nextVersionType: NextVersionType.MAJOR_NULLSAFETY_PRE_RELEASE);
-      testAllowedVersion("1.0.0-nullsafety", "1.0.0-nullsafety.1",
+      testAllowedVersion('1.0.0-nullsafety', '1.0.0-nullsafety.1',
           nextVersionType: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE);
-      testAllowedVersion("1.0.0-nullsafety.1", "1.0.0-nullsafety.2",
+      testAllowedVersion('1.0.0-nullsafety.1', '1.0.0-nullsafety.2',
           nextVersionType: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE);
-      testAllowedVersion("0.1.0", "0.2.0-nullsafety",
+      testAllowedVersion('0.1.0', '0.2.0-nullsafety',
           nextVersionType: NextVersionType.MAJOR_NULLSAFETY_PRE_RELEASE);
-      testAllowedVersion("0.1.0-nullsafety", "0.1.0-nullsafety.1",
+      testAllowedVersion('0.1.0-nullsafety', '0.1.0-nullsafety.1',
           nextVersionType: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE);
-      testAllowedVersion("0.1.0-nullsafety.1", "0.1.0-nullsafety.2",
+      testAllowedVersion('0.1.0-nullsafety.1', '0.1.0-nullsafety.2',
           nextVersionType: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE);
-      testAllowedVersion("1.0.0", "1.1.0-nullsafety",
+      testAllowedVersion('1.0.0', '1.1.0-nullsafety',
           nextVersionType: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE);
-      testAllowedVersion("1.1.0-nullsafety", "1.1.0-nullsafety.1",
+      testAllowedVersion('1.1.0-nullsafety', '1.1.0-nullsafety.1',
           nextVersionType: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE);
-      testAllowedVersion("0.1.0", "0.1.1-nullsafety",
+      testAllowedVersion('0.1.0', '0.1.1-nullsafety',
           nextVersionType: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE);
-      testAllowedVersion("0.1.1-nullsafety", "0.1.1-nullsafety.1",
+      testAllowedVersion('0.1.1-nullsafety', '0.1.1-nullsafety.1',
           nextVersionType: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE);
     });
 
-    test("nextVersion does not allow skipping major versions", () {
-      testAllowedVersion("1.0.1", "3.0.0", allowed: false);
-      testAllowedVersion("1.1.0", "2.3.0", allowed: false);
+    test('nextVersion does not allow skipping major versions', () {
+      testAllowedVersion('1.0.1', '3.0.0', allowed: false);
+      testAllowedVersion('1.1.0', '2.3.0', allowed: false);
     });
   });
 }

@@ -65,15 +65,15 @@ class BuildExamplesCommand extends PluginCommand {
 
     checkSharding();
     final List<String> failingPackages = <String>[];
-    await for (Directory plugin in getPlugins()) {
-      for (Directory example in getExamplesForPlugin(plugin)) {
+    await for (final Directory plugin in getPlugins()) {
+      for (final Directory example in getExamplesForPlugin(plugin)) {
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
 
         if (platforms[kLinux]) {
           print('\nBUILDING Linux for $packageName');
           if (isLinuxPlugin(plugin, fileSystem)) {
-            int buildExitCode = await processRunner.runAndStream(
+            final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
@@ -93,7 +93,7 @@ class BuildExamplesCommand extends PluginCommand {
         if (platforms[kMacos]) {
           print('\nBUILDING macOS for $packageName');
           if (isMacOsPlugin(plugin, fileSystem)) {
-            int exitCode = await processRunner.runAndStream(
+            final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
@@ -113,7 +113,7 @@ class BuildExamplesCommand extends PluginCommand {
         if (platforms[kWeb]) {
           print('\nBUILDING web for $packageName');
           if (isWebPlugin(plugin, fileSystem)) {
-            int buildExitCode = await processRunner.runAndStream(
+            final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
@@ -133,7 +133,7 @@ class BuildExamplesCommand extends PluginCommand {
         if (platforms[kWindows]) {
           print('\nBUILDING Windows for $packageName');
           if (isWindowsPlugin(plugin, fileSystem)) {
-            int buildExitCode = await processRunner.runAndStream(
+            final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
@@ -196,7 +196,7 @@ class BuildExamplesCommand extends PluginCommand {
 
     if (failingPackages.isNotEmpty) {
       print('The following build are failing (see above for details):');
-      for (String package in failingPackages) {
+      for (final String package in failingPackages) {
         print(' * $package');
       }
       throw ToolExit(1);

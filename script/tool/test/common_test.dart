@@ -109,7 +109,7 @@ void main() {
 
     test('all plugins should be tested if there are no plugin related changes.',
         () async {
-      gitDiffResponse = ".cirrus";
+      gitDiffResponse = '.cirrus';
       final Directory plugin1 = createFakePlugin('plugin1');
       final Directory plugin2 = createFakePlugin('plugin2');
       await runner.run(
@@ -119,7 +119,7 @@ void main() {
     });
 
     test('Only changed plugin should be tested.', () async {
-      gitDiffResponse = "packages/plugin1/plugin1.dart";
+      gitDiffResponse = 'packages/plugin1/plugin1.dart';
       final Directory plugin1 = createFakePlugin('plugin1');
       createFakePlugin('plugin2');
       await runner.run(
@@ -248,7 +248,7 @@ packages/plugin3/plugin3.dart
 
     test('No git diff should result no files changed', () async {
       final GitVersionFinder finder = GitVersionFinder(gitDir, 'some base sha');
-      List<String> changedFiles = await finder.getChangedFiles();
+      final List<String> changedFiles = await finder.getChangedFiles();
 
       expect(changedFiles, isEmpty);
     });
@@ -259,7 +259,7 @@ file1/file1.cc
 file2/file2.cc
 ''';
       final GitVersionFinder finder = GitVersionFinder(gitDir, 'some base sha');
-      List<String> changedFiles = await finder.getChangedFiles();
+      final List<String> changedFiles = await finder.getChangedFiles();
 
       expect(
           changedFiles, equals(<String>['file1/file1.cc', 'file2/file2.cc']));
@@ -271,7 +271,7 @@ file1/pubspec.yaml
 file2/file2.cc
 ''';
       final GitVersionFinder finder = GitVersionFinder(gitDir, 'some base sha');
-      List<String> changedFiles = await finder.getChangedPubSpecs();
+      final List<String> changedFiles = await finder.getChangedPubSpecs();
 
       expect(changedFiles, equals(<String>['file1/pubspec.yaml']));
     });
@@ -289,7 +289,7 @@ file2/file2.cc
     });
 
     test('use correct base sha if specified', () async {
-      final String customBaseSha = 'aklsjdcaskf12312';
+      const String customBaseSha = 'aklsjdcaskf12312';
       gitDiffResponse = '''
 file1/pubspec.yaml
 file2/file2.cc
@@ -321,8 +321,8 @@ class SamplePluginCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    await for (Directory package in getPlugins()) {
-      this.plugins_.add(package.path);
+    await for (final Directory package in getPlugins()) {
+      plugins_.add(package.path);
     }
   }
 }

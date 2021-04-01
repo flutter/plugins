@@ -150,7 +150,7 @@ class VersionCheckCommand extends PluginCommand {
           printErrorAndExit(errorMessage: error);
         }
 
-        bool isPlatformInterface = pubspec.name.endsWith("_platform_interface");
+        final bool isPlatformInterface = pubspec.name.endsWith('_platform_interface');
         if (isPlatformInterface &&
             allowedNextVersions[headVersion] ==
                 NextVersionType.BREAKING_MAJOR) {
@@ -164,7 +164,7 @@ class VersionCheckCommand extends PluginCommand {
       }
     }
 
-    await for (Directory plugin in getPlugins()) {
+    await for (final Directory plugin in getPlugins()) {
       await _checkVersionsMatch(plugin);
     }
 
@@ -180,7 +180,7 @@ class VersionCheckCommand extends PluginCommand {
 
     final Pubspec pubspec = _tryParsePubspec(plugin);
     if (pubspec == null) {
-      final String error = 'Cannot parse version from pubspec.yaml';
+      const String error = 'Cannot parse version from pubspec.yaml';
       printErrorAndExit(errorMessage: error);
     }
     final Version fromPubspec = pubspec.version;
@@ -198,7 +198,7 @@ class VersionCheckCommand extends PluginCommand {
     }
     // Remove all leading mark down syntax from the version line.
     final String versionString = firstLineWithText.split(' ').last;
-    Version fromChangeLog = Version.parse(versionString);
+    final Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
       final String error =
           'Cannot find version on the first line of ${plugin.path}/CHANGELOG.md';
@@ -213,14 +213,14 @@ The first version listed in CHANGELOG.md is $fromChangeLog.
 ''';
       printErrorAndExit(errorMessage: error);
     }
-    print('${packageName} passed version check');
+    print('$packageName passed version check');
   }
 
   Pubspec _tryParsePubspec(Directory package) {
     final File pubspecFile = package.childFile('pubspec.yaml');
 
     try {
-      Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+      final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
       if (pubspec == null) {
         final String error =
             'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';

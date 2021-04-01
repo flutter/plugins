@@ -12,7 +12,7 @@ import 'package:platform/platform.dart';
 
 import 'common.dart';
 
-typedef void Print(Object object);
+typedef Print = void Function(Object object);
 
 /// Lint the CocoaPod podspecs and run unit tests.
 ///
@@ -66,7 +66,7 @@ class LintPodspecsCommand extends PluginCommand {
     _print('Starting podspec lint test');
 
     final List<String> failingPlugins = <String>[];
-    for (File podspec in await _podspecsToLint()) {
+    for (final File podspec in await _podspecsToLint()) {
       if (!await _lintPodspec(podspec)) {
         failingPlugins.add(p.basenameWithoutExtension(podspec.path));
       }

@@ -27,7 +27,7 @@ import 'version_check_command.dart';
 import 'xctest_command.dart';
 
 void main(List<String> args) {
-  final FileSystem fileSystem = const LocalFileSystem();
+  const FileSystem fileSystem = const LocalFileSystem();
 
   Directory packagesDir = fileSystem
       .directory(p.join(fileSystem.currentDirectory.path, 'packages'));

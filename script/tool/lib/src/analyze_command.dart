@@ -62,7 +62,7 @@ class AnalyzeCommand extends PluginCommand {
         'pub', <String>['global', 'activate', 'tuneup'],
         workingDir: packagesDir, exitOnError: true);
 
-    await for (Directory package in getPackages()) {
+    await for (final Directory package in getPackages()) {
       if (isFlutterPackage(package, fileSystem)) {
         await processRunner.runAndStream('flutter', <String>['packages', 'get'],
             workingDir: package, exitOnError: true);
@@ -73,7 +73,7 @@ class AnalyzeCommand extends PluginCommand {
     }
 
     final List<String> failingPackages = <String>[];
-    await for (Directory package in getPlugins()) {
+    await for (final Directory package in getPlugins()) {
       final int exitCode = await processRunner.runAndStream(
           'pub', <String>['global', 'run', 'tuneup', 'check'],
           workingDir: package);

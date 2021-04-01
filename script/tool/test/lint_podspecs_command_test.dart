@@ -64,7 +64,7 @@ void main() {
     });
 
     test('runs pod lib lint on a podspec', () async {
-      Directory plugin1Dir =
+      final Directory plugin1Dir =
           createFakePlugin('plugin1', withExtraFiles: <List<String>>[
         <String>['ios', 'plugin1.podspec'],
         <String>['bogus.dart'], // Ignore non-podspecs.
@@ -128,7 +128,7 @@ void main() {
     });
 
     test('allow warnings for podspecs with known warnings', () async {
-      Directory plugin1Dir =
+      final Directory plugin1Dir =
           createFakePlugin('plugin1', withExtraFiles: <List<String>>[
         <String>['plugin1.podspec'],
       ]);

@@ -60,7 +60,7 @@ void main() {
       expect(
           printedMessages,
           contains(
-              "\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway."));
+              '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.'));
     });
 
     test('runs e2e tests', () async {

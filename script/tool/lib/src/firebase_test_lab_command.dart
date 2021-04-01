@@ -76,7 +76,7 @@ class FirebaseTestLabCommand extends PluginCommand {
       'activate-service-account',
       '--key-file=${argResults['service-key']}',
     ]);
-    int exitCode = await processRunner.runAndStream('gcloud', <String>[
+    final int exitCode = await processRunner.runAndStream('gcloud', <String>[
       'config',
       'set',
       'project',
@@ -107,7 +107,7 @@ class FirebaseTestLabCommand extends PluginCommand {
     final List<String> missingFlutterBuild = <String>[];
     int resultsCounter =
         0; // We use a unique GCS bucket for each Firebase Test Lab run
-    await for (Directory package in packagesWithTests) {
+    await for (final Directory package in packagesWithTests) {
       // See https://github.com/flutter/flutter/issues/38983
 
       final Directory exampleDirectory =
@@ -177,7 +177,7 @@ class FirebaseTestLabCommand extends PluginCommand {
           fileSystem.directory(p.join(package.path, 'example'));
       testDirs.addAll(
           example.listSync().where(isTestDir).cast<Directory>().toList());
-      for (Directory testDir in testDirs) {
+      for (final Directory testDir in testDirs) {
         bool isE2ETest(FileSystemEntity file) {
           return file.path.endsWith('_e2e.dart') ||
               (file.parent.basename == 'integration_test' &&
@@ -188,7 +188,7 @@ class FirebaseTestLabCommand extends PluginCommand {
             .listSync(recursive: true, followLinks: true)
             .where(isE2ETest)
             .toList();
-        for (FileSystemEntity test in testFiles) {
+        for (final FileSystemEntity test in testFiles) {
           exitCode = await processRunner.runAndStream(
               p.join(androidDirectory.path, _gradleWrapper),
               <String>[
@@ -224,9 +224,9 @@ class FirebaseTestLabCommand extends PluginCommand {
             '--timeout',
             '5m',
             '--results-bucket=${argResults['results-bucket']}',
-            '--results-dir=${resultsDir}',
+            '--results-dir=$resultsDir',
           ];
-          for (String device in argResults['device'] as List<String>) {
+          for (final String device in argResults['device'] as List<String>) {
             args.addAll(<String>['--device', device]);
           }
           exitCode = await processRunner.runAndStream('gcloud', args,
@@ -245,14 +245,14 @@ class FirebaseTestLabCommand extends PluginCommand {
       _print(
           'The instrumentation tests for the following packages are failing (see above for'
           'details):');
-      for (String package in failingPackages) {
+      for (final String package in failingPackages) {
         _print(' * $package');
       }
     }
     if (missingFlutterBuild.isNotEmpty) {
       _print('Run "pub global run flutter_plugin_tools build-examples --apk" on'
           'the following packages before executing tests again:');
-      for (String package in missingFlutterBuild) {
+      for (final String package in missingFlutterBuild) {
         _print(' * $package');
       }
     }

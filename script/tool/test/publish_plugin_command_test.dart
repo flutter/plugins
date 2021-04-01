@@ -67,7 +67,7 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       expect(
-          printedMessages.last, contains("Must specify a package to publish."));
+          printedMessages.last, contains('Must specify a package to publish.'));
     });
 
     test('requires an existing flag', () async {
@@ -99,7 +99,7 @@ void main() {
               .run(<String>['publish-plugin', '--package', testPluginName]),
           throwsA(const TypeMatcher<ToolExit>()));
 
-      expect(processRunner.results.last.stderr, contains("No such remote"));
+      expect(processRunner.results.last.stderr, contains('No such remote'));
     });
 
     test("doesn't validate the remote if it's not pushing tags", () async {
@@ -204,7 +204,7 @@ void main() {
               ]),
           throwsA(const TypeMatcher<ToolExit>()));
 
-      expect(printedMessages, contains("Publish failed. Exiting."));
+      expect(printedMessages, contains('Publish failed. Exiting.'));
     });
   });
 
@@ -235,7 +235,7 @@ void main() {
               ]),
           throwsA(const TypeMatcher<ToolExit>()));
 
-      expect(printedMessages, contains("Publish failed. Exiting."));
+      expect(printedMessages, contains('Publish failed. Exiting.'));
       final String tag = (await gitDir.runCommand(
               <String>['show-ref', 'fake_package-v0.0.1'],
               throwOnError: false))

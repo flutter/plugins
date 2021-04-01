@@ -16,7 +16,7 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
-typedef void Print(Object object);
+typedef Print = void Function(Object object);
 
 /// Key for windows platform.
 const String kWindows = 'windows';
@@ -284,7 +284,7 @@ abstract class PluginCommand extends Command<void> {
     final int start = min(shardIndex * shardSize, allPlugins.length);
     final int end = min(start + shardSize, allPlugins.length);
 
-    for (Directory plugin in allPlugins.sublist(start, end)) {
+    for (final Directory plugin in allPlugins.sublist(start, end)) {
       yield plugin;
     }
   }
@@ -314,7 +314,7 @@ abstract class PluginCommand extends Command<void> {
       plugins = await _getChangedPackages();
     }
 
-    await for (FileSystemEntity entity
+    await for (final FileSystemEntity entity
         in packagesDir.list(followLinks: false)) {
       // A top-level Dart package is a plugin package.
       if (_isDartPackage(entity)) {
@@ -324,7 +324,7 @@ abstract class PluginCommand extends Command<void> {
         }
       } else if (entity is Directory) {
         // Look for Dart packages under this top-level directory.
-        await for (FileSystemEntity subdir in entity.list(followLinks: false)) {
+        await for (final FileSystemEntity subdir in entity.list(followLinks: false)) {
           if (_isDartPackage(subdir)) {
             // If --plugin=my_plugin is passed, then match all federated
             // plugins under 'my_plugin'. Also match if the exact plugin is
@@ -355,7 +355,7 @@ abstract class PluginCommand extends Command<void> {
   /// Returns all Dart package folders (typically, plugin + example) of the
   /// plugins involved in this command execution.
   Stream<Directory> getPackages() async* {
-    await for (Directory plugin in getPlugins()) {
+    await for (final Directory plugin in getPlugins()) {
       yield plugin;
       yield* plugin
           .list(recursive: true, followLinks: false)
@@ -406,7 +406,7 @@ abstract class PluginCommand extends Command<void> {
   /// Throws tool exit if [gitDir] nor root directory is a git directory.
   Future<GitVersionFinder> retrieveVersionFinder() async {
     final String rootDir = packagesDir.parent.absolute.path;
-    String baseSha = argResults[_kBaseSha] as String;
+    final String baseSha = argResults[_kBaseSha] as String;
 
     GitDir baseGitDir = gitDir;
     if (baseGitDir == null) {
@@ -574,7 +574,7 @@ class GitVersionFinder {
   Future<List<String>> getChangedFiles() async {
     final String baseSha = await _getBaseSha();
     final io.ProcessResult changedFilesCommand = await baseGitDir
-        .runCommand(<String>['diff', '--name-only', '$baseSha', 'HEAD']);
+        .runCommand(<String>['diff', '--name-only', baseSha, 'HEAD']);
     print('Determine diff with base sha: $baseSha');
     final String changedFilesStdout =
         changedFilesCommand.stdout.toString() ?? '';

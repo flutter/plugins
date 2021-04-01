@@ -62,7 +62,7 @@ final List<RegExp> _thirdPartyLicenseBlockRegexes = <RegExp>[
 // Slight variants are not accepted because they may prevent consolidation in
 // tools that assemble all licenses used in distributed applications.
 // standardized.
-final String _fullBsdLicenseText =
+const String _fullBsdLicenseText =
     '''Copyright 2013 The Flutter Authors. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -200,7 +200,7 @@ class LicenseCheckCommand extends PluginCommand {
           'the new third-party license block.\n');
     }
 
-    bool succeeded =
+    final bool succeeded =
         incorrectFirstPartyFiles.isEmpty && unrecognizedThirdPartyFiles.isEmpty;
     if (succeeded) {
       _print('All source files passed validation!');
@@ -230,7 +230,7 @@ class LicenseCheckCommand extends PluginCommand {
           'Please ensure that they use the exact format used in this repository".\n');
     }
 
-    bool succeeded = incorrectLicenseFiles.isEmpty;
+    final bool succeeded = incorrectLicenseFiles.isEmpty;
     if (succeeded) {
       _print('All LICENSE files passed validation!');
     }

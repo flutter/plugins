@@ -83,20 +83,20 @@ Directory createFakePlugin(
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
     createFakePubspec(exampleDir,
-        name: "${name}_example", isFlutter: isFlutter);
+        name: '${name}_example', isFlutter: isFlutter);
   } else if (withExamples.isNotEmpty) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
-    for (String example in withExamples) {
+    for (final String example in withExamples) {
       final Directory currentExample = exampleDir.childDirectory(example)
         ..createSync();
       createFakePubspec(currentExample, name: example, isFlutter: isFlutter);
     }
   }
 
-  for (List<String> file in withExtraFiles) {
-    final List<String> newFilePath = <String>[pluginDirectory.path]
-      ..addAll(file);
+  for (final List<String> file in withExtraFiles) {
+    final List<String> newFilePath = <String>[pluginDirectory.path, ...file]
+      ;
     final File newFile =
         mockFileSystem.file(mockFileSystem.path.joinAll(newFilePath));
     newFile.createSync(recursive: true);
@@ -308,7 +308,7 @@ class ProcessCall {
 
   @override
   String toString() {
-    final List<String> command = <String>[executable]..addAll(args);
+    final List<String> command = <String>[executable, ...args];
     return '"${command.join(' ')}" in $workingDir';
   }
 }
