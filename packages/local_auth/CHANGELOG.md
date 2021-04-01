@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Fix crashes due to threading issues in iOS implementation.
+
 ## 1.1.1
 
 * Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
