@@ -1,11 +1,15 @@
+## 2.0.3-dev
+
+* Fix incorrect typecast in TileOverlay example.
+
 ## 2.0.2
 
-* Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
+* Update flutter\_plugin\_android\_lifecycle dependency to 2.0.1 to fix an R8 issue
   on some versions.
 
 ## 2.0.1
 
-* Update platform_plugin_interface version requirement.
+* Update platform\_plugin\_interface version requirement.
 
 ## 2.0.0
 
