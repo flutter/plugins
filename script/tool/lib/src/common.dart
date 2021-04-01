@@ -16,6 +16,8 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
+/// The signature for a print handler for commands that allow overriding the
+/// print destination.
 typedef Print = void Function(Object object);
 
 /// Key for windows platform.
@@ -156,12 +158,16 @@ void printErrorAndExit({@required String errorMessage, int exitCode = 1}) {
 
 /// Error thrown when a command needs to exit with a non-zero exit code.
 class ToolExit extends Error {
+  /// Creates a tool exit with the given [exitCode].
   ToolExit(this.exitCode);
 
+  /// The code that the process should exit with.
   final int exitCode;
 }
 
+/// Interface definition for all commands in this tool.
 abstract class PluginCommand extends Command<void> {
+  /// Creates a command to operate on [packagesDir] with the given environment.
   PluginCommand(
     this.packagesDir,
     this.fileSystem, {
@@ -233,21 +239,23 @@ abstract class PluginCommand extends Command<void> {
   int _shardIndex;
   int _shardCount;
 
+  /// The shard of the overall command execution that this instance should run.
   int get shardIndex {
     if (_shardIndex == null) {
-      checkSharding();
+      _checkSharding();
     }
     return _shardIndex;
   }
 
+  /// The number of shards this command is divided into.
   int get shardCount {
     if (_shardCount == null) {
-      checkSharding();
+      _checkSharding();
     }
     return _shardCount;
   }
 
-  void checkSharding() {
+  void _checkSharding() {
     final int shardIndex = int.tryParse(argResults[_shardIndexArg] as String);
     final int shardCount = int.tryParse(argResults[_shardCountArg] as String);
     if (shardIndex == null) {
@@ -452,6 +460,7 @@ abstract class PluginCommand extends Command<void> {
 /// We use this instead of directly running the process so it can be overridden
 /// in tests.
 class ProcessRunner {
+  /// Creates a new process runner.
   const ProcessRunner();
 
   /// Run the [executable] with [args] and stream output to stderr and stdout.

@@ -9,7 +9,9 @@ import 'package:path/path.dart' as p;
 
 import 'common.dart';
 
+/// A command to run Dart unit tests for packages.
 class TestCommand extends PluginCommand {
+  /// Creates an instance of the test command.
   TestCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -31,7 +33,6 @@ class TestCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    checkSharding();
     final List<String> failingPackages = <String>[];
     await for (final Directory packageDir in getPackages()) {
       final String packageName =

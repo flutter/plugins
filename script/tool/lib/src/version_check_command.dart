@@ -15,47 +15,32 @@ import 'common.dart';
 
 const String _kBaseSha = 'base-sha';
 
+/// Categories of version change types.
 enum NextVersionType {
+  /// A breaking change.
   BREAKING_MAJOR,
-  MAJOR_NULLSAFETY_PRE_RELEASE,
-  MINOR_NULLSAFETY_PRE_RELEASE,
+
+  /// A minor change (e.g., added feature).
   MINOR,
+
+  /// A bugfix change.
   PATCH,
+
+  /// The release of an existing prerelease version.
   RELEASE,
 }
 
-Version getNextNullSafetyPreRelease(Version current, Version next) {
-  String nextNullsafetyPrerelease = 'nullsafety';
-  if (current.isPreRelease &&
-      current.preRelease.first is String &&
-      current.preRelease.first == 'nullsafety') {
-    if (current.preRelease.length == 1) {
-      nextNullsafetyPrerelease = 'nullsafety.1';
-    } else if (current.preRelease.length == 2 &&
-        current.preRelease.last is int) {
-      nextNullsafetyPrerelease = 'nullsafety.${current.preRelease.last + 1}';
-    }
-  }
-  return Version(
-    next.major,
-    next.minor,
-    next.patch,
-    pre: nextNullsafetyPrerelease,
-  );
-}
-
+/// Returns the set of allowed next versions, with their change type, for
+/// [masterVersion].
+///
+/// [headVerison] is used to check whether this is a pre-1.0 version bump, as
+/// those have different semver rules.
 @visibleForTesting
 Map<Version, NextVersionType> getAllowedNextVersions(
     Version masterVersion, Version headVersion) {
-  final Version nextNullSafetyMajor =
-      getNextNullSafetyPreRelease(masterVersion, masterVersion.nextMajor);
-  final Version nextNullSafetyMinor =
-      getNextNullSafetyPreRelease(masterVersion, masterVersion.nextMinor);
   final Map<Version, NextVersionType> allowedNextVersions =
       <Version, NextVersionType>{
     masterVersion.nextMajor: NextVersionType.BREAKING_MAJOR,
-    nextNullSafetyMajor: NextVersionType.MAJOR_NULLSAFETY_PRE_RELEASE,
-    nextNullSafetyMinor: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE,
     masterVersion.nextMinor: NextVersionType.MINOR,
     masterVersion.nextPatch: NextVersionType.PATCH,
   };
@@ -80,21 +65,13 @@ Map<Version, NextVersionType> getAllowedNextVersions(
         NextVersionType.BREAKING_MAJOR;
     allowedNextVersions[masterVersion.nextPatch] = NextVersionType.MINOR;
     allowedNextVersions[preReleaseVersion] = NextVersionType.PATCH;
-
-    final Version nextNullSafetyMajor =
-        getNextNullSafetyPreRelease(masterVersion, masterVersion.nextMinor);
-    final Version nextNullSafetyMinor =
-        getNextNullSafetyPreRelease(masterVersion, masterVersion.nextPatch);
-
-    allowedNextVersions[nextNullSafetyMajor] =
-        NextVersionType.MAJOR_NULLSAFETY_PRE_RELEASE;
-    allowedNextVersions[nextNullSafetyMinor] =
-        NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE;
   }
   return allowedNextVersions;
 }
 
+/// A command to validate version changes to packages.
 class VersionCheckCommand extends PluginCommand {
+  /// Creates an instance of the version check command.
   VersionCheckCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -114,7 +91,6 @@ class VersionCheckCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    checkSharding();
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
 
     final List<String> changedPubspecs =
@@ -150,7 +126,8 @@ class VersionCheckCommand extends PluginCommand {
           printErrorAndExit(errorMessage: error);
         }
 
-        final bool isPlatformInterface = pubspec.name.endsWith('_platform_interface');
+        final bool isPlatformInterface =
+            pubspec.name.endsWith('_platform_interface');
         if (isPlatformInterface &&
             allowedNextVersions[headVersion] ==
                 NextVersionType.BREAKING_MAJOR) {

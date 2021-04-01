@@ -12,7 +12,9 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common.dart';
 
+/// A command to create an application that builds all in a single application.
 class CreateAllPluginsAppCommand extends PluginCommand {
+  /// Creates an instance of the builder command.
   CreateAllPluginsAppCommand(
     Directory packagesDir,
     FileSystem fileSystem, {

@@ -8,7 +8,9 @@ import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'common.dart';
 
+/// A command to run the example applications for packages via Flutter driver.
 class DriveExamplesCommand extends PluginCommand {
+  /// Creates an instance of the drive command.
   DriveExamplesCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -49,7 +51,6 @@ class DriveExamplesCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    checkSharding();
     final List<String> failingTests = <String>[];
     final bool isLinux = argResults[kLinux] == true;
     final bool isMacos = argResults[kMacos] == true;
@@ -61,7 +62,7 @@ class DriveExamplesCommand extends PluginCommand {
       for (final Directory example in getExamplesForPlugin(plugin)) {
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
-        if (!(await pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
+        if (!(await _pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
           continue;
         }
         final Directory driverTests =
@@ -190,7 +191,7 @@ Tried searching for the following:
     print('All driver tests successful!');
   }
 
-  Future<bool> pluginSupportedOnCurrentPlatform(
+  Future<bool> _pluginSupportedOnCurrentPlatform(
       FileSystemEntity plugin, FileSystem fileSystem) async {
     final bool isAndroid = argResults[kAndroid] == true;
     final bool isIOS = argResults[kIos] == true;

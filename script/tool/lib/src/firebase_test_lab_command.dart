@@ -11,7 +11,9 @@ import 'package:uuid/uuid.dart';
 
 import 'common.dart';
 
+/// A command to run tests via Firebase test lab.
 class FirebaseTestLabCommand extends PluginCommand {
+  /// Creates an instance of the test runner command.
   FirebaseTestLabCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -94,7 +96,6 @@ class FirebaseTestLabCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    checkSharding();
     final Stream<Directory> packagesWithTests = getPackages().where(
         (Directory d) =>
             isFlutterPackage(d, fileSystem) &&

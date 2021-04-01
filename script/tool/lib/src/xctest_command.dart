@@ -22,6 +22,7 @@ const String _kFoundNoSimulatorsMessage =
 /// The tests target have to be added to the xcode project of the example app. Usually at "example/ios/Runner.xcworkspace".
 /// The static analyzer is also run.
 class XCTestCommand extends PluginCommand {
+  /// Creates an instance of the test command.
   XCTestCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -56,8 +57,6 @@ class XCTestCommand extends PluginCommand {
       }
       destination = 'id=$simulatorId';
     }
-
-    checkSharding();
 
     final List<String> skipped = argResults[_kSkip] as List<String>;
 

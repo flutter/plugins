@@ -8,7 +8,10 @@ import 'package:file/file.dart';
 
 import 'common.dart';
 
+/// A command to list different types of repository content.
 class ListCommand extends PluginCommand {
+  /// Creates an instance of the list command, whose behavior depends on the
+  /// 'type' argument it provides.
   ListCommand(Directory packagesDir, FileSystem fileSystem)
       : super(packagesDir, fileSystem) {
     argParser.addOption(
@@ -33,7 +36,6 @@ class ListCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    checkSharding();
     switch (argResults[_type] as String) {
       case _plugin:
         await for (final Directory package in getPlugins()) {

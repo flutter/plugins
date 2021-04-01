@@ -12,19 +12,19 @@ import 'package:platform/platform.dart';
 
 import 'common.dart';
 
-typedef Print = void Function(Object object);
-
 /// Lint the CocoaPod podspecs and run unit tests.
 ///
 /// See https://guides.cocoapods.org/terminal/commands.html#pod_lib_lint.
 class LintPodspecsCommand extends PluginCommand {
+  /// Creates an instance of the linter command.
   LintPodspecsCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-    this.platform = const LocalPlatform(),
+    Platform platform = const LocalPlatform(),
     Print print = print,
-  })  : _print = print,
+  })  : _platform = platform,
+        _print = print,
         super(packagesDir, fileSystem, processRunner: processRunner) {
     argParser.addMultiOption('skip',
         help:
@@ -47,18 +47,16 @@ class LintPodspecsCommand extends PluginCommand {
       'Runs "pod lib lint" on all iOS and macOS plugin podspecs.\n\n'
       'This command requires "pod" and "flutter" to be in your path. Runs on macOS only.';
 
-  final Platform platform;
+  final Platform _platform;
 
   final Print _print;
 
   @override
   Future<void> run() async {
-    if (!platform.isMacOS) {
+    if (!_platform.isMacOS) {
       _print('Detected platform is not macOS, skipping podspec lint');
       return;
     }
-
-    checkSharding();
 
     await processRunner.runAndExitOnError('which', <String>['pod'],
         workingDir: packagesDir);

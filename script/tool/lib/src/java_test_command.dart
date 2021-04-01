@@ -9,7 +9,9 @@ import 'package:path/path.dart' as p;
 
 import 'common.dart';
 
+/// A command to run the Java tests of Android plugins.
 class JavaTestCommand extends PluginCommand {
+  /// Creates an instance of the test runner.
   JavaTestCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -28,7 +30,6 @@ class JavaTestCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    checkSharding();
     final Stream<Directory> examplesWithTests = getExamples().where(
         (Directory d) =>
             isFlutterPackage(d, fileSystem) &&

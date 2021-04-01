@@ -16,7 +16,9 @@ import 'common.dart';
 const String _googleFormatterUrl =
     'https://github.com/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar';
 
+/// A command to format all package code.
 class FormatCommand extends PluginCommand {
+  /// Creates an instance of the format command.
   FormatCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -39,7 +41,6 @@ class FormatCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    checkSharding();
     final String googleFormatterPath = await _getGoogleFormatterPath();
 
     await _formatDart();

@@ -26,6 +26,7 @@ import 'common.dart';
 ///
 /// [processRunner], [print], and [stdin] can be overriden for easier testing.
 class PublishPluginCommand extends PluginCommand {
+  /// Creates an instance of the publish command.
   PublishPluginCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -90,7 +91,6 @@ class PublishPluginCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    checkSharding();
     _print('Checking local repo...');
     _packageDir = _checkPackageDir();
     await _checkGitStatus();

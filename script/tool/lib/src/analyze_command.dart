@@ -9,7 +9,9 @@ import 'package:path/path.dart' as p;
 
 import 'common.dart';
 
+/// A command to run Dart analysis on packages.
 class AnalyzeCommand extends PluginCommand {
+  /// Creates a analysis command instance.
   AnalyzeCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -32,8 +34,6 @@ class AnalyzeCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    checkSharding();
-
     print('Verifying analysis settings...');
     final List<FileSystemEntity> files = packagesDir.listSync(recursive: true);
     for (final FileSystemEntity file in files) {

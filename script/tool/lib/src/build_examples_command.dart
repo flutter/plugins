@@ -11,7 +11,9 @@ import 'package:platform/platform.dart';
 
 import 'common.dart';
 
+/// A command to build the example applications for packages.
 class BuildExamplesCommand extends PluginCommand {
+  /// Creates an instance of the build command.
   BuildExamplesCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -63,7 +65,6 @@ class BuildExamplesCommand extends PluginCommand {
 
     final String enableExperiment = argResults[kEnableExperiment] as String;
 
-    checkSharding();
     final List<String> failingPackages = <String>[];
     await for (final Directory plugin in getPlugins()) {
       for (final Directory example in getExamplesForPlugin(plugin)) {
