@@ -46,7 +46,7 @@ class FormatCommand extends PluginCommand {
     await _formatJava(googleFormatterPath);
     await _formatCppAndObjectiveC();
 
-    if (argResults['fail-on-change']) {
+    if (argResults['fail-on-change'] == true) {
       final bool modified = await _didModifyAnything();
       if (modified) {
         throw ToolExit(1);
@@ -61,15 +61,14 @@ class FormatCommand extends PluginCommand {
 
     print('\n\n');
 
-    if (modifiedFiles.stdout.isEmpty) {
+    final String stdout = modifiedFiles.stdout as String;
+    if (stdout.isEmpty) {
       print('All files formatted correctly.');
       return false;
     }
 
     print('These files are not formatted correctly (see diff below):');
-    LineSplitter.split(modifiedFiles.stdout)
-        .map((String line) => '  $line')
-        .forEach(print);
+    LineSplitter.split(stdout).map((String line) => '  $line').forEach(print);
 
     print('\nTo fix run "pub global activate flutter_plugin_tools && '
         'pub global run flutter_plugin_tools format" or copy-paste '
@@ -95,7 +94,7 @@ class FormatCommand extends PluginCommand {
     // 'ProcessException: Argument list too long'.
     final Iterable<List<String>> batches = partition(allFiles, 100);
     for (List<String> batch in batches) {
-      await processRunner.runAndStream(argResults['clang-format'],
+      await processRunner.runAndStream(argResults['clang-format'] as String,
           <String>['-i', '--style=Google']..addAll(batch),
           workingDir: packagesDir, exitOnError: true);
     }

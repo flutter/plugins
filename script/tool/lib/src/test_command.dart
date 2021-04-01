@@ -43,7 +43,7 @@ class TestCommand extends PluginCommand {
 
       print('RUNNING $packageName tests...');
 
-      final String enableExperiment = argResults[kEnableExperiment];
+      final String enableExperiment = argResults[kEnableExperiment] as String;
 
       // `flutter test` automatically gets packages.  `pub run test` does not.  :(
       int exitCode = 0;

@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
+import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:git/git.dart';
 import 'package:mockito/mockito.dart';
@@ -36,7 +37,7 @@ void testAllowedVersion(
 
 class MockGitDir extends Mock implements GitDir {}
 
-class MockProcessResult extends Mock implements ProcessResult {}
+class MockProcessResult extends Mock implements io.ProcessResult {}
 
 void main() {
   group('$VersionCheckCommand', () {
@@ -52,16 +53,17 @@ void main() {
       gitShowResponses = <String, String>{};
       final MockGitDir gitDir = MockGitDir();
       when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
-        gitDirCommands.add(invocation.positionalArguments[0]);
+        gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
         final MockProcessResult mockProcessResult = MockProcessResult();
         if (invocation.positionalArguments[0][0] == 'diff') {
-          when<String>(mockProcessResult.stdout).thenReturn(gitDiffResponse);
+          when<String>(mockProcessResult.stdout as String)
+              .thenReturn(gitDiffResponse);
         } else if (invocation.positionalArguments[0][0] == 'show') {
           final String response =
               gitShowResponses[invocation.positionalArguments[0][1]];
-          when<String>(mockProcessResult.stdout).thenReturn(response);
+          when<String>(mockProcessResult.stdout as String).thenReturn(response);
         }
-        return Future<ProcessResult>.value(mockProcessResult);
+        return Future<io.ProcessResult>.value(mockProcessResult);
       });
       initializeFakePackages();
       processRunner = RecordingProcessRunner();
@@ -227,7 +229,7 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       await expect(
         output,
-        containsAllInOrder([
+        containsAllInOrder(<String>[
           'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for plugin.',
           'plugin passed version check',
           'No version check errors found!'
@@ -259,7 +261,7 @@ void main() {
         List<String> outputValue = await output;
         await expectLater(
           outputValue,
-          containsAllInOrder([
+          containsAllInOrder(<String>[
             '''
   versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
   The version in pubspec.yaml is 1.0.1.
@@ -288,7 +290,7 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       await expect(
         output,
-        containsAllInOrder([
+        containsAllInOrder(<String>[
           'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for plugin.',
           'plugin passed version check',
           'No version check errors found!'
@@ -326,7 +328,7 @@ void main() {
         List<String> outputValue = await output;
         await expectLater(
           outputValue,
-          containsAllInOrder([
+          containsAllInOrder(<String>[
             '''
   versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
   The version in pubspec.yaml is 1.0.0.

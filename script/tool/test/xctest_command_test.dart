@@ -113,19 +113,15 @@ void main() {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(0);
       processRunner.processToReturn = mockProcess;
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'xctest',
-        _kDestination,
-        'foo_destination'
-      ]);
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['xctest', _kDestination, 'foo_destination']);
       expect(output, contains('iOS is not supported by this plugin.'));
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
 
       cleanupPackages();
     });
 
-    test('running with correct destination, skip 1 plugin',
-        () async {
+    test('running with correct destination, skip 1 plugin', () async {
       createFakePlugin('plugin1',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
@@ -203,7 +199,7 @@ void main() {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(0);
       processRunner.processToReturn = mockProcess;
-      final Map<String, dynamic> schemeCommandResult = {
+      final Map<String, dynamic> schemeCommandResult = <String, dynamic>{
         "project": {
           "targets": ["bar_scheme", "foo_scheme"]
         }

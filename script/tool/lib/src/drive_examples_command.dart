@@ -51,10 +51,10 @@ class DriveExamplesCommand extends PluginCommand {
   Future<Null> run() async {
     checkSharding();
     final List<String> failingTests = <String>[];
-    final bool isLinux = argResults[kLinux];
-    final bool isMacos = argResults[kMacos];
-    final bool isWeb = argResults[kWeb];
-    final bool isWindows = argResults[kWindows];
+    final bool isLinux = argResults[kLinux] == true;
+    final bool isMacos = argResults[kMacos] == true;
+    final bool isWeb = argResults[kWeb] == true;
+    final bool isWindows = argResults[kWindows] == true;
     await for (Directory plugin in getPlugins()) {
       final String flutterCommand =
           LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
@@ -125,7 +125,8 @@ Tried searching for the following:
 
           final List<String> driveArgs = <String>['drive'];
 
-          final String enableExperiment = argResults[kEnableExperiment];
+          final String enableExperiment =
+              argResults[kEnableExperiment] as String;
           if (enableExperiment.isNotEmpty) {
             driveArgs.add('--enable-experiment=$enableExperiment');
           }
@@ -191,12 +192,12 @@ Tried searching for the following:
 
   Future<bool> pluginSupportedOnCurrentPlatform(
       FileSystemEntity plugin, FileSystem fileSystem) async {
-    final bool isAndroid = argResults[kAndroid];
-    final bool isIOS = argResults[kIos];
-    final bool isLinux = argResults[kLinux];
-    final bool isMacos = argResults[kMacos];
-    final bool isWeb = argResults[kWeb];
-    final bool isWindows = argResults[kWindows];
+    final bool isAndroid = argResults[kAndroid] == true;
+    final bool isIOS = argResults[kIos] == true;
+    final bool isLinux = argResults[kLinux] == true;
+    final bool isMacos = argResults[kMacos] == true;
+    final bool isWeb = argResults[kWeb] == true;
+    final bool isWindows = argResults[kWindows] == true;
     if (isAndroid) {
       return (isAndroidPlugin(plugin, fileSystem));
     }

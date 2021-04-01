@@ -65,7 +65,7 @@ Map<Version, NextVersionType> getAllowedNextVersions(
     if (masterVersion.build.isEmpty) {
       nextBuildNumber = 1;
     } else {
-      final int currentBuildNumber = masterVersion.build.first;
+      final int currentBuildNumber = masterVersion.build.first as int;
       nextBuildNumber = currentBuildNumber + 1;
     }
     final Version preReleaseVersion = Version(
@@ -120,7 +120,7 @@ class VersionCheckCommand extends PluginCommand {
     final List<String> changedPubspecs =
         await gitVersionFinder.getChangedPubSpecs();
 
-    final String baseSha = argResults[_kBaseSha];
+    final String baseSha = argResults[_kBaseSha] as String;
     for (final String pubspecPath in changedPubspecs) {
       try {
         final File pubspecFile = fileSystem.file(pubspecPath);
@@ -189,9 +189,9 @@ class VersionCheckCommand extends PluginCommand {
     final File changelog = plugin.childFile('CHANGELOG.md');
     final List<String> lines = changelog.readAsLinesSync();
     String firstLineWithText;
-    final Iterator iterator = lines.iterator;
+    final Iterator<String> iterator = lines.iterator;
     while (iterator.moveNext()) {
-      if ((iterator.current as String).trim().isNotEmpty) {
+      if (iterator.current.trim().isNotEmpty) {
         firstLineWithText = iterator.current;
         break;
       }

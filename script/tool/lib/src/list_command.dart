@@ -34,7 +34,7 @@ class ListCommand extends PluginCommand {
   @override
   Future<Null> run() async {
     checkSharding();
-    switch (argResults[_type]) {
+    switch (argResults[_type] as String) {
       case _plugin:
         await for (Directory package in getPlugins()) {
           print(package.path);

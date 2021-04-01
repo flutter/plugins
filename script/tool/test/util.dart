@@ -293,13 +293,10 @@ class ProcessCall {
 
   @override
   bool operator ==(dynamic other) {
-    if (other is! ProcessCall) {
-      return false;
-    }
-    final ProcessCall otherCall = other;
-    return executable == otherCall.executable &&
-        listsEqual(args, otherCall.args) &&
-        workingDir == otherCall.workingDir;
+    return other is ProcessCall &&
+        executable == other.executable &&
+        listsEqual(args, other.args) &&
+        workingDir == other.workingDir;
   }
 
   @override

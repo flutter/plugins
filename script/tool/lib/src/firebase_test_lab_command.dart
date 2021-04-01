@@ -80,7 +80,7 @@ class FirebaseTestLabCommand extends PluginCommand {
       'config',
       'set',
       'project',
-      argResults['project'],
+      argResults['project'] as String,
     ]);
     if (exitCode == 0) {
       _print('\nFirebase project configured.');
@@ -119,7 +119,7 @@ class FirebaseTestLabCommand extends PluginCommand {
       final Directory androidDirectory =
           fileSystem.directory(p.join(exampleDirectory.path, 'android'));
 
-      final String enableExperiment = argResults[kEnableExperiment];
+      final String enableExperiment = argResults[kEnableExperiment] as String;
       final String encodedEnableExperiment =
           Uri.encodeComponent('--enable-experiment=$enableExperiment');
 
@@ -166,15 +166,17 @@ class FirebaseTestLabCommand extends PluginCommand {
       // Look for tests recursively in folders that start with 'test' and that
       // live in the root or example folders.
       bool isTestDir(FileSystemEntity dir) {
-        return p.basename(dir.path).startsWith('test') ||
-            p.basename(dir.path) == 'integration_test';
+        return dir is Directory &&
+            (p.basename(dir.path).startsWith('test') ||
+                p.basename(dir.path) == 'integration_test');
       }
 
-      final List<FileSystemEntity> testDirs =
-          package.listSync().where(isTestDir).toList();
+      final List<Directory> testDirs =
+          package.listSync().where(isTestDir).cast<Directory>().toList();
       final Directory example =
           fileSystem.directory(p.join(package.path, 'example'));
-      testDirs.addAll(example.listSync().where(isTestDir).toList());
+      testDirs.addAll(
+          example.listSync().where(isTestDir).cast<Directory>().toList());
       for (Directory testDir in testDirs) {
         bool isE2ETest(FileSystemEntity file) {
           return file.path.endsWith('_e2e.dart') ||
@@ -205,7 +207,7 @@ class FirebaseTestLabCommand extends PluginCommand {
             continue;
           }
           final String buildId = io.Platform.environment['CIRRUS_BUILD_ID'];
-          final String testRunId = argResults['test-run-id'];
+          final String testRunId = argResults['test-run-id'] as String;
           final String resultsDir =
               'plugins_android_test/$packageName/$buildId/$testRunId/${resultsCounter++}/';
           final List<String> args = <String>[
@@ -224,7 +226,7 @@ class FirebaseTestLabCommand extends PluginCommand {
             '--results-bucket=${argResults['results-bucket']}',
             '--results-dir=${resultsDir}',
           ];
-          for (String device in argResults['device']) {
+          for (String device in argResults['device'] as List<String>) {
             args.addAll(<String>['--device', device]);
           }
           exitCode = await processRunner.runAndStream('gcloud', args,

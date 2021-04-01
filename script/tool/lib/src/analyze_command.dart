@@ -42,8 +42,8 @@ class AnalyzeCommand extends PluginCommand {
         continue;
       }
 
-      final bool allowed = argResults[_customAnalysisFlag].any(
-          (String directory) =>
+      final bool allowed = (argResults[_customAnalysisFlag] as List<String>)
+          .any((String directory) =>
               directory != null &&
               directory.isNotEmpty &&
               p.isWithin(p.join(packagesDir.path, directory), file.path));

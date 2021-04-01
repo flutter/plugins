@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
 import 'dart:math';
 
@@ -53,8 +54,9 @@ bool isFlutterPackage(FileSystemEntity entity, FileSystem fileSystem) {
   try {
     final File pubspecFile =
         fileSystem.file(p.join(entity.path, 'pubspec.yaml'));
-    final YamlMap pubspecYaml = loadYaml(pubspecFile.readAsStringSync());
-    final YamlMap dependencies = pubspecYaml['dependencies'];
+    final YamlMap pubspecYaml =
+        loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
+    final YamlMap dependencies = pubspecYaml['dependencies'] as YamlMap;
     if (dependencies == null) {
       return false;
     }
@@ -89,16 +91,17 @@ bool pluginSupportsPlatform(
   try {
     final File pubspecFile =
         fileSystem.file(p.join(entity.path, 'pubspec.yaml'));
-    final YamlMap pubspecYaml = loadYaml(pubspecFile.readAsStringSync());
-    final YamlMap flutterSection = pubspecYaml['flutter'];
+    final YamlMap pubspecYaml =
+        loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
+    final YamlMap flutterSection = pubspecYaml['flutter'] as YamlMap;
     if (flutterSection == null) {
       return false;
     }
-    final YamlMap pluginSection = flutterSection['plugin'];
+    final YamlMap pluginSection = flutterSection['plugin'] as YamlMap;
     if (pluginSection == null) {
       return false;
     }
-    final YamlMap platforms = pluginSection['platforms'];
+    final YamlMap platforms = pluginSection['platforms'] as YamlMap;
     if (platforms == null) {
       // Legacy plugin specs are assumed to support iOS and Android.
       if (!pluginSection.containsKey('platforms')) {
@@ -245,8 +248,8 @@ abstract class PluginCommand extends Command<Null> {
   }
 
   void checkSharding() {
-    final int shardIndex = int.tryParse(argResults[_shardIndexArg]);
-    final int shardCount = int.tryParse(argResults[_shardCountArg]);
+    final int shardIndex = int.tryParse(argResults[_shardIndexArg] as String);
+    final int shardCount = int.tryParse(argResults[_shardCountArg] as String);
     if (shardIndex == null) {
       usageException('$_shardIndexArg must be an integer');
     }
@@ -301,10 +304,12 @@ abstract class PluginCommand extends Command<Null> {
   ///    "client library" package, which declares the API for the plugin, as
   ///    well as one or more platform-specific implementations.
   Stream<Directory> _getAllPlugins() async* {
-    Set<String> plugins = Set<String>.from(argResults[_pluginsArg]);
+    Set<String> plugins =
+        Set<String>.from(argResults[_pluginsArg] as List<String>);
     final Set<String> excludedPlugins =
-        Set<String>.from(argResults[_excludeArg]);
-    final bool runOnChangedPackages = argResults[_runOnChangedPackagesArg];
+        Set<String>.from(argResults[_excludeArg] as List<String>);
+    final bool runOnChangedPackages =
+        argResults[_runOnChangedPackagesArg] as bool;
     if (plugins.isEmpty && runOnChangedPackages) {
       plugins = await _getChangedPackages();
     }
@@ -315,7 +320,7 @@ abstract class PluginCommand extends Command<Null> {
       if (_isDartPackage(entity)) {
         if (!excludedPlugins.contains(entity.basename) &&
             (plugins.isEmpty || plugins.contains(p.basename(entity.path)))) {
-          yield entity;
+          yield entity as Directory;
         }
       } else if (entity is Directory) {
         // Look for Dart packages under this top-level directory.
@@ -334,7 +339,7 @@ abstract class PluginCommand extends Command<Null> {
                 (plugins.isEmpty ||
                     plugins.contains(relativePath) ||
                     plugins.contains(basenamePath))) {
-              yield subdir;
+              yield subdir as Directory;
             }
           }
         }
@@ -401,7 +406,7 @@ abstract class PluginCommand extends Command<Null> {
   /// Throws tool exit if [gitDir] nor root directory is a git directory.
   Future<GitVersionFinder> retrieveVersionFinder() async {
     final String rootDir = packagesDir.parent.absolute.path;
-    String baseSha = argResults[_kBaseSha];
+    String baseSha = argResults[_kBaseSha] as String;
 
     GitDir baseGitDir = gitDir;
     if (baseGitDir == null) {
@@ -490,8 +495,8 @@ class ProcessRunner {
   Future<io.ProcessResult> run(String executable, List<String> args,
       {Directory workingDir,
       bool exitOnError = false,
-      stdoutEncoding = io.systemEncoding,
-      stderrEncoding = io.systemEncoding}) async {
+      Encoding stdoutEncoding = io.systemEncoding,
+      Encoding stderrEncoding = io.systemEncoding}) async {
     return io.Process.run(executable, args,
         workingDirectory: workingDir?.path,
         stdoutEncoding: stdoutEncoding,
@@ -571,13 +576,13 @@ class GitVersionFinder {
     final io.ProcessResult changedFilesCommand = await baseGitDir
         .runCommand(<String>['diff', '--name-only', '$baseSha', 'HEAD']);
     print('Determine diff with base sha: $baseSha');
-    final String changedFilesStdout = changedFilesCommand.stdout.toString()  ?? '';
+    final String changedFilesStdout =
+        changedFilesCommand.stdout.toString() ?? '';
     if (changedFilesStdout.isEmpty) {
       return <String>[];
     }
-    final List<String> changedFiles = changedFilesStdout
-        .split('\n')
-          ..removeWhere((element) => element.isEmpty);
+    final List<String> changedFiles = changedFilesStdout.split('\n')
+      ..removeWhere((element) => element.isEmpty);
     return changedFiles.toList();
   }
 
@@ -585,8 +590,8 @@ class GitVersionFinder {
   Future<Version> getPackageVersion(String pubspecPath, String gitRef) async {
     final io.ProcessResult gitShow =
         await baseGitDir.runCommand(<String>['show', '$gitRef:$pubspecPath']);
-    final String fileContent = gitShow.stdout;
-    final String versionString = loadYaml(fileContent)['version'];
+    final String fileContent = gitShow.stdout as String;
+    final String versionString = loadYaml(fileContent)['version'] as String;
     return versionString == null ? null : Version.parse(versionString);
   }
 

@@ -188,10 +188,10 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
       if (entry.value is VersionConstraint) {
         buffer.write('  ${entry.key}: ${entry.value}');
       } else if (entry.value is SdkDependency) {
-        final SdkDependency dep = entry.value;
+        final SdkDependency dep = entry.value as SdkDependency;
         buffer.write('  ${entry.key}: \n    sdk: ${dep.sdk}');
       } else if (entry.value is PathDependency) {
-        final PathDependency dep = entry.value;
+        final PathDependency dep = entry.value as PathDependency;
         buffer.write('  ${entry.key}: \n    path: ${dep.path}');
       } else {
         throw UnimplementedError(

@@ -220,7 +220,7 @@ void main() {
 
       final String tag =
           (await gitDir.runCommand(<String>['show-ref', 'fake_package-v0.0.1']))
-              .stdout;
+              .stdout as String;
       expect(tag, isNotEmpty);
     });
 
@@ -239,7 +239,7 @@ void main() {
       final String tag = (await gitDir.runCommand(
               <String>['show-ref', 'fake_package-v0.0.1'],
               throwOnError: false))
-          .stdout;
+          .stdout as String;
       expect(tag, isEmpty);
     });
   });
@@ -361,7 +361,7 @@ class MockStdin extends Mock implements io.Stdin {
   String readLineOutput;
 
   @override
-  Stream<S> transform<S>(StreamTransformer<dynamic, S> streamTransformer) {
+  Stream<S> transform<S>(StreamTransformer<List<int>, S> streamTransformer) {
     return controller.stream.transform(streamTransformer);
   }
 

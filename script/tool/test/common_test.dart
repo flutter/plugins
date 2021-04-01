@@ -25,10 +25,11 @@ void main() {
     gitDiffResponse = '';
     final MockGitDir gitDir = MockGitDir();
     when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
-      gitDirCommands.add(invocation.positionalArguments[0]);
+      gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
       final MockProcessResult mockProcessResult = MockProcessResult();
       if (invocation.positionalArguments[0][0] == 'diff') {
-        when<String>(mockProcessResult.stdout).thenReturn(gitDiffResponse);
+        when<String>(mockProcessResult.stdout as String)
+            .thenReturn(gitDiffResponse);
       }
       return Future<ProcessResult>.value(mockProcessResult);
     });
@@ -226,12 +227,14 @@ packages/plugin3/plugin3.dart
       gitDiffResponse = '';
       gitDir = MockGitDir();
       when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
-        gitDirCommands.add(invocation.positionalArguments[0]);
+        gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
         final MockProcessResult mockProcessResult = MockProcessResult();
         if (invocation.positionalArguments[0][0] == 'diff') {
-          when<String>(mockProcessResult.stdout).thenReturn(gitDiffResponse);
+          when<String>(mockProcessResult.stdout as String)
+              .thenReturn(gitDiffResponse);
         } else if (invocation.positionalArguments[0][0] == 'merge-base') {
-          when<String>(mockProcessResult.stdout).thenReturn(mergeBaseResponse);
+          when<String>(mockProcessResult.stdout as String)
+              .thenReturn(mergeBaseResponse);
         }
         return Future<ProcessResult>.value(mockProcessResult);
       });

@@ -47,7 +47,7 @@ class XCTestCommand extends PluginCommand {
 
   @override
   Future<Null> run() async {
-    String destination = argResults[_kiOSDestination];
+    String destination = argResults[_kiOSDestination] as String;
     if (destination == null) {
       String simulatorId = await _findAvailableIphoneSimulator();
       if (simulatorId == null) {
@@ -59,7 +59,7 @@ class XCTestCommand extends PluginCommand {
 
     checkSharding();
 
-    final List<String> skipped = argResults[_kSkip];
+    final List<String> skipped = argResults[_kSkip] as List<String>;
 
     List<String> failingPackages = <String>[];
     await for (Directory plugin in getPlugins()) {
@@ -110,8 +110,7 @@ class XCTestCommand extends PluginCommand {
   Future<int> _runTests(bool runTests, String destination, Directory example) {
     final List<String> xctestArgs = <String>[
       _kXcodeBuildCommand,
-      if (runTests)
-        'test',
+      if (runTests) 'test',
       'analyze',
       '-workspace',
       'ios/Runner.xcworkspace',
@@ -128,8 +127,8 @@ class XCTestCommand extends PluginCommand {
     final String completeTestCommand =
         '$_kXCRunCommand ${xctestArgs.join(' ')}';
     print(completeTestCommand);
-    return processRunner
-        .runAndStream(_kXCRunCommand, xctestArgs, workingDir: example, exitOnError: false);
+    return processRunner.runAndStream(_kXCRunCommand, xctestArgs,
+        workingDir: example, exitOnError: false);
   }
 
   Future<String> _findAvailableIphoneSimulator() async {
@@ -151,20 +150,25 @@ class XCTestCommand extends PluginCommand {
       throw ToolExit(1);
     }
     final Map<String, dynamic> simulatorListJson =
-        jsonDecode(findSimulatorsResult.stdout);
-    final List<dynamic> runtimes = simulatorListJson['runtimes'];
-    final Map<String, dynamic> devices = simulatorListJson['devices'];
+        jsonDecode(findSimulatorsResult.stdout as String)
+            as Map<String, dynamic>;
+    final List<Map<String, dynamic>> runtimes =
+        (simulatorListJson['runtimes'] as List<dynamic>)
+            .cast<Map<String, dynamic>>();
+    final Map<String, dynamic> devices =
+        simulatorListJson['devices'] as Map<String, dynamic>;
     if (runtimes.isEmpty || devices.isEmpty) {
       return null;
     }
     String id;
     // Looking for runtimes, trying to find one with highest OS version.
     for (Map<String, dynamic> runtimeMap in runtimes.reversed) {
-      if (!runtimeMap['name'].contains('iOS')) {
+      if (!(runtimeMap['name'] as String).contains('iOS')) {
         continue;
       }
-      final String runtimeID = runtimeMap['identifier'];
-      final List<dynamic> devicesForRuntime = devices[runtimeID];
+      final String runtimeID = runtimeMap['identifier'] as String;
+      final List<Map<String, dynamic>> devicesForRuntime =
+          (devices[runtimeID] as List<dynamic>).cast<Map<String, dynamic>>();
       if (devicesForRuntime.isEmpty) {
         continue;
       }
@@ -174,7 +178,7 @@ class XCTestCommand extends PluginCommand {
             (device['isAvailable'] as bool == false)) {
           continue;
         }
-        id = device['udid'];
+        id = device['udid'] as String;
         print('device selected: $device');
         return id;
       }

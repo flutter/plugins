@@ -40,20 +40,28 @@ class BuildExamplesCommand extends PluginCommand {
 
   @override
   Future<Null> run() async {
-    if (!argResults[kIpa] &&
-        !argResults[kApk] &&
-        !argResults[kLinux] &&
-        !argResults[kMacos] &&
-        !argResults[kWeb] &&
-        !argResults[kWindows]) {
-      print('None of --linux, --macos, --web, --windows, --apk, or --ipa were '
-          'specified, so not building anything.');
+    final List<String> platformSwitches = <String>[
+      kApk,
+      kIpa,
+      kLinux,
+      kMacos,
+      kWeb,
+      kWindows,
+    ];
+    final Map<String, bool> platforms = {
+      for (final String platform in platformSwitches)
+        platform: argResults[platform] as bool
+    };
+    if (!platforms.values.any((bool enabled) => enabled)) {
+      print(
+          'None of ${platformSwitches.map((String platform) => '--$platform').join(', ')} '
+          'were specified, so not building anything.');
       return;
     }
     final String flutterCommand =
         LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
-    final String enableExperiment = argResults[kEnableExperiment];
+    final String enableExperiment = argResults[kEnableExperiment] as String;
 
     checkSharding();
     final List<String> failingPackages = <String>[];
@@ -62,7 +70,7 @@ class BuildExamplesCommand extends PluginCommand {
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
 
-        if (argResults[kLinux]) {
+        if (platforms[kLinux]) {
           print('\nBUILDING Linux for $packageName');
           if (isLinuxPlugin(plugin, fileSystem)) {
             int buildExitCode = await processRunner.runAndStream(
@@ -82,7 +90,7 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (argResults[kMacos]) {
+        if (platforms[kMacos]) {
           print('\nBUILDING macOS for $packageName');
           if (isMacOsPlugin(plugin, fileSystem)) {
             int exitCode = await processRunner.runAndStream(
@@ -102,7 +110,7 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (argResults[kWeb]) {
+        if (platforms[kWeb]) {
           print('\nBUILDING web for $packageName');
           if (isWebPlugin(plugin, fileSystem)) {
             int buildExitCode = await processRunner.runAndStream(
@@ -122,7 +130,7 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (argResults[kWindows]) {
+        if (platforms[kWindows]) {
           print('\nBUILDING Windows for $packageName');
           if (isWindowsPlugin(plugin, fileSystem)) {
             int buildExitCode = await processRunner.runAndStream(
@@ -142,7 +150,7 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (argResults[kIpa]) {
+        if (platforms[kIpa]) {
           print('\nBUILDING IPA for $packageName');
           if (isIosPlugin(plugin, fileSystem)) {
             final int exitCode = await processRunner.runAndStream(
@@ -163,7 +171,7 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (argResults[kApk]) {
+        if (platforms[kApk]) {
           print('\nBUILDING APK for $packageName');
           if (isAndroidPlugin(plugin, fileSystem)) {
             final int exitCode = await processRunner.runAndStream(

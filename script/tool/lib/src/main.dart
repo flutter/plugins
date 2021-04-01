@@ -61,7 +61,7 @@ void main(List<String> args) {
     ..addCommand(XCTestCommand(packagesDir, fileSystem));
 
   commandRunner.run(args).catchError((Object e) {
-    final ToolExit toolExit = e;
+    final ToolExit toolExit = e as ToolExit;
     io.exit(toolExit.exitCode);
   }, test: (Object e) => e is ToolExit);
 }

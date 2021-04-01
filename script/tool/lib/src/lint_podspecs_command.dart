@@ -86,7 +86,8 @@ class LintPodspecsCommand extends PluginCommand {
     final List<File> podspecs = await getFiles().where((File entity) {
       final String filePath = entity.path;
       return p.extension(filePath) == '.podspec' &&
-          !argResults['skip'].contains(p.basenameWithoutExtension(filePath));
+          !(argResults['skip'] as List<String>)
+              .contains(p.basenameWithoutExtension(filePath));
     }).toList();
 
     podspecs.sort(
@@ -102,12 +103,14 @@ class LintPodspecsCommand extends PluginCommand {
     _print('Linting $podspecBasename');
 
     // Lint plugin as framework (use_frameworks!).
-    final ProcessResult frameworkResult = await _runPodLint(podspecPath, libraryLint: true);
+    final ProcessResult frameworkResult =
+        await _runPodLint(podspecPath, libraryLint: true);
     _print(frameworkResult.stdout);
     _print(frameworkResult.stderr);
 
     // Lint plugin as library.
-    final ProcessResult libraryResult = await _runPodLint(podspecPath, libraryLint: false);
+    final ProcessResult libraryResult =
+        await _runPodLint(podspecPath, libraryLint: false);
     _print(libraryResult.stdout);
     _print(libraryResult.stderr);
 
@@ -116,7 +119,7 @@ class LintPodspecsCommand extends PluginCommand {
 
   Future<ProcessResult> _runPodLint(String podspecPath,
       {bool libraryLint}) async {
-    final bool allowWarnings = argResults['ignore-warnings']
+    final bool allowWarnings = (argResults['ignore-warnings'] as List<String>)
         .contains(p.basenameWithoutExtension(podspecPath));
     final List<String> arguments = <String>[
       'lib',
