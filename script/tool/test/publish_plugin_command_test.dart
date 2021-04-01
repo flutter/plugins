@@ -42,15 +42,15 @@ void main() {
     assert(pluginDir != null && pluginDir.existsSync());
     createFakePubspec(pluginDir, includeVersion: true);
     io.Process.runSync('git', <String>['init'],
-        workingDirectory: mockPackagesDir.path);
-    gitDir = await GitDir.fromExisting(mockPackagesDir.path);
+        workingDirectory: parentDir.path);
+    gitDir = await GitDir.fromExisting(parentDir.path);
     await gitDir.runCommand(<String>['add', '-A']);
     await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
     processRunner = TestProcessRunner();
     mockStdin = MockStdin();
     commandRunner = CommandRunner<Null>('tester', '')
       ..addCommand(PublishPluginCommand(
-          mockPackagesDir, const LocalFileSystem(),
+          mockPackagesDir, mockPackagesDir.fileSystem,
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()),
           stdinput: mockStdin));
@@ -65,7 +65,6 @@ void main() {
     test('requires a package flag', () async {
       await expectLater(() => commandRunner.run(<String>['publish-plugin']),
           throwsA(const TypeMatcher<ToolExit>()));
-
       expect(
           printedMessages.last, contains("Must specify a package to publish."));
     });
@@ -73,7 +72,7 @@ void main() {
     test('requires an existing flag', () async {
       await expectLater(
           () => commandRunner
-              .run(<String>['publish-plugin', '--package', 'iamerror']),
+              .run(<String>['publish-plugin', '--package', 'iamerror', '--no-push-tags']),
           throwsA(const TypeMatcher<ToolExit>()));
 
       expect(printedMessages.last, contains('iamerror does not exist'));
@@ -84,7 +83,7 @@ void main() {
 
       await expectLater(
           () => commandRunner
-              .run(<String>['publish-plugin', '--package', testPluginName]),
+              .run(<String>['publish-plugin', '--package', testPluginName, '--no-push-tags']),
           throwsA(const TypeMatcher<ToolExit>()));
 
       expect(
@@ -98,8 +97,7 @@ void main() {
           () => commandRunner
               .run(<String>['publish-plugin', '--package', testPluginName]),
           throwsA(const TypeMatcher<ToolExit>()));
-
-      expect(processRunner.results.last.stderr, contains("No such remote"));
+      expect(processRunner.results.last.stdout, contains("No such remote"));
     });
 
     test("doesn't validate the remote if it's not pushing tags", () async {
