@@ -1,3 +1,7 @@
+## 0.8.1
+
+* Solved a rotation issue on iOS which caused the default preview to be displayed as landscape right instead of portrait.
+
 ## 0.8.0
 
 * Stable null safety release.

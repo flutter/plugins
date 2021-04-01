@@ -6,7 +6,7 @@ dependencies:
   video_player: ^2.0.0-nullsafety.7
   flutter:
     sdk: flutter
-  flutter_plugin_android_lifecycle: ^2.0.0
+  flutter_plugin_android_lifecycle: ^2.0.1
   image_picker:
     # When depending on this package from a real application you should use:
     #   image_picker: ^x.y.z
@@ -19,7 +19,7 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   integration_test:
-    path: ../../../integration_test
+    sdk: flutter
   pedantic: ^1.10.0
 
 flutter:

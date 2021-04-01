@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:io' as io;
 
@@ -8,6 +12,9 @@ import 'package:platform/platform.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:quiver/collection.dart';
 
+// TODO(stuartmorgan): Eliminate this in favor of setting up a clean filesystem
+// for each test, to eliminate the chance of files from one test interfering
+// with another test.
 FileSystem mockFileSystem = MemoryFileSystem(
     style: LocalPlatform().isWindows
         ? FileSystemStyle.windows
@@ -24,7 +31,8 @@ void initializeFakePackages({Directory parentDir}) {
   mockPackagesDir.createSync();
 }
 
-/// Creates a plugin package with the given [name] in [mockPackagesDir].
+/// Creates a plugin package with the given [name] in [packagesDirectory],
+/// defaulting to [mockPackagesDir].
 Directory createFakePlugin(
   String name, {
   bool withSingleExample = false,
@@ -40,13 +48,16 @@ Directory createFakePlugin(
   bool includeChangeLog = false,
   bool includeVersion = false,
   String parentDirectoryName = '',
+  Directory packagesDirectory,
 }) {
   assert(!(withSingleExample && withExamples.isNotEmpty),
       'cannot pass withSingleExample and withExamples simultaneously');
 
-  final Directory pluginDirectory = (parentDirectoryName != '')
-      ? mockPackagesDir.childDirectory(parentDirectoryName).childDirectory(name)
-      : mockPackagesDir.childDirectory(name);
+  Directory parentDirectory = packagesDirectory ?? mockPackagesDir;
+  if (parentDirectoryName != '') {
+    parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
+  }
+  final Directory pluginDirectory = parentDirectory.childDirectory(name);
   pluginDirectory.createSync(recursive: true);
 
   createFakePubspec(
