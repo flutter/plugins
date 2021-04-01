@@ -129,6 +129,51 @@ void main() {
       },
     );
 
+    testWidgets(
+      'stay paused when seeking after video completed',
+      (WidgetTester tester) async {
+        await _controller.initialize();
+        // Mute to allow playing without DOM interaction on Web.
+        // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+        await _controller.setVolume(0);
+        Duration tenMillisBeforeEnd =
+            _controller.value.duration - const Duration(milliseconds: 10);
+        await _controller.seekTo(tenMillisBeforeEnd);
+        await _controller.play();
+        await tester.pumpAndSettle(_playDuration);
+        expect(_controller.value.isPlaying, false);
+        expect(_controller.value.position, _controller.value.duration);
+
+        await _controller.seekTo(tenMillisBeforeEnd);
+        await tester.pumpAndSettle(_playDuration);
+
+        expect(_controller.value.isPlaying, false);
+        expect(_controller.value.position, tenMillisBeforeEnd);
+      },
+    );
+
+    testWidgets(
+      'do not exceed duration on play after video completed',
+      (WidgetTester tester) async {
+        await _controller.initialize();
+        // Mute to allow playing without DOM interaction on Web.
+        // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+        await _controller.setVolume(0);
+        await _controller.seekTo(
+            _controller.value.duration - const Duration(milliseconds: 10));
+        await _controller.play();
+        await tester.pumpAndSettle(_playDuration);
+        expect(_controller.value.isPlaying, false);
+        expect(_controller.value.position, _controller.value.duration);
+
+        await _controller.play();
+        await tester.pumpAndSettle(_playDuration);
+
+        expect(_controller.value.position,
+            lessThanOrEqualTo(_controller.value.duration));
+      },
+    );
+
     testWidgets('test video player view with local asset',
         (WidgetTester tester) async {
       Future<bool> started() async {
