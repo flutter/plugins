@@ -35,7 +35,7 @@ android {
 
 dependencies {
     api "androidx.core:core:1.1.0-beta01"
-    api "androidx.biometric:biometric:1.0.0-beta01"
+    api "androidx.biometric:biometric:1.2.0-alpha03"
     api "androidx.fragment:fragment:1.1.0-alpha06"
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'

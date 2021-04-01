@@ -6,6 +6,8 @@ package io.flutter.plugins.localauth;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.KEYGUARD_SERVICE;
+import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG;
+import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -269,16 +271,29 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       return biometrics;
     }
     PackageManager packageManager = activity.getPackageManager();
-    if (Build.VERSION.SDK_INT >= 23) {
-      if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+    if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 27 && fingerprintManager != null) {
+      if (fingerprintManager.hasEnrolledFingerprints()) {
         biometrics.add("fingerprint");
       }
     }
-    if (Build.VERSION.SDK_INT >= 29) {
-      if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
+    if (Build.VERSION.SDK_INT >= 28) {
+      BiometricManager biometricManager = BiometricManager.from(activity.getApplicationContext());
+
+      if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)
+          && (biometricManager.canAuthenticate( BIOMETRIC_STRONG | BIOMETRIC_WEAK)
+              == BiometricManager.BIOMETRIC_SUCCESS)) {
         biometrics.add("face");
       }
-      if (packageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)) {
+
+      if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
+          && (biometricManager.canAuthenticate(BIOMETRIC_STRONG | BIOMETRIC_WEAK)
+              == BiometricManager.BIOMETRIC_SUCCESS)) {
+        biometrics.add("fingerprint");
+      }
+
+      if (packageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)
+          && (biometricManager.canAuthenticate(BIOMETRIC_STRONG | BIOMETRIC_WEAK)
+              == BiometricManager.BIOMETRIC_SUCCESS)) {
         biometrics.add("iris");
       }
     }
