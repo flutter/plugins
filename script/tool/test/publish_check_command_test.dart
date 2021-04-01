@@ -26,7 +26,7 @@ void main() {
           mockPackagesDir, mockFileSystem,
           processRunner: processRunner);
 
-      runner = CommandRunner<Null>(
+      runner = CommandRunner<void>(
         'publish_check_command',
         'Test for publish-check command.',
       );

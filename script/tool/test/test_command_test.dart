@@ -11,7 +11,7 @@ import 'util.dart';
 
 void main() {
   group('$TestCommand', () {
-    CommandRunner<TestCommand> runner;
+    CommandRunner<void> runner;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
 
     setUp(() {
@@ -19,7 +19,7 @@ void main() {
       final TestCommand command = TestCommand(mockPackagesDir, mockFileSystem,
           processRunner: processRunner);
 
-      runner = CommandRunner<Null>('test_test', 'Test for $TestCommand');
+      runner = CommandRunner<void>('test_test', 'Test for $TestCommand');
       runner.addCommand(command);
     });
 

@@ -30,7 +30,7 @@ class TestCommand extends PluginCommand {
       'This command requires "flutter" to be in your path.';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     checkSharding();
     final List<String> failingPackages = <String>[];
     await for (Directory packageDir in getPackages()) {

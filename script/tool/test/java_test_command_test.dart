@@ -12,7 +12,7 @@ import 'util.dart';
 
 void main() {
   group('$JavaTestCommand', () {
-    CommandRunner<JavaTestCommand> runner;
+    CommandRunner<void> runner;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
 
     setUp(() {
@@ -22,7 +22,7 @@ void main() {
           processRunner: processRunner);
 
       runner =
-          CommandRunner<Null>('java_test_test', 'Test for $JavaTestCommand');
+          CommandRunner<void>('java_test_test', 'Test for $JavaTestCommand');
       runner.addCommand(command);
     });
 

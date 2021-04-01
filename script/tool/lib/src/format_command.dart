@@ -38,7 +38,7 @@ class FormatCommand extends PluginCommand {
       'your path.';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     checkSharding();
     final String googleFormatterPath = await _getGoogleFormatterPath();
 
@@ -82,7 +82,7 @@ class FormatCommand extends PluginCommand {
     return true;
   }
 
-  Future<Null> _formatCppAndObjectiveC() async {
+  Future<void> _formatCppAndObjectiveC() async {
     print('Formatting all .cc, .cpp, .mm, .m, and .h files...');
     final Iterable<String> allFiles = <String>[]
       ..addAll(await _getFilesWithExtension('.h'))
@@ -100,7 +100,7 @@ class FormatCommand extends PluginCommand {
     }
   }
 
-  Future<Null> _formatJava(String googleFormatterPath) async {
+  Future<void> _formatJava(String googleFormatterPath) async {
     print('Formatting all .java files...');
     final Iterable<String> javaFiles = await _getFilesWithExtension('.java');
     await processRunner.runAndStream('java',
@@ -108,7 +108,7 @@ class FormatCommand extends PluginCommand {
         workingDir: packagesDir, exitOnError: true);
   }
 
-  Future<Null> _formatDart() async {
+  Future<void> _formatDart() async {
     // This actually should be fine for non-Flutter Dart projects, no need to
     // specifically shell out to dartfmt -w in that case.
     print('Formatting all .dart files...');

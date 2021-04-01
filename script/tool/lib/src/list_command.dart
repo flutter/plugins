@@ -32,7 +32,7 @@ class ListCommand extends PluginCommand {
   final String description = 'Lists packages or files';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     checkSharding();
     switch (argResults[_type] as String) {
       case _plugin:

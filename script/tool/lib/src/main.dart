@@ -41,7 +41,7 @@ void main(List<String> args) {
     }
   }
 
-  final CommandRunner<Null> commandRunner = CommandRunner<Null>(
+  final CommandRunner<void> commandRunner = CommandRunner<void>(
       'pub global run flutter_plugin_tools',
       'Productivity utils for hosting multiple plugins within one repository.')
     ..addCommand(AnalyzeCommand(packagesDir, fileSystem))

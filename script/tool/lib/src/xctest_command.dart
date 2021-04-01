@@ -46,7 +46,7 @@ class XCTestCommand extends PluginCommand {
       'This command requires "flutter" and "xcrun" to be in your path.';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     String destination = argResults[_kiOSDestination] as String;
     if (destination == null) {
       String simulatorId = await _findAvailableIphoneSimulator();

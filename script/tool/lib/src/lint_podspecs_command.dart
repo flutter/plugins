@@ -52,7 +52,7 @@ class LintPodspecsCommand extends PluginCommand {
   final Print _print;
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     if (!platform.isMacOS) {
       _print('Detected platform is not macOS, skipping podspec lint');
       return;

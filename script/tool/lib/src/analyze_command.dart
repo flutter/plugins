@@ -31,7 +31,7 @@ class AnalyzeCommand extends PluginCommand {
       'This command requires "pub" and "flutter" to be in your path.';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     checkSharding();
 
     print('Verifying analysis settings...');

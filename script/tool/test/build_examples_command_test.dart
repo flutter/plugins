@@ -13,7 +13,7 @@ import 'util.dart';
 
 void main() {
   group('test build_example_command', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
     final String flutterCommand =
         LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
@@ -25,7 +25,7 @@ void main() {
           mockPackagesDir, mockFileSystem,
           processRunner: processRunner);
 
-      runner = CommandRunner<Null>(
+      runner = CommandRunner<void>(
           'build_examples_command', 'Test for build_example_command');
       runner.addCommand(command);
       cleanupPackages();

@@ -27,7 +27,7 @@ void main() {
   Directory pluginDir;
   GitDir gitDir;
   TestProcessRunner processRunner;
-  CommandRunner<Null> commandRunner;
+  CommandRunner<void> commandRunner;
   MockStdin mockStdin;
 
   setUp(() async {
@@ -48,7 +48,7 @@ void main() {
     await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
     processRunner = TestProcessRunner();
     mockStdin = MockStdin();
-    commandRunner = CommandRunner<Null>('tester', '')
+    commandRunner = CommandRunner<void>('tester', '')
       ..addCommand(PublishPluginCommand(
           mockPackagesDir, const LocalFileSystem(),
           processRunner: processRunner,

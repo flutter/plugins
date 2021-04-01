@@ -161,7 +161,7 @@ class ToolExit extends Error {
   final int exitCode;
 }
 
-abstract class PluginCommand extends Command<Null> {
+abstract class PluginCommand extends Command<void> {
   PluginCommand(
     this.packagesDir,
     this.fileSystem, {

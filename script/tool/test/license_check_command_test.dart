@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('$LicenseCheckCommand', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     FileSystem fileSystem;
     List<String> printedMessages;
     Directory root;
@@ -29,7 +29,7 @@ void main() {
         print: (Object message) => printedMessages.add(message.toString()),
       );
       runner =
-          CommandRunner<Null>('license_test', 'Test for $LicenseCheckCommand');
+          CommandRunner<void>('license_test', 'Test for $LicenseCheckCommand');
       runner.addCommand(command);
     });
 
@@ -304,18 +304,20 @@ void main() {
       _writeLicense(
         bad,
         copyright: 'Copyright 2017 Some New Authors.',
-          license: <String>[
-            'Licensed under the Apache License, Version 2.0 (the "License");',
-            'you may not use this file except in compliance with the License.'
-          ],
+        license: <String>[
+          'Licensed under the Apache License, Version 2.0 (the "License");',
+          'you may not use this file except in compliance with the License.'
+        ],
       );
 
       await expectLater(() => runner.run(<String>['license-check']),
           throwsA(const TypeMatcher<ToolExit>()));
 
       // Failure should give information about the problematic files.
-      expect(printedMessages,
-          contains('No recognized license was found for the following third-party files:'));
+      expect(
+          printedMessages,
+          contains(
+              'No recognized license was found for the following third-party files:'));
       expect(printedMessages, contains('  third_party/bad.cc'));
       // Failure shouldn't print the success message.
       expect(printedMessages,

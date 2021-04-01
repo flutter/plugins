@@ -93,7 +93,7 @@ class FirebaseTestLabCommand extends PluginCommand {
   }
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     checkSharding();
     final Stream<Directory> packagesWithTests = getPackages().where(
         (Directory d) =>

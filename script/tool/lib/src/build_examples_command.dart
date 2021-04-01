@@ -39,7 +39,7 @@ class BuildExamplesCommand extends PluginCommand {
       'This command requires "flutter" to be in your path.';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     final List<String> platformSwitches = <String>[
       kApk,
       kIpa,

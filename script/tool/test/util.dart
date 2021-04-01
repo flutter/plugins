@@ -195,7 +195,7 @@ void cleanupPackages() {
 /// Run the command [runner] with the given [args] and return
 /// what was printed.
 Future<List<String>> runCapturingPrint(
-    CommandRunner<PluginCommand> runner, List<String> args) async {
+    CommandRunner<void> runner, List<String> args) async {
   final List<String> prints = <String>[];
   final ZoneSpecification spec = ZoneSpecification(
     print: (_, __, ___, String message) {

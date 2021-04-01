@@ -89,7 +89,7 @@ class PublishPluginCommand extends PluginCommand {
   StreamSubscription<String> _stdinSubscription;
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     checkSharding();
     _print('Checking local repo...');
     _packageDir = _checkPackageDir();

@@ -27,7 +27,7 @@ class JavaTestCommand extends PluginCommand {
   static const String _gradleWrapper = 'gradlew';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     checkSharding();
     final Stream<Directory> examplesWithTests = getExamples().where(
         (Directory d) =>

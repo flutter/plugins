@@ -12,7 +12,7 @@ import 'util.dart';
 
 void main() {
   group('$CreateAllPluginsAppCommand', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     FileSystem fileSystem;
     Directory testRoot;
     Directory packagesDir;
@@ -32,7 +32,7 @@ void main() {
         pluginsRoot: testRoot,
       );
       appDir = command.appDirectory;
-      runner = CommandRunner<Null>(
+      runner = CommandRunner<void>(
           'create_all_test', 'Test for $CreateAllPluginsAppCommand');
       runner.addCommand(command);
     });

@@ -110,7 +110,7 @@ class LicenseCheckCommand extends PluginCommand {
       'Ensures that all code files have copyright/license blocks.';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     final Iterable<File> codeFiles = (await _getAllFiles()).where((File file) =>
         _codeFileExtensions.contains(p.extension(file.path)) &&
         !_shouldIgnoreFile(file));

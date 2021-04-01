@@ -26,7 +26,7 @@ class PublishCheckCommand extends PluginCommand {
       'Checks to make sure that a plugin *could* be published.';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     checkSharding();
     final List<Directory> failedPackages = <Directory>[];
 

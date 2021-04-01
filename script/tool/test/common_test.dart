@@ -44,7 +44,7 @@ void main() {
       gitDir: gitDir,
     );
     runner =
-        CommandRunner<Null>('common_command', 'Test for common functionality');
+        CommandRunner<void>('common_command', 'Test for common functionality');
     runner.addCommand(samplePluginCommand);
   });
 
@@ -320,7 +320,7 @@ class SamplePluginCommand extends PluginCommand {
   final String description = 'sample command';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     await for (Directory package in getPlugins()) {
       this.plugins_.add(package.path);
     }

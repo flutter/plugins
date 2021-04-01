@@ -83,7 +83,7 @@ void main() {
   const String _kSkip = '--skip';
 
   group('test xctest_command', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
 
     setUp(() {
@@ -93,7 +93,7 @@ void main() {
           mockPackagesDir, mockFileSystem,
           processRunner: processRunner);
 
-      runner = CommandRunner<Null>('xctest_command', 'Test for xctest_command');
+      runner = CommandRunner<void>('xctest_command', 'Test for xctest_command');
       runner.addCommand(command);
       cleanupPackages();
     });

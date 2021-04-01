@@ -15,7 +15,7 @@ import 'util.dart';
 void main() {
   group('$FirebaseTestLabCommand', () {
     final List<String> printedMessages = <String>[];
-    CommandRunner<FirebaseTestLabCommand> runner;
+    CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
 
     setUp(() {
@@ -26,7 +26,7 @@ void main() {
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()));
 
-      runner = CommandRunner<Null>(
+      runner = CommandRunner<void>(
           'firebase_test_lab_command', 'Test for $FirebaseTestLabCommand');
       runner.addCommand(command);
     });

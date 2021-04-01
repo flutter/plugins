@@ -41,7 +41,7 @@ class MockProcessResult extends Mock implements io.ProcessResult {}
 
 void main() {
   group('$VersionCheckCommand', () {
-    CommandRunner<VersionCheckCommand> runner;
+    CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
     List<List<String>> gitDirCommands;
     String gitDiffResponse;
@@ -71,7 +71,7 @@ void main() {
           mockPackagesDir, mockFileSystem,
           processRunner: processRunner, gitDir: gitDir);
 
-      runner = CommandRunner<Null>(
+      runner = CommandRunner<void>(
           'version_check_command', 'Test for $VersionCheckCommand');
       runner.addCommand(command);
     });

@@ -17,7 +17,7 @@ import 'util.dart';
 
 void main() {
   group('$LintPodspecsCommand', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     MockPlatform mockPlatform;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
     List<String> printedMessages;
@@ -37,7 +37,7 @@ void main() {
       );
 
       runner =
-          CommandRunner<Null>('podspec_test', 'Test for $LintPodspecsCommand');
+          CommandRunner<void>('podspec_test', 'Test for $LintPodspecsCommand');
       runner.addCommand(command);
       final MockProcess mockLintProcess = MockProcess();
       mockLintProcess.exitCodeCompleter.complete(0);
@@ -103,8 +103,7 @@ void main() {
         ]),
       );
 
-      expect(
-          printedMessages, contains('Linting plugin1.podspec'));
+      expect(printedMessages, contains('Linting plugin1.podspec'));
       expect(printedMessages, contains('Foo'));
       expect(printedMessages, contains('Bar'));
     });
@@ -166,8 +165,7 @@ void main() {
         ]),
       );
 
-      expect(
-          printedMessages, contains('Linting plugin1.podspec'));
+      expect(printedMessages, contains('Linting plugin1.podspec'));
     });
   });
 }

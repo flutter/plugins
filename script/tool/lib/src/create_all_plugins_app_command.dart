@@ -36,7 +36,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   String get name => 'all-plugins-app';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     final int exitCode = await _createApp();
     if (exitCode != 0) {
       throw ToolExit(exitCode);

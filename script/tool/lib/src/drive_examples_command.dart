@@ -48,7 +48,7 @@ class DriveExamplesCommand extends PluginCommand {
       'integration_test/*_test.dart.';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     checkSharding();
     final List<String> failingTests = <String>[];
     final bool isLinux = argResults[kLinux] == true;
