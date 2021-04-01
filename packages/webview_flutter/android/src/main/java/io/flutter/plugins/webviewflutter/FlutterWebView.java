@@ -29,6 +29,20 @@ import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
+  private static FlutterWebViewIniter commonIniter;
+
+  /**
+   * Set common initializing logic for all Flutter WebView's. When the WebView is created and the
+   * original initialization is done, {@link FlutterWebViewIniter#initWebView(WebView)} would be
+   * called.
+   *
+   * <p>Suggestion: you can call this method in {@link android.app.Application} to avoid memory
+   * leak.
+   */
+  public static void setCommonIniter(FlutterWebViewIniter initer) {
+    FlutterWebView.commonIniter = initer;
+  }
+
   private final WebView webView;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
@@ -128,6 +142,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String userAgent = (String) params.get("userAgent");
       updateUserAgent(userAgent);
     }
+    if (commonIniter != null) commonIniter.initWebView(webView);
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
