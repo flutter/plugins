@@ -119,7 +119,6 @@ class PublishPluginCommand extends PluginCommand {
 
     final Directory packageDir = _checkPackageDir(package);
     await _publishPlugin(packageDir: packagesDir);
-
     await _tagRelease(packageDir: packageDir, remote: remote, remoteUrl: remoteUrl, shouldPushTag: shouldPushTag);
     await _finishSuccesfully();
   }
