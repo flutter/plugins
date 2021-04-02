@@ -104,7 +104,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     TrackSelectionsMessage response =
         await _api.trackSelections(TextureMessage()..textureId = textureId);
     final List<TrackSelection> trackSelections = [];
-    for (dynamic? trackSelectionMap in response.trackSelections!) {
+    for (dynamic trackSelectionMap in response.trackSelections!) {
       final trackSelectionType =
           _intTrackSelectionTypeMap[trackSelectionMap['trackType']]!;
       final bool isUnknown = trackSelectionMap['isUnknown'];
