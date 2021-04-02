@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Fixed iOS app crash when fill `localizedReason` with an empty string
+
 ## 1.1.1
 
 * Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
